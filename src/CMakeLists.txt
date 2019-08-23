@@ -43,12 +43,11 @@ SET(BASE_OTHER_SOURCE
 
 SOURCE_GROUP("Other"                FILES ${BASE_OTHER_SOURCE})
 
-SET(BASE_PLUG_IN_SOURCE
-    PlugIn/ExternalModule.cpp
-#     PlugIn/PlugIn.cpp
-)
+file(GLOB BASE_PLUG_IN_HEADER ${CMCORE_ROOT_INCLUDE_PATH}/hgl/plugin/*.h)
+file(GLOB BASE_PLUG_IN_SOURCE PlugIn/*.cpp)
 
-SOURCE_GROUP("PlugIn" FILES ${BASE_PLUG_IN_SOURCE})
+SOURCE_GROUP("PlugIn\\Header Files" FILES ${BASE_PLUG_IN_HEADER})
+SOURCE_GROUP("PlugIn\\Source Files" FILES ${BASE_PLUG_IN_SOURCE})
 
 add_library(CMCore STATIC  #${SYSTEM_INFO_SOURCE}
                             ${TYPE_TEMPLATE_HEADER}
@@ -56,6 +55,8 @@ add_library(CMCore STATIC  #${SYSTEM_INFO_SOURCE}
                             ${BASE_IO_SOURCE}
                             ${BASE_FILE_SYSTEM_SOURCE}
                             ${BASE_OTHER_SOURCE}
+							
+							${BASE_PLUG_IN_HEADER}
                             ${BASE_PLUG_IN_SOURCE})
 
 set_property(TARGET CMCore PROPERTY FOLDER "CM")
