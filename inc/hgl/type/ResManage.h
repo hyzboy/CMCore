@@ -38,13 +38,13 @@ namespace hgl
         virtual ~ResManage();
 
         virtual void        Clear();                                            ///<清除所有数据
-        virtual void        ClearFree();                                        ///<清除所有没有用到的数据
+        virtual void        ClearFree();                                        ///<清除所有引用计数为0的数据
 
                 const int   GetCount()const{return items.GetCount();}           ///<取得数据数量
 
         virtual bool        Add(const F &,T *);                                 ///<添加一个数据
-        virtual T *         Find(const F &);                                    ///<查找一个数据
-        virtual T *         Get(const F &);                                     ///<取得一个数据
+        virtual T *         Find(const F &);                                    ///<查找一个数据(不增加引用计数)
+        virtual T *         Get(const F &);                                     ///<取得一个数据(增加引用计数)
 
         virtual bool        ValueExist(T *);                                                  ///<确认这个数据是否存在
         virtual bool        GetKeyByValue(T *,F *,uint *,bool inc_ref_count=false);           ///<取得一个数据的Key和引用次数
