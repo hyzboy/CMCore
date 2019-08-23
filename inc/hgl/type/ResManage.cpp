@@ -62,12 +62,9 @@ namespace hgl
         if(index==-1)
             return(nullptr);
 
-        T *result;
+        ResItem *obj=items.GetItem(index);
 
-        if(items.Get(flag,result))
-            return(result);
-
-        return(nullptr);
+        return obj->right;
     }
 
     template<typename F,typename T>
