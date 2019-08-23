@@ -49,6 +49,12 @@ file(GLOB BASE_PLUG_IN_SOURCE PlugIn/*.cpp)
 SOURCE_GROUP("PlugIn\\Header Files" FILES ${BASE_PLUG_IN_HEADER})
 SOURCE_GROUP("PlugIn\\Source Files" FILES ${BASE_PLUG_IN_SOURCE})
 
+file(GLOB BASE_LOG_HEADER ${CMCORE_ROOT_INCLUDE_PATH}/hgl/log/*.h)
+file(GLOB BASE_LOG_SOURCE Log/*.*)
+
+SOURCE_GROUP("Log\\Header Files" FILES ${BASE_LOG_HEADER})
+SOURCE_GROUP("Log\\Source Files" FILES ${BASE_LOG_SOURCE})
+
 add_library(CMCore STATIC  #${SYSTEM_INFO_SOURCE}
                             ${TYPE_TEMPLATE_HEADER}
                             ${BASE_TYPE_SOURCE}
@@ -57,6 +63,10 @@ add_library(CMCore STATIC  #${SYSTEM_INFO_SOURCE}
                             ${BASE_OTHER_SOURCE}
 							
 							${BASE_PLUG_IN_HEADER}
-                            ${BASE_PLUG_IN_SOURCE})
+                            ${BASE_PLUG_IN_SOURCE}
+							
+							${BASE_LOG_HEADER}
+							${BASE_LOG_SOURCE}
+							)
 
 set_property(TARGET CMCore PROPERTY FOLDER "CM")

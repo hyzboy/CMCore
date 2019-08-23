@@ -25,20 +25,23 @@ namespace hgl
     /**
      * 插件注册模板
      */
-    template<typename T> class RegistryPlugInProxy
+    template<typename T,typename CN> class RegistryPlugInProxy
     {
-        SharedPtr<T> plugin;
+        T *plugin;
 
     public:
 
         RegistryPlugInProxy()
         {
-            plugin=new T;
+            plugin=new CN;
         }
 
-        virtual ~RegistryPlugInProxy()=default;
+        virtual ~RegistryPlugInProxy()
+        {
+            delete plugin;
+        }
 
-        T *get(){return *plugin;}
+        T *get(){return plugin;}
     };//template<typename T> class RegistryPlugInProxy
 
     /*
@@ -52,10 +55,10 @@ namespace hgl
     */
 
 #ifndef __MAKE_PLUGIN__     //内部插件
-    #define REGISTRY_PLUG_IN(name,classname) static RegistryPlugInProxy<classname> plugin_proxy_##classname;
+    #define REGISTRY_PLUG_IN(name,classname)    static RegistryPlugInProxy<name,classname> plugin_proxy_##classname;   \
+                                                extern "C" void registry_plugin_##classname;
 #else                       //外部插件
-    #define REGISTRY_PLUG_IN(name,classname)    
-    static 
+    #define REGISTRY_PLUG_IN(name,classname)    static RegistryPlugInProxy<name,classname> plugin_proxy_##classname     \
     extern "C" void registry_plugin_##name(void)
     {
         
