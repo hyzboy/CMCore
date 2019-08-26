@@ -122,36 +122,41 @@ namespace hgl
     }
 
     template<typename F,typename T>
-    void ResManage<F,T>::ReleaseBySerial(int index,bool zero_clear)
+    uint ResManage<F,T>::ReleaseBySerial(int index,bool zero_clear)
     {
         if(index==-1)
         {
 //          ErrorHint(u"所释放的资源不存在");
-            return;
+            return(0);
         }
 
         ResItem *obj=items.GetItem(index);
 
         --obj->count;
 
-        if(zero_clear&&obj->count==0)
+        if(obj->count>0)
+            return obj->count;
+
+        if(zero_clear)
         {
             Clear(obj->right);
 
             items.DeleteBySerial(index);
         }
+
+        return 0;
     }
 
     template<typename F,typename T>
-    void ResManage<F,T>::Release(const F &flag,bool zero_clear)
+    uint ResManage<F,T>::Release(const F &flag,bool zero_clear)
     {
-        ReleaseBySerial(items.Find(flag),zero_clear);
+        return ReleaseBySerial(items.Find(flag),zero_clear);
     }
 
     template<typename F,typename T>
-    void ResManage<F,T>::Release(T *td,bool zero_clear)
+    uint ResManage<F,T>::Release(T *td,bool zero_clear)
     {
-        ReleaseBySerial(items.FindByValue(td),zero_clear);
+        return ReleaseBySerial(items.FindByValue(td),zero_clear);
     }
 }//namespace hgl
 #endif//HGL_RES_MANAGE_CPP

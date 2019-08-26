@@ -27,7 +27,7 @@ namespace hgl
 
         _Map<F,T *,ResItem> items;
 
-        void ReleaseBySerial(int,bool);
+        uint ReleaseBySerial(int,bool);
 
     protected:
 
@@ -49,8 +49,8 @@ namespace hgl
         virtual bool        ValueExist(T *);                                                  ///<确认这个数据是否存在
         virtual bool        GetKeyByValue(T *,F *,uint *,bool inc_ref_count=false);           ///<取得一个数据的Key和引用次数
 
-        virtual void        Release(const F &,bool zero_clear=false);           ///<释放一个数据
-        virtual void        Release(T *,bool zero_clear=false);                 ///<释放一个数据
+        virtual uint        Release(const F &,bool zero_clear=false);           ///<释放一个数据
+        virtual uint        Release(T *,bool zero_clear=false);                 ///<释放一个数据
     };//template<typename F,typename T> class ResManage
 
     /**
