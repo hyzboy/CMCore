@@ -1,6 +1,7 @@
-﻿#include<hgl/PlugIn.h>
-#include<hgl/Logger.h>
+﻿#include<hgl/plugin/PlugIn.h>
+#include<hgl/log/Logger.h>
 #include<hgl/type/DateTime.h>
+#include<hgl/type/List.h>
 #include<hgl/thread/RWLock.h>
 
 namespace hgl
@@ -130,7 +131,7 @@ namespace hgl
         /**
          * 日志插件,一个模拟的接口
          */
-        class LogPlugIn:public PlugIn                                                                    ///日志插件
+        class LogPlugIn:public PlugIn                                                               ///日志插件
         {
         public:
 

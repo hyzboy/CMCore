@@ -56,6 +56,9 @@ namespace hgl
                     return(true);
                 }
             }
+
+            delete pi_module;
+            pi_module=nullptr;
         }
 
         status=PlugInStatus::LOAD_FAILED;
