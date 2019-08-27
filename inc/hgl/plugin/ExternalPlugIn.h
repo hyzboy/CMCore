@@ -37,7 +37,7 @@ namespace hgl
         virtual ~ExternalPlugIn();
 
         void Free();                                        ///<释放插件文件
-        bool Load(const UTF16String &,const OSString &);    ///<加载插件
+        bool Load(const OSString &,const OSString &);       ///<加载插件
     };//class ExternalPlugIn:public PlugIn
 }//namespace hgl
 #endif//HGL_EXTERNAL_PLUG_IN_INCLUDE

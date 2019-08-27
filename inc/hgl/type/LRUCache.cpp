@@ -1,7 +1,7 @@
 ﻿#ifndef HGL_TYPE_LRU_CACHE_CPP
 #define HGL_TYPE_LRU_CACHE_CPP
 
-#include<hgl/LogInfo.h>
+#include<hgl/log/LogInfo.h>
 namespace hgl
 {
     /**

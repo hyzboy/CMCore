@@ -9,15 +9,15 @@ namespace hgl
     /**
      * 插件管理
      */
-    class PlugInManage:public ResManage<UTF16String,PlugIn>
+    class PlugInManage:public ResManage<OSString,PlugIn>
     {
-        UTF16String name;                                                                           ///<插件类目名称(必须符合代码名称规则)
+        OSString name;                                                          ///<插件类目名称(必须符合代码名称规则)
 
-        OSStringList findpath;                                                                      ///<插件查找目录
+        OSStringList findpath;                                                  ///<插件查找目录
 
     public:
 
-        PlugInManage(const UTF16String &n)
+        PlugInManage(const OSString &n)
         {
             name=n;
         }
@@ -25,13 +25,13 @@ namespace hgl
         virtual ~PlugInManage();
 
         bool    RegistryPlugin(PlugIn *);                                       ///<注册一个内置插件
-        uint    UnregistryPlugin(const UTF16String &);                          ///<释放一个内置插件
+        uint    UnregistryPlugin(const OSString &);                             ///<释放一个内置插件
 
         bool    AddFindPath (const OSString &path);                             ///<添加一个插件查找目录
 
-        PlugIn *LoadPlugin  (const UTF16String &,const OSString &);             ///<加载一个外部插件，明确指定全路径文件名
-        PlugIn *LoadPlugin  (const UTF16String &);                              ///<加载一个外部插件，自行查找
-        bool    UnloadPlugin(const UTF16String &);                              ///<释放一个外部插件
+        PlugIn *LoadPlugin  (const OSString &,const OSString &);                ///<加载一个外部插件，明确指定全路径文件名
+        PlugIn *LoadPlugin  (const OSString &);                                 ///<加载一个外部插件，自行查找
+        bool    UnloadPlugin(const OSString &);                                 ///<释放一个外部插件
     };//class PlugInManage:public ResManage<UTF16String,PlugIn>
 
     /**

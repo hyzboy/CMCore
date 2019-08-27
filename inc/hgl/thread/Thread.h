@@ -5,7 +5,7 @@
 #include<hgl/type/Set.h>
 #include<hgl/type/BaseString.h>
 #include<hgl/thread/ThreadMutex.h>
-#include<hgl/LogInfo.h>
+#include<hgl/log/LogInfo.h>
 
 namespace hgl
 {

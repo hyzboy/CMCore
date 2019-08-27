@@ -54,8 +54,7 @@ namespace hgl
             Date d;
             Time t;
 
-            d.Sync();
-            t.Sync();
+            ToDateTime(d,t);
 
             const OSString str= OS_TEXT("Create Log Date/Time: ")+
                                 OSString(d.GetYear  ())+OS_TEXT("-")+
@@ -119,17 +118,8 @@ namespace hgl
             WriteLog<char>
         };
 
-        bool GetLogInterface(uint32 ver,void *data)
-        {
-            if(ver!=3)
-                return(false);
-
-            memcpy(data,&LogInterface3,sizeof(LogInterface));
-            return(true);
-        }
-
         /**
-         * 日志插件,一个模拟的接口
+         * 日志插件
          */
         class LogPlugIn:public PlugIn                                                               ///日志插件
         {
@@ -137,12 +127,20 @@ namespace hgl
 
             LogPlugIn()
             {
-                type=pitLog;
+                ver=1;
+                name=OS_TEXT("Log");
+                intro=U16_TEXT("unicode text log module.");
 
-                name=OS_TEXT("unicode text log module.");
-                filename=OS_TEXT("LogInfo.cpp");
+                filename=OS_TEXT("Loginfo.cpp");
+            }
 
-                GetInterface=GetLogInterface;
+            bool GetInterface(uint ver,void *data) override
+            {
+                if(ver!=3||!data)
+                    return(false);
+
+                memcpy(data,&LogInterface3,sizeof(LogInterface));
+                return(true);
             }
         };//class LogPlugIn
     }//namespace logger
@@ -163,8 +161,6 @@ namespace hgl
 
             delete li;
             li=nullptr;
-
-            UnloadPlugIn(pi);
 
             return(nullptr);
         }

@@ -26,7 +26,7 @@ namespace hgl
         status=PlugInStatus::NO_LOAD;
     }
 
-    bool ExternalPlugIn::Load(const UTF16String &pn,const OSString &fn)
+    bool ExternalPlugIn::Load(const OSString &pn,const OSString &fn)
     {
         if(pi_module)
             return(true);

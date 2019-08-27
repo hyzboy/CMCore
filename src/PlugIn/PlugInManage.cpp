@@ -9,7 +9,7 @@ namespace hgl
     {
         if(!pi)return(false);
 
-        const UTF16String &pi_name=pi->GetName();
+        const OSString &pi_name=pi->GetName();
 
         if(this->Find(pi_name))
             return(false);
@@ -17,7 +17,7 @@ namespace hgl
         return this->Add(pi_name,pi);
     }
 
-    uint PlugInManage::UnregistryPlugin(const UTF16String &pi_name)
+    uint PlugInManage::UnregistryPlugin(const OSString &pi_name)
     {
         PlugIn *pi=this->Find(pi_name);
 
@@ -42,7 +42,7 @@ namespace hgl
         return(true);
     }
 
-    PlugIn *PlugInManage::LoadPlugin(const UTF16String &pi_name,const OSString &filename)
+    PlugIn *PlugInManage::LoadPlugin(const OSString &pi_name,const OSString &filename)
     {
         if(pi_name.IsEmpty())return(nullptr);
         if(filename.IsEmpty())return(nullptr);
@@ -64,7 +64,7 @@ namespace hgl
         return(nullptr);
     }
 
-    PlugIn *PlugInManage::LoadPlugin(const UTF16String &pi_name)
+    PlugIn *PlugInManage::LoadPlugin(const OSString &pi_name)
     {
         if(pi_name.IsEmpty())return(nullptr);
 
@@ -99,5 +99,16 @@ namespace hgl
 
             epi->Free();
         }
+
+        delete epi;
+        return(nullptr);
+    }
+
+    bool PlugInManage::UnloadPlugin(const OSString &pi_name)
+    {
+        if(pi_name.IsEmpty())return(nullptr);
+
+        this->Release(pi_name);
+        return(true);
     }
 }//namespace hgl

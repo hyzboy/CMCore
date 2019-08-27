@@ -1,7 +1,7 @@
 ﻿#ifndef HGL_STACK_CPP
 #define HGL_STACK_CPP
 
-#include<hgl/LogInfo.h>
+#include<hgl/log/LogInfo.h>
 namespace hgl
 {
     /**
