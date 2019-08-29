@@ -189,7 +189,7 @@ namespace hgl
 
     namespace logger
     {
-        Logger *CreateLoggerConsole (const OSString &,LogLevel);
+        Logger *CreateLoggerConsole (LogLevel);
         Logger *CreateLoggerFile    (const OSString &,LogLevel);
 
         /**
@@ -198,7 +198,7 @@ namespace hgl
          */
         bool InitLogger(const OSString &app_name)
         {
-            AddLogger(CreateLoggerConsole(app_name,llLog));
+            AddLogger(CreateLoggerConsole(llLog));
             AddLogger(CreateLoggerFile(app_name,llLog));
 
             return InitLog();
