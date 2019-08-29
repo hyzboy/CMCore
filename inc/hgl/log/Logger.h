@@ -20,16 +20,17 @@ namespace hgl
         class Logger
         {
         protected:
-
+        
             LogLevel min_level;                                                                     ///<最小输出级别
-            UTF16String project_code;
+            Logger *parent;                                                                         ///<上级输出器
 
         public:
 
-            Logger(LogLevel l){min_level=l;}
+            Logger(LogLevel l,Logger *pl=nullptr){min_level=l;parent=pl;}
             virtual ~Logger()=default;
 
-            const LogLevel GetLevel()const{return min_level;}                                       ///<取得最小输出级别
+            const LogLevel  GetLevel    ()const{return min_level;}                                  ///<取得最小输出级别
+            Logger *        GetParent   (){return parent;}                                          ///<取得上级日志输出器
 
             virtual void Close()=0;                                                                 ///<关闭日志
 

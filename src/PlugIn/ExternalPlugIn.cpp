@@ -7,6 +7,7 @@ namespace hgl
     {
         status=PlugInStatus::NONE;
         pi_module=nullptr;
+        plugin_interface=nullptr;
     }
     
     ExternalPlugIn::~ExternalPlugIn()
@@ -19,6 +20,7 @@ namespace hgl
         if(!pi_module)return;
         
         plugin_interface->Close();
+        plugin_interface=nullptr;
 
         delete pi_module;
         pi_module=nullptr;
@@ -44,7 +46,10 @@ namespace hgl
             {
                 plugin_interface=init_proc();
 
-                if(plugin_interface)
+                if(plugin_interface
+                 &&plugin_interface->GetVersion
+                 &&plugin_interface->GetIntro
+                 &&plugin_interface->GetInterface)
                 {                    
                     status=PlugInStatus::COMPLETE;
 
@@ -63,5 +68,12 @@ namespace hgl
 
         status=PlugInStatus::LOAD_FAILED;
         return(false);
+    }
+    
+    bool ExternalPlugIn::GetInterface(uint ver,void *interface_data)
+    {
+        if(!plugin_interface)return(false);
+
+        return plugin_interface->GetInterface(ver,interface_data);
     }
 }//namespace hgl

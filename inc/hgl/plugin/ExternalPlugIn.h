@@ -4,7 +4,9 @@
 #include<hgl/plugin/PlugIn.h>
 #include<hgl/platform/ExternalModule.h>
 namespace hgl
-{    
+{
+    struct PlugInInterface;
+
     /**
      * 外部插件状态
      */
@@ -26,6 +28,8 @@ namespace hgl
         OSString filename;                                  ///<插件对应的真实文件系统名称
 
         ExternalModule *pi_module;
+        
+        PlugInInterface *plugin_interface;
 
     public:
 
@@ -36,8 +40,10 @@ namespace hgl
         ExternalPlugIn();
         virtual ~ExternalPlugIn();
 
-        void Free();                                        ///<释放插件文件
-        bool Load(const OSString &,const OSString &);       ///<加载插件
+                void Free();                                                    ///<释放插件文件
+                bool Load(const OSString &,const OSString &);                   ///<加载插件
+        
+        virtual bool GetInterface(uint,void *) override;
     };//class ExternalPlugIn:public PlugIn
 }//namespace hgl
 #endif//HGL_EXTERNAL_PLUG_IN_INCLUDE

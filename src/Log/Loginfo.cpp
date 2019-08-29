@@ -167,12 +167,11 @@ namespace hgl
 
         void CloseLog()
         {
-            if(li)
-            {
-                li->Close();
-                delete li;
-                li=nullptr;
-            }
+            if(!li)return;
+
+            li->Close();
+            delete li;
+            li=nullptr;
         }
 
         void Log(LogLevel level,const u16char *str,int size)
