@@ -92,7 +92,7 @@ namespace hgl
             HGL_POINTER_UINT thread_id;                 ///<线程ID
 
         public:
-        };//class AdvLogger
+        };//class LoggerBase
 
         /**
          * 线程日志
