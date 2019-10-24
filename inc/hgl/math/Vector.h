@@ -3,6 +3,7 @@
 
 #ifdef _MSC_VER
 #pragma warning(disable:4244)           // double -> int 精度丢失警告
+#pragma warning(disable:4996)           // sprintf may be unsafe, Consider using sprintf_s instead
 #endif//_MSC_VER
 
 #include<hgl/math/FastTriangle.h>
