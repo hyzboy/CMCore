@@ -215,6 +215,8 @@
 
     #if HGL_COMPILER == HGL_COMPILER_Microsoft
         #include<hgl/platform/compiler/Microsoft.h>
+    #elif HGL_COMPILER == HGL_COMPILER_LLVM
+        #include<hgl/platform/compiler/LLVM.h>
     #elif HGL_COMPILER == HGL_COMPILER_Intel
         #include<hgl/platform/compiler/Intel.h>
     #elif HGL_COMPILER == HGL_COMPILER_IBM
