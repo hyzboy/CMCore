@@ -1,4 +1,4 @@
-#include<hgl/plugin/PlugInManage.h>
+﻿#include<hgl/plugin/PlugInManage.h>
 #include<hgl/filesystem/FileSystem.h>
 
 namespace hgl
