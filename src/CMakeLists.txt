@@ -55,18 +55,16 @@ file(GLOB BASE_LOG_SOURCE Log/*.*)
 SOURCE_GROUP("Log\\Header Files" FILES ${BASE_LOG_HEADER})
 SOURCE_GROUP("Log\\Source Files" FILES ${BASE_LOG_SOURCE})
 
-add_library(CMCore STATIC  #${SYSTEM_INFO_SOURCE}
+add_cm_library(CMCore "CM"  #${SYSTEM_INFO_SOURCE}
                             ${TYPE_TEMPLATE_HEADER}
                             ${BASE_TYPE_SOURCE}
                             ${BASE_IO_SOURCE}
                             ${BASE_FILE_SYSTEM_SOURCE}
                             ${BASE_OTHER_SOURCE}
-							
+
 							${BASE_PLUG_IN_HEADER}
                             ${BASE_PLUG_IN_SOURCE}
-							
+
 							${BASE_LOG_HEADER}
 							${BASE_LOG_SOURCE}
 							)
-
-set_property(TARGET CMCore PROPERTY FOLDER "CM")
