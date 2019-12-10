@@ -1,11 +1,7 @@
 #ifndef HGL_PROCESS_MUTEX_INCLUDE
 #define HGL_PROCESS_MUTEX_INCLUDE
 
-#include<hgl/type/DataType.h>
-
-#if HGL_OS!=HGL_OS_Windows
-    #include<semaphore.h>
-#endif//HGL_OS!=HGL_OS_Windows
+#include<hgl/platform/Platform.h>
 
 namespace hgl
 {
@@ -14,11 +10,7 @@ namespace hgl
     */
     class ProcMutex                                                                                 ///进程排斥
     {
-#if HGL_OS==HGL_OS_Windows
-        void *lock;
-#else
-        sem_t *lock;
-#endif//HGL_OS==HGL_OS_Windows
+        proc_mutex_ptr lock;
 
     public:
 

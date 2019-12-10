@@ -9,7 +9,7 @@
 
 namespace hgl
 {
-    using hgl_thread_mutex  =pthread_mutex_t;
+    using thread_mutex_ptr  =pthread_mutex_t;
 
     using thread_ptr        =pthread_t;
     using rwlock_ptr        =pthread_rwlock_t *;
@@ -24,5 +24,7 @@ namespace hgl
 
     #define THREAD_FUNC     void *
     #define HGL_THREAD_DETACH_SELF  pthread_detach(pthread_self());
+
+    using proc_mutex_ptr    =sem_t *;
 }//namespace hgl
 #endif//HGL_POSIX_THREAD_INCLUDE

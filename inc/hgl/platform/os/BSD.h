@@ -62,8 +62,6 @@ typedef void *                  ExternalModulePointer;
 #define pi_get                  dlsym
 #define pi_close                dlclose
 
-typedef pthread_mutex_t hgl_thread_mutex;
-
 #define hgl_stat64              stat
 #define hgl_open64              open
 #define hgl_lseek64             lseek

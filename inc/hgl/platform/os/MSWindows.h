@@ -72,7 +72,7 @@ using ExternalModulePointer     =HMODULE;
 #define hgl_read64              _read
 #define hgl_write64             _write
 
-using hgl_thread_mutex  =CRITICAL_SECTION;
+using thread_mutex_ptr  =CRITICAL_SECTION;
 using thread_ptr        =HANDLE;
 using rwlock_ptr        =SRWLOCK;
 using semaphore_ptr     =HANDLE;
@@ -80,5 +80,7 @@ using conv_var_ptr      =CONDITION_VARIABLE;
 
 #define THREAD_FUNC      DWORD WINAPI
 #define HGL_THREAD_DETACH_SELF
+
+using proc_mutex_ptr    =HANDLE;
 //--------------------------------------------------------------------------------------------------
 #endif//HGL_OS_WIN_INCLUDE

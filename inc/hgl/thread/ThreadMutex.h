@@ -11,14 +11,14 @@ namespace hgl
     */
     class ThreadMutex                                                                               ///排斥访问类(仅当前进程)
     {
-        hgl_thread_mutex ptr;
+        thread_mutex_ptr ptr;
 
     public:
 
         ThreadMutex();                                                                              ///<本类构造函数
         virtual ~ThreadMutex();                                                                     ///<本类析构函数
 
-        hgl_thread_mutex *GetThreadMutex(){return &ptr;}
+        thread_mutex_ptr *GetThreadMutex(){return &ptr;}
 
         virtual void    Lock();                                                                     ///<取得的控制权(如果对象处于排斥状态，则等待)
         virtual bool    TryLock();                                                                  ///<尝试取得控制权
