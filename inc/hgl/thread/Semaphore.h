@@ -1,9 +1,7 @@
 ﻿#ifndef HGL_SEMAPHORE_INCLUDE
 #define HGL_SEMAPHORE_INCLUDE
 
-#ifdef __APPLE__
-#include<dispatch/dispatch.h>
-#endif//__APPLE__
+#include<hgl/platform/Platform.h>
 
 namespace hgl
 {
@@ -13,11 +11,7 @@ namespace hgl
     */
     class Semaphore                                                                                 ///信号
     {
-#ifdef __APPLE__
-        dispatch_semaphore_t ptr;
-#else
-        void *ptr;
-#endif//__APPLE__
+        semaphore_ptr ptr;
 
     public:
 

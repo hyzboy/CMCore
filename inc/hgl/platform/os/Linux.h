@@ -50,7 +50,7 @@ inline T *hgl_aligned_malloc(size_t n)
 }
 
 #define OS_EXTERNAL_H           <dlfcn.h>
-typedef void *                  ExternalModulePointer;
+using ExternalModulePointer     =void *;
 #define pi_get                  dlsym
 #define pi_close                dlclose
 

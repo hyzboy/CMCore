@@ -9,14 +9,14 @@ namespace hgl
     */
     class RWLock                                                                                    ///读写锁/共享锁
     {
-        void *lock;
+        rwlock_ptr *lock;
 
     public:
 
         RWLock();
         virtual ~RWLock();
 
-        void *GetRWLock(){ return lock; }                                                           ///<返回操作系级锁
+        rwlock_ptr *GetRWLock(){ return lock; }                                                     ///<返回操作系级锁
 
         bool TryReadLock();                                                                         ///<尝试读(共享访问)锁定
         bool ReadLock();                                                                            ///<读(共享访问)锁定

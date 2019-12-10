@@ -59,7 +59,7 @@ using os_char           =wchar_t;
 #endif//
 
 #define OS_EXTERNAL_H           <winbase.h>
-typedef HMODULE                 ExternalModulePointer;
+using ExternalModulePointer     =HMODULE;
 #define pi_get                  GetProcAddress
 #define pi_close                FreeLibrary
 
@@ -74,6 +74,10 @@ typedef HMODULE                 ExternalModulePointer;
 
 using hgl_thread_mutex  =CRITICAL_SECTION;
 using thread_ptr        =HANDLE;
+using rwlock_ptr        =SRWLOCK;
+using semaphore_ptr     =HANDLE;
+using conv_var_ptr      =CONDITION_VARIABLE;
+
 #define THREAD_FUNC      DWORD WINAPI
 #define HGL_THREAD_DETACH_SELF
 //--------------------------------------------------------------------------------------------------
