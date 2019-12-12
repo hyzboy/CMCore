@@ -32,7 +32,7 @@
 #define HGL_CPU_PowerPC64           HGL_MERGE32('P','P','6','4')
 #define HGL_CPU_Cell                HGL_MERGE32('C','E','L','L')
 #define HGL_CPU_ARM7                HGL_MERGE32('A','R','M','7')
-#define HGL_CPU_ARM64               HGL_MERGE32('A','R','6','4')
+#define HGL_CPU_AARCH64             HGL_MERGE32('A','R','6','4')
 
 #define HGL_COMPILER_Microsoft      HGL_MERGE32('M','S','C',' ')
 #define HGL_COMPILER_GNU            HGL_MERGE32('G','N','U',' ')
@@ -117,7 +117,7 @@
         #define HGL_MIN_MEMORY_ALLOC_BYTES  4
         #define HGL_ENDIAN                  HGL_LITTLE_ENDIAN
 #elif defined(__aarch64__)
-    #define HGL_CPU                     HGL_CPU_ARM64
+    #define HGL_CPU                     HGL_CPU_AARCH64
     #define HGL_CPU_NAME                OS_TEXT("aarch64")
     #define HGL_LIB_CPU_NAME            OS_TEXT("aarch64")
     #define HGL_MIN_MEMORY_ALLOC_BYTES  4
