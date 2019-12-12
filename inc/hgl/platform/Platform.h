@@ -118,8 +118,8 @@
         #define HGL_ENDIAN                  HGL_LITTLE_ENDIAN
 #elif defined(__aarch64__)
     #define HGL_CPU                     HGL_CPU_ARM64
-    #define HGL_CPU_NAME                OS_TEXT("ARM64")
-    #define HGL_LIB_CPU_NAME            OS_TEXT("ARM64")
+    #define HGL_CPU_NAME                OS_TEXT("aarch64")
+    #define HGL_LIB_CPU_NAME            OS_TEXT("aarch64")
     #define HGL_MIN_MEMORY_ALLOC_BYTES  4
     #define HGL_ENDIAN                  HGL_LITTLE_ENDIAN
 #elif defined(__wasm__)
