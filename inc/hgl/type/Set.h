@@ -43,7 +43,7 @@ namespace hgl
                 void    ClearData       ();                                                         ///<清除数据，但不释放内存
                 void    DeleteClear     (){data_list.DeleteClear();}                                ///<清除所有数据并全部调用delete
 
-                bool    Get             (const int index,T &data)
+                bool    Get             (const int index,T &data)                                   ///<根据序列号取得指定数据
                 {
                     if(index<0||index>=data_list.GetCount())
                         return(false);
@@ -51,6 +51,9 @@ namespace hgl
                     data=*(data_list.GetData()+index);
                     return(true);
                 }
+
+                bool    GetBegin        (T &data){return data_list.Begin(data);}                    ///<取得最前面一个数据
+                bool    GetEnd          (T &data){return data_list.End(data);}                      ///<取得最后面一个数据
 
                 int     Intersection    (Set<T> &result,const Set<T> &set);                         ///<取得与指定合集的交集
                 int     Intersection    (const Set<T> &set);                                        ///<取得与指定合集的交集数量
