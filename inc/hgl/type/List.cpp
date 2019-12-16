@@ -19,7 +19,7 @@ namespace hgl
     template<typename T>
     bool List<T>::Begin(T &ti)const
     {
-        if(!items)
+        if(!items||count<=0)
             return(false);
 
         memcpy(&ti,items,sizeof(T));
@@ -29,7 +29,7 @@ namespace hgl
     template<typename T>
     bool List<T>::End(T &ti)const
     {
-        if(!items)
+        if(!items||count<=0)
             return(false);
 
         memcpy(&ti,items+count-1,sizeof(T));

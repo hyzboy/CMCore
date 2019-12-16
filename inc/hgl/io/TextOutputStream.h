@@ -123,7 +123,7 @@ namespace hgl
 
                 for(int i=0;i<count;i++)
                 {
-                    const BaseString<T> &str=sl[i];
+                    const T &str=sl.GetString(i);
 
                     const int len=str.Length();
 

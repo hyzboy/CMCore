@@ -205,7 +205,7 @@ namespace hgl
             Items.Exchange(index1,index2);
         }
 
-        T &GetString(int n)const{return *(Items[n]);}                                               ///<取得指定行字符串
+        const T &GetString(int n)const{return *(Items[n]);}                                         ///<取得指定行字符串
     };//template<typename T> class StringList
 
     template<typename T> T StringList<T>::NullString;                                               ///<空字符串实例
