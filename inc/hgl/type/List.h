@@ -26,6 +26,9 @@ namespace hgl
                         T *     GetData     ()const{return items;}                                  ///<提供原始数据项
                         int     GetBytes    ()const{return count*sizeof(T);}                        ///<取得原始数据总字节数
 
+                        T *     GetBegin    (){return (items&&count>0)?items:nullptr;}              ///<取得第一个数据项指针
+                        T *     GetEnd      (){return (items&&count>0)?items+count-1:nullptr;}      ///<取得最后一个数据项指针
+
     public: //方法
 
         List(){};                                                                                   ///<本类构造函数
@@ -43,7 +46,7 @@ namespace hgl
         virtual void Clear();                                                                       ///<清除所有数据
         virtual void ClearData();                                                                   ///<清除所有数据，但不清空缓冲区
         virtual int  Find(const T &)const;                                                          ///<查找指定数据的索引
-                bool IsExist(const T &flag)const{return Find(flag)!=-1;}                            ///<确认数据项是否存在
+        virtual bool IsExist(const T &flag)const{return Find(flag)!=-1;}                            ///<确认数据项是否存在
         virtual bool Delete(int);                                                                   ///<删除指定索引的数据
         virtual bool Delete(int,int);                                                               ///<删除指定索引的数据
         virtual bool DeleteMove(int);                                                               ///<删除指定索引的数据,将后面紧邻的数据前移
@@ -135,6 +138,8 @@ namespace hgl
 
         virtual void    Clear();                                                                    ///<清除所有数据
         virtual void    ClearData();                                                                ///<清除所有数据，但不清空缓冲区
+
+        virtual bool    IsExist(const T *flag)const{return Find((T *)flag)!=-1;}                    ///<确认数据项是否存在
 
         virtual bool    Unlink(int index){return List<T *>::Delete(index);}                         ///<将指定索引处的数据与列表断开
         virtual bool    UnlinkMove(int index){return List<T *>::DeleteMove(index);}                 ///<将指定索引处的数据与列表断开,将前移后面的数据
