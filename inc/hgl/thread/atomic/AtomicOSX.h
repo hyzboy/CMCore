@@ -1,4 +1,4 @@
-#ifndef HGL_THREAD_ATOMIC_OSX_INCLUDE
+﻿#ifndef HGL_THREAD_ATOMIC_OSX_INCLUDE
 #define HGL_THREAD_ATOMIC_OSX_INCLUDE
 
 #include<libkern/OSAtomic.h>
@@ -36,12 +36,12 @@ namespace hgl
         inline aint operator =          (cavint new_value)  {value=new_value;return value;}
         inline aint operator ++         ()                  {return OSAtomicIncrement32(&value);}
         inline aint operator --         ()                  {return OSAtomicDecrement32(&value);}
-        inline aint operator +=         (cavint add_value)  {return;}
-        inline aint operator -=         (cavint sub_value)  {return;}
+        inline aint operator +=         (cavint add_value)  {return OSAtomicAdd32(value,&add_value);}
+        inline aint operator -=         (cavint sub_value)  {cavint sv=-sub_value;return OSAtomicAdd32(value,&sv);}
 
-        inline aint operator &=         (cavint v)          {return operator=(value &=v);}
-        inline aint operator |=         (cavint v)          {return operator=(value |=v);}
-        inline aint operator ^=         (cavint v)          {return operator=(value ^=v);}
+        inline aint operator &=         (cavint v)          {return OSAtomicAnd32(value,&v);}
+        inline aint operator |=         (cavint v)          {return OSAtomicOr32Orig(value,&v);}
+        inline aint operator ^=         (cavint v)          {return OSAtomicXor32Orig(value,&v);}
 
         inline aint operator ++         (int)               {aint ret=value;operator++();return ret;}//后置++
         inline aint operator --         (int)               {volatile T ret=value;operator--();return ret;}//后置--
