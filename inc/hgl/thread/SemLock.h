@@ -1,4 +1,4 @@
-#ifndef HGL_THREAD_SEM_LOCK_INCLUDE
+﻿#ifndef HGL_THREAD_SEM_LOCK_INCLUDE
 #define HGL_THREAD_SEM_LOCK_INCLUDE
 
 #include<hgl/thread/Semaphore.h>
@@ -53,7 +53,7 @@ namespace hgl
          * @param time_out 超时时间
          * @return 是否成功
          */
-        bool Acquire(double time_out=0.0f){return sem.Acquire();}
+        bool Acquire(double time_out=0.0f){return sem.Acquire(time_out);}
     };//template<typename T,typename L> class SemLockTemplate
 
     /**
