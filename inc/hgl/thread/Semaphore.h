@@ -21,7 +21,8 @@ namespace hgl
         virtual bool Post(int n=1);                                                                 ///<发送信号
 
         virtual bool TryAcquire();                                                                  ///<尝试取得一个信号
-        virtual bool Acquire(double time=0.0);                                                      ///<等待并获取一个信号
+        virtual bool Acquire();                                                                     ///<等待并获取一个信号
+        virtual bool Acquire(double time);                                                          ///<等待并获取一个信号
     };//class Semaphore
 }//namespace hgl
 #endif//HGL_SEMAPHORE_INCLUDE
