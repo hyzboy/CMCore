@@ -63,7 +63,7 @@ namespace hgl
         }
 
         /**
-         * 截取一个文件名中的主名称(不能带路径)
+         * 截取一个文件名中的主名称
          * @param filename 文件名
          * @param split_char 扩展名分隔符,一般为'.'
          */
