@@ -504,6 +504,11 @@ namespace hgl
 
     public:
 
+        AutoDeleteArray()
+        {
+            obj=nullptr;
+        }
+
         AutoDeleteArray(T *o)
         {
             obj=o;
