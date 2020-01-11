@@ -11,26 +11,6 @@ namespace hgl
     using Matrix3f=float3x3;
     using Matrix4f=float4x4;
 
-    /**
-     * 世界矩阵数据
-     * @see res/shader/UBO_WorldMatrix.glsl
-     */
-    struct WorldMatrix
-    {
-        alignas(16) Matrix4f ortho;                 //2D正角视图矩阵
-
-        alignas(16) Matrix4f projection;
-        alignas(16) Matrix4f inverse_projection;
-
-        alignas(16) Matrix4f modelview;
-        alignas(16) Matrix4f inverse_modelview;
-
-        alignas(16) Matrix4f mvp;
-        alignas(16) Matrix4f inverse_map;
-
-        alignas(16) Vector4f view_pos;              ///<眼睛坐标
-    };//struct WorldMatrix
-
     inline Matrix4f identity()
     {
         return Matrix4f::identity;
