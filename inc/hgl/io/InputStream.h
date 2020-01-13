@@ -29,11 +29,14 @@ namespace hgl
 
             virtual bool    Restart()=0;                                                            ///<复位访问指针
             virtual int64   Skip(int64)=0;                                                          ///<跳过指定字节不访问
-            virtual int64   Seek(int64,SeekOrigin=SeekOrigin::Begin)=0;                                       ///<移动访问指针
+            virtual int64   Seek(int64,SeekOrigin=SeekOrigin::Begin)=0;                             ///<移动访问指针
             virtual int64   Tell()const=0;                                                          ///<返回当前访问位置
             virtual int64   GetSize()const=0;                                                       ///<取得流长度
             virtual int64   Available()const=0;                                                     ///<剩下的可以不受阻塞访问的字节数
         };//class InputStream
+
+        int64 LoadFromInputStream(void *buf,int64 max_size,InputStream *is);                        ///<从输入流中加载指定最大长度的数据
+        void *LoadFromInputStream(int64 *size,InputStream *is);                                     ///<从输入流中加载所有的数据到一块内存
     }//namespace io
 }//namespace hgl
 #endif//HGL_IO_INPUT_STREAM_INCLUDE
