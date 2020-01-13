@@ -478,6 +478,27 @@ namespace hgl
 
         /**
          * 和一个字符串进行比较
+         * @param pos 起始位置
+         * @param bs 比较字符串
+         * @param num 比较长度
+         * @return <0 自身小
+         * @return 0 等同
+         * @return >0 自身大
+         */
+        int Comp(const int pos,const SelfClass &bs,const int num)const
+        {
+            if(!data.valid())
+                return(bs.Length());
+
+            if(bs.Length()<=0)
+                return Length();
+
+            return data->Comp(pos,bs.data.get(),num);
+        }
+
+        /**
+         * 和一个字符串进行比较
+         * @param pos 起始位置
          * @param str 比较字符串
          * @return <0 自身小
          * @return 0 等同
@@ -494,6 +515,28 @@ namespace hgl
             }
 
             return data->Comp(pos,str);
+        }
+
+        /**
+         * 和一个字符串进行比较
+         * @param pos 起始位置
+         * @param str 比较字符串
+         * @param num 比较长度
+         * @return <0 自身小
+         * @return 0 等同
+         * @return >0 自身大
+         */
+        int Comp(const int pos,const T *str,const int num)const
+        {
+            if(!data.valid())
+            {
+                if(!str)
+                    return 0;
+                else
+                    return *str;
+            }
+
+            return data->Comp(pos,str,num);
         }
 
         /**
