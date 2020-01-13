@@ -2,6 +2,7 @@
 #define HGL_TYPE_BASE_STRING_INCLUDE
 
 #include<hgl/type/StringInstance.h>
+#include<hgl/io/InputStream.h>
 #include<hgl/CompOperator.h>
 #include<hgl/type/Smart.h>
 
@@ -27,6 +28,24 @@ namespace hgl
         BaseString(const T *str)
         {
             Set(str);
+        }
+
+        BaseString(io::InputStream *is,int len=0)
+        {
+            if(len<=0)
+                len=is->Available();
+
+            if(len<=0)
+                return;
+
+            len/=sizeof(T);
+
+            T *str=new T[len+1];
+
+            len=is->Read(str,len*sizeof(T));
+
+            str[len]=0;
+            Set(str,len,true);
         }
 
         explicit BaseString(const T);
