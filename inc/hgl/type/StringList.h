@@ -79,8 +79,13 @@ namespace hgl
         {
             const int count=sl.GetCount();
 
+            T **str=sl.Items.GetData();
+
             for(int i=0;i<count;i++)
-                Add(sl.Items[i]);
+            {
+                Add(**str);
+                ++str;
+            }
 
             return(count);
         }
