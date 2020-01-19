@@ -16,6 +16,7 @@ SOURCE_GROUP("DataType\\Template" FILES ${TYPE_TEMPLATE_HEADER})
 SOURCE_GROUP("DataType" FILES ${BASE_TYPE_SOURCE})
 
 SET(BASE_IO_SOURCE
+    IO/InputStream.cpp
     IO/DataInputStream.cpp
     IO/DataOutputStream.cpp
     IO/FileAccess.cpp
