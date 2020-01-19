@@ -567,7 +567,7 @@ namespace hgl
     }
 
     /**
-     * 在字符串中查找某个字符,指定字符串最大长度
+     * 在字符串中查找多个字符中的任意一个,指定字符串最大长度
      * @param str 字符串
      * @param ch 字符
      * @param n 字符串长度
@@ -590,7 +590,7 @@ namespace hgl
     }
 
     /**
-     * 在字符串中查找某个字符
+     * 在字符串中查找多个字符中的任意一个
      * @param str 字符串
      * @param ch 字符列表
      * @param ch_count 字符个数
@@ -604,6 +604,74 @@ namespace hgl
         while(*str)
         {
             if(strchr(ch,*str,ch_count))
+                return(str);
+
+            ++str;
+        }
+
+        return(nullptr);
+    }
+
+    /**
+     * 在字符串中查找排除指定字符外的第一个字符
+     * @param str 字符串
+     * @param ch 要排除的字符
+     * @return 查找到的位置指针
+     */
+    template<typename TS,typename TC>
+    TS *strechr(TS *str,TC ch)
+    {
+        if(!str||!(*str)||ch==0)return(nullptr);
+
+        while(*str)
+        {
+            if(*str!=ch)
+                return(str);
+            else
+                ++str;
+        }
+
+        return(nullptr);
+    }
+
+    /**
+     * 在字符串中查找排除指定字符外的第一个字符,指定字符串最大长度
+     * @param str 字符串
+     * @param ch 要排除的字符
+     * @param n 字符串长度
+     * @return 查找到的位置指针
+     */
+    template<typename TS,typename TC>
+    TS *strechr(TS *str,TC ch,int n)
+    {
+        if(!str||!(*str)||ch==0||n<=0)return(nullptr);
+
+        while(*str&&n--)
+        {
+            if(*str!=ch)
+                return(str);
+            else
+                ++str;
+        }
+
+        return(nullptr);
+    }
+
+    /**
+     * 在字符串中查找在字符串中查找排除指定字符外的第一个字符
+     * @param str 字符串
+     * @param ch 要排除的字符列表
+     * @param ch_count 字符个数
+     * @return 查找到的位置指针
+     */
+    template<typename TS,typename TC>
+    TS *strechr(TS *str,TC *ch,const int ch_count)
+    {
+        if(!str||!(*str)||!ch||!(*ch)||ch_count<=0)return(nullptr);
+
+        while(*str)
+        {
+            if(!strchr(ch,*str,ch_count))
                 return(str);
 
             ++str;
