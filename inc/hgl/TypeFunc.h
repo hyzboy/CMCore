@@ -165,43 +165,43 @@ namespace hgl
     /**
      * 星期每天枚举
      */
-    enum WeekDay
+    enum class Weekday
     {
-        weekNone=-1,
-
-        weekSunday,     ///<星期天
-        weekMonday,     ///<星期一
-        weekTuesday,    ///<星期二
-        weekWednesday,  ///<星期三
-        weekThursday,   ///<星期四
-        weekFriday,     ///<星期五
-        weekSaturday,   ///<星期六
-
-        weekEnd
+        Sunday=0,   ///<星期天
+        Monday,     ///<星期一
+        Tuesday,    ///<星期二
+        Wednesday,  ///<星期三
+        Thursday,   ///<星期四
+        Friday,     ///<星期五
+        Saturday,   ///<星期六
+        
+        BEGIN_RANGE =Sunday,
+        END_RANGE   =Saturday,
+        RANGE_SIZE  =END_RANGE-BEGIN_RANGE+1        
     };
 
     /**
      * 月份枚举
      */
-    enum Month
+    enum class Month
     {
-        monthNone=0,
+        January=1, ///<一月
+        February,  ///<二月
+        March,     ///<三月
+        April,     ///<四月
+        May,       ///<五月
+        June,      ///<六月
+        July,      ///<七月
+        August,    ///<八月
+        September, ///<九月
+        October,   ///<十月
+        November,  ///<十一月
+        December,  ///<十二月
 
-        monthJanuary,   ///<一月
-        monthFebruary,  ///<二月
-        monthMarch,     ///<三月
-        monthApril,     ///<四月
-        monthMay,       ///<五月
-        monthJune,      ///<六月
-        monthJuly,      ///<七月
-        monthAugust,    ///<八月
-        monthSeptember, ///<九月
-        monthOctober,   ///<十月
-        monthNovember,  ///<十一月
-        monthDecember,  ///<十二月
-
-        monthEnd
-    };
+        BEGIN_RANGE =January,
+        END_RANGE   =December,
+        RANGE_SIZE  =END_RANGE-BEGIN_RANGE+1
+    };//enum class Month
 
     constexpr uint  HGL_TIME_ONE_SECOND     =1;
     constexpr uint  HGL_TIME_HALF_MINUTE    =30;
