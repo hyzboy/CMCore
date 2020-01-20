@@ -22,12 +22,10 @@ namespace hgl
 
     /**
      * 近似Pow2.2，使用此函数等于pow(x,2.2)
-     * The MIT License
-     * Copyright © 2019 Inigo Quilez
      */
-    double inline ApproxPow22(double x)
+    double inline LPow22(double x)
     {
-        return ((exp2(x)-1.0)-x*0.693147)*3.258891;
+        return x*(1.12*x - 0.12);
     }
 }//namespace hgl
 #endif//HGL_ALGORITHM_MATH_FAST_TRIANGLE_FUNCTION_INCLUDE
