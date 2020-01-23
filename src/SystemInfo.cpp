@@ -1,5 +1,5 @@
-﻿#include<hgl/platform/SystemInfo.h>
-#include<hgl/LogInfo.h>
+#include<hgl/platform/SystemInfo.h>
+#include<hgl/log/LogInfo.h>
 #include<hgl/PlugIn.h>
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/Info.h>
