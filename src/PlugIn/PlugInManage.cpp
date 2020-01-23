@@ -51,7 +51,7 @@ namespace hgl
 
         if(pi)return pi;
 
-        if(!FileExist(filename))return(false);
+        if(!FileExist(filename))return(nullptr);
 
         ExternalPlugIn *epi=new ExternalPlugIn;
 
@@ -76,12 +76,7 @@ namespace hgl
 
         if(fp_count<=0)return(nullptr);
 
-#if HGL_OS == HGL_OS_Windows
-        OSString pi_filename=name+L'.'+pi_name+HGL_PLUGIN_EXTNAME;
-#else
-        OSString pi_filename=ToOSString(name)+'.'+ToOString(pi_name)+HGL_PLUGIN_EXTNAME;
-#endif//HGL_OS == HGL_OS_Windows
-
+        OSString pi_filename=name+OS_TEXT('.')+pi_name+HGL_PLUGIN_EXTNAME;
         OSString pi_fullfilename;
         ExternalPlugIn *epi=new ExternalPlugIn;
 
@@ -106,7 +101,7 @@ namespace hgl
 
     bool PlugInManage::UnloadPlugin(const OSString &pi_name)
     {
-        if(pi_name.IsEmpty())return(nullptr);
+        if(pi_name.IsEmpty())return(false);
 
         this->Release(pi_name);
         return(true);

@@ -10,7 +10,7 @@ namespace hgl
     */
     class ProcMutex                                                                                 ///进程排斥
     {
-        proc_mutex_ptr lock;
+        proc_mutex_ptr *lock;
 
     public:
 

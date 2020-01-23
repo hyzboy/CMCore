@@ -12,7 +12,7 @@ namespace hgl
     */
     class CondVar
     {
-        conv_var_ptr *cond_var;
+        cond_var_ptr *cond_var;
 
     public:
 
