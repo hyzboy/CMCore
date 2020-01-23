@@ -48,8 +48,6 @@ namespace hgl
             Set(str,len,true);
         }
 
-        explicit BaseString(const T);
-
         static BaseString<T> charOf(const T &ch)
         {
             T *str=new T[2];
