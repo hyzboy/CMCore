@@ -3,14 +3,14 @@
 
 #include<hgl/type/BaseString.h>
 namespace hgl
-{    
+{
     /**
     * 插件基类
     */
     class PlugIn                                                                                    ///插件
     {
     protected:
-    
+
         uint ref_count;
 
         uint ver;
@@ -33,7 +33,7 @@ namespace hgl
             ver=0;
         }
 
-        virtual ~PlugIn();
+        virtual ~PlugIn()=default;
 
         uint add_ref(){return ++ref_count;}
         uint release_ref(){return --ref_count;}
