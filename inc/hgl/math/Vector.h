@@ -306,8 +306,6 @@ namespace hgl
             x=v3f.x;
             y=v3f.y;
             z=v3f.z;
-
-            return *this;
         }
 
         operator const Vector3f()const{return Vector3f(x,y,z);}
@@ -337,8 +335,6 @@ namespace hgl
             y=v4f.y;
             z=v4f.z;
             w=v4f.w;
-
-            return *this;
         }
 
         operator const Vector4f()const{return Vector4f(x,y,z,w);}
