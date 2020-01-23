@@ -139,7 +139,7 @@ namespace hgl
         virtual void    Clear();                                                                    ///<清除所有数据
         virtual void    ClearData();                                                                ///<清除所有数据，但不清空缓冲区
 
-        virtual bool    IsExist(const T *flag)const{return Find((T *)flag)!=-1;}                    ///<确认数据项是否存在
+        virtual bool    IsExist(const T *flag)const{return this->Find((T *)flag)!=-1;}              ///<确认数据项是否存在
 
         virtual bool    Unlink(int index){return List<T *>::Delete(index);}                         ///<将指定索引处的数据与列表断开
         virtual bool    UnlinkMove(int index){return List<T *>::DeleteMove(index);}                 ///<将指定索引处的数据与列表断开,将前移后面的数据
