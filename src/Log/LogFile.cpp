@@ -11,8 +11,6 @@ namespace hgl
 
     namespace logger
     {
-        io::TextOutputStream *CreateTextOutputStream(io::OutputStream *);
-
         class LogFile:public Logger
         {
             ThreadMutex lock;
@@ -62,7 +60,7 @@ namespace hgl
 
                     if(fos.CreateTrunc(filename))//创建成功
                     {
-                        tos=CreateTextOutputStream(&fos);
+                        tos=io::CreateTextOutputStream<os_char>(&fos);
                         tos->WriteBOM();
 
                         return(true);
