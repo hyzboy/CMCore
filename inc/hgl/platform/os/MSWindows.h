@@ -76,7 +76,7 @@ using thread_mutex_ptr  =CRITICAL_SECTION;
 using thread_ptr        =HANDLE;
 using rwlock_ptr        =SRWLOCK;
 using semaphore_ptr     =HANDLE;
-using conv_var_ptr      =CONDITION_VARIABLE;
+using cond_var_ptr      =CONDITION_VARIABLE;
 
 #define THREAD_FUNC      DWORD WINAPI
 #define HGL_THREAD_DETACH_SELF

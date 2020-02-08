@@ -11,7 +11,7 @@ namespace hgl
     */
     class Semaphore                                                                                 ///信号
     {
-        semaphore_ptr *ptr;
+        semaphore_ptr ptr;
 
     public:
 
