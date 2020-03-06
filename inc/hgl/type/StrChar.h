@@ -2601,7 +2601,7 @@ namespace hgl
     template<typename T,typename HC>
     void ParseHexStr(HC &hc,const T *str)
     {
-        ParseHexStr((uint8 *)&hc,(const uint8 *)str,sizeof(HC));
+        ParseHexStr((uint8 *)&hc,str,sizeof(HC));
     }
 
     /**
