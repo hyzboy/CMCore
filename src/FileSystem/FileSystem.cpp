@@ -71,7 +71,7 @@ namespace hgl
         * @param buf 用来保存数据的内存指针的指针
         * @return 文件长度
         */
-        int64 LoadFileToMemory(const OSString &filename,void **buf)
+        int64 LoadFileToMemory(const OSString &filename,void **buf,bool append_zero)
         {
             io::FileInputStream fs;
 
@@ -80,11 +80,15 @@ namespace hgl
 
             const int64 size=fs.GetSize();
 
-            char *fb=new char[size];
+            char *fb=new char[append_zero?size+1:size];
 
             if(fs.Read(fb,size)==size)
             {
                 *buf=fb;
+
+                if(append_zero)
+                    fb[size]=0;
+
                 return(size);
             }
 
