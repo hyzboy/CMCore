@@ -2,15 +2,7 @@
 #define HGL_OS_MACOS_INCLUDE
 
 #include<dirent.h>
-//------------------------------------------------------------------
-using u32char           =char32_t;
-using u16char           =char16_t;
-using os_char           =char;
-#define to_oschar       to_u8
-#define OS_TEXT(str)    u8##str
-#define U8_TEXT(str)    u8##str
-#define U16_TEXT(str)   u##str
-
+#include<hgl/platform/os/CharType.h>
 //--------------------------------------------------------------------------------------------------
 #if HGL_OS == HGL_OS_iOS
     #define HGL_OS_NAME     OS_TEXT("iOS")

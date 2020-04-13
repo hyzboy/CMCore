@@ -2,15 +2,8 @@
 #define HGL_OS_ANDROID_INCLUDE
 
 #include<limits.h>
+#include<hgl/platform/os/CharType.h>
 //--------------------------------------------------------------------------------------------------
-using u32char           =char32_t;
-using u16char           =char16_t;
-using os_char           =char;
-#define to_oschar       to_u8
-#define OS_TEXT(str)    u8##str
-#define U8_TEXT(str)    u8##str
-#define U16_TEXT(str)   u##str
-
 #define HGL_OS_NAME                 OS_TEXT("Android")
 #define HGL_LIB_OS                  "Android"                                       //库操作系统前缀
 //--------------------------------------------------------------------------------------------------

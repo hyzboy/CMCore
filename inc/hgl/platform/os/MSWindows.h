@@ -16,6 +16,12 @@ using os_char           =wchar_t;
 #define U8_TEXT(str)    u8##str
 #define U16_TEXT(str)   L##str
 
+#define os_main         wmain
+#define os_out          std::wcout
+#define os_in           std::wcin
+#define os_err          std::wcerr
+#define os_log          std::wclog
+
 #define HGL_OS_NAME             OS_TEXT("Windows")
 
 #if HGL_CPU == HGL_CPU_X86_32
