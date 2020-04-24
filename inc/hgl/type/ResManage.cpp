@@ -116,7 +116,7 @@ namespace hgl
             *key=obj->left;
 
         if(ref_count)
-            *key=obj->count;
+            *ref_count=obj->count;
 
         return(true);
     }
