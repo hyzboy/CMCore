@@ -250,7 +250,7 @@ namespace hgl
      * @return 字符串长度
      */
     template<typename T>
-    int strlen(const T *str,int max_len)
+    int strlen(const T *str,uint max_len)
     {
         if(str&&*str)
         {
@@ -2025,7 +2025,7 @@ namespace hgl
      * @return 转换后的字符串
      */
     template<typename T,typename I>
-    T *itos(T *str,int size,const I num)
+    T *itos(T *str,const int size,const I num)
     {
         itos_rl(str,size,num);
         return str;

@@ -14,8 +14,8 @@ namespace hgl
 
         typedef StringInstance<T> SelfClass;
 
-        int length;                                                                                 ///<字符串长度
-        int malloc_length;                                                                          ///<空间实际分配长度
+        uint length;                                                                                ///<字符串长度
+        uint malloc_length;                                                                         ///<空间实际分配长度
 
         T *buffer;
 
@@ -28,6 +28,17 @@ namespace hgl
             buffer=0;
         }
 
+        virtual void InitPrivate(const T *str,const uint len)
+        {
+            length=len;
+
+            malloc_length=power_to_2(length+1);
+
+            buffer=new T[malloc_length];
+            memcpy(buffer,str,length*sizeof(T));
+            buffer[length]=0;
+        }
+
     public:
 
         StringInstance()
@@ -35,16 +46,21 @@ namespace hgl
             InitPrivate();
         }
 
-        StringInstance(const T *str,int len=-1,bool one_instance=false)
+        /**
+         * 初始化字符串实例(基于一个字符串)
+         */
+        void InitFromString(const T *str,const int len)
         {
-            if(!str)
+            if(!str||!len)
             {
                 InitPrivate();
                 return;
             }
 
             if(len<0)
+            {
                 length=hgl::strlen(str);
+            }
             else
             {
                 length=hgl::strlen(str,len);
@@ -56,29 +72,50 @@ namespace hgl
             if(length<=0)
             {
                 InitPrivate();
+                return;
+            }
 
-                if(one_instance)
-                    delete[] str;
+            InitPrivate(str,length);
+        }
+
+        /**
+         * 初始化字符串实例(基于一块已经分配好的内存)
+         */
+        void InitFromInstance(T *str,const uint len)
+        {
+            if(!str)
+            {
+                InitPrivate();
+                return;
+            }
+
+            {
+                length=hgl::strlen(str,len);
+
+                while(length&&!str[length-1])               //清除后面的0
+                    length--;
+            }
+
+            if(length<=0)
+            {
+                InitPrivate();
+                delete[] str;
 
                 return;
             }
 
-            if(one_instance&&str[length]==0)                            //如果最后不是0，则需要重新分配内存创建带0结尾的字串
+            if(str[length]==0)                            //如果最后不是0，则需要重新分配内存创建带0结尾的字串
             {
                 malloc_length=len;
-                buffer=(T *)str;
-
+                buffer=str;
                 return;
             }
+            else
+            {            
+                InitPrivate(str,length);
 
-            malloc_length=power_to_2(length+1);
-
-            buffer=new T[malloc_length];
-            memcpy(buffer,str,length*sizeof(T));
-            buffer[length]=0;
-
-            if(one_instance)
                 delete[] str;
+            }
         }
 
         StringInstance(const SelfClass &bs)
@@ -114,16 +151,35 @@ namespace hgl
         {
             if(!buffer)return(0);
 
-            return(new SelfClass(buffer,length));
+            SelfClass *sc=new SelfClass();
+
+            sc->InitFromString(buffer,length);
+
+            return sc;
         }
 
-        SelfClass *CreateCopy(int start,int count=-1)
+        SelfClass *CreateCopy(const uint start)
         {
             if(!buffer)return(nullptr);
-            if(start<0||count==0)return(nullptr);
-            if(count>0&&start+count>=length)return(nullptr);
+            if(start>=length)return(nullptr);
+            
+            SelfClass *sc=new SelfClass();
 
-            return(new SelfClass(buffer+start,count));
+            sc->InitFromString(buffer+start,length-start);
+
+            return sc;
+        }
+
+        SelfClass *CreateCopy(const uint start,const uint count)
+        {
+            if(!buffer)return(nullptr);
+            if(count==0)return(nullptr);
+
+            SelfClass *sc=new SelfClass();
+
+            sc->InitFromString(buffer+start,start+count>=length?length-start:count);
+
+            return sc;
         }
 
         T *Discard()
@@ -140,12 +196,12 @@ namespace hgl
             return buffer;
         }
 
-        const int GetLength()const                                                                  ///<取得字符串长度
+        const uint GetLength()const                                                                 ///<取得字符串长度
         {
             return length;
         }
 
-        bool GetChar(int n,T &ch)const
+        bool GetChar(const uint n,T &ch)const
         {
             if(n>=length)
                 return(false);
@@ -155,7 +211,7 @@ namespace hgl
             return(true);
         }
 
-        bool SetChar(int n,const T &ch)
+        bool SetChar(const uint n,const T &ch)
         {
             if(n>=length)
                 return(false);
@@ -198,7 +254,7 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int Comp(const int pos,const SelfClass *sc)const
+        const int Comp(const uint pos,const SelfClass *sc)const
         {
             if(!sc)
                 return length;
@@ -229,7 +285,7 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int Comp(const int pos,const T *str)const
+        const int Comp(const uint pos,const T *str)const
         {
             if(!str)
                 return length;
@@ -248,7 +304,7 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int Comp(const T *str,const int num)const
+        const int Comp(const T *str,const uint num)const
         {
             if(!str)
                 return length-num;
@@ -258,13 +314,14 @@ namespace hgl
 
         /**
          * 和一个字符串比较指字长度的字符
+         * @param pos 起始偏移位置
          * @param str 比较字符串
          * @param num 比较字数
          * @return <0 我方小
          * @return 0 等同
          * @return >0 我方大
          */
-        const int Comp(const int pos,const T *str,const int num)const
+        const int Comp(const uint pos,const T *str,const uint num)const
         {
             if(!str)
                 return(length-pos);
@@ -294,7 +351,7 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int CaseComp(const T &str)const
+        const int CaseComp(const T *str)const
         {
             return hgl::stricmp(buffer,length,str,hgl::strlen(str));
         }
@@ -306,7 +363,7 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int CaseComp(const SelfClass &sc,const int num)const
+        const int CaseComp(const SelfClass &sc,const uint num)const
         {
             return hgl::stricmp(buffer,length,sc.buffer,num);
         }
@@ -318,12 +375,25 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int CaseComp(const T &str,const int num)const
+        const int CaseComp(const T *str,const uint num)const
         {
             return hgl::stricmp(buffer,length,str,num);
         }
 
-        bool Insert(int pos,const T *istr,int len)                                                  ///<插入一个字符串
+        /**
+         * 和那一个字符串进行比较指字长度的字符,英文不区分大小写
+         * @param pos 起始偏移位置
+         * @param str 比较字符串
+         * @return <0 我方小
+         * @return 0 等同
+         * @return >0 我方大
+         */
+        const int CaseComp(const uint pos,const T *str,const uint num)const
+        {
+            return hgl::stricmp(buffer+pos,length-pos,str,num);
+        }
+
+        bool Insert(const uint pos,const T *istr,int len)                                                  ///<插入一个字符串
         {
             if(!istr||!*istr)
                 return(false);
@@ -335,7 +405,7 @@ namespace hgl
 
             if(pos<0||pos>length||len<=0)return(false);
 
-            const int need_length=length+len+1;
+            const uint need_length=length+len+1;
 
             if(need_length>malloc_length)
             {
@@ -369,16 +439,16 @@ namespace hgl
             return(true);
         }
 
-        bool Insert(int pos,const T &ch         ){return Insert(pos,    &ch,        1               );}
-        bool Insert(int pos,const T *str        ){return Insert(pos,    str,        hgl::strlen(str));}
-        bool Insert(int pos,const SelfClass &str){return Insert(pos,    str.c_str(),str.GetLength() );}
+        bool Insert(uint pos,const T &ch         ){return Insert(pos,    &ch,        1               );}
+        bool Insert(uint pos,const T *str        ){return Insert(pos,    str,        hgl::strlen(str));}
+        bool Insert(uint pos,const SelfClass &str){return Insert(pos,    str.c_str(),str.GetLength() );}
 
         bool Append(const T &ch                 ){return Insert(length, &ch,        1               );}
         bool Append(const T *str,const int len  ){return Insert(length, str,        len             );}
         bool Append(const T *str                ){return Insert(length, str,        hgl::strlen(str));}
         bool Append(const SelfClass &str        ){return Insert(length, str.c_str(),str.GetLength() );}
 
-        bool Delete(int pos,int num)                                                                ///<删除指定字符
+        bool Delete(uint pos,int num)                                                                ///<删除指定字符
         {
             if(pos<0||pos>=length||num<0)return(false);
 
@@ -417,7 +487,7 @@ namespace hgl
             return ClipLeft(length-num);
         }
 
-        bool Clip(int pos,int num)
+        bool Clip(uint pos,int num)
         {
             if(pos<0||pos>length
              ||num<0||pos+num>length)
@@ -472,7 +542,7 @@ namespace hgl
             return(true);
         }
 
-        bool Write(int pos,const SelfClass &str)
+        bool Write(uint pos,const SelfClass &str)
         {
             if(pos<0||pos>length)
                 return(false);

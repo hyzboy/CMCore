@@ -25,9 +25,37 @@ namespace hgl
 
         BaseString()=default;
 
+        BaseString(InstClass *ic)
+        {
+            data=ic;
+        }
+        
+        /**
+         * 根据一个C指针风格字符串设置当前字符串内容
+         * @param str 字符串内容，需以0为结尾
+         */
         BaseString(const T *str)
         {
-            Set(str);
+            SetString(str);
+        }
+
+        /**
+         * 根据一个C指针风格字符串设置当前字符串内容(传入的str需要delete[])
+         * @param str 字符串内容，在len<0的情况下，需以0为结尾
+         * @param len 字符串长度，如果str以0为结尾，可以为负值，将启用自动计算长度
+         */
+        BaseString(const T *str,int len)
+        {
+            SetString(str,len);
+        }
+
+        static BaseString<T> newOf(T *str,const uint len)
+        {
+            StringInstance<T> *si=new StringInstance<T>();
+
+            si->InitFromInstance(str,len);
+
+            return BaseString<T>(si);
         }
 
         BaseString(io::InputStream *is,int len=0)
@@ -45,8 +73,10 @@ namespace hgl
             len=is->Read(str,len*sizeof(T));
 
             str[len]=0;
-            Set(str,len,true);
+            SetInstance(str,len);
         }
+
+        BaseString(const char)=delete;
 
         static BaseString<T> charOf(const T &ch)
         {
@@ -55,18 +85,7 @@ namespace hgl
             str[0]=ch;
             str[1]=0;
 
-            return BaseString<T>(str,1,true);
-        }
-
-        /**
-         * 根据一个C指针风格字符串设置当前字符串内容
-         * @param str 字符串内容，在len<0的情况下，需以0为结尾
-         * @param len 字符串长度，如果str以0为结尾，可以为负值，将启用自动计算长度
-         * @param one_instance 是否仅有这一份实例，如果是将不会产生复岓是而是直接使用此值，最终delete[]释放
-         */
-        BaseString(const T *str,int len,bool one_instance=false)
-        {
-            Set(str,len,one_instance);
+            return BaseString<T>::newOf(str,1);
         }
 
         BaseString(const InstClass &si)
@@ -84,9 +103,19 @@ namespace hgl
         }
 
         #define BASE_STRING_NUMBER_CONSTRUCT(type,func) \
-        BaseString(const type num)  \
+        BaseString(const type num)=delete;  \
+        static BaseString<T> valueOf(const type value)  \
         {   \
-            Set(func(new T[8*sizeof(type)],8*sizeof(type),num),-1,true);    \
+            StringInstance<T> *si=new StringInstance<T>();  \
+            \
+            const int len=8*sizeof(type);   \
+            \
+            T *tmp_str=new T[len];   \
+            \
+            func(tmp_str,len,value);  \
+            si->InitFromInstance(tmp_str,hgl::strlen(tmp_str)); \
+            \
+            return BaseString<T>(si);   \
         }
 
         BASE_STRING_NUMBER_CONSTRUCT(int,   itos);
@@ -99,7 +128,9 @@ namespace hgl
 
         #undef BASE_STRING_NUMBER_CONSTRUCT
 
-        BaseString(const int *value,int N)
+        BaseString(const int *value,int N)=delete;
+
+        static BaseString<T> valueOf(const int *value,int N)
         {
             const int size=N*sizeof(int)*8;
             int len;
@@ -117,10 +148,12 @@ namespace hgl
                 ++value;
             }
 
-            Set(tmp_str);
+            return BaseString<T>(tmp_str);
         }
 
-        BaseString(const float *value,int N)
+        BaseString(const float *value,int N)=delete;
+
+        static BaseString<T> valueOf(const float *value,int N)
         {
             const int size=N*sizeof(float)*16;
             int len;
@@ -137,8 +170,8 @@ namespace hgl
                 ftos(tmp_str+len,size-len,*value);
                 ++value;
             }
-
-            Set(tmp_str);
+            
+            return BaseString<T>(tmp_str);
         }
 
         virtual ~BaseString()=default;
@@ -209,9 +242,8 @@ namespace hgl
          * 根据一个C指针风格字符串设置当前字符串内容
          * @param str 字符串内容，在len<0的情况下，需以0为结尾
          * @param len 字符串长度，如果str以0为结尾，可以为负值，将启用自动计算长度
-         * @param one_instance 是否仅有这一份实例，如果是将不会产生复岓是而是直接使用此值，最终delete[]释放
          */
-        void Set(const T *str,int len=-1,bool one_instance=false)
+        void SetString(const T *str,int len=-1)
         {
             if(!str||!*str||!len)       //len=-1为自检测,为0不处理
             {
@@ -219,12 +251,35 @@ namespace hgl
                 return;
             }
 
-            data=new InstClass(str,len,one_instance);
+            data=new InstClass();
+            data->InitFromString(str,len);
         }
 
-        void Strcpy(const T *str,int len=-1,bool one=false)
+        /**
+         * 根据一个C指针风格字符串设置当前字符串内容
+         * @param str 字符串内容，在len<0的情况下，需以0为结尾
+         * @param len 字符串长度
+         */
+        void SetInstance(const T *str,const uint len)
         {
-            Set(str,len,one);
+            if(!str||!*str)
+            {
+                Clear();
+                return;
+            }
+
+            data=new InstClass();            
+            data->InitFromInstance(str,len);
+        }
+
+        void Strcpy(const T *str,int len=-1)
+        {
+            SetString(str,len);
+        }
+
+        void StrcpyInstance(const T *str,int len=-1)
+        {
+            SetInstance(str,len);
         }
 
         /**
@@ -363,7 +418,7 @@ namespace hgl
          * @param str 要插入的字符串
          * @param len 要插入的字符个数,如果为-1则自动检测字符串长度
          */
-        bool Insert(int pos,const T *str,int len=-1)
+        bool Insert(const uint pos,const T *str,int len=-1)
         {
             if(len==0)return(false);
 
@@ -376,7 +431,7 @@ namespace hgl
             }
             else
             {
-                Set(str,len);
+                SetString(str,len);
                 return(true);
             }
         }
@@ -386,7 +441,7 @@ namespace hgl
          * @param pos 要插入的位置
          * @param str 要插入的字符串
          */
-        bool Insert(int pos,const SelfClass &str)
+        bool Insert(const uint pos,const SelfClass &str)
         {
             if((&str)==nullptr)
                 return(false);
@@ -418,7 +473,7 @@ namespace hgl
          * @param num 要删除的字符个数
          * @return 是否成功
          */
-        bool Delete(int pos,int num)
+        bool Delete(const uint pos,int num)
         {
             if(pos<0||num<=0)return(false);
 
@@ -482,7 +537,7 @@ namespace hgl
          * @return 0 等同
          * @return >0 自身大
          */
-        int Comp(const int pos,const SelfClass &bs)const
+        int Comp(const uint pos,const SelfClass &bs)const
         {
             if(!data.valid())
                 return(bs.Length());
@@ -502,7 +557,7 @@ namespace hgl
          * @return 0 等同
          * @return >0 自身大
          */
-        int Comp(const int pos,const SelfClass &bs,const int num)const
+        int Comp(const uint pos,const SelfClass &bs,const int num)const
         {
             if(!data.valid())
                 return(bs.Length());
@@ -521,7 +576,7 @@ namespace hgl
          * @return 0 等同
          * @return >0 自身大
          */
-        int Comp(const int pos,const T *str)const
+        int Comp(const uint pos,const T *str)const
         {
             if(!data.valid())
             {
@@ -543,7 +598,7 @@ namespace hgl
          * @return 0 等同
          * @return >0 自身大
          */
-        int Comp(const int pos,const T *str,const int num)const
+        int Comp(const uint pos,const T *str,const int num)const
         {
             if(!data.valid())
             {
@@ -681,6 +736,28 @@ namespace hgl
 
             return data->CaseComp(str,num);
         }
+
+        /**
+         * 和那一个字符串比较指字长度的字符,英文不区分大小写
+         * @param str 比较字符串
+         * @param num 比较字数
+         * @return <0 自身小
+         * @return 0 等同
+         * @return >0 自身大
+         */
+        int CaseComp(const uint pos,const T *str,const int num)const
+        {
+            if(!data.valid())
+            {
+                if(!str||num<=0)
+                    return 0;
+
+                return *str;
+            }
+
+            return data->CaseComp(pos,str,num);
+        }
+
     public:
 
         bool ToBool(bool &result)const                                                              ///<将本类中的字符串转换成布尔数值并返回
@@ -814,7 +891,7 @@ namespace hgl
 
         bool ClipLeft(int n){return Unlink()?data->ClipLeft(n):false;}                              ///<截取字符串前端的指定个字符,等同TrimRight(lengths-n))
         bool ClipRight(int n){return Delete(0,Length()-n);}                                         ///<截取字符串后端的指定个字符,等同TrimLeft(length-n)
-        bool Clip(int pos,int num)                                                                  ///<从指定位置删除指定个字符
+        bool Clip(uint pos,int num)                                                                  ///<从指定位置删除指定个字符
         {
             if(!Unlink())
                 return(false);
@@ -874,7 +951,7 @@ namespace hgl
         int StatChar(const T ch)const{return data.valid()?StatChar(data->c_str(),ch):-1;}           ///<统计字符串中某个字符的个数
         int StatLine()const{return data.valid()?StatLine(data->c_str()):-1;}                        ///<统计字符串行数
 
-        int FindChar(int pos,const T ch)const                                                       ///<返回当前字符串中指定字符开始的索引(从左至右)
+        int FindChar(uint pos,const T ch)const                                                       ///<返回当前字符串中指定字符开始的索引(从左至右)
         {
             if(!data.valid())
                 return(-1);
@@ -894,7 +971,7 @@ namespace hgl
          * @param pos 起始查找位置
          * @param ch 要查找的字符,可以是多个，找到任意一个就算
          */
-        int FindChar(int pos,const BaseString<T> &ch)const                                          ///<返回当前字符串中指定字符(多个任选一)的索引(从左至右)
+        int FindChar(uint pos,const BaseString<T> &ch)const                                          ///<返回当前字符串中指定字符(多个任选一)的索引(从左至右)
         {
             if(!data.valid())
                 return(-1);
@@ -976,7 +1053,7 @@ namespace hgl
          * @param pos 起始查找位置
          * @param ch 要排除的字符
          */
-        int FindExcludeChar(const int pos,const T &ch)const
+        int FindExcludeChar(const uint pos,const T &ch)const
         {
             if(!data.valid())
                 return(-1);
@@ -996,7 +1073,7 @@ namespace hgl
          * @param pos 起始查找位置
          * @param ch 要排除的字符
          */
-        int FindExcludeChar(const int pos,const BaseString<T> &ch)const
+        int FindExcludeChar(const uint pos,const BaseString<T> &ch)const
         {
             if(!data.valid())
                 return(-1);
@@ -1075,7 +1152,7 @@ namespace hgl
          * @param str 要写入的字符串
          * @return 是否成功
          */
-        bool WriteString(int pos,const SelfClass &str)
+        bool WriteString(uint pos,const SelfClass &str)
         {
             if(!Unlink())
                 return(false);
@@ -1151,7 +1228,7 @@ namespace hgl
 
                 ms[new_len]=0;
 
-                return(SelfClass(ms,new_len,true));
+                return BaseString::newOf(ms,new_len);
             }
 
             SelfClass  operator +   (const SelfClass &str) const
@@ -1168,7 +1245,7 @@ namespace hgl
             SelfClass   operator +  (const T ch) const
             {
                 if(!data.valid())
-                    return(SelfClass(ch));
+                    return(SelfClass::charOf(ch));
 
                 return ComboString(data->c_str(),data->GetLength(),&ch,1);
             }

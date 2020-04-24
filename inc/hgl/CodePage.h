@@ -191,7 +191,7 @@ namespace hgl
         int wlen;
         u16char *ws=u8_to_u16(u8_str,length,wlen);
 
-        return UTF16String(ws,wlen,true);
+        return UTF16String::newOf(ws,wlen);
     }
 
     inline UTF16String to_u16(const UTF8String &u8str)
@@ -204,8 +204,8 @@ namespace hgl
         int wlen;
 
         u16char *ws=u8_to_u16(str,strlen(str),wlen);
-
-        return UTF16String(ws,wlen,true);
+        
+        return UTF16String::newOf(ws,wlen);
     }
 
     inline UTF8String to_u8(const u16char *wide_str,int length)
@@ -214,7 +214,7 @@ namespace hgl
 
         char *us=u16_to_u8(wide_str,length,ulen);
 
-        return UTF8String(us,ulen,true);
+        return UTF8String::newOf(us,ulen);
     }
 
     inline UTF8String to_u8(const UTF16String &ws)
