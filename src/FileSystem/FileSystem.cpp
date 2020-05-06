@@ -11,15 +11,14 @@ namespace hgl
 {
     namespace filesystem
     {
-        constexpr int FILE_PROC_BUF_SIZE=HGL_SIZE_1MB;
-
         /**
         * 比较两个文件是否一样
         * @param filename1 第一个文件的名称
         * @param filename2 第二个文件的名称
+        * @param buf_size
         * @return 文件是否一样
         */
-        bool FileComp(const OSString &filename1,const OSString &filename2)
+        bool FileComp(const OSString &filename1,const OSString &filename2,const size_t buf_size)
         {
             io::FileInputStream fp1,fp2;
             int64 fs1,fs2;
@@ -34,34 +33,23 @@ namespace hgl
                 return(false);
 
             int64 pos=0,size;
-            char *data1,*data2;
-
-            data1=new char[FILE_PROC_BUF_SIZE];
-            data2=new char[FILE_PROC_BUF_SIZE];
+            AutoDeleteArray<char> data1=new char[buf_size];
+            AutoDeleteArray<char> data2=new char[buf_size];
 
             while(pos<fs1)
             {
-                size=FILE_PROC_BUF_SIZE;
+                size=buf_size;
                 if(pos+size>fs1)size=fs1-pos;
 
                 fp1.Read(data1,size);
                 fp2.Read(data2,size);
 
-                if(memcmp(data1,data2,size)==0)
-                {
-                    pos+=size;
-                    continue;
-                }
-                else
-                {
-                    delete[] data1;
-                    delete[] data2;
+                if(memcmp(data1,data2,size))
                     return(false);
-                }
-            };
 
-            delete[] data1;
-            delete[] data2;
+                pos+=size;
+            }
+
             return(true);
         }
 
@@ -287,12 +275,12 @@ namespace hgl
 
             struct_stat64 file_state;
 
-            memset(&file_state,0,sizeof(struct_stat64));
+            hgl_zero(file_state);
 
             if(hgl_lstat64(filename,&file_state)==-1)
                 return(false);
 
-            memset(&fi,0,sizeof(FileInfo));
+            hgl_zero(fi);
 
             if(file_state.st_mode&S_IFREG)
                 fi.is_file=true;

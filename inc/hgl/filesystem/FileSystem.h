@@ -157,7 +157,7 @@ namespace hgl
         bool FileMove(const OSString &,const OSString &);                                               ///<文件移动
         bool FileRename(const OSString &,const OSString &);                                             ///<文件改名
         bool FileExist(const OSString &);                                                               ///<文件确认是否存在
-        bool FileComp(const OSString &,const OSString &);                                               ///<文件比较
+        bool FileComp(const OSString &,const OSString &,const size_t buf_size=HGL_SIZE_1MB);            ///<文件比较
 
         bool FileCanRead(const OSString &);                                                             ///<检测文件是否可读
         bool FileCanWrite(const OSString &);                                                            ///<检测文件是否可写
