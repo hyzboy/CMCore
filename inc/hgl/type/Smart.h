@@ -482,6 +482,7 @@ namespace hgl
 
         operator T *(){return obj;}
         operator const T *()const{return obj;}
+        const bool operator !()const{return !obj;}
 
         void Clear()
         {
@@ -529,6 +530,7 @@ namespace hgl
 
         operator T *(){return obj;}
         operator const T *()const{return obj;}
+        const bool operator !()const{return !obj;}
 
                 T &operator[](int index){return obj[index];}
         const   T &operator[](int index)const{return obj[index];}
