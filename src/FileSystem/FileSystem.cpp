@@ -52,6 +52,29 @@ namespace hgl
 
             return(true);
         }
+        
+        void *LoadFileToMemory(const OSString &filename,int64 &size,bool append_zero)
+        {
+            io::FileInputStream fs;
+
+            if(!fs.Open(filename))
+                return(nullptr);
+
+            size=fs.GetSize();
+
+            char *fb=new char[append_zero?size+1:size];
+
+            if(fs.Read(fb,size)==size)
+            {
+                if(append_zero)
+                    fb[size]=0;
+
+                return fb;
+            }
+
+            delete[] fb;
+            return(nullptr);
+        }
 
         /**
         * 加载一个文件到内存,文件数据请自己delete[]掉
@@ -61,27 +84,11 @@ namespace hgl
         */
         int64 LoadFileToMemory(const OSString &filename,void **buf,bool append_zero)
         {
-            io::FileInputStream fs;
+            int64 size;
 
-            if(!fs.Open(filename))
-                return(-1);
+            *buf=LoadFileToMemory(filename,size,append_zero);
 
-            const int64 size=fs.GetSize();
-
-            char *fb=new char[append_zero?size+1:size];
-
-            if(fs.Read(fb,size)==size)
-            {
-                *buf=fb;
-
-                if(append_zero)
-                    fb[size]=0;
-
-                return(size);
-            }
-
-            delete[] fb;
-            return(-1);
+            return size;
         }
 
         /**
