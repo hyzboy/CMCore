@@ -145,6 +145,12 @@ namespace hgl
                 return cur_pos;
             }
 
+            const void *TellPointer()const
+            {
+                if(!buf)return(nullptr);
+                return buf+cur_pos;
+            }
+
             int64   GetSize()const
             {
                 if(!buf)return(-1);
