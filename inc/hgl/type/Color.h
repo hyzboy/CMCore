@@ -187,6 +187,10 @@ namespace hgl
         cePlayStationLightBlue,
 
         cePlum,                 ///<洋李色
+
+        cePornHubRed,           ///<PornHub红
+        cePornHubYellow,        ///<PornHub黄
+
         cePowderBlue,           ///<粉蓝色
         cePurple,               ///<紫色
         ceRed,                  ///<红色
