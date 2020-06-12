@@ -1086,7 +1086,7 @@ namespace hgl
             return(-1);
         }
 
-        int FindExcludeChar(const BaseString &ch){return FindExcludeChar(0,ch);}
+        int FindExcludeChar(const BaseString &ch)const{return FindExcludeChar(0,ch);}
 
         /**
          * 在整个字符串内，查找指定字符串
