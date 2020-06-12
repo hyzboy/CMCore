@@ -105,6 +105,17 @@ namespace hgl
             {4,{0x00,0x00,0xFE,0xFF},bomUTF32BE,&utf32be_charset   ,ccpUTF32BE  }
         };
 
+        inline ByteOrderMask CheckBOM(const void *data)
+        {
+            for(uint i=bomNone+1;i<bomEnd;i++)
+            {
+                if(memcmp(data,BOMData[i].data,BOMData[i].size)==0)
+                    return (ByteOrderMask)i;
+            }
+
+            return bomNone;
+        }
+
         template<typename T>
         inline T EndianSwap(const T value)
         {
