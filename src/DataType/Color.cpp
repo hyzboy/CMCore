@@ -182,6 +182,10 @@ namespace hgl
         DEF_COLOR(PlayStationLightBlue,     0,120,200,"PlayStation亮蓝")
 
         DEF_COLOR(Plum,                   221,160,221,"洋李色")
+
+        DEF_COLOR(PornHubRed,             242, 68, 68,"PorhHub红")
+        DEF_COLOR(PornHubYellow,          255,153,  0,"PorhHub黄")
+
         DEF_COLOR(PowderBlue,             176,224,230,"粉蓝色")
         DEF_COLOR(Purple,                 128,  0,128,"紫色")
         DEF_COLOR(Red,                    255,  0,  0,"红色")

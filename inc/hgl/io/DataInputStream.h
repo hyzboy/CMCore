@@ -186,25 +186,25 @@ namespace hgl
 
             //16bit str-length
             virtual bool ReadUTF8ShortString    (char *,        uint max_len=0);
-            virtual bool ReadUTF8ShortString    (UTF8String &,  uint max_len=0);                    ///<读取utf8格式字符串(前缀四字节的字符串字节长度)
-            virtual bool ReadUTF8ShortString    (UTF16String &, uint max_len=0);                    ///<读取utf8格式字符串(前缀四字节的字符串字节长度)
+            virtual bool ReadUTF8ShortString    (UTF8String &,  uint max_len=0);                    ///<读取utf8格式字符串(前缀2字节的字符串字节长度)
+            virtual bool ReadUTF8ShortString    (UTF16String &, uint max_len=0);                    ///<读取utf8格式字符串(前缀2字节的字符串字节长度)
 
             virtual bool ReadUTF16LEShortString (u16char *,     uint max_len=0);
             virtual bool ReadUTF16BEShortString (u16char *,     uint max_len=0);
 
-            virtual bool ReadUTF16LEShortString (UTF16String &, uint max_len=0);                    ///<读取utf16-le格式字符串(前缀四字节的字符串字节长度)
-            virtual bool ReadUTF16BEShortString (UTF16String &, uint max_len=0);                    ///<读取utf16-be格式字符串(前缀四字节的字符串字节长度)
+            virtual bool ReadUTF16LEShortString (UTF16String &, uint max_len=0);                    ///<读取utf16-le格式字符串(前缀2字节的字符串字节长度)
+            virtual bool ReadUTF16BEShortString (UTF16String &, uint max_len=0);                    ///<读取utf16-be格式字符串(前缀2字节的字符串字节长度)
 
             //8bit str-length
             virtual bool ReadUTF8TinyString     (char *,        uint max_len=0);
-            virtual bool ReadUTF8TinyString     (UTF8String &,  uint max_len=0);                    ///<读取utf8格式字符串(前缀四字节的字符串字节长度)
-            virtual bool ReadUTF8TinyString     (UTF16String &, uint max_len=0);                    ///<读取utf8格式字符串(前缀四字节的字符串字节长度)
+            virtual bool ReadUTF8TinyString     (UTF8String &,  uint max_len=0);                    ///<读取utf8格式字符串(前缀1字节的字符串字节长度)
+            virtual bool ReadUTF8TinyString     (UTF16String &, uint max_len=0);                    ///<读取utf8格式字符串(前缀1字节的字符串字节长度)
 
             virtual bool ReadUTF16LETinyString  (u16char *,     uint max_len=0);
             virtual bool ReadUTF16BETinyString  (u16char *,     uint max_len=0);
 
-            virtual bool ReadUTF16LETinyString  (UTF16String &, uint max_len=0);                    ///<读取utf16-le格式字符串(前缀四字节的字符串字节长度)
-            virtual bool ReadUTF16BETinyString  (UTF16String &, uint max_len=0);                    ///<读取utf16-be格式字符串(前缀四字节的字符串字节长度)
+            virtual bool ReadUTF16LETinyString  (UTF16String &, uint max_len=0);                    ///<读取utf16-le格式字符串(前缀1字节的字符串字节长度)
+            virtual bool ReadUTF16BETinyString  (UTF16String &, uint max_len=0);                    ///<读取utf16-be格式字符串(前缀1字节的字符串字节长度)
         };//class DataInputStream
 
         template<> bool inline DataInputStream::ReadNumber<int8>(int8 &value){return ReadInt8(value);}

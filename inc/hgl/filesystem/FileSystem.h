@@ -163,6 +163,7 @@ namespace hgl
         bool FileCanWrite(const OSString &);                                                            ///<检测文件是否可写
         bool FileCanExec(const OSString &);                                                             ///<检测文件是否可执行
 
+        void *LoadFileToMemory(const OSString &,int64 &,bool append_zero=false);                        ///<加载一个文件到内存
         int64 LoadFileToMemory(const OSString &,void **,bool append_zero=false);                        ///<加载一个文件到内存
         int64 SaveMemoryToFile(const OSString &,const void *,const int64 &);                            ///<保存一块内存成文件
         int64 SaveMemoryToFile(const OSString &,void **,const int64 *,const int &);                     ///<保存多块内存成一个文件

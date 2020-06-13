@@ -71,7 +71,7 @@ namespace hgl
             {
                 fos=new FileOutputStream();
 
-                if(!fos->Open(filename))
+                if(!fos->Open(filename,mode))
                 {
                     delete fos;
                     fos=nullptr;
