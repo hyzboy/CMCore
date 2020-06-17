@@ -76,7 +76,7 @@ namespace hgl
 
         if(fp_count<=0)return(nullptr);
 
-        OSString pi_filename=name+OS_TEXT('.')+pi_name+HGL_PLUGIN_EXTNAME;
+        OSString pi_filename=name+OS_TEXT(".")+pi_name+HGL_PLUGIN_EXTNAME;
         OSString pi_fullfilename;
         ExternalPlugIn *epi=new ExternalPlugIn;
 
