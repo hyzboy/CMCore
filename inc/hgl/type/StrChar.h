@@ -156,7 +156,14 @@ namespace hgl
     template<typename T>
     bool isspace(const T ch)
     {
-        return(ch==' '||ch=='\t'||ch=='\r'||ch=='\f'||ch=='\v'||ch=='\n');
+        return(ch==0
+             ||ch==' '      //半角空格
+             ||ch==L'　'    //全角空格
+             ||ch=='\t'
+             ||ch=='\r'
+             ||ch=='\f'
+             ||ch=='\v'
+             ||ch=='\n');
     }
 
     /**
