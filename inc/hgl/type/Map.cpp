@@ -239,7 +239,7 @@ namespace hgl
     * @return 是否取得成功
     */
     template<typename F,typename T,typename DataPair>
-    bool _Map<F,T,DataPair>::Get(int index,F &f,T &t) const
+    bool _Map<F,T,DataPair>::GetBySerial(int index,F &f,T &t) const
     {
         if(index<0||index>=data_list.GetCount())return(false);
 

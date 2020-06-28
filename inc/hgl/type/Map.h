@@ -94,7 +94,7 @@ namespace hgl
                 }
 
                 IDItem *GetItem(int n){return GetListObject(data_list,n);}                          ///<取指定序号的数据
-                bool    Get(int,F &,T &) const;                                                     ///<取指定序号的数据
+                bool    GetBySerial(int,F &,T &) const;                                             ///<取指定序号的数据
                 bool    GetKey(int,F &);                                                            ///<取指定序号的索引
                 bool    GetValue(int,T &);                                                          ///<取指定序号的数据
 
@@ -136,7 +136,9 @@ namespace hgl
                 void    DeleteObject(DataPair *ds)
                 {
                     if(!ds)return;
-                    DeleteObject(ds->left,ds->right);
+
+                    if(ds->right)                                                                   ///<存在数据就是nullptr的可能
+                        DeleteObject(ds->left,ds->right);
                 }
 
                 void    DeleteObject(int index)
