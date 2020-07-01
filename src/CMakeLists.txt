@@ -36,6 +36,7 @@ SOURCE_GROUP("FileSystem" FILES ${BASE_FILE_SYSTEM_SOURCE})
 
 SET(BASE_OTHER_SOURCE
     Other/CodePage.cpp
+    Other/UnicodeBlocks.cpp
     Other/DateTime.cpp
 #    Other/ExpendString.cpp
     Other/ThreadFunc.cpp
