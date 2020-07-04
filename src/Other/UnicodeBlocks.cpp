@@ -342,7 +342,7 @@ namespace hgl
              &&ch<UnicodeBlockList[left].end)
                 return (UnicodeBlock)left;
 
-            --left;
+            ++left;
 
             if(ch>UnicodeBlockList[right].begin
              &&ch<UnicodeBlockList[right].end)
