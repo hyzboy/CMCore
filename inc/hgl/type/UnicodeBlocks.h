@@ -321,12 +321,22 @@ namespace hgl
         supplementary_private_use_area_a,
         supplementary_private_use_area_b,
 
+        Error=0xFFFF,
+
         BEGIN_RANGE =basic_latin,
         END_RANGE   =supplementary_private_use_area_b,
-        RANGE_SIZE  =(END_RANGE-BEGIN_RANGE+1)
+        RANGE_SIZE  =(END_RANGE-BEGIN_RANGE+1),
     };//
 
-    bool IsInUnicodeBlock(const UnicodeBlock &type,const uint32 ch);
+    /**
+     * 寻找字符属于那一个Unicode块
+     */
+    const UnicodeBlock IndexOfUnicodeBlock(const u32char ch);
+
+    /**
+     * 判断字符是否属于当前Unicode块
+     */
+    bool IsInUnicodeBlock(const UnicodeBlock &type,const u32char ch);
 
     bool isLatin(const u32char ch);     //判断当前字符是否是拉丁字符
     bool isCJK  (const u16char ch);     //判断当前字符是否是CJK字符

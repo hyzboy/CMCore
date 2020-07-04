@@ -327,10 +327,55 @@ namespace hgl
         };
     }//namespace hgl
 
+    const UnicodeBlock IndexOfUnicodeBlock(const u32char ch)
+    {
+        if(ch>UnicodeBlockList[(size_t)UnicodeBlock::END_RANGE].end)
+            return UnicodeBlock::Error;
+
+        uint left   =(uint)UnicodeBlock::BEGIN_RANGE;
+        uint right  =(uint)UnicodeBlock::END_RANGE;
+        uint mid;
+
+        while(left<right)
+        {
+            if(ch>UnicodeBlockList[left].begin
+             &&ch<UnicodeBlockList[left].end)
+                return (UnicodeBlock)left;
+
+            --left;
+
+            if(ch>UnicodeBlockList[right].begin
+             &&ch<UnicodeBlockList[right].end)
+                return (UnicodeBlock)right;
+
+            --right;
+
+            mid=(left+right)/2;
+
+            if(ch>UnicodeBlockList[mid].begin
+             &&ch<UnicodeBlockList[mid].end)
+                return (UnicodeBlock)mid;
+
+            if(ch<UnicodeBlockList[mid].begin)
+            {
+                right=mid;
+                continue;
+            }
+
+            if(ch>UnicodeBlockList[mid].end)
+            {
+                left=mid;
+                continue;
+            }
+        }
+
+        return UnicodeBlock::Error;
+    }
+
     bool IsInUnicodeBlock(const UnicodeBlock &type,const uint32 ch)
     {
         if(type<UnicodeBlock::basic_latin
-            ||type>UnicodeBlock::END_RANGE)
+         ||type>UnicodeBlock::END_RANGE)
             return(false);
 
         if(ch<UnicodeBlockList[(size_t)type].begin)return(false);
