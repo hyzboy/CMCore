@@ -147,7 +147,7 @@ namespace hgl
         }
 
         inline UTF8String MergeFilename(const UTF8String &pathname,const UTF8String &filename)          ///<组合路径名与文件名
-        {return MergeFilename<char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_U8STR);}
+        {return MergeFilename<u8char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_U8STR);}
 
         inline WideString MergeFilename(const WideString &pathname,const WideString &filename)          ///<组合路径名与文件名
         {return MergeFilename<wchar_t>(pathname,filename,L'\\',L"\\");}

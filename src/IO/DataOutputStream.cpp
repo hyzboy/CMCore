@@ -4,7 +4,7 @@ namespace hgl
 {
     namespace io    // write utf8 chars
     {
-        template<> bool DataOutputStream::WriteUTF8Chars<char>        (const char *str,uint size)
+        template<> bool DataOutputStream::WriteUTF8Chars<u8char>        (const u8char *str,uint size)
         {
             if(!out)return(false);
             if(size==0)return(true);
@@ -27,7 +27,7 @@ namespace hgl
 
     namespace io    //write utf8 string
     {
-        template<typename T> bool DataOutputStream::WriteUTF8StringWithLength(const char *str,const uint length)
+        template<typename T> bool DataOutputStream::WriteUTF8StringWithLength(const u8char *str,const uint length)
         {
             if(!out)return(false);
 
@@ -47,7 +47,7 @@ namespace hgl
             if(!out)return(false);
 
             int utf8_count;
-            char *utf8_str=u16_to_u8(str.c_str(),str.Length(),utf8_count);
+            u8char *utf8_str=u16_to_u8(str.c_str(),str.Length(),utf8_count);
 
             const bool result=WriteUTF8StringWithLength<T>(utf8_str,utf8_count);
 
@@ -78,7 +78,7 @@ namespace hgl
 
     namespace io    //write utf16-le chars
     {
-        template<> bool DataOutputStream::WriteUTF16LEChars<char>(const char *str,uint length)
+        template<> bool DataOutputStream::WriteUTF16LEChars<u8char>(const u8char *str,uint length)
         {
             if(length==0)return(true);
             if(!out||!str||!*str)return(false);
@@ -99,7 +99,7 @@ namespace hgl
 
     namespace io    //write utf16-be chars
     {
-        template<> bool DataOutputStream::WriteUTF16BEChars<char>(const char *str,uint length)
+        template<> bool DataOutputStream::WriteUTF16BEChars<u8char>(const u8char *str,uint length)
         {
             if(length==0)return(true);
             if(!out||!str||!*str)return(false);
@@ -136,8 +136,8 @@ namespace hgl
 
     namespace io
     {
-        bool DataOutputStream::WriteUTF8String        (const char *str,uint length){return WriteUTF8StringWithLength<uint32>(str,         length);}                               ///<按utf16-le格式写入字符串(前置4字节字符串长度,再写入字符阵列)
-        bool DataOutputStream::WriteUTF8String        (const char *str            ){return WriteUTF8StringWithLength<uint32>(str,         hgl::strlen(str));}                     ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
+        bool DataOutputStream::WriteUTF8String        (const u8char *str,uint length){return WriteUTF8StringWithLength<uint32>(str,         length);}                               ///<按utf16-le格式写入字符串(前置4字节字符串长度,再写入字符阵列)
+        bool DataOutputStream::WriteUTF8String        (const u8char *str            ){return WriteUTF8StringWithLength<uint32>(str,         hgl::strlen(str));}                     ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
         bool DataOutputStream::WriteUTF8String        (const UTF8String &str      ){return WriteUTF8StringWithLength<uint32>(str.c_str(), str.Length());}                         ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
         bool DataOutputStream::WriteUTF8String        (const UTF16String &str     ){return WriteUTF8StringWithLength<uint32>(str);}                                               ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
 
@@ -152,8 +152,8 @@ namespace hgl
 
 
 
-        bool DataOutputStream::WriteUTF8ShortString   (const char *str,uint length){return WriteUTF8StringWithLength<uint16>(str,         length);}                               ///<按utf16-le格式写入字符串(前置2字节字符串长度,再写入字符阵列)
-        bool DataOutputStream::WriteUTF8ShortString   (const char *str            ){return WriteUTF8StringWithLength<uint16>(str,         hgl::strlen(str));}                     ///<按utf8格式写入字符串(前置2字节字符串长度,再写入字符阵列)
+        bool DataOutputStream::WriteUTF8ShortString   (const u8char *str,uint length){return WriteUTF8StringWithLength<uint16>(str,         length);}                               ///<按utf16-le格式写入字符串(前置2字节字符串长度,再写入字符阵列)
+        bool DataOutputStream::WriteUTF8ShortString   (const u8char *str            ){return WriteUTF8StringWithLength<uint16>(str,         hgl::strlen(str));}                     ///<按utf8格式写入字符串(前置2字节字符串长度,再写入字符阵列)
         bool DataOutputStream::WriteUTF8ShortString   (const UTF8String &str      ){return WriteUTF8StringWithLength<uint16>(str.c_str(), str.Length());}                         ///<按utf8格式写入字符串(前置2字节字符串长度,再写入字符阵列)
         bool DataOutputStream::WriteUTF8ShortString   (const UTF16String &str     ){return WriteUTF8StringWithLength<uint16>(str);}                                               ///<按utf8格式写入字符串(前置2字节字符串长度,再写入字符阵列)
 
@@ -168,8 +168,8 @@ namespace hgl
 
 
 
-        bool DataOutputStream::WriteUTF8TinyString    (const char *str,uint length){return WriteUTF8StringWithLength<uint8>(str,          length);}                               ///<按utf16-le格式写入字符串(前置1字节字符串长度,再写入字符阵列)
-        bool DataOutputStream::WriteUTF8TinyString    (const char *str            ){return WriteUTF8StringWithLength<uint8>(str,          hgl::strlen(str));}                     ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
+        bool DataOutputStream::WriteUTF8TinyString    (const u8char *str,uint length){return WriteUTF8StringWithLength<uint8>(str,          length);}                               ///<按utf16-le格式写入字符串(前置1字节字符串长度,再写入字符阵列)
+        bool DataOutputStream::WriteUTF8TinyString    (const u8char *str            ){return WriteUTF8StringWithLength<uint8>(str,          hgl::strlen(str));}                     ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
         bool DataOutputStream::WriteUTF8TinyString    (const UTF8String &str      ){return WriteUTF8StringWithLength<uint8>(str.c_str(),  str.Length());}                         ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
         bool DataOutputStream::WriteUTF8TinyString    (const UTF16String &str     ){return WriteUTF8StringWithLength<uint8>(str);}                                                ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
 

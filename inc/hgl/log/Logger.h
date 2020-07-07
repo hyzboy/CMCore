@@ -35,7 +35,7 @@ namespace hgl
             virtual void Close()=0;                                                                 ///<关闭日志
 
             virtual void Write(const u16char *,int)=0;                                              ///<输出一行u16char日志
-            virtual void Write(const char *,int)=0;                                                 ///<输出一行char(utf8)日志
+            virtual void Write(const u8char *,int)=0;                                               ///<输出一行u8char日志
         };//class Logger
     }//namespace logger
 

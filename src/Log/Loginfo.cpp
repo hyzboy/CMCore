@@ -104,7 +104,7 @@ namespace hgl
             void (*Close)();                                                                            ///<关闭所有日志输出
 
             void (*WriteUTF16)(LogLevel,const u16char *,int);                                           ///<输出一行日志
-            void (*WriteUTF8)(LogLevel,const char *,int);                                               ///<输出一行日志
+            void (*WriteUTF8)(LogLevel,const u8char *,int);                                             ///<输出一行日志
         };//struct LogInterface
 
         static LogInterface LogInterface3=
@@ -115,7 +115,7 @@ namespace hgl
             CloseAllLog,
 
             WriteLog<u16char>,
-            WriteLog<char>
+            WriteLog<u8char>
         };
 
         /**
@@ -180,7 +180,7 @@ namespace hgl
                 li->WriteUTF16(level,str,size==-1?hgl::strlen(str):size);
         }
 
-        void Log(LogLevel level,const char *str,int size)
+        void Log(LogLevel level,const u8char *str,int size)
         {
             if(li)
                 li->WriteUTF8(level,str,size==-1?hgl::strlen(str):size);

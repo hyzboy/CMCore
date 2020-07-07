@@ -85,7 +85,7 @@ namespace hgl
 
     constexpr int CharPageCount=sizeof(CodeSet2CharPage)/sizeof(CodePageAndCharSet);
 
-    inline CharCodePage FindCodePage(const char *char_set)
+    inline CharCodePage FindCodePage(const u8char *char_set)
     {
         for(int i=0;i<CharPageCount;i++)
             if(!charset_cmp(CodePage2CharSet[i].charset,char_set))
@@ -104,17 +104,17 @@ namespace hgl
         CharSet()
         {
             codepage=ccpNone;
-            strcpy(charset,CharSetNameLength,"us-ascii");
+            hgl::strcpy(charset,CharSetNameLength,"us-ascii");
         }
 
         CharSet(CharCodePage ccp,const char *cs)
         {
             codepage=ccp;
-            strcpy(charset,CharSetNameLength,cs);
+            hgl::strcpy(charset,CharSetNameLength,cs);
         }
 
         CharSet(CharCodePage);
-        CharSet(const char *);
+        CharSet(const u8char *);
 
         CharSet(const CodePageAndCharSet &cs)
         {
@@ -129,13 +129,13 @@ namespace hgl
     inline CharSet::CharSet(CharCodePage ccp)
     {
         codepage=ccp;
-        strcpy(charset,CharSetNameLength,FindCharSet(ccp));
+        hgl::strcpy(charset,CharSetNameLength,FindCharSet(ccp));
     }
 
-    inline CharSet::CharSet(const char *cs)
+    inline CharSet::CharSet(const u8char *cs)
     {
         codepage=FindCodePage(cs);
-        strcpy(charset,CharSetNameLength,FindCharSet(codepage));
+        hgl::strcpy(charset,CharSetNameLength,FindCharSet(codepage));
     }
 
     extern CharSet DefaultCharSet();
@@ -152,9 +152,9 @@ namespace hgl
      * @param src_size  字符串长度,-1表示全部
      * @return 转换成功后的字符串字符数
      */
-    int to_utf16(const CharSet &charset,u16char **dst,const char *src,const int src_size=-1);
+    int to_utf16(const CharSet &charset,u16char **dst,const void *src,const int src_size=-1);
 
-    int to_utf8(const CharSet &charset,char **dst,const char *src,const int src_size=-1);
+    int to_utf8(const CharSet &charset,u8char **dst,const void *src,const int src_size=-1);
 
     /**
      * 转换u16char *字符串到指定字符集的字符串
@@ -164,29 +164,29 @@ namespace hgl
      * @param src_size  字符串长度,-1表示全部
      * @return 转换成功后的字符串字符数
      */
-    int utf16_to(const CharSet &charset,char **dst,const u16char *src,const int src_size=-1);
+    int utf16_to(const CharSet &charset,u8char **dst,const u16char *src,const int src_size=-1);
 
-    int utf8_to(const CharSet &charset,char **dst,const char *src,const int src_size=-1);
+    int utf8_to(const CharSet &charset,u8char **dst,const u8char *src,const int src_size=-1);
 
-    int             u16_to_u8(char *,int,const u16char *,const int=-1);                         ///<转换u16char *到utf8格式的char *
-    int             u8_to_u16(u16char *,int,const char *,const int=-1);                         ///<转换utf8格式的char *到u16char *
+    int             u16_to_u8(u8char *,int,const u16char *,const int=-1);                           ///<转换u16char *到utf8格式的u8char *
+    int             u8_to_u16(u16char *,int,const u8char *,const int=-1);                           ///<转换utf8格式的u8char *到u16char *
 
-    char *          u16_to_u8(const u16char *,const int,int &);                                 ///<转换u16char *到utf8格式的char *
-    u16char *       u8_to_u16(const char *,const int,int &);                                    ///<转换utf8格式的char *到u16char *
+    u8char *        u16_to_u8(const u16char *,const int,int &);                                     ///<转换u16char *到utf8格式的u8char *
+    u16char *       u8_to_u16(const u8char *,const int,int &);                                      ///<转换utf8格式的u8char *到u16char *
 
-    inline char *   u16_to_u8(const u16char *str)
+    inline u8char * u16_to_u8(const u16char *str)
     {
         int len;
         return u16_to_u8(str,hgl::strlen<u16char>(str)+1,len);
     }
 
-    inline u16char *u8_to_u16(const char *str)
+    inline u16char *u8_to_u16(const u8char *str)
     {
         int len;
-        return u8_to_u16(str,hgl::strlen<char>(str)+1,len);
+        return u8_to_u16(str,hgl::strlen<u8char>(str)+1,len);
     }
 
-    inline UTF16String to_u16(const char *u8_str,int length)
+    inline UTF16String to_u16(const u8char *u8_str,int length)
     {
         int wlen;
         u16char *ws=u8_to_u16(u8_str,length,wlen);
@@ -199,7 +199,7 @@ namespace hgl
         return to_u16(u8str.c_str(),u8str.Length());
     }
 
-    inline UTF16String to_u16(const char *str)
+    inline UTF16String to_u16(const u8char *str)
     {
         int wlen;
 
@@ -212,7 +212,7 @@ namespace hgl
     {
         int ulen;
 
-        char *us=u16_to_u8(wide_str,length,ulen);
+        u8char *us=u16_to_u8(wide_str,length,ulen);
 
         return UTF8String::newOf(us,ulen);
     }
@@ -223,7 +223,7 @@ namespace hgl
     }
 
 #if HGL_OS == HGL_OS_Windows
-    inline OSString ToOSString(const char *str){return to_u16(str);}
+    inline OSString ToOSString(const u8char *str){return to_u16(str);}
     inline OSString ToOSString(const UTF8String &str){return to_u16(str.c_str(), (int)(str.Length()));}
 
     inline UTF8String ToUTF8String(const os_char *str){return to_u8(str,strlen(str));}

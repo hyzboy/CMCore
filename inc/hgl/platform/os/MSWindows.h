@@ -4,13 +4,16 @@
 #include<malloc.h>
 #include<winsock2.h>        //winsock2必须在Windows.h前面，不然会报错
 #include<windows.h>
+#include<uchar.h>
 
 #undef min
 #undef max
 //--------------------------------------------------------------------------------------------------
 using u32char           =char32_t;
 using u16char           =wchar_t;
+using u8char            =char8_t;
 using os_char           =wchar_t;
+
 #define to_oschar       to_u16
 #define OS_TEXT(str)    L##str
 #define U8_TEXT(str)    u8##str

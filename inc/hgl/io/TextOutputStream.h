@@ -55,7 +55,7 @@ namespace hgl
                 return(out->Write(bom_item->data,bom_item->size)==bom_item->size);
             }
 
-            virtual bool WriteChars(const char *,int64)=0;                                          ///<写入一个字符串
+            virtual bool WriteChars(const u8char *,int64)=0;                                        ///<写入一个字符串
             virtual bool WriteChars(const u16char *,int64)=0;                                       ///<写入一个字符串
 
             template<typename N>
@@ -162,7 +162,7 @@ namespace hgl
 
             EndianTextOutputStream(OutputStream *);
 
-            bool WriteChars(const char *,int64);                                            ///<写入一个字符串
+            bool WriteChars(const u8char *,int64);                                          ///<写入一个字符串
             bool WriteChars(const u16char *,int64);                                         ///<写入一个字符串
         };//template<ByteOrderMask BOM> class EndianTextOutputStream
 

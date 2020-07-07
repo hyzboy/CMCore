@@ -7,16 +7,16 @@ namespace hgl
      */
     int LoadStringListFromText(UTF8StringList &sl,uchar *data,const int size,const CharSet &cs)
     {
-        char *str=nullptr;
+        u8char *str=nullptr;
 
         int line_count;
         int char_count;
 
         if(size>=3&&data[0]==0xEF&&data[1]==0xBB&&data[2]==0xBF)            //utf8
-            line_count=SplitToStringListByEnter<char>(sl,(char *)(data+3),size-3);
+            line_count=SplitToStringListByEnter<u8char>(sl,(u8char *)(data+3),size-3);
         else
         if(cs==UTF8CharSet)
-            line_count=SplitToStringListByEnter<char>(sl,(char *)data,size);
+            line_count=SplitToStringListByEnter<u8char>(sl,(u8char *)data,size);
         else
         {
             if(size>=2)
@@ -69,7 +69,7 @@ namespace hgl
                 char_count=to_utf8(cs,&str,(char *)data,size);
 #endif//
 
-            line_count=SplitToStringListByEnter<char>(sl,str,char_count);
+            line_count=SplitToStringListByEnter<u8char>(sl,str,char_count);
 
             delete[] str;
         }
@@ -128,10 +128,10 @@ namespace hgl
         else
         {
             if(size>=3&&data[0]==0xEF&&data[1]==0xBB&&data[2]==0xBF)        //utf8
-                str=u8_to_u16((char *)(data+3),size-3,char_count);
+                str=u8_to_u16((u8char *)(data+3),size-3,char_count);
             else
             if(cs==UTF8CharSet)
-                str=u8_to_u16((char *)data,size,char_count);
+                str=u8_to_u16((u8char *)data,size,char_count);
             else
             {
 #ifdef __ANDROID__

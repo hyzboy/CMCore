@@ -8,7 +8,7 @@ namespace hgl
     CharSet UTF16LECharSet  (ccpUTF16LE,utf16le_charset );
     CharSet UTF16BECharSet  (ccpUTF16BE,utf16be_charset );
 
-    int    u16_to_u8(char *dst,int dst_size,const u16char *src,const int src_size)
+    int    u16_to_u8(u8char *dst,int dst_size,const u16char *src,const int src_size)
     {
         if(src_size<=0||!src||!*src)
         {
@@ -50,7 +50,7 @@ namespace hgl
         return int(tp-(uint8 *)dst);
     }
 
-    int    u8_to_u16(u16char *dst,int dst_size,const char *src,const int src_size)
+    int    u8_to_u16(u16char *dst,int dst_size,const u8char *src,const int src_size)
     {
         if(src_size<=0||!src||!*src)
         {
@@ -116,7 +116,7 @@ namespace hgl
      * @param dst_size 结果字符串字符数
      * @return 转换结果，需自行delete[]
      */
-    char *u16_to_u8(const u16char *src,const int src_size,int &dst_size)
+    u8char *u16_to_u8(const u16char *src,const int src_size,int &dst_size)
     {
         if(src_size<=0||!src||!*src)
         {
@@ -150,7 +150,7 @@ namespace hgl
         if(dst_size<=0)
             return(nullptr);
 
-        char *dst=new char[dst_size+1];
+        u8char *dst=new u8char[dst_size+1];
 
         dst[dst_size]=0;        //为防止内存检测工具报错，所以提前赋0
 
@@ -166,7 +166,7 @@ namespace hgl
      * @param dst_size 结果字符串字符数
      * @return 转换结果，需自行delete[]
      */
-    u16char *u8_to_u16(const char *src,const int src_size,int &dst_size)
+    u16char *u8_to_u16(const u8char *src,const int src_size,int &dst_size)
     {
         if(src_size<=0||!src||!*src)
         {

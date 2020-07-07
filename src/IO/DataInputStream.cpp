@@ -96,7 +96,7 @@ namespace hgl
 
             const uint count=(max_len>str_len?str_len:max_len);
 
-            char *utf8_str=dis->ReadArrays<char>(count);
+            u8char *utf8_str=dis->ReadArrays<u8char>(count);
 
             if(!utf8_str)
                 return(false);
@@ -131,7 +131,7 @@ namespace hgl
 
             const uint count=(max_len>str_len?str_len:max_len);
 
-            char *utf8_str=dis->ReadArrays<char>(count);
+            u8char *utf8_str=dis->ReadArrays<u8char>(count);
 
             if(!utf8_str)
                 return(false);

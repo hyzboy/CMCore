@@ -639,7 +639,7 @@ namespace hgl
         return(result);
     }//int LoadStringList
 
-    inline int LoadUTF8StringList      (UTF8StringList &   sl,io::DataInputStream *dis){return LoadStringList<char,    bomUTF8     >(sl,dis);}
+    inline int LoadUTF8StringList      (UTF8StringList &   sl,io::DataInputStream *dis){return LoadStringList<u8char,  bomUTF8     >(sl,dis);}
     inline int LoadUTF16LEStringList   (UTF16StringList &  sl,io::DataInputStream *dis){return LoadStringList<u16char, bomUTF16LE  >(sl,dis);}
     inline int LoadUTF16BEStringList   (UTF16StringList &  sl,io::DataInputStream *dis){return LoadStringList<u16char, bomUTF16BE  >(sl,dis);}
 

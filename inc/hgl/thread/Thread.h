@@ -58,7 +58,7 @@ namespace hgl
         virtual bool ProcStartThread()                                                                ///<线程启动运行函数,在Execute前被调用
                 {
 #ifdef _DEBUG
-                    char thread_addr[(sizeof(thread_ptr)<<1)+1];
+                    u8char thread_addr[(sizeof(thread_ptr)<<1)+1];
 
                     DataToUpperHexStr(thread_addr,(uint8 *)&tp,sizeof(thread_ptr));
 

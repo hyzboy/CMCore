@@ -3,7 +3,9 @@
 
 using u32char           =char32_t;
 using u16char           =char16_t;
+using u8char            =char8_t;
 using os_char           =char;
+
 #define to_oschar       to_u8
 #define OS_TEXT(str)    u8##str
 #define U8_TEXT(str)    u8##str

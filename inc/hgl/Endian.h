@@ -58,10 +58,10 @@ namespace hgl
             bomEnd
         };
 
-        constexpr uint CharSetNameLength=32;                                                            ///<字符集名称长度
-        using CharSetName=char[CharSetNameLength];                                                      ///<字符集名称类型定义
+        constexpr uint CharSetNameLength=32;                                                        ///<字符集名称长度
+        using CharSetName=char[CharSetNameLength];                                                  ///<字符集名称类型定义
 
-        template<int,char> const CharSetName &GetCurCharSet();                                          ///<取得当前程序编码字符集
+        template<int,char> const CharSetName &GetCurCharSet();                                      ///<取得当前程序编码字符集
 
         constexpr CharSetName utf8_charset="utf8";
         constexpr CharSetName utf16le_charset="utf-16le";
@@ -85,7 +85,7 @@ namespace hgl
         struct BOMFileHeader
         {
             int size;                   ///<字节序文件头长度
-            unsigned char data[4];      ///<字节序数据
+            uint8 data[4];              ///<字节序数据
 
             ByteOrderMask bom;          ///<字节序枚举
             const CharSetName *char_set;///<字符集名称

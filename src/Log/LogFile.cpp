@@ -86,7 +86,7 @@ namespace hgl
                 }
             }
 
-            void Write(const char *str,int size)
+            void Write(const u8char *str,int size)
             {
                 if(tos&&str&&*str&&size>0)
                 {

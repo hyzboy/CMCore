@@ -1289,12 +1289,12 @@ namespace hgl
 
         return BaseString<T>(value)+str;
     }
-
-    using UTF8String    =BaseString<char>;
+    
     using AnsiString    =BaseString<char>;
+    using UTF8String    =BaseString<u8char>;
     using UTF16String   =BaseString<u16char>;
-    using OSString      =BaseString<os_char>;
     using UTF32String   =BaseString<char32_t>;
+    using OSString      =BaseString<os_char>;
     using WideString    =BaseString<wchar_t>;
 
     template<typename C> bool ToNumber(const BaseString<C> &str,int &value){return str.ToInt(value);}

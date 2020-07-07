@@ -372,7 +372,7 @@ namespace hgl
         return UnicodeBlock::Error;
     }
 
-    bool IsInUnicodeBlock(const UnicodeBlock &type,const uint32 ch)
+    bool IsInUnicodeBlock(const UnicodeBlock &type,const u32char ch)
     {
         if(type<UnicodeBlock::basic_latin
          ||type>UnicodeBlock::END_RANGE)

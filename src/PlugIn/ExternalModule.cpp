@@ -35,13 +35,13 @@ namespace hgl
             void *func=pi_get(fp,name);
 
             if(!func)
-                LOG_ERROR("don't find "+UTF8String(name));
+                LOG_ERROR("don't find "+AnsiString(name));
 
             return(func);
         }
         else
         {
-            LOG_ERROR("Get func <"+UTF8String(name)+"> error: no load module!");
+            LOG_ERROR("Get func <"+AnsiString(name)+"> error: no load module!");
 
             return(nullptr);
         }
