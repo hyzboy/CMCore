@@ -22,9 +22,9 @@ namespace hgl
             return(-1);
 
         const u16char *sp=src;
-        uint8 *tp=(uint8 *)dst;
+        u8char *tp=dst;
 
-        while(*sp&&(int(tp-(uint8 *)dst)<dst_size))
+        while(*sp&&(int(tp-dst)<dst_size))
         {
             if(*sp<=0x7F)                       // U-00000000 - U-0000007F: 0xxx
             {
@@ -47,7 +47,7 @@ namespace hgl
 
 //        *tp=0;
 
-        return int(tp-(uint8 *)dst);
+        return int(tp-dst);
     }
 
     int    u8_to_u16(u16char *dst,int dst_size,const u8char *src,const int src_size)
@@ -63,7 +63,7 @@ namespace hgl
         if(!dst||dst_size<=0)
             return(-1);
 
-        const uint8 *sp=(uint8 *)src;
+        const u8char *sp=src;
         u16char *tp=dst;
 
         while(*sp&&(int(tp-dst)<dst_size))
@@ -174,11 +174,11 @@ namespace hgl
             return(nullptr);
         }
 
-        uint8 *sp=(uint8 *)src;
+        const u8char *sp=src;
 
         dst_size=0;
 
-        while(*sp&&(sp-(uint8 *)src)<src_size)
+        while(*sp&&(sp-src)<src_size)
         {
             if(*sp<0x80)                        //    U-00000000 - U-0000007F: 0xxxxxxx
             {

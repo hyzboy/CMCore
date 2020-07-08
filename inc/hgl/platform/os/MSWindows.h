@@ -11,7 +11,6 @@
 //--------------------------------------------------------------------------------------------------
 using u32char           =char32_t;
 using u16char           =wchar_t;
-using u8char            =char8_t;
 using os_char           =wchar_t;
 
 #define to_oschar       to_u16
