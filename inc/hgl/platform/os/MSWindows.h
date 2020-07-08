@@ -17,6 +17,7 @@ using os_char           =wchar_t;
 #define OS_TEXT(str)    L##str
 #define U8_TEXT(str)    u8##str
 #define U16_TEXT(str)   L##str
+#define U32_TEXT(str)   U##str
 
 #define os_main         wmain
 #define os_out          std::wcout

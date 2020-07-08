@@ -10,6 +10,7 @@ using os_char           =char;
 #define OS_TEXT(str)    u8##str
 #define U8_TEXT(str)    u8##str
 #define U16_TEXT(str)   u##str
+#define U32_TEXT(str)   U##str
 
 #define os_main         main
 #define os_out          std::cout
