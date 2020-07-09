@@ -168,10 +168,10 @@ namespace hgl
 
 
 
-        bool DataOutputStream::WriteUTF8TinyString    (const u8char *str,uint length){return WriteUTF8StringWithLength<uint8>(str,          length);}                               ///<按utf16-le格式写入字符串(前置1字节字符串长度,再写入字符阵列)
-        bool DataOutputStream::WriteUTF8TinyString    (const u8char *str            ){return WriteUTF8StringWithLength<uint8>(str,          hgl::strlen(str));}                     ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
-        bool DataOutputStream::WriteUTF8TinyString    (const UTF8String &str      ){return WriteUTF8StringWithLength<uint8>(str.c_str(),  str.Length());}                         ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
-        bool DataOutputStream::WriteUTF8TinyString    (const UTF16String &str     ){return WriteUTF8StringWithLength<uint8>(str);}                                                ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
+        bool DataOutputStream::WriteUTF8TinyString    (const u8char *str,uint length){return WriteUTF8StringWithLength<uint8>(str,          length);}                             ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
+        bool DataOutputStream::WriteUTF8TinyString    (const u8char *str            ){return WriteUTF8StringWithLength<uint8>(str,          hgl::strlen(str));}                   ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
+        bool DataOutputStream::WriteUTF8TinyString    (const UTF8String &str        ){return WriteUTF8StringWithLength<uint8>(str.c_str(),  str.Length());}                       ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
+        bool DataOutputStream::WriteUTF8TinyString    (const UTF16String &str       ){return WriteUTF8StringWithLength<uint8>(str);}                                              ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
 
         bool DataOutputStream::WriteUTF16LETinyString (const u16char *str,uint len){return WriteUTF16StringWithLength<HGL_LITTLE_ENDIAN,  uint8>(str,         len);}              ///<按utf16-le格式写入字符串(前置1字节字符串长度,再写入字符阵列)
         bool DataOutputStream::WriteUTF16BETinyString (const u16char *str,uint len){return WriteUTF16StringWithLength<HGL_BIG_ENDIAN,     uint8>(str,         len);}              ///<按utf16-be格式写入字符串(前置1字节字符串长度,再写入字符阵列)
