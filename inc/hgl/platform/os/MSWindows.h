@@ -11,13 +11,13 @@
 //--------------------------------------------------------------------------------------------------
 using u32char           =char32_t;
 using u16char           =wchar_t;
-using u8char            =char8_t;
 using os_char           =wchar_t;
 
 #define to_oschar       to_u16
 #define OS_TEXT(str)    L##str
 #define U8_TEXT(str)    u8##str
 #define U16_TEXT(str)   L##str
+#define U32_TEXT(str)   U##str
 
 #define os_main         wmain
 #define os_out          std::wcout
