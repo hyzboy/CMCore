@@ -4,13 +4,15 @@
 #define HGL_COMPILER_NAME            OS_TEXT("Microsoft C/C++")
 #define HGL_LIB_COMPILER_NAME        OS_TEXT("MSC")
 
-#if _MSC_VER < 1910                            //Visual C++ 2017
+#if _MSC_VER < 1900                            //Visual C++ 2017
     #error Please upgrade your compiler or development tools to Microsoft C/C++ 19.1 (Visual C++ 2017) or later.
 #else
     #if _MSC_VER >= 1920
         #define HGL_LIB_COMPILER_VERSION    OS_TEXT("19.2")      //Visual C++ 2019
     #elif _MSC_VER >= 1910
         #define HGL_LIB_COMPILER_VERSION    OS_TEXT("19.1")      //Visual C++ 2017
+    #elif _MSC_VER >= 1900
+        #define HGL_LIB_COMPILER_VERSION    OS_TEXT("19.0")      //Visual C++ 2015
     #else
         #define HGL_LIB_COMPILER_VERSION    OS_TEXT("Unknow")
     #endif//_MSC_VER

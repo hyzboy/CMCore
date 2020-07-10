@@ -1,6 +1,10 @@
 ﻿#ifndef HGL_LIST_CPP
 #define HGL_LIST_CPP
 
+#ifdef _WIN32
+    #include <time.h>
+#endif
+
 //--------------------------------------------------------------------------------------------------
 // 代码中的部分memcpy可替换为memmove,但这样会引起CodeGuard/Valgrind之类的内存调试器报错
 //--------------------------------------------------------------------------------------------------
@@ -41,8 +45,11 @@ namespace hgl
     {
         if(!items||count<=0)
             return(false);
-
+#ifdef _WIN32
+        memcpy(&ti,items+(rand()%count),sizeof(T));
+#else
         memcpy(&ti,items+(lrand48()%count),sizeof(T));
+#endif
         return(true);
     }
 

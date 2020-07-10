@@ -51,33 +51,36 @@ using os_char           =wchar_t;
 #define HGL_GL_WINDOW_INCLUDE_FILE      <hgl/platform/WinOpenGL.h>                      //指定OpenGL窗口引用头文件
 #define HGL_GL_WINDOW_CLASS             WinGLWindow                                     //指定OpenGL窗口类名称
 //--------------------------------------------------------------------------------------------------
-#if HGL_COMPILER == HGL_COMPILER_Microsoft
-    #define hgl_malloc(size)        _aligned_malloc(size,HGL_MEM_ALIGN)
-    #define hgl_realloc(ptr,size)   _aligned_realloc(ptr,size,HGL_MEM_ALIGN)
-    #define hgl_free                _aligned_free
 
-    template<typename T>
-    inline T *hgl_aligned_malloc(size_t n)
-    {
-        return (T *)_aligned_malloc(n*sizeof(T),alignof(T));
-    }
-#else
-    #define hgl_malloc(size)        memalign(HGL_MEM_ALIGN,size)
-    #define hgl_realloc(ptr,size)   realloc(ptr,size)
-    #define hgl_free                free
-#endif//
+// == 目前MINGW和MSVC在以下接口上应该能保持一致了
+
+#define hgl_malloc(size)        _aligned_malloc(size,HGL_MEM_ALIGN)
+#define hgl_realloc(ptr,size)   _aligned_realloc(ptr,size,HGL_MEM_ALIGN)
+#define hgl_free                _aligned_free
+
+template<typename T>
+inline T *hgl_aligned_malloc(size_t n)
+{
+    return (T *)_aligned_malloc(n*sizeof(T),alignof(T));
+}
 
 #define OS_EXTERNAL_H           <winbase.h>
 using ExternalModulePointer     =HMODULE;
 #define pi_get                  GetProcAddress
 #define pi_close                FreeLibrary
 
-#define struct_stat64           struct _stat64
+#ifdef HGL_64_BITS
+    #define struct_stat64       struct _stat64
+    #define hgl_lstat64         _wstat64
+#endif
+#if HGL_32_BITS
+    #define struct_stat64       struct _stati64
+    #define hgl_lstat64         _wstat32i64
+#endif
 //#define hgl_stat64                _stat64
 #define hgl_lseek64             _lseeki64
 #define hgl_tell64(fp)          _telli64(fp)
 #define hgl_fstat64             _fstati64
-#define hgl_lstat64             _wstat64
 #define hgl_read64              _read
 #define hgl_write64             _write
 
