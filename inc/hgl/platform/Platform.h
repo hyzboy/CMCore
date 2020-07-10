@@ -37,6 +37,7 @@
 #define HGL_COMPILER_Microsoft      HGL_MERGE32('M','S','C',' ')
 #define HGL_COMPILER_GNU            HGL_MERGE32('G','N','U',' ')
 #define HGL_COMPILER_MinGW32        HGL_MERGE32('M','G','3','2')
+#define HGL_COMPILER_MinGW64        HGL_MERGE32('M','G','6','4')
 #define HGL_COMPILER_Intel          HGL_MERGE32('I','n','t','e')
 #define HGL_COMPILER_IBM            HGL_MERGE32('I','B','M',' ')
 #define HGL_COMPILER_DigitalMars    HGL_MERGE32('D','i','M','a')
@@ -191,6 +192,8 @@
     #define HGL_COMPILER    HGL_COMPILER_PGI
 #elif defined(__MINGW32__)
     #define HGL_COMPILER    HGL_COMPILER_MinGW32
+#elif defined(__MINGW64__)
+    #define HGL_COMPILER    HGL_COMPILER_MinGW64
 #elif defined(__GNUC__)
     #define HGL_COMPILER    HGL_COMPILER_GNU
 #else
@@ -221,7 +224,9 @@
         #include<hgl/platform/compiler/Intel.h>
     #elif HGL_COMPILER == HGL_COMPILER_IBM
         #include<hgl/platform/compiler/IBM.h>
-    #elif HGL_COMPILER == HGL_COMPILER_MINGW32
+    #elif HGL_COMPILER == HGL_COMPILER_MinGW32
+        #include<hgl/platform/compiler/GNU.h>
+    #elif HGL_COMPILER == HGL_COMPILER_MinGW64
         #include<hgl/platform/compiler/GNU.h>
     #elif HGL_COMPILER == HGL_COMPILER_GNU
         #include<hgl/platform/compiler/GNU.h>

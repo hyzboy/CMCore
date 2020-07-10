@@ -34,11 +34,6 @@ namespace hgl
             std::cout<<(char *)str.c_str()<<std::endl;
         }
 
-        inline  void Log(LogLevel ll,const AnsiString &str)
-        {
-            std::cout<<str.c_str()<<std::endl;
-        }
-
         inline  void DebugLog(LogLevel ll,const UTF16String &str,const char *filename,int line,const char *funcname)
         {
             Log(ll,str+U16_TEXT(">>LogFrom(\"")+to_u16((u8char *)filename)+U16_TEXT("\", ")+UTF16String::valueOf(line)+U16_TEXT(" line,func:\"")+to_u16((u8char *)funcname)+U16_TEXT("\")"));

@@ -72,6 +72,13 @@
 
 #endif//__GNUC__
 
+#ifdef char8_t
+using u8char    =char8_t;
+#else
+using u8char    =char;
+#endif
+
+
 #define HGL_THREAD_LOCAL_STORAGE        __thread                                //线程本地储存
 //--------------------------------------------------------------------------------------------------
 #define HGL_LIB_FRONT   HGL_LIB_OS "_" HGL_LIB_COMPILER_NAME "_" HGL_LIB_DEBUG_NAME "_"

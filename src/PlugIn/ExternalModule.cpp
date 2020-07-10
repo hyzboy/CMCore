@@ -32,16 +32,16 @@ namespace hgl
     {
         if(fp)
         {
-            void *func=pi_get(fp,name);
+            void *func=(void*)pi_get(fp,name);
 
             if(!func)
-                LOG_ERROR("don't find "+AnsiString(name));
+                LOG_ERROR("don't find "+UTF8String(name));
 
             return(func);
         }
         else
         {
-            LOG_ERROR("Get func <"+AnsiString(name)+"> error: no load module!");
+            LOG_ERROR("Get func <"+UTF8String(name)+"> error: no load module!");
 
             return(nullptr);
         }
@@ -51,7 +51,7 @@ namespace hgl
     {
         if(fp)
         {
-            void *func=pi_get(fp,name);
+            void *func=(void*)pi_get(fp,name);
 
             if(func)return(func);
 
@@ -60,12 +60,12 @@ namespace hgl
             _name[0]='_';
             strcpy(_name+1,HGL_MAX_PATH-1,name);
 
-            func=pi_get(fp,_name);
+            func=(void*)pi_get(fp,_name);
 
             if(func)return(func);
         }
 
-           return(nullptr);
+        return(nullptr);
     }
 
     /**
