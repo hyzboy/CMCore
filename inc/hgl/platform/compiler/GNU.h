@@ -72,10 +72,11 @@
 
 #endif//__GNUC__
 
-#ifdef char8_t
-using u8char    =char8_t;
+// 假设 GCC 从 11 开始正式支持 char8_t( 这个我手头没有 11 ，不确定 )
+#if __GNUC__ >= 11
+    using u8char = char8_t;
 #else
-using u8char    =char;
+    using u8char = char;
 #endif
 
 
