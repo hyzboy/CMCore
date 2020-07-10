@@ -46,7 +46,6 @@ namespace hgl
         if(!items||count<=0)
             return(false);
 #ifdef _WIN32
-        srand( time(0) );
         memcpy(&ti,items+(rand()%count),sizeof(T));
 #else
         memcpy(&ti,items+(lrand48()%count),sizeof(T));
