@@ -34,11 +34,12 @@ namespace hgl
             std::cout<<(char *)str.c_str()<<std::endl;
         }
 
-        // 对于不支持C++20的编译器还得用宏处理一下
-        // inline  void Log(LogLevel ll,const AnsiString &str)
-        // {
-        //     std::cout<<str.c_str()<<std::endl;
-        // }
+        #ifdef HGL_SUPPORT_CHAR8_T
+        inline  void Log(LogLevel ll,const AnsiString &str)
+        {
+            std::cout<<str.c_str()<<std::endl;
+        }
+        #endif//HGL_SUPPORT_CHAR8_T
 
         inline  void DebugLog(LogLevel ll,const UTF16String &str,const char *filename,int line,const char *funcname)
         {

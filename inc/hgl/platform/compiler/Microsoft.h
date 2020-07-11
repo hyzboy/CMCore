@@ -21,9 +21,10 @@
 #define HGL_THREAD_LOCAL_STORAGE        __declspec(thread)                              //线程本地储存
 //--------------------------------------------------------------------------------------------------
 #if _MSVC_LANG>=201704L         //C++20
-using u8char    =char8_t;
+    #define HGL_SUPPORT_CHAR8_T
+    using u8char    =char8_t;
 #else
-using u8char    =char;
+    using u8char    =char;
 #endif
 
 #define HGL_FMT_I64            "%I64d"

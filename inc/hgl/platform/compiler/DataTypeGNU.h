@@ -17,5 +17,12 @@ namespace hgl
 
     using float32   =float;
     using float64   =double;
+
+#if defined(__cpp_char8_t)||defined(__cpp_lib_char8_t)
+    #define HGL_SUPPORT_CHAR8_T
+    using u8char = char8_t;
+#else
+    using u8char = char;
+#endif
 }//namespace hgl
 #endif//HGL_DATATYPE_GNU_INCLUDE
