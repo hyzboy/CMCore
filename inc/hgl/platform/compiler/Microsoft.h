@@ -20,13 +20,6 @@
 
 #define HGL_THREAD_LOCAL_STORAGE        __declspec(thread)                              //线程本地储存
 //--------------------------------------------------------------------------------------------------
-#if _MSVC_LANG>=201704L         //C++20
-    #define HGL_SUPPORT_CHAR8_T
-    using u8char    =char8_t;
-#else
-    using u8char    =char;
-#endif
-
 #define HGL_FMT_I64            "%I64d"
 #define HGL_FMT_U64            "%I64u"
 //参考文档最后查阅支持版本为VC2013，网址：http://msdn.microsoft.com/en-us/library/tcxf1dw6.aspx
