@@ -46,7 +46,7 @@ namespace hgl
      * 参见https://unicode.org/Public/emoji/12.0/emoji-data.txt
      */
     template<typename T>
-    bool isemoji(const T ch)
+    const bool isemoji(const T ch)
     {
         if(ch==0x23)return(true);           //#
         if(ch==0x2A)return(true);           //*
@@ -62,7 +62,7 @@ namespace hgl
      * 测试当前字符是否为小写字母
      */
     template<typename T>
-    bool islower(const T ch)
+    const bool islower(const T ch)
     {
         return(ch>='a'&&ch<='z');
     }
@@ -71,7 +71,7 @@ namespace hgl
      * 测试当前字符是否为大写字母
      */
     template<typename T>
-    bool isupper(const T ch)
+    const bool isupper(const T ch)
     {
         return(ch>='A'&&ch<='Z');
     }
@@ -80,7 +80,7 @@ namespace hgl
      * 测试当前字符是否为字母
      */
     template<typename T>
-    bool isalpha(const T ch)
+    const bool isalpha(const T ch)
     {
         return(islower(ch)||isupper(ch));
     }
@@ -89,7 +89,7 @@ namespace hgl
      * 测试当前字符是否为10进制数字
      */
     template<typename T>
-    bool isdigit(const T ch)
+    const bool isdigit(const T ch)
     {
         return(ch>='0'&&ch<='9');
     }
@@ -98,7 +98,7 @@ namespace hgl
      * 测试当前字符串是否为10进制数字以及小数点、正负符号、指数字符
      */
     template<typename T>
-    bool isfloat(const T ch)
+    const bool isfloat(const T ch)
     {
         return isdigit(ch)
         ||ch=='-'
@@ -109,7 +109,7 @@ namespace hgl
     }
 
     template<typename T>
-    bool isinteger(const T ch)
+    const bool isinteger(const T ch)
     {
         return isdigit(ch)
         ||ch=='-'
@@ -120,7 +120,7 @@ namespace hgl
      * 测试当前字符是否为16进制数用字符(0-9,A-F)
      */
     template<typename T>
-    bool isxdigit(const T ch)
+    const bool isxdigit(const T ch)
     {
         return((ch>='0'&&ch<='9')
         ||(ch>='a'&&ch<='f')
@@ -133,7 +133,7 @@ namespace hgl
      * @param length 字符串长度
      */
     template<typename T>
-    bool isxdigit(const T *str,int length)
+    const bool isxdigit(const T *str,int length)
     {
         if(!str||length<=0)
             return(false);
@@ -154,7 +154,7 @@ namespace hgl
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
     template<typename T>
-    bool isspace(const T ch)
+    const bool isspace(const T ch)
     {
         return(ch==0
              ||ch==' '      //半角空格
@@ -170,7 +170,7 @@ namespace hgl
      * 测试当前字符是否为字母或数字
      */
     template<typename T>
-    bool isalnum(const T ch)
+    const bool isalnum(const T ch)
     {
         return(isalpha(ch)||isdigit(ch));
     }
@@ -179,7 +179,7 @@ namespace hgl
      * 测试当前字符是否为代码可用字符(仅字母，数字，下划线，常用于文件名之类)
      */
     template<typename T>
-    bool iscodechar(const T ch)
+    const bool iscodechar(const T ch)
     {
         return(isalnum(ch)||ch=='_');
     }
@@ -188,7 +188,7 @@ namespace hgl
      * 测试当前字符是否为BASE64编码字符
      */
     template<typename T>
-    bool isbase64(const T c)
+    const bool isbase64(const T c)
     {
         return (c == 43 || // +
         (c >= 47 && c <= 57) || // /-9
@@ -200,7 +200,7 @@ namespace hgl
      * 如果当前字符为大写英文字符，则转换为小写
      */
     template<typename T>
-    T tolower(const T ch)
+    const T tolower(const T ch)
     {
         if(ch>='A'&&ch<='Z')
             return ch+('a'-'A');
@@ -212,7 +212,7 @@ namespace hgl
      * 如果当前字符为小写英文字符，则转换为大写
      */
     template<typename T>
-    T toupper(const T ch)
+    const T toupper(const T ch)
     {
         if(ch>='a'&&ch<='z')
             return ch+('A'-'a');
@@ -224,7 +224,7 @@ namespace hgl
      * 比较两个字符的大小(英文不区分大小写)
      */
     template<typename S,typename D>
-    int chricmp(S src,D dst)
+    const int chricmp(S src,D dst)
     {
         return tolower(src)-tolower(dst);
     }
@@ -235,7 +235,7 @@ namespace hgl
      * @return 字符串长度
      */
     template<typename T>
-    int strlen(const T *str)
+    const int strlen(const T *str)
     {
         if(str&&*str)
         {
@@ -257,7 +257,7 @@ namespace hgl
      * @return 字符串长度
      */
     template<typename T>
-    int strlen(const T *str,uint max_len)
+    const int strlen(const T *str,uint max_len)
     {
         if(str&&*str)
         {
@@ -284,7 +284,7 @@ namespace hgl
      * @return 字符串长度(<0表示出错)
      */
     template<typename T>
-    int strcpy(T *dst,int count,const T *src)
+    const int strcpy(T *dst,int count,const T *src)
     {
         if(!dst)return(-1);
 
@@ -329,7 +329,7 @@ namespace hgl
      * @return 字符串长度(<0表示出错)
      */
     template<typename T>
-    int strcpy(T *dst,int dst_count,const T *src,int count)
+    const int strcpy(T *dst,int dst_count,const T *src,int count)
     {
         if(!dst)return(-1);
 
@@ -524,7 +524,7 @@ namespace hgl
      * @return 字符串长度(<0表示出错)
      */
     template<typename T>
-    int strcat(T *dst,int max_count,const T *src,int count)
+    const int strcat(T *dst,int max_count,const T *src,int count)
     {
         if(!dst||!src||!(*src)||count<=0)return(-1);
 
@@ -800,7 +800,7 @@ namespace hgl
      * @return +1 src >  dst
      */
     template<typename S,typename D>
-    int strcmp(S *src,D *dst)
+    const int strcmp(S *src,D *dst)
     {
         if(!src)
         {
@@ -830,7 +830,7 @@ namespace hgl
      * @return +1 src >  dst
      */
     template<typename S,typename D>
-    int strcmp(S *src,int src_size,D *dst,int dst_size)
+    const int strcmp(S *src,int src_size,D *dst,int dst_size)
     {
         if(!src)
         {
@@ -880,7 +880,7 @@ namespace hgl
      * @return +1 src >  dst
      */
     template<typename S,typename D>
-    int strcmp(S *src,D *dst,int count)
+    const int strcmp(S *src,D *dst,int count)
     {
         if(count<=0)return(0);
 
@@ -913,7 +913,7 @@ namespace hgl
      * @return +1 src >  dst
      */
     template<typename S,typename D>
-    int stricmp(S *src,D *dst)
+    const int stricmp(S *src,D *dst)
     {
         if(!src)
         {
@@ -950,7 +950,7 @@ namespace hgl
      * @return +1 src >  dst
      */
     template<typename S,typename D>
-    int stricmp(S *src,int src_size,D *dst,int dst_size)
+    const int stricmp(S *src,int src_size,D *dst,int dst_size)
     {
         if(!src)
         {
@@ -1009,7 +1009,7 @@ namespace hgl
      * @return +1 src >  dst
      */
     template<typename S,typename D>
-    int stricmp(S *src,D *dst,int count)
+    const int stricmp(S *src,D *dst,int count)
     {
         if(!src)
         {
@@ -1043,7 +1043,7 @@ namespace hgl
      * 字符集专用比较函数,只比较字母与数字，无视各种符号，无视大小写
      */
     template<typename S,typename D>
-    int charset_cmp(S *src,D *dst)
+    const int charset_cmp(S *src,D *dst)
     {
         if(!src)
         {
@@ -1235,7 +1235,7 @@ namespace hgl
      * @return 替换的次数
      */
     template<typename T>
-    int replace(T *str,const T tch,const T sch)
+    const int replace(T *str,const T tch,const T sch)
     {
         if(!str)
             return(0);
@@ -1354,7 +1354,7 @@ namespace hgl
     * 复制一个字符串，并将字符串全部转换成小写
     */
     template<typename T>
-    uint lower_cpy(T *target,const T *source)
+    const uint lower_cpy(T *target,const T *source)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1379,7 +1379,7 @@ namespace hgl
     * 复制一个字符串，并将字符串全部转换成大写
     */
     template<typename T>
-    uint upper_cpy(T *target,const T *source)
+    const uint upper_cpy(T *target,const T *source)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1404,7 +1404,7 @@ namespace hgl
     * 复制一个字符串，并将字符串全部转换成小写
     */
     template<typename T>
-    uint lower_cpy(T *target,const T *source,int source_max)
+    const uint lower_cpy(T *target,const T *source,int source_max)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1431,7 +1431,7 @@ namespace hgl
     * 复制一个字符串，并将字符串全部转换成大写
     */
     template<typename T>
-    uint upper_cpy(T *target,const T *source,int source_max)
+    const uint upper_cpy(T *target,const T *source,int source_max)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1457,7 +1457,7 @@ namespace hgl
     * 复制一个字符串，将字符串全部转换成小写，同时清空字符串中的空格
     */
     template<typename T>
-    uint lower_clip_cpy(T *target,const T *source)
+    const uint lower_clip_cpy(T *target,const T *source)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1487,7 +1487,7 @@ namespace hgl
     * 复制一个字符串，并将字符串全部转换成大写，同时清空字符串中的空格
     */
     template<typename T>
-    uint upper_clip_cpy(T *target,const T *source)
+    const uint upper_clip_cpy(T *target,const T *source)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1516,7 +1516,7 @@ namespace hgl
     * 复制一个字符串，将字符串全部转换成小写，同时清空字符串中的空格
     */
     template<typename T>
-    uint lower_clip_cpy(T *target,const T *source,int source_max)
+    const uint lower_clip_cpy(T *target,const T *source,int source_max)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1547,7 +1547,7 @@ namespace hgl
     * 复制一个字符串，并将字符串全部转换成大写，同时清空字符串中的空格
     */
     template<typename T>
-    uint upper_clip_cpy(T *target,const T *source,int source_max)
+    const uint upper_clip_cpy(T *target,const T *source,int source_max)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1580,7 +1580,7 @@ namespace hgl
      * @return 出现次数
      */
     template<typename T>
-    int stat_char(T *str,T ch)
+    const int stat_char(T *str,T ch)
     {
         if(!str)return(0);
 
@@ -1601,7 +1601,7 @@ namespace hgl
      * 统计一个字符串的行数
      */
     template<typename T>
-    int stat_line(T *str)
+    const int stat_line(T *str)
     {
         if(!str)return(0);
 
@@ -1612,7 +1612,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    bool stoi(S *str,R &result)
+    const bool stoi(S *str,R &result)
     {
         if(!str)
         {
@@ -1647,7 +1647,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    bool stoi(S *str,int size,R &result)
+    const bool stoi(S *str,int size,R &result)
     {
         if(!str||size<=0)
         {
@@ -1687,7 +1687,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    bool stou(S *str,R &result)
+    const bool stou(S *str,R &result)
     {
         if(!str)
         {
@@ -1709,7 +1709,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    bool stou(S *str,int size,R &result)
+    const bool stou(S *str,int size,R &result)
     {
         if(!str||size<=0)
         {
@@ -1732,7 +1732,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    bool xtou(S *str,R &result)
+    const bool xtou(S *str,R &result)
     {
         if(!str)
         {
@@ -1762,7 +1762,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    bool xtou(S *str,int size,R &result)
+    const bool xtou(S *str,int size,R &result)
     {
         if(!str||size<=0)
         {
@@ -1793,7 +1793,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    bool stof(S *str,R &result)
+    const bool stof(S *str,R &result)
     {
         if(!str)
         {
@@ -1850,7 +1850,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    bool stof(S *str,int size,R &result)
+    const bool stof(S *str,int size,R &result)
     {
         if(!str||size<=0)
         {
@@ -1917,7 +1917,7 @@ namespace hgl
      * 转换带指数的字符串到数值变量(如"1.0123e-10")
      */
     template<typename R,typename S>
-    bool etof(S *str,R &result)
+    const bool etof(S *str,R &result)
     {
         double temp;
 
@@ -1957,7 +1957,7 @@ namespace hgl
      * @return 转换后的值
      */
     template<typename T>
-    bool stob(T *str,bool &value)
+    const bool stob(T *str,bool &value)
     {
         if(!str)
         {
@@ -1988,7 +1988,7 @@ namespace hgl
      * @return 转换后的字符串长度
      */
     template<typename T,typename I>
-    int itos_rl(T *str,int size,const I num)
+    const int itos_rl(T *str,int size,const I num)
     {
         if(!str||size<=0)return(-1);
 
@@ -2227,7 +2227,7 @@ namespace hgl
      * @return 是否转换成功
      */
     template<typename T,typename V>
-    bool int_to_size(T *str,int size,V value)
+    const bool int_to_size(T *str,int size,V value)
     {
         const T name[]={'K','M','G','T','P','E','Z','Y','B',0};
 
@@ -2262,7 +2262,7 @@ namespace hgl
     }
 
     template<typename T>
-    int find_str_array(int count,const T **str_array,const T *str)
+    const int find_str_array(int count,const T **str_array,const T *str)
     {
         for(int i=1;i<count;i++)
             if(stricmp<T>(str_array[i],str)==0)return(i);
@@ -2280,7 +2280,7 @@ namespace hgl
      * @return 解晰出来的数据数量
      */
     template<typename T,typename I,bool (*IS_FUNC)(const T &),bool (*STOV)(const T *str,I &)>
-    int parse_number_array(const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0)
+    const int parse_number_array(const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0)
     {
         if(!str||!result||max_count<=0)return(-1);
 
@@ -2337,10 +2337,10 @@ namespace hgl
         return(count);
     }
 
-    template<typename T,typename I> inline int parse_float_array(const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){return parse_number_array<T,I,hgl::isfloat,   hgl::etof>(str,result,max_count,end_char,end_pointer);}
-    template<typename T,typename I> inline int parse_int_array  (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){return parse_number_array<T,I,hgl::isinteger, hgl::stoi>(str,result,max_count,end_char,end_pointer);}
-    template<typename T,typename I> inline int parse_uint_array (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){return parse_number_array<T,I,hgl::isdigit,   hgl::stou>(str,result,max_count,end_char,end_pointer);}
-    template<typename T,typename I> inline int parse_xint_array (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){return parse_number_array<T,I,hgl::isxdigit,  hgl::xtou>(str,result,max_count,end_char,end_pointer);}
+    template<typename T,typename I> inline const int parse_float_array(const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){return parse_number_array<T,I,hgl::isfloat,   hgl::etof>(str,result,max_count,end_char,end_pointer);}
+    template<typename T,typename I> inline const int parse_int_array  (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){return parse_number_array<T,I,hgl::isinteger, hgl::stoi>(str,result,max_count,end_char,end_pointer);}
+    template<typename T,typename I> inline const int parse_uint_array (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){return parse_number_array<T,I,hgl::isdigit,   hgl::stou>(str,result,max_count,end_char,end_pointer);}
+    template<typename T,typename I> inline const int parse_xint_array (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){return parse_number_array<T,I,hgl::isxdigit,  hgl::xtou>(str,result,max_count,end_char,end_pointer);}
 
     /**
      * 解析数值阵列字符串到数组,如"1,2,3"或"1 2 3"
@@ -2351,7 +2351,7 @@ namespace hgl
      * @return -1 出错
      */
     template<typename T,typename I,typename SET,bool (*IS_FUNC)(const T &),bool (*STOV)(const T *str,I &)>
-    int parse_number_array(const T *str,const int str_len,SET &result_list)
+    const int parse_number_array(const T *str,const int str_len,SET &result_list)
     {
         if(!str||str_len<=0)return(-1);
 
@@ -2397,10 +2397,10 @@ namespace hgl
         return(count);
     }
 
-    template<typename T,typename I,typename SET> inline int parse_float_array   (const T *str,const int len,SET &result_list){return parse_number_array<T,I,SET,hgl::isfloat,   hgl::etof>(str,len,result_list);}
-    template<typename T,typename I,typename SET> inline int parse_int_array     (const T *str,const int len,SET &result_list){return parse_number_array<T,I,SET,hgl::isinteger, hgl::stoi>(str,len,result_list);}
-    template<typename T,typename I,typename SET> inline int parse_uint_array    (const T *str,const int len,SET &result_list){return parse_number_array<T,I,SET,hgl::isdigit,   hgl::stou>(str,len,result_list);}
-    template<typename T,typename I,typename SET> inline int parse_xint_array    (const T *str,const int len,SET &result_list){return parse_number_array<T,I,SET,hgl::isxdigit,  hgl::xtou>(str,len,result_list);}
+    template<typename T,typename I,typename SET> inline const int parse_float_array   (const T *str,const int len,SET &result_list){return parse_number_array<T,I,SET,hgl::isfloat,   hgl::etof>(str,len,result_list);}
+    template<typename T,typename I,typename SET> inline const int parse_int_array     (const T *str,const int len,SET &result_list){return parse_number_array<T,I,SET,hgl::isinteger, hgl::stoi>(str,len,result_list);}
+    template<typename T,typename I,typename SET> inline const int parse_uint_array    (const T *str,const int len,SET &result_list){return parse_number_array<T,I,SET,hgl::isdigit,   hgl::stou>(str,len,result_list);}
+    template<typename T,typename I,typename SET> inline const int parse_xint_array    (const T *str,const int len,SET &result_list){return parse_number_array<T,I,SET,hgl::isxdigit,  hgl::xtou>(str,len,result_list);}
 
     /**
      * 按指定分隔符拆分字符串为多个字符串
@@ -2412,7 +2412,7 @@ namespace hgl
      * @return -1 出错
      */
     template<typename T,typename S>
-    int split_string(const T *str,const int str_len,const T &sc,S &result_list)
+    const int split_string(const T *str,const int str_len,const T &sc,S &result_list)
     {
         if(!str||!(*str))return(-1);
         if(str_len<=0)return(-1);
@@ -2457,7 +2457,7 @@ namespace hgl
      * @param str 要查找的字节串
      * @return 返回查找出的序号,-1表示失败
      */
-    template<typename T> int string_to_enum(const T **list,const T *str)
+    template<typename T> const int string_to_enum(const T **list,const T *str)
     {
         if(!str||!list)return(-1);
 
@@ -2477,7 +2477,7 @@ namespace hgl
     /**
      * 检测字符串是否符合代码命名规则（仅可使用字母和数字、下划线，不能使用数字开头）
      */
-    template<typename T> bool check_codestr(const T *str)
+    template<typename T> const bool check_codestr(const T *str)
     {
         if(!str)return(false);
 
@@ -2499,7 +2499,7 @@ namespace hgl
     /**
      * 检测字符串是否包含不可程序使用字符
      */
-    template<typename T> bool check_error_char(const T *str)
+    template<typename T> const bool check_error_char(const T *str)
     {
         if(!str)return(false);
 
@@ -2553,7 +2553,7 @@ namespace hgl
      * @param num 进制
      * @return 解析出来的值
      */
-    inline int parse_dec_number_char(const int ch)
+    inline const int parse_dec_number_char(const int ch)
     {
         if(ch>='0'&&ch<='9')
             return ch-'0';
@@ -2567,7 +2567,7 @@ namespace hgl
      * @return 解析出来的值
      */
     template<uint NUM,typename T>
-    inline int parse_number_char(const T ch)
+    inline const int parse_number_char(const T ch)
     {
         if(ch>='0'&&ch<='9')
             return ch-'0';

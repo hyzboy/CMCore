@@ -203,7 +203,7 @@ namespace hgl
     {
         int wlen;
 
-        u16char *ws=u8_to_u16(str,strlen(str),wlen);
+        u16char *ws=u8_to_u16(str,hgl::strlen(str),wlen);
         
         return UTF16String::newOf(ws,wlen);
     }
