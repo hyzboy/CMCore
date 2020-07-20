@@ -117,7 +117,7 @@ namespace hgl
     {
     protected:
 
-        typedef _Smart<SD,T> SelfClass;
+        using SelfClass=_Smart<SD,T>;
 
         SD *sd;
 
@@ -203,24 +203,24 @@ namespace hgl
             }
         }
 
-                T *get()const{return sd?sd->data:0;}
-        virtual bool valid()const{return sd;}
-                int use_count()const{return sd?sd->count:-1;}
-                bool only()const{return sd?sd->count==1:true;}
+                T *     get         ()const{return sd?sd->data:0;}
+        virtual bool    valid       ()const{return sd;}
+                int     use_count   ()const{return sd?sd->count:-1;}
+                bool    only        ()const{return sd?sd->count==1:true;}
 
     public:
 
-        const T &operator *() const {return *(sd->data);}
-        const bool operator!() const{return sd?!(sd->data):true;}
+        const   T &     operator *  ()const{return *(sd->data);}
+        const   bool    operator !  ()const{return sd?!(sd->data):true;}
 
-        operator T *()const{return(sd?sd->data:0);}
-        T *operator ->()const{return(sd?sd->data:0);}
+                        operator T *()const{return(sd?sd->data:0);}
+                T *     operator -> ()const{return(sd?sd->data:0);}
 
-        bool operator == (const SelfClass & rp)const{return(get()==rp.get());   }
-        bool operator == (const T *         rp)const{return(get()==rp);         }
+                bool    operator == (const SelfClass & rp)const{return(get()==rp.get());   }
+                bool    operator == (const T *         rp)const{return(get()==rp);         }
 
-        bool operator != (const SelfClass & rp)const{return !(operator==(rp));  }
-        bool operator != (const T *         rp)const{return !(operator==(rp));  }
+                bool    operator != (const SelfClass & rp)const{return !(operator==(rp));  }
+                bool    operator != (const T *         rp)const{return !(operator==(rp));  }
     };//template <typename T> class _Smart
 
     template<typename T> class WeakPtr;
