@@ -452,5 +452,19 @@ namespace hgl
         return(false);
     }
 
+    /**
+     * 判断当前字符是否是标点符号
+     */
+     bool isPunctuation(const u32char ch)
+     {
+        CHECK_UNICODE_BLOCKS(general_punctuation)
+        CHECK_UNICODE_BLOCKS(supplemental_punctuation)
+        CHECK_UNICODE_BLOCKS(cjk_symbols_and_punctuation)
+        CHECK_UNICODE_BLOCKS(cuneiform_numbers_and_punctuation)
+        CHECK_UNICODE_BLOCKS(ideographic_symbols_and_punctuation)
+
+        return(false);
+    }
+
     #undef CHECK_UNICODE_BLOCKS
 }//namespace hgl
