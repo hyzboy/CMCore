@@ -11,6 +11,8 @@ namespace hgl
     #define NULL 0
     #endif//
 
+    constexpr u16char HGL_FULL_SPACE=U16_TEXT('　');      //全角空格
+
     template<typename T>
     inline T *zero_new(const int count)
     {
