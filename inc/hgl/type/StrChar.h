@@ -157,8 +157,8 @@ namespace hgl
     const bool isspace(const T ch)
     {
         return(ch==0
-             ||ch==' '      //半角空格
-             ||ch==L'　'    //全角空格
+             ||ch==' '              //半角空格
+             ||ch==HGL_FULL_SPACE   //全角空格
              ||ch=='\t'
              ||ch=='\r'
              ||ch=='\f'
