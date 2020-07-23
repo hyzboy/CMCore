@@ -462,6 +462,11 @@ namespace hgl
 
     public:
 
+        AutoDelete()
+        {
+            obj=nullptr;
+        }
+
         AutoDelete(T *o)
         {
             obj=o;
