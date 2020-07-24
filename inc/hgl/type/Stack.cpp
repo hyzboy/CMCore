@@ -11,7 +11,7 @@ namespace hgl
     template<typename T>
     Stack<T>::Stack(int m)
     {
-        count=0;
+        cur_count=0;
 
         if(m)
         {
@@ -22,38 +22,38 @@ namespace hgl
         else
             max_count=0;
 
-        mem_count=max_count;
+        alloc_count=max_count;
     }
 
     template<typename T>
     Stack<T>::~Stack()
     {
-        if(count||max_count)hgl_free(items);
+        if(cur_count||max_count)hgl_free(items);
     }
 
     /**
     * 修改堆栈的最大值
     */
     template<typename T>
-    void Stack<T>::SetMax(int m)
+    void Stack<T>::SetMaxCount(int m)
     {
         if(m<=0)return;
 
-        if(mem_count==0)
+        if(alloc_count==0)
         {
-            mem_count=power_to_2(m);
-            items=hgl_aligned_malloc<T>(mem_count);
+            alloc_count=power_to_2(m);
+            items=hgl_aligned_malloc<T>(alloc_count);
         }
         else
-        if(mem_count<m)
+        if(alloc_count<m)
         {
-            mem_count=power_to_2(m);
-            items=(T *)hgl_realloc(items,mem_count*sizeof(T));
+            alloc_count=power_to_2(m);
+            items=(T *)hgl_realloc(items,alloc_count*sizeof(T));
         }
 
         max_count=m;
 
-        if(count>=max_count)count=max_count-1;
+        if(cur_count>=max_count)cur_count=max_count-1;
     }
 
     template<typename T>
@@ -64,7 +64,7 @@ namespace hgl
         if(c>max_count)
             return(false);
 
-        count=c;
+        cur_count=c;
         return(true);
     }
 
@@ -75,21 +75,21 @@ namespace hgl
     void Stack<T>::Clear()
     {
         if(max_count==0)
-            if(count)
+            if(cur_count)
             {
                 hgl_free(items);
-                mem_count=0;
+                alloc_count=0;
             }
 
-        count=0;
+        cur_count=0;
     }
 
     template<typename T>
     bool Stack<T>::GetItem(int n,T &data)
     {
-        if(n<0||n>=count)
+        if(n<0||n>=cur_count)
         {
-            LOG_ERROR(OS_TEXT("从堆栈中按索引<") + OSString(n) + OS_TEXT(">取数据，超出正常范围<")+OSString(count) + OS_TEXT(">"));
+            LOG_ERROR(OS_TEXT("从堆栈中按索引<") + OSString(n) + OS_TEXT(">取数据，超出正常范围<")+OSString(cur_count) + OS_TEXT(">"));
 
             return(false);
         }
@@ -106,10 +106,10 @@ namespace hgl
     template<typename T>
     bool Stack<T>::Peek(T &t)
     {
-        if(count)
+        if(cur_count)
         {
-            memcpy(&t,items+(count-1),sizeof(T));
-//          t=items[count-1];
+            memcpy(&t,items+(cur_count-1),sizeof(T));
+//          t=items[cur_count-1];
             return(true);
         }
         else
@@ -124,22 +124,22 @@ namespace hgl
     template<typename T>
     bool Stack<T>::Pop(T &t)
     {
-        if(count)
+        if(cur_count)
         {
-//          t=items[--count];
-            count--;
-            memcpy(&t,items+count,sizeof(T));
+//          t=items[--cur_count];
+            cur_count--;
+            memcpy(&t,items+cur_count,sizeof(T));
 
             if(max_count==0)
             {
-                if(count==0)
+                if(cur_count==0)
                 {
                     hgl_free(items);
 
-                    mem_count=0;
+                    alloc_count=0;
                 }
                 //else
-                    //items=(T *)hgl_realloc(items,count*sizeof(T));
+                    //items=(T *)hgl_realloc(items,cur_count*sizeof(T));
             }
 
             return(true);
@@ -159,30 +159,30 @@ namespace hgl
     {
         if(max_count)
         {
-            if(count>=max_count)return(false);
+            if(cur_count>=max_count)return(false);
         }
         else
         {
-            if(count)
+            if(cur_count)
             {
-                if(count+1>mem_count)
+                if(cur_count+1>alloc_count)
                 {
-                    mem_count=power_to_2(count+1);
+                    alloc_count=power_to_2(cur_count+1);
 
-                    items=(T *)hgl_realloc(items,mem_count*sizeof(T));
+                    items=(T *)hgl_realloc(items,alloc_count*sizeof(T));
                 }
             }
             else
             {
                 items=hgl_aligned_malloc<T>(1);
 
-                mem_count=1;
+                alloc_count=1;
             }
         }
 
-//      items[count++]=data;
-        memcpy(items+count,&data,sizeof(T));
-        count++;
+//      items[cur_count++]=data;
+        memcpy(items+cur_count,&data,sizeof(T));
+        cur_count++;
 
         return(true);
     }
@@ -195,33 +195,33 @@ namespace hgl
     * @return false 放入数据失败
     */
     template<typename T>
-    bool Stack<T>::MultiPush(T *data,int data_count)
+    bool Stack<T>::Push(T *data,int data_count)
     {
         if(max_count)
         {
-            if(count>=max_count)return(false);
+            if(cur_count>=max_count)return(false);
         }
         else
         {
-            if(count)
+            if(cur_count)
             {
-                if(count+data_count>mem_count)
+                if(cur_count+data_count>alloc_count)
                 {
-                    mem_count=power_to_2(count+data_count);
+                    alloc_count=power_to_2(cur_count+data_count);
 
-                    items=(T *)hgl_realloc(items,mem_count*sizeof(T));
+                    items=(T *)hgl_realloc(items,alloc_count*sizeof(T));
                 }
             }
             else
             {
                 items=hgl_aligned_malloc<T>(data_count);
 
-                mem_count=data_count;
+                alloc_count=data_count;
             }
         }
 
-        memcpy(items+count,data,data_count*sizeof(T));
-        count+=data_count;
+        memcpy(items+cur_count,data,data_count*sizeof(T));
+        cur_count+=data_count;
 
         return(true);
     }
@@ -229,21 +229,21 @@ namespace hgl
     template<typename T>
     void Stack<T>::operator =(const Stack<T> &ori)
     {
-        if(ori.count==0)return;
+        if(ori.cur_count==0)return;
 
         Clear();
 
-        max_count=ori.count;
-        count=ori.count;
+        max_count=ori.cur_count;
+        cur_count=ori.cur_count;
 
         if(max_count==0)
-            mem_count=count;
+            alloc_count=cur_count;
         else
-            mem_count=max_count;
+            alloc_count=max_count;
 
-        items=hgl_aligned_malloc<T>(mem_count);
+        items=hgl_aligned_malloc<T>(alloc_count);
 
-        memcpy(items,ori.items,mem_count*sizeof(T));
+        memcpy(items,ori.items,alloc_count*sizeof(T));
     }
 }//namespace hgl
 
@@ -252,7 +252,7 @@ namespace hgl
     template<typename T>
     void StackObject<T>::Clear()
     {
-        for(int i=0;i<this->count;i++)
+        for(int i=0;i<this->cur_count;i++)
             delete this->items[i];
 
         Stack<T *>::Clear();

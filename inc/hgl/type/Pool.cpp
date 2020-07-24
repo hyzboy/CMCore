@@ -6,36 +6,58 @@
 namespace hgl
 {
     template<typename T>
-    void Pool<T>::PreMalloc(int num)
+    void Pool<T>::PreMalloc(int num,bool set_to_max_count)
     {
         if(num<=0)return;
 
         for(int i=0;i<num;i++)
             Inactive.Push(Create());
 
-        count+=num;
-        if(count>history_max)
-            history_max=count;
+        alloc_count+=num;
+        if(alloc_count>history_max)
+            history_max=alloc_count;
+
+        if(set_to_max_count)
+            max_count=alloc_count;
+    }
+    
+    template<typename T>
+    int Pool<T>::SetMaxCount(int mc)
+    {
+        if(mc<0)
+            return(mc);
+
+        if(mc==0)
+        {
+            max_count=0;
+            return 0;
+        }
     }
 
     template<typename T>
-    T Pool<T>::Acquire()
+    bool Pool<T>::Acquire(T &value)
     {
-        T result;
-
-        if(!Inactive.Pop(result))
+        if(!Inactive.Pop(value))
         {
+            if(max_count>0&&alloc_count>=max_count)
+                return(false);
+
             result=Create();
 
-            count++;
+            alloc_count++;
 
-            if(count>history_max)
-                history_max=count;
+            if(alloc_count>history_max)
+                history_max=alloc_count;
         }
 
-        Active.Add(result);
+        Active.Add(value);
+        return(true);
+    }
 
-        return(result);
+    template<typename T>
+    bool Pool<T>::Get(T &value)
+    {
+        return Inactive.Pop(value);
     }
 
     template<typename T>
@@ -45,10 +67,10 @@ namespace hgl
 
         if(!Inactive.Pop(result))
         {
-            count++;
+            alloc_count++;
 
-            if(count>history_max)
-                history_max=count;
+            if(alloc_count>history_max)
+                history_max=alloc_count;
         }
 
         Active.Add(result);
@@ -74,11 +96,11 @@ namespace hgl
     }
 
     template<typename T>
-    int Pool<T>::Release(T *vl,int count)
+    int Pool<T>::Release(T *vl,int alloc_count)
     {
         int total=0;
 
-        for(int i=0;i<count;i++)
+        for(int i=0;i<alloc_count;i++)
         {
             if(Release(*vl))
                 ++total;
@@ -92,53 +114,47 @@ namespace hgl
     template<typename T>
     int Pool<T>::ReleaseAll()
     {
-        int count=Active.GetCount();
-        T *p=Active.GetData();
+        int alloc_count=Active.GetCount();
 
-        for(int i=0;i<count;i++)
-            Inactive.Push(*p++);
+        Inactive.Push(Active.GetData(),alloc_count);
 
         Active.ClearData();
-        return(count);
+        return(alloc_count);
+    }
+
+    template<typename T>
+    void Pool<T>::Clear(T *dp,int dc)
+    {
+        for(int i=0;i<ic;i++)
+        {
+            Clear(*dp);
+            ++dp;
+        }
     }
 
     template<typename T>
     void Pool<T>::ClearInactive()
     {
-        T result;
+        T *p=Inactive.GetData();
+        int ic=Inactive.GetCount();
 
-        count-=Inactive.GetCount();
+        alloc_count-=ic;
 
-        while(Inactive.Pop(result))
-            Clear(result);
+        Clear(p,ic);
+
+        Inactive.ClearData();
     }
 
     template<typename T>
     void Pool<T>::ClearAll()
     {
-        {                   //不能直接调ClearInactive
-            T result;
+        Clear(Inactive.GetData(),Inactive.GetCount());
+        Inactive.ClearData();
 
-            count-=Inactive.GetCount();
+        Clear(Active.GetData(),Active.GetCount());
+        Active.ClearData();
 
-            while(Inactive.Pop(result))
-                Clear(result);
-        }
-
-        {
-            int n=Active.GetCount();
-            T *p=Active.GetData();
-
-            while(n--)
-            {
-                Clear(*p);
-                ++p;
-            }
-
-            Active.Clear();
-        }
-
-        count=0;
+        alloc_count=0;
     }
 }//namespace hgl
 #endif//HGL_POOL_CPP

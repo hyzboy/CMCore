@@ -10,7 +10,7 @@ namespace hgl
     template<typename T>
     Queue<T>::Queue(int m)
     {
-        count=0;
+        cur_count=0;
 
         if(m)
         {
@@ -20,30 +20,59 @@ namespace hgl
         }
         else max_count=0;
 
-        mem_count=max_count;
+        alloc_count=max_count;
     }
 
     template<typename T>
     Queue<T>::~Queue()
     {
-        if(count||max_count)hgl_free(items);
+        if(cur_count||max_count)hgl_free(items);
+    }
+    
+    template<typename T>
+    bool Queue<T>::AllocMemory(int count)
+    {
+        if(max_count)
+            if(count>max_count)return(false);
+
+        if(cur_count)
+        {
+            if(count>alloc_count)
+            {
+                alloc_count=power_to_2(count);
+
+                items=(T *)hgl_realloc(items,alloc_count*sizeof(T));
+            }
+        }
+        else
+        {
+            alloc_count=power_to_2(count);
+            
+            items=hgl_aligned_malloc<T>(alloc_count);
+        }
+
+        return(true);
     }
 
     /**
     * 修改队列的最大值
     */
     template<typename T>
-    void Queue<T>::SetMax(int m)
+    bool Queue<T>::SetMaxCount(int m)
     {
-        if(max_count||(!max_count&&count))
-            items=(T *)hgl_realloc(items,m*sizeof(T));
-        else
-            items=hgl_aligned_malloc<T>(m);
+        if(max_count)
+        {
+            if(max_count==m)return(true);
+        }
+        
+        if(cur_count)
+        {
+            if(cur_count>m)
+                return(false);
+        }
 
         max_count=m;
-        mem_count=m;
-
-        if(count>=max_count)count=max_count-1;
+        return(true);
     }
 
     /**
@@ -53,13 +82,13 @@ namespace hgl
     void Queue<T>::Clear()
     {
         if(max_count==0)
-            if(count)
+            if(cur_count)
             {
                 hgl_free(items);
-                mem_count=0;
+                alloc_count=0;
             }
 
-        count=0;
+        cur_count=0;
     }
 
     /**
@@ -68,7 +97,7 @@ namespace hgl
     template<typename T>
     void Queue<T>::ClearData()
     {
-        count=0;
+        cur_count=0;
     }
 
     /**
@@ -79,7 +108,7 @@ namespace hgl
     template<typename T>
     bool Queue<T>::Peek(T &t)
     {
-        if(count)
+        if(cur_count)
         {
 //          t=items[0];
             memcpy(&t,items,sizeof(T));
@@ -96,15 +125,15 @@ namespace hgl
     template<typename T>
     bool Queue<T>::Delete(int index)
     {
-        if(index<0||index>=count)
+        if(index<0||index>=cur_count)
             return(false);
 
-        count--;
+        cur_count--;
 
-        if(count)
+        if(cur_count)
         {
-            if(index<count)
-                memmove(items+index,items+index+1,(count-index)*sizeof(T));
+            if(index<cur_count)
+                memmove(items+index,items+index+1,(cur_count-index)*sizeof(T));
         }
 
         return(true);
@@ -118,25 +147,25 @@ namespace hgl
     template<typename T>
     bool Queue<T>::Pop(T &t)
     {
-        if(count)
+        if(cur_count)
         {
 //          t=items[0];
             memcpy(&t,items,sizeof(T));
 
-            count--;
+            cur_count--;
 
             if(max_count==0)
             {
-                if(count)
+                if(cur_count)
                 {
                     //memcpy(items,items+1,count*sizeof(T));
-                    memmove(items,items+1,count*sizeof(T));
+                    memmove(items,items+1,cur_count*sizeof(T));
 //                    items=(T *)hgl_realloc(items,count*sizeof(T));
                 }
             }
             else
             {
-                memcpy(items,items+1,count*sizeof(T));
+                memcpy(items,items+1,cur_count*sizeof(T));
             }
 
             return(true);
@@ -154,32 +183,29 @@ namespace hgl
     template<typename T>
     bool Queue<T>::Push(const T &data)
     {
-        if(max_count)
-        {
-            if(count>=max_count)return(false);
-        }
-        else
-        {
-            if(count)
-            {
-                if(count+1>mem_count)
-                {
-                    mem_count=power_to_2(count+1);
-
-                    items=(T *)hgl_realloc(items,mem_count*sizeof(T));
-                }
-            }
-            else
-            {
-                items=hgl_aligned_malloc<T>(1);
-
-                mem_count=1;
-            }
-        }
+        if(!AllocMemory(cur_count+1))
+            return(false);
 
 //      items[count++]=data;
-        memcpy(items+count,&data,sizeof(T));
-        count++;
+        memcpy(items+cur_count,&data,sizeof(T));
+        cur_count++;
+
+        return(true);
+    }
+
+    /**
+     * 向队列中压入一堆数据
+     * @param dp 要放入的数据指针
+     * @param dc 要放入的数据数量
+     */
+    template<typename T>
+    bool Queue<T>::Push(T *dp,const int dc)
+    {
+        if(!AllocMemory(cur_count+dc))
+            return(false);
+
+        memcpy(items+cur_count,dp,sizeof(T)*dc);
+        cur_count+=dc;
 
         return(true);
     }
@@ -187,11 +213,11 @@ namespace hgl
     template<typename T>
     int Queue<T>::Find(const T &data)
     {
-        if(count<=0)
+        if(cur_count<=0)
             return(-1);
 
         T *p=items;
-        for(int i=0;i<count;i++)
+        for(int i=0;i<cur_count;i++)
         {
             if(*p==data)
                 return(i);
@@ -205,21 +231,21 @@ namespace hgl
     template<typename T>
     void Queue<T>::operator =(const Queue<T> &ori)
     {
-        if(ori.count==0)return;
+        if(ori.cur_count==0)return;
 
         Clear();
 
-        max_count=ori.count;
-        count=ori.count;
+        max_count=ori.cur_count;
+        cur_count=ori.cur_count;
 
         if(max_count==0)
-            mem_count=count;
+            alloc_count=cur_count;
         else
-            mem_count=max_count;
+            alloc_count=max_count;
 
-        items=hgl_aligned_malloc<T>(mem_count);
+        items=hgl_aligned_malloc<T>(alloc_count);
 
-        memcpy(items,ori.items,mem_count*sizeof(T));
+        memcpy(items,ori.items,alloc_count*sizeof(T));
     }
 }
 
@@ -228,7 +254,7 @@ namespace hgl
     template<typename T>
     void QueueObject<T>::Clear()
     {
-        int n=Queue<T *>::count;
+        int n=Queue<T *>::cur_count;
 
         while(n--)
             delete Queue<T *>::items[n];
