@@ -58,6 +58,7 @@ namespace hgl
                 bool    IsActive(const T &data)const{return Active.IsExist(data);}
                 bool    IsInactive(const T &data)const{return Inactive.IsExist(data);}
 
+        virtual void    ClearActive();                                                              ///<清除所有活跃的
         virtual void    ClearInactive();                                                            ///<清除所有空闲的
         virtual void    ClearAll();                                                                 ///<清除所有的
     };//template<typename T> class Pool

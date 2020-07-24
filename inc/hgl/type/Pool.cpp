@@ -140,6 +140,17 @@ namespace hgl
     }
 
     template<typename T>
+    void Pool<T>::ClearActive()
+    {
+        T *p=Active.GetData();
+        int ac=Active.GetCount();
+
+        Inactive.Push(p,ac);
+
+        Active.ClearData();
+    }
+
+    template<typename T>
     void Pool<T>::ClearInactive()
     {
         T *p=Inactive.GetData();
