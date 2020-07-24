@@ -41,6 +41,7 @@ namespace hgl
         bool Push       (T *,int);                                                                  ///<压入一批数据
 
          int Find       (const T &);                                                                ///<查找队列中这个数据的编号
+        bool IsExist    (const T &data)const{return this->Find(data)!=-1;}                          ///<确认是否有这个数据
         bool Delete     (int);                                                                      ///<删除队列中指定编号的数据
 
         void Clear      ();                                                                         ///<清除所有数据
