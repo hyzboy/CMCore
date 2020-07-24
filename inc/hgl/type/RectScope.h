@@ -9,7 +9,7 @@ namespace hgl
     */
     template<typename T> class RectScope2                                                           ///矩形范围类
     {
-    protected:
+    public:
 
         T Left;                                                                                     ///<矩形左边所在的坐标
         T Top;                                                                                      ///<矩形上边所在的坐标
@@ -55,6 +55,18 @@ namespace hgl
         }
 
         void Set(T,T,T,T);
+
+        void SetPosition(T l,T t)
+        {
+            Left=l;
+            Top=t;
+        }
+
+        void SetSize(T w,T h)
+        {
+            Width=w;
+            Height=h;
+        }
 
         bool PointIn(T,T)const;
 
@@ -136,6 +148,15 @@ namespace hgl
     typedef RectScope2<uint>    RectScope2ui;
     typedef RectScope2<short>   RectScope2s;
     typedef RectScope2<ushort>  RectScope2us;
+
+    template<typename T>
+    inline void UVFloatFromPixel(RectScope2<T> &target,const RectScope2<T> &source,const double width,const double height)
+    {
+        target.Left     =double(source.Left)     /width;
+        target.Top      =double(source.Top)      /height;
+        target.Width    =double(source.Width)    /width;
+        target.Height   =double(source.Height)   /height;
+    }
 }//namespace hgl
 #include<hgl/type/RectScope.cpp>
 #endif//HGL_RECTSCOPE_INCLUDE
