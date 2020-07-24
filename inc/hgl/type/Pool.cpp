@@ -32,6 +32,9 @@ namespace hgl
             max_count=0;
             return 0;
         }
+
+        max_count=mc;
+        return mc;
     }
 
     template<typename T>
@@ -42,7 +45,7 @@ namespace hgl
             if(max_count>0&&alloc_count>=max_count)
                 return(false);
 
-            result=Create();
+            value=Create();
 
             alloc_count++;
 
@@ -57,7 +60,11 @@ namespace hgl
     template<typename T>
     bool Pool<T>::Get(T &value)
     {
-        return Inactive.Pop(value);
+        if(!Inactive.Pop(value))
+            return(false);
+
+        Active.Add(value);
+        return(true);
     }
 
     template<typename T>
@@ -125,7 +132,7 @@ namespace hgl
     template<typename T>
     void Pool<T>::Clear(T *dp,int dc)
     {
-        for(int i=0;i<ic;i++)
+        for(int i=0;i<dc;i++)
         {
             Clear(*dp);
             ++dp;

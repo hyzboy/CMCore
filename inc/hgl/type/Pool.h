@@ -36,6 +36,9 @@ namespace hgl
         int GetInactiveCount()  const{return Inactive.GetCount();}                                  ///<取得非活动数据数量
         int GetHistoryMaxCount()const{return history_max;}                                          ///<取得历史性最大数据数量
 
+        T *GetActiveData    ()const{return Active.GetData();}                                       ///<取得所有活跃数据
+        T *GetInactiveData  ()const{return Inactive.GetData();}                                     ///<取得所有非活跃数据
+
     public:
 
         Pool(){alloc_count=0;history_max=0;max_count=0;}
@@ -51,6 +54,9 @@ namespace hgl
         virtual bool    Release(T);                                                                 ///<释放一个数据
         virtual int     Release(T *,int);                                                           ///<释放一批数据
         virtual int     ReleaseAll();                                                               ///<释放所有数据
+
+                bool    IsActive(const T &data)const{return Active.IsExist(data);}
+                bool    IsInactive(const T &data)const{return Inactive.IsExist(data);}
 
         virtual void    ClearInactive();                                                            ///<清除所有空闲的
         virtual void    ClearAll();                                                                 ///<清除所有的
