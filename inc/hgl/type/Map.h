@@ -13,11 +13,14 @@ namespace hgl
     template<typename K,typename V,typename DataPair> class _Map
     {
     protected:
+    
+        using ThisClass=_Map<K,V,DataPair>;
 
-        ObjectPool<DataPair> data_pool;
-        List<DataPair *> data_list;
+        using DataPairPool=ObjectPool<DataPair>;
+        using DataPairList=List<DataPair *>;
 
-        using this_calss=_Map<K,V,DataPair>;
+        DataPairPool data_pool;
+        DataPairList data_list;
 
     public: //方法
 
@@ -47,8 +50,8 @@ namespace hgl
         virtual void    Clear();                                                                    ///<清除所有数据
         virtual void    ClearData();                                                                ///<清除所有数据，但不释放内存
 
-        List<DataPair *> &  GetList(){return data_list;}                                            ///<取得线性列表
-        DataPair **         GetDataList()const{return data_list.GetData();}                         ///<取得纯数据线性列表
+        DataPairList &  GetList(){return data_list;}                                                ///<取得线性列表
+        DataPair **     GetDataList()const{return data_list.GetData();}                             ///<取得纯数据线性列表
 
                 template<typename IT>
                 int     GetKey(IT &il_list)                                                         ///<取得所有索引合集
@@ -95,7 +98,7 @@ namespace hgl
 
                 bool    SetValueBySerial(int,V &);                                                  ///<根据序号设置数据
 
-                void    operator=(const _Map<K,V,DataPair> &);                                      ///<操作符重载，复制一个列表
+                void    operator=(const ThisClass &);                                              ///<操作符重载，复制一个列表
 
                 void    Enum(void (*enum_func)(const K &,V));                                       ///<枚举所有数据项
                 void    EnumKey(void (*enum_func)(const K &));                                      ///<枚举所有索引

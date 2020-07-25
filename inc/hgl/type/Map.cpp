@@ -469,7 +469,7 @@ namespace hgl
     }
 
     template<typename K,typename V,typename DataPair>
-    void _Map<K,V,DataPair>::operator=(const _Map<K,V,DataPair> &ftd)
+    void _Map<K,V,DataPair>::operator=(const ThisClass &ftd)
     {
         Clear();
 
