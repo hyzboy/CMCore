@@ -36,8 +36,8 @@ namespace hgl
         int GetInactiveCount()  const{return Inactive.GetCount();}                                  ///<取得非活动数据数量
         int GetHistoryMaxCount()const{return history_max;}                                          ///<取得历史性最大数据数量
 
-        T *GetActiveData    ()const{return Active.GetData();}                                       ///<取得所有活跃数据
-        T *GetInactiveData  ()const{return Inactive.GetData();}                                     ///<取得所有非活跃数据
+        T * GetActiveData()     const{return Active.GetData();}                                     ///<取得所有活跃数据
+        T * GetInactiveData()   const{return Inactive.GetData();}                                   ///<取得所有非活跃数据
 
     public:
 
