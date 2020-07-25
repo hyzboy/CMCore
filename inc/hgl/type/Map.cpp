@@ -8,8 +8,8 @@ namespace hgl
     * @param flag 数据标识
     * @return 数据所在索引，-1表示不存在
     */
-    template<typename F,typename T,typename DataPair>
-    int _Map<F,T,DataPair>::Find(const F &flag)const
+    template<typename K,typename V,typename DataPair>
+    int _Map<K,V,DataPair>::Find(const K &flag)const
     {
         int left=0,right=data_list.GetCount()-1;                //使用left,right而不使用min,max是为了让代码能够更好的阅读。
         int mid;
@@ -41,8 +41,8 @@ namespace hgl
         return(-1);
     }
 
-    template<typename F,typename T,typename DataPair>
-    bool _Map<F,T,DataPair>::FindPos(const F &flag,int &pos)const
+    template<typename K,typename V,typename DataPair>
+    bool _Map<K,V,DataPair>::FindPos(const K &flag,int &pos)const
     {
         int left=0,right=data_list.GetCount()-1;
         int mid;
@@ -124,8 +124,8 @@ namespace hgl
         return(false);
     }
 
-    template<typename F,typename T,typename DataPair>
-    int _Map<F,T,DataPair>::FindByValue(const T &data)const
+    template<typename K,typename V,typename DataPair>
+    int _Map<K,V,DataPair>::FindByValue(const V &data)const
     {
         const int count=data_list.GetCount();
 
@@ -148,51 +148,33 @@ namespace hgl
     * @param data 数据
     * @return 新创建好的数据结构
     */
-    template<typename F,typename T,typename DataPair>
-    DataPair *_Map<F,T,DataPair>::Add(const F &flag,const T &data)
+    template<typename K,typename V,typename DataPair>
+    DataPair *_Map<K,V,DataPair>::Add(const K &flag,const V &data)
     {
-        DataPair *ds=data_pool.Acquire();
+        DataPair *dp;
+        
+        if(!data_pool.Acquire(dp))
+            return(nullptr);
 
-        ds->left=flag;
-        ds->right=data;
+        dp->left=flag;
+        dp->right=data;
 
         int pos;
 
         if(FindPos(flag,pos))
             return(nullptr);
 
-        data_list.Insert(pos,ds);
+        data_list.Insert(pos,dp);
 
-        return(ds);
-    }
-
-    /**
-    * 添加一个数据
-    * @param flag 数据标识
-    * @return 创建好的数据
-    */
-    template<typename F,typename T,typename DataPair>
-    T &_Map<F,T,DataPair>::Add(const F &flag)
-    {
-        DataPair *ds=data_pool.Acquire();
-
-        ds->left=flag;
-
-        int pos;
-
-        FindPos(flag,pos);
-
-        data_list.Insert(pos,ds);
-
-        return ds->right;
+        return(dp);
     }
 
     /**
     * 添加一个数据
     * @param obj 数据
     */
-    template<typename F,typename T,typename DataPair>
-    void _Map<F,T,DataPair>::Add(DataPair *obj)
+    template<typename K,typename V,typename DataPair>
+    void _Map<K,V,DataPair>::Add(DataPair *obj)
     {
         data_list.Insert(FindPos(obj->left),obj);
     }
@@ -203,8 +185,8 @@ namespace hgl
     * @param data 数据存放处
     * @return 是否取得成功
     */
-    template<typename F,typename T,typename DataPair>
-    bool _Map<F,T,DataPair>::Get(const F &flag,T &data) const
+    template<typename K,typename V,typename DataPair>
+    bool _Map<K,V,DataPair>::Get(const K &flag,V &data) const
     {
         int index=Find(flag);
 
@@ -218,8 +200,8 @@ namespace hgl
         return(true);
     }
 
-    template<typename F,typename T,typename DataPair>
-    bool _Map<F,T,DataPair>::Check(const F &key,const T &value) const
+    template<typename K,typename V,typename DataPair>
+    bool _Map<K,V,DataPair>::Check(const K &key,const V &value) const
     {
         int index=Find(key);
 
@@ -238,8 +220,8 @@ namespace hgl
     * @param t 数据存放处
     * @return 是否取得成功
     */
-    template<typename F,typename T,typename DataPair>
-    bool _Map<F,T,DataPair>::GetBySerial(int index,F &f,T &t) const
+    template<typename K,typename V,typename DataPair>
+    bool _Map<K,V,DataPair>::GetBySerial(int index,K &f,V &t) const
     {
         if(index<0||index>=data_list.GetCount())return(false);
 
@@ -257,8 +239,8 @@ namespace hgl
     * @param f 数据索引存放处
     * @return 是否取得成功
     */
-    template<typename F,typename T,typename DataPair>
-    bool _Map<F,T,DataPair>::GetKey(int index,F &f)
+    template<typename K,typename V,typename DataPair>
+    bool _Map<K,V,DataPair>::GetKey(int index,K &f)
     {
         if(index<0||index>=data_list.GetCount())return(false);
 
@@ -275,8 +257,8 @@ namespace hgl
     * @param t 数据存放处
     * @return 是否取得成功
     */
-    template<typename F,typename T,typename DataPair>
-    bool _Map<F,T,DataPair>::GetValue(int index,T &t)
+    template<typename K,typename V,typename DataPair>
+    bool _Map<K,V,DataPair>::GetValue(int index,V &t)
     {
         if(index<0||index>=data_list.GetCount())return(false);
 
@@ -294,8 +276,8 @@ namespace hgl
      * @param index 数据序号
      * @param t 数据
      */
-    template<typename F,typename T,typename DataPair>
-    bool _Map<F,T,DataPair>::SetValueBySerial(int index,T &t)
+    template<typename K,typename V,typename DataPair>
+    bool _Map<K,V,DataPair>::SetValueBySerial(int index,V &t)
     {
         if(index<0||index>=data_list.GetCount())return(false);
 
@@ -310,8 +292,8 @@ namespace hgl
     * @param data 数据存放位处
     * @return 是否成功
     */
-    template<typename F,typename T,typename DataPair>
-    bool _Map<F,T,DataPair>::Delete(const F &flag,T &data)
+    template<typename K,typename V,typename DataPair>
+    bool _Map<K,V,DataPair>::Delete(const K &flag,V &data)
     {
         int index=Find(flag);
 
@@ -333,8 +315,8 @@ namespace hgl
     * @param flag 索引
     * @return 是否成功
     */
-    template<typename F,typename T,typename DataPair>
-    bool _Map<F,T,DataPair>::DeleteByKey(const F &flag)
+    template<typename K,typename V,typename DataPair>
+    bool _Map<K,V,DataPair>::DeleteByKey(const K &flag)
     {
         return DeleteBySerial(Find(flag));
     }
@@ -345,8 +327,8 @@ namespace hgl
     * @param count 索引数量
     * @return 是否成功
     */
-    template<typename F,typename T,typename DataPair>
-    int _Map<F,T,DataPair>::DeleteByKey(const F *fp,const int count)
+    template<typename K,typename V,typename DataPair>
+    int _Map<K,V,DataPair>::DeleteByKey(const K *fp,const int count)
     {
         if(!fp||count<=0)return(0);
 
@@ -369,8 +351,8 @@ namespace hgl
     * @param data 数据
     * @return 是否成功
     */
-    template<typename F,typename T,typename DataPair>
-    bool _Map<F,T,DataPair>::DeleteByValue(const T &data)
+    template<typename K,typename V,typename DataPair>
+    bool _Map<K,V,DataPair>::DeleteByValue(const V &data)
     {
         return DeleteBySerial(FindByValue(data));
     }
@@ -380,8 +362,8 @@ namespace hgl
     * @param index 序号
     * @return 是否成功
     */
-    template<typename F,typename T,typename DataPair>
-    bool _Map<F,T,DataPair>::DeleteBySerial(int index)
+    template<typename K,typename V,typename DataPair>
+    bool _Map<K,V,DataPair>::DeleteBySerial(int index)
     {
         if(index<0
          ||index>=data_list.GetCount())return(false);
@@ -398,8 +380,8 @@ namespace hgl
      * @param number 数量
      * @return 是否成功
      */
-    template<typename F,typename T,typename DataPair>
-    bool _Map<F,T,DataPair>::DeleteBySerial(int start,int number)
+    template<typename K,typename V,typename DataPair>
+    bool _Map<K,V,DataPair>::DeleteBySerial(int start,int number)
     {
         DataPair **dp=data_list.GetData()+start;
 
@@ -417,27 +399,35 @@ namespace hgl
      * @param flag 数据标识
      * @param data 新的数据内容
      */
-    template<typename F,typename T,typename DataPair>
-    void _Map<F,T,DataPair>::Update(const F &flag,const T &data)
+    template<typename K,typename V,typename DataPair>
+    bool _Map<K,V,DataPair>::Update(const K &flag,const V &data)
     {
         int result;
+        DataPair *dp;
 
         if(FindPos(flag,result))
         {
-            DataPair *dp=GetListObject(data_list,result);
+            dp=GetListObject(data_list,result);
 
             if(dp)
+            {
                 dp->right=data;
+                return(true);
+            }
         }
         else
         {
-            DataPair *ds=data_pool.Acquire();
+            if(data_pool.Acquire(dp))
+            {
+                dp->left=flag;
+                dp->right=data;
 
-            ds->left=flag;
-            ds->right=data;
-
-            data_list.Insert(result,ds);
+                data_list.Insert(result,dp);
+                return(true);
+            }
         }
+
+        return(false);
     }
 
     /**
@@ -446,8 +436,8 @@ namespace hgl
     * @param data 新的数据内容
     * @param return 是否更改成功
     */
-    template<typename F,typename T,typename DataPair>
-    bool _Map<F,T,DataPair>::Change(const F &flag,const T &data)
+    template<typename K,typename V,typename DataPair>
+    bool _Map<K,V,DataPair>::Change(const K &flag,const V &data)
     {
         DataPair *dp=GetListObject(data_list,Find(flag));
 
@@ -461,8 +451,8 @@ namespace hgl
     /**
     * 清除所有数据
     */
-    template<typename F,typename T,typename DataPair>
-    void _Map<F,T,DataPair>::Clear()
+    template<typename K,typename V,typename DataPair>
+    void _Map<K,V,DataPair>::Clear()
     {
         data_pool.ClearAll();
         data_list.Clear();
@@ -471,15 +461,15 @@ namespace hgl
     /**
     * 清除所有数据，但不释放内存
     */
-    template<typename F,typename T,typename DataPair>
-    void _Map<F,T,DataPair>::ClearData()
+    template<typename K,typename V,typename DataPair>
+    void _Map<K,V,DataPair>::ClearData()
     {
         data_pool.ReleaseAll();
         data_list.ClearData();
     }
 
-    template<typename F,typename T,typename DataPair>
-    void _Map<F,T,DataPair>::operator=(const _Map<F,T,DataPair> &ftd)
+    template<typename K,typename V,typename DataPair>
+    void _Map<K,V,DataPair>::operator=(const _Map<K,V,DataPair> &ftd)
     {
         Clear();
 
@@ -491,11 +481,13 @@ namespace hgl
         if(count<=0)
             return;
 
-        IDItem **obj=ftd.data_list.GetData();
+        DataPair **obj=ftd.data_list.GetData();
+        DataPair *new_obj;
 
         for(int i=0;i<count;i++)
         {
-            IDItem *new_obj=data_pool.Acquire();
+            if(!data_pool.Acquire(new_obj))
+                break;
 
             new_obj->left=(*obj)->left;
             new_obj->right=(*obj)->right;
@@ -506,15 +498,15 @@ namespace hgl
         }
     }
 
-    template<typename F,typename T,typename DataPair>
-    void _Map<F,T,DataPair>::Enum(void (*enum_func)(const F &,T))
+    template<typename K,typename V,typename DataPair>
+    void _Map<K,V,DataPair>::Enum(void (*enum_func)(const K &,V))
     {
         const int count=data_list.GetCount();
 
         if(count<=0)
             return;
 
-        IDItem **idp=data_list.GetData();
+        DataPair **idp=data_list.GetData();
 
         for(int i=0;i<count;i++)
         {
@@ -524,15 +516,15 @@ namespace hgl
         }
     }
 
-    template<typename F,typename T,typename DataPair>
-    void _Map<F,T,DataPair>::EnumKey(void (*enum_func)(const F &))
+    template<typename K,typename V,typename DataPair>
+    void _Map<K,V,DataPair>::EnumKey(void (*enum_func)(const K &))
     {
         const int count=data_list.GetCount();
 
         if(count<=0)
             return;
 
-        IDItem **idp=data_list.GetData();
+        DataPair **idp=data_list.GetData();
 
         for(int i=0;i<count;i++)
         {
@@ -542,15 +534,15 @@ namespace hgl
         }
     }
 
-    template<typename F,typename T,typename DataPair>
-    void _Map<F,T,DataPair>::EnumAllValue(void (*enum_func)(T))
+    template<typename K,typename V,typename DataPair>
+    void _Map<K,V,DataPair>::EnumAllValue(void (*enum_func)(V))
     {
         const int count=data_list.GetCount();
 
         if(count<=0)
             return;
 
-        IDItem **idp=data_list.GetData();
+        DataPair **idp=data_list.GetData();
 
         for(int i=0;i<count;i++)
         {
@@ -560,15 +552,15 @@ namespace hgl
         }
     }
 
-    template<typename F,typename T,typename DataPair>
-    void _Map<F,T,DataPair>::EnumValue(bool (*enum_func)(T))
+    template<typename K,typename V,typename DataPair>
+    void _Map<K,V,DataPair>::EnumValue(bool (*enum_func)(V))
     {
         const int count=data_list.GetCount();
 
         if(count<=0)
             return;
 
-        IDItem **idp=data_list.GetData();
+        DataPair **idp=data_list.GetData();
 
         for(int i=0;i<count;i++)
         {
