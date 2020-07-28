@@ -157,6 +157,28 @@ namespace hgl
         target.Width    =double(source.Width)    /width;
         target.Height   =double(source.Height)   /height;
     }
+
+    template<typename D,typename S>
+    inline D *WriteRect(D *target,const RectScope2<S> &source)
+    {
+        *target=D(source.GetLeft   ());++target;
+        *target=D(source.GetTop    ());++target;
+        *target=D(source.GetRight  ());++target;
+        *target=D(source.GetBottom ());++target;
+
+        return target;
+    }
+
+    template<typename D,typename S>
+    inline D *WriteRect(D *target,const S &left,const S &top,const S &width,const S &height)
+    {
+        *target=D(left      );++target;
+        *target=D(top       );++target;
+        *target=D(left+width);++target;
+        *target=D(top+height);++target;
+
+        return target;
+    }
 }//namespace hgl
 #include<hgl/type/RectScope.cpp>
 #endif//HGL_RECTSCOPE_INCLUDE
