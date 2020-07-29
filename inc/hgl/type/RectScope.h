@@ -149,8 +149,8 @@ namespace hgl
     typedef RectScope2<short>   RectScope2s;
     typedef RectScope2<ushort>  RectScope2us;
 
-    template<typename T>
-    inline void UVFloatFromPixel(RectScope2<T> &target,const RectScope2<T> &source,const double width,const double height)
+    template<typename T,typename S>
+    inline void UVFloatFromPixel(RectScope2<T> &target,const RectScope2<S> &source,const double width,const double height)
     {
         target.Left     =double(source.Left)     /width;
         target.Top      =double(source.Top)      /height;
