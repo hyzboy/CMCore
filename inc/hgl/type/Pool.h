@@ -192,6 +192,8 @@ namespace hgl
 
     template<typename T> class _ObjectPool:public Pool<T *>                                         ///对象池
     {
+    protected:
+
         virtual T *Create()=0;
 
         virtual void Clear(T *obj)  {   if(obj)delete obj;  }
