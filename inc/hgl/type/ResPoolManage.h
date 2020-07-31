@@ -9,16 +9,16 @@ namespace hgl
     /**
      * 资源池是Pool/ResManage两个模板的组合应用
      */
-    template <typename I,typename T> class ResPoolManage:public ResManage<I,T>
+    template <typename K,typename V> class ResPoolManage:public ResManage<K,V>
     {
     protected:
 
-        ObjectPool<T> data_pool;
+        ObjectPool<V> data_pool;
 
     public:
 
-        virtual T *Create(const I &flag){return data_pool.Acquire();}
-        virtual void Clear(T *obj){data_pool.Release(obj);}
+        virtual V *Create(const K &key){return data_pool.Acquire();}
+        virtual void Clear(V *obj){data_pool.Release(obj);}
 
     public:
 
@@ -29,6 +29,6 @@ namespace hgl
             this->items.Clear();
             data_pool.ClearAll();
         }
-    };//template <typename I,typename T> class ResPoolManage<I,T>:public ResManage<I,T>
+    };//template <typename K,typename V> class ResPoolManage<K,V>:public ResManage<K,V>
 }//namespace hgl
 #endif//HGL_RES_POOL_MANAGE_INCLUDE
