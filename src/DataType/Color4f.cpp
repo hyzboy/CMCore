@@ -1,11 +1,13 @@
 ﻿#include<hgl/type/Color4f.h>
 namespace hgl
 {
-    void Color4f::Use(COLOR_ENUM ce,float ta)
+    void Color4f::Use(COLOR ce,float ta)
     {
-        r=prv_color[ce].r;
-        g=prv_color[ce].g;
-        b=prv_color[ce].b;
+        const COLOR_DEF *pc=prv_color+size_t(ce);
+
+        r=pc->r;
+        g=pc->g;
+        b=pc->b;
         a=ta;
     }
 

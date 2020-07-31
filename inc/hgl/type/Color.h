@@ -22,227 +22,227 @@ namespace hgl
     /**
     * 颜色枚举
     */
-    enum COLOR_ENUM             ///颜色枚举
+    enum class COLOR          ///颜色枚举
     {
-        ceNone,
+        AliceBlue=0,          ///<艾利斯兰
+        AndroidGreen,         ///<安卓绿
+        AntiqueWhite,         ///<古董白
+        AppleGreen,           ///<苹果绿
+        Aqua,                 ///<浅绿色
+        AquaMarine,           ///<碧绿色
 
-        ceAliceBlue,            ///<艾利斯兰
-        ceAndroidGreen,         ///<安卓绿
-        ceAntiqueWhite,         ///<古董白
-        ceAppleGreen,           ///<苹果绿
-        ceAqua,                 ///<浅绿色
-        ceAquaMarine,           ///<碧绿色
+        ArdenRed,             ///<雅顿红(注：商业使用需获得Elizabeth Arden公司授权)
 
-        ceArdenRed,             ///<雅顿红(注：商业使用需获得Elizabeth Arden公司授权)
+        Azure,                ///<天蓝色
+        BananaMania,          ///<香蕉黄(芯)
+        BananaYellow,         ///<香蕉黄(皮)
+        Beige,                ///<米色
+        Bisque,               ///<桔黄色
+        Black,                ///<黑色
+        BlanchedAlmond,       ///<白杏色
+        Blue,                 ///<蓝色
+        BlueViolet,           ///<紫罗兰色
+        Brown,                ///<褐色
+        BurlyWood,            ///<实木色
+        CadetBlue,            ///<军兰色
+        CaribbeanGreen,       ///<加勒比海绿
+        Chartreuse,           ///<黄绿色
+        CherryBlossomPink,    ///<樱桃花粉
+        Chocolate,            ///<巧克力色
+        Coral,                ///<珊瑚色
+        CornflowerBlue,       ///<菊花兰
+        Cornsilk,             ///<米绸色
+        Crimson,              ///<暗深红
+        Cyan,                 ///<青色
+        DarkBlue,             ///<暗蓝色
+        DarkCyan,             ///<暗青色
+        DarkGoldenrod,        ///<暗金黄
+        DarkGray,             ///<暗灰色
+        DarkGreen,            ///<暗绿色
+        DarkGrey,             ///<暗白色
+        DarkKhaki,            ///<暗黄褐色
+        DarkMagenta,          ///<暗洋红
+        DarkOliveGreen,       ///<暗橄榄绿
+        DarkOrange,           ///<暗桔黄
+        DarkOrchid,           ///<暗紫色
+        DarkRed,              ///<暗红色
+        DarkSalmon,           ///<暗肉色
+        DarkSeaGreen,         ///<暗海兰
+        DarkSlateBlue,        ///<暗灰兰
+        DarkSlateGray,        ///<墨绿色
+        DarkSlateGrey,        ///<暗灰绿
+        DarkTurquoise,        ///<暗宝石绿
+        DarkViolet,           ///<暗紫罗兰
+        DeepPink,             ///<深粉红
+        DeepSkyBlue,          ///<深天蓝
+        DimGray,              ///<暗灰色
+        DimGrey,              ///<暗灰白
+        DodgerBlue,           ///<闪兰色
+        FireBrick,            ///<火砖色
+        FloralWhite,          ///<花白色
+        ForestGreen,          ///<森林绿
+        FrenchBeige,          ///<法国米色
+        FrenchBlue,           ///<法国兰
+        FrenchLilac,          ///<法国丁香色
+        Fuchsia,              ///<紫红色
+        Gainsboro,            ///<淡灰色
+        GhostWhite,           ///<幽灵白
+        Gold,                 ///<金色
+        Goldenrod,            ///<金麒麟色
+        GoldenYellow,         ///<金黄
+        Gray,                 ///<灰色
+        Green,                ///<绿色
+        GreenYellow,          ///<蓝绿色
+        Grey,                 ///<灰白色
+        HollywoodCerise,      ///<好莱坞樱桃红
+        Honeydew,             ///<蜜色
+        HotPink,              ///<火热粉
+        HunterGreen,          ///<猎人绿
+        IndianGreen,          ///<印度绿
+        IndianRed,            ///<印度红
+        IndianYellow,         ///<印度黄
+        Indigo,               ///<靛青色
+        Ivory,                ///<象牙白
+        Khaki,                ///<黄褐色
+        Lavender,             ///<淡紫色
+        LavenderBlush,        ///<淡紫红
+        LawnGreen,            ///<草绿色
+        Lemon,                ///<柠檬色
+        LemonYellow,          ///<柠檬黄
+        LemonChiffon,         ///<柠檬绸
+        LightBlue,            ///<亮蓝色
+        LightCoral,           ///<亮珊瑚色
+        LightCyan,            ///<亮青色
+        LightGoldenrodYellow, ///<亮金黄
+        LightGray,            ///<亮灰色
+        LightGreen,           ///<亮绿色
+        LightGrey,            ///<亮灰白
+        LightPink,            ///<亮粉红
+        LightSalmon,          ///<亮肉色
+        LightSeaGreen,        ///<亮海蓝
+        LightSkyBlue,         ///<亮天蓝
+        LightSlateGray,       ///<亮蓝灰
+        LightSlateGrey,       ///<亮蓝白
+        LightSteelBlue,       ///<亮钢兰
+        LightYellow,          ///<亮黄色
+        Lime,                 ///<酸橙色
+        LimeGreen,            ///<橙绿色
+        Linen,                ///<亚麻色
+        Lion,                 ///<獅子棕
+        Magenta,              ///<红紫色
+        Maroon,               ///<粟色
+        MediumAquamarine,     ///<间绿色
+        MediumBlue,           ///<间兰色
+        MediumOrchid,         ///<间淡紫
+        MediumPurple,         ///<间紫色
+        MediumSeaGreen,       ///<间海蓝
+        MediumSlateBlue,      ///<间暗蓝
+        MediumSpringGreen,    ///<间春绿
+        MediumTurquoise,      ///<间绿宝石
+        MediumVioletRed,      ///<间紫罗兰
+        MidNightBlue,         ///<中灰蓝
+        Mint,                 ///<薄荷色
+        MintCream,            ///<薄荷霜
+        MintGreen,            ///<薄荷绿
+        MistyRose,            ///<浅玫瑰
+        Moccasin,             ///<鹿皮色
 
-        ceAzure,                ///<天蓝色
-        ceBananaMania,          ///<香蕉黄(芯)
-        ceBananaYellow,         ///<香蕉黄(皮)
-        ceBeige,                ///<米色
-        ceBisque,               ///<桔黄色
-        ceBlack,                ///<黑色
-        ceBlanchedAlmond,       ///<白杏色
-        ceBlue,                 ///<蓝色
-        ceBlueViolet,           ///<紫罗兰色
-        ceBrown,                ///<褐色
-        ceBurlyWood,            ///<实木色
-        ceCadetBlue,            ///<军兰色
-        ceCaribbeanGreen,       ///<加勒比海绿
-        ceChartreuse,           ///<黄绿色
-        ceCherryBlossomPink,    ///<樱桃花粉
-        ceChocolate,            ///<巧克力色
-        ceCoral,                ///<珊瑚色
-        ceCornflowerBlue,       ///<菊花兰
-        ceCornsilk,             ///<米绸色
-        ceCrimson,              ///<暗深红
-        ceCyan,                 ///<青色
-        ceDarkBlue,             ///<暗蓝色
-        ceDarkCyan,             ///<暗青色
-        ceDarkGoldenrod,        ///<暗金黄
-        ceDarkGray,             ///<暗灰色
-        ceDarkGreen,            ///<暗绿色
-        ceDarkGrey,             ///<暗白色
-        ceDarkKhaki,            ///<暗黄褐色
-        ceDarkMagenta,          ///<暗洋红
-        ceDarkOliveGreen,       ///<暗橄榄绿
-        ceDarkOrange,           ///<暗桔黄
-        ceDarkOrchid,           ///<暗紫色
-        ceDarkRed,              ///<暗红色
-        ceDarkSalmon,           ///<暗肉色
-        ceDarkSeaGreen,         ///<暗海兰
-        ceDarkSlateBlue,        ///<暗灰兰
-        ceDarkSlateGray,        ///<墨绿色
-        ceDarkSlateGrey,        ///<暗灰绿
-        ceDarkTurquoise,        ///<暗宝石绿
-        ceDarkViolet,           ///<暗紫罗兰
-        ceDeepPink,             ///<深粉红
-        ceDeepSkyBlue,          ///<深天蓝
-        ceDimGray,              ///<暗灰色
-        ceDimGrey,              ///<暗灰白
-        ceDodgerBlue,           ///<闪兰色
-        ceFireBrick,            ///<火砖色
-        ceFloralWhite,          ///<花白色
-        ceForestGreen,          ///<森林绿
-        ceFrenchBeige,          ///<法国米色
-        ceFrenchBlue,           ///<法国兰
-        ceFrenchLilac,          ///<法国丁香色
-        ceFuchsia,              ///<紫红色
-        ceGainsboro,            ///<淡灰色
-        ceGhostWhite,           ///<幽灵白
-        ceGold,                 ///<金色
-        ceGoldenrod,            ///<金麒麟色
-        ceGoldenYellow,         ///<金黄
-        ceGray,                 ///<灰色
-        ceGreen,                ///<绿色
-        ceGreenYellow,          ///<蓝绿色
-        ceGrey,                 ///<灰白色
-        ceHollywoodCerise,      ///<好莱坞樱桃红
-        ceHoneydew,             ///<蜜色
-        ceHotPink,              ///<火热粉
-        ceHunterGreen,          ///<猎人绿
-        ceIndianGreen,          ///<印度绿
-        ceIndianRed,            ///<印度红
-        ceIndianYellow,         ///<印度黄
-        ceIndigo,               ///<靛青色
-        ceIvory,                ///<象牙白
-        ceKhaki,                ///<黄褐色
-        ceLavender,             ///<淡紫色
-        ceLavenderBlush,        ///<淡紫红
-        ceLawnGreen,            ///<草绿色
-        ceLemon,                ///<柠檬色
-        ceLemonYellow,          ///<柠檬黄
-        ceLemonChiffon,         ///<柠檬绸
-        ceLightBlue,            ///<亮蓝色
-        ceLightCoral,           ///<亮珊瑚色
-        ceLightCyan,            ///<亮青色
-        ceLightGoldenrodYellow, ///<亮金黄
-        ceLightGray,            ///<亮灰色
-        ceLightGreen,           ///<亮绿色
-        ceLightGrey,            ///<亮灰白
-        ceLightPink,            ///<亮粉红
-        ceLightSalmon,          ///<亮肉色
-        ceLightSeaGreen,        ///<亮海蓝
-        ceLightSkyBlue,         ///<亮天蓝
-        ceLightSlateGray,       ///<亮蓝灰
-        ceLightSlateGrey,       ///<亮蓝白
-        ceLightSteelBlue,       ///<亮钢兰
-        ceLightYellow,          ///<亮黄色
-        ceLime,                 ///<酸橙色
-        ceLimeGreen,            ///<橙绿色
-        ceLinen,                ///<亚麻色
-        ceLion,                 ///<獅子棕
-        ceMagenta,              ///<红紫色
-        ceMaroon,               ///<粟色
-        ceMediumAquamarine,     ///<间绿色
-        ceMediumBlue,           ///<间兰色
-        ceMediumOrchid,         ///<间淡紫
-        ceMediumPurple,         ///<间紫色
-        ceMediumSeaGreen,       ///<间海蓝
-        ceMediumSlateBlue,      ///<间暗蓝
-        ceMediumSpringGreen,    ///<间春绿
-        ceMediumTurquoise,      ///<间绿宝石
-        ceMediumVioletRed,      ///<间紫罗兰
-        ceMidNightBlue,         ///<中灰蓝
-        ceMint,                 ///<薄荷色
-        ceMintCream,            ///<薄荷霜
-        ceMintGreen,            ///<薄荷绿
-        ceMistyRose,            ///<浅玫瑰
-        ceMoccasin,             ///<鹿皮色
+        MozillaBlue,          ///<Mozilla Firefox Blue
+        MozillaCharcoal,      ///<Mozilla charcoal
+        MozillaLightBlue,     ///<Mozilla Firefox Light Blue
+        MozillaLightOrange,   ///<Mozilla Firefox Light orange
+        MoziilaNightBlue,     ///<Mozilla Nightly Blue
+        MozillaOrange,        ///<Mozilla Firefox Orange
+        MozillaRed,           ///<Mozilla red
+        MozillaSand,          ///<Mozilla sand
+        MozillaYellow,        ///<Mozilla Firefox Yellow
 
-        ceMozillaBlue,          ///<Mozilla Firefox Blue
-        ceMozillaCharcoal,      ///<Mozilla charcoal
-        ceMozillaLightBlue,     ///<Mozilla Firefox Light Blue
-        ceMozillaLightOrange,   ///<Mozilla Firefox Light orange
-        ceMoziilaNightBlue,     ///<Mozilla Nightly Blue
-        ceMozillaOrange,        ///<Mozilla Firefox Orange
-        ceMozillaRed,           ///<Mozilla red
-        ceMozillaSand,          ///<Mozilla sand
-        ceMozillaYellow,        ///<Mozilla Firefox Yellow
+        NavajoWhite,          ///<纳瓦白
+        Navy,                 ///<海军色
 
-        ceNavajoWhite,          ///<纳瓦白
-        ceNavy,                 ///<海军色
+        NiveaBlue,            ///<妮维雅蓝(注：商业使用需获得Beiersdorf AG授权)
 
-        ceNiveaBlue,            ///<妮维雅蓝(注：商业使用需获得Beiersdorf AG授权)
+        NokiaBlue,            ///<诺基亚蓝
 
-        ceNokiaBlue,            ///<诺基亚蓝
+        OldLace,              ///<老花色
+        Olive,                ///<橄榄色
+        Olivedrab,            ///<深绿褐色
+        Orange,               ///<橙色
+        OrangeRed,            ///<红橙色
+        Orchid,               ///<淡紫色
+        PaleGoldenrod,        ///<苍麒麟色
+        PaleGreen,            ///<苍绿色
+        PaleTurquoise,        ///<苍宝石绿
+        PaleVioletRed,        ///<苍紫罗兰色
+        Papayawhip,           ///<番木色
+        Peachpuff,            ///<桃色
+        Pear,                 ///<梨色
+        Peru,                 ///<秘鲁色
+        Pink,                 ///<粉红色
 
-        ceOldLace,              ///<老花色
-        ceOlive,                ///<橄榄色
-        ceOlivedrab,            ///<深绿褐色
-        ceOrange,               ///<橙色
-        ceOrangeRed,            ///<红橙色
-        ceOrchid,               ///<淡紫色
-        cePaleGoldenrod,        ///<苍麒麟色
-        cePaleGreen,            ///<苍绿色
-        cePaleTurquoise,        ///<苍宝石绿
-        cePaleVioletRed,        ///<苍紫罗兰色
-        cePapayawhip,           ///<番木色
-        cePeachpuff,            ///<桃色
-        cePear,                 ///<梨色
-        cePeru,                 ///<秘鲁色
-        cePink,                 ///<粉红色
+                                //SONY PlayStation 商标用配色(注：商业使用需获得SONY授权)
+        PlayStationBlue,
+        PlayStationLightBlue,
 
-        //SONY PlayStation 商标用配色(注：商业使用需获得SONY授权)
-        cePlayStationBlue,
-        cePlayStationLightBlue,
+        Plum,                 ///<洋李色
 
-        cePlum,                 ///<洋李色
+        PornHubRed,           ///<PornHub红
+        PornHubYellow,        ///<PornHub黄
 
-        cePornHubRed,           ///<PornHub红
-        cePornHubYellow,        ///<PornHub黄
+        PowderBlue,           ///<粉蓝色
+        Purple,               ///<紫色
+        Red,                  ///<红色
+        Rose,                 ///<玫瑰红
+        RosyBrown,            ///<褐玫瑰红
+        RoyalBlue,            ///<皇家蓝
+        Ruby,                 ///<宝石红
+        SaddleBrown,          ///<重褐色
+        Salmon,               ///<鲜肉色
 
-        cePowderBlue,           ///<粉蓝色
-        cePurple,               ///<紫色
-        ceRed,                  ///<红色
-        ceRose,                 ///<玫瑰红
-        ceRosyBrown,            ///<褐玫瑰红
-        ceRoyalBlue,            ///<皇家蓝
-        ceRuby,                 ///<宝石红
-        ceSaddleBrown,          ///<重褐色
-        ceSalmon,               ///<鲜肉色
+        SamsungBlue,          ///<三星蓝
 
-        ceSamsungBlue,          ///<三星蓝
+        SandyBrown,           ///<沙褐色
+        SeaGreen,             ///<海绿色
+        SeaShell,             ///<海贝色
+        Sienna,               ///<赭色
+        Silver,               ///<银色
+        SkyBlue,              ///<天蓝色
+        SlateBlue,            ///<石蓝色
+        SlateGray,            ///<灰石色
+        SlateGrey,            ///<白灰石色
+        Snow,                 ///<雪白色
+        SpringGreen,          ///<春绿色
+        SteelBlue,            ///<钢兰色
 
-        ceSandyBrown,           ///<沙褐色
-        ceSeaGreen,             ///<海绿色
-        ceSeaShell,             ///<海贝色
-        ceSienna,               ///<赭色
-        ceSilver,               ///<银色
-        ceSkyBlue,              ///<天蓝色
-        ceSlateBlue,            ///<石蓝色
-        ceSlateGray,            ///<灰石色
-        ceSlateGrey,            ///<白灰石色
-        ceSnow,                 ///<雪白色
-        ceSpringGreen,          ///<春绿色
-        ceSteelBlue,            ///<钢兰色
+        SUSEBlack,            ///<SUSE黑
+        SUSEGreen,            ///<SUSE绿
 
-        ceSUSEBlack,            ///<SUSE黑
-        ceSUSEGreen,            ///<SUSE绿
+        Tan,                  ///<茶色
+        Teal,                 ///<水鸭色
+        Thistle,              ///<蓟色
 
-        ceTan,                  ///<茶色
-        ceTeal,                 ///<水鸭色
-        ceThistle,              ///<蓟色
+        TiffanyBlue,          ///<蒂芙尼蓝(知更鸟蛋蓝/勿忘我蓝)(注：商业使用需获取Tiffany公司授权)
 
-        ceTiffanyBlue,          ///<蒂芙尼蓝(知更鸟蛋蓝/勿忘我蓝)(注：商业使用需获取Tiffany公司授权)
+        Tomato,               ///<西红柿色
+        Turquoise,            ///<青绿色
 
-        ceTomato,               ///<西红柿色
-        ceTurquoise,            ///<青绿色
+        UbuntuOrange,         ///<Ubuntu橙色
+        UbuntuLightAubergine,
+        UbuntuMidAubergine,
+        UbuntuDarkAubergine,
 
-        ceUbuntuOrange,         ///<Ubuntu橙色
-        ceUbuntuLightAubergine,
-        ceUbuntuMidAubergine,
-        ceUbuntuDarkAubergine,
+        Violet,               ///<紫罗兰色
+        Wheat,                ///<浅黄色
+        White,                ///<白色
+        WhiteSmoke,           ///<烟白色
+        Yellow,               ///<黄色
+        YellowGreen,          ///<黄绿色
 
-        ceViolet,               ///<紫罗兰色
-        ceWheat,                ///<浅黄色
-        ceWhite,                ///<白色
-        ceWhiteSmoke,           ///<烟白色
-        ceYellow,               ///<黄色
-        ceYellowGreen,          ///<黄绿色
-
-        ceEnd
+        BEGIN_RANGE =AliceBlue,
+        END_RANGE   =YellowGreen,
+        RANGE_SIZE  =(END_RANGE-BEGIN_RANGE)+1
     };//enum COLOR_ENUM
 
-    extern COLOR_DEF prv_color[ceEnd+1];
+    extern COLOR_DEF prv_color[size_t(COLOR::RANGE_SIZE)];
 }//namespace hgl
 #endif//HGL_COLOR_TABLE_INCLUDE

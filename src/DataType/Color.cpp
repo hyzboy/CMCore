@@ -18,7 +18,7 @@ namespace hgl
                                                         U16_TEXT(chs_name)  \
                                                     },
 
-    COLOR_DEF prv_color[ceEnd+1]=
+    COLOR_DEF prv_color[size_t(COLOR::RANGE_SIZE)]=
     {
         DEF_COLOR(None,                     0,  0,  0,"")
 

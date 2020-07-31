@@ -1,11 +1,13 @@
 ﻿#include<hgl/type/Color3f.h>
 namespace hgl
 {
-    void Color3f::Use(COLOR_ENUM ce)
+    void Color3f::Use(COLOR ce)
     {
-        r=prv_color[ce].r;
-        g=prv_color[ce].g;
-        b=prv_color[ce].b;
+        const COLOR_DEF *pc=prv_color+size_t(ce);
+
+        r=pc->r;
+        g=pc->g;
+        b=pc->b;
     }
 
     void Color3f::Clamp()

@@ -18,12 +18,12 @@ namespace hgl
     public:
 
         Color3f(){r=0,g=0,b=0;}                                                                     ///<本类构造函数
-        Color3f(COLOR_ENUM ce){Use(ce);}                                                            ///<本类构造函数
+        Color3f(COLOR ce){Use(ce);}                                                            ///<本类构造函数
         Color3f(float l){r=l,g=l,b=l;Clamp();}                                                      ///<本类构造函数
         Color3f(float vr,float vg,float vb){r=vr,g=vg,b=vb;Clamp();}                                ///<本类构造函数
         Color3f(const Color3f &v){r=v.r;g=v.g;b=v.b;Clamp();}                                       ///<本类构造函数
 
-        void Use(COLOR_ENUM);
+        void Use(COLOR);
         void Zero(){r=0,g=0,b=0;}                                                                   ///<全清为0
         void One() {r=1,g=1,b=1;}                                                                   ///<全清为1
         void Rand();                                                                                ///<全随机
@@ -54,7 +54,7 @@ namespace hgl
 
         //操作符重载
         void operator = (const float *v){r=*v++;g=*v++;b=*v;}
-        void operator = (COLOR_ENUM ce){Use(ce);}
+        void operator = (COLOR ce){Use(ce);}
 
         bool operator == (const Color3f &);
         bool operator != (const Color3f &);
