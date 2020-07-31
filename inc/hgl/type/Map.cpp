@@ -180,24 +180,24 @@ namespace hgl
     }
 
     /**
-    * 根据索引取得数据
+    * 根据索引取得数据与序号
     * @param flag 数据索引
     * @param data 数据存放处
-    * @return 是否取得成功
+    * @return 数据序号,<0表示失败
     */
     template<typename K,typename V,typename DataPair>
-    bool _Map<K,V,DataPair>::Get(const K &flag,V &data) const
+    int _Map<K,V,DataPair>::GetValueAndSerial(const K &flag,V &data) const
     {
         int index=Find(flag);
 
         DataPair *obj=GetListObject(data_list,index);
 
         if(!obj)
-            return(false);
+            return(-1);
 
         data=obj->right;
 
-        return(true);
+        return(index);
     }
 
     template<typename K,typename V,typename DataPair>

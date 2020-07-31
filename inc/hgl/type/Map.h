@@ -38,7 +38,8 @@ namespace hgl
                 bool    KeyExist(const K &key)const{return(Find(key)!=-1);}                         ///<确认这个数据是否存在
                 bool    ValueExist(const V &value)const{return(FindByValue(value)!=-1);}            ///<确认这个数据是否存在
                 bool    Check(const K &key,const V &value)const;                                    ///<确认数据是否是这个
-        virtual bool    Get(const K &,V &) const;                                                   ///<取得数据
+        virtual int     GetValueAndSerial(const K &,V &) const;                                     ///<取得数据与索引
+                bool    Get(const K &key,V &value) const {return(GetValueAndSerial(key,value)>=0);} ///<取得数据
         virtual bool    Delete(const K &,V &);                                                      ///<将指定数据从列表中移除，并获得这个数据
         virtual bool    DeleteByKey(const K &);                                                     ///<根据索引将指定数据从列表中移除
         virtual int     DeleteByKey(const K *,const int);                                           ///<根据索引将指定数据从列表中批量移除
@@ -98,7 +99,7 @@ namespace hgl
 
                 bool    SetValueBySerial(int,V &);                                                  ///<根据序号设置数据
 
-                void    operator=(const ThisClass &);                                              ///<操作符重载，复制一个列表
+                void    operator=(const ThisClass &);                                               ///<操作符重载，复制一个列表
 
                 void    Enum(void (*enum_func)(const K &,V));                                       ///<枚举所有数据项
                 void    EnumKey(void (*enum_func)(const K &));                                      ///<枚举所有索引
