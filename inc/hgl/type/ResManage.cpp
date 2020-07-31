@@ -4,14 +4,14 @@
 #include<hgl/type/ResManage.h>
 namespace hgl
 {
-    template<typename F,typename T>
-    ResManage<F,T>::~ResManage()
+    template<typename K,typename V>
+    ResManage<K,V>::~ResManage()
     {
         Clear();
     }
 
-    template<typename F,typename T>
-    void ResManage<F,T>::Clear()
+    template<typename K,typename V>
+    void ResManage<K,V>::Clear()
     {
         int n=items.GetCount();
 
@@ -25,8 +25,8 @@ namespace hgl
         items.Clear();
     }
 
-    template<typename F,typename T>
-    void ResManage<F,T>::ClearFree()
+    template<typename K,typename V>
+    void ResManage<K,V>::ClearFree()
     {
         int n=items.GetCount();
 
@@ -34,7 +34,7 @@ namespace hgl
         {
             ResItem *obj=items.GetItem(n);
 
-            if(obj->count<=0)
+            if(obj->ref_count<=0)
             {
                 Clear(obj->right);
                 items.DeleteBySerial(n);
@@ -42,8 +42,8 @@ namespace hgl
         }
     }
 
-    template<typename F,typename T>
-    bool ResManage<F,T>::Add(const F &flag,T *obj)
+    template<typename K,typename V>
+    bool ResManage<K,V>::Add(const K &flag,V *obj)
     {
         if(!obj)return(false);
 
@@ -54,8 +54,8 @@ namespace hgl
         return(true);
     }
 
-    template<typename F,typename T>
-    T *ResManage<F,T>::Find(const F &flag)
+    template<typename K,typename V>
+    V *ResManage<K,V>::Find(const K &flag)
     {
         int index=items.Find(flag);
 
@@ -67,8 +67,8 @@ namespace hgl
         return obj->right;
     }
 
-    template<typename F,typename T>
-    T *ResManage<F,T>::Get(const F &flag)
+    template<typename K,typename V>
+    V *ResManage<K,V>::Get(const K &flag)
     {
         int index=items.Find(flag);
 
@@ -76,7 +76,7 @@ namespace hgl
         {
             ResItem *obj=items.GetItem(index);
 
-            ++obj->count;
+            ++obj->ref_count;
 
             return obj->right;
         }
@@ -87,8 +87,8 @@ namespace hgl
     /**
      * 确认指定数据是否存在
      */
-    template<typename F,typename T>
-    bool ResManage<F,T>::ValueExist(T *value)
+    template<typename K,typename V>
+    bool ResManage<K,V>::ValueExist(V *value)
     {
         return(items.FindByValue(value)!=-1);
     }
@@ -100,8 +100,8 @@ namespace hgl
      * @param ref_count 引用计数存放地址
      * @param 是否增加引用计数
      */
-    template<typename F,typename T>
-    bool ResManage<F,T>::GetKeyByValue(T *value,F *key,uint *ref_count,bool inc_ref_count)
+    template<typename K,typename V>
+    bool ResManage<K,V>::GetKeyByValue(V *value,K *key,uint *ref_count,bool inc_ref_count)
     {
         int index=items.FindByValue(value);
 
@@ -110,32 +110,32 @@ namespace hgl
         ResItem *obj=items.GetItem(index);
 
         if(inc_ref_count)
-            ++obj->count;
+            ++obj->ref_count;
 
         if(key)
             *key=obj->left;
 
         if(ref_count)
-            *ref_count=obj->count;
+            *ref_count=obj->ref_count;
 
         return(true);
     }
 
-    template<typename F,typename T>
-    uint ResManage<F,T>::ReleaseBySerial(int index,bool zero_clear)
+    template<typename K,typename V>
+    int ResManage<K,V>::ReleaseBySerial(int index,bool zero_clear)
     {
         if(index==-1)
         {
 //          ErrorHint(u"所释放的资源不存在");
-            return(0);
+            return(-1);
         }
 
         ResItem *obj=items.GetItem(index);
 
-        --obj->count;
+        --obj->ref_count;
 
-        if(obj->count>0)
-            return obj->count;
+        if(obj->ref_count>0)
+            return obj->ref_count;
 
         if(zero_clear)
         {
@@ -147,14 +147,14 @@ namespace hgl
         return 0;
     }
 
-    template<typename F,typename T>
-    uint ResManage<F,T>::Release(const F &flag,bool zero_clear)
+    template<typename K,typename V>
+    int ResManage<K,V>::Release(const K &flag,bool zero_clear)
     {
         return ReleaseBySerial(items.Find(flag),zero_clear);
     }
 
-    template<typename F,typename T>
-    uint ResManage<F,T>::Release(T *td,bool zero_clear)
+    template<typename K,typename V>
+    int ResManage<K,V>::Release(V *td,bool zero_clear)
     {
         return ReleaseBySerial(items.FindByValue(td),zero_clear);
     }

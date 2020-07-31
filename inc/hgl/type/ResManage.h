@@ -4,34 +4,34 @@
 #include<hgl/type/Map.h>
 namespace hgl
 {
-    template<typename F,typename T> struct RefFlagData:public Pair<F,T *>
+    template<typename K,typename V> struct RefKeyValue:public Pair<K,V *>       ///<带引用计数的Key/value数据结构
     {
-        uint count;
+        int ref_count;              ///<引用计数
 
     public:
 
-        RefFlagData():Pair<F,T *>()
+        RefKeyValue():Pair<K,V *>()
         {
-            count=1;
+            ref_count=1;
         }
     };
 
     /**
     * 资源管理器,它没有缓冲管理，仅仅是管理数据，并保证不会被重复加载
     */
-    template<typename F,typename T> class ResManage
+    template<typename K,typename V> class ResManage
     {
     protected:
 
-        using ResItem=RefFlagData<F,T> ;
+        using ResItem=RefKeyValue<K,V>;
 
-        _Map<F,T *,ResItem> items;
+        _Map<K,V *,ResItem> items;
 
-        uint ReleaseBySerial(int,bool);
+        int ReleaseBySerial(int,bool);
 
     protected:
 
-        virtual void Clear(T *obj){delete obj;}                                 ///<资源释放虚拟函数(缺省为直接delete对象)
+        virtual void Clear(V *obj){delete obj;}                                 ///<资源释放虚拟函数(缺省为直接delete对象)
 
     public:
 
@@ -42,42 +42,42 @@ namespace hgl
 
                 const int   GetCount()const{return items.GetCount();}           ///<取得数据数量
 
-        virtual bool        Add(const F &,T *);                                 ///<添加一个数据
-        virtual T *         Find(const F &);                                    ///<查找一个数据(不增加引用计数)
-        virtual T *         Get(const F &);                                     ///<取得一个数据(增加引用计数)
+        virtual bool        Add(const K &,V *);                                 ///<添加一个数据
+        virtual V *         Find(const K &);                                    ///<查找一个数据(不增加引用计数)
+        virtual V *         Get(const K &);                                     ///<取得一个数据(增加引用计数)
 
-        virtual bool        ValueExist(T *);                                                  ///<确认这个数据是否存在
-        virtual bool        GetKeyByValue(T *,F *,uint *,bool inc_ref_count=false);           ///<取得一个数据的Key和引用次数
+        virtual bool        ValueExist(V *);                                    ///<确认这个数据是否存在
+        virtual bool        GetKeyByValue(V *,K *,uint *,bool inc_ref=false);   ///<取得一个数据的Key和引用次数
 
-        virtual uint        Release(const F &,bool zero_clear=false);           ///<释放一个数据
-        virtual uint        Release(T *,bool zero_clear=false);                 ///<释放一个数据
+        virtual int         Release(const K &,bool zero_clear=false);           ///<释放一个数据
+        virtual int         Release(V *,bool zero_clear=false);                 ///<释放一个数据
     };//template<typename F,typename T> class ResManage
 
     /**
      * 使用int类做数标致的资源管理器
      */
-    template<typename F,typename T> class IDResManage:public ResManage<F,T>
+    template<typename K,typename V> class IDResManage:public ResManage<K,V>
     {
-        F id_count=0;
+        K id_count=0;
 
     public:
 
-        using ResManage<F,T>::ResManage;
+        using ResManage<K,V>::ResManage;
         virtual ~IDResManage()=default;
 
-        virtual F Add(T *value)
+        virtual K Add(V *value)
         {
             if(!value)return(-1);
 
             {
-                F key;
+                K key;
                 uint count;
 
-                if(ResManage<F,T>::GetKeyByValue(value,&key,&count,true))
+                if(ResManage<K,V>::GetKeyByValue(value,&key,&count,true))
                     return key;
             }
 
-            if(!ResManage<F,T>::Add(id_count,value))
+            if(!ResManage<K,V>::Add(id_count,value))
                 return(-1);
 
             return id_count++;
