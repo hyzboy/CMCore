@@ -105,6 +105,29 @@ namespace hgl
                 void    EnumKey(void (*enum_func)(const K &));                                      ///<枚举所有索引
                 void    EnumAllValue(void (*enum_func)(V));                                         ///<枚举所有数值
                 void    EnumValue(bool (*enum_func)(V));                                            ///<枚举所有数值(返回true/false表示是否继续)
+
+                /**
+                 * 统计出不在in_list中的数据，产生的结果写入without_list
+                 */
+                void WithoutList(DataPairList &without_list,const List<K> &in_list)
+                {
+                    without_list.ClearData();
+                    const int count=this->GetCount();
+
+                    if(count<=0)return;
+
+                    without_list.PreMalloc(count);
+
+                    const DataPair *sp=this->GetDataList();
+
+                    for(int i=0;i<count;i++)
+                    {
+                        if(!in_list.IsExist(*sp))
+                            without_list.Add(*sp);
+
+                        ++sp;
+                    }
+                }
     };//class _Map
 
     template<typename K,typename V> class Map:public _Map<K,V,Pair<K,V> >

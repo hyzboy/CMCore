@@ -92,6 +92,29 @@ namespace hgl
                 ++obj;
             }
         }
+
+                /**
+                 * 统计出不在in_list中的数据，产生的结果写入without_list
+                 */
+                void WithoutList(List<T> &without_list,const List<T> &in_list)
+                {
+                    without_list.ClearData();
+                    const int count=this->GetCount();
+
+                    if(count<=0)return;
+
+                    without_list.PreMalloc(count);
+
+                    const T *sp=this->GetData();
+
+                    for(int i=0;i<count;i++)
+                    {
+                        if(!in_list.IsExist(*sp))
+                            without_list.Add(*sp);
+
+                        ++sp;
+                    }
+                }
     };//template <typename T> class List
 
     template<typename T> T *GetListObject(const List<T *> &list,const int index)
