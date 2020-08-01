@@ -480,6 +480,9 @@ namespace hgl
 
         void operator = (T *o)
         {
+            if(obj)
+                delete obj;
+
             obj=o;
         }
 
@@ -491,6 +494,9 @@ namespace hgl
 
         void Clear()
         {
+            if(obj)
+                delete obj;
+
             obj=nullptr;
         }
 
@@ -528,6 +534,9 @@ namespace hgl
 
         void operator = (T *o)
         {
+            if(obj)
+                delete[] obj;
+
             obj=o;
         }
 
@@ -542,6 +551,9 @@ namespace hgl
 
         void Clear()
         {
+            if(!obj)return;
+            
+            delete[] obj;
             obj=nullptr;
         }
     };//template<typename T> class AutoDeleteArray
