@@ -31,6 +31,41 @@ namespace hgl
 
         virtual ~ResPool()=default;
 
+        const int GetActiveCount()const{return active_items.GetCount();}        ///<取得活跃项数量
+        const int GetIdleCount()const{return idle_items.GetCount();}            ///<取得闲置项数量
+
+        /**
+         * 根据key列表统计数据
+         * @param key_list          要扫描的key列表
+         * @param in_active_list    有多少个key是活跃的
+         * @param in_idle_list      有多少个key是闲置的
+         * @param out_list          active/idle中都不存在的key有多少个
+         * @param idle_left_list    不在active/idle中，但可以从idle中释放的个数
+         */
+        void Stats(const List<K> &key_list,List<K> &in_active_list,List<K> &in_idle_list,List<K> &out_list,List<K> &idle_left_list)
+        {
+            in_active_list.ClearData();
+            in_idle_list.ClearData();
+            out_list.ClearData();
+            idle_left_list.ClearData();
+            
+            const K *kp=key_list.GetData();
+            for(int i=0;i<key_list.GetCount();i++)
+            {
+                if(active_items.KeyExist(*kp))
+                    in_active_list.Add(*kp);
+                else
+                if(idle_items.KeyExist(*kp))
+                    in_idle_list.Add(*kp);
+                else
+                    out_list.Add(*kp);
+
+                ++kp;
+            }
+
+            idle_items.WithoutList(idle_left_list,in_idle_list);
+        }
+
         bool KeyExist(const K &key)
         {
             if(active_items.KeyExist(key))
