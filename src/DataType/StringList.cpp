@@ -77,11 +77,10 @@ namespace hgl
         delete[] data;
         return line_count;
     }
-
     /**
-     * 加载一个原始文本块到UTF16StringList
+     * 加载一个原始文本块到UTF16String
      */
-    int LoadStringListFromText(UTF16StringList &sl,uchar *data,const int size,const CharSet &cs)
+    int LoadStringFromText(UTF16String &full_text,uchar *data,const int size,const CharSet &cs)
     {
         u16char *str=nullptr;
 
@@ -123,7 +122,7 @@ namespace hgl
 
         if((uchar *)str>=data&&(uchar *)str<=data+size)                      //如果str的地址在data的范围内
         {
-            line_count=SplitToStringListByEnter<u16char>(sl,str,char_count);
+            full_text.SetString(str,char_count);
         }
         else
         {
@@ -141,13 +140,25 @@ namespace hgl
 #endif//
             }
 
-            line_count=SplitToStringListByEnter<u16char>(sl,str,char_count);
+            full_text.SetString(str,char_count);
 
             delete[] str;
         }
 
         delete[] data;
-        return line_count;
+        return char_count;
+    }
+
+    /**
+     * 加载一个原始文本块到UTF16StringList
+     */
+    int LoadStringListFromText(UTF16StringList &sl,uchar *data,const int size,const CharSet &cs)
+    {
+        UTF16String str;
+
+        LoadStringFromText(str,data,size,cs);
+
+        return SplitToStringListByEnter<u16char>(sl,str);
     }
 
     /**
@@ -165,7 +176,22 @@ namespace hgl
         return LoadStringListFromText(sl,data,size,cs);
     }
 
-      /**
+    /**
+     * 加载一个原始文本文件到UTF16String
+     */
+    int LoadStringFromTextFile(UTF16String &str,const OSString &filename,const CharSet &cs)
+    {
+        uchar *data;
+
+        const int size=filesystem::LoadFileToMemory(filename,(void **)&data);
+
+        if(size<=0)
+            return size;
+
+        return LoadStringFromText(str,data,size,cs);
+    }
+
+    /**
      * 加载一个原始文本文件到UTF16StringList
      */
     int LoadStringListFromTextFile(UTF16StringList &sl,const OSString &filename,const CharSet &cs)
