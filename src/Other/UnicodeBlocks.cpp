@@ -1,4 +1,4 @@
-#include<hgl/type/UnicodeBlocks.h>
+﻿#include<hgl/type/UnicodeBlocks.h>
 
 namespace hgl
 {

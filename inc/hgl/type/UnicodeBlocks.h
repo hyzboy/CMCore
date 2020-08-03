@@ -1,4 +1,4 @@
-#ifndef HGL_UNICODE_BLOCKS_INCLUDE
+﻿#ifndef HGL_UNICODE_BLOCKS_INCLUDE
 #define HGL_UNICODE_BLOCKS_INCLUDE
 
 #include<hgl/type/DataType.h>
