@@ -492,11 +492,8 @@ namespace hgl
         operator const T *()const{return obj;}
         const bool operator !()const{return !obj;}
 
-        void Clear()
+        void Discard()
         {
-            if(obj)
-                delete obj;
-
             obj=nullptr;
         }
 
@@ -549,11 +546,8 @@ namespace hgl
                 T &operator[](int index){return obj[index];}
         const   T &operator[](int index)const{return obj[index];}
 
-        void Clear()
+        void Discard()
         {
-            if(!obj)return;
-            
-            delete[] obj;
             obj=nullptr;
         }
     };//template<typename T> class AutoDeleteArray
