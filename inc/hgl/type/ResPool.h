@@ -45,15 +45,15 @@ namespace hgl
          * @param out_count         active/idle中都不存在的key有多少个
          * @param idle_left_count   不在active/idle中，但可以从idle中释放的个数
          */
-        void Stats(const List<K> &key_list,int *in_active_count,int *in_idle_count,int *out_count,int *idle_left_count)
+        void Stats(const K *key_list,const int key_count,int *in_active_count,int *in_idle_count,int *out_count,int *idle_left_count)
         {
             *in_active_count=0;
             *in_idle_count=0;
             *out_count=0;
             *idle_left_count=0;
             
-            const K *kp=key_list.GetData();
-            for(int i=0;i<key_list.GetCount();i++)
+            const K *kp=key_list;
+            for(int i=0;i<key_count;i++)
             {
                 if(active_items.KeyExist(*kp))
                     ++(*in_active_count);
