@@ -14,8 +14,8 @@ namespace hgl
         protected:
 
             const uint8 *buf;
-            size_t buf_size;
-            size_t cur_pos;
+            int64 buf_size;
+            int64 cur_pos;
 
         public:
 
@@ -37,7 +37,7 @@ namespace hgl
              * @param size 数据长度字节数
              * @return 是否成功
              */
-            bool Link(const void *data,const size_t size)
+            bool Link(const void *data,const int64 size)
             {
                 if(!data)
                     return(false);
@@ -55,7 +55,7 @@ namespace hgl
              * @param size 数据长度字节数
              * @return 是否成功
              */
-            bool Update(void *data,size_t size)
+            bool Update(void *data,int64 size)
             {
                 if(!data)
                     return(false);

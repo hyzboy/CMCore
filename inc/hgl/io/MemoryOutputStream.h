@@ -15,9 +15,9 @@ namespace hgl
 
             uint8 *buf;
 
-            size_t max_size;
-            size_t buf_size;
-            size_t cur_pos;
+            int64 max_size;
+            int64 buf_size;
+            int64 cur_pos;
 
             bool one;
 
@@ -44,7 +44,7 @@ namespace hgl
              * @param len 存放数据长度的指针
              * @return 创建好的内存拷贝
              */
-            void *CreateCopyData(int *len)const
+            void *CreateCopyData(int64 *len)const
             {
                 if(buf_size<=0)
                     return(nullptr);
@@ -66,7 +66,7 @@ namespace hgl
              * @param one_instance 是否仅此一份实例(如果是，将由MemoryOutputStream类负责释放)
              * @return 是否成功
              */
-            bool Link(void *ptr,size_t size,bool one_instance=false)
+            bool Link(void *ptr,int64 size,bool one_instance=false)
             {
                 if(!ptr||!size)
                     return(false);
@@ -87,7 +87,7 @@ namespace hgl
              * @param size 数据长度字节数
              * @return 是否成功
              */
-            bool Update(void *ptr,size_t size)
+            bool Update(void *ptr,int64 size)
             {
                 if(!ptr||!size)
                     return(false);
