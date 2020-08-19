@@ -551,5 +551,57 @@ namespace hgl
             obj=nullptr;
         }
     };//template<typename T> class AutoDeleteArray
+
+    template<typename T> class AutoFree
+    {
+        T *obj;
+
+    public:
+
+        AutoFree()
+        {
+            obj=nullptr;
+        }
+
+        AutoFree(T *o)
+        {
+            obj=o;
+        }
+
+        ~AutoFree()
+        {
+            if(obj)
+                free(obj);
+        }        
+
+        void operator = (T *o)
+        {
+            if(obj)
+                free(obj);
+
+            obj=o;
+        }
+
+        T *data(){return obj;}
+        T *operator -> (){return obj;}
+
+        operator T *(){return obj;}
+        operator const T *()const{return obj;}
+        const bool operator !()const{return !obj;}
+
+        void Discard()
+        {
+            obj=nullptr;
+        }
+
+        T *Finish()
+        {
+            T *reuslt=obj;
+            
+            obj=nullptr;
+
+            return reuslt;
+        }
+    };//class AutoFree
 }//namespace hgl
 #endif//HGL_SMART_INCLUDE
