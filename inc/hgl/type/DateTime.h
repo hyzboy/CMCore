@@ -174,5 +174,11 @@ namespace hgl
      * 根据Date/Time转换出以秒为单位的时间值
      */
     double FromDateTime(const Date &,const Time &);
+
+    struct DateTime
+    {
+        Date date;
+        Time time;
+    };
 }//namespace hgl
 #endif//HGL_DATETIME_INCLUDE
