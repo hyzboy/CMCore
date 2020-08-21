@@ -576,12 +576,12 @@ namespace hgl
             return SplitToMultiStringList<T>(sl,slc,str.c_str(),str.Length());
     }
 
-    using UTF8StringList    =StringList<UTF8String  >;
-    using UTF16StringList   =StringList<UTF16String >;
-    using UTF32StringList   =StringList<UTF32String >;
-    using AnsiStringList    =StringList<AnsiString  >;
-    using WideStringList    =StringList<WideString  >;
-    using OSStringList      =StringList<OSString    >;
+    using  UTF8StringList=StringList< UTF8String>;
+    using UTF16StringList=StringList<UTF16String>;
+    using UTF32StringList=StringList<UTF32String>;
+    using  AnsiStringList=StringList< AnsiString>;
+    using  WideStringList=StringList< WideString>;
+    using    OSStringList=StringList<   OSString>;
 
     template<typename T,ByteOrderMask bom> struct ReadStringFromDIS
     {
@@ -648,14 +648,15 @@ namespace hgl
     inline int LoadUTF16LEStringList   (UTF16StringList &  sl,io::DataInputStream *dis){return LoadStringList<u16char, bomUTF16LE  >(sl,dis);}
     inline int LoadUTF16BEStringList   (UTF16StringList &  sl,io::DataInputStream *dis){return LoadStringList<u16char, bomUTF16BE  >(sl,dis);}
 
-    int LoadStringFromText(UTF16String &str,void *data,const int size,const CharSet &default_charset=UTF8CharSet);                   ///<从文件加载一个文本块到UTF16StringList
+    int LoadStringFromText(UTF8String &str,void *data,const int size,const CharSet &default_charset=UTF8CharSet);                   ///<从文件加载一个文本块到UTF8StringList
+    int LoadStringFromText(UTF16String &str,void *data,const int size,const CharSet &default_charset=UTF8CharSet);                  ///<从文件加载一个文本块到UTF16StringList
 
-    int LoadStringListFromText(UTF8StringList   &sl,void *data,const int size,const CharSet &default_charset=UTF8CharSet);           ///<从文件加载一个文本块到UTF8StringList
-    int LoadStringListFromText(UTF16StringList  &sl,void *data,const int size,const CharSet &default_charset=UTF8CharSet);           ///<从文件加载一个文本块到UTF16StringList
+    int LoadStringListFromText(UTF8StringList   &sl,void *data,const int size,const CharSet &default_charset=UTF8CharSet);          ///<从文件加载一个文本块到UTF8StringList
+    int LoadStringListFromText(UTF16StringList  &sl,void *data,const int size,const CharSet &default_charset=UTF8CharSet);          ///<从文件加载一个文本块到UTF16StringList
 
-    int LoadStringFromTextFile(UTF16String &str,const OSString &filename,const CharSet &default_charset=UTF8CharSet);                ///<从文件加载一个文本文件到UTF16String
-    int LoadStringListFromTextFile(UTF8StringList   &sl,const OSString &filename,const CharSet &default_charset=UTF8CharSet);        ///<从文件加载一个文本文件到UTF8StringList
-    int LoadStringListFromTextFile(UTF16StringList  &sl,const OSString &filename,const CharSet &default_charset=UTF8CharSet);        ///<从文件加载一个文本文件到UTF16StringList
+    int LoadStringFromTextFile(     UTF16String &str,   const OSString &filename,const CharSet &default_charset=UTF8CharSet);       ///<从文件加载一个文本文件到UTF16String
+    int LoadStringListFromTextFile( UTF8StringList &sl, const OSString &filename,const CharSet &default_charset=UTF8CharSet);       ///<从文件加载一个文本文件到UTF8StringList
+    int LoadStringListFromTextFile( UTF16StringList &sl,const OSString &filename,const CharSet &default_charset=UTF8CharSet);       ///<从文件加载一个文本文件到UTF16StringList
 
     template<typename T,ByteOrderMask bom> struct WriteStringToDOS
     {

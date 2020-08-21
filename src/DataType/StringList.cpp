@@ -3,20 +3,20 @@
 namespace hgl
 {
     /**
-     * 加载一个原始文本块到UTF8StringList
+     * 加载一个原始文本块到UTF8String
      */
-    int LoadStringListFromText(UTF8StringList &sl,uchar *data,const int size,const CharSet &cs)
+    int LoadStringFromText(UTF8String &full_text,void *source_data,const int size,const CharSet &cs)
     {
         u8char *str=nullptr;
+        int char_count=0;
 
-        int line_count;
-        int char_count;
+        u8char *data=(u8char *)source_data;
 
         if(size>=3&&data[0]==0xEF&&data[1]==0xBB&&data[2]==0xBF)            //utf8
-            line_count=SplitToStringListByEnter<u8char>(sl,(u8char *)(data+3),size-3);
-        else
-        if(cs==UTF8CharSet)
-            line_count=SplitToStringListByEnter<u8char>(sl,(u8char *)data,size);
+        {
+            full_text.SetString((u8char *)(data+3),size-3);
+            char_count=size-3;
+        }
         else
         {
             if(size>=2)
@@ -64,28 +64,31 @@ namespace hgl
 
             if(!str)
 #ifdef __ANDROID__
+            {
+                delete[] data;
                 return 0;
+            }
 #else
                 char_count=to_utf8(cs,&str,(char *)data,size);
 #endif//
 
-            line_count=SplitToStringListByEnter<u8char>(sl,str,char_count);
-
+            full_text.SetString(str,char_count);
             delete[] str;
         }
 
         delete[] data;
-        return line_count;
+        return char_count;
     }
+
     /**
      * 加载一个原始文本块到UTF16String
      */
-    int LoadStringFromText(UTF16String &full_text,uchar *data,const int size,const CharSet &cs)
+    int LoadStringFromText(UTF16String &full_text,void *source_data,const int size,const CharSet &cs)
     {
+        uint8 *data=(uint8 *)source_data;
         u16char *str=nullptr;
 
         int char_count=0;
-        int line_count;
 
         if(size>=2)
         {
@@ -134,7 +137,9 @@ namespace hgl
             else
             {
 #ifdef __ANDROID__
+                delete[] data;
                 return 0;
+            }
 #else
                 char_count=to_utf16(cs,&str,(char *)data,size);
 #endif//
@@ -148,11 +153,23 @@ namespace hgl
         delete[] data;
         return char_count;
     }
+    
+    /**
+     * 加载一个原始文本块到UTF8StringList
+     */
+    int LoadStringListFromText(UTF8StringList &sl,void *data,const int size,const CharSet &cs)
+    {
+        UTF8String str;
+
+        LoadStringFromText(str,data,size,cs);
+
+        return SplitToStringListByEnter<u8char>(sl,str);
+    }
 
     /**
      * 加载一个原始文本块到UTF16StringList
      */
-    int LoadStringListFromText(UTF16StringList &sl,uchar *data,const int size,const CharSet &cs)
+    int LoadStringListFromText(UTF16StringList &sl,void *data,const int size,const CharSet &cs)
     {
         UTF16String str;
 
@@ -162,9 +179,9 @@ namespace hgl
     }
 
     /**
-     * 加载一个原始文本文件到UTF8StringList
+     * 加载一个原始文本文件到UTF8String
      */
-    int LoadStringListFromTextFile(UTF8StringList &sl,const OSString &filename,const CharSet &cs)
+    int LoadStringFromTextFile(UTF8String &str,const OSString &filename,const CharSet &cs)
     {
         uchar *data;
 
@@ -173,7 +190,7 @@ namespace hgl
         if(size<=0)
             return size;
 
-        return LoadStringListFromText(sl,data,size,cs);
+        return LoadStringFromText(str,data,size,cs);
     }
 
     /**
@@ -189,6 +206,21 @@ namespace hgl
             return size;
 
         return LoadStringFromText(str,data,size,cs);
+    }
+
+    /**
+     * 加载一个原始文本文件到UTF8StringList
+     */
+    int LoadStringListFromTextFile(UTF8StringList &sl,const OSString &filename,const CharSet &cs)
+    {
+        uchar *data;
+
+        const int size=filesystem::LoadFileToMemory(filename,(void **)&data);
+
+        if(size<=0)
+            return size;
+
+        return LoadStringListFromText(sl,data,size,cs);
     }
 
     /**
