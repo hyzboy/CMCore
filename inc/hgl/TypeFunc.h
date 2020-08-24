@@ -5,6 +5,8 @@
 #include<math.h>
 namespace hgl
 {
+    #define HGL_OFFICAL_WEB "www.hyzgame.com"
+
     #define HGL_CONVER_TO_MEM_ALIGN(x)      ((((x)+HGL_MEM_ALIGN-1)/HGL_MEM_ALIGN)*HGL_MEM_ALIGN)                   //内存对齐转换宏
 
     #ifndef NULL
