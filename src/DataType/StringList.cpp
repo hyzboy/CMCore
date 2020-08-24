@@ -5,12 +5,12 @@ namespace hgl
     /**
      * 加载一个原始文本块到UTF8String
      */
-    int LoadStringFromText(UTF8String &full_text,void *source_data,const int size,const CharSet &cs)
+    int LoadStringFromText(UTF8String &full_text,const void *source_data,const int size,const CharSet &cs)
     {
         u8char *str=nullptr;
         int char_count=0;
 
-        u8char *data=(u8char *)source_data;
+        const u8char *data=(const u8char *)source_data;
 
         if(size>=3&&data[0]==0xEF&&data[1]==0xBB&&data[2]==0xBF)            //utf8
         {
@@ -76,16 +76,15 @@ namespace hgl
             delete[] str;
         }
 
-        delete[] data;
         return char_count;
     }
 
     /**
      * 加载一个原始文本块到UTF16String
      */
-    int LoadStringFromText(UTF16String &full_text,void *source_data,const int size,const CharSet &cs)
+    int LoadStringFromText(UTF16String &full_text,const void *source_data,const int size,const CharSet &cs)
     {
-        uint8 *data=(uint8 *)source_data;
+        const uint8 *data=(const uint8 *)source_data;
         u16char *str=nullptr;
 
         int char_count=0;
@@ -150,14 +149,13 @@ namespace hgl
             delete[] str;
         }
 
-        delete[] data;
         return char_count;
     }
     
     /**
      * 加载一个原始文本块到UTF8StringList
      */
-    int LoadStringListFromText(UTF8StringList &sl,void *data,const int size,const CharSet &cs)
+    int LoadStringListFromText(UTF8StringList &sl,const void *data,const int size,const CharSet &cs)
     {
         UTF8String str;
 
@@ -169,7 +167,7 @@ namespace hgl
     /**
      * 加载一个原始文本块到UTF16StringList
      */
-    int LoadStringListFromText(UTF16StringList &sl,void *data,const int size,const CharSet &cs)
+    int LoadStringListFromText(UTF16StringList &sl,const void *data,const int size,const CharSet &cs)
     {
         UTF16String str;
 
