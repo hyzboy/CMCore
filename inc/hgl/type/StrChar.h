@@ -167,6 +167,35 @@ namespace hgl
     }
 
     /**
+     * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
+     */
+    template<>
+    inline const bool isspace(const char ch)
+    {
+        return(ch==0
+             ||ch==' '              //半角空格
+             ||ch=='\t'
+             ||ch=='\r'
+             ||ch=='\f'
+             ||ch=='\v'
+             ||ch=='\n');
+    }
+
+    #ifdef char8_t
+    template<>
+    const bool isspace(const char8_t ch)
+    {
+        return(ch==0
+             ||ch==' '              //半角空格
+             ||ch=='\t'
+             ||ch=='\r'
+             ||ch=='\f'
+             ||ch=='\v'
+             ||ch=='\n');
+    }
+    #endif//char8_t
+
+    /**
      * 测试当前字符是否为字母或数字
      */
     template<typename T>
@@ -1079,7 +1108,7 @@ namespace hgl
      * @return 新的字符串，需自行delete[]
      */
     template<typename T>
-    T *trimleft(T *src,int &len)
+    T *trimleft(const T *src,int &len)
     {
         const T *p=src;
 
@@ -1103,7 +1132,7 @@ namespace hgl
      * 截去字符串尾端所有的空格、换行等符号字符
      */
     template<typename T>
-    T *trimright(T *src,int &len)
+    T *trimright(const T *src,int &len)
     {
         const T *p=src+len-1;
 
@@ -1127,7 +1156,7 @@ namespace hgl
      * 截去字符串前端和尾端的所有空格、换行符等符号
      */
     template<typename T>
-    T *trim(T *src,int &len)
+    T *trim(const T *src,int &len)
     {
         const T *sp=src;
         const T *ep=src+len-1;
@@ -2217,6 +2246,100 @@ namespace hgl
     T *ftos(T *str,int size,F value)
     {
         return ftos(str,size,4,value);
+    }
+
+    /**
+     * 从一个字符串中截取两个指定字符中间的子串
+     * @param str 源字符串
+     * @param str_length 源字符串字度
+     * @param start_char 起始字符
+     * @param end_char 结束字符
+     * @param between_length 截取的子串长度
+     * @return 截取的子串起始指针
+     * @return nullptr 错误
+     */
+    template<typename T>
+    const T *getbetween(const T *str,int str_length,const T start_char,const T end_char,int *between_length)
+    {
+        if(!str||!*str||str_length<=0)
+            return(nullptr);
+
+        const T *start=nullptr;
+
+        while(*str&&str_length>0)
+        {
+            --str_length;
+
+            if(*str==start_char)
+            {
+                ++str;
+                start=str;
+                break;
+            }
+        
+            ++str;
+        }
+
+        if(!start)return(nullptr);
+
+        while(*str&&str_length>0)
+        {
+            --str_length;
+
+            if(*str==end_char)
+            {
+                *between_length=str-start;
+                return(start);
+            }
+
+            ++str;
+        }
+
+        return(nullptr);
+    }
+    
+    /**
+     * 从一个字符串中截取指定字符中间的子串
+     * @param str 源字符串
+     * @param str_length 源字符串字度
+     * @param edge_char 边界字符
+     * @param between_length 截取的子串长度
+     * @return 截取的子串起始指针
+     * @return nullptr 错误
+     */
+    template<typename T>
+    const T *getbetween(const T *str,int str_length,const T edge_char,int *between_length)
+    {
+        return getbetween(str,str_length,edge_char,edge_char,between_length);
+    }
+    
+    /**
+     * 从一个字符串中截取两个指定字符中间的子串
+     * @param str 源字符串
+     * @param start_char 起始字符
+     * @param end_char 结束字符
+     * @param between_length 截取的子串长度
+     * @return 截取的子串起始指针
+     * @return nullptr 错误
+     */
+    template<typename T>
+    const T *getbetween(const T *str,const T start_char,const T end_char,int *between_length)
+    {
+        return getbetween(str,hgl::strlen(str),start_char,end_char,between_length);
+    }
+    
+    /**
+     * 从一个字符串中截取指定字符中间的子串
+     * @param str 源字符串
+     * @param edge_char 边界字符
+     * @param between_length 截取的子串长度
+     * @return 截取的子串起始指针
+     * @return nullptr 错误
+     */
+    template<typename T>
+    const T *getbetween(const T *str,const T edge_char,int *between_length)
+    {
+        return getbetween(str,hgl::strlen(str),edge_char,edge_char,between_length);
     }
 
     /**
