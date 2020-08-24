@@ -870,7 +870,7 @@ namespace hgl
 
             if(new_len>0)
             {
-                Set(new_str,new_len,true);
+                SetString(SelfClass::newOf(new_str,new_len));
                 return(true);
             }
             else
