@@ -7,6 +7,8 @@ namespace hgl
 {
     #define HGL_OFFICAL_WEB "www.hyzgame.com"
 
+    #define ENUM_CLASS_RANGE(begin,end)     BEGIN_RANGE=begin,END_RANGE=end,RANGE_SIZE=(END_RANGE-BEGIN_RANGE)+1
+
     #define HGL_CONVER_TO_MEM_ALIGN(x)      ((((x)+HGL_MEM_ALIGN-1)/HGL_MEM_ALIGN)*HGL_MEM_ALIGN)                   //内存对齐转换宏
 
     #ifndef NULL
