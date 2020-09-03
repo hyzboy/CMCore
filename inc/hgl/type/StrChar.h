@@ -1108,7 +1108,7 @@ namespace hgl
      * @return 新的字符串，需自行delete[]
      */
     template<typename T>
-    T *trimleft(const T *src,int &len)
+    const T *trimleft(const T *src,int &len)
     {
         const T *p=src;
 
@@ -1119,20 +1119,16 @@ namespace hgl
         }
 
         if(len<=0)
-            return(0);
+            return(nullptr);
 
-        T *new_str=new T[len+1];
-
-        memcpy(new_str,p,len*sizeof(T));
-        new_str[len]=0;
-        return new_str;
+        return p;
     }
 
     /**
      * 截去字符串尾端所有的空格、换行等符号字符
      */
     template<typename T>
-    T *trimright(const T *src,int &len)
+    const T *trimright(const T *src,int &len)
     {
         const T *p=src+len-1;
 
@@ -1143,20 +1139,16 @@ namespace hgl
         }
 
         if(len<=0)
-            return(0);
+            return(nullptr);
 
-        T *new_str=new T[len+1];
-
-        memcpy(new_str,src,len*sizeof(T));
-        new_str[len]=0;
-        return new_str;
+        return src;
     }
 
     /**
      * 截去字符串前端和尾端的所有空格、换行符等符号
      */
     template<typename T>
-    T *trim(const T *src,int &len)
+    const T *trim(const T *src,int &len)
     {
         const T *sp=src;
         const T *ep=src+len-1;
@@ -1174,13 +1166,9 @@ namespace hgl
         }
 
         if(len<=0)
-            return(0);
+            return(nullptr);
 
-        T *new_str=new T[len+1];
-
-        memcpy(new_str,sp,len*sizeof(T));
-        new_str[len]=0;
-        return new_str;
+        return sp;
     }
 
     /**
