@@ -857,7 +857,7 @@ namespace hgl
 
     protected:
 
-        typedef T *(*ConvFunc)(const T *,int &);
+        typedef const T *(*ConvFunc)(const T *,int &);
 
         bool StrConv(ConvFunc conv)
         {
@@ -866,11 +866,11 @@ namespace hgl
 
             int new_len=data->GetLength();
 
-            T *new_str=conv(data->c_str(),new_len);
+            const T *new_str=conv(data->c_str(),new_len);
 
             if(new_len>0)
             {
-                SetString(SelfClass::newOf(new_str,new_len));
+                SetString(new_str,new_len);
                 return(true);
             }
             else
