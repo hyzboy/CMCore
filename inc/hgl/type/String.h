@@ -9,13 +9,13 @@
 namespace hgl
 {
     /**
-     * 字符串基类
+     * 字符串类
      */
-    template<typename T> class BaseString                                                           ///字符串基类
+    template<typename T> class String                                                               ///字符串基类
     {
     protected:
 
-        using SelfClass     =BaseString<T>;
+        using SelfClass     =String<T>;
         using InstClass     =StringInstance<T>;
         using SharedClass   =SharedPtr<InstClass>;
 
@@ -23,9 +23,9 @@ namespace hgl
 
     public:
 
-        BaseString()=default;
+        String()=default;
 
-        BaseString(InstClass *ic)
+        String(InstClass *ic)
         {
             data=ic;
         }
@@ -34,7 +34,7 @@ namespace hgl
          * 根据一个C指针风格字符串设置当前字符串内容
          * @param str 字符串内容，需以0为结尾
          */
-        BaseString(const T *str)
+        String(const T *str)
         {
             SetString(str);
         }
@@ -44,21 +44,21 @@ namespace hgl
          * @param str 字符串内容，在len<0的情况下，需以0为结尾
          * @param len 字符串长度，如果str以0为结尾，可以为负值，将启用自动计算长度
          */
-        BaseString(const T *str,int len)
+        String(const T *str,int len)
         {
             SetString(str,len);
         }
 
-        static BaseString<T> newOf(T *str,const uint len)
+        static String<T> newOf(T *str,const uint len)
         {
             StringInstance<T> *si=new StringInstance<T>();
 
             si->InitFromInstance(str,len);
 
-            return BaseString<T>(si);
+            return String<T>(si);
         }
 
-        BaseString(io::InputStream *is,int len=0)
+        String(io::InputStream *is,int len=0)
         {
             if(len<=0)
                 len=is->Available();
@@ -76,26 +76,26 @@ namespace hgl
             SetInstance(str,len);
         }
 
-        BaseString(const char)=delete;
+        String(const char)=delete;
 
-        static BaseString<T> charOf(const T &ch)
+        static String<T> charOf(const T &ch)
         {
             T *str=new T[2];
 
             str[0]=ch;
             str[1]=0;
 
-            return BaseString<T>::newOf(str,1);
+            return String<T>::newOf(str,1);
         }
 
-        BaseString(const InstClass &si)
+        String(const InstClass &si)
         {
             if((&si)==nullptr)return;
 
             data=si;
         }
 
-        BaseString(const SelfClass &bs)
+        String(const SelfClass &bs)
         {
             if((&bs)==nullptr)return;
 
@@ -103,8 +103,8 @@ namespace hgl
         }
 
         #define BASE_STRING_NUMBER_CONSTRUCT(type,func) \
-        BaseString(const type num)=delete;  \
-        static BaseString<T> valueOf(const type value)  \
+        String(const type num)=delete;  \
+        static String<T> valueOf(const type value)  \
         {   \
             StringInstance<T> *si=new StringInstance<T>();  \
             \
@@ -115,7 +115,7 @@ namespace hgl
             func(tmp_str,len,value);  \
             si->InitFromInstance(tmp_str,hgl::strlen(tmp_str)); \
             \
-            return BaseString<T>(si);   \
+            return String<T>(si);   \
         }
 
         BASE_STRING_NUMBER_CONSTRUCT(int,   itos);
@@ -128,9 +128,9 @@ namespace hgl
 
         #undef BASE_STRING_NUMBER_CONSTRUCT
 
-        BaseString(const int *value,int N)=delete;
+        String(const int *value,int N)=delete;
 
-        static BaseString<T> valueOf(const int *value,int N)
+        static String<T> valueOf(const int *value,int N)
         {
             const int size=N*sizeof(int)*8;
             int len;
@@ -148,12 +148,12 @@ namespace hgl
                 ++value;
             }
 
-            return BaseString<T>(tmp_str);
+            return String<T>(tmp_str);
         }
 
-        BaseString(const float *value,int N)=delete;
+        String(const float *value,int N)=delete;
 
-        static BaseString<T> valueOf(const float *value,int N)
+        static String<T> valueOf(const float *value,int N)
         {
             const int size=N*sizeof(float)*16;
             int len;
@@ -171,10 +171,10 @@ namespace hgl
                 ++value;
             }
             
-            return BaseString<T>(tmp_str);
+            return String<T>(tmp_str);
         }
 
-        virtual ~BaseString()=default;
+        virtual ~String()=default;
 
         const T GetBeginChar()const                                                                 ///<取得当前字符串第一个字符
         {
@@ -352,7 +352,7 @@ namespace hgl
         }
 
         /**
-         * 断开与其它BaseString共用的情况，创建一个独有的实例
+         * 断开与其它String共用的情况，创建一个独有的实例
          */
         bool Unlink()
         {
@@ -971,7 +971,7 @@ namespace hgl
          * @param pos 起始查找位置
          * @param ch 要查找的字符,可以是多个，找到任意一个就算
          */
-        int FindChar(uint pos,const BaseString<T> &ch)const                                          ///<返回当前字符串中指定字符(多个任选一)的索引(从左至右)
+        int FindChar(uint pos,const String<T> &ch)const                                          ///<返回当前字符串中指定字符(多个任选一)的索引(从左至右)
         {
             if(!data.valid())
                 return(-1);
@@ -984,7 +984,7 @@ namespace hgl
             return(-1);
         }
 
-        int FindChar(const BaseString<T> &ch)const{return FindChar(0,ch);}                          ///<返回当前字符串中指定字符(多个任选一)的索引(从左至右)
+        int FindChar(const String<T> &ch)const{return FindChar(0,ch);}                          ///<返回当前字符串中指定字符(多个任选一)的索引(从左至右)
 
         int FindRightChar(const T ch)const                                                          ///<返回当前字符串中指定字符开始的索引(从右至左)
         {
@@ -999,7 +999,7 @@ namespace hgl
             return(-1);
         }
 
-        int FindRightChar(const BaseString<T> &ch)const                                             ///<返回当前字符串中指定字符(多个任选一)开始的索引(从右至左)
+        int FindRightChar(const String<T> &ch)const                                             ///<返回当前字符串中指定字符(多个任选一)开始的索引(从右至左)
         {
             if(!data.valid())
                 return(-1);
@@ -1035,7 +1035,7 @@ namespace hgl
          * @param off 从右至左跳过不查的字符个数
          * @param ch 要查找的字符
          */
-        int FindRightChar(const int off,const BaseString<T> &ch)const
+        int FindRightChar(const int off,const String<T> &ch)const
         {
             if(!data.valid())
                 return(-1);
@@ -1073,7 +1073,7 @@ namespace hgl
          * @param pos 起始查找位置
          * @param ch 要排除的字符
          */
-        int FindExcludeChar(const uint pos,const BaseString<T> &ch)const
+        int FindExcludeChar(const uint pos,const String<T> &ch)const
         {
             if(!data.valid())
                 return(-1);
@@ -1086,7 +1086,7 @@ namespace hgl
             return(-1);
         }
 
-        int FindExcludeChar(const BaseString &ch)const{return FindExcludeChar(0,ch);}
+        int FindExcludeChar(const String &ch)const{return FindExcludeChar(0,ch);}
 
         /**
          * 在整个字符串内，查找指定字符串
@@ -1228,7 +1228,7 @@ namespace hgl
 
                 ms[new_len]=0;
 
-                return BaseString::newOf(ms,new_len);
+                return String::newOf(ms,new_len);
             }
 
             SelfClass  operator +   (const SelfClass &str) const
@@ -1277,35 +1277,35 @@ namespace hgl
 
             CompOperator(const T *,Comp);
             CompOperator(const SelfClass &,Comp);
-    };//template<typename T> class BaseString
+    };//template<typename T> class String
 
     //这种重载用于value+str的情况
     //而类中的的重载用于str+value的情况
 
-    template<typename V,typename T> BaseString<T> operator + (const V &value,const BaseString<T> &str)
+    template<typename V,typename T> String<T> operator + (const V &value,const String<T> &str)
     {
         if(str.Length()<=0)
-            return BaseString<T>(value);
+            return String<T>(value);
 
-        return BaseString<T>(value)+str;
+        return String<T>(value)+str;
     }
     
-    using AnsiString    =BaseString<char>;
-    using UTF8String    =BaseString<u8char>;
-    using UTF16String   =BaseString<u16char>;
-    using UTF32String   =BaseString<char32_t>;
-    using OSString      =BaseString<os_char>;
-    using WideString    =BaseString<wchar_t>;
+    using AnsiString    =String<char>;
+    using UTF8String    =String<u8char>;
+    using UTF16String   =String<u16char>;
+    using UTF32String   =String<char32_t>;
+    using OSString      =String<os_char>;
+    using WideString    =String<wchar_t>;
 
-    template<typename C> bool ToNumber(const BaseString<C> &str,int &value){return str.ToInt(value);}
-    template<typename C> bool ToNumber(const BaseString<C> &str,uint &value){return str.ToUint(value);}
-    template<typename C> bool ToNumber(const BaseString<C> &str,float &value){return str.ToFloat(value);}
-    template<typename C> bool ToNumber(const BaseString<C> &str,double &value){return str.ToFloat(value);}
+    template<typename C> bool ToNumber(const String<C> &str,int &value){return str.ToInt(value);}
+    template<typename C> bool ToNumber(const String<C> &str,uint &value){return str.ToUint(value);}
+    template<typename C> bool ToNumber(const String<C> &str,float &value){return str.ToFloat(value);}
+    template<typename C> bool ToNumber(const String<C> &str,double &value){return str.ToFloat(value);}
 
     /**
      * 以累加的方式为一个字符串计算出一个hash码
      */
-    template<typename T,int HASH_MAX> uint StringFastHash(const BaseString<T> &str)
+    template<typename T,int HASH_MAX> uint StringFastHash(const String<T> &str)
     {
         const T *p=str.c_str();
         int c=str.Length();
@@ -1324,13 +1324,13 @@ namespace hgl
      * @return 转换好的字符串
      * @see HexToString
      */
-    template<typename T,typename I> BaseString<T> ToHexString(const I &value)
+    template<typename T,typename I> String<T> ToHexString(const I &value)
     {
         T str[(sizeof(I)<<1)+1];
 
         ToUpperHexStr(str,value);
 
-        return BaseString<T>(str);
+        return String<T>(str);
     }
 
     /**
@@ -1339,46 +1339,46 @@ namespace hgl
      * @param value 要转换的数值
      * @see ToHexString
      */
-    template<typename T,typename I> BaseString<T> HexToString(const I &value)
+    template<typename T,typename I> String<T> HexToString(const I &value)
     {
         T str[(sizeof(I)<<1)+1];
 
         htos(str,sizeof(I)<<1,value);
 
-        return BaseString<T>(str);
+        return String<T>(str);
     }
 
     /**
      * 将一个指针转换成一个16进制字符串
      */
-    template<typename T> BaseString<T> PointerToHexString(const void *ptr)
+    template<typename T> String<T> PointerToHexString(const void *ptr)
     {
         return HexToString<T,HGL_POINTER_UINT>(reinterpret_cast<const HGL_POINTER_UINT>(ptr));
     }
 
-    inline BaseString<os_char> PointerToHexOSString(const void *value)
+    inline String<os_char> PointerToHexOSString(const void *value)
     {
         return PointerToHexString<os_char>(value);
     }
 
-    inline BaseString<char> PointerToHexUTF8String(const void *value)
+    inline String<char> PointerToHexUTF8String(const void *value)
     {
         return PointerToHexString<char>(value);
     }
 
-    inline BaseString<u16char> PointerToHexUTF16String(const void *value)
+    inline String<u16char> PointerToHexUTF16String(const void *value)
     {
         return PointerToHexString<u16char>(value);
     }
 
     template<typename T>
-    inline void strcpy(T *dst,int max_count,const BaseString<T> &src)
+    inline void strcpy(T *dst,int max_count,const String<T> &src)
     {
         hgl::strcpy(dst,max_count,src.c_str(),src.Length());
     }
 
     template<typename T>
-    inline void strcat(T *dst,int max_count,const BaseString<T> &src)
+    inline void strcat(T *dst,int max_count,const String<T> &src)
     {
         hgl::strcat(dst,max_count,src.c_str(),src.Length());
     }

@@ -3,7 +3,7 @@
 
 #include<hgl/type/DataType.h>
 #include<hgl/type/Set.h>
-#include<hgl/type/BaseString.h>
+#include<hgl/type/String.h>
 #include<hgl/thread/ThreadMutex.h>
 #include<hgl/log/LogInfo.h>
 

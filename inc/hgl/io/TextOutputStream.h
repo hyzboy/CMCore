@@ -59,7 +59,7 @@ namespace hgl
             virtual bool WriteChars(const u16char *,int64)=0;                                       ///<写入一个字符串
 
             template<typename N>
-            bool WriteString(const BaseString<N> &str)                                              ///<写入一个字符串
+            bool WriteString(const String<N> &str)                                              ///<写入一个字符串
             {
                 return WriteChars(str.c_str(),str.Length());
             }
@@ -79,7 +79,7 @@ namespace hgl
             }
 
             template<typename N>
-            bool WriteLine(const BaseString<N> &str)
+            bool WriteLine(const String<N> &str)
             {
                 return WriteLine(str.c_str(),str.Length());
             }

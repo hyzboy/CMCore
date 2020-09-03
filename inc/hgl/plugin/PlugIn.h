@@ -1,7 +1,7 @@
 ﻿#ifndef HGL_PLUGIN_INCLUDE
 #define HGL_PLUGIN_INCLUDE
 
-#include<hgl/type/BaseString.h>
+#include<hgl/type/String.h>
 namespace hgl
 {
     /**

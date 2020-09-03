@@ -3,7 +3,7 @@
 
 #include<hgl/type/List.h>
 #include<hgl/filesystem/FileSystem.h>
-#include<hgl/type/BaseString.h>
+#include<hgl/type/String.h>
 #include<hgl/io/DataInputStream.h>
 #include<hgl/io/DataOutputStream.h>
 
@@ -222,7 +222,7 @@ namespace hgl
      * @param size 字符串长度
      * @return 字符串行数
      */
-    template<typename T> int SplitToStringListBySpace(StringList<BaseString<T> > &sl,const T *str,int size)
+    template<typename T> int SplitToStringListBySpace(StringList<String<T> > &sl,const T *str,int size)
     {
         if(!str||size<=0)return(-1);
 
@@ -237,7 +237,7 @@ namespace hgl
             {
                 if(p>sp)
                 {
-                    sl.Add(BaseString<T>(sp,p-sp));
+                    sl.Add(String<T>(sp,p-sp));
                     ++count;
                 }
 
@@ -249,7 +249,7 @@ namespace hgl
             {
                 if(p>sp)
                 {
-                    sl.Add(BaseString<T>(sp,p-sp));
+                    sl.Add(String<T>(sp,p-sp));
                     ++count;
                 }
 
@@ -262,7 +262,7 @@ namespace hgl
 
         if(p>sp)
         {
-            sl.Add(BaseString<T>(sp,p-sp));
+            sl.Add(String<T>(sp,p-sp));
             ++count;
         }
 
@@ -277,7 +277,7 @@ namespace hgl
      * @param split_char 分隔字符
      * @return 字符串行数
      */
-    template<typename T> int SplitToStringList(StringList<BaseString<T> > &sl,const T *str,int size,const T &split_char)
+    template<typename T> int SplitToStringList(StringList<String<T> > &sl,const T *str,int size,const T &split_char)
     {
         if(!str||size<=0)return(-1);
 
@@ -292,7 +292,7 @@ namespace hgl
             {
                 if(p>sp)
                 {
-                    sl.Add(BaseString<T>(sp,p-sp));
+                    sl.Add(String<T>(sp,p-sp));
                     ++count;
                 }
 
@@ -304,7 +304,7 @@ namespace hgl
             {
                 if(p>sp)
                 {
-                    sl.Add(BaseString<T>(sp,p-sp));
+                    sl.Add(String<T>(sp,p-sp));
                     ++count;
                 }
 
@@ -317,14 +317,14 @@ namespace hgl
 
         if(p>sp)
         {
-            sl.Add(BaseString<T>(sp,p-sp));
+            sl.Add(String<T>(sp,p-sp));
             ++count;
         }
 
         return count;
     }//int SplitToStringList
 
-    template<typename T> int SplitToStringListFromString(StringList<BaseString<T> > &sl,const BaseString<T> &str,const T &split_char)
+    template<typename T> int SplitToStringListFromString(StringList<String<T> > &sl,const String<T> &str,const T &split_char)
     {
         return SplitToStringList<T>(sl,str.c_str(),str.Length(),split_char);
     }
@@ -338,7 +338,7 @@ namespace hgl
      * @param maxSize 最多执行次数
      * @return 字符串行数
      */
-    template<typename T> int SplitToStringList(StringList<BaseString<T> > &sl,const T *str,int size,const T &split_char,int maxSize)
+    template<typename T> int SplitToStringList(StringList<String<T> > &sl,const T *str,int size,const T &split_char,int maxSize)
     {
         if(!str||size<=0)return(-1);
 
@@ -353,7 +353,7 @@ namespace hgl
             {
                 if(p>sp)
                 {
-                    sl.Add(BaseString<T>(sp,p-sp));
+                    sl.Add(String<T>(sp,p-sp));
                     ++count;
                 }
 
@@ -365,7 +365,7 @@ namespace hgl
             {
                 if(p>sp)
                 {
-                    sl.Add(BaseString<T>(sp,p-sp));
+                    sl.Add(String<T>(sp,p-sp));
                     ++count;
                 }
 
@@ -376,7 +376,7 @@ namespace hgl
                     --size;
                     if(size > 0)
                     {
-                        sl.Add(BaseString<T>(sp,size));
+                        sl.Add(String<T>(sp,size));
                         ++count;
                     }
 
@@ -390,14 +390,14 @@ namespace hgl
 
         if(p>sp)
         {
-            sl.Add(BaseString<T>(sp,p-sp));
+            sl.Add(String<T>(sp,p-sp));
             ++count;
         }
 
         return count;
     }//int SplitToStringList
 
-    template<typename T> int SplitToStringList(StringList<BaseString<T> > &sl,const BaseString<T> &str,const T &split_char,int maxSize)
+    template<typename T> int SplitToStringList(StringList<String<T> > &sl,const String<T> &str,const T &split_char,int maxSize)
     {
         return SplitToStringList<T>(sl,str.c_str(),str.Length(),split_char,maxSize);
     }
@@ -409,7 +409,7 @@ namespace hgl
      * @param size 字符串长度
      * @return 字符串行数
      */
-    template<typename T> int SplitToStringListByEnter(StringList<BaseString<T> > &sl,const T *str,int size)
+    template<typename T> int SplitToStringListByEnter(StringList<String<T> > &sl,const T *str,int size)
     {
         if(!str||size<=0)return(-1);
 
@@ -424,7 +424,7 @@ namespace hgl
             {
                 if(p>sp)
                 {
-                    sl.Add(BaseString<T>(sp,p-sp));
+                    sl.Add(String<T>(sp,p-sp));
                     ++count;
                 }
 
@@ -434,7 +434,7 @@ namespace hgl
 
             if(*p==0x0D)            // \r
             {
-                sl.Add(BaseString<T>(sp,p-sp));
+                sl.Add(String<T>(sp,p-sp));
                 ++count;
 
                 ++p;
@@ -451,7 +451,7 @@ namespace hgl
             else
             if(*p==0x0A)            // \n
             {
-                sl.Add(BaseString<T>(sp,p-sp));
+                sl.Add(String<T>(sp,p-sp));
                 ++count;
 
                 ++p;
@@ -468,19 +468,19 @@ namespace hgl
 
         if(p>sp)
         {
-            sl.Add(BaseString<T>(sp,p-sp));
+            sl.Add(String<T>(sp,p-sp));
             ++count;
         }
 
         return count;
     }//int SplitToStringList
     
-    template<typename T> int SplitToStringListByEnter(StringList<BaseString<T> > &sl,const BaseString<T> &str)
+    template<typename T> int SplitToStringListByEnter(StringList<String<T> > &sl,const String<T> &str)
     {
         return SplitToStringListByEnter<T>(sl,str.c_str(),str.Length());
     }
 
-    template<typename T> int SplitToStringList(StringList<BaseString<T> > &sl,const BaseString<T> &str)
+    template<typename T> int SplitToStringList(StringList<String<T> > &sl,const String<T> &str)
     {
         return SplitToStringList<T>(sl,str.c_str(),str.Length());
     }
@@ -493,7 +493,7 @@ namespace hgl
      * @param size 字符串长度
      * @return 字符串行数
      */
-    template<typename T> int SplitToMultiStringList(StringList<BaseString<T> > **sl,int slc,const T *str,int size)
+    template<typename T> int SplitToMultiStringList(StringList<String<T> > **sl,int slc,const T *str,int size)
     {
         if(!str||size<=0)return(-1);
         if(slc<=0)return(-1);
@@ -510,7 +510,7 @@ namespace hgl
             {
                 if(p>sp)
                 {
-                    sl[index]->Add(BaseString<T>(sp,p-sp));
+                    sl[index]->Add(String<T>(sp,p-sp));
                     if(++index==slc)index=0;
                     ++count;
                 }
@@ -521,7 +521,7 @@ namespace hgl
 
             if(*p==0x0D)            // \r
             {
-                sl[index]->Add(BaseString<T>(sp,p-sp));
+                sl[index]->Add(String<T>(sp,p-sp));
                 if(++index==slc)index=0;
 
                 ++count;
@@ -540,7 +540,7 @@ namespace hgl
             else
             if(*p==0x0A)            // \n
             {
-                sl[index]->Add(BaseString<T>(sp,p-sp));
+                sl[index]->Add(String<T>(sp,p-sp));
                 if(++index==slc)index=0;
 
                 ++count;
@@ -559,14 +559,14 @@ namespace hgl
 
         if(p>sp)
         {
-            sl[index]->Add(BaseString<T>(sp,p-sp));
+            sl[index]->Add(String<T>(sp,p-sp));
             ++count;
         }
 
         return count;
     }//int SplitToStringList
 
-    template<typename T> int SplitToMultiStringList(StringList<BaseString<T> > **sl,int slc,const BaseString<T> &str)
+    template<typename T> int SplitToMultiStringList(StringList<String<T> > **sl,int slc,const String<T> &str)
     {
         if(!sl||slc<=0)return(false);
 
@@ -618,7 +618,7 @@ namespace hgl
      * @param dis 数据输入流
      * @return 字符串行数
      */
-    template<typename T,ByteOrderMask bom> int LoadStringList(StringList<BaseString<T> > &sl,io::DataInputStream *dis)
+    template<typename T,ByteOrderMask bom> int LoadStringList(StringList<String<T> > &sl,io::DataInputStream *dis)
     {
         if(!dis)return(-1);
 
@@ -628,9 +628,9 @@ namespace hgl
         if(!dis->ReadInt32(count))
             return(-2);
 
-        ReadStringFromDIS<BaseString<T>,bom> rsfd;
+        ReadStringFromDIS<String<T>,bom> rsfd;
 
-        BaseString<T> str;
+        String<T> str;
 
         for(int i=0;i<count;i++)
         {

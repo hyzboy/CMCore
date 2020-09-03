@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<string>
-#include<hgl/type/BaseString.h>
+#include<hgl/type/String.h>
 #include<hgl/CodePage.h>
 
 #if HGL_OS == HGL_OS_Windows

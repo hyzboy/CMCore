@@ -2,7 +2,7 @@
 #define HGL_IO_DATA_OUTPUT_STREAM_INCLUDE
 
 #include<hgl/io/OutputStream.h>
-#include<hgl/type/BaseString.h>
+#include<hgl/type/String.h>
 #include<hgl/CodePage.h>
 #include<hgl/math/Vector.h>
 namespace hgl
@@ -136,9 +136,9 @@ namespace hgl
             template<typename T> bool WriteUTF16LEChars     (const T *str,uint count);                          ///<按utf16-le格式写入字符阵列
             template<typename T> bool WriteUTF16BEChars     (const T *str,uint count);                          ///<按utf16-be格式写入字符阵列
 
-            template<typename T> bool WriteUTF8Chars        (const BaseString<T> &str){return WriteUTF8Chars    (str.c_str(),str.Length());}
-            template<typename T> bool WriteUTF16LEChars     (const BaseString<T> &str){return WriteUTF16LEChars (str.c_str(),str.Length());}
-            template<typename T> bool WriteUTF16BEChars     (const BaseString<T> &str){return WriteUTF16BEChars (str.c_str(),str.Length());}
+            template<typename T> bool WriteUTF8Chars        (const String<T> &str){return WriteUTF8Chars    (str.c_str(),str.Length());}
+            template<typename T> bool WriteUTF16LEChars     (const String<T> &str){return WriteUTF16LEChars (str.c_str(),str.Length());}
+            template<typename T> bool WriteUTF16BEChars     (const String<T> &str){return WriteUTF16BEChars (str.c_str(),str.Length());}
 
             template<typename T> bool WriteUTF8StringWithLength (const u8char *str,const uint length);
             template<typename T> bool WriteUTF8StringWithLength (const UTF16String &str);

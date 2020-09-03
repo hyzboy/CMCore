@@ -2,7 +2,7 @@
 #define HGL_IO_DATA_INPUT_STREAM_INCLUDE
 
 #include<hgl/io/InputStream.h>
-#include<hgl/type/BaseString.h>
+#include<hgl/type/String.h>
 #include<hgl/math/Vector.h>
 namespace hgl
 {

@@ -1,7 +1,7 @@
 ﻿#ifndef HGL_LOGGER_INCLUDE
 #define HGL_LOGGER_INCLUDE
 
-#include<hgl/type/BaseString.h>
+#include<hgl/type/String.h>
 namespace hgl
 {
     namespace logger

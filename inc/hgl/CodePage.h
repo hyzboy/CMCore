@@ -2,7 +2,7 @@
 #define HGL_CODE_PAGE_INCLUDE
 
 #include<hgl/platform/Platform.h>
-#include<hgl/type/BaseString.h>
+#include<hgl/type/String.h>
 namespace hgl
 {
     struct CodePageAndCharSet

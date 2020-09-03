@@ -1,7 +1,7 @@
 ﻿#ifndef HGL_FILE_SYSTEM_INCLUDE
 #define HGL_FILE_SYSTEM_INCLUDE
 
-#include<hgl/type/BaseString.h>
+#include<hgl/type/String.h>
 #include<hgl/type/List.h>
 namespace hgl
 {
@@ -13,9 +13,9 @@ namespace hgl
     namespace filesystem
     {
         template<typename T>
-        inline BaseString<T> MergeFilename(const BaseString<T> &pathname,const BaseString<T> &filename,const T directory_separator_char,const T *directory_separator_str)
+        inline String<T> MergeFilename(const String<T> &pathname,const String<T> &filename,const T directory_separator_char,const T *directory_separator_str)
         {
-            BaseString<T> fullname;
+            String<T> fullname;
 
             if(pathname.GetEndChar()==directory_separator_char)                 //结尾有分隔符
             {
@@ -47,17 +47,17 @@ namespace hgl
          * @param fullname 完整路径文件名
          */
         template<typename T>
-        inline BaseString<T> ClipFilename(const BaseString<T> &fullname)
+        inline String<T> ClipFilename(const String<T> &fullname)
         {
             if(fullname.Length()<=1)
-                return(BaseString<T>());
+                return(String<T>());
 
             const T spear_char[] = { '/','\\' };
 
             const int pos=fullname.FindRightChar(spear_char);
 
             if(pos==-1)
-                return BaseString<T>(fullname);
+                return String<T>(fullname);
 
             return fullname.SubString(pos+1);
         }
@@ -68,15 +68,15 @@ namespace hgl
          * @param split_char 扩展名分隔符,一般为'.'
          */
         template<typename T>
-        inline BaseString<T> ClipFileMainname(const BaseString<T> &filename,const T split_char='.')
+        inline String<T> ClipFileMainname(const String<T> &filename,const T split_char='.')
         {
             if(filename.Length()<=1)
-                return(BaseString<T>());
+                return(String<T>());
 
             const int pos=filename.FindRightChar(split_char);
 
             if(pos==-1)
-                return BaseString<T>(filename);
+                return String<T>(filename);
 
             return filename.SubString(0,pos);
         }
@@ -87,7 +87,7 @@ namespace hgl
          * @param include_dot 是否包括点
          */
         template<typename T>
-        inline BaseString<T> ClipFileExtName(const BaseString<T> &fullname,bool include_dot=true)
+        inline String<T> ClipFileExtName(const String<T> &fullname,bool include_dot=true)
         {
             int end=fullname.FindChar(T('?'));         //url的文件名，以?为结束
 
@@ -97,7 +97,7 @@ namespace hgl
             int pos=fullname.FindRightChar(fullname.Length()-end,T('.'));
 
             if(pos==-1)
-                return BaseString<T>();
+                return String<T>();
 
             return include_dot? fullname.SubString(pos,     end- pos   ):
                                 fullname.SubString(pos+1,   end-(pos+1));
@@ -107,10 +107,10 @@ namespace hgl
          * 截取路径最后一个名字
          */
         template<typename T>
-        inline BaseString<T> ClipLastPathname(const BaseString<T> &fullname)
+        inline String<T> ClipLastPathname(const String<T> &fullname)
         {
             if(fullname.Length()<=1)
-                return(BaseString<T>());
+                return(String<T>());
 
             const T gap_char[2]={'\\','/'};
 
@@ -136,14 +136,14 @@ namespace hgl
                 {
                     if(*e==gap_char[0]||*e==gap_char[1])
                     {
-                        return BaseString<T>(e+1,p-e);
+                        return String<T>(e+1,p-e);
                     }
 
                     --e;
                 }
             }
 
-            return(BaseString<T>());
+            return(String<T>());
         }
 
         inline UTF8String MergeFilename(const UTF8String &pathname,const UTF8String &filename)          ///<组合路径名与文件名
