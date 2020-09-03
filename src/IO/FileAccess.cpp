@@ -14,7 +14,7 @@ namespace hgl
         FileAccess::FileAccess()
         {
             fp=-1;
-            mode=fomNone;
+            mode=FileOpenMode::None;
         }
 
         FileAccess::~FileAccess()
@@ -56,7 +56,7 @@ namespace hgl
             CloseFile(fp);
 
             fp=-1;
-            mode=fomNone;
+            mode=FileOpenMode::None;
         }
 
         void FileAccess::CloseRead()
@@ -66,7 +66,7 @@ namespace hgl
             if(!CanWrite())
                 Close();
 
-            mode=fomOnlyWrite;
+            mode=FileOpenMode::OnlyWrite;
         }
 
         void FileAccess::CloseWrite()
@@ -76,14 +76,14 @@ namespace hgl
             if(!CanRead())
                 Close();
 
-            mode=fomOnlyRead;
+            mode=FileOpenMode::OnlyRead;
         }
 
         bool FileAccess::CanRead() const
         {
             if(fp==-1)return(false);
 
-            if(mode==fomOnlyWrite)return(false);
+            if(mode==FileOpenMode::OnlyWrite)return(false);
 
             return true;
         }
@@ -92,7 +92,7 @@ namespace hgl
         {
             if(fp==-1)return(false);
 
-            if(mode==fomOnlyRead)return(false);
+            if(mode==FileOpenMode::OnlyRead)return(false);
 
             return(true);
         }
@@ -100,7 +100,7 @@ namespace hgl
         bool FileAccess::CanSeek() const
         {
             if(fp==-1)return(false);
-            if(mode<fomCreate||mode>=fomAppend)return(false);
+            if(mode<FileOpenMode::Create||mode>=FileOpenMode::Append)return(false);
 
             return(true);
         }
@@ -131,8 +131,8 @@ namespace hgl
         {
             if(fp==-1)return(-1);
 
-            if(mode!=fomOnlyRead
-             &&mode!=fomReadWrite)
+            if(mode!=FileOpenMode::OnlyRead
+             &&mode!=FileOpenMode::ReadWrite)
                 return(-1);
 
             return GetSize()-Tell();

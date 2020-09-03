@@ -8,19 +8,19 @@ namespace hgl
 {
     namespace io
     {
-        enum FileOpenMode                   ///文件访问模式枚举
+        enum class FileOpenMode          ///文件访问模式枚举
         {
-            fomNone=0,
+            None=0,
 
-            fomCreate,                      ///<创建文件，如存在则失败
-            fomCreateTrunc,                 ///<强制创建，如存在则抹掉
-            fomCreateTemp,
-            fomOnlyRead,                    ///<只读方式
-            fomOnlyWrite,                   ///<只写方式
-            fomReadWrite,                   ///<可读可写
-            fomAppend,                      ///<追加模式
+            Create,                      ///<创建文件，如存在则失败
+            CreateTrunc,                 ///<强制创建，如存在则抹掉
+            CreateTemp,
+            OnlyRead,                    ///<只读方式
+            OnlyWrite,                   ///<只写方式
+            ReadWrite,                   ///<可读可写
+            Append,                      ///<追加模式
 
-            fomEnd
+            End
         };//enum FileOpenMode
 
         /**
@@ -43,13 +43,13 @@ namespace hgl
             FileAccess();
             virtual ~FileAccess();
 
-            virtual bool Open(const OSString &,FileOpenMode fom);                                   ///<以指定模式打开一个文件
-            virtual bool Create(const OSString &fn){return Open(fn,fomCreate);}                     ///<创建一个新文件，如文件已存在则创建失败
-            virtual bool CreateTrunc(const OSString &fn){return Open(fn,fomCreateTrunc);}           ///<创建一个新文件，如文件已存在则抹消它
-            virtual bool OpenRead(const OSString &fn){return Open(fn,fomOnlyRead);}                 ///<以只读模式打开一个文件
-            virtual bool OpenWrite(const OSString &fn){return Open(fn,fomOnlyWrite);}               ///<以只写模式打开一个文件
-            virtual bool OpenReadWrite(const OSString &fn){return Open(fn,fomReadWrite);}           ///<以读写模式打开一个文件
-            virtual bool CreateTemp();
+            virtual bool Open           (const OSString &,FileOpenMode fom);                                ///<以指定模式打开一个文件
+            virtual bool Create         (const OSString &fn){return Open(fn,FileOpenMode::Create);}         ///<创建一个新文件，如文件已存在则创建失败
+            virtual bool CreateTrunc    (const OSString &fn){return Open(fn,FileOpenMode::CreateTrunc);}    ///<创建一个新文件，如文件已存在则抹消它
+            virtual bool OpenRead       (const OSString &fn){return Open(fn,FileOpenMode::OnlyRead);}       ///<以只读模式打开一个文件
+            virtual bool OpenWrite      (const OSString &fn){return Open(fn,FileOpenMode::OnlyWrite);}      ///<以只写模式打开一个文件
+            virtual bool OpenReadWrite  (const OSString &fn){return Open(fn,FileOpenMode::ReadWrite);}      ///<以读写模式打开一个文件
+            virtual bool CreateTemp     ();                                                                 ///<创建一个临时文件
 
             virtual void Close();                                                                   ///<关闭文件
             virtual void CloseRead();                                                               ///<仅关闭读取
@@ -64,7 +64,7 @@ namespace hgl
             virtual bool CanRestart()const{return CanSeek();}                                       ///<文件是否可复位访问
             virtual bool CanSize()const{return(true);}                                              ///<文件是否可取得长度
 
-            virtual int64 Seek(int64,SeekOrigin=SeekOrigin::Begin);                                           ///<定位访问指针
+            virtual int64 Seek(int64,SeekOrigin=SeekOrigin::Begin);                                 ///<定位访问指针
             virtual int64 Tell()const;                                                              ///<取得访问指针位置
             virtual int64 GetSize();                                                                ///<取得文件长度
             virtual bool Restart();                                                                 ///<复位访问指针

@@ -26,7 +26,7 @@ namespace hgl
 
             file=new FileAccess();
 
-            if(!file->Open(filename,fomOnlyRead))
+            if(!file->Open(filename,FileOpenMode::OnlyRead))
             {
                 file=nullptr;
                 return(false);

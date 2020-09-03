@@ -29,7 +29,7 @@ namespace hgl
             }
 
             int64   read                (void *ptr,int size){return in?in->ReadFully(ptr,size):-1;}
-            int     skipBytes           (int size)          {return in?in->Seek(size,soCurrent):-1;}
+            int     skipBytes           (int size)          {return in?in->Seek(size,SeekOrigin::Current):-1;}
 
             bool    readBoolean         (bool       &b)     {return in?in->ReadBool     (b):false;}
             bool    readByte            (int8       &i)     {return in?in->ReadInt8     (i):false;}

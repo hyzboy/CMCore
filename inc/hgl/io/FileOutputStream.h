@@ -24,11 +24,11 @@ namespace hgl
             FileOutputStream(SharedPtr<FileAccess> &);
             virtual ~FileOutputStream();
 
-            virtual bool    Open(const OSString &fn,FileOpenMode mode){return OpenFile(fn,mode);}   ///<打开文件，指定一个模式
-            virtual bool    Open(const OSString &fn){return OpenFile(fn,fomOnlyWrite);}             ///<打开文件
-            virtual bool    Create(const OSString &fn){return OpenFile(fn,fomCreate);}              ///<创建文件，如存在创建失败
-            virtual bool    CreateTrunc(const OSString &fn){return OpenFile(fn,fomCreateTrunc);}    ///<创建文件，如存在则抹去
-            virtual bool    OpenAppend(const OSString &fn){return OpenFile(fn,fomAppend);}          ///<打开文件，追加模式
+            virtual bool    Open        (const OSString &fn,FileOpenMode mode){return OpenFile(fn,mode);}       ///<打开文件，指定一个模式
+            virtual bool    Open        (const OSString &fn){return OpenFile(fn,FileOpenMode::OnlyWrite);}      ///<打开文件
+            virtual bool    Create      (const OSString &fn){return OpenFile(fn,FileOpenMode::Create);}         ///<创建文件，如存在创建失败
+            virtual bool    CreateTrunc (const OSString &fn){return OpenFile(fn,FileOpenMode::CreateTrunc);}    ///<创建文件，如存在则抹去
+            virtual bool    OpenAppend  (const OSString &fn){return OpenFile(fn,FileOpenMode::Append);}         ///<打开文件，追加模式
 
             virtual void    Close();                                                                ///<关闭文件
 
@@ -67,7 +67,7 @@ namespace hgl
              * @param mode 打开模式，默认只写(必然可读)
              * @see FileOpenMode
              */
-            OpenFileOutputStream(const OSString &filename,FileOpenMode mode=fomOnlyWrite)
+            OpenFileOutputStream(const OSString &filename,FileOpenMode mode=FileOpenMode::OnlyWrite)
             {
                 fos=new FileOutputStream();
 
