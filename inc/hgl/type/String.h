@@ -260,7 +260,7 @@ namespace hgl
          * @param str 字符串内容，在len<0的情况下，需以0为结尾
          * @param len 字符串长度
          */
-        void SetInstance(const T *str,const uint len)
+        void SetInstance(T *str,const uint len)
         {
             if(!str||!*str)
             {
@@ -277,7 +277,7 @@ namespace hgl
             SetString(str,len);
         }
 
-        void StrcpyInstance(const T *str,int len=-1)
+        void StrcpyInstance(T *str,int len=-1)
         {
             SetInstance(str,len);
         }
