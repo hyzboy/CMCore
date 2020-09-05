@@ -10,7 +10,7 @@ namespace hgl
         u8char *str=nullptr;
         int char_count=0;
 
-        const u8char *data=(const u8char *)source_data;
+        const uint8 *data=(const uint8 *)source_data;
 
         if(size>=3&&data[0]==0xEF&&data[1]==0xBB&&data[2]==0xBF)            //utf8
         {
