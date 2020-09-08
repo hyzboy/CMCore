@@ -159,11 +159,13 @@ namespace hgl
         return(ch==0
              ||ch==' '              //半角空格
              ||ch==HGL_FULL_SPACE   //全角空格
-             ||ch=='\t'
-             ||ch=='\r'
+             ||ch=='\a'
+             ||ch=='\b'
              ||ch=='\f'
-             ||ch=='\v'
-             ||ch=='\n');
+             ||ch=='\n'
+             ||ch=='\r'
+             ||ch=='\t'
+             ||ch=='\v');
     }
 
     /**
@@ -174,11 +176,13 @@ namespace hgl
     {
         return(ch==0
              ||ch==' '              //半角空格
-             ||ch=='\t'
-             ||ch=='\r'
+             ||ch=='\a'
+             ||ch=='\b'
              ||ch=='\f'
-             ||ch=='\v'
-             ||ch=='\n');
+             ||ch=='\n'
+             ||ch=='\r'
+             ||ch=='\t'
+             ||ch=='\v');
     }
 
     #ifdef char8_t
@@ -187,11 +191,13 @@ namespace hgl
     {
         return(ch==0
              ||ch==' '              //半角空格
-             ||ch=='\t'
-             ||ch=='\r'
+             ||ch=='\a'
+             ||ch=='\b'
              ||ch=='\f'
-             ||ch=='\v'
-             ||ch=='\n');
+             ||ch=='\n'
+             ||ch=='\r'
+             ||ch=='\t'
+             ||ch=='\v');
     }
     #endif//char8_t
 

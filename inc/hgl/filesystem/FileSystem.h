@@ -73,12 +73,25 @@ namespace hgl
             if(filename.Length()<=1)
                 return(String<T>());
 
-            const int pos=filename.FindRightChar(split_char);
+            const T spear_char[] = { '/','\\' };
 
-            if(pos==-1)
-                return String<T>(filename);
+            const int dot=filename.FindRightChar(split_char);
+            const int pos=filename.FindRightChar(spear_char);
 
-            return filename.SubString(0,pos);
+            if(dot==-1)
+            {
+                if(pos==-1)
+                    return String<T>(filename);
+                else
+                    return filename.SubString(pos+1);
+            }
+            else
+            {
+                if(pos==-1)
+                    return filename.SubString(0,dot);
+                else
+                    return filename.SubString(pos+1,dot-pos-1);
+            }
         }
 
         /**

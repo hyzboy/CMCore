@@ -6,6 +6,7 @@
 namespace hgl
 {
     #define HGL_OFFICAL_WEB "www.hyzgame.com"
+    #define HGL_OFFICAL_WEB_U8 u8"www.hyzgame.com"
 
     #define ENUM_CLASS_RANGE(begin,end)     BEGIN_RANGE=begin,END_RANGE=end,RANGE_SIZE=(END_RANGE-BEGIN_RANGE)+1
 
