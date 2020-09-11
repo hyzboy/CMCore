@@ -220,6 +220,15 @@ namespace hgl
     }
 
     /**
+     * 测试当前字符是否不是代码可用字符(仅字母，数字，下划线，常用于文件名之类)
+     */
+    template<typename T>
+    const bool notcodechar(const T ch)
+    {
+        return(!iscodechar(ch));
+    }
+
+    /**
      * 测试当前字符是否为BASE64编码字符
      */
     template<typename T>
@@ -1108,17 +1117,18 @@ namespace hgl
     }
 
     /**
-     * 截去字符串前端所有的空格、换行等符号字符
+     * 截去字符串前端所有的指定字符
      * @param src 源字符串指针
-     * @param len 源字符串长度
-     * @return 新的字符串，需自行delete[]
+     * @param len 源字符串长度(同样用于返回结果字符串长度)
+     * @param trimfunc 截取字符判断函数(默认isspace)
+     * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *trimleft(const T *src,int &len)
+    const T *trimleft(const T *src,int &len,const bool (*trimfunc)(const T)=isspace<T>)
     {
         const T *p=src;
 
-        while(*p&&isspace(*p)&&len)
+        while(*p&&trimfunc(*p)&&len)
         {
             p++;
             len--;
@@ -1131,14 +1141,18 @@ namespace hgl
     }
 
     /**
-     * 截去字符串尾端所有的空格、换行等符号字符
+     * 截去字符串尾端所有的指定字符
+     * @param src 源字符串指针
+     * @param len 源字符串长度(同样用于返回结果字符串长度)
+     * @param trimfunc 截取字符判断函数(默认isspace)
+     * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *trimright(const T *src,int &len)
+    const T *trimright(const T *src,int &len,const bool (*trimfunc)(const T)=isspace<T>)
     {
         const T *p=src+len-1;
 
-        while(isspace(*p)&&len)
+        while(trimfunc(*p)&&len)
         {
             p--;
             len--;
@@ -1151,21 +1165,25 @@ namespace hgl
     }
 
     /**
-     * 截去字符串前端和尾端的所有空格、换行符等符号
+     * 截去字符串前端和尾端的所有指定字符
+     * @param src 源字符串指针
+     * @param len 源字符串长度(同样用于返回结果字符串长度)
+     * @param trimfunc 截取字符判断函数(默认isspace)
+     * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *trim(const T *src,int &len)
+    const T *trim(const T *src,int &len,const bool (*trimfunc)(const T)=isspace<T>)
     {
         const T *sp=src;
         const T *ep=src+len-1;
 
-        while(*sp&&isspace(*sp)&&len)
+        while(*sp&&trimfunc(*sp)&&len)
         {
             ++sp;
             --len;
         }
 
-        while(isspace(*ep)&&len)
+        while(trimfunc(*ep)&&len)
         {
             --ep;
             --len;
@@ -1175,6 +1193,50 @@ namespace hgl
             return(nullptr);
 
         return sp;
+    }
+    
+    /**
+     * 截取字符串前端的字符串
+     * @param src 源字符串指针
+     * @param len 源字符串长度(同样用于返回结果字符串长度)
+     * @param clipfunc 不可用字符判断函数(默认isspace)
+     * @return 新的字符串起始指针
+     */
+    template<typename T>
+    const T *clipleft(const T *src,int &len,const bool (*clipfunc)(const T)=isspace<T>)
+    {
+        const T *p=src;
+
+        while(*p&&!clipfunc(*p)&&p-src<=len)
+            p++;
+
+        if(p==src)
+            return(nullptr);
+
+        len=p-src;
+        return src;
+    }
+
+    /**
+     * 截去字符串尾端的字符串
+     * @param src 源字符串指针
+     * @param len 源字符串长度(同样用于返回结果字符串长度)
+     * @param clipfunc 不可用字符判断函数(默认isspace)
+     * @return 新的字符串起始指针
+     */
+    template<typename T>
+    const T *clipright(const T *src,int &len,const bool (*clipfunc)(const T)=isspace<T>)
+    {
+        const T *p=src+len-1;
+
+        while(!clipfunc(*p)&&src-p<=len)
+            p--;
+
+        if(len<=0)
+            return(nullptr);
+
+        len=src+len-p-1;
+        return p+1;
     }
 
     /**
