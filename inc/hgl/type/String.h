@@ -49,6 +49,9 @@ namespace hgl
             SetString(str,len);
         }
 
+        /**
+         * 基于一块已经创建好的内存创建字符串类
+         */
         static String<T> newOf(T *str,const uint len)
         {
             StringInstance<T> *si=new StringInstance<T>();
