@@ -234,9 +234,9 @@ namespace hgl
     {
         if(!input)return(nullptr);
 
-        const BOMFileHeader *bfh=BOMData+bomUTF8;
+        const BOMFileHeader *bfh=BOMData+(uint)ByteOrderMask::UTF8;
 
-        for(uint i=bomUTF8;i<bomEnd;i++)
+        for(uint i=(uint)ByteOrderMask::BEGIN_RANGE+1;i<(uint)ByteOrderMask::END_RANGE;i++)
         {
             if(memcmp(input,bfh->data,bfh->size)==0)
                 return bfh;
@@ -258,7 +258,7 @@ namespace hgl
         if(!cs)return(false);
         if(!bom)return(false);
 
-        if(bom->bom<=bomNone||bom->bom>=bomEnd)return(false);
+        if(!RangeCheck<ByteOrderMask>(bom->bom))return(false);
 
         cs->codepage=bom->code_page;
         memcpy(cs->charset,bom->char_set,sizeof(CharSetName));

@@ -50,7 +50,7 @@ namespace hgl
             {
                 if(!out)return(false);
 
-                const BOMFileHeader *bom_item=BOMData+bom;
+                const BOMFileHeader *bom_item=BOMData+int(bom)-int(ByteOrderMask::BEGIN_RANGE);
 
                 return(out->Write(bom_item->data,bom_item->size)==bom_item->size);
             }
@@ -59,7 +59,7 @@ namespace hgl
             virtual bool WriteChars(const u16char *,int64)=0;                                       ///<写入一个字符串
 
             template<typename N>
-            bool WriteString(const String<N> &str)                                              ///<写入一个字符串
+            bool WriteString(const String<N> &str)                                                  ///<写入一个字符串
             {
                 return WriteChars(str.c_str(),str.Length());
             }
@@ -166,9 +166,9 @@ namespace hgl
             bool WriteChars(const u16char *,int64);                                         ///<写入一个字符串
         };//template<ByteOrderMask BOM> class EndianTextOutputStream
 
-        typedef EndianTextOutputStream<bomUTF8   > UTF8TextOutputStream;
-        typedef EndianTextOutputStream<bomUTF16LE> UTF16LETextOutputStream;
-        typedef EndianTextOutputStream<bomUTF16BE> UTF16BETextOutputStream;
+        typedef EndianTextOutputStream<ByteOrderMask::UTF8   > UTF8TextOutputStream;
+        typedef EndianTextOutputStream<ByteOrderMask::UTF16LE> UTF16LETextOutputStream;
+        typedef EndianTextOutputStream<ByteOrderMask::UTF16BE> UTF16BETextOutputStream;
 
         template<typename T> TextOutputStream *CreateTextOutputStream(OutputStream *os);
     }//namespace io

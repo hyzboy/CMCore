@@ -2,6 +2,7 @@
 #define HGL_ENDIAN_INCLUDE
 
 #include<hgl/platform/Platform.h>               // 平台定义
+#include<hgl/TypeFunc.h>
 namespace hgl
 {
     namespace endian
@@ -47,15 +48,16 @@ namespace hgl
         /**
          * 字节序类型枚举
          */
-        enum ByteOrderMask
+        enum class ByteOrderMask
         {
-            bomNone=0,
-            bomUTF8,
-            bomUTF16LE,
-            bomUTF16BE,
-            bomUTF32LE,
-            bomUTF32BE,
-            bomEnd
+            NONE=0,
+            UTF8,
+            UTF16LE,
+            UTF16BE,
+            UTF32LE,
+            UTF32BE,
+
+            ENUM_CLASS_RANGE(UTF8,UTF32BE)
         };
 
         constexpr uint CharSetNameLength=32;                                                        ///<字符集名称长度
@@ -95,25 +97,26 @@ namespace hgl
         /**
          * 字节序文件头定义
          */
-        constexpr BOMFileHeader BOMData[bomEnd]=
+        constexpr BOMFileHeader BOMData[size_t(ByteOrderMask::RANGE_SIZE)]=
         {
-            {0,{}                   ,bomNone,   nullptr            ,ccpNone     },
-            {3,{0xEF,0xBB,0xBF}     ,bomUTF8,   &utf8_charset      ,ccpUTF8     },
-            {2,{0xFF,0xFE}          ,bomUTF16LE,&utf16le_charset   ,ccpUTF16LE  },
-            {2,{0xFE,0xFF}          ,bomUTF16BE,&utf16be_charset   ,ccpUTF16BE  },
-            {4,{0xFF,0xFE,0x00,0x00},bomUTF32LE,&utf32le_charset   ,ccpUTF32LE  },
-            {4,{0x00,0x00,0xFE,0xFF},bomUTF32BE,&utf32be_charset   ,ccpUTF32BE  }
+            {3,{0xEF,0xBB,0xBF}     ,ByteOrderMask::UTF8,   &utf8_charset      ,ccpUTF8     },
+            {2,{0xFF,0xFE}          ,ByteOrderMask::UTF16LE,&utf16le_charset   ,ccpUTF16LE  },
+            {2,{0xFE,0xFF}          ,ByteOrderMask::UTF16BE,&utf16be_charset   ,ccpUTF16BE  },
+            {4,{0xFF,0xFE,0x00,0x00},ByteOrderMask::UTF32LE,&utf32le_charset   ,ccpUTF32LE  },
+            {4,{0x00,0x00,0xFE,0xFF},ByteOrderMask::UTF32BE,&utf32be_charset   ,ccpUTF32BE  }
         };
 
         inline ByteOrderMask CheckBOM(const void *data)
         {
-            for(uint i=bomNone+1;i<bomEnd;i++)
+            const BOMFileHeader *bom=BOMData;
+
+            for(int i=int(ByteOrderMask::BEGIN_RANGE);i<int(ByteOrderMask::END_RANGE);i++)
             {
-                if(memcmp(data,BOMData[i].data,BOMData[i].size)==0)
+                if(memcmp(data,bom->data,bom->size)==0)
                     return (ByteOrderMask)i;
             }
 
-            return bomNone;
+            return ByteOrderMask::NONE;
         }
 
         template<typename T>

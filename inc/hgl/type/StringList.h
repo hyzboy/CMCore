@@ -628,7 +628,7 @@ namespace hgl
         bool ReadString(io::DataInputStream *dis,T &str);
     };
 
-    template<typename T> struct ReadStringFromDIS<T,bomUTF8>
+    template<typename T> struct ReadStringFromDIS<T,ByteOrderMask::UTF8>
     {
         bool ReadString(io::DataInputStream *dis,T &str)
         {
@@ -636,7 +636,7 @@ namespace hgl
         }
     };
 
-    template<typename T> struct ReadStringFromDIS<T,bomUTF16LE>
+    template<typename T> struct ReadStringFromDIS<T,ByteOrderMask::UTF16LE>
     {
         bool ReadString(io::DataInputStream *dis,T &str)
         {
@@ -644,7 +644,7 @@ namespace hgl
         }
     };
 
-    template<typename T> struct ReadStringFromDIS<T,bomUTF16BE>
+    template<typename T> struct ReadStringFromDIS<T,ByteOrderMask::UTF16BE>
     {
         bool ReadString(io::DataInputStream *dis,T &str)
         {
@@ -684,9 +684,9 @@ namespace hgl
         return(result);
     }//int LoadStringList
 
-    inline int LoadUTF8StringList      (UTF8StringList &   sl,io::DataInputStream *dis){return LoadStringList<u8char,  bomUTF8     >(sl,dis);}
-    inline int LoadUTF16LEStringList   (UTF16StringList &  sl,io::DataInputStream *dis){return LoadStringList<u16char, bomUTF16LE  >(sl,dis);}
-    inline int LoadUTF16BEStringList   (UTF16StringList &  sl,io::DataInputStream *dis){return LoadStringList<u16char, bomUTF16BE  >(sl,dis);}
+    inline int LoadUTF8StringList      (UTF8StringList &   sl,io::DataInputStream *dis){return LoadStringList<u8char,  ByteOrderMask::UTF8     >(sl,dis);}
+    inline int LoadUTF16LEStringList   (UTF16StringList &  sl,io::DataInputStream *dis){return LoadStringList<u16char, ByteOrderMask::UTF16LE  >(sl,dis);}
+    inline int LoadUTF16BEStringList   (UTF16StringList &  sl,io::DataInputStream *dis){return LoadStringList<u16char, ByteOrderMask::UTF16BE  >(sl,dis);}
 
     int LoadStringFromText(UTF8String &str,const void *data,const int size,const CharSet &default_charset=UTF8CharSet);             ///<从文件加载一个文本块到UTF8StringList
     int LoadStringFromText(UTF16String &str,const void *data,const int size,const CharSet &default_charset=UTF8CharSet);            ///<从文件加载一个文本块到UTF16StringList
@@ -703,7 +703,7 @@ namespace hgl
         bool WriteString(io::DataOutputStream *dos,const T &str);
     };
 
-    template<typename T> struct WriteStringToDOS<T,bomUTF8>
+    template<typename T> struct WriteStringToDOS<T,ByteOrderMask::UTF8>
     {
         bool WriteString(io::DataOutputStream *dos,const T &str)
         {
@@ -711,7 +711,7 @@ namespace hgl
         }
     };
 
-    template<typename T> struct WriteStringToDOS<T,bomUTF16LE>
+    template<typename T> struct WriteStringToDOS<T,ByteOrderMask::UTF16LE>
     {
         bool WriteString(io::DataOutputStream *dos,const T &str)
         {
@@ -719,7 +719,7 @@ namespace hgl
         }
     };
 
-    template<typename T> struct WriteStringToDOS<T,bomUTF16BE>
+    template<typename T> struct WriteStringToDOS<T,ByteOrderMask::UTF16BE>
     {
         bool WriteString(io::DataOutputStream *dos,const T &str)
         {
@@ -750,17 +750,17 @@ namespace hgl
 
     template<typename T> int SaveUTF8StringList(io::DataOutputStream *dos,const StringList<T> &sl)
     {
-        return WriteStringList<T,bomUTF8>(dos,sl);
+        return WriteStringList<T,ByteOrderMask::UTF8>(dos,sl);
     }
 
     template<typename T> int SaveUTF16LEStringList(io::DataOutputStream *dos,const StringList<T> &sl)
     {
-        return WriteStringList<T,bomUTF16LE>(dos,sl);
+        return WriteStringList<T,ByteOrderMask::UTF16LE>(dos,sl);
     }
 
     template<typename T> int SaveUTF16BEStringList(io::DataOutputStream *dos,const StringList<T> &sl)
     {
-        return WriteStringList<T,bomUTF16BE>(dos,sl);
+        return WriteStringList<T,ByteOrderMask::UTF16BE>(dos,sl);
     }
 }//namespace hgl
 #endif//HGL_STRINGLIST_INCLUDE
