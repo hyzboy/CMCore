@@ -117,6 +117,28 @@ namespace hgl
         }
 
         /**
+         * 清除完整文件名中的扩展名
+         * @param fullname 完整文件名
+         * @param include_dot 是否包括点也清除
+         */
+        template<typename T>
+        inline String<T> TrimFileExtName(const String<T> &fullname,bool include_dot=false)
+        {
+            int end=fullname.FindChar(T('?'));         //url的文件名，以?为结束
+
+            if(end==-1)
+                end=fullname.Length();
+
+            int pos=fullname.FindRightChar(fullname.Length()-end,T('.'));
+
+            if(pos==-1)
+                return String<T>();
+
+            return include_dot? fullname.SubString(0,pos):
+                                fullname.SubString(0,pos+1);
+        }
+
+        /**
          * 截取路径最后一个名字
          */
         template<typename T>
