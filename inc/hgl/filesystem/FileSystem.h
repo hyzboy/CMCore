@@ -139,6 +139,30 @@ namespace hgl
         }
 
         /**
+         * 截取一个文件名中的路径名
+         * @param filename 文件名
+         * @param include_spear_char 是否包含最后的分隔符
+         */
+        template<typename T>
+        inline String<T> ClipPathname(const String<T> &filename,bool include_spear_char=true)
+        {
+            if(filename.Length()<=1)
+                return(String<T>());
+
+            const T spear_char[] = { '/','\\',':'};
+
+            const int pos=filename.FindRightChar(spear_char);
+
+            if(pos==-1)
+                return filename;
+            else
+            if(include_spear_char)
+                return filename.SubString(0,pos);
+            else
+                return filename.SubString(0,pos-1);
+        }
+
+        /**
          * 截取路径最后一个名字
          */
         template<typename T>
