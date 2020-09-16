@@ -2631,12 +2631,12 @@ namespace hgl
     }
 
     /**
-     * 将一个字符串转换成对应的枚举值
+     * 获取一个字符串在一个字符串列表中的序列号
      * @param list 对应的字符串列表,以0结尾,如:const char *target_list[]={"self","line","circle","\0"};
      * @param str 要查找的字节串
      * @return 返回查找出的序号,-1表示失败
      */
-    template<typename T> const int string_to_enum(const T **list,const T *str)
+    template<typename T> const int string_serial_from_list(const T **list,const T *str)
     {
         if(!str||!list)return(-1);
 
