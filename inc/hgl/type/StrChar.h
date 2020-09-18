@@ -105,7 +105,9 @@ namespace hgl
         ||ch=='+'
         ||ch=='.'
         ||ch=='E'
-        ||ch=='e';
+        ||ch=='e'
+        ||ch=='f'
+        ||ch=='F';
     }
 
     template<typename T>
@@ -133,7 +135,7 @@ namespace hgl
      * @param length 字符串长度
      */
     template<typename T>
-    const bool isxdigit(const T *str,int length)
+    const bool isxdigits(const T *str,int length)
     {
         if(!str||length<=0)
             return(false);
@@ -2450,6 +2452,41 @@ namespace hgl
     }
 
     /**
+     * 从字符串中解晰数值阵列,如"1,2,3"或"1 2 3"
+     */
+    template<typename C,typename N> struct ParseNumberArray
+    {
+    public:
+
+        virtual bool IsChar(const C ch)=0;
+        virtual bool ToNumber(const C *,N &)=0;
+    };
+
+    template<typename C,typename N> struct ParseIntArray:public ParseNumberArray<C,N>
+    {
+        virtual bool IsChar(const C ch) override{return hgl::isinteger(ch);}
+        virtual bool ToNumber(const C *str,N &result) override{return hgl::stoi(str,result);}
+    };
+
+    template<typename C,typename N> struct ParseUIntArray:public ParseNumberArray<C,N>
+    {
+        virtual bool IsChar(const C ch) override{return hgl::isdigit(ch);}
+        virtual bool ToNumber(const C *str,N &result) override{return hgl::stou(str,result);}
+    };
+
+    template<typename C,typename N> struct ParseFloatArray:public ParseNumberArray<C,N>
+    {
+        virtual bool IsChar(const C ch) override{return hgl::isfloat(ch);}
+        virtual bool ToNumber(const C *str,N &result) override{return hgl::etof(str,result);}
+    };
+
+    template<typename C,typename N> struct ParseHexArray:public ParseNumberArray<C,N>
+    {
+        virtual bool IsChar(const C ch) override{return hgl::isxdigit(ch);}
+        virtual bool ToNumber(const C *str,N &result) override{return hgl::xtou(str,result);}
+    };
+
+    /**
      * 解析数值阵列字符串到数组,如"1,2,3"或"1 2 3"
      * @param str 要解析的字符串
      * @param result 结果数组
@@ -2458,12 +2495,12 @@ namespace hgl
      * @param end_pointer 结束指针
      * @return 解晰出来的数据数量
      */
-    template<typename T,typename I,bool (*IS_FUNC)(const T &),bool (*STOV)(const T *str,I &)>
-    const int parse_number_array(const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0)
+    template<typename C,typename N>
+    int parse_number_array(ParseNumberArray<C,N> *pna,const C *str,N *result,int max_count,const C end_char=0,const C **end_pointer=nullptr)
     {
         if(!str||!result||max_count<=0)return(-1);
 
-        const T *p,*sp;
+        const C *p,*sp;
         int count=0;
 
         sp=str;
@@ -2471,13 +2508,13 @@ namespace hgl
 
         while(*p&&*p!=end_char)
         {
-            if(IS_FUNC(*p))
+            if(pna->IsChar(*p))
             {
                 p++;
                 continue;
             }
 
-            if(STOV(sp,*result))
+            if(pna->ToNumber(sp,*result))
             {
                 ++count;
                 --max_count;
@@ -2506,7 +2543,7 @@ namespace hgl
 
         if(p>sp)
         {
-            STOV(sp,*result);
+            pna->ToNumber(sp,*result);
             ++count;
         }
 
@@ -2516,10 +2553,10 @@ namespace hgl
         return(count);
     }
 
-    template<typename T,typename I> inline const int parse_float_array(const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){return parse_number_array<T,I,hgl::isfloat,   hgl::etof>(str,result,max_count,end_char,end_pointer);}
-    template<typename T,typename I> inline const int parse_int_array  (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){return parse_number_array<T,I,hgl::isinteger, hgl::stoi>(str,result,max_count,end_char,end_pointer);}
-    template<typename T,typename I> inline const int parse_uint_array (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){return parse_number_array<T,I,hgl::isdigit,   hgl::stou>(str,result,max_count,end_char,end_pointer);}
-    template<typename T,typename I> inline const int parse_xint_array (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){return parse_number_array<T,I,hgl::isxdigit,  hgl::xtou>(str,result,max_count,end_char,end_pointer);}
+    template<typename T,typename I> inline const int parse_float_array(const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseFloatArray<T,I> pna;return parse_number_array<T,I>(&pna,str,result,max_count,end_char,end_pointer);}
+    template<typename T,typename I> inline const int parse_int_array  (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseIntArray<T,I>   pna;return parse_number_array<T,I>(pna,str,result,max_count,end_char,end_pointer);}
+    template<typename T,typename I> inline const int parse_uint_array (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseUIntArray<T,I>  pna;return parse_number_array<T,I>(pna,str,result,max_count,end_char,end_pointer);}
+    template<typename T,typename I> inline const int parse_xint_array (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseHexArray<T,I>   pna;return parse_number_array<T,I>(pna,str,result,max_count,end_char,end_pointer);}
 
     /**
      * 解析数值阵列字符串到数组,如"1,2,3"或"1 2 3"
@@ -2529,8 +2566,8 @@ namespace hgl
      * @return 解晰出来的数据数量
      * @return -1 出错
      */
-    template<typename T,typename I,typename SET,bool (*IS_FUNC)(const T &),bool (*STOV)(const T *str,I &)>
-    const int parse_number_array(const T *str,const int str_len,SET &result_list)
+    template<typename T,typename I,typename SET>
+    const int parse_number_array(ParseNumberArray<T,I> *pna,const T *str,const int str_len,SET &result_list)
     {
         if(!str||str_len<=0)return(-1);
 
@@ -2545,13 +2582,13 @@ namespace hgl
         while(*p&&len)
         {
             --len;
-            if(IS_FUNC(*p))
+            if(pna->IsChar(*p))
             {
                 p++;
                 continue;
             }
 
-            if(STOV(sp,result))
+            if(pna->ToNumber(sp,result))
             {
                 ++count;
 
@@ -2568,7 +2605,7 @@ namespace hgl
 
         if(p>sp)
         {
-            STOV(sp,result);
+            pna->ToNumber(sp,result);
             result_list.Add(result);
             ++count;
         }
@@ -2576,10 +2613,10 @@ namespace hgl
         return(count);
     }
 
-    template<typename T,typename I,typename SET> inline const int parse_float_array   (const T *str,const int len,SET &result_list){return parse_number_array<T,I,SET,hgl::isfloat,   hgl::etof>(str,len,result_list);}
-    template<typename T,typename I,typename SET> inline const int parse_int_array     (const T *str,const int len,SET &result_list){return parse_number_array<T,I,SET,hgl::isinteger, hgl::stoi>(str,len,result_list);}
-    template<typename T,typename I,typename SET> inline const int parse_uint_array    (const T *str,const int len,SET &result_list){return parse_number_array<T,I,SET,hgl::isdigit,   hgl::stou>(str,len,result_list);}
-    template<typename T,typename I,typename SET> inline const int parse_xint_array    (const T *str,const int len,SET &result_list){return parse_number_array<T,I,SET,hgl::isxdigit,  hgl::xtou>(str,len,result_list);}
+    template<typename T,typename I,typename SET> inline const int parse_float_array   (const T *str,const int len,SET &result_list){ParseFloatArray<T,I> pna;return parse_number_array<T,I,SET>(&pna,str,len,result_list);}
+    template<typename T,typename I,typename SET> inline const int parse_int_array     (const T *str,const int len,SET &result_list){ParseIntArray<T,I>   pna;return parse_number_array<T,I,SET>(&pna,str,len,result_list);}
+    template<typename T,typename I,typename SET> inline const int parse_uint_array    (const T *str,const int len,SET &result_list){ParseUIntArray<T,I>  pna;return parse_number_array<T,I,SET>(&pna,str,len,result_list);}
+    template<typename T,typename I,typename SET> inline const int parse_xint_array    (const T *str,const int len,SET &result_list){ParseHexArray<T,I>   pna;return parse_number_array<T,I,SET>(&pna,str,len,result_list);}
 
     /**
      * 按指定分隔符拆分字符串为多个字符串
@@ -2644,6 +2681,9 @@ namespace hgl
 
         do
         {
+            if(*list[index]==0)
+                return(-1);
+
             if(stricmp(list[index],str)==0)
                 return index;
 
