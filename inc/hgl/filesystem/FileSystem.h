@@ -76,7 +76,7 @@ namespace hgl
             const T spear_char[] = { '/','\\' };
 
             const int dot=filename.FindRightChar(split_char);
-            const int pos=filename.FindRightChar(spear_char);
+            const int pos=filename.FindRightChars(spear_char);
 
             if(dot==-1)
             {
@@ -151,7 +151,7 @@ namespace hgl
 
             const T spear_char[] = { '/','\\',':'};
 
-            const int pos=filename.FindRightChar(spear_char);
+            const int pos=filename.FindRightChars(spear_char);
 
             if(pos==-1)
                 return filename;

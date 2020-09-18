@@ -974,7 +974,7 @@ namespace hgl
          * @param pos 起始查找位置
          * @param ch 要查找的字符,可以是多个，找到任意一个就算
          */
-        int FindChar(uint pos,const String<T> &ch)const                                          ///<返回当前字符串中指定字符(多个任选一)的索引(从左至右)
+        int FindChars(uint pos,const String<T> &ch)const                                          ///<返回当前字符串中指定字符(多个任选一)的索引(从左至右)
         {
             if(!data.valid())
                 return(-1);
@@ -987,7 +987,7 @@ namespace hgl
             return(-1);
         }
 
-        int FindChar(const String<T> &ch)const{return FindChar(0,ch);}                          ///<返回当前字符串中指定字符(多个任选一)的索引(从左至右)
+        int FindChars(const String<T> &ch)const{return FindChars(0,ch);}                          ///<返回当前字符串中指定字符(多个任选一)的索引(从左至右)
 
         int FindRightChar(const T ch)const                                                          ///<返回当前字符串中指定字符开始的索引(从右至左)
         {
@@ -1002,7 +1002,7 @@ namespace hgl
             return(-1);
         }
 
-        int FindRightChar(const String<T> &ch)const                                             ///<返回当前字符串中指定字符(多个任选一)开始的索引(从右至左)
+        int FindRightChars(const String<T> &ch)const                                             ///<返回当前字符串中指定字符(多个任选一)开始的索引(从右至左)
         {
             if(!data.valid())
                 return(-1);
