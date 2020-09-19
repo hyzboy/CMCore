@@ -580,6 +580,17 @@ namespace hgl
      * 分配指定类型数据块并清0
      */
     template<typename T>
+    inline T *hgl_zero_new()
+    {
+        T *data=new T;
+        memset(data,0,sizeof(T));
+        return data;
+    }
+
+    /**
+     * 分配指定类型数据块并清0
+     */
+    template<typename T>
     inline T *hgl_zero_new(const size_t count)
     {
         if(count<=0)return(nullptr);
