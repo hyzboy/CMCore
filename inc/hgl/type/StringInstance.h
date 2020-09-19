@@ -414,12 +414,12 @@ namespace hgl
                 T *new_str=new T[malloc_length];
 
                 if(pos)
-                    hgl_typecpy(new_str,buffer,pos);
+                    hgl_cpy(new_str,buffer,pos);
 
-                hgl_typecpy(new_str+pos,istr,len);
+                hgl_cpy(new_str+pos,istr,len);
 
                 if(pos<length)
-                    hgl_typecpy(new_str+pos+len,buffer+pos,length-pos);
+                    hgl_cpy(new_str+pos+len,buffer+pos,length-pos);
 
                 new_str[need_length-1]=0;
 
@@ -431,8 +431,8 @@ namespace hgl
             }
             else
             {
-                hgl_typemove(buffer+pos+len,buffer+pos,length-pos+1);
-                hgl_typecpy(buffer+pos,istr,len);
+                hgl_move(buffer+pos+len,buffer+pos,length-pos+1);
+                hgl_cpy(buffer+pos,istr,len);
                 length+=len;
             }
 

@@ -505,7 +505,7 @@ namespace hgl
     }
 
     /**
-     * 等值类型复制
+     * 同类型复制
      */
     template<typename T>
     inline void hgl_cpy(T &dst,const T &src)
@@ -514,10 +514,19 @@ namespace hgl
     }
 
     /**
-     * 不同类型数据块复制
+     * 同类型指针数据复制
+     */
+    template<typename T>
+    inline void hgl_cpy(T *dst,const T *src)
+    {
+        memcpy(dst,src,sizeof(T));
+    }
+
+    /**
+     * 数据类型转换赋值
      */
     template<typename S,typename D>
-    inline void hgl_cpy(D *dst,const S *src,const size_t count)
+    inline void typeconv(D *dst,const S *src,const size_t count)
     {
         for(size_t i=0;i<count;i++)
         {
@@ -531,7 +540,7 @@ namespace hgl
      * 同类型数据块复制
      */
     template<typename T>
-    inline void hgl_typecpy(T *dst,const T *src,const size_t count)
+    inline void hgl_cpy(T *dst,const T *src,const size_t count)
     {
         memcpy(dst,src,count*sizeof(T));
     }
@@ -540,7 +549,7 @@ namespace hgl
      * 同类型数据块移动
      */
     template<typename T>
-    inline void hgl_typemove(T *dst,const T *src,const size_t count)
+    inline void hgl_move(T *dst,const T *src,const size_t count)
     {
         memmove(dst,src,count*sizeof(T));
     }
