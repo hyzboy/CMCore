@@ -80,7 +80,7 @@ namespace hgl
         {
             count=1;
             max_count=1;
-            items=hgl_aligned_malloc<T>(1);
+            items=hgl_align_malloc<T>(1);
 
             return items;
         }
@@ -88,7 +88,7 @@ namespace hgl
         {
             max_count=power_to_2(count+1);
 
-            items=(T *)hgl_realloc(items,max_count*sizeof(T));
+            items=(T *)hgl_align_realloc<T>(items,max_count);
 
             ++count;
             return(items+(count-1));
@@ -107,13 +107,13 @@ namespace hgl
         {
             count=0;
             max_count=1;
-            items=hgl_aligned_malloc<T>(1);
+            items=hgl_align_malloc<T>(1);
         }
         else
         {
             max_count=power_to_2(count+1);
 
-            items=(T *)hgl_realloc(items,max_count*sizeof(T));
+            items=(T *)hgl_align_realloc<T>(items,max_count);
         }
 
         memcpy(items+count,&data,sizeof(T));//items[count]=data;
@@ -136,13 +136,13 @@ namespace hgl
         {
             count=0;
             max_count=power_to_2(n);
-            items=hgl_aligned_malloc<T>(max_count);
+            items=hgl_align_malloc<T>(max_count);
         }
         else
         {
             max_count=power_to_2(count+n);
 
-            items=(T *)hgl_realloc(items,max_count*sizeof(T));
+            items=(T *)hgl_align_realloc<T>(items,max_count);
         }
 
         T *p=items;
@@ -172,13 +172,13 @@ namespace hgl
             count=0;
             max_count=power_to_2(n);
 
-            items=hgl_aligned_malloc<T>(max_count);
+            items=hgl_align_malloc<T>(max_count);
         }
         else
         {
             max_count=power_to_2(count+n);
 
-            items=(T *)hgl_realloc(items,max_count*sizeof(T));
+            items=(T *)hgl_align_realloc<T>(items,max_count);
         }
 
         memcpy(items+count,data,n*sizeof(T));
@@ -396,13 +396,13 @@ namespace hgl
             {
                 max_count=1;
 
-                items=hgl_aligned_malloc<T>(max_count);
+                items=hgl_align_malloc<T>(max_count);
             }
             else
             {
                 max_count=power_to_2(count+1);
 
-                items=(T *)hgl_realloc(items,max_count*sizeof(T));
+                items=(T *)hgl_align_realloc<T>(items,max_count);
             }
 
             memmove(items+index+1,items+index,(count-index)*sizeof(T));
@@ -447,9 +447,9 @@ namespace hgl
         max_count=power_to_2(new_count);
 
         if(!items)
-            items=hgl_aligned_malloc<T>(max_count);
+            items=hgl_align_malloc<T>(max_count);
         else
-            items=(T *)hgl_realloc(items,max_count*sizeof(T));
+            items=(T *)hgl_align_realloc<T>(items,max_count);
     }
 
     template<typename T>
