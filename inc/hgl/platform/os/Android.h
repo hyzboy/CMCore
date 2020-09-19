@@ -37,7 +37,7 @@
 #define hgl_free                free
 
 template<typename T>
-inline T *hgl_aligned_malloc(size_t n)
+inline T *hgl_align_malloc(size_t n)
 {
     return (T *)memalign(alignof(T),n*sizeof(T));
 }

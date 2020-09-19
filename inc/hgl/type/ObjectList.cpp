@@ -22,7 +22,7 @@ namespace hgl
 //      if(!this->items)
 //      {
 //          this->max_count=1;
-//          this->items=(T **)hgl_aligned_malloc<T *>(1);
+//          this->items=(T **)hgl_align_malloc<T *>(1);
 //      }
 //      else
 //      {
@@ -238,7 +238,7 @@ namespace hgl
             }
 //            else
 //            {
-//              this->items=(T **)hgl_aligned_malloc<T *>(this->max_count);
+//              this->items=(T **)hgl_align_malloc<T *>(this->max_count);
 //
 //                while(new_count--)
 //                  this->items[this->count++]=CreateObject();
