@@ -604,9 +604,9 @@ namespace hgl
         sp=sl.GetDataList();
         for(int i=0;i<line;i++)
         {
-            hgl_typecpy(tp,(*sp)->c_str(),(*sp)->Length());
+            hgl_cpy(tp,(*sp)->c_str(),(*sp)->Length());
             tp+=(*sp)->Length();
-            hgl_typecpy(tp,end_line.c_str(),end_line.Length());
+            hgl_cpy(tp,end_line.c_str(),end_line.Length());
             tp+=end_line.Length();
 
             ++sp;
