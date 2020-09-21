@@ -1,7 +1,7 @@
-﻿#ifndef HGL_TYPE_SET_CPP
-#define HGL_TYPE_SET_CPP
+﻿#ifndef HGL_TYPE_SETS_CPP
+#define HGL_TYPE_SETS_CPP
 
-#include<hgl/type/Set.h>
+#include<hgl/type/Sets.h>
 namespace hgl
 {
     /**
@@ -10,7 +10,7 @@ namespace hgl
     * @return 数据所在索引，-1表示不存在
     */
     template<typename T>
-    const int Set<T>::Find(const T &flag)const
+    const int Sets<T>::Find(const T &flag)const
     {
         int left=0,right=data_list.GetCount()-1;                //使用left,right而不使用min,max是为了让代码能够更好的阅读。
         int mid;
@@ -42,7 +42,7 @@ namespace hgl
     }
 
     template<typename T>
-    bool Set<T>::FindPos(const T &flag,int &pos)const
+    bool Sets<T>::FindPos(const T &flag,int &pos)const
     {
         int left=0,right=data_list.GetCount()-1;
         int mid;
@@ -128,7 +128,7 @@ namespace hgl
     * @return 位置
     */
     template<typename T>
-    int Set<T>::Add(const T &data)
+    int Sets<T>::Add(const T &data)
     {
         if(data_list.GetCount()<=0)
         {
@@ -156,7 +156,7 @@ namespace hgl
     * @return 成功加入的数据个数
     */
     template<typename T>
-    int Set<T>::Add(const T *dp,const int count)
+    int Sets<T>::Add(const T *dp,const int count)
     {
         int total=0;
 
@@ -177,7 +177,7 @@ namespace hgl
      * @return 是否成功
      */
     template<typename T>
-    bool Set<T>::Update(const T &data)
+    bool Sets<T>::Update(const T &data)
     {
         if(data_list.GetCount()<=0)
             return(false);
@@ -196,7 +196,7 @@ namespace hgl
     * @param pos 索引编号
     */
     template<typename T>
-    bool Set<T>::DeleteBySerial(int pos)
+    bool Sets<T>::DeleteBySerial(int pos)
     {
         if(pos<0||pos>=data_list.GetCount())return(false);
 
@@ -208,7 +208,7 @@ namespace hgl
     * @param data 数据
     */
     template<typename T>
-    bool Set<T>::Delete(const T &data)
+    bool Sets<T>::Delete(const T &data)
     {
         int pos=Find(data);
 
@@ -224,7 +224,7 @@ namespace hgl
     * @return 成功删除的数据个数
     */
     template<typename T>
-    int Set<T>::Delete(T *dp,const int count)
+    int Sets<T>::Delete(T *dp,const int count)
     {
         int total=0;
         int pos;
@@ -248,7 +248,7 @@ namespace hgl
     * 清除所有数据
     */
     template<typename T>
-    void Set<T>::Clear()
+    void Sets<T>::Clear()
     {
         data_list.Clear();
     }
@@ -257,7 +257,7 @@ namespace hgl
     * 清除所有数据，但不释放内存
     */
     template<typename T>
-    void Set<T>::ClearData()
+    void Sets<T>::ClearData()
     {
         data_list.ClearData();
     }
@@ -266,7 +266,7 @@ namespace hgl
      * 随机取得一个数据
      */
     template<typename T>
-    bool Set<T>::Rand(T &result)const
+    bool Sets<T>::Rand(T &result)const
     {
         return data_list.Rand(result);
     }
@@ -278,7 +278,7 @@ namespace hgl
      * @return 交集数量
      */
     template<typename T>
-    int Set<T>::Intersection(Set<T> &result,const Set<T> &list)
+    int Sets<T>::Intersection(Sets<T> &result,const Sets<T> &list)
     {
         if(data_list.GetCount()<=0)
             return(0);
@@ -296,7 +296,7 @@ namespace hgl
     }
 
     template<typename T>
-    int Set<T>::Intersection(const Set<T> &list)
+    int Sets<T>::Intersection(const Sets<T> &list)
     {
         if(data_list.GetCount()<=0)
             return(0);
@@ -319,7 +319,7 @@ namespace hgl
     }
 
     template<typename T>
-    int Set<T>::Intersection(Set<T> &result,const Set<T> &il,const Set<T> &cl)
+    int Sets<T>::Intersection(Sets<T> &result,const Sets<T> &il,const Sets<T> &cl)
     {
         if(data_list.GetCount()<=0)
             return(0);
@@ -340,7 +340,7 @@ namespace hgl
     }
 
     template<typename T>
-    int Set<T>::Difference(const Set<T> &is)
+    int Sets<T>::Difference(const Sets<T> &is)
     {
         if(data_list.GetCount()<=0)
             return(is.GetCount());
@@ -362,4 +362,4 @@ namespace hgl
         return count;
     }
 }//namespace hgl
-#endif//HGL_TYPE_SET_CPP
+#endif//HGL_TYPE_SETS_CPP

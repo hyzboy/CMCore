@@ -2,7 +2,7 @@
 #define HGL_THREAD_INCLUDE
 
 #include<hgl/type/DataType.h>
-#include<hgl/type/Set.h>
+#include<hgl/type/Sets.h>
 #include<hgl/type/String.h>
 #include<hgl/thread/ThreadMutex.h>
 #include<hgl/log/LogInfo.h>
@@ -123,7 +123,7 @@ namespace hgl
     {
     protected:
 
-        Set<THREAD *> thread_set;
+        Sets<THREAD *> thread_set;
 
     public:
 
