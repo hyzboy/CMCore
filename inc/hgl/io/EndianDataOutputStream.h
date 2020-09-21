@@ -15,9 +15,7 @@ namespace hgl
             {
             }
 
-            virtual ~DirectDataOutputStream()
-            {
-            }
+            virtual ~DirectDataOutputStream()=default;
 
             #define STREAM_DIRECT_WRITE(type,name)  virtual bool Write##name(const type &value) \
                                                     {   \

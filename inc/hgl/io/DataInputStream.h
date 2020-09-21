@@ -26,9 +26,7 @@ namespace hgl
                 in=is;
             }
 
-            virtual ~DataInputStream()
-            {
-            }
+            virtual ~DataInputStream()=default;
 
             virtual void Use(InputStream *is)
             {

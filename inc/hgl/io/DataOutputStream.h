@@ -27,9 +27,7 @@ namespace hgl
                 out=os;
             }
 
-            virtual ~DataOutputStream()
-            {
-            }
+            virtual ~DataOutputStream()=default;
 
             virtual void Use(OutputStream *os)
             {
