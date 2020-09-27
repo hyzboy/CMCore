@@ -33,8 +33,8 @@ namespace hgl
                 return(false);
 
             int64 pos=0,size;
-            AutoDeleteArray<char> data1=new char[buf_size];
-            AutoDeleteArray<char> data2=new char[buf_size];
+            AutoDeleteArray<char> data1(buf_size);
+            AutoDeleteArray<char> data2(buf_size);
 
             while(pos<fs1)
             {

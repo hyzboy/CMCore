@@ -518,6 +518,11 @@ namespace hgl
             obj=nullptr;
         }
 
+        AutoDeleteArray(const size_t count)
+        {
+            obj=new T[count];
+        }
+
         AutoDeleteArray(T *o)
         {
             obj=o;
