@@ -52,7 +52,7 @@ namespace hgl
             if(fullname.Length()<=1)
                 return(String<T>());
 
-            const T spear_char[] = { '/','\\' };
+            const T spear_char[] = { '/','\\',0 };
 
             const int pos=fullname.FindRightChar(spear_char);
 
@@ -73,7 +73,7 @@ namespace hgl
             if(filename.Length()<=1)
                 return(String<T>());
 
-            const T spear_char[] = { '/','\\' };
+            const T spear_char[] = { '/','\\',0 };
 
             const int dot=filename.FindRightChar(split_char);
             const int pos=filename.FindRightChars(spear_char);
@@ -149,7 +149,7 @@ namespace hgl
             if(filename.Length()<=1)
                 return(String<T>());
 
-            const T spear_char[] = { '/','\\',':'};
+            const T spear_char[] = { '/','\\',':',0};
 
             const int pos=filename.FindRightChars(spear_char);
 
@@ -171,7 +171,7 @@ namespace hgl
             if(fullname.Length()<=1)
                 return(String<T>());
 
-            const T gap_char[2]={'\\','/'};
+            const T gap_char[]={'\\','/',0};
 
             T *p=nullptr;
 
