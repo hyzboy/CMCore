@@ -10,6 +10,7 @@ namespace hgl
 {
     using Matrix3f=float3x3;
     using Matrix4f=float4x4;
+    using Matrix3x4f=float3x4;
 
     inline Matrix4f identity()
     {
