@@ -26,13 +26,6 @@
 //--------------------------------------------------------------------------------------------------
 #define _USE_MATH_DEFINES                // 使用数学常数定义
 //--------------------------------------------------------------------------------------------------
-#pragma warning(disable:4819)            // ansi -> unicode
-#pragma warning(disable:4311)            // 模板警告
-#pragma warning(disable:4800)            // -> bool 性能损失警告
-#pragma warning(disable:4244)            // -> int 精度丢失警告
-#pragma warning(disable:4804)            // 不安全的类型比较
-#pragma warning(disable:4805)            // 不安全的类型比较
-
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 #endif//
