@@ -107,6 +107,14 @@ namespace hgl
     }
 
     template<typename T>
+    inline T clamp(const T &v,const T &min_v,const T &max_v)
+    {
+        if(v<min_v)return min_v;
+        if(v>max_v)return max_v;
+        return v;
+    }
+
+    template<typename T>
     inline T normalized(const T &v)
     {
         return v.Normalized();
@@ -128,6 +136,12 @@ namespace hgl
     inline float dot(const T &v1,const T &v2)
     {
         return v1.Dot(v2);
+    }
+
+    template<typename T>
+    inline float dot2(const T &v)
+    {
+        return v.Dot(v);
     }
 
     inline float ray_angle_cos(const Ray &ray,const vec &pos)
