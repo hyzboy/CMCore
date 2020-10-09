@@ -29,6 +29,9 @@ namespace hgl
                         T *     GetBegin    (){return (items&&count>0)?items:nullptr;}              ///<取得第一个数据项指针
                         T *     GetEnd      (){return (items&&count>0)?items+count-1:nullptr;}      ///<取得最后一个数据项指针
 
+                        T *     begin()const{return items;}
+                        T *     end()const{return items+count;}
+
     public: //方法
 
         List(){};                                                                                   ///<本类构造函数

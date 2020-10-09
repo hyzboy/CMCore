@@ -22,6 +22,11 @@ namespace hgl
         DataPairPool data_pool;
         DataPairList data_list;
 
+    public:
+
+        const DataPair *begin()const{return data_list.begin();}
+        const DataPair *end()const{return data_list.end();}
+
     public: //方法
 
         _Map()=default;

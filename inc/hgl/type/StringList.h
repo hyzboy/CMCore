@@ -27,6 +27,9 @@ namespace hgl
         T **GetDataList()const{return Items.GetData();}                                             ///<取得字符串列表指针数据
         const int GetCount()const{return Items.GetCount();}                                         ///<字符串列表行数虚拟变量
 
+        T **begin()  const{return Items.GetData();}
+        T **end()    const{return Items.GetData()+Items.GetCount();}
+
     public: //操作符重载
 
         T &operator[](int n)const

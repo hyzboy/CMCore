@@ -30,6 +30,9 @@ namespace hgl
         int     GetMaxCount ()const{return max_count;}                                              ///<取得最大数量
         bool    SetMaxCount (int);                                                                  ///<设置最大数量
 
+        const T *begin()const{return items;}
+        const T *end()const{return items+cur_count;}
+
     public: //方法
 
         Queue(int=0);

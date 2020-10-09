@@ -22,6 +22,9 @@ namespace hgl
                 T *         GetData     ()const{return data_list.GetData();}                        ///<取得数据指针
                 int         GetCount    ()const{return data_list.GetCount();}                       ///<取得数据总量
 
+                T *         begin       ()const{return data_list.begin();}
+                T *         end         ()const{return data_list.end();}
+
     public:
 
         Sets()=default;
