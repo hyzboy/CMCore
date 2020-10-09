@@ -32,19 +32,21 @@ namespace hgl
 
             bool Create(const OSString &project_code)
             {
+                OSString local_app_data_path;
+                OSString cmgdk_path;
+                OSString fn;
                 os_char filename[HGL_MAX_PATH];
-                os_char fn[HGL_MAX_PATH];
                 os_char num[16]={'.',0};
 
-                GetLocalAppdataPath(fn);
+                if(!GetLocalAppdataPath(local_app_data_path))
+                    return(false);
 
-                strcat(fn,HGL_MAX_PATH,HGL_DIRECTORY_SEPARATOR);
-                strcat(fn,HGL_MAX_PATH,OS_TEXT(".cmgdk"),6);
-                filesystem::MakePath(fn);
+                cmgdk_path=filesystem::MergeFilename(local_app_data_path,OS_TEXT(".cmgdk"));
 
-                strcat(fn,HGL_MAX_PATH,HGL_DIRECTORY_SEPARATOR);
+                if(!filesystem::MakePath(cmgdk_path))
+                    return(false);
 
-                strcat(fn,HGL_MAX_PATH,project_code);
+                fn=filesystem::MergeFilename(cmgdk_path,project_code);
 
                 for(uint i=0;i<=0xFFFF;i++)
                 {
@@ -56,7 +58,7 @@ namespace hgl
                         strcat(filename,HGL_MAX_PATH,num,sizeof(num));
                     }
 
-                    strcat(filename,HGL_MAX_PATH,OS_TEXT(".Loginfo"),8);
+                    strcat(filename,HGL_MAX_PATH,OS_TEXT(".log.txt"),8);
 
                     if(fos.CreateTrunc(filename))//创建成功
                     {
