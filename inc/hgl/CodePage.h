@@ -144,6 +144,12 @@ namespace hgl
     extern CharSet UTF16LECharSet;
     extern CharSet UTF16BECharSet;
 
+    #if HGL_OS == HGL_OS_Windows
+        #define OSCharSet   UTF16LECharSet
+    #else
+        #define OSCharSet   UTF8CharSet
+    #endif//
+
     /**
      * 使用指定字符集转换字符串到 u16char *字符串
      * @param charset   字符集
