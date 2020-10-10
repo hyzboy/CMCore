@@ -216,6 +216,11 @@ namespace hgl
 
     public:
 
+        T **begin()const{return this->items;}
+        T **end()const{return this->items+this->count;}
+
+    public:
+
         virtual ~ObjectList()
         {
             CusObjectList<T>::Clear();
