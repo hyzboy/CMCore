@@ -134,6 +134,12 @@ namespace hgl
             if(cs==UTF8CharSet)
                 str=u8_to_u16((u8char *)data,size,char_count);
             else
+            if(cs==UTF16BECharSet||cs==UTF16LECharSet)
+            {
+                str=(u16char *)data;
+                char_count=size>>1;
+            }
+            else
             {
 #ifdef __ANDROID__
                 delete[] data;
