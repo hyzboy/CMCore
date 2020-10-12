@@ -18,9 +18,9 @@ namespace hgl
 
         public:
 
-            EnumFileConfig(const OSString &fn)
+            EnumFileConfig(const OSString &path)
             {
-                folder_name=fn;
+                folder_name=path;
 
 #if HGL_OS == HGL_OS_Windows
                 find_name=OS_TEXT("*.*");
