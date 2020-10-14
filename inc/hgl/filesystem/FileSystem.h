@@ -54,7 +54,7 @@ namespace hgl
 
             const T spear_char[] = { '/','\\',0 };
 
-            const int pos=fullname.FindRightChar(spear_char);
+            const int pos=fullname.FindRightChars(spear_char);
 
             if(pos==-1)
                 return String<T>(fullname);
