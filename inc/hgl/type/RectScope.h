@@ -39,6 +39,7 @@ namespace hgl
         const vec2<T> GetLeftBottom ()const{return vec2<T>(Left,        Top+Height);}
         const vec2<T> GetRightTop   ()const{return vec2<T>(Left+Width,  Top);}
         const vec2<T> GetRightBottom()const{return vec2<T>(Left+Width,  Top+Height);}
+        const vec2<T> GetSize       ()const{return vec2<T>(Width,       Height);}
 
     public:
 
