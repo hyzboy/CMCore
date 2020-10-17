@@ -544,6 +544,7 @@ namespace hgl
 
         T *operator -> (){return obj;}
 
+        T *data(){return obj;}
         operator T *(){return obj;}
         operator const T *()const{return obj;}
         const bool operator !()const{return !obj;}
@@ -556,6 +557,71 @@ namespace hgl
             obj=nullptr;
         }
     };//template<typename T> class AutoDeleteArray
+    
+    template<typename T> class AutoDeleteObjectArray
+    {
+        using TP=T *;
+
+        TP *items;
+        uint count;
+
+    public:
+
+        AutoDeleteObjectArray()
+        {
+            items=nullptr;
+            count=0;
+        }
+
+        AutoDeleteObjectArray(const uint c)
+        {
+            if(c>0)
+            {
+                count=c;
+                items=new TP[count];
+                hgl_zero<TP>(items,count);
+            }
+            else
+            {
+                items=nullptr;
+                count=0;
+            }
+        }
+
+        AutoDeleteObjectArray(TP *o,const uint c)
+        {
+            items=o;
+            count=c;
+        }
+
+        ~AutoDeleteObjectArray()
+        {
+            SAFE_CLEAR_OBJECT_ARRAY(items,count);
+        }
+
+        TP *operator -> (){return items;}
+
+        TP *data(){return items;}
+        operator TP *(){return items;}
+        operator const TP *()const{return items;}
+        const bool operator !()const{return !items;}
+
+                TP &operator[](int index){return items[index];}
+        const   TP &operator[](int index)const{return items[index];}
+
+        void Discard()
+        {
+            items=nullptr;
+            count=0;
+        }
+
+        void DiscardObject()
+        {
+            hgl_zero<TP>(items,count);
+            delete[] items;
+            Discard();
+        }
+    };//template<typename T> class AutoDeleteObjectArray
 
     template<typename T> class AutoFree
     {
