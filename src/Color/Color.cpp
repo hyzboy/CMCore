@@ -20,8 +20,6 @@ namespace hgl
 
     COLOR_DEF prv_color[size_t(COLOR::RANGE_SIZE)]=
     {
-        DEF_COLOR(None,                     0,  0,  0,"")
-
         DEF_COLOR(AliceBlue,              240,248,255,"艾利斯兰")
         DEF_COLOR(AndroidGreen,           164,198, 57,"安卓绿")
         DEF_COLOR(AntiqueWhite,           250,235,215,"古董白")
