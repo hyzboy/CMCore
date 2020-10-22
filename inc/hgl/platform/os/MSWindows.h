@@ -61,13 +61,24 @@ using os_char           =wchar_t;
 template<typename T>
 inline T *hgl_align_malloc(size_t n)
 {
+    if(n<=0)return(nullptr);
+
     return (T *)_aligned_malloc(n*sizeof(T),alignof(T));
 }
 
 template<typename T>
 inline T *hgl_align_realloc(T *ptr,size_t n)
 {
-    return (T *)_aligned_realloc(ptr,n*sizeof(T),alignof(T));
+    if(n<=0)
+    {
+        _aligned_free(ptr);
+        return(nullptr);
+    }
+
+    if(ptr)
+        return (T *)_aligned_realloc(ptr,n*sizeof(T),alignof(T));
+    else
+        return (T *)_aligned_malloc(n*sizeof(T),alignof(T));        
 }
 
 #define OS_EXTERNAL_H           <winbase.h>
