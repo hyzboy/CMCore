@@ -35,6 +35,7 @@ namespace hgl
     public: //方法
 
         List(){};                                                                                   ///<本类构造函数
+        List(const T *lt,const int n){Add(lt,n);}                                                   ///<本类构造函数
         List(const List<T> &lt){operator=(lt);}                                                     ///<本类构造函数
         List(const std::initializer_list<T> &lt){operator=(lt);}
 
