@@ -510,36 +510,32 @@ namespace hgl
     template<typename T> class AutoDeleteArray
     {
         T *obj;
+        size_t size;
 
     public:
 
         AutoDeleteArray()
         {
             obj=nullptr;
+            size=0;
         }
 
         AutoDeleteArray(const size_t count)
         {
             obj=new T[count];
+            size=count;
         }
 
-        AutoDeleteArray(T *o)
+        AutoDeleteArray(T *o,const size_t count)
         {
             obj=o;
+            size=count;
         }
 
         ~AutoDeleteArray()
         {
             if(obj)
                 delete[] obj;
-        }
-
-        void operator = (T *o)
-        {
-            if(obj)
-                delete[] obj;
-
-            obj=o;
         }
 
         T *operator -> (){return obj;}
@@ -549,12 +545,16 @@ namespace hgl
         operator const T *()const{return obj;}
         const bool operator !()const{return !obj;}
 
+        T *begin(){return obj;}
+        T *end(){return obj+size;}
+
                 T &operator[](int index){return obj[index];}
         const   T &operator[](int index)const{return obj[index];}
 
         void Discard()
         {
             obj=nullptr;
+            size=0;
         }
     };//template<typename T> class AutoDeleteArray
     
