@@ -548,6 +548,11 @@ namespace hgl
         T *begin(){return obj;}
         T *end(){return obj+size;}
 
+        void zero()
+        {
+            memset(obj,0,size*sizeof(T));
+        }
+
                 T &operator[](int index){return obj[index];}
         const   T &operator[](int index)const{return obj[index];}
 
