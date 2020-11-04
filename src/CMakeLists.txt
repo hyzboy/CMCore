@@ -4,6 +4,19 @@ file(GLOB TYPE_TEMPLATE_HEADER ${TYPE_INCLUDE_PATH}/*.h)
 
 SET(SYSTEM_INFO_SOURCE   SystemInfo.cpp)
 
+##Math--------------------------------------------------------
+SET(MATH_HEADER_FILES   ${TYPE_INCLUDE_PATH}/bvec.h
+                        ${TYPE_INCLUDE_PATH}/FastTriangle.h
+                        ${TYPE_INCLUDE_PATH}/Math.h
+                        ${TYPE_INCLUDE_PATH}/Matrix.h
+                        ${TYPE_INCLUDE_PATH}/Vector.h)
+
+SET(MATH_SOURCE_FILES   Math/LAtan.cpp
+                        Math/LSinCos.cpp)
+
+SOURCE_GROUP("Math\\Header Files" FILES ${MATH_HEADER_FILES})
+SOURCE_GROUP("Math\\Source Files" FILES ${MATH_SOURCE_FILES})
+
 ##Color--------------------------------------------------------
 SET(COLOR_HEADER_FILES  ${TYPE_INCLUDE_PATH}/Color.h
                         ${TYPE_INCLUDE_PATH}/Color3f.h
@@ -139,6 +152,9 @@ add_cm_library(CMCore "CM"  #${SYSTEM_INFO_SOURCE}
                             ${TYPE_TEMPLATE_HEADER}
 
                             ${IO_SOURCE_FILES}
+
+                            ${MATH_HEADER_FILES}
+                            ${MATH_SOURCE_FILES}
 
                             ${FILESYSTEM_HEADER_FILES}
                             ${FILESYSTEM_SOURCE_FILES}
