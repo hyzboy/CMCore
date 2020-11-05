@@ -4,12 +4,14 @@ file(GLOB TYPE_TEMPLATE_HEADER ${TYPE_INCLUDE_PATH}/*.h)
 
 SET(SYSTEM_INFO_SOURCE   SystemInfo.cpp)
 
+SET(MATH_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/math)
+
 ##Math--------------------------------------------------------
-SET(MATH_HEADER_FILES   ${TYPE_INCLUDE_PATH}/bvec.h
-                        ${TYPE_INCLUDE_PATH}/FastTriangle.h
-                        ${TYPE_INCLUDE_PATH}/Math.h
-                        ${TYPE_INCLUDE_PATH}/Matrix.h
-                        ${TYPE_INCLUDE_PATH}/Vector.h)
+SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
+                        ${MATH_INCLUDE_PATH}/FastTriangle.h
+                        ${MATH_INCLUDE_PATH}/Math.h
+                        ${MATH_INCLUDE_PATH}/Matrix.h
+                        ${MATH_INCLUDE_PATH}/Vector.h)
 
 SET(MATH_SOURCE_FILES   Math/LAtan.cpp
                         Math/LSinCos.cpp)

@@ -1,4 +1,4 @@
-﻿#include<hgl/algorithm/VectorMath.h>
+﻿#include<hgl/TypeFunc.h>
 #include<cmath>
 namespace hgl
 {
