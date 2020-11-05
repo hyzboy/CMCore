@@ -538,6 +538,25 @@ namespace hgl
                 delete[] obj;
         }
 
+        T *alloc(const size_t count)
+        {
+            if(!obj)
+                delete[] obj;
+
+            if(count<=0)
+            {
+                obj=nullptr;
+                size=0;
+            }
+            else
+            {
+                obj=new T[count];
+                size=count;
+            }
+
+            return obj;
+        }
+
         T *operator -> (){return obj;}
 
         T *data(){return obj;}
