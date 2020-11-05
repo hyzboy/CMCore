@@ -2830,6 +2830,32 @@ namespace hgl
         ParseHexStr((uint8 *)&hc,str,sizeof(HC));
     }
 
+    template<typename T,typename U>
+    void Hex2String(T *str,U value,bool upper=true)
+    {
+        const uchar A=upper?'A':'a';
+        const uint size=sizeof(U)*2;
+        const uint8 *sp=(uint8 *)&value;
+              T *tp=str;
+        uint l,r;
+
+        for(uint i=0;i<sizeof(U);i++)
+        {
+            l=((*sp)&0xF0)>>4;
+            r= (*sp)&0x0F;
+
+            ++sp;
+
+            if(l<10)*tp++=l+'0';
+               else *tp++=l-10+A;
+
+            if(r<10)*tp++=r+'0';
+               else *tp++=r-10+A;
+        }
+
+        *tp=0;
+    }
+
     /**
      * 将一串原始数据转转成16进制数值字符串
      * @param str 16进制数值字符串存入处
