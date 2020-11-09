@@ -153,6 +153,18 @@ namespace hgl
     }
 
     /**
+     * 是否为斜杠
+     */
+    template<typename T>
+    const bool isslash(const T ch)
+    {
+        if(ch=='\\')return(true);
+        if(ch=='/')return(true);
+
+        return(false);
+    }
+
+    /**
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
     template<typename T>
