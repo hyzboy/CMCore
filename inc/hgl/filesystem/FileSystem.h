@@ -11,6 +11,10 @@ namespace hgl
 
     namespace filesystem
     {
+        /**
+        * 组合文件名.<Br>
+        * 根据离散的每一级目录名称和最终名称合成完整文件名
+        */
         template<typename T>
         inline const String<T> ComboFilename(const StringList<String<T>> &sl,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
         {
@@ -55,6 +59,10 @@ namespace hgl
             return String<T>::newOf(fullname,p-fullname);
         }
 
+        /**
+        * 合成文件名<br>
+        * 根据路径名和文件名
+        */
         template<typename T>
         inline String<T> MergeFilename(const String<T> &pathname,const String<T> &filename,const T directory_separator_char,const T *directory_separator_str)
         {
@@ -86,9 +94,9 @@ namespace hgl
         }
 
         /**
-         * 截取完整路径中的文件名
-         * @param fullname 完整路径文件名
-         */
+        * 截取完整路径中的文件名
+        * @param fullname 完整路径文件名
+        */
         template<typename T>
         inline String<T> ClipFilename(const String<T> &fullname)
         {
@@ -106,10 +114,10 @@ namespace hgl
         }
 
         /**
-         * 截取一个文件名中的主名称
-         * @param filename 文件名
-         * @param split_char 扩展名分隔符,一般为'.'
-         */
+        * 截取一个文件名中的主名称
+        * @param filename 文件名
+        * @param split_char 扩展名分隔符,一般为'.'
+        */
         template<typename T>
         inline String<T> ClipFileMainname(const String<T> &filename,const T split_char='.')
         {
@@ -138,10 +146,10 @@ namespace hgl
         }
 
         /**
-         * 截取完整文件名中的扩展名
-         * @param fullname 完整文件名
-         * @param include_dot 是否包括点
-         */
+        * 截取完整文件名中的扩展名
+        * @param fullname 完整文件名
+        * @param include_dot 是否包括点
+        */
         template<typename T>
         inline String<T> ClipFileExtName(const String<T> &fullname,bool include_dot=true)
         {
@@ -160,10 +168,10 @@ namespace hgl
         }
 
         /**
-         * 清除完整文件名中的扩展名
-         * @param fullname 完整文件名
-         * @param include_dot 是否包括点也清除
-         */
+        * 清除完整文件名中的扩展名
+        * @param fullname 完整文件名
+        * @param include_dot 是否包括点也清除
+        */
         template<typename T>
         inline String<T> TrimFileExtName(const String<T> &fullname,bool include_dot=false)
         {
@@ -182,10 +190,10 @@ namespace hgl
         }
 
         /**
-         * 截取一个文件名中的路径名
-         * @param filename 文件名
-         * @param include_spear_char 是否包含最后的分隔符
-         */
+        * 截取一个文件名中的路径名
+        * @param filename 文件名
+        * @param include_spear_char 是否包含最后的分隔符
+        */
         template<typename T>
         inline String<T> ClipPathname(const String<T> &filename,bool include_spear_char=true)
         {
@@ -206,8 +214,8 @@ namespace hgl
         }
 
         /**
-         * 截取路径最后一个名字
-         */
+        * 截取路径最后一个名字
+        */
         template<typename T>
         inline String<T> ClipLastPathname(const String<T> &fullname)
         {
@@ -292,8 +300,8 @@ namespace hgl
         //使用int64而不是__int64是因为不是所有编译器都支持__int64的写法，必须使用DataType.H中引入的定义
 
         /**
-         * 文件信息数据结构
-         */
+        * 文件信息数据结构
+        */
         struct FileInfo                             ///文件信息
         {
             os_char name[HGL_MAX_PATH];             ///<文件名(不包含路径)
