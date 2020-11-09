@@ -1,8 +1,7 @@
 ﻿#ifndef HGL_FILE_SYSTEM_INCLUDE
 #define HGL_FILE_SYSTEM_INCLUDE
 
-#include<hgl/type/String.h>
-#include<hgl/type/List.h>
+#include<hgl/type/StringList.h>
 namespace hgl
 {
     namespace io
@@ -12,6 +11,50 @@ namespace hgl
 
     namespace filesystem
     {
+        template<typename T>
+        inline const String<T> ComboFilename(const StringList<String<T>> &sl,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
+        {
+            T *fullname=nullptr;
+
+            {
+                int total=0;
+
+                for(auto str:sl)
+                    total+=str->Length();
+
+                total+=sl.GetCount();
+                ++total;
+
+                fullname=new T[total+1];
+            }
+
+            T *p=fullname;
+            const T *tmp;
+            int len;
+            bool first=true;
+
+            for(auto str:sl)
+            {
+                len=str->Length();
+
+                tmp=trim<T>(str->c_str(),len,isslash<T>);
+
+                if(first)
+                {
+                    *p=spear_char;
+                    ++p;
+                    first=false;
+                }
+
+                hgl_cpy<T>(p,tmp,len);
+                p+=len;
+            }
+
+            *p=0;
+
+            return String<T>::newOf(fullname,p-fullname);
+        }
+
         template<typename T>
         inline String<T> MergeFilename(const String<T> &pathname,const String<T> &filename,const T directory_separator_char,const T *directory_separator_str)
         {
