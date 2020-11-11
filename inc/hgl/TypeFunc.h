@@ -419,6 +419,30 @@ namespace hgl
 
         return(result);
     }
+    
+    /**
+     * 向上对齐
+     */
+    template<typename T> inline T align_up(T val, T alignment)      // align val to the next multiple of alignment
+    {
+        return (val + alignment - (T)1) & ~(alignment - (T)1);
+    }
+
+    /**
+     * 向下对齐
+     */
+    template<typename T> inline T align_down(T val, T alignment)    // align val to the previous multiple of alignment
+    {
+        return val & ~(alignment - (T)1);
+    }
+    
+    /**
+     * 求对齐数量
+     */
+    template<typename T> inline T divide_rounding_up(T a, T b)
+    {
+        return (x + y - (T)1) / y;
+    }
 
     template<typename T> inline void hgl_swap(T &x,T &y)
     {
