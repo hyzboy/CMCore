@@ -353,5 +353,15 @@ namespace hgl
 
         operator const Vector4f()const{return Vector4f(x,y,z,w);}
     };
+
+    inline const Vector3f PolarToVector3f(float yaw,float pitch)
+    {
+        return Vector3f(sinf(yaw) * cosf(pitch), sinf(pitch), cosf(yaw) * cosf(pitch));
+    }
+
+    inline const Vector4f PolarToVector4f(float yaw,float pitch)
+    {
+        return Vector4f(sinf(yaw) * cosf(pitch), sinf(pitch), cosf(yaw) * cosf(pitch), 0);
+    }
 }//namespace hgl
 #endif//HGL_ALGORITHM_MATH_VECTOR_INCLUDE
