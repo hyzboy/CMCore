@@ -181,27 +181,14 @@ namespace hgl
     }
 
     template<typename T1, typename T2>
-    inline float length_squared(const T1 &v1, const T2 &v2)
-    {
-        const float x = (v1.x - v2.x);
-        const float y = (v1.y - v2.y);
-
-        return x*x + y*y;
-    }
-
-    template<typename T1, typename T2>
     inline float length(const T1 &v1, const T2 &v2)
     {
-        return sqrt(length_squared(v1, v2));
+        return sqrt(length_squared(v1-v2));
     }
-
-    inline float length_squared(const Vector3f &v1, const Vector3f &v2)
+    template<typename T1, typename T2>
+    inline float length_squared(const T1 &v1, const T2 &v2)
     {
-        const float x = (v1.x - v2.x);
-        const float y = (v1.y - v2.y);
-        const float z = (v1.z - v2.z);
-
-        return x*x + y*y + z*z;
+        return length_squared(v1-v2);
     }
 
     template<typename T1, typename T2>
@@ -211,11 +198,6 @@ namespace hgl
         const float y = (v1.y - v2.y);
 
         return x*x + y*y;
-    }
-
-    inline float length(const Vector3f &v1, const Vector3f &v2)
-    {
-        return sqrt(length_squared(v1, v2));
     }
 
     template<typename T1, typename T2>
