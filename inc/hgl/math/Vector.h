@@ -185,6 +185,7 @@ namespace hgl
     {
         return sqrt(length_squared(v1-v2));
     }
+
     template<typename T1, typename T2>
     inline float length_squared(const T1 &v1, const T2 &v2)
     {
@@ -194,8 +195,8 @@ namespace hgl
     template<typename T1, typename T2>
     inline float length_squared_2d(const T1 &v1, const T2 &v2)
     {
-        const float x = (v1.x - v2.x);
-        const float y = (v1.y - v2.y);
+        const double x = double(v1.x) - double(v2.x);
+        const double y = double(v1.y) - double(v2.y);
 
         return x*x + y*y;
     }
