@@ -96,14 +96,14 @@ namespace hgl
 
         Vector4f nup=cross(right,forward);
 
-        Matrix4f result(   right.x,        right.y,        right.z,         dot(eye,right),
-                             nup.x,          nup.y,          nup.z,         dot(eye,nup),
-                        -forward.x,     -forward.y,     -forward.z/2.0f,    dot(eye,forward),
+        Matrix4f result(   right.x,        right.y,        right.z,         1.0f,
+                             nup.x,          nup.y,          nup.z,         1.0f,
+                        -forward.x,     -forward.y,     -forward.z/2.0f,    1.0f,
                               0.0f,           0.0f,           0.0f,         1.0f);
                                                     //  ^^^^^^
                                                     //  某些引擎这里为0.5，那是因为他们是 -1 to 1 的Z值设定，而我们是0 to 1，所以这里不用乘
                                                     //  同理，camera的znear为接近0的正数，zfar为一个较大的正数，默认使用16/256
 
-        return result;
+        return result*translate(-eye.xyz());
     }
 }//namespace hgl
