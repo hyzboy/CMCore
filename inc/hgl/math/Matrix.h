@@ -22,19 +22,21 @@ namespace hgl
         return m.Inverted();
     }
 
-    inline Matrix4f ortho(  float left,
-                            float right,
-                            float bottom,
-                            float top,
-                            float znear,
-                            float zfar )
-    {
-        return Matrix4f(
-            2.0f / (right - left),  0.0f,                   0.0f,                   -(right + left) / (right - left),
-            0.0f,                   2.0f / (bottom - top),  0.0f,                   -(bottom + top) / (bottom - top),
-            0.0f,                   0.0f,                   1.0f / (znear - zfar),  znear / (znear - zfar),
-            0.0f,                   0.0f,                   0.0f,                   1.0f);
-    }
+    /**
+     * 生成一个正角视图矩阵
+     * @param left 左
+     * @param right 右
+     * @param top 顶
+     * @param bottom 底
+     * @param znear 近平面z值
+     * @param zfar 远平台z值
+     */
+    Matrix4f ortho( float left,
+                    float right,
+                    float bottom,
+                    float top,
+                    float znear,
+                    float zfar );
 
     /**
      * 生成一个正角视图矩阵
@@ -43,28 +45,14 @@ namespace hgl
      * @param znear 近平面z值
      * @param zfar 远平台z值
      */
-    inline Matrix4f ortho(float width,float height,float znear,float zfar)
-    {
-        return Matrix4f(
-            2.0f / width,   0.0f,           0.0f,                   -1,
-            0.0f,           2.0f / height,  0.0f,                   -1,
-            0.0f,           0.0f,           1.0f / (znear - zfar),  znear / (znear - zfar),
-            0.0f,           0.0f,           0.0f,                   1.0f);
-    }
+    Matrix4f ortho(float width,float height,float znear,float zfar);
 
     /**
      * 生成一个正角视图矩阵
      * @param width 宽
      * @param height 高
      */
-    inline Matrix4f ortho(float width,float height)
-    {
-        return Matrix4f(
-            2.0f / width,   0.0f,           0.0f,   -1,
-            0.0f,           2.0f / height,  0.0f,   -1,
-            0.0f,           0.0f,           -1.0f , 0.0f,
-            0.0f,           0.0f,           0.0f,   1.0f);
-    }
+    Matrix4f ortho(float width,float height);
 
     /**
      * 生成一个透视矩阵
@@ -73,28 +61,18 @@ namespace hgl
      * @param znear 近截面
      * @param zfar 远截面
      */
-    inline Matrix4f perspective(float field_of_view,
-                                float aspect_ratio,                                
-                                float znear,
-                                float zfar)
-    {
-        const float f = 1.0f / tan( hgl_ang2rad( 0.5f * field_of_view ) );
+    Matrix4f perspective(   float field_of_view,
+                            float aspect_ratio,                                
+                            float znear,
+                            float zfar);
 
-  //      float  scaleX, shearXy, shearXz, x;
-		//float shearYx,  scaleY, shearYz, y;
-		//float shearZx, shearZy,  scaleZ, z;
-		//float shearWx, shearWy, shearWz, w;
-
-        return Matrix4f(
-            f / aspect_ratio,   0.0f,   0.0f,                   0.0f,
-            0.0f,               -f,     0.0f,                   0.0f,
-            0.0f,               0.0f,   zfar / (znear - zfar),  (znear * zfar) / (znear - zfar),
-                                    //  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                    //  某些引擎这两项会乘0.5，那是因为他们是 -1 to 1 的Z值设定，而我们是0 to 1，所以这里不用乘
-                                    //  同理，camera的znear为接近0的正数，zfar为一个较大的正数，默认使用16/256
-
-            0.0f,               0.0f,   -1.0f,                  0.0f);
-    }
+    /**
+     * 产生一个lookat变换矩阵
+     * @param eye 眼睛位置
+     * @param target 目标位置
+     * @param up 向上向量
+     */
+    Matrix4f lookat(const Vector4f &eye,const Vector4f &target,const Vector4f &up);
 
     inline Matrix4f translate(const Vector3f &v)
     {

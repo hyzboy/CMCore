@@ -14,7 +14,8 @@ SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
                         ${MATH_INCLUDE_PATH}/Vector.h)
 
 SET(MATH_SOURCE_FILES   Math/LAtan.cpp
-                        Math/LSinCos.cpp)
+                        Math/LSinCos.cpp
+                        Math/Matrix4f.cpp)
 
 SOURCE_GROUP("Math\\Header Files" FILES ${MATH_HEADER_FILES})
 SOURCE_GROUP("Math\\Source Files" FILES ${MATH_SOURCE_FILES})
