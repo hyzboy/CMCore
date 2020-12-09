@@ -84,6 +84,11 @@ namespace hgl
         return Matrix4f::Translate(x,y,z);
     }
 
+    inline Matrix4f translate(float x,float y)
+    {
+        return Matrix4f::Translate(x,y,1.0f);
+    }
+
     inline Matrix4f scale(const Vector3f &v)
     {
         return Matrix4f::Scale(v,Vector3f::zero);
@@ -92,6 +97,11 @@ namespace hgl
     inline Matrix4f scale(float x,float y,float z)
     {
         return Matrix4f::Scale(Vector3f(x,y,z),Vector3f::zero);
+    }
+
+    inline Matrix4f scale(float x,float y)
+    {
+        return Matrix4f::Scale(Vector3f(x,y,1.0f),Vector3f::zero);
     }
 
     inline Matrix4f scale(float s)
@@ -107,6 +117,11 @@ namespace hgl
     inline Matrix4f rotate(float angle,float x,float y,float z)
     {
         return rotate(angle,Vector3f(x,y,z));
+    }
+    
+    inline Matrix4f rotate(float angle,float x,float y)
+    {
+        return rotate(angle,Vector3f(x,y,1.0f));
     }
 
     inline Matrix4f rotate(float angle,const Vector4f &axis)
