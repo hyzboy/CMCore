@@ -43,10 +43,13 @@ namespace hgl
 
                 tmp=trim<T>(str->c_str(),len,isslash<T>);
 
-                if(first)
+                if(!first)
                 {
                     *p=spear_char;
                     ++p;
+                }
+                else
+                {
                     first=false;
                 }
 
