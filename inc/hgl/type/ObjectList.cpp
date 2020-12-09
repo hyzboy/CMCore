@@ -21,15 +21,15 @@ namespace hgl
 //  {
 //      if(!this->items)
 //      {
-//          this->max_count=1;
+//          this->alloc_count=1;
 //          this->items=(T **)hgl_align_malloc<T *>(1);
 //      }
 //      else
 //      {
-//          if(this->count>=this->max_count)
-//              this->max_count<<=1;
+//          if(this->count>=this->alloc_count)
+//              this->alloc_count<<=1;
 //
-//          this->items=(T **)hgl_realloc(this->items,this->max_count*sizeof(T *));
+//          this->items=(T **)hgl_realloc(this->items,this->alloc_count*sizeof(T *));
 //      }
 //
 //      return(this->items[this->count++]=CreateObject());
@@ -45,10 +45,10 @@ namespace hgl
 //
 //      if(index<this->count)
 //      {
-//          if(this->count>=this->max_count)
-//              this->max_count<<=1;
+//          if(this->count>=this->alloc_count)
+//              this->alloc_count<<=1;
 //
-//          this->items=(T **)hgl_realloc(this->items,this->max_count*sizeof(T *));
+//          this->items=(T **)hgl_realloc(this->items,this->alloc_count*sizeof(T *));
 //
 //          memmove(this->items+index+1,this->items+index,(this->count-index)*sizeof(T *));
 //
@@ -217,13 +217,13 @@ namespace hgl
         }
         else
         {
-            this->max_count=power_to_2(new_count);
+            this->alloc_count=power_to_2(new_count);
 
             if(this->items)
             {
                 if(new_count>this->count)
                 {
-                    this->items=(T **)hgl_realloc(this->items,this->max_count*sizeof(T *));
+                    this->items=(T **)hgl_realloc(this->items,this->alloc_count*sizeof(T *));
 
 //                  for(;this->count<new_count;this->count++)
 //                      this->items[this->count]=CreateObject();
@@ -233,12 +233,12 @@ namespace hgl
                     while(this->count-->new_count)
                         DeleteObject(this->items[this->count]);
 
-                    this->items=(T **)hgl_realloc(this->items,this->max_count*sizeof(T *));
+                    this->items=(T **)hgl_realloc(this->items,this->alloc_count*sizeof(T *));
                 }
             }
 //            else
 //            {
-//              this->items=(T **)hgl_align_malloc<T *>(this->max_count);
+//              this->items=(T **)hgl_align_malloc<T *>(this->alloc_count);
 //
 //                while(new_count--)
 //                  this->items[this->count++]=CreateObject();

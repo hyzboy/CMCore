@@ -13,13 +13,13 @@ namespace hgl
     {
         if(value<=0)
         {
-            LOG_ERROR(OS_TEXT("ActiveChain缓冲区大小被设置<=0"));
+            LOG_ERROR(OS_TEXT("LRUCache缓冲区大小被设置<=0"));
 
             value=3;
         }
 
         count=0;
-        max_count=value;
+        alloc_count=value;
 
         start_item=nullptr;
         end_item=nullptr;
@@ -32,14 +32,14 @@ namespace hgl
     }
 
     template<typename F,typename T>
-    void LRUCache<F,T>::SetMaxCount(int value)
+    void LRUCache<F,T>::Realloc(int value)
     {
         if(value<=0)
         {
-            LOG_ERROR(OS_TEXT("ActiveChain缓冲区大小被设置<=0，此次设置无效！"));
+            LOG_ERROR(OS_TEXT("LRUCache缓冲区大小被设置<=0，此次设置无效！"));
         }
         else
-            max_count=value;
+            alloc_count=value;
     }
 
     template<typename F,typename T>
@@ -71,7 +71,7 @@ namespace hgl
             #ifdef _DEBUG
             if(count!=1)
             {
-                LOG_ERROR(OS_TEXT("ActiveChain出错，end_item=nullptr,count!=1"));
+                LOG_ERROR(OS_TEXT("LRUCache出错，end_item=nullptr,count!=1"));
             }
             #endif//
             start_item=nullptr;         //如果end_item为空，start_item也应该为空
@@ -90,7 +90,7 @@ namespace hgl
     {
         LruItem *temp;
 
-        while(count>=max_count)ClearEnd();          //满了，清除超出的数据
+        while(count>=alloc_count)ClearEnd();          //满了，清除超出的数据
 
         temp=new LruItem;
         temp->key=key;
@@ -111,7 +111,7 @@ namespace hgl
             #ifdef _DEBUG               //理由上end_item为NULL时应该是没有数据
             if(count!=1)
             {
-                LOG_ERROR(OS_TEXT("ActiveChain出错，end_item=nullptr,count!=1"));
+                LOG_ERROR(OS_TEXT("LRUCache出错，end_item=nullptr,count!=1"));
             }
             else
             #endif//_DEBUG
@@ -202,7 +202,7 @@ namespace hgl
         if(Find(key,value,mts))
             return(true);
 
-        while(count>=max_count)ClearEnd();          //满了，清除超出的数据
+        while(count>=alloc_count)ClearEnd();          //满了，清除超出的数据
 
         if(Create(key,value))
         {

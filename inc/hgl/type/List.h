@@ -14,23 +14,24 @@ namespace hgl
     {
     protected:
 
-        int count=0;
-        int max_count=0;
+        int count=0;                                                                                ///<当前数据数量
+        int alloc_count=0;                                                                          ///<当前已分配空间数量
         T *items=nullptr;
 
     public: //属性
 
-                        int     GetCount    ()const{return count;}                                  ///<取得列表内数据数量
-        virtual         void    SetCount    (int);                                                  ///<设置列表内数据数量
-        virtual         void    PreMalloc   (int);                                                  ///<预分配指定数量的数据空间
-                        T *     GetData     ()const{return items;}                                  ///<提供原始数据项
-                        int     GetBytes    ()const{return count*sizeof(T);}                        ///<取得原始数据总字节数
+                        int     GetAllocCount   ()const{return alloc_count;}                        ///<取得已分配容量
+                        int     GetCount        ()const{return count;}                              ///<取得列表内数据数量
+        virtual         void    SetCount        (int);                                              ///<设置列表内数据数量
+        virtual         void    PreMalloc       (int);                                              ///<预分配指定数量的数据空间
+                        T *     GetData         ()const{return items;}                              ///<提供原始数据项
+                        int     GetBytes        ()const{return count*sizeof(T);}                    ///<取得原始数据总字节数
 
-                        T *     GetBegin    (){return (items&&count>0)?items:nullptr;}              ///<取得第一个数据项指针
-                        T *     GetEnd      (){return (items&&count>0)?items+count-1:nullptr;}      ///<取得最后一个数据项指针
+                        T *     GetBegin        (){return (items&&count>0)?items:nullptr;}          ///<取得第一个数据项指针
+                        T *     GetEnd          (){return (items&&count>0)?items+count-1:nullptr;}  ///<取得最后一个数据项指针
 
-                        T *     begin()const{return items;}
-                        T *     end()const{return items+count;}
+                        T *     begin           ()const{return items;}
+                        T *     end             ()const{return items+count;}
 
     public: //方法
 

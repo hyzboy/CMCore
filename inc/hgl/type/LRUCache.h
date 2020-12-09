@@ -30,7 +30,7 @@ namespace hgl
         LruItem *start_item,        //首数据
                 *end_item;          //尾数据
 
-        int count,max_count;
+        int count,alloc_count;
 
     protected:
 
@@ -45,10 +45,10 @@ namespace hgl
 
     public:
 
-                const   int     GetCount    ()const{return count;}                                  ///<取得当前有多少数据
-                const   int     GetMaxCount ()const{return max_count;}                              ///<取得最大可以有多少数据
-        virtual         void    SetMaxCount (int);                                                  ///<设置最大可以有多少数据
-                        int     GetFreeCount()const{return max_count-count;}                        ///<取得当前缓冲区剩于量
+                const   int     GetCount        ()const{return count;}                              ///<取得当前有多少数据
+                const   int     GetAllocCount   ()const{return alloc_count;}                        ///<取得已分配空间容量
+        virtual         void    Realloc         (int);                                              ///<设置已分配空间容量
+                        int     GetFreeCount    ()const{return alloc_count-count;}                  ///<取得当前缓冲区剩于量
 
     public:
 
