@@ -1,19 +1,11 @@
 ﻿#ifndef HGL_LOGGER_INCLUDE
 #define HGL_LOGGER_INCLUDE
 
-#include<hgl/type/String.h>
+#include<hgl/log/LogInfo.h>
 namespace hgl
 {
     namespace logger
     {
-        enum LogLevel
-        {
-            llError=0,      //错误，肯定出对话框
-            llProblem,      //问题，默认出对话框
-            llHint,         //提示，不重要，debug状态默认出对话框
-            llLog           //记录一下
-        };//enum LogLevel
-
         /**
          * 日志输出基类
          */
