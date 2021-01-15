@@ -439,7 +439,7 @@ namespace hgl
     /**
      * 求对齐数量
      */
-    template<typename T> inline T divide_rounding_up(T a, T b)
+    template<typename T> inline T divide_rounding_up(T x, T y)
     {
         return (x + y - (T)1) / y;
     }
