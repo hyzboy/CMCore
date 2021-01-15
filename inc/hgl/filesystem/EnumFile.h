@@ -54,8 +54,9 @@ namespace hgl
         {
         protected:
 
-            virtual void ProcFolder(struct EnumFileConfig *parent_efc,struct EnumFileConfig *cur_efc,FileInfo &fi){}
-            virtual void ProcFile(struct EnumFileConfig *,FileInfo &fi){}
+            virtual void ProcFolderBegin(struct EnumFileConfig *parent_efc,struct EnumFileConfig *cur_efc,FileInfo &fi){}
+            virtual void ProcFolderEnd  (struct EnumFileConfig *parent_efc,struct EnumFileConfig *cur_efc,FileInfo &fi){}
+            virtual void ProcFile       (struct EnumFileConfig *,FileInfo &fi){}
 
             virtual EnumFileConfig *CreateSubConfig(struct EnumFileConfig *up_efc,const FileInfo &fi)
             {
