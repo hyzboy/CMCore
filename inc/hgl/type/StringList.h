@@ -112,14 +112,18 @@ namespace hgl
         {
             int count=Items.GetCount();
             int result=0;
+            T** sl = Items.GetData();
+            sl += count - 1;
 
             while(count--)
             {
-                if(Items[count]->Comp(str)==0)
+                if((*sl)->Comp(str)==0)
                 {
                     Items.Delete(count);
                     result++;
                 }
+
+                --sl;
             }
 
             return(result);
@@ -133,10 +137,13 @@ namespace hgl
         int  Find(const T &str) const                                                               ///<查找字符串,未找到返回-1
         {
             const int count=Items.GetCount();
+            T** sl = Items.GetData();
 
             for(int i=0;i<count;i++)
-                if(Items[i]->Comp(str)==0)
+                if((*sl)->Comp(str)==0)
                     return(i);
+                else
+                    ++sl;
 
             return(-1);
         }
@@ -149,10 +156,13 @@ namespace hgl
         int  CaseFind(const T &str) const                                                           ///<查找字符串,英文无视大小写,未找到返回-1
         {
             const int count=Items.GetCount();
+            T** sl = Items.GetData();
 
-            for(int i=0;i<count;i++)
-                if(Items[i]->CaseComp(str)==0)
+            for (int i = 0; i < count; i++)
+                if ((*sl)->CaseComp(str) == 0)
                     return(i);
+                else
+                    ++sl;
 
             return(-1);
         }
@@ -167,9 +177,13 @@ namespace hgl
         {
             const int count=Items.GetCount();
 
+            T** sl = Items.GetData();
+
             for(int i=0;i<count;i++)
-                if(Items[i]->Comp(str,cn)==0)
+                if((*sl)->Comp(str,cn)==0)
                     return(i);
+                else
+                    ++sl;
 
             return(-1);
         }
@@ -184,9 +198,13 @@ namespace hgl
         {
             const int count=Items.GetCount();
 
-            for(int i=0;i<count;i++)
-                if(Items[i]->CaseComp(str,cn)==0)
+            T** sl = Items.GetData();
+
+            for (int i = 0; i < count; i++)
+                if ((*sl)->CaseComp(str, cn) == 0)
                     return(i);
+                else
+                    ++sl;
 
             return(-1);
         }
