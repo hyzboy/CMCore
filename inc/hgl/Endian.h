@@ -10,6 +10,7 @@ namespace hgl
         /**
         * Windows代码页枚举
         * 全部Windows所支持代码页请参见 http://msdn.microsoft.com/en-us/library/dd317756
+        *                            https://docs.microsoft.com/en-us/windows/win32/intl/code-page-identifiers
         */
         enum CharCodePage                                       ///代码页枚举
         {
@@ -32,6 +33,19 @@ namespace hgl
             ccpMacJanpan                    =10001,             ///<日文
             ccpMacTraditionalChinese        =10002,             ///<繁体中文
             ccpMacSimplifiedChinese         =10008,             ///<简体中文
+
+            //ISO
+            ccp8859_1                       =28591,             ///<ISO 8859-1 Latin 1; Western European                    西欧语系(阿尔巴尼亚语,西班牙加泰罗尼亚语,丹麦语,荷兰语,英语,Faeroese语,芬兰语,法语,德语,加里西亚语,爱尔兰语,冰岛语,意大利语,挪威语,葡萄牙语,瑞士语.)这同时适用于美国英语. 
+            ccp8859_2                       =28592,             ///<ISO 8859-2 Central European; Central European (ISO)     斯拉夫/中欧语系(捷克语,德语,匈牙利语,波兰语,罗马尼亚语,克罗地亚语,斯洛伐克语,斯洛文尼亚语) 
+            ccp8859_3                       =28593,             ///<ISO 8859-3 Latin 3                                      世界语,加里西亚语,马耳他语,土耳其语
+            ccp8859_4                       =28594,             ///<ISO 8859-4 Baltic                                       爱莎尼亚语,拉脱维亚语,立陶宛语
+            ccp8859_5                       =28595,             ///<ISO 8859-5 Cyrillic                                     斯拉夫语系(保加利亚语,Byelorussian语,马其顿语,俄语,塞尔维亚语,乌克兰语)
+            ccp8859_6                       =28596,             ///<ISO 8859-6 Arabic                                       阿拉伯语
+            ccp8859_7                       =28597,             ///<ISO 8859-7 Greek                                        现代希腊语
+            ccp8859_8                       =28598,             ///<ISO 8859-8 Hebrew; Hebrew (ISO-Visual)                  希伯来语
+            ccp8859_9                       =28599,             ///<ISO 8859-9 Turkish                                      Latin 5 字符集, (去掉了 Latin 1中不经常使用的一些冰岛语字符而代以土耳其语字符) 
+            ccp8859_13                      =28603,             ///<ISO 8859-13 Estonian
+            ccp8859_15                      =28605,             ///<ISO 8859-15 Latin 9                                     Latin 9 字符集, 是Latin 1字符集的更新版本,去掉一些不常用的字符,增加了对爱莎尼亚语的支持,修正了法语和芬兰语部份,增加了欧元字符) 
 
             //unicode
             ccpUTF7                         =65000,             ///<utf-7

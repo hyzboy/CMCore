@@ -29,6 +29,18 @@ namespace hgl
         {ccpMacTraditionalChinese,  "x-mac-chinesetrad" },
         {ccpMacSimplifiedChinese,   "x-mac-chinesesimp" },
 
+        {ccp8859_1,         "iso-8859-1"},
+        {ccp8859_2,         "iso-8859-2"},
+        {ccp8859_3,         "iso-8859-3"},
+        {ccp8859_4,         "iso-8859-4"},
+        {ccp8859_5,         "iso-8859-5"},
+        {ccp8859_6,         "iso-8859-6"},
+        {ccp8859_7,         "iso-8859-7"},
+        {ccp8859_8,         "iso-8859-8"},
+        {ccp8859_9,         "iso-8859-9"},
+        {ccp8859_13,        "iso-8859-13"},
+        {ccp8859_15,        "iso-8859-15"},
+
         {ccpUTF7,           "utf-7"     },
         {ccpUTF8,           "utf-8"     },
 
@@ -69,6 +81,18 @@ namespace hgl
         {ccpMacJanpan,              "x-mac-japanese"    },
         {ccpMacTraditionalChinese,  "x-mac-chinesetrad" },
         {ccpMacSimplifiedChinese,   "x-mac-chinesesimp" },
+     
+        {ccp8859_1,         "iso-8859-1"},
+        {ccp8859_2,         "iso-8859-2"},
+        {ccp8859_3,         "iso-8859-3"},
+        {ccp8859_4,         "iso-8859-4"},
+        {ccp8859_5,         "iso-8859-5"},
+        {ccp8859_6,         "iso-8859-6"},
+        {ccp8859_7,         "iso-8859-7"},
+        {ccp8859_8,         "iso-8859-8"},
+        {ccp8859_9,         "iso-8859-9"},
+        {ccp8859_13,        "iso-8859-13"},
+        {ccp8859_15,        "iso-8859-15"},
 
         {ccpUTF7,           "utf7"      },
         {ccpUTF8,           "utf8"      },
