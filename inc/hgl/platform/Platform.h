@@ -280,7 +280,7 @@
 
 #elif HGL_OS == HGL_OS_macOS
 
-    #include<hgl/platform/os/MacOS.h>
+    #include<hgl/platform/os/Apple.h>
 
     #if HGL_COMPILER == HGL_COMPILER_Intel
         #include<hgl/platform/compiler/Intel.h>
@@ -292,7 +292,7 @@
 
 #elif HGL_OS == HGL_OS_iOS
 
-    #include<hgl/platform/os/MacOS.h>
+    #include<hgl/platform/os/Apple.h>
     #include<hgl/platform/compiler/LLVM.h>
 
 #elif HGL_OS == HGL_OS_PSP2
