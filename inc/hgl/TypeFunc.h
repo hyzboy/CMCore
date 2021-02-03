@@ -279,6 +279,7 @@ namespace hgl
     HGL_DEF_ANG2RAD(225)
     HGL_DEF_ANG2RAD(270)
     HGL_DEF_ANG2RAD(315)
+    HGL_DEF_ANG2RAD(360)
 
     #undef HGL_DEF_ANG2RAD
 
