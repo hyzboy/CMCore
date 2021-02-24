@@ -5,19 +5,36 @@
 namespace hgl
 {
     /**
-     * 抽像数据块
+     * 抽像内存分配器
      */
-    class AbstractDataBlock
+    class AbstractMemoryAllocator
     {
     protected:
+
+        void *memory_block;                 ///<内存地址
 
         uint64 data_size;                   ///<数据长度
 
         uint64 alloc_unit_size;             ///<分配单位长度(分配长度必须为此值的整倍数)
         uint64 alloc_size;                  ///<实际分配数据长度
+        
+    public:
+
+        virtual const   uint64  GetSize         ()const{return data_size;}          ///<获取所需求的内存大小
+        virtual const   uint64  GetAllocUnitSize()const{return alloc_unit_size;}    ///<获取分配单元大小
+        virtual const   uint64  GetAllocSize    ()const{return alloc_size;}         ///<获取实际分配的内存大小
+
+        virtual         void *  Get             (){return memory_block;}            ///<取得内存块地址
+        virtual         void *  Get             (const uint64 offset)
+        {
+            return (uint8 *)memory_block+offset;
+        }
 
     public:
 
+        /**
+         * 设置分配单元长度
+         */
         virtual void SetAllocUnitSize(const uint64 size)
         {
             alloc_unit_size=size;
@@ -28,75 +45,53 @@ namespace hgl
          */
         virtual uint64 ComputeAllocSize(const uint64 size)
         {
+            uint64 result;
+
             if(alloc_unit_size==0)
             {
-                alloc_size=power_to_2(size);
+                result=power_to_2(size);
             }
             else
             if(alloc_unit_size==1)
             {
-                alloc_size=size;
+                result=size;
             }
             else
             {
-                alloc_size=(size+alloc_unit_size-1)/alloc_unit_size;
-                alloc_size*=alloc_unit_size;
+                result=(size+alloc_unit_size-1)/alloc_unit_size;
+                result*=alloc_unit_size;
             }
 
-            return alloc_size;
+            return result;
         }
 
     public:
 
-        AbstractDataBlock()
+        AbstractMemoryAllocator()
         {
+            memory_block=nullptr;
+
             data_size=0;
             alloc_unit_size=0;
             alloc_size=0;
         }
 
+        virtual ~AbstractMemoryAllocator()=default;
+
         virtual bool Alloc  (const uint64 size)=0;              ///<分配指定空间的数据
         virtual void Free   ()=0;                               ///<释放数据空间
-        virtual void Clear  ()=0;                               ///<清空数据(但不释放空间)
+        virtual void Clear  (){data_size=0;}
+    };//class AbstractMemoryAllocator
 
-        virtual const uint64 GetSize()const {return data_size;}
-
-        virtual bool Exchange   (const uint64 target,const uint64 source,const uint64 size)=0;          ///<交换两个数据空间
-        virtual void Move       (const uint64 target,const uint64 source,const uint64 size)=0;          ///<移动一块数据
-
-        virtual bool Write      (const uint64 target,const void *source,const uint64 size)=0;           ///<写入一块数据
-
-        virtual bool CopyFrom   (const uint64 target,AbstractDataBlock *source,const uint64 offset,const uint64 size)=0;
-        virtual bool CopyFrom   (const uint64 target,AbstractDataBlock *source)
-        {
-            if(!source)return(false);
-
-            return CopyFrom(target,source,0,source->GetSize());
-        }
-    };//class AbstractDataBlock
-
-    class MemoryBlock:public AbstractDataBlock
+    class MemoryAllocator:public AbstractMemoryAllocator
     {
-    protected:
-
-        void *memory_block;
-
-        void *temp_block;
-        uint64 temp_size;
-
     public:
 
-        MemoryBlock()
-        {
-            memory_block=nullptr;
-            temp_block=nullptr;
-            temp_size=0;
-        }
+        using AbstractMemoryAllocator::AbstractMemoryAllocator;
 
-        virtual ~MemoryBlock()
+        virtual ~MemoryAllocator()
         {
             Free();
-            hgl_free(temp_block);
         }
 
         bool Alloc(const uint64 size) override
@@ -109,7 +104,7 @@ namespace hgl
 
             alloc_size=ComputeAllocSize(size);
 
-            hgl_align_realloc(memory_block,alloc_size,alloc_unit_size);       //hgl_align_realloc支持传入空的memory_block，所以无需判断malloc/realloc
+            memory_block=hgl_align_realloc(memory_block,alloc_size,alloc_unit_size);       //hgl_align_realloc支持传入空的memory_block，所以无需判断malloc/realloc
 
             return memory_block;
         }
@@ -117,141 +112,167 @@ namespace hgl
         void Free() override
         {
             if(memory_block)
+            {
                 hgl_free(memory_block);
+                memory_block=nullptr;
+            }
 
             data_size=0;
             alloc_size=0;
         }
+    };//class MemoryAllocator:public AbstractMemoryAllocator
 
-        void Clear() override
+    /**
+     * 内存数据块
+     */
+    class MemoryBlock
+    {
+    protected:
+
+        AbstractMemoryAllocator *memory_allocator;
+
+        void *temp_block;
+        uint64 temp_size;
+
+    public:
+
+        MemoryBlock(AbstractMemoryAllocator *ama)
         {
-            data_size=0;
+            memory_allocator=ama;
+
+            temp_block=nullptr;
+            temp_size=0;
         }
 
-        bool Write(const uint64 target,const void *source,const uint64 size) override
+        virtual ~MemoryBlock()
         {
-            if(target>data_size)return(false);
+            hgl_free(temp_block);
+            SAFE_CLEAR(memory_allocator);       //会同步释放内存
+        }
+
+        virtual uint64  GetSize ()const                 {return memory_allocator->GetSize();}
+        virtual void *  Get     ()                      {return memory_allocator->Get();}
+        virtual void *  Get     (const uint64 offset)   {return memory_allocator->Get(offset);}
+
+        virtual void Clear()
+        {
+            memory_allocator->Clear();
+        }
+
+        virtual bool Alloc(const uint64 size,const uint64 uint_size=0)
+        {
+            memory_allocator->SetAllocUnitSize(uint_size);
+            memory_allocator->Alloc(size);
+        }
+
+        virtual bool Write(const uint64 target,const void *source,const uint64 size) 
+        {
+            if(target+size>memory_allocator->GetSize())return(false);
             if(!source||!size)return(false);
 
-            memcpy((uint8 *)memory_block+target,source,size);
+            memcpy(Get(target),source,size);
             return(true);
         }
 
-        bool Exchange   (const uint64 target,const uint64 source,const uint64 size) override
+        virtual bool Write(const uint64 target,MemoryBlock *source,const uint64 offset,const uint64 size)
+        {
+            if(offset+size>source->GetSize())return(false);
+
+            return Write(target,source->Get(offset),size);
+        }
+
+        virtual bool Exchange   (const uint64 target,const uint64 source,const uint64 size) 
         {
             if(size<=0)return(false);
             if(target==source)return(true);
 
             if(size>temp_size)
             {
-                temp_size=ComputeAllocSize(size);
-                temp_block=hgl_align_realloc(temp_block,temp_size,alloc_unit_size);
+                temp_size=memory_allocator->ComputeAllocSize(size);
+                temp_block=hgl_align_realloc(temp_block,temp_size,memory_allocator->GetAllocUnitSize());
             }
 
             memcpy( temp_block,
-                    (uint8 *)memory_block+target,
+                    Get(target),
                     size);
 
-            memcpy( (uint8 *)memory_block+target,
-                    (uint8 *)memory_block+source,
+            memcpy( Get(target),
+                    Get(source),
                     size);
 
-            memcpy( (uint8 *)memory_block+source,
+            memcpy( Get(source),
                     temp_block,
                     size);
 
             return(true);
         }
 
-        void Move       (const uint64 target,const uint64 source,const uint64 size) override
+        void Move       (const uint64 target,const uint64 source,const uint64 size)
         {
-            memmove((uint8 *)memory_block+target,
-                    (uint8 *)memory_block+source,
+            memmove(Get(target),
+                    Get(source),
                     size);
-        }
-
-        bool CopyFrom   (const uint64 target,AbstractDataBlock *source,const uint64 offset,const uint64 size) override
-        {
-        }
-
-        bool CopyFrom   (const uint64 target,AbstractDataBlock *source) override
-        {
         }
     };//class MemoryBlock:public AbstractDataBlock
 
     /**
-     * 抽像合集
+     * 数据合集
      */
-    template<typename T> class AbstractCollection
+    template<typename T> class Collection
     {
     protected:
 
-        AbstractDataBlock *data_block;
+        MemoryBlock *memory_block;
 
         uint64 data_count;
 
     public:
 
-        AbstractCollection(AbstractDataBlock *adb)
+        Collection(AbstractMemoryBlock *adb)
         {
-            data_block=adb;
+            memory_block=adb;
             data_count=0;
         }
 
-        virtual ~AbstractCollection()
+        virtual ~Collection()
         {
-            SAFE_CLEAR(data_block);
+            SAFE_CLEAR(memory_block);
         }
 
-        virtual AbstractDataBlock *getDataBlock()const{return data_block;}
+        virtual MemoryBlock *   GetMemoryBlock()const{return memory_block;}
 
-        virtual const uint64 GetCount()const{return data_count;}
-        virtual const bool isEmpty()const{return !data_count;}
+        virtual const uint64    GetCount()const{return data_count;}
+        virtual const bool      IsEmpty()const{return !data_count;}
 
-        virtual bool add(const T &obj)
+        virtual bool Add(const T &obj)
         {
-            if(!data_block->Alloc((data_count+1)*sizeof(T)))
+            if(!memory_block->Alloc((data_count+1)*sizeof(T)))
                 return(false);
 
-            if(!data_block->Write(data_count*sizeof(T),&obj,sizeof(T)))
+            if(!memory_block->Write(data_count*sizeof(T),&obj,sizeof(T)))
                 return(false);
 
             ++data_count;
             return(true);
         }
 
-        virtual bool addAll(const AbstractCollection<T> &c)
+        virtual bool Add(const Collection<T> &c)
         {
             const uint64 source_size=c.GetCount();
 
             if(!source_size)return(true);
 
-            if(!data_block->Alloc((data_count+source_size)*sizeof(T)))
+            if(!memory_block->Alloc((data_count+source_size)*sizeof(T)))
                 return(false);
 
-            return data_block->CopyFrom(data_count*sizeof(T),getDataBlock());
+            return memory_block->Write(data_count*sizeof(T),GetMemoryBlock());
         }
 
-        virtual void clear()
+        virtual void Clear()
         {
             data_count=0;
-            if(data_block)data_block->Clear();
+            if(memory_block)memory_block->Clear();
         }
-    };//
-
-    /**
-     * 数据合集模板
-     */
-    template<typename T> class Collection:public AbstractCollection
-    {
-    public:
-
-        Collection():AbstractCollection(new MemoryBlock){}
-
-        virtual bool add(const T &obj);
-        virtual bool addAll(const Collection<T> &c);
-
-        virtual void clear();
-    };//
+    };//class Collection
 }//namespace hgl
 #endif//HGL_COLLECTION_INCLUDE
