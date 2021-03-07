@@ -1,8 +1,33 @@
-﻿SET(TYPE_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type)
+﻿SET(CORE_PLATFORM_INCLUDE_PATH  ${CMCORE_ROOT_INCLUDE_PATH}/hgl/platform)
+
+SET(CORE_PLATFORM_HEADER_FILES  ${CORE_PLATFORM_INCLUDE_PATH}/Platform.h
+                                ${CORE_PLATFORM_INCLUDE_PATH}/os/CharType.h)
+
+IF(WIN32)
+
+    SET(CORE_PLATFORM_HEADER_FILES ${CORE_PLATFORM_HEADER_FILES}    ${CORE_PLATFORM_INCLUDE_PATH}/os/MSWindows.h)
+
+ELSEIF(UNIX)
+
+    IF(APPLE)
+        SET(CORE_PLATFORM_HEADER_FILES ${CORE_PLATFORM_HEADER_FILES}    ${CORE_PLATFORM_INCLUDE_PATH}/os/Apple.h)
+    ELSEIF(ANDROID)
+        SET(CORE_PLATFORM_HEADER_FILES ${CORE_PLATFORM_HEADER_FILES}    ${CORE_PLATFORM_INCLUDE_PATH}/os/Android.h)
+    ELSE()
+    ENDIF()
+
+    SET(CORE_PLATFORM_HEADER_FILES ${CORE_PLATFORM_HEADER_FILES}    ${CORE_PLATFORM_INCLUDE_PATH}/os/PosixThread.h)
+ENDIF()
+
+SOURCE_GROUP("Platform" FILES ${CORE_PLATFORM_HEADER_FILES})
+
+
+SET(TYPE_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type)
 
 file(GLOB TYPE_TEMPLATE_HEADER ${TYPE_INCLUDE_PATH}/*.h)
 
-SET(SYSTEM_INFO_SOURCE   SystemInfo.cpp)
+SET(SYSTEM_INFO_SOURCE  ${CORE_PLATFORM_INCLUDE_PATH}/SystemInfo.h
+                        SystemInfo.cpp)
 
 SET(MATH_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/math)
 
@@ -55,6 +80,12 @@ SOURCE_GROUP("Text\\Header Files" FILES ${TEXT_HEADER_FILES})
 SOURCE_GROUP("Text\\Source Files" FILES ${TEXT_SOURCE_FILES})
 
 SOURCE_GROUP("Datatype\\Template" FILES ${TYPE_TEMPLATE_HEADER})
+
+SET(BASE_OTHER_SOURCE   ${TYPE_INCLUDE_PATH}/MemoryBlock.h
+                        ${TYPE_INCLUDE_PATH}/MemoryAllocator.h
+                        Other/MemoryBlock.cpp
+                        Other/MemoryAllocator.cpp)
+SOURCE_GROUP("DataType\\Template\\Memory" FILES ${BASE_OTHER_SOURCE})
 
 ##I/O------------------------------------------------------------
 SET(IO_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io)
@@ -129,8 +160,7 @@ SOURCE_GROUP("Time\\Header Files" FILES ${BASE_TIME_HEADER_FILES})
 SOURCE_GROUP("Time\\Source Files" FILES ${BASE_TIME_SOURCE_FILES})
 
 SET(BASE_THREAD_SOURCE   Other/ThreadFunc.cpp)
-
-SOURCE_GROUP("Thread" FILES ${BASE_OTHER_SOURCE})
+SOURCE_GROUP("Thread" FILES ${BASE_THREAD_SOURCE})
 
 file(GLOB BASE_PLUG_IN_HEADER ${CMCORE_ROOT_INCLUDE_PATH}/hgl/plugin/*.h)
 file(GLOB BASE_PLUG_IN_SOURCE PlugIn/*.cpp)
@@ -144,7 +174,8 @@ file(GLOB BASE_LOG_SOURCE Log/*.*)
 SOURCE_GROUP("Log\\Header Files" FILES ${BASE_LOG_HEADER})
 SOURCE_GROUP("Log\\Source Files" FILES ${BASE_LOG_SOURCE})
 
-add_cm_library(CMCore "CM"  #${SYSTEM_INFO_SOURCE}
+add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
+                            #${SYSTEM_INFO_SOURCE}
 
                             ${COLOR_HEADER_FILES}
                             ${COLOR_SOURCE_FILES}
@@ -166,6 +197,7 @@ add_cm_library(CMCore "CM"  #${SYSTEM_INFO_SOURCE}
                             ${BASE_TIME_HEADER_FILES}
                             ${BASE_TIME_SOURCE_FILES}
 
+                            ${BASE_OTHER_SOURCE}
                             ${BASE_THREAD_SOURCE}
 
                             ${BASE_PLUG_IN_HEADER}

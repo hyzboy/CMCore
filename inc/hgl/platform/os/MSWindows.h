@@ -48,9 +48,6 @@ using os_char           =wchar_t;
 #define HGL_MAX_PATH                    MAX_PATH
 
 #define HGL_MEM_ALIGN                   16                                              //内存对齐字节数
-
-#define HGL_GL_WINDOW_INCLUDE_FILE      <hgl/platform/WinOpenGL.h>                      //指定OpenGL窗口引用头文件
-#define HGL_GL_WINDOW_CLASS             WinGLWindow                                     //指定OpenGL窗口类名称
 //--------------------------------------------------------------------------------------------------
 
 // == 目前MINGW和MSVC在以下接口上应该能保持一致了
@@ -59,9 +56,12 @@ using os_char           =wchar_t;
 #define hgl_realloc(ptr,size)   _aligned_realloc(ptr,size,HGL_MEM_ALIGN)
 #define hgl_free                _aligned_free
 
-void *hgl_align_malloc(size_t n,size_t align_size)
+inline void *hgl_align_malloc(size_t n,size_t align_size)
 {
     if(n<=0)return(nullptr);
+
+    if(align_size==0)
+        align_size=HGL_MEM_ALIGN;
 
     return _aligned_malloc(n,align_size);
 }
@@ -74,7 +74,7 @@ inline T *hgl_align_malloc(size_t n)
     return (T *)_aligned_malloc(n*sizeof(T),alignof(T));
 }
 
-void *hgl_align_realloc(void *ptr,size_t n,size_t align_size)
+inline void *hgl_align_realloc(void *ptr,size_t n,size_t align_size)
 {
     if(n<=0)
     {
@@ -83,6 +83,9 @@ void *hgl_align_realloc(void *ptr,size_t n,size_t align_size)
 
         return(nullptr);
     }
+
+    if(align_size==0)
+        align_size=HGL_MEM_ALIGN;
 
     if(ptr)
         return _aligned_realloc(ptr,n,align_size);
