@@ -28,11 +28,15 @@ namespace hgl
             SAFE_CLEAR(memory_block);
         }
 
-        virtual MemoryBlock *   GetMemoryBlock()const{return memory_block;}
+        virtual MemoryBlock *   GetMemoryBlock()const{return memory_block;}                         ///<获取整个合集所用的内存块
+        virtual T *             ToArray()const{return (T *)(memory_block->Get());}                  ///<按C阵列方式访问数据
 
-        virtual const uint64    GetCount()const{return data_count;}
-        virtual const bool      IsEmpty()const{return !data_count;}
+        virtual const uint64    GetCount()const{return data_count;}                                 ///<获取合集内的数据个数
+        virtual const bool      IsEmpty()const{return !data_count;}                                 ///<当前合集是否为空
 
+        /**
+         * 增加一个数据到合集
+         */
         virtual bool Add(const T &obj)
         {
             if(!memory_block->Alloc((data_count+1)*sizeof(T)))
@@ -45,6 +49,9 @@ namespace hgl
             return(true);
         }
 
+        /**
+         * 增加一整个合集的数据
+         */
         virtual bool Add(const Collection<T> &c)
         {
             const uint64 source_size=c.GetCount();
@@ -57,10 +64,35 @@ namespace hgl
             return memory_block->Write(data_count*sizeof(T),GetMemoryBlock(),0,source_size);
         }
 
+        /**
+         * 清空整个合集(并不释放内存)
+         */
         virtual void Clear()
         {
             data_count=0;
-            if(memory_block)memory_block->Clear();
+        }
+
+        /**
+         * 移除指定个连续数据
+         * @param start 起始索引
+         * @param count 数据个数
+         */
+        virtual bool Remove(const uint64 start,const uint64 count)
+        {
+            if(start+count>data_count)
+                return(false);
+
+            if(start+count<data_count)  
+                memory_block->Move( sizeof(T)*start,
+                                    sizeof(T)*(start+count),
+                                    sizeof(T)*(data_count-start-count));        //将最后一段数据移到前面来
+            //else 
+            //{
+            //    如果start_count==data_count代表要移除的数据本就在最后，那就不用move处理了
+            //}
+
+            data_count-=count;
+            return(true);
         }
     };//class Collection
 }//namespace hgl
