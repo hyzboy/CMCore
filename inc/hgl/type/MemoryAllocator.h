@@ -24,6 +24,8 @@ namespace hgl
         virtual const   uint64  GetAllocUnitSize()const{return alloc_unit_size;}    ///<获取分配单元大小
         virtual const   uint64  GetAllocSize    ()const{return alloc_size;}         ///<获取实际分配的内存大小
 
+        virtual const   bool    CanRealloc      ()const=0;                          ///<是否可重新分配
+
         virtual         void *  Get             (){return memory_block;}            ///<取得内存块地址
         virtual         void *  Get             (const uint64 offset)
         {
@@ -54,6 +56,10 @@ namespace hgl
 
     class MemoryAllocator:public AbstractMemoryAllocator
     {
+    public:
+
+        virtual const bool CanRealloc()const{return true;}
+
     public:
 
         using AbstractMemoryAllocator::AbstractMemoryAllocator;

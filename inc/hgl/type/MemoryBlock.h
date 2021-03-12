@@ -22,9 +22,11 @@ namespace hgl
         MemoryBlock(AbstractMemoryAllocator *ama=new MemoryAllocator);
         virtual ~MemoryBlock();
 
-        virtual const   uint64  GetSize ()const                 {return memory_allocator->GetSize();}
-        virtual         void *  Get     ()                      {return memory_allocator->Get();}
-        virtual         void *  Get     (const uint64 offset)   {return memory_allocator->Get(offset);}
+        virtual const   uint64  GetSize     ()const                 {return memory_allocator->GetSize();}
+        virtual const   uint64  GetAllocSize()const                 {return memory_allocator->GetAllocSize();}
+
+        virtual         void *  Get         ()                      {return memory_allocator->Get();}
+        virtual         void *  Get         (const uint64 offset)   {return memory_allocator->Get(offset);}
 
         virtual         void    Clear   ();
         virtual         bool    Alloc   (const uint64 size,const uint64 uint_size=0);
