@@ -1,48 +1,9 @@
-#ifndef HGL_COLLECTION_INCLUDE
+﻿#ifndef HGL_COLLECTION_INCLUDE
 #define HGL_COLLECTION_INCLUDE
 
 #include<hgl/type/MemoryBlock.h>
 namespace hgl
 {
-    template<typename T> struct Iterable
-    {
-        virtual bool Equal(T &target,const T &source)
-        {
-            target=source;
-        }
-
-        virtual void Copy(T *target,const T *source,const uint64 count)
-        {
-            memcpy(target,source,count*sizeof(T));
-        }
-
-        virtual int Comp(const T &a,const T &b)=0;
-    };
-
-    /**
-     * 数值
-     */
-    template<typename T> struct NumberIterable:public Iterable<T>
-    {    
-        int Comp(const T &a,const T &b) override
-        {
-            return a-b;
-        }
-    };
-
-    template<typename T> struct ObjectIterable:public Iterable<T>
-    {
-        void Copy(T *target,const T *source,const uint64 count)
-        {
-            for(uint64 i=0;i<count;i++)
-            {
-                *target=*source;
-                ++target;
-                ++source;
-            }
-        }
-    };
-
     /**
      * 数据合集
      */
@@ -61,17 +22,17 @@ namespace hgl
         
         virtual const bool      IsEmpty         ()const{return !data_count;}                                                                ///<当前合集是否为空
         virtual const uint64    GetCount        ()const{return data_count;}                                                                 ///<获取合集内的数据个数
-        virtual const uint64    GetAllocCount   ()const{return memory_block?memory_block->GetAllocSize()/sizeof(T):nullptr;}                ///<获取合集实际分配空间
+        virtual const uint64    GetAllocCount   ()const{return memory_block?memory_block->GetAllocSize()/sizeof(T):0;}                      ///<获取合集实际分配空间
 
         virtual const uint64    TotalBytes      ()const{return data_count*sizeof(T);}
         
         //begin/end用于兼容for(T obj:Collection<T>)
-                        T *     begin           ()const{return memory_block?memory_block->Get():nullptr;}
-                        T *     end             ()const{return memory_block?memory_block->Get()+data_count:nullptr;}
+                        T *     begin           ()const{return memory_block?(T *)(memory_block->Get()):nullptr;}
+                        T *     end             ()const{return memory_block?(T *)(memory_block->Get())+data_count:nullptr;}
 
     public:
 
-        Collection(MemoryBlock *mb)
+        Collection(MemoryBlock *mb=new MemoryBlock)
         {
             memory_block=mb;
             data_count=0;
@@ -86,8 +47,9 @@ namespace hgl
 
         /**
          * 增加一个数据到合集
+         * @param element 要增加的元素
          */
-        virtual bool Add(const T &obj)
+        virtual bool Add(const T &element)
         {
             if(!memory_block)
                 return(false);
@@ -95,7 +57,7 @@ namespace hgl
             if(!memory_block->Alloc((data_count+1)*sizeof(T)))
                 return(false);
 
-            if(!memory_block->Write(data_count*sizeof(T),&obj,sizeof(T)))
+            if(!memory_block->Write(data_count*sizeof(T),&element,sizeof(T)))
                 return(false);
 
             ++data_count;
@@ -117,7 +79,35 @@ namespace hgl
             if(!memory_block->Alloc((data_count+source_size)*sizeof(T)))
                 return(false);
 
-            return memory_block->Write(data_count*sizeof(T),GetMemoryBlock(),0,source_size);
+            if(!memory_block->Write(data_count*sizeof(T),GetMemoryBlock(),0,source_size))
+                return(false);
+
+            ++data_count;
+            return(true);
+        }
+
+        /**
+         * 插入一个数据到合集
+         * @param offset 要插入的偏移地址
+         * @param element 要插入的元素
+         */
+        virtual bool Insert(const uint64 offset,const T &element)
+        {
+            if(data_count==0)
+                return Add(element);
+
+            if(!memory_block->Alloc((data_count+1)*sizeof(T)))
+                return(false);
+
+            memory_block->Move( sizeof(T)*(offset+1),
+                                sizeof(T)* offset,
+                                sizeof(T)*(data_count-offset));
+
+            if(!memory_block->Write(offset*sizeof(T),&element,sizeof(T)))
+                return(false);
+
+            ++data_count;
+            return(true);
         }
 
         /**
@@ -129,30 +119,87 @@ namespace hgl
         }
 
         /**
-         * 删除指定个连续数据
+         * 移除指定位置的数据
+         * @param offset 要删除的数据偏移
+         */
+        virtual bool RemoveAt(const uint64 offset)
+        {
+            if(!memory_block)
+                return(false);
+
+            if(offset>data_count)
+                return(false);
+
+            //将最后一个数据移到这个位置
+            memory_block->Copy( sizeof(T)*offset,
+                                sizeof(T)*(data_count-1),
+                                sizeof(T));
+
+            --data_count;
+            return(true);
+        }
+
+        /**
+         * 移除指定数量的连续
          * @param start 起始索引
          * @param count 数据个数
          */
-        virtual bool Delete(const uint64 start,const uint64 count)
+        virtual bool RemoveAt(const uint64 start,const uint64 count)
         {
+            if(count==1)
+                return RemoveAt(start);
+
             if(!memory_block)
                 return(false);
 
             if(start+count>data_count)
                 return(false);
 
-            if(start+count<data_count)  
-                memory_block->Move( sizeof(T)*start,
-                                    sizeof(T)*(start+count),
-                                    sizeof(T)*(data_count-start-count));        //将最后一段数据移到前面来
-            //else 
-            //{
-            //    如果start_count==data_count代表要移除的数据本就在最后，那就不用move处理了
-            //}
+            const uint64 end_count=data_count-(start+count);            //删除的数据段后面的数据个数
+
+            if(end_count>0)
+            {
+                if(end_count<=count)                                    //后面比较少，那直接复制过来就行了
+                {
+                    //后面剩的和前面删掉的一样多，复制过来    
+                    //[------------][***********]
+                    //      ^             v
+                    //      |             |
+                    //      +-------------+
+
+                    memory_block->Copy( sizeof(T)*start,
+                                        sizeof(T)*(start+count),
+                                        sizeof(T)*end_count);
+                }
+                else
+                {
+                    //后面剩的比前面空的多，将最后一段等长的复制过来
+                    //[---][**********][***]
+                    //  ^                v
+                    //  |                |
+                    //  +----------------+
+
+                    memory_block->Copy( sizeof(T)*start,
+                                        sizeof(T)*(data_count-count),
+                                        sizeof(T)*count);
+                }
+            }
+            //else{后面剩的数据个数为0，那就什么都不用干}
 
             data_count-=count;
             return(true);
         }
+
+        ///**
+        // * 从合集中移除指定的数据
+        // */
+        //virtual uint64 Remove(const Collection<T> &coll)
+        //{
+        //    for(const T &e:coll)
+        //    {
+        //        
+        //    }
+        //}
     };//class Collection
 }//namespace hgl
 #endif//HGL_COLLECTION_INCLUDE
