@@ -51,8 +51,11 @@ namespace hgl
         if(size<=0)return(false);
         if(size<=data_size)return(true);
 
-        if(size<alloc_size)
+        if(size<=alloc_size)
+        {
+            data_size=size;
             return(true);
+        }
 
         alloc_size=ComputeAllocSize(size);
 
