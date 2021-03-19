@@ -34,6 +34,7 @@ namespace hgl
         virtual         bool    Write   (const uint64 target,MemoryBlock *source,const uint64 offset,const uint64 size);
         virtual         bool    Exchange(const uint64 target,const uint64 source,const uint64 size);
         virtual         void    Move    (const uint64 target,const uint64 source,const uint64 size);
+        virtual         void    Copy    (const uint64 target,const uint64 source,const uint64 size);
     };//class MemoryBlock:public AbstractDataBlock
 }//namespace hgl
 #endif//HGL_MEMORY_BLOCK_INCLUDE
