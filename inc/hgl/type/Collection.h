@@ -190,16 +190,71 @@ namespace hgl
             return(true);
         }
 
-        ///**
-        // * 从合集中移除指定的数据
-        // */
-        //virtual uint64 Remove(const Collection<T> &coll)
-        //{
-        //    for(const T &e:coll)
-        //    {
-        //        
-        //    }
-        //}
+        virtual int64 indexOf(const T &value)
+        {
+            T *p=begin();
+            T *ep=end();
+
+            do
+            {
+                if(*p==value)
+                    return(p-begin());
+            }
+            while(++p<ep);
+
+            return -1;
+        }
+
+        /**
+         * 移除指定数据
+         * @param value 要移除的数据
+         * @return 移除的数据总量
+         */
+        virtual uint64 Remove(const T &value)
+        {
+            uint64 origin_count=data_count;
+
+            T *p=end();
+            T *ep;
+            T *bp=begin();
+
+            ep=--p;
+
+            do
+            {
+                if(*p==value)
+                {
+                    if(*p==*ep)     //就是最后一个不管了
+                    {
+                    }
+                    else
+                    {
+                        *p=*ep;
+                        --ep;
+                    }
+
+                    --data_count;
+                }
+            }
+            while(--p>=bp);
+
+            return origin_count-data_count;
+        }
+
+        /**
+         * 从合集中移除指定的数据
+         * @param coll 要移除的数据合集
+         * @return 移除的数据总量
+         */
+        virtual uint64 Remove(const Collection<T> &coll)
+        {
+            uint64 origin_count=data_count;
+
+            for(const T &value:coll)
+                Remove(value);
+
+            return origin_count-data_count;
+        }
     };//class Collection
 }//namespace hgl
 #endif//HGL_COLLECTION_INCLUDE
