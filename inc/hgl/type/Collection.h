@@ -4,6 +4,11 @@
 #include<hgl/type/MemoryBlock.h>
 namespace hgl
 {
+    template<typename T> struct CheckElement
+    {
+        virtual const bool Check(const T &)=0;
+    };
+
     /**
      * 数据合集
      */
@@ -190,7 +195,7 @@ namespace hgl
             return(true);
         }
 
-        virtual int64 indexOf(const T &value)
+        virtual int64 indexOf(const T &value) const
         {
             T *p=begin();
             T *ep=end();
@@ -205,12 +210,19 @@ namespace hgl
             return -1;
         }
 
+        virtual bool isMember(const T &value) const
+        {
+            for(const T &v:*this)
+                if(v==value)return(true);
+
+            return(false);
+        }
+        
         /**
-         * 移除指定数据
-         * @param value 要移除的数据
-         * @return 移除的数据总量
+         * 按条件移除
+         * @param condition 条件判断对象
          */
-        virtual uint64 Remove(const T &value)
+        virtual uint64 RemoveCondition(CheckElement<T> *condition)
         {
             uint64 origin_count=data_count;
 
@@ -222,7 +234,7 @@ namespace hgl
 
             do
             {
-                if(*p==value)
+                if(condition->Check(*p))
                 {
                     if(*p==*ep)     //就是最后一个不管了
                     {
@@ -241,6 +253,50 @@ namespace hgl
             return origin_count-data_count;
         }
 
+        struct CheckElementEqual:public CheckElement<T>
+        {
+            T value;
+
+        public:
+
+            CheckElementEqual(const T &v)
+            {
+                value=v;
+            }
+
+            const bool Check(const T &v) override
+            {
+                return v==value;
+            }
+        };
+
+        /**
+         * 移除指定数据
+         * @param value 要移除的数据
+         * @return 移除的数据总量
+         */
+        virtual uint64 Remove(const T &value)
+        {
+            return RemoveCondition(&CheckElementEqual(value));
+        }        
+
+        struct CheckElementInCollection:public CheckElement<T>
+        {
+            const Collection<T> *coll;
+
+        public:
+
+            CheckElementInCollection(const Collection<T> *c)
+            {
+                coll=c;
+            }
+
+            const bool Check(const T &v) override
+            {
+                return coll->isMember(v);
+            }
+        };
+
         /**
          * 从合集中移除指定的数据
          * @param coll 要移除的数据合集
@@ -248,12 +304,7 @@ namespace hgl
          */
         virtual uint64 Remove(const Collection<T> &coll)
         {
-            uint64 origin_count=data_count;
-
-            for(const T &value:coll)
-                Remove(value);
-
-            return origin_count-data_count;
+            return RemoveCondition(&CheckElementInCollection(&coll));
         }
     };//class Collection
 }//namespace hgl
