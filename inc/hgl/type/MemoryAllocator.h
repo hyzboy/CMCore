@@ -1,4 +1,4 @@
-#ifndef HGL_MEMORY_ALLOCATOR_INCLUDE
+﻿#ifndef HGL_MEMORY_ALLOCATOR_INCLUDE
 #define HGL_MEMORY_ALLOCATOR_INCLUDE
 
 #include<hgl/type/DataType.h>
@@ -66,7 +66,7 @@ namespace hgl
         virtual ~MemoryAllocator();
 
         virtual bool Alloc(const uint64 size);
-        virtual void Free();
+        virtual void Free() override;
     };//class MemoryAllocator:public AbstractMemoryAllocator
 }//namespace hgl
 #endif//HGL_MEMORY_ALLOCATOR_INCLUDE

@@ -1,4 +1,4 @@
-#include<hgl/type/MemoryAllocator.h>
+﻿#include<hgl/type/MemoryAllocator.h>
 
 namespace hgl
 {

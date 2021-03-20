@@ -1,4 +1,4 @@
-#include<hgl/type/MemoryBlock.h>
+ï»¿#include<hgl/type/MemoryBlock.h>
 #include<string.h>
 namespace hgl
 {
@@ -13,12 +13,17 @@ namespace hgl
     MemoryBlock::~MemoryBlock()
     {
         hgl_free(temp_block);
-        SAFE_CLEAR(memory_allocator);       //»áÍ¬²½ÊÍ·ÅÄÚ´æ
+        SAFE_CLEAR(memory_allocator);       //ä¼šåŒæ­¥é‡Šæ”¾å†…å­˜
     }
 
     void MemoryBlock::Clear()
     {
         memory_allocator->Clear();
+    }
+
+    void MemoryBlock::Free()
+    {
+        memory_allocator->Free();
     }
 
     bool MemoryBlock::Alloc(const uint64 size,const uint64 uint_size)
