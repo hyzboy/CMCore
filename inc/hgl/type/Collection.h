@@ -7,7 +7,7 @@ namespace hgl
     template<typename T> struct CheckElement
     {
         virtual const bool Check(const T &)=0;
-    };
+    };//template<typename T> struct CheckElement
 
     /**
      * 数据合集
@@ -92,6 +92,39 @@ namespace hgl
         }
 
         /**
+         * 获取一个数据
+         * @param index 数据索引
+         * @param element 数据存放地址
+         * @return 是否成功
+         */
+        virtual bool Get(const uint64 index,T *element)
+        {
+            if(index>=data_count)return(false);
+            if(!element)return(false);
+            if(!memory_block)return(false);
+
+            memcpy(element,memory_block->Get(index*sizeof(T)),sizeof(T));
+
+            return(true);
+        }
+
+        /**
+         * 设置一个数据
+         * @param index 要设置的位置索引(如索引不可用会失败)
+         * @param element 要设置的数据
+         * @return 是否成功
+         */
+        virtual bool Set(const uint64 index,const T &element)
+        {
+            if(index>=data_count)return(false);
+            if(!memory_block)return(false);
+
+            memcpy(memory_block->Get(index*sizeof(T)),&element,sizeof(T));
+
+            return(true);
+        }
+
+        /**
          * 插入一个数据到合集
          * @param offset 要插入的偏移地址
          * @param element 要插入的元素
@@ -116,11 +149,42 @@ namespace hgl
         }
 
         /**
+         * 交换两个数据的位置
+         */
+        virtual bool Exchange(uint64 target,uint64 source)
+        {
+            if(data_count<2)return(false);
+            if(target==source)return(true);
+
+            T tmp;
+
+            target*=sizeof(T);
+            source*=sizeof(T);
+
+            memcpy(&tmp,                        memory_block->Get(target),  sizeof(T));
+            memcpy(memory_block->Get(target),   memory_block->Get(source),  sizeof(T));
+            memcpy(memory_block->Get(source),   &tmp,                       sizeof(T));
+
+            return(true);
+        }
+
+        /**
          * 清空整个合集(并不释放内存)
          */
         virtual void Clear()
         {
             data_count=0;
+        }
+
+        /**
+         * 清空整个合集并释放内存 
+         */
+        virtual void Free()
+        {
+            data_count=0;
+
+            if(memory_block)
+                memory_block->Free();
         }
 
         /**
@@ -195,6 +259,9 @@ namespace hgl
             return(true);
         }
 
+        /**
+         * 获取数据在合集中的索引
+         */
         virtual int64 indexOf(const T &value) const
         {
             T *p=begin();
@@ -268,7 +335,7 @@ namespace hgl
             {
                 return v==value;
             }
-        };
+        };//struct CheckElementEqual:public CheckElement<T>
 
         /**
          * 移除指定数据
@@ -278,7 +345,7 @@ namespace hgl
         virtual uint64 Remove(const T &value)
         {
             return RemoveCondition(&CheckElementEqual(value));
-        }        
+        }
 
         struct CheckElementInCollection:public CheckElement<T>
         {
@@ -295,7 +362,7 @@ namespace hgl
             {
                 return coll->isMember(v);
             }
-        };
+        };//struct CheckElementInCollection:public CheckElement<T>
 
         /**
          * 从合集中移除指定的数据
