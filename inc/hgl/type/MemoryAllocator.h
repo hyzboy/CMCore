@@ -18,6 +18,8 @@ namespace hgl
         uint64 alloc_unit_size;             ///<分配单位长度(分配长度必须为此值的整倍数)
         uint64 alloc_size;                  ///<实际分配数据长度
 
+        virtual         bool    Alloc           ()=0;                               ///<分配指定空间的数据
+
     public:
 
         virtual const   uint64  GetSize         ()const{return data_size;}          ///<获取所需求的内存大小
@@ -49,13 +51,17 @@ namespace hgl
         AbstractMemoryAllocator();
         virtual ~AbstractMemoryAllocator()=default;
 
-        virtual bool Alloc  (const uint64 size)=0;              ///<分配指定空间的数据
+                bool Alloc  (const uint64);                     ///<分配指定长度的空间
         virtual void Free   ()=0;                               ///<释放数据空间
         virtual void Clear  (){data_size=0;}
     };//class AbstractMemoryAllocator
 
     class MemoryAllocator:public AbstractMemoryAllocator
     {
+    protected:
+
+        virtual bool Alloc() override;
+
     public:
 
         virtual const bool CanRealloc()const{return true;}
@@ -64,8 +70,6 @@ namespace hgl
 
         using AbstractMemoryAllocator::AbstractMemoryAllocator;
         virtual ~MemoryAllocator();
-
-        virtual bool Alloc(const uint64 size);
         virtual void Free() override;
     };//class MemoryAllocator:public AbstractMemoryAllocator
 }//namespace hgl
