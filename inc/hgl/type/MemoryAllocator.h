@@ -58,7 +58,7 @@ namespace hgl
     {
     public:
 
-        virtual const bool CanRealloc()const{return true;}
+        virtual const bool CanRealloc()const override{return true;}
 
     public:
 
