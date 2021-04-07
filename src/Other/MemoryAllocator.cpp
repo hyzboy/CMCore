@@ -40,33 +40,41 @@ namespace hgl
 
         return result;
     }
+
+    bool AbstractMemoryAllocator::Alloc(const uint64 size)
+    {
+        if(size<=0)return(false);
+
+        if(memory_block)
+        {
+            if(size<=data_size)return(true);
+
+            if(size<=alloc_size)
+            {
+                data_size=size;
+                return(true);
+            }
+        }
+
+        alloc_size=ComputeAllocSize(size);
+
+        if(!Alloc())
+            return(false);
+
+        data_size=size;
+        return(true);
+    }
     
     MemoryAllocator::~MemoryAllocator()
     {
         Free();
     }
 
-    bool MemoryAllocator::Alloc(const uint64 size)
+    bool MemoryAllocator::Alloc()
     {
-        if(size<=0)return(false);
-        if(size<=data_size)return(true);
-
-        if(size<=alloc_size)
-        {
-            data_size=size;
-            return(true);
-        }
-
-        alloc_size=ComputeAllocSize(size);
-
         memory_block=hgl_align_realloc(memory_block,alloc_size,alloc_unit_size);       //hgl_align_realloc支持传入空的memory_block，所以无需判断malloc/realloc
 
-        if(!memory_block)
-            return(false);
-
-        data_size=size;
-
-        return(memory_block);
+        return memory_block;
     }
 
     void MemoryAllocator::Free()
