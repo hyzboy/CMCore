@@ -33,7 +33,7 @@ namespace hgl
         
         //begin/end用于兼容for(T obj:Collection<T>)
                         T *     begin           ()const{return memory_block?(T *)(memory_block->Get()):nullptr;}
-                        T *     end             ()const{return memory_block?(T *)(memory_block->Get())+data_count:nullptr;}
+                        T *     end             ()const{return memory_block?(T *)(memory_block->Get())+data_count*sizeof(T):nullptr;}
 
     public:
 
@@ -46,6 +46,25 @@ namespace hgl
         virtual ~Collection()
         {
             SAFE_CLEAR(memory_block);
+        }
+
+        /**
+         * 预分配空间
+         */
+        virtual bool Alloc(const uint64 count)
+        {
+            if(!memory_block)
+                return(false);
+
+            uint64 cur_count=GetAllocCount();
+
+            if(count<=cur_count)
+                return(true);
+
+            if(!memory_block->Alloc(count*sizeof(T)))
+                return(false);
+
+            return(true);
         }
 
     public:
@@ -177,6 +196,21 @@ namespace hgl
         }
 
         /**
+         * 映射一段数据区供访问
+         */
+        virtual T *Map(const uint64 start,const uint64 range)
+        {
+            if(range<=0)return(nullptr);
+            if(!memory_block)return(nullptr);
+
+            if(start+range>data_count)
+                memory_block->Alloc((start+range)*sizeof(T));
+
+            data_count=start+range;
+            return (T *)(memory_block->Get(start*sizeof(T)));
+        }
+
+        /**
          * 清空整个合集并释放内存 
          */
         virtual void Free()
@@ -303,7 +337,7 @@ namespace hgl
             {
                 if(condition->Check(*p))
                 {
-                    if(*p==*ep)     //就是最后一个不管了
+                    if(p==ep)     //就是最后一个不管了
                     {
                     }
                     else
