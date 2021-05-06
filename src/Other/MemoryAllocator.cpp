@@ -41,7 +41,7 @@ namespace hgl
         return result;
     }
 
-    bool AbstractMemoryAllocator::Alloc(const uint64 size)
+    bool AbstractMemoryAllocator::AllocMemory(const uint64 size)
     {
         if(size<=0)return(false);
 
@@ -58,7 +58,7 @@ namespace hgl
 
         alloc_size=ComputeAllocSize(size);
 
-        if(!Alloc())
+        if(!AllocMemory())
             return(false);
 
         data_size=size;
@@ -70,7 +70,7 @@ namespace hgl
         Free();
     }
 
-    bool MemoryAllocator::Alloc()
+    bool MemoryAllocator::AllocMemory()
     {
         memory_block=hgl_align_realloc(memory_block,alloc_size,alloc_unit_size);       //hgl_align_realloc支持传入空的memory_block，所以无需判断malloc/realloc
 

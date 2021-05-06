@@ -17,6 +17,16 @@ SET(TYPE_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type)
 
 file(GLOB TYPE_TEMPLATE_HEADER ${TYPE_INCLUDE_PATH}/*.h)
 
+file(GLOB TYPE_SOURCE_FILES ${TYPE_INCLUDE_PATH}/*.cpp)
+
+SET(COLLECTION_SOURCE   Type/Collection.cpp)
+
+SET(TYPE_SOURCE_FILES   ${TYPE_SOURCE_FILES}
+                        ${COLLECTION_SOURCE})
+
+SOURCE_GROUP("DataType\\Collection" FILES   ${TYPE_INCLUDE_PATH}/Collection.h
+                                            ${COLLECTION_SOURCE})
+
 SET(SYSTEM_INFO_SOURCE  ${CORE_PLATFORM_INCLUDE_PATH}/SystemInfo.h
                         SystemInfo.cpp)
 
@@ -176,6 +186,7 @@ add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
                             ${TEXT_SOURCE_FILES}
 
                             ${TYPE_TEMPLATE_HEADER}
+                            ${TYPE_SOURCE_FILES}
 
                             ${IO_SOURCE_FILES}
 

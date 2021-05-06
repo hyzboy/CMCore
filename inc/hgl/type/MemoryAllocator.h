@@ -18,7 +18,7 @@ namespace hgl
         uint64 alloc_unit_size;             ///<分配单位长度(分配长度必须为此值的整倍数)
         uint64 alloc_size;                  ///<实际分配数据长度
 
-        virtual         bool    Alloc           ()=0;                               ///<分配指定空间的数据
+        virtual         bool    AllocMemory     ()=0;                               ///<分配指定空间的数据
 
     public:
 
@@ -60,7 +60,7 @@ namespace hgl
     {
     protected:
 
-        virtual bool Alloc() override;
+        virtual bool AllocMemory() override;
 
     public:
 
