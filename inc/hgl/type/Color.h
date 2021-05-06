@@ -4,6 +4,8 @@
 #include<hgl/platform/Platform.h>
 namespace hgl
 {
+    void GetSpectralColor(double &r,double &g,double &b,const double l);                            ///<根据光谱值获取对应的RGB值
+
     /**
     * 颜色数据定义
     */
