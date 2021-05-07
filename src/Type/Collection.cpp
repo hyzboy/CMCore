@@ -1,11 +1,11 @@
-#include<hgl/type/Collection.h>
+ï»¿#include<hgl/type/Collection.h>
 
 namespace hgl
 {
-    Collection::Collection(const size_t ub,MemoryBlock *mb,ElementOperator *eo)
+    Collection::Collection(const size_t ub,MemoryBlock *mb)
     {
         unit_bytes=ub;
-        memory_block=mb;            
+        memory_block=mb;
         data_count=0;
         total_bytes=0;
 
@@ -13,28 +13,16 @@ namespace hgl
             tmp_buffer=new uchar[unit_bytes];
         else
             tmp_buffer=nullptr;
-
-        if(!eo)
-        {
-            eo_default=new ElementOperatorMemcmp(unit_bytes);
-            element_operator=eo_default;
-        }
-        else
-        {
-            eo_default=nullptr;
-            element_operator=eo;
-        }
     }
 
     Collection::~Collection()
     {
-        SAFE_CLEAR(eo_default);
-        SAFE_CLEAR(tmp_buffer);
+        delete[] tmp_buffer;            //"delete[] nullptr" isn't a bug.
         SAFE_CLEAR(memory_block);
     }
 
     /**
-     * Ô¤·ÖÅä¿Õ¼ä
+     * é¢„åˆ†é…ç©ºé—´
      */
     bool Collection::Alloc(const uint64 count)
     {
@@ -55,8 +43,8 @@ namespace hgl
     }
 
     /**
-     * Ôö¼ÓÒ»¸öÊı¾İµ½ºÏ¼¯
-     * @param element ÒªÔö¼ÓµÄÔªËØÄÚ´æÖ¸Õë
+     * å¢åŠ ä¸€ä¸ªæ•°æ®åˆ°åˆé›†
+     * @param element è¦å¢åŠ çš„å…ƒç´ å†…å­˜æŒ‡é’ˆ
      */
     bool Collection::Add(const void *element)
     {
@@ -68,7 +56,7 @@ namespace hgl
         if(!memory_block->Alloc(total_bytes+unit_bytes))
             return(false);
 
-        if(!memory_block->Write(total_bytes,&element,unit_bytes))
+        if(!memory_block->Write(total_bytes,element,unit_bytes))
             return(false);
 
         ++data_count;
@@ -77,9 +65,9 @@ namespace hgl
     }
 
     /**
-     * Ôö¼ÓÒ»Õû¸öºÏ¼¯µÄÊı¾İ
+     * å¢åŠ ä¸€æ•´ä¸ªåˆé›†çš„æ•°æ®
      */
-    bool Collection::Add(const Collection &c)
+    bool Collection::AddCollection(const Collection &c)
     {
         if(!memory_block)
             return(false);
@@ -100,10 +88,10 @@ namespace hgl
     }
 
     /**
-     * »ñÈ¡Ò»¸öÊı¾İ
-     * @param index Êı¾İË÷Òı
-     * @param element Êı¾İ´æ·ÅÖ¸Õë
-     * @return ÊÇ·ñ³É¹¦
+     * è·å–ä¸€ä¸ªæ•°æ®
+     * @param index æ•°æ®ç´¢å¼•
+     * @param element æ•°æ®å­˜æ”¾æŒ‡é’ˆ
+     * @return æ˜¯å¦æˆåŠŸ
      */
     bool Collection::Get(const uint64 index,void *element)
     {
@@ -117,25 +105,25 @@ namespace hgl
     }
 
     /**
-     * ÉèÖÃÒ»¸öÊı¾İ
-     * @param index ÒªÉèÖÃµÄÎ»ÖÃË÷Òı(ÈçË÷Òı²»¿ÉÓÃ»áÊ§°Ü)
-     * @param element ÒªÉèÖÃµÄÊı¾İ
-     * @return ÊÇ·ñ³É¹¦
+     * è®¾ç½®ä¸€ä¸ªæ•°æ®
+     * @param index è¦è®¾ç½®çš„ä½ç½®ç´¢å¼•(å¦‚ç´¢å¼•ä¸å¯ç”¨ä¼šå¤±è´¥)
+     * @param element è¦è®¾ç½®çš„æ•°æ®
+     * @return æ˜¯å¦æˆåŠŸ
      */
     bool Collection::Set(const uint64 index,const void *element)
     {
         if(index>=data_count)return(false);
         if(!memory_block)return(false);
 
-        memcpy(memory_block->Get(index*unit_bytes),&element,unit_bytes);
+        memcpy(memory_block->Get(index*unit_bytes),element,unit_bytes);
 
         return(true);
     }
 
     /**
-     * ²åÈëÒ»¸öÊı¾İµ½ºÏ¼¯
-     * @param offset Òª²åÈëµÄÆ«ÒÆµØÖ·
-     * @param element Òª²åÈëµÄÔªËØ
+     * æ’å…¥ä¸€ä¸ªæ•°æ®åˆ°åˆé›†
+     * @param offset è¦æ’å…¥çš„åç§»åœ°å€
+     * @param element è¦æ’å…¥çš„å…ƒç´ 
      */
     bool Collection::Insert(const uint64 offset,const void *element)
     {
@@ -149,7 +137,7 @@ namespace hgl
                             unit_bytes* offset,
                             unit_bytes*(data_count-offset));
 
-        if(!memory_block->Write(offset*unit_bytes,&element,unit_bytes))
+        if(!memory_block->Write(offset*unit_bytes,element,unit_bytes))
             return(false);
 
         ++data_count;
@@ -158,7 +146,7 @@ namespace hgl
     }
 
     /**
-     * ½»»»Á½¸öÊı¾İµÄÎ»ÖÃ
+     * äº¤æ¢ä¸¤ä¸ªæ•°æ®çš„ä½ç½®
      */
     bool Collection::Exchange(uint64 target,uint64 source)
     {
@@ -176,7 +164,7 @@ namespace hgl
     }
 
     /**
-     * Çå¿ÕÕû¸öºÏ¼¯(²¢²»ÊÍ·ÅÄÚ´æ)
+     * æ¸…ç©ºæ•´ä¸ªåˆé›†(å¹¶ä¸é‡Šæ”¾å†…å­˜)
      */
     void Collection::Clear()
     {
@@ -185,7 +173,7 @@ namespace hgl
     }
 
     /**
-     * Ó³ÉäÒ»¶ÎÊı¾İÇø¹©·ÃÎÊ
+     * æ˜ å°„ä¸€æ®µæ•°æ®åŒºä¾›è®¿é—®
      */
     void *Collection::Map(const uint64 start,const uint64 range)
     {
@@ -193,7 +181,7 @@ namespace hgl
         if(!memory_block)return(nullptr);
 
         if(start+range>data_count)
-        {            
+        {
             if(!memory_block->Alloc((start+range)*unit_bytes))
                 return(nullptr);
 
@@ -205,7 +193,7 @@ namespace hgl
     }
 
     /**
-     * Çå¿ÕÕû¸öºÏ¼¯²¢ÊÍ·ÅÄÚ´æ 
+     * æ¸…ç©ºæ•´ä¸ªåˆé›†å¹¶é‡Šæ”¾å†…å­˜
      */
     void Collection::Free()
     {
@@ -217,8 +205,8 @@ namespace hgl
     }
 
     /**
-     * ÒÆ³ıÖ¸¶¨Î»ÖÃµÄÊı¾İ
-     * @param offset ÒªÉ¾³ıµÄÊı¾İÆ«ÒÆ
+     * ç§»é™¤æŒ‡å®šä½ç½®çš„æ•°æ®
+     * @param offset è¦åˆ é™¤çš„æ•°æ®åç§»
      */
     bool Collection::RemoveAt(const uint64 offset)
     {
@@ -227,11 +215,11 @@ namespace hgl
 
         if(offset>data_count)
             return(false);
-                
+
         --data_count;
         total_bytes-=unit_bytes;
 
-        //½«×îºóÒ»¸öÊı¾İÒÆµ½Õâ¸öÎ»ÖÃ
+        //å°†æœ€åä¸€ä¸ªæ•°æ®ç§»åˆ°è¿™ä¸ªä½ç½®
         memory_block->Copy( unit_bytes*offset,
                             unit_bytes*data_count,
                             unit_bytes);
@@ -240,9 +228,9 @@ namespace hgl
     }
 
     /**
-     * ÒÆ³ıÖ¸¶¨ÊıÁ¿µÄÁ¬Ğø
-     * @param start ÆğÊ¼Ë÷Òı
-     * @param remove_count ÒªÒÆ³ıµÄÊı¾İ¸öÊı
+     * ç§»é™¤æŒ‡å®šæ•°é‡çš„è¿ç»­
+     * @param start èµ·å§‹ç´¢å¼•
+     * @param remove_count è¦ç§»é™¤çš„æ•°æ®ä¸ªæ•°
      */
     bool Collection::RemoveAt(const uint64 start,const uint64 remove_count)
     {
@@ -255,13 +243,13 @@ namespace hgl
         if(start+remove_count>data_count)
             return(false);
 
-        const uint64 end_count=data_count-(start+remove_count);            //É¾³ıµÄÊı¾İ¶ÎºóÃæµÄÊı¾İ¸öÊı
+        const uint64 end_count=data_count-(start+remove_count);            //åˆ é™¤çš„æ•°æ®æ®µåé¢çš„æ•°æ®ä¸ªæ•°
 
         if(end_count>0)
         {
-            if(end_count<=remove_count)                                    //ºóÃæ±È½ÏÉÙ£¬ÄÇÖ±½Ó¸´ÖÆ¹ıÀ´¾ÍĞĞÁË
+            if(end_count<=remove_count)                                    //åé¢æ¯”è¾ƒå°‘ï¼Œé‚£ç›´æ¥å¤åˆ¶è¿‡æ¥å°±è¡Œäº†
             {
-                //ºóÃæÊ£µÄºÍÇ°ÃæÉ¾µôµÄÒ»Ñù¶à£¬¸´ÖÆ¹ıÀ´    
+                //åé¢å‰©çš„å’Œå‰é¢åˆ æ‰çš„ä¸€æ ·å¤šï¼Œå¤åˆ¶è¿‡æ¥
                 //[------------][***********]
                 //      ^             v
                 //      |             |
@@ -273,7 +261,7 @@ namespace hgl
             }
             else
             {
-                //ºóÃæÊ£µÄ±ÈÇ°Ãæ¿ÕµÄ¶à£¬½«×îºóÒ»¶ÎµÈ³¤µÄ¸´ÖÆ¹ıÀ´
+                //åé¢å‰©çš„æ¯”å‰é¢ç©ºçš„å¤šï¼Œå°†æœ€åä¸€æ®µç­‰é•¿çš„å¤åˆ¶è¿‡æ¥
                 //[---][**********][***]
                 //  ^                v
                 //  |                |
@@ -284,7 +272,7 @@ namespace hgl
                                     unit_bytes*remove_count);
             }
         }
-        //else{ºóÃæÊ£µÄÊı¾İ¸öÊıÎª0£¬ÄÇ¾ÍÊ²Ã´¶¼²»ÓÃ¸É}
+        //else{åé¢å‰©çš„æ•°æ®ä¸ªæ•°ä¸º0ï¼Œé‚£å°±ä»€ä¹ˆéƒ½ä¸ç”¨å¹²}
 
         data_count-=remove_count;
         total_bytes-=remove_count*unit_bytes;
@@ -292,7 +280,7 @@ namespace hgl
     }
 
     /**
-     * »ñÈ¡Êı¾İÔÚºÏ¼¯ÖĞµÄË÷Òı
+     * è·å–æ•°æ®åœ¨åˆé›†ä¸­çš„ç´¢å¼•
      */
     int64 Collection::indexOfCondition(CheckElement *condition) const
     {
@@ -316,9 +304,9 @@ namespace hgl
     }
 
     /**
-     * °´Ìõ¼şÒÆ³ı
-     * @param condition Ìõ¼şÅĞ¶Ï¶ÔÏó
-     * @param max_count ×î´óÒÆ³ı¸öÊı
+     * æŒ‰æ¡ä»¶ç§»é™¤
+     * @param condition æ¡ä»¶åˆ¤æ–­å¯¹è±¡
+     * @param max_count æœ€å¤§ç§»é™¤ä¸ªæ•°
      */
     int64 Collection::RemoveCondition(CheckElement *condition,int max_count)
     {
@@ -335,7 +323,7 @@ namespace hgl
         {
             if(condition->Check(p))
             {
-                if(p==ep)     //¾ÍÊÇ×îºóÒ»¸ö²»¹ÜÁË
+                if(p==ep)     //å°±æ˜¯æœ€åä¸€ä¸ªä¸ç®¡äº†
                 {
                 }
                 else
@@ -357,18 +345,39 @@ namespace hgl
         return origin_count-data_count;
     }
 
+    struct CheckElementInCollection:public CheckElement
+    {
+        const Collection *coll;
+        CheckElement *check;
+
+    public:
+
+        CheckElementInCollection(const Collection *c,CheckElement *ce)
+        {
+            coll=c;
+            check=ce;
+        }
+
+        const bool Check(const void *v) const override
+        {
+            check->Update(v);
+
+            return coll->indexOfCondition(check)!=-1;
+        }
+    };//struct CheckElementInCollection:public CheckElement
+
     /**
-     * ´ÓºÏ¼¯ÖĞÒÆ³ıÖ¸¶¨µÄÊı¾İ
-     * @param coll ÒªÒÆ³ıµÄÊı¾İºÏ¼¯
-     * @param max_count ×î´óÒÆ³ı¸öÊı
-     * @return ÒÆ³ıµÄÊı¾İ×ÜÁ¿
+     * ä»åˆé›†ä¸­ç§»é™¤æŒ‡å®šçš„æ•°æ®
+     * @param coll è¦ç§»é™¤çš„æ•°æ®åˆé›†
+     * @param max_count æœ€å¤§ç§»é™¤ä¸ªæ•°
+     * @return ç§»é™¤çš„æ•°æ®æ€»é‡
      */
-    int64 Collection::Remove(const Collection &coll,const CheckElement *check,int64 max_count)
+    int64 Collection::RemoveCollection(const Collection &coll,CheckElement *ce,int64 max_count)
     {
         if(coll.GetCount()<=0)return 0;
         if(coll.GetUnitBytes()!=unit_bytes)return -1;
 
-        CheckElementInCollection cec(&coll,check);
+        CheckElementInCollection cec(&coll,ce);
 
         return RemoveCondition(&cec,max_count);
     }
