@@ -1,4 +1,4 @@
-#ifndef HGL_STACK_INCLUDE
+﻿#ifndef HGL_STACK_INCLUDE
 #define HGL_STACK_INCLUDE
 
 #include<hgl/type/DataType.h>

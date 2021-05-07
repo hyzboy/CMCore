@@ -1,4 +1,4 @@
-#ifndef HGL_QUEUE_INCLUDE
+﻿#ifndef HGL_QUEUE_INCLUDE
 #define HGL_QUEUE_INCLUDE
 
 #include<hgl/type/DataType.h>

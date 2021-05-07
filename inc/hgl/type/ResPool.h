@@ -1,4 +1,4 @@
-#ifndef HGL_RES_POOL_INCLUDE
+﻿#ifndef HGL_RES_POOL_INCLUDE
 #define HGL_RES_POOL_INCLUDE
 
 #include<hgl/type/Map.h>
@@ -20,7 +20,7 @@ namespace hgl
 
     /**
      * 附带引用计数的资源池列表
-     */ 
+     */
     template<typename K,typename V> class ResPool
     {
     protected:
@@ -51,7 +51,7 @@ namespace hgl
             *in_idle_count=0;
             *out_count=0;
             *idle_left_count=0;
-            
+
             const K *kp=key_list;
             for(int i=0;i<key_count;i++)
             {
@@ -120,7 +120,7 @@ namespace hgl
         {
             int pos;
             ActiveItem *ai;
-                
+
             if(active_items.Get(key,ai))                    //在活跃列表中找
             {
                 ++ai->ref_count;

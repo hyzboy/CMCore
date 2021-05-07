@@ -1,4 +1,4 @@
-#ifndef HGL_EXTENT_2D_INCLUDE
+﻿#ifndef HGL_EXTENT_2D_INCLUDE
 #define HGL_EXTENT_2D_INCLUDE
 
 #include<hgl/type/DataType.h>

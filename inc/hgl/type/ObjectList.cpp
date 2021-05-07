@@ -1,4 +1,4 @@
-#ifndef HGL_OBJECT_LIST_CPP
+﻿#ifndef HGL_OBJECT_LIST_CPP
 #define HGL_OBJECT_LIST_CPP
 
 #include<hgl/type/List.h>

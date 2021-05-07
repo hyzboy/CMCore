@@ -1,4 +1,4 @@
-#ifndef HGL_MEMORY_BLOCK_INCLUDE
+﻿#ifndef HGL_MEMORY_BLOCK_INCLUDE
 #define HGL_MEMORY_BLOCK_INCLUDE
 
 #include<hgl/type/MemoryAllocator.h>

@@ -1,4 +1,4 @@
-#ifndef HGL_RECT_SCOPE_CPP
+﻿#ifndef HGL_RECT_SCOPE_CPP
 #define HGL_RECT_SCOPE_CPP
 
 #include<hgl/type/RectScope.h>

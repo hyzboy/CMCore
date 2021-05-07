@@ -1,4 +1,4 @@
-#ifndef HGL_RES_POOL_MANAGE_INCLUDE
+﻿#ifndef HGL_RES_POOL_MANAGE_INCLUDE
 #define HGL_RES_POOL_MANAGE_INCLUDE
 
 #include<hgl/type/Pool.h>

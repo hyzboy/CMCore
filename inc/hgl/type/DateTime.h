@@ -1,4 +1,4 @@
-#ifndef HGL_DATETIME_INCLUDE
+﻿#ifndef HGL_DATETIME_INCLUDE
 #define HGL_DATETIME_INCLUDE
 
 #include<hgl/type/DataType.h>
