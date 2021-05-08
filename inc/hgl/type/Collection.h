@@ -18,6 +18,12 @@ namespace hgl
         size_t size;
 
     public:
+    
+        CheckElementMemcmp(const size_t s)
+        {
+            value=nullptr;
+            size=s;
+        }
 
         CheckElementMemcmp(const void *v,const size_t s)
         {
@@ -132,7 +138,7 @@ namespace hgl
         }
 
         template<typename T>
-        int64 indexOf(const T &value)                                                               ///<获取数据在合集中的索引
+        int64 indexOfValue(const T &value)                                                               ///<获取数据在合集中的索引
         {
             CheckElementEqual<T> cee(value);
 
@@ -142,7 +148,7 @@ namespace hgl
         virtual bool isMember(const void *value) const{return indexOf(value)!=-1;}                  ///<判断当前数据是否是其成员
 
         template<typename T>
-        bool  isMember(const T &value)const{return indexOf<T>(value)!=-1;}                          ///<判断当前数据是否是其成员
+        bool  isMemberValue(const T &value)const{return indexOf<T>(value)!=-1;}                          ///<判断当前数据是否是其成员
 
         virtual int64 RemoveCondition(CheckElement *condition,int max_count=1);                     ///<按条件移除
         
@@ -166,7 +172,7 @@ namespace hgl
          * @return 移除的数据总量
          */
         template<typename T>
-        int64 Remove(const T &value,int max_count=1)
+        int64 RemoveValue(const T &value,int max_count=1)
         {
             CheckElementEqual<T> cee(value);
 
