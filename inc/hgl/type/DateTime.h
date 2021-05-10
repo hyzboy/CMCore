@@ -2,7 +2,7 @@
 #define HGL_DATETIME_INCLUDE
 
 #include<hgl/type/DataType.h>
-#include<hgl/TypeFunc.h>
+#include<hgl/math/TimeConst.h>
 
 namespace hgl
 {

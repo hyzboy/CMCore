@@ -1,4 +1,4 @@
-﻿#include<hgl/TypeFunc.h>
+﻿#include<hgl/math/MathConst.h>
 #include<cmath>
 namespace hgl
 {
