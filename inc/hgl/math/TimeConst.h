@@ -1,42 +1,42 @@
-#ifndef HGL_MATH_TIME_CONST_INCLUDE
+ï»¿#ifndef HGL_MATH_TIME_CONST_INCLUDE
 #define HGL_MATH_TIME_CONST_INCLUDE
 namespace hgl
 {
     /**
-     * ĞÇÆÚÃ¿ÌìÃ¶¾Ù
+     * æ˜ŸæœŸæ¯å¤©æšä¸¾
      */
     enum class Weekday
     {
-        Sunday=0,   ///<ĞÇÆÚÌì
-        Monday,     ///<ĞÇÆÚÒ»
-        Tuesday,    ///<ĞÇÆÚ¶ş
-        Wednesday,  ///<ĞÇÆÚÈı
-        Thursday,   ///<ĞÇÆÚËÄ
-        Friday,     ///<ĞÇÆÚÎå
-        Saturday,   ///<ĞÇÆÚÁù
-        
+        Sunday=0,   ///<æ˜ŸæœŸå¤©
+        Monday,     ///<æ˜ŸæœŸä¸€
+        Tuesday,    ///<æ˜ŸæœŸäºŒ
+        Wednesday,  ///<æ˜ŸæœŸä¸‰
+        Thursday,   ///<æ˜ŸæœŸå››
+        Friday,     ///<æ˜ŸæœŸäº”
+        Saturday,   ///<æ˜ŸæœŸå…­
+
         BEGIN_RANGE =Sunday,
         END_RANGE   =Saturday,
-        RANGE_SIZE  =END_RANGE-BEGIN_RANGE+1        
+        RANGE_SIZE  =END_RANGE-BEGIN_RANGE+1
     };
 
     /**
-     * ÔÂ·İÃ¶¾Ù
+     * æœˆä»½æšä¸¾
      */
     enum class Month
     {
-        January=1, ///<Ò»ÔÂ
-        February,  ///<¶şÔÂ
-        March,     ///<ÈıÔÂ
-        April,     ///<ËÄÔÂ
-        May,       ///<ÎåÔÂ
-        June,      ///<ÁùÔÂ
-        July,      ///<ÆßÔÂ
-        August,    ///<°ËÔÂ
-        September, ///<¾ÅÔÂ
-        October,   ///<Ê®ÔÂ
-        November,  ///<Ê®Ò»ÔÂ
-        December,  ///<Ê®¶şÔÂ
+        January=1, ///<ä¸€æœˆ
+        February,  ///<äºŒæœˆ
+        March,     ///<ä¸‰æœˆ
+        April,     ///<å››æœˆ
+        May,       ///<äº”æœˆ
+        June,      ///<å…­æœˆ
+        July,      ///<ä¸ƒæœˆ
+        August,    ///<å…«æœˆ
+        September, ///<ä¹æœˆ
+        October,   ///<åæœˆ
+        November,  ///<åä¸€æœˆ
+        December,  ///<åäºŒæœˆ
 
         BEGIN_RANGE =January,
         END_RANGE   =December,
@@ -61,8 +61,8 @@ namespace hgl
 
     constexpr uint  HGL_MONTH_ONE_YEAR      =12;
 
-    constexpr uint  HGL_MILLI_SEC_PRE_SEC   =1000;              //ºÁÃë
-    constexpr uint  HGL_MICRO_SEC_PER_SEC   =1000*1000;         //Î¢Ãë
-    constexpr uint  HGL_NANO_SEC_PER_SEC    =1000*1000*1000;    //ÄÉÃë
+    constexpr uint  HGL_MILLI_SEC_PRE_SEC   =1000;              //æ¯«ç§’
+    constexpr uint  HGL_MICRO_SEC_PER_SEC   =1000*1000;         //å¾®ç§’
+    constexpr uint  HGL_NANO_SEC_PER_SEC    =1000*1000*1000;    //çº³ç§’
 }//namespace hgl
 #endif//HGL_MATH_TIME_CONST_INCLUDE

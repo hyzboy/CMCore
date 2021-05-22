@@ -1,27 +1,27 @@
-#ifndef HGL_MATH_PHYSICS_CONST_INCLUDE
+ï»¿#ifndef HGL_MATH_PHYSICS_CONST_INCLUDE
 #define HGL_MATH_PHYSICS_CONST_INCLUDE
 
 namespace hgl
 {
-    constexpr double HGL_GOLDEN_RATIO                       =0.61803398874989484820458683436563811772030917980576;//»Æ½ğ±ÈÀı
-    constexpr double HGL_SILVER_RATIO                       =2.4142135623730950488; //°×Òø±ÈÀı
+    constexpr double HGL_GOLDEN_RATIO                       =0.61803398874989484820458683436563811772030917980576;//é»„é‡‘æ¯”ä¾‹
+    constexpr double HGL_SILVER_RATIO                       =2.4142135623730950488; //ç™½é“¶æ¯”ä¾‹
 
-    constexpr double HGL_SPEED_OF_SOUND                     =331.3f;                //ÒôËÙ(Ã×/Ãë)
-    constexpr double HGL_SPEED_OF_LIGHT                     =299792458;             //¹âËÙ(Ã×/Ãë)
+    constexpr double HGL_SPEED_OF_SOUND                     =331.3f;                //éŸ³é€Ÿ(ç±³/ç§’)
+    constexpr double HGL_SPEED_OF_LIGHT                     =299792458;             //å…‰é€Ÿ(ç±³/ç§’)
 
-    constexpr double HGL_ABSOLUTE_ZERO                      =-273.15f;              //¾ø¶ÔÁã¶È
+    constexpr double HGL_ABSOLUTE_ZERO                      =-273.15f;              //ç»å¯¹é›¶åº¦
 
-    constexpr double HGL_UNIVERSAL_GRAVITATION              =6.67384e-11;           //ÍòÓĞÒıÁ¦³£Êı
+    constexpr double HGL_UNIVERSAL_GRAVITATION              =6.67384e-11;           //ä¸‡æœ‰å¼•åŠ›å¸¸æ•°
 
-    constexpr double HGL_EARTH_GRAVITATIONAL_ACCELERATION   =9.80665;               //µØÇòÉÏµÄÖØÁ¦¼ÓËÙ¶È(Å£¶Ù)
-    constexpr double HGL_EARTH_MASS                         =5.9722e+24;            //µØÇòÖÊÁ¿
-    constexpr double HGL_EARTH_RADIUS                       =6371000;               //µØÇò°ë¾¶(Ã×)
+    constexpr double HGL_EARTH_GRAVITATIONAL_ACCELERATION   =9.80665;               //åœ°çƒä¸Šçš„é‡åŠ›åŠ é€Ÿåº¦(ç‰›é¡¿)
+    constexpr double HGL_EARTH_MASS                         =5.9722e+24;            //åœ°çƒè´¨é‡
+    constexpr double HGL_EARTH_RADIUS                       =6371000;               //åœ°çƒåŠå¾„(ç±³)
 
     /**
-     * ÎïÌåÍòÓĞÒıÁ¦¼ÆËã
-     * @param m1 ĞÇÇòÖÊÁ¿
-     * @param m2 ÎïÌåÖÊÁ¿
-     * @param length µ½ĞÇÇòÖĞĞÄµÄ¾àÀë
+     * ç‰©ä½“ä¸‡æœ‰å¼•åŠ›è®¡ç®—
+     * @param m1 æ˜Ÿçƒè´¨é‡
+     * @param m2 ç‰©ä½“è´¨é‡
+     * @param length åˆ°æ˜Ÿçƒä¸­å¿ƒçš„è·ç¦»
      */
     template<typename T>
     inline T UniversalGravitation(const T m1,const T m2,const T length)
@@ -30,11 +30,11 @@ namespace hgl
     }
 
     /**
-     * ĞÇÇòÖØÁ¦¼ÓËÙ¶È¼ÆËã<br>
-     * ÀíÂÛÉÏ: (µØÇòÖÊÁ¿*ÍòÓĞÒıÁ¦³£Êı)/(µØÇò°ë¾¶µÄÆ½·½)=µØÇòÉÏµÄÖØÁ¦¼ÓËÙ¶È
-     * @param m ĞÇÇòÖÊÁ¿
-     * @param raidus ĞÇÇò°ë¾¶
-     * @return ĞÇÇòµÄÖØÁ¦¼ÓËÙ¶È(Å£¶Ù)
+     * æ˜Ÿçƒé‡åŠ›åŠ é€Ÿåº¦è®¡ç®—<br>
+     * ç†è®ºä¸Š: (åœ°çƒè´¨é‡*ä¸‡æœ‰å¼•åŠ›å¸¸æ•°)/(åœ°çƒåŠå¾„çš„å¹³æ–¹)=åœ°çƒä¸Šçš„é‡åŠ›åŠ é€Ÿåº¦
+     * @param m æ˜Ÿçƒè´¨é‡
+     * @param raidus æ˜ŸçƒåŠå¾„
+     * @return æ˜Ÿçƒçš„é‡åŠ›åŠ é€Ÿåº¦(ç‰›é¡¿)
      */
     template<typename T>
     inline T UniversalGravitation(const T m,const T radius)
@@ -43,10 +43,10 @@ namespace hgl
     }
 
     /**
-     * ÏòĞÄÁ¦¼ÆËã
-     * @param m ÖÊÁ¿
-     * @param v ËÙ¶È
-     * @param r ¾àÀë
+     * å‘å¿ƒåŠ›è®¡ç®—
+     * @param m è´¨é‡
+     * @param v é€Ÿåº¦
+     * @param r è·ç¦»
      */
     template<typename T>
     inline T CentripetalForce(const T m,const T v,const T r)
@@ -55,9 +55,9 @@ namespace hgl
     }
 
     /**
-     * ¼ÓËÙ¶È¼ÆËã
-     * @param power ÍÆÁ¦
-     * @param weight ÖÊÁ¿
+     * åŠ é€Ÿåº¦è®¡ç®—
+     * @param power æ¨åŠ›
+     * @param weight è´¨é‡
      */
     template<typename T>
     inline T AddSpeed(const T &power,const T &weight)
@@ -66,9 +66,9 @@ namespace hgl
     }
 
     /**
-     * ÎïÌåÔË¶¯ÖÊÁ¿¼ÆËã(ÎïÌåÔË¶¯Ô½¿ì£¬ÖÊÁ¿Ô½´ó)
-     * @param m0 ¾²Ö¹ÖÊÁ¿
-     * @param v ÔË¶¯ËÙ¶È
+     * ç‰©ä½“è¿åŠ¨è´¨é‡è®¡ç®—(ç‰©ä½“è¿åŠ¨è¶Šå¿«ï¼Œè´¨é‡è¶Šå¤§)
+     * @param m0 é™æ­¢è´¨é‡
+     * @param v è¿åŠ¨é€Ÿåº¦
      */
     template<typename T>
     inline T RunWeight(const T &m0,const T &v)

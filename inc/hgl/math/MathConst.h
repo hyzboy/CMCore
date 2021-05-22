@@ -1,11 +1,11 @@
-#ifndef HGL_MATH_CONST_INCLUDE
+ï»¿#ifndef HGL_MATH_CONST_INCLUDE
 #define HGL_MATH_CONST_INCLUDE
 
 #include<hgl/type/DataType.h>
 
 namespace hgl
 {
-    constexpr double HGL_E          =2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274;        //Å·À­Êı(×ÔÈ»¶ÔÊıµÄµ×Êı)
+    constexpr double HGL_E          =2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274;        //æ¬§æ‹‰æ•°(è‡ªç„¶å¯¹æ•°çš„åº•æ•°)
     constexpr double HGL_LOG2E      =1.44269504088896340736;
     constexpr double HGL_LOG10E     =0.434294481903251827651;
     constexpr double HGL_LN2        =0.693147180559945309417;
@@ -42,9 +42,9 @@ namespace hgl
     HGL_DEF_ANG2RAD(360)
 
     #undef HGL_DEF_ANG2RAD
-    
+
     /**
-     * ½Ç¶È×ª»¡¶È
+     * è§’åº¦è½¬å¼§åº¦
      */
     inline double hgl_ang2rad(const double ang)
     {
@@ -52,7 +52,7 @@ namespace hgl
     }
 
     /**
-     * »¡¶È×ª½Ç¶È
+     * å¼§åº¦è½¬è§’åº¦
      */
     inline double hgl_rad2ang(const double rad)
     {
@@ -60,9 +60,9 @@ namespace hgl
     }
 
     /**
-     * ¸¡µãÊı½ØÈ¡Ğ¡ÊıµãºóÖ¸¶¨Î»¶È
-     * @param value Òª½ØÈ¡µÄ¸¡µãÊı
-     * @param num Òª½ØÈ¡µÄÎ»Êı
+     * æµ®ç‚¹æ•°æˆªå–å°æ•°ç‚¹åæŒ‡å®šä½åº¦
+     * @param value è¦æˆªå–çš„æµ®ç‚¹æ•°
+     * @param num è¦æˆªå–çš„ä½æ•°
      */
     template<typename T>
     inline T hgl_clip_float(const T value,const int num)
@@ -90,8 +90,8 @@ namespace hgl
     }
 
     /**
-     * ÕıÔ²Ãæ»ı¼ÆËã
-     * @param radius °ë¾¶
+     * æ­£åœ†é¢ç§¯è®¡ç®—
+     * @param radius åŠå¾„
      */
     inline double CircleArea(const double radius)
     {
@@ -99,9 +99,9 @@ namespace hgl
     }
 
     /**
-     * ÍÖÔ²Ãæ»ı¼ÆËã
-     * @param l_radius ³¤°ë¾¶
-     * @param s_radius ¶Ì°ë¾¶
+     * æ¤­åœ†é¢ç§¯è®¡ç®—
+     * @param l_radius é•¿åŠå¾„
+     * @param s_radius çŸ­åŠå¾„
      */
     inline double ElipseArea(const double l_radius,const double s_radius)
     {
@@ -109,8 +109,8 @@ namespace hgl
     }
 
     /**
-     * ÇòÌå»ı¼ÆËã
-     * @param radius Çò°ë¾¶
+     * çƒä½“ç§¯è®¡ç®—
+     * @param radius çƒåŠå¾„
      */
     inline double SphereVolume(const double radius)
     {
@@ -118,10 +118,10 @@ namespace hgl
     }
 
     /**
-     * ÍÖÇòÌå»ı¼ÆËã
-     * @param x_radius x°ë¾¶
-     * @param y_radius y°ë¾¶
-     * @param z_radius z°ë¾¶
+     * æ¤­çƒä½“ç§¯è®¡ç®—
+     * @param x_radius xåŠå¾„
+     * @param y_radius yåŠå¾„
+     * @param z_radius zåŠå¾„
      */
     inline double EllipsoidVolume(const double x_radius,const double y_radius,const double z_radius)
     {
