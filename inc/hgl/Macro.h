@@ -122,5 +122,6 @@ namespace hgl
     #define ENUM_CLASS_RANGE_ERROR_CHECK(EC,value)                  (value<EC::BEGIN_RANGE||value>EC::END_RANGE)
     #define ENUM_CLASS_RANGE_ERROR_RETURN(EC,value,return_value)    if(ENUM_CLASS_RANGE_ERROR_CHECK(EC,value))return(return_value);
     #define ENUM_CLASS_RANGE_ERROR_RETURN_FALSE(EC,value)           ENUM_CLASS_RANGE_ERROR_RETURN(EC,value,false)
+    #define ENUM_CLASS_RANGE_ERROR_RETURN_NULLPTR(EC,value)         ENUM_CLASS_RANGE_ERROR_RETURN(EC,value,nullptr)
 }//namespace hgl
 #endif//HGL_MACRO_INCLUDE
