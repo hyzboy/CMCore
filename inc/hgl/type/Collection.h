@@ -76,7 +76,7 @@ namespace hgl
 
         MemoryBlock *memory_block;
 
-        size_t unit_bytes;      //单个数据字节数
+        uint32 unit_bytes;      //单个数据字节数
         uint64 data_count;
         uint64 total_bytes;     //总字节数
 
@@ -96,7 +96,7 @@ namespace hgl
         virtual const uint64    GetCount        ()const{return data_count;}                                                                 ///<获取合集内的数据个数
         virtual const uint64    GetAllocCount   ()const{return memory_block?memory_block->GetAllocSize()/unit_bytes:0;}                     ///<获取合集实际分配空间
 
-                const size_t    GetUnitBytes    ()const{return unit_bytes;}                                                                 ///<取得单项数据长度字节数
+                const uint32    GetUnitBytes    ()const{return unit_bytes;}                                                                 ///<取得单项数据长度字节数
         virtual const uint64    GetTotalBytes   ()const{return total_bytes;}                                                                ///<取得所有数据总长度字节数
 
     public:
