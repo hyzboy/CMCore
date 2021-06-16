@@ -20,6 +20,11 @@ namespace hgl
         return(true);
     }
 
+    #define ENUM_CLASS_FOR(ECTYPE,ctype,value)    \
+            for(ctype value= (ctype)ECTYPE::BEGIN_RANGE;    \
+                      value<=(ctype)ECTYPE::END_RANGE;  \
+                      value++)
+
     #define HGL_CONVER_TO_MEM_ALIGN(x)      ((((x)+HGL_MEM_ALIGN-1)/HGL_MEM_ALIGN)*HGL_MEM_ALIGN)                   //内存对齐转换宏
 
     #ifndef NULL
