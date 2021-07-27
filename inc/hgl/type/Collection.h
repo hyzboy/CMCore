@@ -101,7 +101,7 @@ namespace hgl
 
     public:
 
-        Collection(const size_t ub=1,MemoryBlock *mb=new MemoryBlock);
+        Collection(const uint32 ub=1,MemoryBlock *mb=new MemoryBlock);
         virtual ~Collection();
 
         virtual bool Alloc(const uint64 count);                                                     ///<预分配空间

@@ -13,41 +13,41 @@ namespace hgl
 
     constexpr struct CodePageAndCharSet CodePage2CharSet[]=
     {
-        {ccpNone,           "us-ascii"  },
+        {CharCodePage::NONE,           "us-ascii"  },
 
-        {ccpGBK,            "gbk"       },
-        {ccpBig5,           "big5"      },
-        {ccpGB2312,         "gb2312"    },
-        {ccpGB18030,        "gb18030"   },
+        {CharCodePage::GBK,            "gbk"       },
+        {CharCodePage::Big5,           "big5"      },
+        {CharCodePage::GB2312,         "gb2312"    },
+        {CharCodePage::GB18030,        "gb18030"   },
 
-        {ccpShiftJIS,       "shift-jis"     },
-        {ccpJISX,           "iso-2022-jp"   },
+        {CharCodePage::ShiftJIS,       "shift-jis"     },
+        {CharCodePage::JISX,           "iso-2022-jp"   },
 
-        {ccpKorean,         "ks_c_5601-1987"},
+        {CharCodePage::Korean,         "ks_c_5601-1987"},
 
-        {ccpMacJanpan,              "x-mac-japanese"    },
-        {ccpMacTraditionalChinese,  "x-mac-chinesetrad" },
-        {ccpMacSimplifiedChinese,   "x-mac-chinesesimp" },
+        {CharCodePage::MacJanpan,              "x-mac-japanese"    },
+        {CharCodePage::MacTraditionalChinese,  "x-mac-chinesetrad" },
+        {CharCodePage::MacSimplifiedChinese,   "x-mac-chinesesimp" },
 
-        {ccp8859_1,         "iso-8859-1"},
-        {ccp8859_2,         "iso-8859-2"},
-        {ccp8859_3,         "iso-8859-3"},
-        {ccp8859_4,         "iso-8859-4"},
-        {ccp8859_5,         "iso-8859-5"},
-        {ccp8859_6,         "iso-8859-6"},
-        {ccp8859_7,         "iso-8859-7"},
-        {ccp8859_8,         "iso-8859-8"},
-        {ccp8859_9,         "iso-8859-9"},
-        {ccp8859_13,        "iso-8859-13"},
-        {ccp8859_15,        "iso-8859-15"},
+        {CharCodePage::ISO_8859_1,         "iso-8859-1"},
+        {CharCodePage::ISO_8859_2,         "iso-8859-2"},
+        {CharCodePage::ISO_8859_3,         "iso-8859-3"},
+        {CharCodePage::ISO_8859_4,         "iso-8859-4"},
+        {CharCodePage::ISO_8859_5,         "iso-8859-5"},
+        {CharCodePage::ISO_8859_6,         "iso-8859-6"},
+        {CharCodePage::ISO_8859_7,         "iso-8859-7"},
+        {CharCodePage::ISO_8859_8,         "iso-8859-8"},
+        {CharCodePage::ISO_8859_9,         "iso-8859-9"},
+        {CharCodePage::ISO_8859_13,        "iso-8859-13"},
+        {CharCodePage::ISO_8859_15,        "iso-8859-15"},
 
-        {ccpUTF7,           "utf-7"     },
-        {ccpUTF8,           "utf-8"     },
+        {CharCodePage::UTF7,           "utf-7"     },
+        {CharCodePage::UTF8,           "utf-8"     },
 
-        {ccpUTF16LE,        "utf-16le"  },
-        {ccpUTF16BE,        "utf-16be"  },
-        {ccpUTF32LE,        "utf-32le"  },
-        {ccpUTF32BE,        "utf-32be"  },
+        {CharCodePage::UTF16LE,        "utf-16le"  },
+        {CharCodePage::UTF16BE,        "utf-16be"  },
+        {CharCodePage::UTF32LE,        "utf-32le"  },
+        {CharCodePage::UTF32BE,        "utf-32be"  },
     };//const struct
 
     constexpr int CharSetCount=sizeof(CodePage2CharSet)/sizeof(CodePageAndCharSet);
@@ -63,48 +63,51 @@ namespace hgl
 
     constexpr struct CodePageAndCharSet CodeSet2CharPage[]=
     {
-        {ccpNone,           "us-ascii"  },
+        {CharCodePage::NONE,           "us-ascii"  },
 
-        {ccpGBK,            "gbk"       },
+        {CharCodePage::GBK,            "gbk"       },
 
-        {ccpBig5,           "big5"      },
-        {ccpBig5,           "bigfive"   },
+        {CharCodePage::Big5,           "big5"      },
+        {CharCodePage::Big5,           "bigfive"   },
 
-        {ccpGB2312,         "gb2312"    },
-        {ccpGB18030,        "gb18030"   },
+        {CharCodePage::GB2312,         "gb2312"    },
+        {CharCodePage::GB18030,        "gb18030"   },
 
-        {ccpShiftJIS,       "shift_jis"     },
-        {ccpJISX,           "iso-2022-jp"   },
+        {CharCodePage::ShiftJIS,       "shift_jis"     },
+        {CharCodePage::JISX,           "iso-2022-jp"   },
 
-        {ccpKorean,         "ks_c_5601-1987"},
+        {CharCodePage::Korean,         "ks_c_5601-1987"},
 
-        {ccpMacJanpan,              "x-mac-japanese"    },
-        {ccpMacTraditionalChinese,  "x-mac-chinesetrad" },
-        {ccpMacSimplifiedChinese,   "x-mac-chinesesimp" },
+        {CharCodePage::MacJanpan,              "x-mac-japanese"    },
+        {CharCodePage::MacTraditionalChinese,  "x-mac-chinesetrad" },
+        {CharCodePage::MacSimplifiedChinese,   "x-mac-chinesesimp" },
      
-        {ccp8859_1,         "iso-8859-1"},
-        {ccp8859_2,         "iso-8859-2"},
-        {ccp8859_3,         "iso-8859-3"},
-        {ccp8859_4,         "iso-8859-4"},
-        {ccp8859_5,         "iso-8859-5"},
-        {ccp8859_6,         "iso-8859-6"},
-        {ccp8859_7,         "iso-8859-7"},
-        {ccp8859_8,         "iso-8859-8"},
-        {ccp8859_9,         "iso-8859-9"},
-        {ccp8859_13,        "iso-8859-13"},
-        {ccp8859_15,        "iso-8859-15"},
+        {CharCodePage::ISO_8859_1,         "iso-8859-1"},
+        {CharCodePage::ISO_8859_2,         "iso-8859-2"},
+        {CharCodePage::ISO_8859_3,         "iso-8859-3"},
+        {CharCodePage::ISO_8859_4,         "iso-8859-4"},
+        {CharCodePage::ISO_8859_5,         "iso-8859-5"},
+        {CharCodePage::ISO_8859_6,         "iso-8859-6"},
+        {CharCodePage::ISO_8859_7,         "iso-8859-7"},
+        {CharCodePage::ISO_8859_8,         "iso-8859-8"},
+        {CharCodePage::ISO_8859_9,         "iso-8859-9"},
+        {CharCodePage::ISO_8859_13,        "iso-8859-13"},
+        {CharCodePage::ISO_8859_15,        "iso-8859-15"},
 
-        {ccpUTF7,           "utf7"      },
-        {ccpUTF8,           "utf8"      },
-        {ccpUTF16LE,        "utf16le"   },
-        {ccpUTF16BE,        "utf16be"   },
-        {ccpUTF32LE,        "utf32le"   },
-        {ccpUTF32BE,        "utf32be"   },
+        {CharCodePage::UTF7,           "utf-7"      },
+        {CharCodePage::UTF8,           "utf-8"      },
+        {CharCodePage::UTF16LE,        "utf-16le"   },
+        {CharCodePage::UTF16BE,        "utf-16be"   },
+        {CharCodePage::UTF32LE,        "utf-32le"   },
+        {CharCodePage::UTF32BE,        "utf-32be"   },
 
-        {ccpUTF16LE,        "ucs2le"    },
-        {ccpUTF16BE,        "ucs2be"    },
-        {ccpUTF32LE,        "ucs4le"    },
-        {ccpUTF32BE,        "ucs4be"    }
+        {CharCodePage::UTF16LE,        "utf-16"     },
+        {CharCodePage::UTF16BE,        "unicodeFFFE"},
+
+        {CharCodePage::UTF16LE,        "ucs-2le"    },
+        {CharCodePage::UTF16BE,        "ucs-2be"    },
+        {CharCodePage::UTF32LE,        "ucs-4le"    },
+        {CharCodePage::UTF32BE,        "ucs-4be"    }
     };//const struct CharSet Characters
 
     constexpr int CharPageCount=sizeof(CodeSet2CharPage)/sizeof(CodePageAndCharSet);
@@ -115,7 +118,7 @@ namespace hgl
             if(!charset_cmp(CodePage2CharSet[i].charset,char_set))
                 return CodePage2CharSet[i].codepage;
 
-        return ccpNone;
+        return CharCodePage::NONE;
     }
 
     struct CharSet
@@ -127,14 +130,14 @@ namespace hgl
 
         CharSet()
         {
-            codepage=ccpNone;
-            hgl::strcpy(charset,CharSetNameLength,"us-ascii");
+            codepage=CharCodePage::NONE;
+            hgl::strcpy(charset,CHAR_SET_NAME_MAX_LENGTH,"us-ascii");
         }
 
         CharSet(CharCodePage ccp,const char *cs)
         {
             codepage=ccp;
-            hgl::strcpy(charset,CharSetNameLength,cs);
+            hgl::strcpy(charset,CHAR_SET_NAME_MAX_LENGTH,cs);
         }
 
         CharSet(CharCodePage);
@@ -143,23 +146,23 @@ namespace hgl
         CharSet(const CodePageAndCharSet &cs)
         {
             codepage=cs.codepage;
-            strcpy(charset,CharSetNameLength,cs.charset);
+            strcpy(charset,CHAR_SET_NAME_MAX_LENGTH,cs.charset);
         }
 
-        int _Comp(const CharSet &data)const{return codepage-data.codepage;} \
+        int _Comp(const CharSet &data)const{return (size_t)codepage-(size_t)data.codepage;} \
         CompOperator(const CharSet &,_Comp)
     };//struct CharacterSet
 
     inline CharSet::CharSet(CharCodePage ccp)
     {
         codepage=ccp;
-        hgl::strcpy(charset,CharSetNameLength,FindCharSet(ccp));
+        hgl::strcpy(charset,CHAR_SET_NAME_MAX_LENGTH,FindCharSet(ccp));
     }
 
     inline CharSet::CharSet(const u8char *cs)
     {
         codepage=FindCodePage(cs);
-        hgl::strcpy(charset,CharSetNameLength,FindCharSet(codepage));
+        hgl::strcpy(charset,CHAR_SET_NAME_MAX_LENGTH,FindCharSet(codepage));
     }
 
     extern CharSet DefaultCharSet();

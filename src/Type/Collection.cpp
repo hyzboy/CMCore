@@ -2,7 +2,7 @@
 
 namespace hgl
 {
-    Collection::Collection(const size_t ub,MemoryBlock *mb)
+    Collection::Collection(const uint32 ub,MemoryBlock *mb)
     {
         unit_bytes=ub;
         memory_block=mb;
