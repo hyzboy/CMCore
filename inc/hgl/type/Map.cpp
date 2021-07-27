@@ -224,8 +224,11 @@ namespace hgl
     bool _Map<K,V,DataPair>::GetBySerial(int index,K &f,V &t) const
     {
         if(index<0||index>=data_list.GetCount())return(false);
+        
+        DataPair *ds;
 
-        DataPair *ds=data_list[index];
+        if(!data_list.Get(index,ds))
+            return(false);
 
         f=ds->left;
         t=ds->right;
@@ -243,8 +246,11 @@ namespace hgl
     bool _Map<K,V,DataPair>::GetKey(int index,K &f)
     {
         if(index<0||index>=data_list.GetCount())return(false);
+        
+        DataPair *ds;
 
-        DataPair *ds=data_list[index];
+        if(!data_list.Get(index,ds))
+            return(false);
 
         f=ds->left;
 
@@ -261,10 +267,11 @@ namespace hgl
     bool _Map<K,V,DataPair>::GetValue(int index,V &t)
     {
         if(index<0||index>=data_list.GetCount())return(false);
+        
+        DataPair *ds;
 
-        DataPair *ds=data_list[index];
-
-        if(!ds)return(false);
+        if(!data_list.Get(index,ds))
+            return(false);
 
         t=ds->right;
 

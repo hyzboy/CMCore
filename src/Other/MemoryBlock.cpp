@@ -29,7 +29,7 @@ namespace hgl
     bool MemoryBlock::Alloc(const uint64 size,const uint64 uint_size)
     {
         memory_allocator->SetAllocUnitSize(uint_size);
-        return memory_allocator->AllocMemory(size);
+        return memory_allocator->Alloc(size);
     }
 
     bool MemoryBlock::Write(const uint64 target,const void *source,const uint64 size)

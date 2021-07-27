@@ -32,6 +32,7 @@
 #include<hgl/platform/os/PosixThread.h>
 
 //#define hgl_malloc(size)      memalign(HGL_MEM_ALIGN,size)            //这个所有版本linux libc都支持
+//                              posix_memalign(...)                     //待区分差别
 #define hgl_malloc(size)        aligned_alloc(HGL_MEM_ALIGN,size)         //这个是C11新增，需要libc 2.16
 #define hgl_realloc(ptr,size)   realloc(ptr,size)
 #define hgl_free                free

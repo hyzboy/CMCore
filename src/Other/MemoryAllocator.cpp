@@ -41,7 +41,7 @@ namespace hgl
         return result;
     }
 
-    bool AbstractMemoryAllocator::AllocMemory(const uint64 size)
+    bool AbstractMemoryAllocator::Alloc(const uint64 size)
     {
         if(size<=0)return(false);
 
