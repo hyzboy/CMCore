@@ -1,6 +1,8 @@
 ﻿#ifndef HGL_PLATFORM_INCLUDE
 #define HGL_PLATFORM_INCLUDE
 
+#include<hgl/platform/os/vsprintf.h>
+
 #ifdef _DEBUG
     #define HGL_LIB_DEBUG_NAME  "Debug"
 #else

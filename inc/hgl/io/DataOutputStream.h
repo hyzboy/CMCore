@@ -146,7 +146,7 @@ namespace hgl
         public:
 
             //32 bit length
-            bool WriteUTF8String        (const u8char *str,uint length);                                            ///<按utf16-le格式写入字符串(前置4字节字符串长度,再写入字符阵列)
+            bool WriteUTF8String        (const u8char *str,uint length);                                            ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
             bool WriteUTF8String        (const u8char *str            );                                            ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
             bool WriteUTF8String        (const UTF8String &str      );                                              ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
             bool WriteUTF8String        (const UTF16String &str     );                                              ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
@@ -168,7 +168,7 @@ namespace hgl
             bool WriteAnsiString        (const AnsiString &str      ){return WriteUTF8String((u8char *)str.c_str(),str.Length());}
 
             //16 bit length
-            bool WriteUTF8ShortString   (const u8char *str,uint length);                                            ///<按utf16-le格式写入字符串(前置2字节字符串长度,再写入字符阵列)
+            bool WriteUTF8ShortString   (const u8char *str,uint length);                                            ///<按utf8格式写入字符串(前置2字节字符串长度,再写入字符阵列)
             bool WriteUTF8ShortString   (const u8char *str            );                                            ///<按utf8格式写入字符串(前置2字节字符串长度,再写入字符阵列)
             bool WriteUTF8ShortString   (const UTF8String &str      );                                              ///<按utf8格式写入字符串(前置2字节字符串长度,再写入字符阵列)
             bool WriteUTF8ShortString   (const UTF16String &str     );                                              ///<按utf8格式写入字符串(前置2字节字符串长度,再写入字符阵列)
@@ -190,7 +190,7 @@ namespace hgl
             bool WriteAnsiShortString   (const AnsiString &str      ){return WriteUTF8ShortString((u8char *)str.c_str(),str.Length());}
 
             //8 bit length
-            bool WriteUTF8TinyString    (const u8char *str,uint length);                                            ///<按utf16-le格式写入字符串(前置1字节字符串长度,再写入字符阵列)
+            bool WriteUTF8TinyString    (const u8char *str,uint length);                                            ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
             bool WriteUTF8TinyString    (const u8char *str            );                                            ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
             bool WriteUTF8TinyString    (const UTF8String &str      );                                              ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
             bool WriteUTF8TinyString    (const UTF16String &str     );                                              ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)

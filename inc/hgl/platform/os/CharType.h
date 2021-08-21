@@ -16,5 +16,4 @@ using os_char           =char;
 #define os_in           std::cin
 #define os_err          std::cerr
 #define os_log          std::clog
-
 #endif//HGL_CHAR_TYPE_INCLUDE
