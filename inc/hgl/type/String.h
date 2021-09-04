@@ -291,6 +291,9 @@ namespace hgl
          */
         void Set(const SelfClass &bs)
         {
+            if(data==bs.data)
+                return;
+
             if((&bs)==nullptr)
             {
                 Clear();
@@ -1202,8 +1205,22 @@ namespace hgl
             operator        T *()       {return c_str();}
             operator const  T *()const  {return c_str();}
 
-            SelfClass &operator =   (const T *str        ){Set(str);return(*this);}
-            SelfClass &operator =   (const SelfClass &str){Set(str);return(*this);}
+            SelfClass &operator =   (const T *str        )
+            {
+                if(str!=c_str())
+                    Set(str);
+                
+                return(*this);
+            }
+
+            SelfClass &operator =   (const SelfClass &str)
+            {
+                if(str.c_str()!=c_str())
+                    Set(str);
+                    
+                return(*this);
+            }
+
             SelfClass &operator +=  (const SelfClass &str){Strcat(str);return(*this);}
             SelfClass &operator <<  (const SelfClass &str){return(operator+=(str));}
 
