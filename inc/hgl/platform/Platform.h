@@ -14,13 +14,15 @@
 #define HGL_OS_Windows              HGL_MERGE32('W','i','n',' ')
 #define HGL_OS_macOS                HGL_MERGE32('m','a','c',' ')
 #define HGL_OS_iOS                  HGL_MERGE32('i','O','S',' ')
+#define HGL_OS_iPadOS               HGL_MERGE32('i','P','O','S')
 #define HGL_OS_FreeBSD              HGL_MERGE32('F','B','S','D')
 #define HGL_OS_NetBSD               HGL_MERGE32('N','B','S','D')
 #define HGL_OS_OpenBSD              HGL_MERGE32('O','B','S','D')
 #define HGL_OS_Linux                HGL_MERGE32('L','i','n','u')
 #define HGL_OS_Cygwin               HGL_MERGE32('C','y','g','w')
-#define HGL_OS_PSP2                 HGL_MERGE32('P','S','P','2')
+#define HGL_OS_PSVita               HGL_MERGE32('P','S','V',' ')
 #define HGL_OS_PS4                  HGL_MERGE32('P','S','4',' ')
+#define HGL_OS_PS5                  HGL_MERGE32('P','S','5',' ')
 #define HGL_OS_AIX                  HGL_MERGE32('A','I','X',' ')
 #define HGL_OS_Android              HGL_MERGE32('A','n','d','r')
 #define HGL_OS_Wasm                 HGL_MERGE32('W','a','s','m')
@@ -33,8 +35,9 @@
 #define HGL_CPU_PowerPC             HGL_MERGE32('P','P','C',' ')
 #define HGL_CPU_PowerPC64           HGL_MERGE32('P','P','6','4')
 #define HGL_CPU_Cell                HGL_MERGE32('C','E','L','L')
-#define HGL_CPU_ARM7                HGL_MERGE32('A','R','M','7')
-#define HGL_CPU_AARCH64             HGL_MERGE32('A','R','6','4')
+#define HGL_CPU_ARMv7               HGL_MERGE32('A','R','M','7')
+#define HGL_CPU_ARMv8               HGL_MERGE32('A','R','M','8')
+#define HGL_CPU_ARMv9               HGL_MERGE32('A','R','M','9')
 
 #define HGL_COMPILER_Microsoft      HGL_MERGE32('M','S','C',' ')
 #define HGL_COMPILER_GNU            HGL_MERGE32('G','N','U',' ')
@@ -114,15 +117,15 @@
     ||defined(__ARM_ARCH__7R__) \
     ||defined(__ARM_ARCH__7M__) \
     ||defined(__ARM_ARCH__7S__)
-        #define HGL_CPU                     HGL_CPU_ARM7
-        #define HGL_CPU_NAME                OS_TEXT("ARM7")
-        #define HGL_LIB_CPU_NAME            OS_TEXT("ARM7")
+        #define HGL_CPU                     HGL_CPU_ARMv7
+        #define HGL_CPU_NAME                OS_TEXT("ARMv7")
+        #define HGL_LIB_CPU_NAME            OS_TEXT("ARMv7")
         #define HGL_MIN_MEMORY_ALLOC_BYTES  4
         #define HGL_ENDIAN                  HGL_LITTLE_ENDIAN
 #elif defined(__aarch64__)
-    #define HGL_CPU                     HGL_CPU_AARCH64
-    #define HGL_CPU_NAME                OS_TEXT("aarch64")
-    #define HGL_LIB_CPU_NAME            OS_TEXT("aarch64")
+    #define HGL_CPU                     HGL_CPU_ARMv8
+    #define HGL_CPU_NAME                OS_TEXT("ARMv8")
+    #define HGL_LIB_CPU_NAME            OS_TEXT("ARMv8")
     #define HGL_MIN_MEMORY_ALLOC_BYTES  4
     #define HGL_ENDIAN                  HGL_LITTLE_ENDIAN
 #elif defined(__wasm__)
@@ -338,6 +341,11 @@ namespace hgl
 {
     #define HGL_WINDOW_DIRECTORY_SEPARATOR  OS_TEXT('\\')
     #define HGL_UNIX_DIRECTORY_SPEARATOR    OS_TEXT('/')
-}//namespace hgl
 
+    #if HGL_DIRECTORY_SEPARATOR_RAWCHAR=='\\'
+        #define HGL_INCORRECT_DIRECTORY_SEPARATOR   OS_TEXT('/')
+    #else
+        #define HGL_INCORRECT_DIRECTORY_SEPARATOR   OS_TEXT('\\')
+    #endif//
+}//namespace hgl
 #endif//HGL_PLATFORM_INCLUDE
