@@ -12,6 +12,75 @@ namespace hgl
     namespace filesystem
     {
         /**
+         * 修正部分文件名问题(目前仅处理错误斜杠和重复斜杠问题)
+         */
+        OSString FixFilename(const OSString &filename)
+        {
+            int old_len=filename.Length();
+            int new_len;
+
+            os_char *new_string=new os_char[old_len+1];
+
+            os_char *sp=filename.c_str();
+            os_char *tp=new_string;
+            os_char last_char=0;
+            bool fix=false;
+
+            while(*sp)
+            {
+                if(*sp==HGL_INCORRECT_DIRECTORY_SEPARATOR)
+                {
+                    if(last_char==HGL_INCORRECT_DIRECTORY_SEPARATOR)
+                    {
+                        fix=true;
+                        ++sp;
+                        continue;
+                    }
+                    else
+                    {
+                        last_char=*sp;
+                        fix=true;
+                        ++sp;
+                        *tp=HGL_DIRECTORY_SEPARATOR;
+                    }
+                }
+                else
+                {
+                    if(*sp==HGL_DIRECTORY_SEPARATOR
+                     &&last_char==HGL_DIRECTORY_SEPARATOR)
+                    {
+                        last_char=*sp;
+                        fix=true;
+
+                        ++sp;
+                        continue;
+                    }
+                    else
+                    {
+                        last_char=*sp;
+
+                        *tp=*sp;
+                        ++sp;
+                    }
+                }
+
+                ++tp;
+            }
+
+            *tp=0;
+
+            new_len=tp-new_string;
+
+            if(!fix)
+            {
+                delete[] new_string;
+                return filename;
+            }
+
+            return OSString::newOf(new_string,new_len);
+        }
+
+        /**
         * 比较两个文件是否一样
         * @param filename1 第一个文件的名称
         * @param filename2 第二个文件的名称

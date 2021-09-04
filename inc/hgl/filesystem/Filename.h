@@ -259,6 +259,8 @@ namespace hgl
 
         inline WideString MergeFilename(const WideString &pathname,const WideString &filename)          ///<组合路径名与文件名
         {return MergeFilename<wchar_t>(pathname,filename,L'\\',L"\\");}
+
+        OSString FixFilename(const OSString &filename);                                                 ///<修正部分文件名问题
     }//namespace filesystem
 }//namespace hgl
 #endif//HGL_FILESYSTEM_FILENAME_INCLUDE
