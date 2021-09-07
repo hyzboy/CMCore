@@ -46,7 +46,20 @@ namespace hgl
         bool GetCurrentProgramPath(OSString &);                                                         ///<取得当前程序所在路径
         bool GetLocalAppdataPath(OSString &);                                                           ///<取得当前用户应用程序数据存放路径
 
-        //使用int64而不是__int64是因为不是所有编译器都支持__int64的写法，必须使用DataType.H中引入的定义
+        /**
+        * 文件名长度限制
+        * 
+        *   OS              | FILENAME | FILENAME+PATHNAME |
+        * ------------------+----------+-------------------+
+        * Windows               256         260
+        * Windows 10(>1607)     32767       32767               // max length must get from lpMaximumComponentLength of GetVolumeInformation
+        *                                                       // https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=powershell
+        * 
+        * MacOS/Solaris/AIX     255         1024
+        * Linux                 255         1024/4096
+        */
+
+        //使用int64而不是__int64是因为不是所有编译器都支持__int64的写法，必须使用DataType.h中引入的定义
 
         /**
         * 文件信息数据结构

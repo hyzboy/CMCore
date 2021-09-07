@@ -46,7 +46,12 @@ using os_char           =wchar_t;
 #define HGL_LINE_END                    OS_TEXT("\r\n")                                 //换行符
 #define HGL_LINE_END_SIZE               2                                               //换行符长度
 
-#define HGL_MAX_PATH                    MAX_PATH
+/**
+* 从Windows 10(ver 1607)开始，NTFS分区文件名最大长度为32767。
+* 但由于文件系统的不同，我们需要使用 GetVolumeInformation 函数，根据参数lpMaximumComponentLength的返回值来确定每个分区可使用的最大长度
+*/
+
+#define HGL_MAX_PATH                    MAX_PATH                                        //文件名最大长度
 
 #define HGL_MEM_ALIGN                   16                                              //内存对齐字节数
 //--------------------------------------------------------------------------------------------------
