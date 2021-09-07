@@ -2,6 +2,12 @@
 #define HGL_FILESYSTEM_FILENAME_INCLUDE
 
 #include<hgl/type/StringList.h>
+
+/**
+* Maximum Path Length Limitation
+* https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=cmd
+*/
+
 namespace hgl
 {
     namespace filesystem
@@ -11,17 +17,17 @@ namespace hgl
         * 根据离散的每一级目录名称和最终名称合成完整文件名
         */
         template<typename T>
-        inline const String<T> ComboFilename(const StringList<String<T>> &sl,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
+        inline const String<T> ComboFilename(const T **str_list,const int *str_len,const int count,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
         {
             T *fullname=nullptr;
 
             {
                 int total=0;
 
-                for(auto str:sl)
-                    total+=str->Length();
+                for(int size:str_len)
+                    total+=size;
 
-                total+=sl.GetCount();
+                total+=count;
                 ++total;
 
                 fullname=new T[total+1];
@@ -32,11 +38,13 @@ namespace hgl
             int len;
             bool first=true;
 
-            for(auto str:sl)
+            for(int i=0;i<count;i++)
             {
-                len=str->Length();
+                len=str_len[i];
 
-                tmp=trim<T>(str->c_str(),len,isslash<T>);
+                if(len<=0)continue;
+                
+                tmp=trim<T>(str_list[i],len,isslash<T>);
 
                 if(!first)
                 {
@@ -55,6 +63,46 @@ namespace hgl
             *p=0;
 
             return String<T>::newOf(fullname,p-fullname);
+        }
+        /**
+        * 组合文件名.<Br>
+        * 根据离散的每一级目录名称和最终名称合成完整文件名
+        */
+        template<typename T>
+        inline const String<T> ComboFilename(const T **str_list,const int count,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
+        {
+            int str_len[count];
+
+            for(int i=0;i<count;++)
+                str_len=strlen(str_list[i]);
+
+            return ComboFilename(str_list,str_len,count,spear_char);
+        }
+
+        /**
+        * 组合文件名.<Br>
+        * 根据离散的每一级目录名称和最终名称合成完整文件名
+        */
+        template<typename T>
+        inline const String<T> ComboFilename(const StringList<String<T>> &sl,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
+        {
+            T **str_list[sl.GetCount()];
+            int str_len[sl.GetCount()];
+
+            int index=0;
+
+            for(auto str:sl)
+            {
+                if(str->IsEmpty())
+                    continue;
+
+                str_list[index]=str->c_str();
+                str_len[index]=str->Length();
+
+                ++index;
+            }
+
+            return ComboFilename(str_list,str_len,spear_char);
         }
 
         /**
