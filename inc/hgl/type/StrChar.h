@@ -2415,12 +2415,12 @@ namespace hgl
     /**
      * 转换一个整数到计算机表示法
      * @param str 字符串保存指针
-     * @param size 字符串保存空间长度
+     * @param str_max_length 字符串保存空间长度
      * @param value 要转换的值
      * @return 是否转换成功
      */
     template<typename T,typename V>
-    const bool int_to_size(T *str,int size,V value)
+    const bool int_to_size(T *str,int str_max_length,V value)
     {
         const T name[]={'K','M','G','T','P','E','Z','Y','B',0};
 
@@ -2429,7 +2429,7 @@ namespace hgl
         double new_value=value;
         int pos=0;
 
-        while(new_value>=1024&&size--)
+        while(new_value>=1024&&str_max_length--)
         {
             pos++;
             new_value/=1024;
@@ -2440,7 +2440,7 @@ namespace hgl
 
         const float f=new_value;
 
-        ftos(str,size,2,f);
+        ftos(str,str_max_length,2,f);
 
         T *p=str+strlen(str);
 
