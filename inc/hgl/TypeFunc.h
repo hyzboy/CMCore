@@ -406,6 +406,15 @@ namespace hgl
     {
         memset(&data,0,sizeof(T));
     }
+
+    /**
+     * 指定类型数据清0
+     */
+    template<typename T>
+    inline void hgl_zero(T *data)
+    {
+        memset(data,0,sizeof(T));
+    }
 }//namespace hgl
 
 /**
