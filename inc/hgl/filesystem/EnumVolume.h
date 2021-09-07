@@ -11,17 +11,17 @@ namespace hgl
          */
         struct VolumeInfo
         {
-            enum DriverType
+            enum class DriverType
             {
-                dtNone=0,               ///<未知类型
+                None=0,
 
-                dtRemovable,            ///<可移动设备
-                dtFixed,                ///<固定设备
-                dtRemote,               ///<远程设备
-                dtCDROM,                ///<光盘驱动器
-                dtRamDisk,              ///<内存虚拟设备
+                Removable,            ///<可移动设备
+                Fixed,                ///<固定设备
+                Remote,               ///<远程设备
+                CDROM,                ///<光盘驱动器
+                RamDisk,              ///<内存虚拟设备
 
-                dtEnd                   ///<结束定义
+                ENUM_CLASS_RANGE(None,RamDisk)
             };
 
             u16char             name[HGL_MAX_PATH];         ///<卷名称
@@ -52,22 +52,14 @@ namespace hgl
          */
         struct VolumeCheckConfig
         {
-            bool removable  =false;
-            bool fixed      =false;
-            bool remote     =false;
-            bool cdrom      =false;
-            bool ram_disk   =false;
-            bool unknow     =false;
+            bool removable  =true;
+            bool fixed      =true;
+            bool remote     =true;
+            bool cdrom      =true;
+            bool ram_disk   =true;
+            bool unknow     =true;
 
         public:
-
-            /**
-             * 设置为全部检测
-             */
-            void SetFullCheck()
-            {
-                memset(this,0xff,sizeof(VolumeCheckConfig));
-            }
 
             /**
              * 是否无效配置
@@ -85,6 +77,8 @@ namespace hgl
             }
         };
 
+        using VolumeInfoList=List<VolumeInfo>;
+
         /**
          * 枚举当前计算机所有卷
          * @param vi_list 储存卷信息的列表
@@ -93,7 +87,7 @@ namespace hgl
          * @param check_cd 检测光盘
          * @return 查找到的卷数量，-1表示失败
          */
-        int EnumVolume(List<VolumeInfo> &vi_list,const VolumeCheckConfig &);
+        int EnumVolume(VolumeInfoList &vi_list,const VolumeCheckConfig &);
 #endif//HGL_OS == HGL_OS_Windows
     }//namespace filesystem
 }//namespace hgl
