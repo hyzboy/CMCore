@@ -411,9 +411,9 @@ namespace hgl
      * 指定类型数据清0
      */
     template<typename T>
-    inline void hgl_zero(T *data)
+    inline void hgl_zero(T *data,const uint count)
     {
-        memset(data,0,sizeof(T));
+        memset(data,0,sizeof(T)*count);
     }
 }//namespace hgl
 
