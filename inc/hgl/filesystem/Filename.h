@@ -17,20 +17,14 @@ namespace hgl
         * 根据离散的每一级目录名称和最终名称合成完整文件名
         */
         template<typename T>
-        inline const String<T> ComboFilename(const T **str_list,const int *str_len,const int count,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
+        inline const String<T> ComboFilename(T **str_list,int *str_len,const int count,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
         {
             T *fullname=nullptr;
 
             {
-                int total=0;
+                const int total=sum(str_len,count)+count;
 
-                for(int size:str_len)
-                    total+=size;
-
-                total+=count;
-                ++total;
-
-                fullname=new T[total+1];
+                fullname=new T[total];
             }
 
             T *p=fullname;
@@ -69,7 +63,7 @@ namespace hgl
         * 根据离散的每一级目录名称和最终名称合成完整文件名
         */
         template<typename T>
-        inline const String<T> ComboFilename(const T **str_list,const int count,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
+        inline const String<T> ComboFilename(T **str_list,const int count,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
         {
             int str_len[count];
 
@@ -86,8 +80,8 @@ namespace hgl
         template<typename T>
         inline const String<T> ComboFilename(const StringList<String<T>> &sl,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
         {
-            T **str_list[sl.GetCount()];
-            int str_len[sl.GetCount()];
+            T **str_list=AutoDeleteArray<T *>(sl.GetCount());
+            int *str_len=AutoDeleteArray<int>(sl.GetCount());
 
             int index=0;
 
@@ -102,7 +96,7 @@ namespace hgl
                 ++index;
             }
 
-            return ComboFilename(str_list,str_len,spear_char);
+            return ComboFilename(str_list,str_len,sl.GetCount(),spear_char);
         }
 
         /**
