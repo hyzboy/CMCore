@@ -188,6 +188,17 @@ namespace hgl
     constexpr char UpperHexChar[16]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};  ///<大写16进制字符
 
     /**
+     * 求数值对齐后的值
+     */
+    template<typename T>
+    inline T hgl_align(const T &value,const T &alignment)
+    {    
+        const T align_size=alignment-1;
+
+        return (value+align_size)&(~align_size);
+    }
+
+    /**
      * 取适合正巧大于当前数的2次幂值
      */
     template<typename T>
