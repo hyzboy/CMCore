@@ -6,20 +6,26 @@
 //注：GLM/CML(OpenGLMode)是列矩阵,计算坐标matrix*pos
 //   而MGL是行矩阵，需要反过来pos*matrix
 
+#include<glm/gtc/matrix_transform.hpp>
+
 namespace hgl
 {
-    using Matrix3f=float3x3;
-    using Matrix4f=float4x4;
-    using Matrix3x4f=float3x4;
+    using Matrix3f=glm::mat3;
+    using Matrix4f=glm::mat4;
 
     inline Matrix4f identity()
     {
-        return Matrix4f::identity;
+        return Matrix4f();
     }
 
     inline Matrix4f inverse(const Matrix4f &m)
     {
-        return m.Inverted();
+        return glm::inverse(m);
+    }
+
+    inline Matrix4f transpose(const Matrix4f &m)
+    {
+        return glm::transpose(m);
     }
 
     /**
@@ -76,52 +82,52 @@ namespace hgl
 
     inline Matrix4f translate(const Vector3f &v)
     {
-        return Matrix4f::Translate(v);
+        return glm::translate(Matrix4f(1.0f),v);
     }
 
     inline Matrix4f translate(float x,float y,float z)
     {
-        return Matrix4f::Translate(x,y,z);
+        return glm::translate(Matrix4f(1.0f),Vector3f(x,y,z));
     }
 
     inline Matrix4f translate(float x,float y)
     {
-        return Matrix4f::Translate(x,y,1.0f);
+        return translate(x,y,1.0f);
     }
 
     inline Matrix4f scale(const Vector3f &v)
     {
-        return Matrix4f::Scale(v,Vector3f::zero);
+        return glm::scale(Matrix4f(1.0f),v);
     }
 
     inline Matrix4f scale(float x,float y,float z)
     {
-        return Matrix4f::Scale(Vector3f(x,y,z),Vector3f::zero);
+        return glm::scale(Matrix4f(1.0f),Vector3f(x,y,z));
     }
 
     inline Matrix4f scale(float x,float y)
     {
-        return Matrix4f::Scale(Vector3f(x,y,1.0f),Vector3f::zero);
+        return scale(x,y,1.0f);
     }
 
     inline Matrix4f scale(float s)
     {
-        return Matrix4f::Scale(Vector3f(s,s,s),Vector3f::zero);
+        return glm::scale(Matrix4f(1.0f),Vector3f(s,s,s));
     }
 
     inline Matrix4f rotate(float angle,const Vector3f &axis)
     {
-        return Matrix4f::RotateAxisAngle(axis.Normalized(),angle);
+        return glm::rotate(Matrix4f(1.0f),angle,axis);
     }
 
     inline Matrix4f rotate(float angle,float x,float y,float z)
     {
-        return rotate(angle,Vector3f(x,y,z));
+        return glm::rotate(Matrix4f(1.0f),angle,Vector3f(x,y,z));
     }
     
     inline Matrix4f rotate(float angle,float x,float y)
     {
-        return rotate(angle,Vector3f(x,y,1.0f));
+        return rotate(angle,x,y,1.0f);
     }
 
     inline Matrix4f rotate(float angle,const Vector4f &axis)
@@ -131,9 +137,9 @@ namespace hgl
 
     inline Vector3f rotate(const Vector3f &v3f,float angle,const Vector3f &axis)
     {
-        Vector4f result=rotate(angle,axis)*Vector4f(v3f,1.0f);
+		Vector4f result = rotate(angle, axis)*Vector4f(v3f, 1.0f);
 
-        return result.xyz();
+		return Vector3f(result.x,result.y,result.z);
     }
 }//namespace hgl
 #endif//HGL_ALGORITHM_MATH_VECTOR_MATRIX_INCLUDE
