@@ -3,6 +3,7 @@
 // Vulkan Cookbook
 // ISBN: 9781786468154
 // Packt Publishing Limited
+// git: https://github.com/PacktPublishing/Vulkan-Cookbook.git
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
@@ -23,10 +24,26 @@ namespace hgl
                     float zfar )
     {
         return Matrix4f(
-            2.0f / (right - left),  0.0f,                   0.0f,                   -(right + left) / (right - left),
-            0.0f,                   2.0f / (bottom - top),  0.0f,                   -(bottom + top) / (bottom - top),
-            0.0f,                   0.0f,                   1.0f / (znear - zfar),  znear / (znear - zfar),
-            0.0f,                   0.0f,                   0.0f,                   1.0f);
+          2.0f / (right - left),
+          0.0f,
+          0.0f,
+          0.0f,
+
+          0.0f,
+          2.0f / (bottom - top),
+          0.0f,
+          0.0f,
+
+          0.0f,
+          0.0f,
+          1.0f / (znear - zfar),
+          0.0f,
+
+          -(right + left) / (right - left),
+          -(bottom + top) / (bottom - top),
+          znear / (znear - zfar),
+          1.0f
+        );
     }
 
     /**
@@ -37,12 +54,8 @@ namespace hgl
      * @param zfar 远平台z值
      */
     Matrix4f ortho(float width,float height,float znear,float zfar)
-    {
-        return Matrix4f(
-            2.0f / width,   0.0f,           0.0f,                   -1,
-            0.0f,           2.0f / height,  0.0f,                   -1,
-            0.0f,           0.0f,           1.0f / (znear - zfar),  znear / (znear - zfar),
-            0.0f,           0.0f,           0.0f,                   1.0f);
+    {        
+        return ortho(0.0f,width,height,0.0f,znear,zfar);
     }
 
     /**
@@ -51,12 +64,8 @@ namespace hgl
      * @param height 高
      */
     Matrix4f ortho(float width,float height)
-    {
-        return Matrix4f(
-            2.0f / width,   0.0f,           0.0f,   -1,
-            0.0f,           2.0f / height,  0.0f,   -1,
-            0.0f,           0.0f,           -1.0f , 0.0f,
-            0.0f,           0.0f,           0.0f,   1.0f);
+    {    
+        return ortho(width,height,0.0f,1.0f);
     }
 
     /**
@@ -71,17 +80,27 @@ namespace hgl
                             float znear,
                             float zfar)
     {
-        const float f = 1.0f / tan( hgl_ang2rad( 0.5f * field_of_view ) );
-
         return Matrix4f(
-            f / aspect_ratio,   0.0f,   0.0f,                   0.0f,
-            0.0f,               -f,     0.0f,                   0.0f,
-            0.0f,               0.0f,   zfar / (znear - zfar), (znear * zfar) / (znear - zfar),
-                                    //  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                    //  某些引擎这两项会乘0.5，那是因为他们是 -1 to 1 的Z值设定，而我们是 0 to 1，所以这里不用乘
-                                    //  同理，camera的znear为接近0的正数，zfar为一个较大的正数，默认使用16/256
+          field_of_view / aspect_ratio,
+          0.0f,
+          0.0f,
+          0.0f,
 
-            0.0f,               0.0f,   -1.0f,                  0.0f);
+          0.0f,
+          -field_of_view,
+          0.0f,
+          0.0f,
+
+          0.0f,
+          0.0f,
+          zfar / (znear - zfar),
+          -1.0f,
+      
+          0.0f,
+          0.0f,
+          (znear * zfar) / (znear - zfar),
+          0.0f
+        );
     }
 
     Matrix4f lookat(const Vector4f &eye,const Vector4f &target,const Vector4f &up)
@@ -96,14 +115,31 @@ namespace hgl
 
         Vector4f nup=cross(right,forward);
 
-        Matrix4f result(   right.x,        right.y,        right.z,         1.0f,
-                             nup.x,          nup.y,          nup.z,         1.0f,
-                        -forward.x,     -forward.y,     -forward.z/2.0f,    1.0f,
-                              0.0f,           0.0f,           0.0f,         1.0f);
-                                                    //  ^^^^^^
-                                                    //  某些引擎这里为0.5，那是因为他们是 -1 to 1 的Z值设定，而我们是0 to 1，所以这里不用乘
-                                                    //  同理，camera的znear为接近0的正数，zfar为一个较大的正数，默认使用16/256
+        //Matrix4f result(   right.x,        right.y,        right.z,         1.0f,
+        //                     nup.x,          nup.y,          nup.z,         1.0f,
+        //                -forward.x,     -forward.y,     -forward.z/2.0f,    1.0f,
+        //                      0.0f,           0.0f,           0.0f,         1.0f);
 
-        return result*translate(-eye.xyz());
+        Matrix4f result(   right.x,
+                             nup.x,
+                        -forward.x,
+                              0.0f,
+
+                            right.y,
+                            nup.y,
+                        -forward.y,
+                                0.0f,
+
+                                        right.z,         
+                                        nup.z,         
+                                    -forward.z/2.0f,    
+                                        0.0f,         
+
+                                        1.0f,
+                                        1.0f,
+                                        1.0f,
+                                        1.0f);
+
+        return result*translate(-Vector3f(eye));
     }
 }//namespace hgl
