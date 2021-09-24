@@ -11,6 +11,8 @@ namespace hgl
     {
     public:
 
+        using VEC2=glm::vec<2,T,glm::defaultp>;
+
         T Left;                                                                                     ///<矩形左边所在的坐标
         T Top;                                                                                      ///<矩形上边所在的坐标
         T Width;                                                                                    ///<矩形的宽度
@@ -35,11 +37,11 @@ namespace hgl
         T GetCenterX()const{return Left+(Width/2);}
         T GetCenterY()const{return Top+(Height/2);}
 
-        const vec2<T> GetLeftTop    ()const{return vec2<T>(Left,        Top);}
-        const vec2<T> GetLeftBottom ()const{return vec2<T>(Left,        Top+Height);}
-        const vec2<T> GetRightTop   ()const{return vec2<T>(Left+Width,  Top);}
-        const vec2<T> GetRightBottom()const{return vec2<T>(Left+Width,  Top+Height);}
-        const vec2<T> GetSize       ()const{return vec2<T>(Width,       Height);}
+        const VEC2 GetLeftTop    ()const{return VEC2(Left,        Top);}
+        const VEC2 GetLeftBottom ()const{return VEC2(Left,        Top+Height);}
+        const VEC2 GetRightTop   ()const{return VEC2(Left+Width,  Top);}
+        const VEC2 GetRightBottom()const{return VEC2(Left+Width,  Top+Height);}
+        const VEC2 GetSize       ()const{return VEC2(Width,       Height);}
 
     public:
 
@@ -147,8 +149,8 @@ namespace hgl
     typedef RectScope2<float>   RectScope2f;
     typedef RectScope2<int>     RectScope2i;
     typedef RectScope2<uint>    RectScope2ui;
-    typedef RectScope2<short>   RectScope2s;
-    typedef RectScope2<ushort>  RectScope2us;
+//    typedef RectScope2<short>   RectScope2s;
+//    typedef RectScope2<ushort>  RectScope2us;
 
     template<typename T,typename S>
     inline void UVFloatFromPixel(RectScope2<T> &target,const RectScope2<S> &source,const double width,const double height)
