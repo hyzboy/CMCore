@@ -35,6 +35,9 @@ namespace hgl
     using Vector3f=float3;
     using Vector4f=float4;
 
+    using Vector2i=glm::ivec2;
+    using Vector2u=glm::uvec2;
+
     inline bool operator == (const Vector2f &lhs,const Vector2f &rhs)
     {
         if(lhs.x!=rhs.x)return(false);
@@ -126,10 +129,19 @@ namespace hgl
         v.Normalize();
     }
 
-    template<typename T>
-    inline T cross(const T &v1,const T &v2)
+    inline Vector3f cross(const Vector3f &v1,const Vector3f &v2)
     {
         return v1.Cross(v2);
+    }
+
+    inline Vector4f cross(const Vector4f &v1,const Vector4f &v2)
+    {
+        Vector3f v31=v1;
+        Vector3f v32=v2;
+
+        Vector4f result=Vector4f(glm::cross(v31,v32),1.0f);
+
+        return result;
     }
 
     template<typename T>
@@ -254,89 +266,6 @@ namespace hgl
         result.y = center.y + ((source.x - center.x)*as + (source.y - center.y)*ac);
     }
 
-    template<typename T> union vec2
-    {
-        struct { T x,y; };
-        struct { T r,g; };
-        struct { T u,v; };
-        T data[2];
-
-    public:
-
-        vec2(){x=y=0;}
-        vec2(T v1,T v2):x(v1),y(v2){}
-        vec2(const vec2 &v2)
-        {
-            x=v2.x;
-            y=v2.y;
-        }
-
-        vec2(const Vector2f &v2f)
-        {
-            x=v2f.x;
-            y=v2f.y;
-        }
-
-        operator const Vector2f()const{return Vector2f(x,y);}
-    };
-
-    template<typename T> union vec3
-    {
-        struct { T x,y,z; };
-        struct { T r,g,b; };
-        struct { T u,v,w; };
-        T data[3];
-
-    public:
-
-        vec3(){x=y=z=0;}
-        vec3(T v1,T v2,T v3):x(v1),y(v2),z(v3){}
-        vec3(const vec3 &v3)
-        {
-            x=v3.x;
-            y=v3.y;
-            z=v3.z;
-        }
-
-        vec3(const Vector3f &v3f)
-        {
-            x=v3f.x;
-            y=v3f.y;
-            z=v3f.z;
-        }
-
-        operator const Vector3f()const{return Vector3f(x,y,z);}
-    };
-
-    template<typename T> union vec4
-    {
-        struct { T x,y,z,w; };
-        struct { T r,g,b,a; };
-        T data[4];
-
-    public:
-
-        vec4(){x=y=z=w=0;}
-        vec4(T v1,T v2,T v3,T v4):x(v1),y(v2),z(v3),w(v4){}
-        vec4(const vec4 &v4)
-        {
-            x=v4.x;
-            y=v4.y;
-            z=v4.z;
-            w=v4.w;
-        }
-
-        vec4(const Vector4f &v4f)
-        {
-            x=v4f.x;
-            y=v4f.y;
-            z=v4f.z;
-            w=v4f.w;
-        }
-
-        operator const Vector4f()const{return Vector4f(x,y,z,w);}
-    };
-
     inline const Vector3f PolarToVector3f(float yaw,float pitch)
     {
         return Vector3f(sinf(yaw) * cosf(pitch), sinf(pitch), cosf(yaw) * cosf(pitch));
@@ -345,6 +274,51 @@ namespace hgl
     inline const Vector4f PolarToVector4f(float yaw,float pitch)
     {
         return Vector4f(sinf(yaw) * cosf(pitch), sinf(pitch), cosf(yaw) * cosf(pitch), 0);
+    }
+
+    inline const Vector4f PointVector(const Vector3f &v)
+    {
+        return Vector4f(v,1.0f);
+    }
+
+    inline const Vector4f DirectionVector(const Vector3f &v)
+    {
+        return Vector4f(v,0.0f);
+    }
+
+    inline const Vector3f xyz(const Vector4f &v)
+    {
+        return Vector3f(v.x,v.y,v.z);
+    }
+
+    inline const Vector3f MinVector(const Vector3f &v1,const Vector3f &v2)
+    {
+        return Vector3f(hgl_min(v1.x,v2.x),
+                        hgl_min(v1.y,v2.y),
+                        hgl_min(v1.z,v2.z));
+    }
+
+    inline const Vector4f MinVector(const Vector4f &v1,const Vector4f &v2)
+    {
+        return Vector4f(hgl_min(v1.x,v2.x),
+                        hgl_min(v1.y,v2.y),
+                        hgl_min(v1.z,v2.z),
+                        hgl_min(v1.w,v2.w));
+    }
+
+    inline const Vector3f MaxVector(const Vector3f &v1,const Vector3f &v2)
+    {
+        return Vector3f(hgl_max(v1.x,v2.x),
+                        hgl_max(v1.y,v2.y),
+                        hgl_max(v1.z,v2.z));
+    }
+
+    inline const Vector4f MaxVector(const Vector4f &v1,const Vector4f &v2)
+    {
+        return Vector4f(hgl_max(v1.x,v2.x),
+                        hgl_max(v1.y,v2.y),
+                        hgl_max(v1.z,v2.z),
+                        hgl_max(v1.w,v2.w));
     }
 }//namespace hgl
 #endif//HGL_ALGORITHM_MATH_VECTOR_INCLUDE
