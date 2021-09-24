@@ -3,37 +3,16 @@
 
 #ifdef _MSC_VER
 #pragma warning(disable:4244)           // double -> int 精度丢失警告
-#pragma warning(disable:4996)           // sprintf may be unsafe, Consider using sprintf_s instead
 #endif//_MSC_VER
 
 #include<hgl/math/FastTriangle.h>
-#include<MathGeoLib.h>
-
-/**
- * MathGeoLib
- * Game Math and Geometry Library
- *
- * My C++ library for 3D mathematics and geometry manipulation.
- * Jukka Jylänki
- *
- * offical web: http://clb.demon.fi/MathGeoLib/nightly/
- *
- * License:
- *
- *      This library is licensed under the Apache 2 license. I am not a lawyer, but to me that
- * license means that you can use this code for any purpose, both commercial and closed source.
- * You are however restricted from claiming you wrote it yourself, and cannot hold me liable
- * for anything over this code.
- *      I acknowledge that most of the non-trivial math routines are taken off a book or a
- * research paper. In all places, I have tried to be diligent to properly attribute the original
- * source. Please contact me if you feel I have misattributed something.
- */
+#include<glm/glm.hpp>
 
 namespace hgl
 {
-    using Vector2f=float2;
-    using Vector3f=float3;
-    using Vector4f=float4;
+    using Vector2f=glm::vec2;
+    using Vector3f=glm::vec3;
+    using Vector4f=glm::vec4;
 
     using Vector2i=glm::ivec2;
     using Vector2u=glm::uvec2;
@@ -120,18 +99,18 @@ namespace hgl
     template<typename T>
     inline T normalized(const T &v)
     {
-        return v.Normalized();
+        return glm::normalize(v);
     }
 
     template<typename T>
     inline void normalize(T &v)
     {
-        v.Normalize();
+        v=glm::normalize(v);
     }
 
     inline Vector3f cross(const Vector3f &v1,const Vector3f &v2)
     {
-        return v1.Cross(v2);
+        return glm::cross(v1,v2);
     }
 
     inline Vector4f cross(const Vector4f &v1,const Vector4f &v2)
@@ -147,19 +126,19 @@ namespace hgl
     template<typename T>
     inline float dot(const T &v1,const T &v2)
     {
-        return v1.Dot(v2);
+        return glm::dot(v1,v2);
     }
 
-    template<typename T>
-    inline float dot2(const T &v)
-    {
-        return v.Dot(v);
-    }
+    //template<typename T>
+    //inline float dot2(const T &v)
+    //{
+    //    return v.Dot(v);
+    //}
 
-    inline float ray_angle_cos(const Ray &ray,const vec &pos)
-    {
-        return ray.dir.Dot((pos-ray.pos).Normalized());
-    }
+    //inline float ray_angle_cos(const Ray &ray,const vec &pos)
+    //{
+    //    return ray.dir.Dot((pos-ray.pos).Normalized());
+    //}
 
     inline float length_squared(const Vector2f &v)
     {
