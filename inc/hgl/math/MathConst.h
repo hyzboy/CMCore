@@ -29,24 +29,24 @@ namespace hgl
     constexpr double HGL_COS_ANG_270=0;
     constexpr double HGL_COS_ANG_315=0.707106781187;
 
-    #define HGL_DEF_ANG2RAD(ang)    constexpr double HGL_RAD_##ang=double(ang)*(HGL_PI/180.0f);
+    #define HGL_DEF_DEG2RAD(ang)    constexpr double HGL_RAD_##ang=double(ang)*(HGL_PI/180.0f);
 
-    HGL_DEF_ANG2RAD(0)
-    HGL_DEF_ANG2RAD(45)
-    HGL_DEF_ANG2RAD(90)
-    HGL_DEF_ANG2RAD(135)
-    HGL_DEF_ANG2RAD(180)
-    HGL_DEF_ANG2RAD(225)
-    HGL_DEF_ANG2RAD(270)
-    HGL_DEF_ANG2RAD(315)
-    HGL_DEF_ANG2RAD(360)
+    HGL_DEF_DEG2RAD(0)
+    HGL_DEF_DEG2RAD(45)
+    HGL_DEF_DEG2RAD(90)
+    HGL_DEF_DEG2RAD(135)
+    HGL_DEF_DEG2RAD(180)
+    HGL_DEF_DEG2RAD(225)
+    HGL_DEF_DEG2RAD(270)
+    HGL_DEF_DEG2RAD(315)
+    HGL_DEF_DEG2RAD(360)
 
-    #undef HGL_DEF_ANG2RAD
+    #undef HGL_DEF_DEG2RAD
 
     /**
      * 角度转弧度
      */
-    inline double hgl_ang2rad(const double ang)
+    inline double hgl_deg2rad(const double ang)
     {
         return ang*(HGL_PI/180.0f);
     }
@@ -54,7 +54,7 @@ namespace hgl
     /**
      * 弧度转角度
      */
-    inline double hgl_rad2ang(const double rad)
+    inline double hgl_rad2deg(const double rad)
     {
         return rad*(180.0f/HGL_PI);
     }

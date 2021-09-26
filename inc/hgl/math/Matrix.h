@@ -13,11 +13,6 @@ namespace hgl
     using Matrix3f=glm::mat3;
     using Matrix4f=glm::mat4;
 
-    inline Matrix4f identity()
-    {
-        return Matrix4f();
-    }
-
     inline Matrix4f inverse(const Matrix4f &m)
     {
         return glm::inverse(m);

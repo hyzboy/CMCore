@@ -80,14 +80,16 @@ namespace hgl
                             float znear,
                             float zfar)
     {
+        float f = 1.0f / tan( hgl_deg2rad( 0.5f * field_of_view ) );
+
         return Matrix4f(
-          field_of_view / aspect_ratio,
+          f / aspect_ratio,
           0.0f,
           0.0f,
           0.0f,
 
           0.0f,
-          -field_of_view,
+          -f,
           0.0f,
           0.0f,
 
@@ -105,41 +107,31 @@ namespace hgl
 
     Matrix4f lookat(const Vector4f &eye,const Vector4f &target,const Vector4f &up)
     {
-        Vector4f forward=target-eye;
-
-        normalize(forward);
-
-        Vector4f right=cross(forward,up);
-
-        normalize(right);
+        Vector4f forward=normalize(target-eye);
+        Vector4f right=normalize(cross(forward,up));
 
         Vector4f nup=cross(right,forward);
-
-        //Matrix4f result(   right.x,        right.y,        right.z,         1.0f,
-        //                     nup.x,          nup.y,          nup.z,         1.0f,
-        //                -forward.x,     -forward.y,     -forward.z/2.0f,    1.0f,
-        //                      0.0f,           0.0f,           0.0f,         1.0f);
 
         Matrix4f result(   right.x,
                              nup.x,
                         -forward.x,
                               0.0f,
 
-                            right.y,
-                            nup.y,
+                           right.y,
+                             nup.y,
                         -forward.y,
-                                0.0f,
+                              0.0f,
 
-                                        right.z,         
-                                        nup.z,         
-                                    -forward.z/2.0f,    
-                                        0.0f,         
+                           right.z,
+                             nup.z,
+                   -forward.z/2.0f,
+                              0.0f,
 
-                                        1.0f,
-                                        1.0f,
-                                        1.0f,
-                                        1.0f);
+                  dot(eye,right  ),
+                  dot(eye,nup    ),
+                  dot(eye,forward),
+                             1.0f);
 
-        return result*translate(-Vector3f(eye));
+        return result;
     }
 }//namespace hgl
