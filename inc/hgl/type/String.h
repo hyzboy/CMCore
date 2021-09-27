@@ -1363,7 +1363,7 @@ namespace hgl
     {
         T str[(sizeof(I)<<1)+1];
 
-        htos(str,sizeof(I)<<1,value);
+        htos(str,(sizeof(I)<<1)+1,value);
 
         return String<T>(str);
     }
