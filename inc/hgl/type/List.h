@@ -22,8 +22,8 @@ namespace hgl
 
                         int     GetAllocCount   ()const{return alloc_count;}                        ///<取得已分配容量
                         int     GetCount        ()const{return count;}                              ///<取得列表内数据数量
-        virtual         void    SetCount        (int);                                              ///<设置列表内数据数量
-        virtual         void    PreMalloc       (int);                                              ///<预分配指定数量的数据空间
+        virtual         bool    SetCount        (int);                                              ///<设置列表内数据数量
+        virtual         bool    PreMalloc       (int);                                              ///<预分配指定数量的数据空间
                         T *     GetData         ()const{return items;}                              ///<提供原始数据项
                         int     GetBytes        ()const{return count*sizeof(T);}                    ///<取得原始数据总字节数
 
@@ -144,7 +144,7 @@ namespace hgl
     {
     public:
 
-        virtual void    SetCount(int);
+        virtual bool    SetCount(int) override;
 
 //      virtual T *     CreateObject()=0;                                                           ///<创建一个数据，但不加入列表
         virtual void    DeleteObject(T *)=0;                                                        ///<删除一个数据

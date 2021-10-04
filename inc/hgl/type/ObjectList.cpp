@@ -207,23 +207,27 @@ namespace hgl
     }
 
     template<typename T>
-    void CusObjectList<T>::SetCount(int new_count)
+    bool CusObjectList<T>::SetCount(int new_count)
     {
-        if(this->count==new_count)return;
+        if(this->count==new_count)return(true);
 
         if(new_count<=0)
         {
             DeleteAll();
+            return(true);
         }
         else
         {
             this->alloc_count=power_to_2(new_count);
 
+            T **new_items;
+
             if(this->items)
             {
                 if(new_count>this->count)
                 {
-                    this->items=(T **)hgl_realloc(this->items,this->alloc_count*sizeof(T *));
+
+                    new_items=hgl_align_realloc<T *>(this->items,this->alloc_count);
 
 //                  for(;this->count<new_count;this->count++)
 //                      this->items[this->count]=CreateObject();
@@ -233,17 +237,24 @@ namespace hgl
                     while(this->count-->new_count)
                         DeleteObject(this->items[this->count]);
 
-                    this->items=(T **)hgl_realloc(this->items,this->alloc_count*sizeof(T *));
+                    new_items=hgl_align_realloc<T *>(this->items,this->alloc_count);
                 }
             }
-//            else
-//            {
-//              this->items=(T **)hgl_align_malloc<T *>(this->alloc_count);
-//
+            else
+            {
+                new_items=hgl_align_malloc<T *>(this->alloc_count);
+
 //                while(new_count--)
 //                  this->items[this->count++]=CreateObject();
-//            }
+            }
+
+            if(!new_items)
+                return(false);
+
+            items=new_items;
         }
+
+        return(true);
     }
 }//namespace hgl
 #endif//HGL_OBJECT_LIST_CPP

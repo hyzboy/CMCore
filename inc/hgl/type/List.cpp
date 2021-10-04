@@ -443,32 +443,45 @@ namespace hgl
     }
 
     template<typename T>
-    void List<T>::PreMalloc(int new_count)
+    bool List<T>::PreMalloc(int new_count)
     {
-        if(alloc_count>=new_count)return;
+        if(alloc_count>=new_count)return(true);
 
         alloc_count=power_to_2(new_count);
 
         if(!items)
+        {
             items=hgl_align_malloc<T>(alloc_count);
+
+            return items;
+        }
         else
-            items=(T *)hgl_align_realloc<T>(items,alloc_count);
+        {
+            T *new_items=(T *)hgl_align_realloc<T>(items,alloc_count);
+
+            if(!new_items)return(false);
+
+            items=new_items;
+            return(true);
+        }
     }
 
     template<typename T>
-    void List<T>::SetCount(int new_count)
+    bool List<T>::SetCount(int new_count)
     {
-        if(count==new_count)return;
+        if(count==new_count)return(true);
 
         if(new_count<=0)
         {
             ClearData();
-            return;
+            return(true);
         }
 
-        PreMalloc(new_count);
+        if(!PreMalloc(new_count))
+            return(false);
 
         count=new_count;
+        return(true);
     }
 
     /**
@@ -486,7 +499,7 @@ namespace hgl
 
         SetCount(lt.count);
 
-        memcpy(items,lt.items,count*sizeof(T));
+        hgl_cpy<T>(items,lt.items,count);
     }
 
     template<typename T>
@@ -496,7 +509,7 @@ namespace hgl
 
         SetCount((int)l.size());
 
-        memcpy(items,l.begin(),count*sizeof(T));
+        hgl_cpy<T>(items,l.begin(),count);
     }
 }//namespace hgl
 #endif//HGL_LIST_CPP
