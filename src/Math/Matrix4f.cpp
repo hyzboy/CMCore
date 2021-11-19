@@ -12,8 +12,6 @@
 // Recipe:  04 Preparing a perspective projection matrix
 // Recipe:  05 Preparing an orthographic projection matrix
 
-// 注：我方便用row矩阵，所以需要将Vulkan Cookbook中的矩转旋转参照
-
 namespace hgl
 {
     Matrix4f ortho( float left,
@@ -112,7 +110,7 @@ namespace hgl
 
         Vector4f nup=cross(right,forward);
 
-        Matrix4f result(   right.x,
+        return Matrix4f(   right.x,
                              nup.x,
                         -forward.x,
                               0.0f,
@@ -130,8 +128,7 @@ namespace hgl
                   dot(eye,right  ),
                   dot(eye,nup    ),
                   dot(eye,forward),
-                             1.0f);
-
-        return result;
+                              1.0f
+        );
     }
 }//namespace hgl
