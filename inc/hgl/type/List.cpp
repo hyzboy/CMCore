@@ -131,7 +131,7 @@ namespace hgl
     * @return -1 出错
     */
     template<typename T>
-    int List<T>::Add(const T &data,int n)
+    int List<T>::RepeatAdd(const T &data,int n)
     {
         if(n<=0)return(-1);
 
