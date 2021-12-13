@@ -210,10 +210,10 @@ namespace hgl
         /**
         * 清除完整文件名中的扩展名
         * @param fullname 完整文件名
-        * @param include_dot 是否包括点也清除
+        * @param clear_dot 是否包括点也清除
         */
         template<typename T>
-        inline String<T> TrimFileExtName(const String<T> &fullname,bool include_dot=false)
+        inline String<T> TrimFileExtName(const String<T> &fullname,bool clear_dot=false)
         {
             int end=fullname.FindChar(T('?'));         //url的文件名，以?为结束
 
@@ -225,7 +225,7 @@ namespace hgl
             if(pos==-1)
                 return String<T>();
 
-            return include_dot? fullname.SubString(0,pos):
+            return clear_dot?   fullname.SubString(0,pos):
                                 fullname.SubString(0,pos+1);
         }
 
@@ -294,6 +294,45 @@ namespace hgl
             }
 
             return(String<T>());
+        }
+
+        /**
+        * 截取完整路径中的路径名和文件名
+        * @param pathname 拆分后的路径名
+        * @param filename 拆分后的文件名
+        * @param fullname 拆分前的完整路径文件名
+        */
+        template<typename T>
+        inline bool SplitFilename(String<T> &pathname,String<T> &filename,const String<T> &fullname)
+        {
+            if(fullname.Length()<=1)
+                return false;
+
+            const T spear_char[] = { '/','\\' };
+
+            const int pos=fullname.FindRightChars(spear_char);
+
+            if(pos==-1)
+                return(false);
+
+            pathname.Strcpy(fullname,pos);
+            filename.Strcpy(fullname.c_str()+pos+1);
+
+            return(true);
+        }
+
+        template<typename T>
+        inline String<T> ReplaceExtName(const String<T> &old_name,const String<T> &new_extname,const T split_char='.')
+        {
+            if(old_name.Length()<=1)
+                return(String<T>::charOf(split_char)+new_extname);
+
+            const int pos=old_name.FindRightChar(split_char);
+
+            if(pos!=-1)
+                return old_name.SubString(0,pos)+new_extname;
+            else
+                return old_name+String<T>::charOf(split_char)+new_extname;
         }
 
         inline UTF8String MergeFilename(const UTF8String &pathname,const UTF8String &filename)          ///<组合路径名与文件名
