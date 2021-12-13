@@ -44,7 +44,7 @@ namespace hgl
 
         virtual T *  Add();                                                                         ///<添加一个空数据
         virtual int  Add(const T &);                                                                ///<增加一个数据
-        virtual int  Add(const T &,int n);                                                          ///<重复增加一个数据
+        virtual int  RepeatAdd(const T &,int n);                                                    ///<重复增加一个数据
         virtual int  Add(const T *,int n);                                                          ///<增加一批数据
                 int  Add(const List<T> &l){return Add(l.items,l.count);}                            ///<增加一批数据
 
