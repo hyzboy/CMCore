@@ -400,12 +400,22 @@ namespace hgl
     }
 
     template<typename T>
-    inline T *hgl_copy_new(const size_t count,const T *src)
+    inline T *hgl_new_copy(const T *src,const size_t count)
     {
-        if(count<=0)return(nullptr);
+        if(!src||count<=0)return(nullptr);
 
         T *data=new T[count];
         memcpy(data,src,count*sizeof(T));
+        return data;
+    }
+
+    template<typename T>
+    inline T *hgl_new_copy(const T *src)
+    {
+        if(!src)return(nullptr);
+
+        T *data=new T;
+        memcpy(data,src,sizeof(T));
         return data;
     }
 
