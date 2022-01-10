@@ -117,11 +117,10 @@ namespace hgl
                                             return(false);  \
                                     }
 
+    template<typename EC> inline bool EnumClassRangeCheck(const EC &value){return(value>=EC::BEGIN_RANGE&&value<=EC::END_RANGE);}
 
-    #define ENUM_CLASS_RANGE_CHECK(EC,value)                        (value>=EC::BEGIN_RANGE&&value<=EC::END_RANGE)
-    #define ENUM_CLASS_RANGE_ERROR_CHECK(EC,value)                  (value<EC::BEGIN_RANGE||value>EC::END_RANGE)
-    #define ENUM_CLASS_RANGE_ERROR_RETURN(EC,value,return_value)    if(ENUM_CLASS_RANGE_ERROR_CHECK(EC,value))return(return_value);
-    #define ENUM_CLASS_RANGE_ERROR_RETURN_FALSE(EC,value)           ENUM_CLASS_RANGE_ERROR_RETURN(EC,value,false)
-    #define ENUM_CLASS_RANGE_ERROR_RETURN_NULLPTR(EC,value)         ENUM_CLASS_RANGE_ERROR_RETURN(EC,value,nullptr)
+    #define ENUM_CLASS_RANGE_ERROR_RETURN(value,return_value)       if(EnumClassRangeCheck(value))return(return_value);
+    #define ENUM_CLASS_RANGE_ERROR_RETURN_FALSE(value)              if(!EnumClassRangeCheck(value))return(false);
+    #define ENUM_CLASS_RANGE_ERROR_RETURN_NULLPTR(value)            if(!EnumClassRangeCheck(value))return(nullptr);
 }//namespace hgl
 #endif//HGL_MACRO_INCLUDE
