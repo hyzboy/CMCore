@@ -103,12 +103,12 @@ namespace hgl
         );
     }
 
-    Matrix4f lookat(const Vector4f &eye,const Vector4f &target,const Vector4f &up)
+    Matrix4f lookat(const Vector3f &eye,const Vector3f &target,const Vector3f &up)
     {
-        Vector4f forward=normalize(target-eye);
-        Vector4f right=normalize(cross(forward,up));
+        Vector3f forward=normalize(target-eye);
+        Vector3f right=normalize(cross(forward,up));
 
-        Vector4f nup=cross(right,forward);
+        Vector3f nup=cross(right,forward);
 
         return Matrix4f(   right.x,
                              nup.x,
