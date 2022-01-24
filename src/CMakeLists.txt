@@ -119,6 +119,13 @@ SET(IO_JAVA_FILES   ${IO_INCLUDE_PATH}/JavaInputStream.h
 
 SET(IO_TEXT_FILES   IO/TextOutputStream.cpp)
 
+SET(INPUT_EVENT_FILES   ${IO_INCLUDE_PATH}/event/KeyboardEvent.h
+                        ${IO_INCLUDE_PATH}/event/MouseEvent.h
+                        ${IO_INCLUDE_PATH}/event/JoystickEvent.h
+                        ${IO_INCLUDE_PATH}/event/InputEvent.h)
+
+SOURCE_GROUP("IO\\Event"   FILES ${INPUT_EVENT_FILES})
+
 SOURCE_GROUP("IO\\Base"    FILES ${IO_BASE_FILES})
 SOURCE_GROUP("IO\\Data"    FILES ${IO_DATA_FILES})
 SOURCE_GROUP("IO\\Memory"  FILES ${IO_MEMORY_FILES})
@@ -131,7 +138,8 @@ SET(IO_SOURCE_FILES ${IO_BASE_FILES}
                     ${IO_MEMORY_FILES}
                     ${IO_FILE_FILES}
                     ${IO_JAVA_FILES}
-                    ${IO_TEXT_FILES})
+                    ${IO_TEXT_FILES}
+                    ${INPUT_EVENT_FILES})
 
 SET(FILESYSTEM_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/filesystem)
 
