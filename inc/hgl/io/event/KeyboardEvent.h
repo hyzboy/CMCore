@@ -180,9 +180,9 @@ namespace hgl
                 return EventProcResult::Continue;
             }
 
-            virtual bool OnPressed(const KeyboardButton &kb){}
-            virtual bool OnReleased(const KeyboardButton &kb){}
-            virtual bool OnChar(const wchar_t &){}
+            virtual bool OnPressed(const KeyboardButton &kb){return(false);}
+            virtual bool OnReleased(const KeyboardButton &kb){return(false);}
+            virtual bool OnChar(const wchar_t &){return(false);}
         };//class KeyboardEvent
 
         class KeyboardStateEvent:public KeyboardEvent

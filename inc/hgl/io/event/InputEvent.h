@@ -47,14 +47,14 @@ namespace hgl
                     for(InputEvent *ie:sub_event_proc[header.type])
                         if(ie->OnEvent(header,data)==EventProcResult::Break)
                             return EventProcResult::Break;
+                }
 
-                    if(sub_event_proc[size_t(InputEventSource::Root)].GetCount()>0
-                     &&InputEventSource(header.type)!=InputEventSource::Root)
-                    {
-                        for(InputEvent *ie:sub_event_proc[size_t(InputEventSource::Root)])
-                            if(ie->OnEvent(header,data)==EventProcResult::Break)
-                                return EventProcResult::Break;
-                    }
+                if(sub_event_proc[size_t(InputEventSource::Root)].GetCount()>0
+                    &&InputEventSource(header.type)!=InputEventSource::Root)
+                {
+                    for(InputEvent *ie:sub_event_proc[size_t(InputEventSource::Root)])
+                        if(ie->OnEvent(header,data)==EventProcResult::Break)
+                            return EventProcResult::Break;
                 }
 
                 return(EventProcResult::Continue);
