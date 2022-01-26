@@ -78,7 +78,7 @@ namespace hgl
                             float znear,
                             float zfar)
     {
-        float f = 1.0f / tan( hgl_deg2rad( 0.5f * field_of_view ) );
+        float f = 1.0f / tan( deg2rad( 0.5f * field_of_view ) );
 
         return Matrix4f(
           f / aspect_ratio,

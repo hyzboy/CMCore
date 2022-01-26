@@ -46,15 +46,15 @@ namespace hgl
     /**
      * 角度转弧度
      */
-    inline double hgl_deg2rad(const double ang)
+    inline double deg2rad(const double deg)
     {
-        return ang*(HGL_PI/180.0f);
+        return deg*(HGL_PI/180.0f);
     }
 
     /**
      * 弧度转角度
      */
-    inline double hgl_rad2deg(const double rad)
+    inline double rad2deg(const double rad)
     {
         return rad*(180.0f/HGL_PI);
     }
