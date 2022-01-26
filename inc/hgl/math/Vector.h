@@ -15,7 +15,13 @@ namespace hgl
     using Vector4f=glm::vec4;
 
     using Vector2i=glm::ivec2;
+    using Vector3i=glm::ivec3;
+    using Vector4i=glm::ivec4;
+
     using Vector2u=glm::uvec2;
+    using Vector3u=glm::uvec3;
+    using Vector4u=glm::uvec4;
+
 
     inline bool operator == (const Vector2f &lhs,const Vector2f &rhs)
     {
