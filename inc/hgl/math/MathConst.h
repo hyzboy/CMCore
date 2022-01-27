@@ -46,7 +46,7 @@ namespace hgl
     /**
      * 角度转弧度
      */
-    inline double deg2rad(const double deg)
+    inline constexpr double deg2rad(const double deg)
     {
         return deg*(HGL_PI/180.0f);
     }
@@ -54,7 +54,7 @@ namespace hgl
     /**
      * 弧度转角度
      */
-    inline double rad2deg(const double rad)
+    inline constexpr double rad2deg(const double rad)
     {
         return rad*(180.0f/HGL_PI);
     }
@@ -77,12 +77,12 @@ namespace hgl
         return double(floor(value*per))/per;
     }
 
-    inline float half_to_float(const uint16 &h)
+    inline constexpr float half_to_float(const uint16 &h)
     {
         return ((h&0x8000)<<16) | (((h&0x7c00)+0x1C000)<<13) | ((h&0x03FF)<<13);
     }
 
-    inline uint16 float_to_half(const float &f)
+    inline constexpr uint16 float_to_half(const float &f)
     {
         const uint32 x = *((uint32 *)&f);
 
@@ -93,7 +93,7 @@ namespace hgl
      * 正圆面积计算
      * @param radius 半径
      */
-    inline double CircleArea(const double radius)
+    inline constexpr double CircleArea(const double radius)
     {
         return(radius*radius*HGL_PI);
     }
@@ -103,7 +103,7 @@ namespace hgl
      * @param l_radius 长半径
      * @param s_radius 短半径
      */
-    inline double ElipseArea(const double l_radius,const double s_radius)
+    inline constexpr double ElipseArea(const double l_radius,const double s_radius)
     {
         return(l_radius*s_radius*HGL_PI);
     }
@@ -112,7 +112,7 @@ namespace hgl
      * 球体积计算
      * @param radius 球半径
      */
-    inline double SphereVolume(const double radius)
+    inline constexpr double SphereVolume(const double radius)
     {
         return(radius*radius*radius*(HGL_PI*4.0f))/3.0f;
     }
@@ -123,7 +123,7 @@ namespace hgl
      * @param y_radius y半径
      * @param z_radius z半径
      */
-    inline double EllipsoidVolume(const double x_radius,const double y_radius,const double z_radius)
+    inline constexpr double EllipsoidVolume(const double x_radius,const double y_radius,const double z_radius)
     {
         return(x_radius*y_radius*z_radius*(HGL_PI*4.0f))/3.0f;
     }
