@@ -22,7 +22,6 @@ namespace hgl
     using Vector3u=glm::uvec3;
     using Vector4u=glm::uvec4;
 
-
     inline bool operator == (const Vector2f &lhs,const Vector2f &rhs)
     {
         if(lhs.x!=rhs.x)return(false);
@@ -224,6 +223,21 @@ namespace hgl
         result.y = start.y + (end.y - start.y)*pos;
     }
 
+    inline bool IsNearlyEqual(const float v1,const float v2,const float gap)
+    {
+        return fabsf(v1-v2)<=gap;
+    }
+
+    inline bool IsNearlyEqual(const Vector2f &v1,const Vector2f &v2,const float gap)
+    {
+        return length_squared_2d(v1,v2)<=(gap*gap);
+    }
+
+    inline bool IsNearlyEqual(const Vector3f &v1,const Vector3f &v2,const float gap)
+    {
+        return length_squared(v1,v2)<=(gap*gap);
+    }
+
     inline float ray_angle_cos(const Vector3f &ray_dir, const Vector3f &ray_pos, const Vector3f &pos)
     {
         return dot(ray_dir, normalized(pos - ray_pos));
@@ -251,14 +265,11 @@ namespace hgl
         result.y = center.y + ((source.x - center.x)*as + (source.y - center.y)*ac);
     }
 
-    inline const Vector3f PolarToVector3f(float yaw,float pitch)
+    inline const Vector3f PolarToVector(float yaw,float pitch)
     {
-        return Vector3f(sinf(yaw) * cosf(pitch), sinf(pitch), cosf(yaw) * cosf(pitch));
-    }
-
-    inline const Vector4f PolarToVector4f(float yaw,float pitch)
-    {
-        return Vector4f(sinf(yaw) * cosf(pitch), sinf(pitch), cosf(yaw) * cosf(pitch), 0);
+        return glm::normalize(  Vector3f(   cos(yaw  )*cos(pitch),
+                                            sin(yaw  )*cos(pitch),
+                                            sin(pitch)));
     }
 
     inline const Vector4f PointVector(const Vector3f &v)
