@@ -1,7 +1,7 @@
 #ifndef HGL_IO_INPUT_EVENT_INCLUDE
 #define HGL_IO_INPUT_EVENT_INCLUDE
 
-#include<hgl/type/Sets.h>
+#include<hgl/type/SortedSets.h>
 #include<hgl/io/event/InputEventSource.h>
 namespace hgl
 {
@@ -31,7 +31,7 @@ namespace hgl
 
             InputEventSource source_type;
 
-            Sets<InputEvent *> sub_event_proc[size_t(InputEventSource::RANGE_SIZE)];
+            SortedSets<InputEvent *> sub_event_proc[size_t(InputEventSource::RANGE_SIZE)];
 
         public:
 
