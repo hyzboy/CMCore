@@ -59,7 +59,9 @@ namespace hgl
                 bool    GetBegin        (T &data){return data_list.Begin(data);}                    ///<取得最前面一个数据
                 bool    GetEnd          (T &data){return data_list.End(data);}                      ///<取得最后面一个数据
 
-                int     Intersection    (SortedSets<T> &result,const SortedSets<T> &set);           ///<取得与指定合集的交集
+                int     Clear           (const SortedSets<T> &clear_sets);                          ///<清除指定合集中所有数据
+
+                int     Intersection    (SortedSets<T> &result,const SortedSets<T> &sets);          ///<取得与指定合集的交集
                 int     Intersection    (const SortedSets<T> &set);                                 ///<取得与指定合集的交集数量
 
                 /**

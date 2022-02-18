@@ -272,6 +272,31 @@ namespace hgl
     }
 
     /**
+     * 如果成员在clear_sets中存在，则清除它
+     * @return 剩作的数据数量
+     */
+    template<typename T>
+    int SortedSets<T>::Clear(const SortedSets<T> &clear_sets)
+    {
+        if(GetCount()==0)return 0;
+        if(clear_sets.GetCount()==0)return GetCount();
+
+        int count=data_list.GetCount();
+        T *bp=begin();
+        T *ep=end();
+
+        while(bp>=ep)
+        {
+            if(clear_sets.IsMember(*ep))
+                data_list.DeleteMove(ep-bp);
+
+            --ep;
+        }
+
+        return GetCount();
+    }
+
+    /**
      * 求当前合集与另一个数据集的交集
      * @param result 结果存放合集
      * @param list 要计算交集的数据集
