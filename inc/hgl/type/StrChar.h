@@ -167,25 +167,40 @@ namespace hgl
     /**
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
-    template<typename T>
-    const bool isspace(const T ch)
+    inline const bool isspace(const u32char &ch)
     {
         return(ch==0
-             ||ch==' '              //半角空格
-             ||ch==HGL_FULL_SPACE   //全角空格
-             ||ch=='\a'
-             ||ch=='\b'
-             ||ch=='\f'
-             ||ch=='\n'
-             ||ch=='\r'
-             ||ch=='\t'
-             ||ch=='\v');
+             ||ch==U' '              //半角空格
+             ||ch==U32_FULL_SPACE   //全角空格
+             ||ch==U'\a'
+             ||ch==U'\b'
+             ||ch==U'\f'
+             ||ch==U'\n'
+             ||ch==U'\r'
+             ||ch==U'\t'
+             ||ch==U'\v');
     }
 
     /**
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
-    template<>
+    inline const bool isspace(const u16char &ch)
+    {
+        return(ch==0
+             ||ch==U16_TEXT(' ')    //半角空格
+             ||ch==U16_FULL_SPACE   //全角空格
+             ||ch==U16_TEXT('\a')
+             ||ch==U16_TEXT('\b')
+             ||ch==U16_TEXT('\f')
+             ||ch==U16_TEXT('\n')
+             ||ch==U16_TEXT('\r')
+             ||ch==U16_TEXT('\t')
+             ||ch==U16_TEXT('\v'));
+    }
+
+    /**
+     * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
+     */
     inline const bool isspace(const char ch)
     {
         return(ch==0
@@ -200,18 +215,17 @@ namespace hgl
     }
 
     #ifdef char8_t
-    template<>
-    const bool isspace(const char8_t ch)
+    inline const bool isspace(const char8_t ch)
     {
         return(ch==0
-             ||ch==' '              //半角空格
-             ||ch=='\a'
-             ||ch=='\b'
-             ||ch=='\f'
-             ||ch=='\n'
-             ||ch=='\r'
-             ||ch=='\t'
-             ||ch=='\v');
+             ||ch==u8' '              //半角空格
+             ||ch==u8'\a'
+             ||ch==u8'\b'
+             ||ch==u8'\f'
+             ||ch==u8'\n'
+             ||ch==u8'\r'
+             ||ch==u8'\t'
+             ||ch==u8'\v');
     }
     #endif//char8_t
 
