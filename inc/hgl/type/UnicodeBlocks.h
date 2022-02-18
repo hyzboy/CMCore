@@ -323,9 +323,7 @@ namespace hgl
 
         Error=0xFFFF,
 
-        BEGIN_RANGE =basic_latin,
-        END_RANGE   =supplementary_private_use_area_b,
-        RANGE_SIZE  =(END_RANGE-BEGIN_RANGE+1),
+        ENUM_CLASS_RANGE(basic_latin,supplementary_private_use_area_b)
     };//
 
     /**
