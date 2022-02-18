@@ -193,6 +193,15 @@ namespace hgl
     template<typename T>
     inline T hgl_align(const T &value,const T &alignment)
     {    
+        return ((value+alignment-1)/alignment)*alignment;
+    }
+
+    /**
+     * 求数值对齐后的值
+     */
+    template<typename T>
+    inline T hgl_align2(const T &value,const T &alignment)
+    {    
         const T align_size=alignment-1;
 
         return (value+align_size)&(~align_size);
