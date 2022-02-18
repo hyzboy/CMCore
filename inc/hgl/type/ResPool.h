@@ -18,6 +18,14 @@ namespace hgl
         }
     };//template<typename T> struct RefData
 
+    struct ResPoolStats
+    {
+         int active;        ///<有多少个key是活跃的
+         int idle;          ///<有多少个key是闲置的
+         int can_free;      ///<不在active/idle中，但可以从idle中释放的个数
+         int non_existent;  ///<active/idle中都不存在的key有多少个
+    };
+
     /**
      * 附带引用计数的资源池列表
      */
@@ -39,34 +47,29 @@ namespace hgl
 
         /**
          * 根据key列表统计数据
-         * @param key_list          要扫描的key列表
-         * @param in_active_count   有多少个key是活跃的
-         * @param in_idle_count     有多少个key是闲置的
-         * @param out_count         active/idle中都不存在的key有多少个
-         * @param idle_left_count   不在active/idle中，但可以从idle中释放的个数
+         * @param ststs     统计结果
+         * @param key_list  要扫描的key列表
+         * @param key_count 要扫描的key数量
          */
-        void Stats(const K *key_list,const int key_count,int *in_active_count,int *in_idle_count,int *out_count,int *idle_left_count)
+        void Stats(ResPoolStats &stats,const K *key_list,const int key_count)
         {
-            *in_active_count=0;
-            *in_idle_count=0;
-            *out_count=0;
-            *idle_left_count=0;
+            hgl_zero(stats);
 
             const K *kp=key_list;
             for(int i=0;i<key_count;i++)
             {
                 if(active_items.KeyExist(*kp))
-                    ++(*in_active_count);
+                    ++(stats.active);
                 else
                 if(idle_items.KeyExist(*kp))
-                    ++(*in_idle_count);
+                    ++(stats.idle);
                 else
-                    ++(*out_count);
+                    ++(stats.non_existent);
 
                 ++kp;
             }
 
-            *idle_left_count=idle_items.GetCount()-(*in_idle_count);
+            stats.can_free=idle_items.GetCount()-(*idle);
         }
 
         /**
