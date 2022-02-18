@@ -69,7 +69,7 @@ namespace hgl
                 ++kp;
             }
 
-            stats.can_free=idle_items.GetCount()-(*idle);
+            stats.can_free=idle_items.GetCount()-(stats.idle);
         }
 
         /**
