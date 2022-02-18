@@ -264,6 +264,18 @@ namespace hgl
 
     template<typename T> inline T hgl_abs(const T &v){return (v>=0?v:-v);}
 
+    template<typename T> inline void get_min(T &a,const T &b)
+    {
+        if(a>b)
+            a=b;
+    }
+
+    template<typename T> inline void get_max(T &a,const T &b)
+    {
+        if(a<b)
+            a=b;
+    }
+
     template<typename T> inline T hgl_min(const T &a,const T &b){return (a>b?b:a);}
     template<typename T> inline T hgl_max(const T &a,const T &b){return (a>b?a:b);}
 
