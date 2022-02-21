@@ -19,7 +19,7 @@ namespace hgl
 
     public: //属性
 
-                List<T> &   GetList     ()const{return data_list;}                                  ///<取得数据原始列表
+        const   List<T> &   GetList     ()const{return data_list;}                                  ///<取得数据原始列表
                 T *         GetData     ()const{return data_list.GetData();}                        ///<取得数据指针
                 int         GetCount    ()const{return data_list.GetCount();}                       ///<取得数据总量
 
