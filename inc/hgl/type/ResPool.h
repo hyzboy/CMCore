@@ -23,7 +23,7 @@ namespace hgl
          int active;        ///<有多少个key是活跃的
          int idle;          ///<有多少个key是闲置的
          int can_free;      ///<不在active/idle中，但可以从idle中释放的个数
-         int non_existent;  ///<active/idle中都不存在的key有多少个
+         int not_found;     ///<active/idle中都不存在的key有多少个
     };
 
     /**
@@ -64,7 +64,7 @@ namespace hgl
                 if(idle_items.KeyExist(*kp))
                     ++(stats.idle);
                 else
-                    ++(stats.non_existent);
+                    ++(stats.not_found);
 
                 ++kp;
             }
