@@ -1200,7 +1200,7 @@ namespace hgl
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *trim(const T *src,int &len,const bool (*trimfunc)(const T)=isspace<T>)
+    const T *trim(const T *src,int &len,const bool (*trimfunc)(const T)=isspace)
     {
         const T *sp=src;
         const T *ep=src+len-1;
@@ -1231,7 +1231,7 @@ namespace hgl
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *clipleft(const T *src,int &len,const bool (*clipfunc)(const T)=isspace<T>)
+    const T *clipleft(const T *src,int &len,const bool (*clipfunc)(const T)=isspace)
     {
         const T *p=src;
 
@@ -1253,7 +1253,7 @@ namespace hgl
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *clipright(const T *src,int &len,const bool (*clipfunc)(const T)=isspace<T>)
+    const T *clipright(const T *src,int &len,const bool (*clipfunc)(const T)=isspace)
     {
         const T *p=src+len-1;
 
