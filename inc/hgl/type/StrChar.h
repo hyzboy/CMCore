@@ -171,7 +171,7 @@ namespace hgl
     {
         return(ch==0
              ||ch==U' '              //半角空格
-             ||ch==U32_FULL_SPACE   //全角空格
+             ||ch==U32_FULL_WIDTH_SPACE   //全角空格
              ||ch==U'\a'
              ||ch==U'\b'
              ||ch==U'\f'
@@ -188,7 +188,7 @@ namespace hgl
     {
         return(ch==0
              ||ch==U16_TEXT(' ')    //半角空格
-             ||ch==U16_FULL_SPACE   //全角空格
+             ||ch==U16_FULL_WIDTH_SPACE   //全角空格
              ||ch==U16_TEXT('\a')
              ||ch==U16_TEXT('\b')
              ||ch==U16_TEXT('\f')

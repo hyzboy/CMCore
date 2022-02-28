@@ -31,8 +31,8 @@ namespace hgl
     #define NULL 0
     #endif//
 
-    constexpr u16char U16_FULL_SPACE=U16_TEXT('　');      //全角空格
-    constexpr u32char U32_FULL_SPACE=U32_TEXT('　');      //全角空格
+    constexpr u16char U16_FULL_WIDTH_SPACE=U16_TEXT('　');      //全角空格
+    constexpr u32char U32_FULL_WIDTH_SPACE=U32_TEXT('　');      //全角空格
 
     template<typename T>
     inline T *zero_new(const int count)
