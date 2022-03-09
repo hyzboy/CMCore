@@ -102,33 +102,4 @@ namespace hgl
           0.0f
         );
     }
-
-    Matrix4f lookat(const Vector3f &eye,const Vector3f &target,const Vector3f &up)
-    {
-        Vector3f forward=normalize(target-eye);
-        Vector3f right=normalize(cross(forward,up));
-
-        Vector3f nup=cross(right,forward);
-
-        return Matrix4f(   right.x,
-                             nup.x,
-                        -forward.x,
-                              0.0f,
-
-                           right.y,
-                             nup.y,
-                        -forward.y,
-                              0.0f,
-
-                           right.z,
-                             nup.z,
-                   -forward.z/2.0f,
-                              0.0f,
-
-                  dot(eye,right  ),
-                  dot(eye,nup    ),
-                  dot(eye,forward),
-                              1.0f
-        );
-    }
 }//namespace hgl
