@@ -57,13 +57,16 @@ namespace hgl
         Crimson,              ///<暗深红
         Cyan,                 ///<青色
         DarkBlue,             ///<暗蓝色
+        DarkCharcoal,         ///<炭黑色
         DarkCyan,             ///<暗青色
         DarkGoldenrod,        ///<暗金黄
         DarkGray,             ///<暗灰色
         DarkGreen,            ///<暗绿色
         DarkGrey,             ///<暗白色
+        DarkGunmetal,         ///<黑炮铜
         DarkKhaki,            ///<暗黄褐色
         DarkMagenta,          ///<暗洋红
+        DarkMidnightBlue,     ///<暗夜蓝
         DarkOliveGreen,       ///<暗橄榄绿
         DarkOrange,           ///<暗桔黄
         DarkOrchid,           ///<暗紫色
@@ -80,6 +83,7 @@ namespace hgl
         DimGray,              ///<暗灰色
         DimGrey,              ///<暗灰白
         DodgerBlue,           ///<闪兰色
+        EerieBlack,           ///<怪异黑
         FireBrick,            ///<火砖色
         FloralWhite,          ///<花白色
         ForestGreen,          ///<森林绿
@@ -133,6 +137,7 @@ namespace hgl
         Lion,                 ///<獅子棕
         Magenta,              ///<红紫色
         Maroon,               ///<粟色
+        MaastrichtBlue,       ///<马斯特里赫特蓝色
         MediumAquamarine,     ///<间绿色
         MediumBlue,           ///<间兰色
         MediumOrchid,         ///<间淡紫
@@ -172,6 +177,9 @@ namespace hgl
         Orange,               ///<橙色
         OrangeRed,            ///<红橙色
         Orchid,               ///<淡紫色
+
+        OxfordBlue,           ///<牛津蓝
+
         PaleGoldenrod,        ///<苍麒麟色
         PaleGreen,            ///<苍绿色
         PaleTurquoise,        ///<苍宝石绿
