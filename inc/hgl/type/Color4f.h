@@ -2,6 +2,7 @@
 #define HGL_COLOR_4_FLOAT_INCLUDE
 
 #include<hgl/type/Color3f.h>
+#include<hgl/type/DataType.h>
 namespace hgl
 {
     #define HGL_FLOAT_TO_U32(c1,c2,c3,c4)   uint32( \
@@ -29,13 +30,10 @@ namespace hgl
     public:
 
         Color4f(){r=0,g=0,b=0,a=1;}                                                                 ///<本类构造函数
-        Color4f(COLOR ce){Use(ce,1);}                                                          ///<本类构造函数
-        Color4f(COLOR ce,float ta){Use(ce,ta);}                                                ///<本类构造函数
         Color4f(float v){r=v,g=v,b=v,a=1;Clamp();}                                                  ///<本类构造函数
         Color4f(float vr,float vg,float vb,float va){r=vr,g=vg,b=vb;a=va;Clamp();}                  ///<本类构造函数
         Color4f(const Color3f &v,float va=1){Set(v,va);}                                            ///<本类构造函数
 
-        void Use(COLOR,float);
         void Zero(){r=0,g=0,b=0,a=0;}                                                               ///<全清为0
         void One() {r=1,g=1,b=1,a=1;}                                                               ///<全清为1
 
@@ -65,7 +63,6 @@ namespace hgl
         void operator = (const float *v){r=*v++;g=*v++;b=*v++;a=*v;}
         void operator = (const Color3f &v){r=v.r;g=v.g;b=v.b;a=1;}
         void operator = (const Color4f &v){r=v.r;g=v.g;b=v.b;a=v.a;}
-        void operator = (COLOR ce){Use(ce,a);}
 
         bool operator == (const Color4f &);
         bool operator != (const Color4f &);

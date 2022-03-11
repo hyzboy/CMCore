@@ -281,15 +281,14 @@ namespace hgl
     /**
      * 根据光谱值获取对应的RGB值
      * @param l 光谱值(从400到700)
-     * @return r/g/b 该光谱对应的RGB(0至1)
      */
-    void GetSpectralColor(double &r,double &g,double &b,const double l)
+    const Color3f GetSpectralColor(const double l)
     {
         double t;  
 
-        r=0.0;
-        g=0.0;
-        b=0.0;
+        double r=0.0;
+        double g=0.0;
+        double b=0.0;
 
              if ((l>=400.0)&&(l<410.0)) { t=(l-400.0)/(410.0-400.0); r=    +(0.33*t)-(0.20*t*t); }
         else if ((l>=410.0)&&(l<475.0)) { t=(l-410.0)/(475.0-410.0); r=0.14         -(0.13*t*t); }
@@ -303,5 +302,7 @@ namespace hgl
 
              if ((l>=400.0)&&(l<475.0)) { t=(l-400.0)/(475.0-400.0); b=    +(2.20*t)-(1.50*t*t); }
         else if ((l>=475.0)&&(l<560.0)) { t=(l-475.0)/(560.0-475.0); b=0.7 -(     t)+(0.30*t*t); }
+
+        return Color3f(r,g,b);
     }
 }//namespace hgl

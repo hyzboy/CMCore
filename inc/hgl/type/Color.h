@@ -3,6 +3,7 @@
 
 #include<hgl/platform/Platform.h>
 #include<hgl/TypeFunc.h>
+#include<hgl/type/Color4f.h>
 namespace hgl
 {
     #define DEF_RGB_U8_TO_F(r,g,b)      {float(r)/255.0f,float(g)/255.0f,float(b)/255.0f}
@@ -18,7 +19,7 @@ namespace hgl
         return red*0.299+green*0.587+blue*0.114;
     }
 
-    void GetSpectralColor(double &r,double &g,double &b,const double l);                            ///<根据光谱值获取对应的RGB值
+    const Color3f GetSpectralColor(const double l);                            ///<根据光谱值获取对应的RGB值
 
     /**
     * 颜色数据定义
@@ -288,5 +289,19 @@ namespace hgl
     };//enum COLOR_ENUM
 
     extern COLOR_DEF prv_color[size_t(COLOR::RANGE_SIZE)];
+
+    inline const Color3f GetColor3f(const enum class COLOR &ce)
+    {
+        const COLOR_DEF &c=prv_color[size_t(ce)];
+
+        return Color3f(c.r,c.g,c.b);
+    }
+
+    inline const Color4f GetColor4f(const enum class COLOR &ce,const float &alpha)
+    {
+        const COLOR_DEF &c=prv_color[size_t(ce)];
+
+        return Color4f(c.r,c.g,c.b,alpha);
+    }
 }//namespace hgl
 #endif//HGL_COLOR_TABLE_INCLUDE

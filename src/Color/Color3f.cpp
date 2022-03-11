@@ -1,15 +1,7 @@
 ﻿#include<hgl/type/Color3f.h>
+#include<hgl/type/Color.h>
 namespace hgl
 {
-    void Color3f::Use(COLOR ce)
-    {
-        const COLOR_DEF *pc=prv_color+size_t(ce);
-
-        r=pc->r;
-        g=pc->g;
-        b=pc->b;
-    }
-
     void Color3f::Clamp()
     {
         if(r<0)r=0;if(r>1)r=1;
@@ -40,7 +32,7 @@ namespace hgl
 //--------------------------------------------------------------------------------------------------
     void Color3f::Grey(float v1,float v2,float v3)
     {
-        float lum=v1*0.299+v2*0.587+v3*0.114;
+        float lum=RGB2Lum(v1,v2,v3);
 
         r=lum;
         g=lum;
@@ -49,7 +41,7 @@ namespace hgl
     //--------------------------------------------------------------------------------------------------
     void Color3f::Grey()
     {
-        float lum=r*0.299+g*0.587+b*0.114;
+        float lum=RGB2Lum(r,g,b);
 
         r=lum;
         g=lum;

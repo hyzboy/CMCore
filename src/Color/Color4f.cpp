@@ -1,16 +1,7 @@
 ﻿#include<hgl/type/Color4f.h>
+#include<hgl/type/Color.h>
 namespace hgl
 {
-    void Color4f::Use(COLOR ce,float ta)
-    {
-        const COLOR_DEF *pc=prv_color+size_t(ce);
-
-        r=pc->r;
-        g=pc->g;
-        b=pc->b;
-        a=ta;
-    }
-
     void Color4f::Clamp()
     {
         if(r<0)r=0;if(r>1)r=1;
@@ -42,7 +33,7 @@ namespace hgl
     //--------------------------------------------------------------------------------------------------
     void Color4f::Grey()
     {
-        float lum=r*0.299+g*0.587+b*0.114;
+        float lum=RGB2Lum(r,g,b);
 
         r=lum;
         g=lum;
