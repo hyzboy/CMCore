@@ -26,10 +26,8 @@ namespace hgl
         DEF_COLOR(AppleGreen,             141,182,  0,"苹果绿")
         DEF_COLOR(Aqua,                     0,255,255,"浅绿色")
         DEF_COLOR(AquaMarine,             127,255,212,"碧绿色")
-
-        DEF_COLOR(ArdenRed,               202, 23, 36,"雅顿红")        //取自美国官网LOGO图片
-
         DEF_COLOR(Azure,                  240,255,255,"天蓝色")
+
         DEF_COLOR(BananaMania,            250,231,181,"香蕉黄(芯)")
         DEF_COLOR(BananaYellow,           255,225, 53,"香蕉黄(皮)")
         DEF_COLOR(Beige,                  245,245,220,"米色")
@@ -40,6 +38,7 @@ namespace hgl
         DEF_COLOR(BlueViolet,             138, 43,226,"紫罗兰蓝")
         DEF_COLOR(Brown,                  165, 42, 42,"褐色")
         DEF_COLOR(BurlyWood,              222,184,135,"实木色")
+
         DEF_COLOR(CadetBlue,               95,158,160,"军兰色")
         DEF_COLOR(CaribbeanGreen,           0,204,153,"加勒比海绿")
         DEF_COLOR(Chartreuse,             127,255,  0,"黄绿色")
@@ -50,6 +49,7 @@ namespace hgl
         DEF_COLOR(Cornsilk,               255,248,220,"米绸色")
         DEF_COLOR(Crimson,                220, 20, 60,"暗深红")
         DEF_COLOR(Cyan,                     0,255,255,"青色")
+
         DEF_COLOR(DarkBlue,                 0,  0,139,"暗蓝色")
         DEF_COLOR(DarkCharcoal,            47, 49, 51,"炭黑色")
         DEF_COLOR(DarkCyan,                 0,139,139,"暗青色")
@@ -72,12 +72,15 @@ namespace hgl
         DEF_COLOR(DarkSlateGrey,           47, 79, 79,"暗灰绿")
         DEF_COLOR(DarkTurquoise,            0,206,209,"暗宝石绿")
         DEF_COLOR(DarkViolet,             148,  0,211,"暗紫罗兰")
+
         DEF_COLOR(DeepPink,               255, 20,147,"深粉红")
         DEF_COLOR(DeepSkyBlue,              0,191,255,"深天蓝")
         DEF_COLOR(DimGray,                105,105,105,"暗灰色")
         DEF_COLOR(DimGrey,                105,105,105,"暗灰白")
-        DEF_COLOR(DodgerBlue,              30,144,255,"闪兰色")        
+        DEF_COLOR(DodgerBlue,              30,144,255,"闪兰色")
+
         DEF_COLOR(EerieBlack,              23, 29, 32,"怪异黑")
+
         DEF_COLOR(FireBrick,              178, 34, 34,"火砖色")
         DEF_COLOR(FloralWhite,            255,250,240,"花白色")
         DEF_COLOR(ForestGreen,             34,139, 34,"森林绿")
@@ -85,6 +88,7 @@ namespace hgl
         DEF_COLOR(FrenchBlue,               0,114,187,"法国兰")
         DEF_COLOR(FrenchLilac,            134, 96,142,"法国丁香色")
         DEF_COLOR(Fuchsia,                255,  0,255,"紫红色")
+
         DEF_COLOR(Gainsboro,              220,220,220,"淡灰色")
         DEF_COLOR(GhostWhite,             248,248,255,"幽灵白")
         DEF_COLOR(Gold,                   255,215,  0,"金色")
@@ -94,22 +98,27 @@ namespace hgl
         DEF_COLOR(Green,                    0,128,  0,"绿色")
         DEF_COLOR(GreenYellow,            173,255, 47,"蓝绿色")
         DEF_COLOR(Grey,                   128,128,128,"灰白色")
+
         DEF_COLOR(HollywoodCerise,        244,  0,161,"好莱坞樱桃红")
         DEF_COLOR(Honeydew,               240,255,240,"蜜色")
         DEF_COLOR(HotPink,                255,105,180,"火热粉")
         DEF_COLOR(HunterGreen,             53, 94, 59,"猎人绿")
+
         DEF_COLOR(IndianGreen,             19,136,  8,"印度绿")
         DEF_COLOR(IndianRed,              205, 92, 92,"印度红")
         DEF_COLOR(IndianYellow,           227,168, 87,"印度黄")
         DEF_COLOR(Indigo,                  75,  0,130,"靛青色")
         DEF_COLOR(Ivory,                  255,255,240,"象牙白")
+
         DEF_COLOR(Khaki,                  240,230,140,"黄褐色")
+
         DEF_COLOR(Lavender,               230,230,250,"淡紫色")
         DEF_COLOR(LavenderBlush,          255,240,245,"淡紫红")
         DEF_COLOR(LawnGreen,              124,252,  0,"草绿色")
         DEF_COLOR(Lemon,                  255,247,  0,"柠檬色")
         DEF_COLOR(LemonYellow,            255,244, 79,"柠檬黄")
         DEF_COLOR(LemonChiffon,           255,250,205,"柠檬绸")
+
         DEF_COLOR(LightBlue,              173,216,230,"亮蓝色")
         DEF_COLOR(LightCoral,             240,128,128,"亮珊瑚色")
         DEF_COLOR(LightCyan,              224,255,255,"亮青色")
@@ -125,14 +134,16 @@ namespace hgl
         DEF_COLOR(LightSlateGrey,         119,136,153,"亮蓝白")
         DEF_COLOR(LightSteelBlue,         176,196,222,"亮钢兰")
         DEF_COLOR(LightYellow,            255,255,224,"亮黄色")
+
         DEF_COLOR(Lime,                     0,255,  0,"酸橙色")
         DEF_COLOR(LimeGreen,               50,205, 50,"橙绿色")
         DEF_COLOR(Linen,                  250,240,230,"亚麻色")
         DEF_COLOR(Lion,                   193,154,107,"獅子棕")
+
         DEF_COLOR(Magenta,                255,  0,255,"红紫色")
-        DEF_COLOR(Maroon,                 128,  0,  0,"粟色")
-            
+        DEF_COLOR(Maroon,                 128,  0,  0,"粟色")            
         DEF_COLOR(MaastrichtBlue,           0, 26, 56,"马斯特里赫特蓝色")
+
         DEF_COLOR(MediumAquamarine,       102,205,170,"间绿色")
         DEF_COLOR(MediumBlue,               0,  0,205,"间兰色")
         DEF_COLOR(MediumOrchid,           186, 85,211,"间淡紫")
@@ -142,6 +153,7 @@ namespace hgl
         DEF_COLOR(MediumSpringGreen,        0,250,154,"间春绿")
         DEF_COLOR(MediumTurquoise,         72,209,204,"间绿宝石")
         DEF_COLOR(MediumVioletRed,        199, 21,133,"间紫罗兰")
+
         DEF_COLOR(MidNightBlue,            25, 25,112,"中灰蓝")
         DEF_COLOR(Mint,                    62,180,137,"薄荷色")
         DEF_COLOR(MintCream,              245,255,250,"薄荷霜")
@@ -162,17 +174,17 @@ namespace hgl
         DEF_COLOR(NavajoWhite,            255,222,173,"纳瓦白")
         DEF_COLOR(Navy,                     0,  0,128,"海军色")
 
-        DEF_COLOR(NiveaBlue,                0, 19,111,"妮维雅蓝")     //取自妮维雅蓝国际官网
-
-        DEF_COLOR(NokiaBlue,               18, 65,145,"诺基亚蓝")     //取自诺基亚官网
-
         DEF_COLOR(OldLace,                253,245,230,"老花色")
         DEF_COLOR(Olive,                  128,128,  0,"橄榄色")
         DEF_COLOR(Olivedrab,              107,142, 35,"深绿褐色")
         DEF_COLOR(Orange,                 255,165,  0,"橙色")
         DEF_COLOR(OrangeRed,              255, 69,  0,"红橙色")
         DEF_COLOR(Orchid,                 218,112,214,"淡紫色")
-        DEF_COLOR(OxfordBlue,               0, 34, 78,"牛津蓝")
+
+        /**
+         * @see https://en.wikipedia.org/wiki/Oxford_Blue_(colour).
+         */
+        DEF_COLOR(OxfordBlue,               0, 33, 71,"牛津蓝")
 
         DEF_COLOR(PaleGoldenrod,          238,232,170,"苍麒麟色")
         DEF_COLOR(PaleGreen,              152,251,152,"苍绿色")
@@ -194,16 +206,15 @@ namespace hgl
 
         DEF_COLOR(PowderBlue,             176,224,230,"粉蓝色")
         DEF_COLOR(Purple,                 128,  0,128,"紫色")
+
         DEF_COLOR(Red,                    255,  0,  0,"红色")
         DEF_COLOR(Rose,                   255,  0,127,"玫瑰红")
         DEF_COLOR(RosyBrown,              188,143,143,"褐玫瑰红")
         DEF_COLOR(RoyalBlue,               65,105,225,"皇家蓝")
         DEF_COLOR(Ruby,                   224, 17, 95,"宝石红")
+            
         DEF_COLOR(SaddleBrown,            139, 69, 19,"重褐色")
         DEF_COLOR(Salmon,                 250,128,114,"鲜肉色")
-
-        DEF_COLOR(SamsungBlue,             20, 40,160,"三星蓝")          //取自三星官网
-
         DEF_COLOR(SandyBrown,             244,164, 96,"沙褐色")
         DEF_COLOR(SeaGreen,                46,139, 87,"海绿色")
         DEF_COLOR(SeaShell,               255,245,238,"海贝色")
@@ -216,22 +227,53 @@ namespace hgl
         DEF_COLOR(Snow,                   255,250,250,"雪白色")
         DEF_COLOR(SpringGreen,              0,255,127,"春绿色")
         DEF_COLOR(SteelBlue,               70,130,180,"钢兰色")
+
+        /**
+         * @see https:brand.suse.com/brand-system/color-palette.
+         */
+        DEF_COLOR(SUSEPineGreen,           12, 50, 44,"SUSE松绿色")
+        DEF_COLOR(SUSEJungleGreen,         48,186,120,"SUSE从林绿")
+        DEF_COLOR(SUSEMidnightBlue,        25, 32,114,"SUSE午夜蓝")
+        DEF_COLOR(SUSEWaterholeBlue,       36, 83,255,"SUSE水洞蓝")
+        DEF_COLOR(SUSEMint,               144,235,205,"SUSE薄荷绿")
+        DEF_COLOR(SUSEPersimmon,          254,124, 63,"SUSE柿子红")
+        DEF_COLOR(SUSEFog,                247,247,247,"SUSE雾色")
+
         DEF_COLOR(Tan,                    210,180,140,"茶色")
         DEF_COLOR(Teal,                     0,128,128,"水鸭色")
         DEF_COLOR(Thistle,                216,191,216,"蓟色")
 
-        DEF_COLOR(TiffanyBlue,            129,216,208,"蒂芙尼蓝")     //取自zh.wikipedia.org/zh-cn/蒂芙尼蓝
+        /**
+         * @see zh.wikipedia.org/zh-cn/蒂芙尼蓝
+         */
+        DEF_COLOR(TiffanyBlue,            129,216,208,"蒂芙尼蓝")
 
         DEF_COLOR(Tomato,                 255, 99, 71,"西红柿色")
         DEF_COLOR(Turquoise,               64,224,208,"青绿色")
+
+        /**
+         * @see https://design.ubuntu.com/brand/colour-palette/.
+         */            
+        DEF_COLOR(UbuntuOrange,           233, 84, 32,"Ubuntu橙")
+
+        DEF_COLOR(UbuntuLightAubergine,   119, 33,111,"Ubuntu亮茄皮紫")
+        DEF_COLOR(UbuntuMidAubergine,      94, 39, 80,"Ubuntu中茄皮紫")
+        DEF_COLOR(UbuntuDarkAubergine,     44,  0, 30,"Ubuntu暗茄皮紫")
+
+        DEF_COLOR(UbuntuWarmGrey,         174,167,159,"Ubuntu暖灰色")
+        DEF_COLOR(UbuntuCoolGrey,          51, 51, 51,"Ubuntu冷灰色")
+        DEF_COLOR(UbuntuTextGrey,          17, 17, 17,"Ubuntu文本灰")
+
+        DEF_COLOR(CanonicalAubergine,     119, 41, 83,"Canonical茄皮紫")
+
         DEF_COLOR(Violet,                 238,130,238,"紫罗兰色")
+
         DEF_COLOR(Wheat,                  245,222,179,"浅黄色")
         DEF_COLOR(White,                  255,255,255,"白色")
         DEF_COLOR(WhiteSmoke,             245,245,245,"烟白色")
+
         DEF_COLOR(Yellow,                 255,255,  0,"黄色")
         DEF_COLOR(YellowGreen,            154,205, 50,"黄绿色")
-
-        DEF_COLOR(End,                      0  ,0  ,0,"")
     };
 
     #undef DEF_COLOR

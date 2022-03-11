@@ -134,9 +134,6 @@ namespace hgl
         return count;
     }
 
-    #define DEF_RGB_U8_TO_F(r,g,b)      {float(r)/255.0f,float(g)/255.0f,float(b)/255.0f}
-    #define DEF_RGBA_U8_TO_F(r,g,b,a)   {float(r)/255.0f,float(g)/255.0f,float(b)/255.0f,float(a)/255.0f}
-
     constexpr uint      HGL_SIZE_1KB    =1024;
     constexpr uint      HGL_SIZE_1MB    =HGL_SIZE_1KB*1024;
     constexpr uint      HGL_SIZE_1GB    =HGL_SIZE_1MB*1024;
