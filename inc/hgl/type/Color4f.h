@@ -25,7 +25,15 @@ namespace hgl
 
     public:
 
-        float r,g,b,a;                                                                              ///<rgba 4原色
+        union
+        {
+            struct
+            {
+                float r,g,b,a;                                                                              ///<rgba 4原色
+            };
+
+            float rgba[4];
+        };
 
     public:
 

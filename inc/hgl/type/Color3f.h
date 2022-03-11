@@ -12,7 +12,15 @@ namespace hgl
 
     public:
 
-        float r,g,b;                                                                                ///<rgb 三原色
+        union
+        {
+            struct
+            {
+                float r,g,b;                                                                                ///<rgb 三原色
+            };
+
+            float rgb[3];
+        };
 
     public:
 
