@@ -332,15 +332,6 @@ namespace hgl
     }
 
     /**
-     * 同类型指针数据复制
-     */
-    template<typename T>
-    inline void hgl_cpy(T *dst,const T *src)
-    {
-        memcpy(dst,src,sizeof(T));
-    }
-
-    /**
      * 数据类型转换赋值
      */
     template<typename S,typename D>
