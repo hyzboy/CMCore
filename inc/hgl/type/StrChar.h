@@ -164,9 +164,12 @@ namespace hgl
         return(false);
     }
 
+    template<typename T> inline const bool isspace(const T &);
+
     /**
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
+    template<>
     inline const bool isspace(const u32char &ch)
     {
         return(ch==0
@@ -184,6 +187,7 @@ namespace hgl
     /**
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
+    template<>
     inline const bool isspace(const u16char &ch)
     {
         return(ch==0
@@ -201,7 +205,8 @@ namespace hgl
     /**
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
-    inline const bool isspace(const char ch)
+    template<>
+    inline const bool isspace(const char &ch)
     {
         return(ch==0
              ||ch==' '              //半角空格
@@ -215,6 +220,7 @@ namespace hgl
     }
 
     #ifdef char8_t
+    template<>
     inline const bool isspace(const char8_t ch)
     {
         return(ch==0
@@ -1148,11 +1154,11 @@ namespace hgl
      * 截去字符串前端所有的指定字符
      * @param src 源字符串指针
      * @param len 源字符串长度(同样用于返回结果字符串长度)
-     * @param trimfunc 截取字符判断函数(默认isspace)
+     * @param trimfunc 截取字符判断函数(默认isspace<T>)
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *trimleft(const T *src,int &len,const bool (*trimfunc)(const T)=isspace<T>)
+    const T *trimleft(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
     {
         const T *p=src;
 
@@ -1172,11 +1178,11 @@ namespace hgl
      * 截去字符串尾端所有的指定字符
      * @param src 源字符串指针
      * @param len 源字符串长度(同样用于返回结果字符串长度)
-     * @param trimfunc 截取字符判断函数(默认isspace)
+     * @param trimfunc 截取字符判断函数(默认isspace<T>)
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *trimright(const T *src,int &len,const bool (*trimfunc)(const T)=isspace<T>)
+    const T *trimright(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
     {
         const T *p=src+len-1;
 
@@ -1196,11 +1202,11 @@ namespace hgl
      * 截去字符串前端和尾端的所有指定字符
      * @param src 源字符串指针
      * @param len 源字符串长度(同样用于返回结果字符串长度)
-     * @param trimfunc 截取字符判断函数(默认isspace)
+     * @param trimfunc 截取字符判断函数(默认isspace<T>)
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *trim(const T *src,int &len,const bool (*trimfunc)(const T)=isspace<T>)
+    const T *trim(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
     {
         const T *sp=src;
         const T *ep=src+len-1;
@@ -1227,11 +1233,11 @@ namespace hgl
      * 截取字符串前端的字符串
      * @param src 源字符串指针
      * @param len 源字符串长度(同样用于返回结果字符串长度)
-     * @param clipfunc 不可用字符判断函数(默认isspace)
+     * @param clipfunc 不可用字符判断函数(默认isspace<T>)
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *clipleft(const T *src,int &len,const bool (*clipfunc)(const T)=isspace<T>)
+    const T *clipleft(const T *src,int &len,const bool (*clipfunc)(const T &)=isspace<T>)
     {
         const T *p=src;
 
@@ -1249,11 +1255,11 @@ namespace hgl
      * 截去字符串尾端的字符串
      * @param src 源字符串指针
      * @param len 源字符串长度(同样用于返回结果字符串长度)
-     * @param clipfunc 不可用字符判断函数(默认isspace)
+     * @param clipfunc 不可用字符判断函数(默认isspace<T>)
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *clipright(const T *src,int &len,const bool (*clipfunc)(const T)=isspace<T>)
+    const T *clipright(const T *src,int &len,const bool (*clipfunc)(const T &)=isspace<T>)
     {
         const T *p=src+len-1;
 
