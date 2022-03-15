@@ -58,6 +58,7 @@ namespace hgl
 
             return String<T>::newOf(fullname,p-fullname);
         }
+
         /**
         * 组合文件名.<Br>
         * 根据离散的每一级目录名称和最终名称合成完整文件名

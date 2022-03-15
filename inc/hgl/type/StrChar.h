@@ -46,7 +46,7 @@ namespace hgl
      * 参见https://unicode.org/Public/emoji/12.0/emoji-data.txt
      */
     template<typename T>
-    const bool isemoji(const T ch)
+    const bool isemoji(const T &ch)
     {
         if(ch==0x23)return(true);           //#
         if(ch==0x2A)return(true);           //*
@@ -62,7 +62,7 @@ namespace hgl
      * 测试当前字符是否为小写字母
      */
     template<typename T>
-    const bool islower(const T ch)
+    const bool islower(const T &ch)
     {
         return(ch>='a'&&ch<='z');
     }
@@ -71,7 +71,7 @@ namespace hgl
      * 测试当前字符是否为大写字母
      */
     template<typename T>
-    const bool isupper(const T ch)
+    const bool isupper(const T &ch)
     {
         return(ch>='A'&&ch<='Z');
     }
@@ -80,7 +80,7 @@ namespace hgl
      * 测试当前字符是否为字母
      */
     template<typename T>
-    const bool isalpha(const T ch)
+    const bool isalpha(const T &ch)
     {
         return(islower(ch)||isupper(ch));
     }
@@ -89,7 +89,7 @@ namespace hgl
      * 测试当前字符是否为10进制数字
      */
     template<typename T>
-    const bool isdigit(const T ch)
+    const bool isdigit(const T &ch)
     {
         return(ch>='0'&&ch<='9');
     }
@@ -98,7 +98,7 @@ namespace hgl
      * 测试当前字符串是否为10进制数字以及小数点、正负符号、指数字符
      */
     template<typename T>
-    const bool isfloat(const T ch)
+    const bool isfloat(const T &ch)
     {
         return isdigit(ch)
         ||ch=='-'
@@ -111,7 +111,7 @@ namespace hgl
     }
 
     template<typename T>
-    const bool isinteger(const T ch)
+    const bool isinteger(const T &ch)
     {
         return isdigit(ch)
         ||ch=='-'
@@ -122,7 +122,7 @@ namespace hgl
      * 测试当前字符是否为16进制数用字符(0-9,A-F)
      */
     template<typename T>
-    const bool isxdigit(const T ch)
+    const bool isxdigit(const T &ch)
     {
         return((ch>='0'&&ch<='9')
         ||(ch>='a'&&ch<='f')
@@ -156,7 +156,7 @@ namespace hgl
      * 是否为斜杠
      */
     template<typename T>
-    const bool isslash(const T ch)
+    const bool isslash(const T &ch)
     {
         if(ch=='\\')return(true);
         if(ch=='/')return(true);
@@ -239,7 +239,7 @@ namespace hgl
      * 测试当前字符是否为字母或数字
      */
     template<typename T>
-    const bool isalnum(const T ch)
+    const bool isalnum(const T &ch)
     {
         return(isalpha(ch)||isdigit(ch));
     }
@@ -248,7 +248,7 @@ namespace hgl
      * 测试当前字符是否为代码可用字符(仅字母，数字，下划线，常用于文件名之类)
      */
     template<typename T>
-    const bool iscodechar(const T ch)
+    const bool iscodechar(const T &ch)
     {
         return(isalnum(ch)||ch=='_');
     }
@@ -257,7 +257,7 @@ namespace hgl
      * 测试当前字符是否不是代码可用字符(仅字母，数字，下划线，常用于文件名之类)
      */
     template<typename T>
-    const bool notcodechar(const T ch)
+    const bool notcodechar(const T &ch)
     {
         return(!iscodechar(ch));
     }
@@ -266,7 +266,7 @@ namespace hgl
      * 测试当前字符是否为BASE64编码字符
      */
     template<typename T>
-    const bool isbase64(const T c)
+    const bool isbase64(const T &c)
     {
         return (c == 43 || // +
         (c >= 47 && c <= 57) || // /-9
