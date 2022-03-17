@@ -22,6 +22,8 @@ namespace hgl
         bool FileCanWrite(const OSString &);                                                            ///<检测文件是否可写
         bool FileCanExec(const OSString &);                                                             ///<检测文件是否可执行
 
+        uint64 FileLastWriteTime(const OSString &);                                                     ///<获取文件最后写入时间
+
         void *LoadFileToMemory(const OSString &,int64 &,bool append_zero=false);                        ///<加载一个文件到内存
         int64 LoadFileToMemory(const OSString &,void **,bool append_zero=false);                        ///<加载一个文件到内存
         int64 SaveMemoryToFile(const OSString &,const void *,const int64 &);                            ///<保存一块内存成文件
