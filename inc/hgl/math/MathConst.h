@@ -77,9 +77,46 @@ namespace hgl
         return double(floor(value*per))/per;
     }
 
-    inline constexpr float half_to_float(const uint16 &h)
+    inline const float half_to_float(const uint16 &h)
     {
-        return ((h&0x8000)<<16) | (((h&0x7c00)+0x1C000)<<13) | ((h&0x03FF)<<13);
+        union
+        {
+            float f;
+            uint32 u;
+        }x;
+
+        x.u=(((h&0x8000)<<16) | (((h&0x7c00)+0x1C000)<<13) | ((h&0x03FF)<<13));
+
+        return x.f;
+    }
+
+    inline void half_to_float(uint32 *target,const uint16 *source,uint32 count)
+    {
+        while (count--)
+        {
+            *target = (((*source & 0x8000) << 16) | (((*source & 0x7c00) + 0x1C000) << 13) | ((*source & 0x03FF) << 13));
+            ++target;
+            ++source;
+        }
+    }
+
+    inline void half_to_uint16(uint16 *target, const uint16 *source, uint32 count)
+    {
+        union
+        {
+            float f;
+            uint32 u;
+        }x;
+
+        while (count--)
+        {
+            x.u = (((*source & 0x8000) << 16) | (((*source & 0x7c00) + 0x1C000) << 13) | ((*source & 0x03FF) << 13));
+
+            *target=x.f*65535;
+            
+            ++target;
+            ++source;
+        }
     }
 
     inline constexpr uint16 float_to_half(const float &f)
