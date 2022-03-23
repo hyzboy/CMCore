@@ -46,7 +46,7 @@ namespace hgl
      * 参见https://unicode.org/Public/emoji/12.0/emoji-data.txt
      */
     template<typename T>
-    const bool isemoji(const T ch)
+    const bool isemoji(const T &ch)
     {
         if(ch==0x23)return(true);           //#
         if(ch==0x2A)return(true);           //*
@@ -62,7 +62,7 @@ namespace hgl
      * 测试当前字符是否为小写字母
      */
     template<typename T>
-    const bool islower(const T ch)
+    const bool islower(const T &ch)
     {
         return(ch>='a'&&ch<='z');
     }
@@ -71,7 +71,7 @@ namespace hgl
      * 测试当前字符是否为大写字母
      */
     template<typename T>
-    const bool isupper(const T ch)
+    const bool isupper(const T &ch)
     {
         return(ch>='A'&&ch<='Z');
     }
@@ -80,7 +80,7 @@ namespace hgl
      * 测试当前字符是否为字母
      */
     template<typename T>
-    const bool isalpha(const T ch)
+    const bool isalpha(const T &ch)
     {
         return(islower(ch)||isupper(ch));
     }
@@ -89,7 +89,7 @@ namespace hgl
      * 测试当前字符是否为10进制数字
      */
     template<typename T>
-    const bool isdigit(const T ch)
+    const bool isdigit(const T &ch)
     {
         return(ch>='0'&&ch<='9');
     }
@@ -98,7 +98,7 @@ namespace hgl
      * 测试当前字符串是否为10进制数字以及小数点、正负符号、指数字符
      */
     template<typename T>
-    const bool isfloat(const T ch)
+    const bool isfloat(const T &ch)
     {
         return isdigit(ch)
         ||ch=='-'
@@ -111,7 +111,7 @@ namespace hgl
     }
 
     template<typename T>
-    const bool isinteger(const T ch)
+    const bool isinteger(const T &ch)
     {
         return isdigit(ch)
         ||ch=='-'
@@ -122,7 +122,7 @@ namespace hgl
      * 测试当前字符是否为16进制数用字符(0-9,A-F)
      */
     template<typename T>
-    const bool isxdigit(const T ch)
+    const bool isxdigit(const T &ch)
     {
         return((ch>='0'&&ch<='9')
         ||(ch>='a'&&ch<='f')
@@ -156,7 +156,7 @@ namespace hgl
      * 是否为斜杠
      */
     template<typename T>
-    const bool isslash(const T ch)
+    const bool isslash(const T &ch)
     {
         if(ch=='\\')return(true);
         if(ch=='/')return(true);
@@ -164,14 +164,17 @@ namespace hgl
         return(false);
     }
 
+    template<typename T> inline const bool isspace(const T &);
+
     /**
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
+    template<>
     inline const bool isspace(const u32char &ch)
     {
         return(ch==0
              ||ch==U' '              //半角空格
-             ||ch==U32_FULL_SPACE   //全角空格
+             ||ch==U32_FULL_WIDTH_SPACE   //全角空格
              ||ch==U'\a'
              ||ch==U'\b'
              ||ch==U'\f'
@@ -184,11 +187,12 @@ namespace hgl
     /**
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
+    template<>
     inline const bool isspace(const u16char &ch)
     {
         return(ch==0
              ||ch==U16_TEXT(' ')    //半角空格
-             ||ch==U16_FULL_SPACE   //全角空格
+             ||ch==U16_FULL_WIDTH_SPACE   //全角空格
              ||ch==U16_TEXT('\a')
              ||ch==U16_TEXT('\b')
              ||ch==U16_TEXT('\f')
@@ -201,7 +205,8 @@ namespace hgl
     /**
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
-    inline const bool isspace(const char ch)
+    template<>
+    inline const bool isspace(const char &ch)
     {
         return(ch==0
              ||ch==' '              //半角空格
@@ -215,6 +220,7 @@ namespace hgl
     }
 
     #ifdef char8_t
+    template<>
     inline const bool isspace(const char8_t ch)
     {
         return(ch==0
@@ -233,7 +239,7 @@ namespace hgl
      * 测试当前字符是否为字母或数字
      */
     template<typename T>
-    const bool isalnum(const T ch)
+    const bool isalnum(const T &ch)
     {
         return(isalpha(ch)||isdigit(ch));
     }
@@ -242,7 +248,7 @@ namespace hgl
      * 测试当前字符是否为代码可用字符(仅字母，数字，下划线，常用于文件名之类)
      */
     template<typename T>
-    const bool iscodechar(const T ch)
+    const bool iscodechar(const T &ch)
     {
         return(isalnum(ch)||ch=='_');
     }
@@ -251,7 +257,7 @@ namespace hgl
      * 测试当前字符是否不是代码可用字符(仅字母，数字，下划线，常用于文件名之类)
      */
     template<typename T>
-    const bool notcodechar(const T ch)
+    const bool notcodechar(const T &ch)
     {
         return(!iscodechar(ch));
     }
@@ -260,7 +266,7 @@ namespace hgl
      * 测试当前字符是否为BASE64编码字符
      */
     template<typename T>
-    const bool isbase64(const T c)
+    const bool isbase64(const T &c)
     {
         return (c == 43 || // +
         (c >= 47 && c <= 57) || // /-9
@@ -1148,11 +1154,11 @@ namespace hgl
      * 截去字符串前端所有的指定字符
      * @param src 源字符串指针
      * @param len 源字符串长度(同样用于返回结果字符串长度)
-     * @param trimfunc 截取字符判断函数(默认isspace)
+     * @param trimfunc 截取字符判断函数(默认isspace<T>)
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *trimleft(const T *src,int &len,const bool (*trimfunc)(const T)=isspace<T>)
+    const T *trimleft(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
     {
         const T *p=src;
 
@@ -1172,11 +1178,11 @@ namespace hgl
      * 截去字符串尾端所有的指定字符
      * @param src 源字符串指针
      * @param len 源字符串长度(同样用于返回结果字符串长度)
-     * @param trimfunc 截取字符判断函数(默认isspace)
+     * @param trimfunc 截取字符判断函数(默认isspace<T>)
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *trimright(const T *src,int &len,const bool (*trimfunc)(const T)=isspace<T>)
+    const T *trimright(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
     {
         const T *p=src+len-1;
 
@@ -1196,11 +1202,11 @@ namespace hgl
      * 截去字符串前端和尾端的所有指定字符
      * @param src 源字符串指针
      * @param len 源字符串长度(同样用于返回结果字符串长度)
-     * @param trimfunc 截取字符判断函数(默认isspace)
+     * @param trimfunc 截取字符判断函数(默认isspace<T>)
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *trim(const T *src,int &len,const bool (*trimfunc)(const T)=isspace)
+    const T *trim(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
     {
         const T *sp=src;
         const T *ep=src+len-1;
@@ -1227,11 +1233,11 @@ namespace hgl
      * 截取字符串前端的字符串
      * @param src 源字符串指针
      * @param len 源字符串长度(同样用于返回结果字符串长度)
-     * @param clipfunc 不可用字符判断函数(默认isspace)
+     * @param clipfunc 不可用字符判断函数(默认isspace<T>)
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *clipleft(const T *src,int &len,const bool (*clipfunc)(const T)=isspace)
+    const T *clipleft(const T *src,int &len,const bool (*clipfunc)(const T &)=isspace<T>)
     {
         const T *p=src;
 
@@ -1249,11 +1255,11 @@ namespace hgl
      * 截去字符串尾端的字符串
      * @param src 源字符串指针
      * @param len 源字符串长度(同样用于返回结果字符串长度)
-     * @param clipfunc 不可用字符判断函数(默认isspace)
+     * @param clipfunc 不可用字符判断函数(默认isspace<T>)
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *clipright(const T *src,int &len,const bool (*clipfunc)(const T)=isspace)
+    const T *clipright(const T *src,int &len,const bool (*clipfunc)(const T &)=isspace<T>)
     {
         const T *p=src+len-1;
 

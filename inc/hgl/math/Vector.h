@@ -94,11 +94,17 @@ namespace hgl
     }
 
     template<typename T>
-    inline T clamp(const T &v,const T &min_v,const T &max_v)
+    inline T clamp(const T v,const T min_v,const T max_v)
     {
         if(v<min_v)return min_v;
         if(v>max_v)return max_v;
         return v;
+    }
+
+    template<typename T>
+    inline const T clamp(const T in)
+    {
+        return clamp<double>(in,0.0f,1.0f);
     }
 
     template<typename T>

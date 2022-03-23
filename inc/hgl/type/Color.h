@@ -2,9 +2,24 @@
 #define HGL_COLOR_TABLE_INCLUDE
 
 #include<hgl/platform/Platform.h>
+#include<hgl/TypeFunc.h>
+#include<hgl/type/Color4f.h>
 namespace hgl
 {
-    void GetSpectralColor(double &r,double &g,double &b,const double l);                            ///<根据光谱值获取对应的RGB值
+    #define DEF_RGB_U8_TO_F(r,g,b)      {float(r)/255.0f,float(g)/255.0f,float(b)/255.0f}
+    #define DEF_RGBA_U8_TO_F(r,g,b,a)   {float(r)/255.0f,float(g)/255.0f,float(b)/255.0f,float(a)/255.0f}
+
+    inline constexpr uint8 RGB2Lum(const uint8 red,const uint8 green,const uint8 blue)
+    {
+        return float(red)*0.299+float(green)*0.587+float(blue)*0.114;
+    }
+
+    inline constexpr float RGB2Lumf(const float red,const float green,const float blue)
+    {
+        return red*0.299+green*0.587+blue*0.114;
+    }
+
+    const Color3f GetSpectralColor(const double l);                            ///<根据光谱值获取对应的RGB值
 
     /**
     * 颜色数据定义
@@ -32,10 +47,8 @@ namespace hgl
         AppleGreen,           ///<苹果绿
         Aqua,                 ///<浅绿色
         AquaMarine,           ///<碧绿色
-
-        ArdenRed,             ///<雅顿红(注：商业使用需获得Elizabeth Arden公司授权)
-
         Azure,                ///<天蓝色
+
         BananaMania,          ///<香蕉黄(芯)
         BananaYellow,         ///<香蕉黄(皮)
         Beige,                ///<米色
@@ -46,6 +59,7 @@ namespace hgl
         BlueViolet,           ///<紫罗兰色
         Brown,                ///<褐色
         BurlyWood,            ///<实木色
+
         CadetBlue,            ///<军兰色
         CaribbeanGreen,       ///<加勒比海绿
         Chartreuse,           ///<黄绿色
@@ -56,14 +70,18 @@ namespace hgl
         Cornsilk,             ///<米绸色
         Crimson,              ///<暗深红
         Cyan,                 ///<青色
+
         DarkBlue,             ///<暗蓝色
+        DarkCharcoal,         ///<炭黑色
         DarkCyan,             ///<暗青色
         DarkGoldenrod,        ///<暗金黄
         DarkGray,             ///<暗灰色
         DarkGreen,            ///<暗绿色
         DarkGrey,             ///<暗白色
+        DarkGunmetal,         ///<黑炮铜
         DarkKhaki,            ///<暗黄褐色
         DarkMagenta,          ///<暗洋红
+        DarkMidnightBlue,     ///<暗夜蓝
         DarkOliveGreen,       ///<暗橄榄绿
         DarkOrange,           ///<暗桔黄
         DarkOrchid,           ///<暗紫色
@@ -75,11 +93,15 @@ namespace hgl
         DarkSlateGrey,        ///<暗灰绿
         DarkTurquoise,        ///<暗宝石绿
         DarkViolet,           ///<暗紫罗兰
+
         DeepPink,             ///<深粉红
         DeepSkyBlue,          ///<深天蓝
         DimGray,              ///<暗灰色
         DimGrey,              ///<暗灰白
         DodgerBlue,           ///<闪兰色
+
+        EerieBlack,           ///<怪异黑
+
         FireBrick,            ///<火砖色
         FloralWhite,          ///<花白色
         ForestGreen,          ///<森林绿
@@ -87,6 +109,7 @@ namespace hgl
         FrenchBlue,           ///<法国兰
         FrenchLilac,          ///<法国丁香色
         Fuchsia,              ///<紫红色
+
         Gainsboro,            ///<淡灰色
         GhostWhite,           ///<幽灵白
         Gold,                 ///<金色
@@ -96,22 +119,27 @@ namespace hgl
         Green,                ///<绿色
         GreenYellow,          ///<蓝绿色
         Grey,                 ///<灰白色
+
         HollywoodCerise,      ///<好莱坞樱桃红
         Honeydew,             ///<蜜色
         HotPink,              ///<火热粉
         HunterGreen,          ///<猎人绿
+
         IndianGreen,          ///<印度绿
         IndianRed,            ///<印度红
         IndianYellow,         ///<印度黄
         Indigo,               ///<靛青色
         Ivory,                ///<象牙白
+
         Khaki,                ///<黄褐色
+
         Lavender,             ///<淡紫色
         LavenderBlush,        ///<淡紫红
         LawnGreen,            ///<草绿色
         Lemon,                ///<柠檬色
         LemonYellow,          ///<柠檬黄
         LemonChiffon,         ///<柠檬绸
+
         LightBlue,            ///<亮蓝色
         LightCoral,           ///<亮珊瑚色
         LightCyan,            ///<亮青色
@@ -127,12 +155,16 @@ namespace hgl
         LightSlateGrey,       ///<亮蓝白
         LightSteelBlue,       ///<亮钢兰
         LightYellow,          ///<亮黄色
+
         Lime,                 ///<酸橙色
         LimeGreen,            ///<橙绿色
         Linen,                ///<亚麻色
         Lion,                 ///<獅子棕
+
         Magenta,              ///<红紫色
         Maroon,               ///<粟色
+        MaastrichtBlue,       ///<马斯特里赫特蓝色
+
         MediumAquamarine,     ///<间绿色
         MediumBlue,           ///<间兰色
         MediumOrchid,         ///<间淡紫
@@ -142,6 +174,7 @@ namespace hgl
         MediumSpringGreen,    ///<间春绿
         MediumTurquoise,      ///<间绿宝石
         MediumVioletRed,      ///<间紫罗兰
+
         MidNightBlue,         ///<中灰蓝
         Mint,                 ///<薄荷色
         MintCream,            ///<薄荷霜
@@ -162,16 +195,15 @@ namespace hgl
         NavajoWhite,          ///<纳瓦白
         Navy,                 ///<海军色
 
-        NiveaBlue,            ///<妮维雅蓝(注：商业使用需获得Beiersdorf AG授权)
-
-        NokiaBlue,            ///<诺基亚蓝
-
         OldLace,              ///<老花色
         Olive,                ///<橄榄色
         Olivedrab,            ///<深绿褐色
         Orange,               ///<橙色
         OrangeRed,            ///<红橙色
         Orchid,               ///<淡紫色
+
+        OxfordBlue,           ///<牛津蓝
+
         PaleGoldenrod,        ///<苍麒麟色
         PaleGreen,            ///<苍绿色
         PaleTurquoise,        ///<苍宝石绿
@@ -193,16 +225,15 @@ namespace hgl
 
         PowderBlue,           ///<粉蓝色
         Purple,               ///<紫色
+
         Red,                  ///<红色
         Rose,                 ///<玫瑰红
         RosyBrown,            ///<褐玫瑰红
         RoyalBlue,            ///<皇家蓝
         Ruby,                 ///<宝石红
+
         SaddleBrown,          ///<重褐色
         Salmon,               ///<鲜肉色
-
-        SamsungBlue,          ///<三星蓝
-
         SandyBrown,           ///<沙褐色
         SeaGreen,             ///<海绿色
         SeaShell,             ///<海贝色
@@ -216,35 +247,61 @@ namespace hgl
         SpringGreen,          ///<春绿色
         SteelBlue,            ///<钢兰色
 
-        SUSEBlack,            ///<SUSE黑
-        SUSEGreen,            ///<SUSE绿
+        SUSEPineGreen,        ///<SUSE松绿色
+        SUSEJungleGreen,      ///<SUSE从林绿
+        SUSEMidnightBlue,     ///<SUSE午夜蓝
+        SUSEWaterholeBlue,    ///<SUSE水洞蓝
+        SUSEMint,             ///<SUSE薄荷绿
+        SUSEPersimmon,        ///<SUSE柿子红
+        SUSEFog,              ///<SUSE雾色
 
         Tan,                  ///<茶色
         Teal,                 ///<水鸭色
         Thistle,              ///<蓟色
 
-        TiffanyBlue,          ///<蒂芙尼蓝(知更鸟蛋蓝/勿忘我蓝)(注：商业使用需获取Tiffany公司授权)
+        TiffanyBlue,          ///<蒂芙尼蓝(知更鸟蛋蓝/勿忘我蓝)
 
         Tomato,               ///<西红柿色
         Turquoise,            ///<青绿色
 
         UbuntuOrange,         ///<Ubuntu橙色
-        UbuntuLightAubergine,
-        UbuntuMidAubergine,
-        UbuntuDarkAubergine,
+
+        UbuntuLightAubergine, ///<Ubuntu亮茄皮紫
+        UbuntuMidAubergine,   ///<Ubuntu中茄皮紫
+        UbuntuDarkAubergine,  ///<Ubuntu暗茄皮紫
+
+        UbuntuWarmGrey,       ///<Ubuntu暖灰色
+        UbuntuCoolGrey,       ///<Ubuntu冷灰色
+        UbuntuTextGrey,       ///<Ubuntu文本灰
+
+        CanonicalAubergine,   ///<Canonical茄皮紫
 
         Violet,               ///<紫罗兰色
+
         Wheat,                ///<浅黄色
         White,                ///<白色
         WhiteSmoke,           ///<烟白色
+
         Yellow,               ///<黄色
         YellowGreen,          ///<黄绿色
 
-        BEGIN_RANGE =AliceBlue,
-        END_RANGE   =YellowGreen,
-        RANGE_SIZE  =(END_RANGE-BEGIN_RANGE)+1
+        ENUM_CLASS_RANGE(AliceBlue,YellowGreen)
     };//enum COLOR_ENUM
 
     extern COLOR_DEF prv_color[size_t(COLOR::RANGE_SIZE)];
+
+    inline const Color3f GetColor3f(const enum class COLOR &ce)
+    {
+        const COLOR_DEF &c=prv_color[size_t(ce)];
+
+        return Color3f(c.r,c.g,c.b);
+    }
+
+    inline const Color4f GetColor4f(const enum class COLOR &ce,const float &alpha)
+    {
+        const COLOR_DEF &c=prv_color[size_t(ce)];
+
+        return Color4f(c.r,c.g,c.b,alpha);
+    }
 }//namespace hgl
 #endif//HGL_COLOR_TABLE_INCLUDE

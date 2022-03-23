@@ -31,8 +31,8 @@ namespace hgl
     #define NULL 0
     #endif//
 
-    constexpr u16char U16_FULL_SPACE=U16_TEXT('　');      //全角空格
-    constexpr u32char U32_FULL_SPACE=U32_TEXT('　');      //全角空格
+    constexpr u16char U16_FULL_WIDTH_SPACE=U16_TEXT('　');      //全角空格
+    constexpr u32char U32_FULL_WIDTH_SPACE=U32_TEXT('　');      //全角空格
 
     template<typename T>
     inline T *zero_new(const int count)
@@ -133,9 +133,6 @@ namespace hgl
 
         return count;
     }
-
-    #define DEF_RGB_U8_TO_F(r,g,b)      {float(r)/255.0f,float(g)/255.0f,float(b)/255.0f}
-    #define DEF_RGBA_U8_TO_F(r,g,b,a)   {float(r)/255.0f,float(g)/255.0f,float(b)/255.0f,float(a)/255.0f}
 
     constexpr uint      HGL_SIZE_1KB    =1024;
     constexpr uint      HGL_SIZE_1MB    =HGL_SIZE_1KB*1024;
@@ -332,15 +329,6 @@ namespace hgl
     inline void hgl_cpy(T &dst,const T &src)
     {
         memcpy(&dst,&src,sizeof(T));
-    }
-
-    /**
-     * 同类型指针数据复制
-     */
-    template<typename T>
-    inline void hgl_cpy(T *dst,const T *src)
-    {
-        memcpy(dst,src,sizeof(T));
     }
 
     /**
