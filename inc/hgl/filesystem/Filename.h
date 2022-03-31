@@ -79,7 +79,7 @@ namespace hgl
         * 根据离散的每一级目录名称和最终名称合成完整文件名
         */
         template<typename T>
-        inline const String<T> ComboFilename(const StringList<String<T>> &sl,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
+        inline const String<T> ComboFilename(const StringList<T> &sl,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
         {
             T **str_list=AutoDeleteArray<T *>(sl.GetCount());
             int *str_len=AutoDeleteArray<int>(sl.GetCount());
