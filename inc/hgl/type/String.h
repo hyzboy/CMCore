@@ -23,6 +23,10 @@ namespace hgl
 
     public:
 
+        using CharType=T;
+
+    public:
+
         String()=default;
 
         String(InstClass *ic)
