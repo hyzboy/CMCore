@@ -23,9 +23,9 @@ namespace hgl
                       value<=(ctype)ECTYPE::END_RANGE;  \
                       value++)
 
-    #define ENUM_CLASS_RANGE_ERROR_RETURN(value,return_value)       if(EnumClassRangeCheck(value))return(return_value);
-    #define ENUM_CLASS_RANGE_ERROR_RETURN_FALSE(value)              if(!EnumClassRangeCheck(value))return(false);
-    #define ENUM_CLASS_RANGE_ERROR_RETURN_NULLPTR(value)            if(!EnumClassRangeCheck(value))return(nullptr);
+    #define ENUM_CLASS_RANGE_ERROR_RETURN(value,return_value)       if(!RangeCheck(value))return(return_value);
+    #define ENUM_CLASS_RANGE_ERROR_RETURN_FALSE(value)              if(!RangeCheck(value))return(false);
+    #define ENUM_CLASS_RANGE_ERROR_RETURN_NULLPTR(value)            if(!RangeCheck(value))return(nullptr);
 
     #define HGL_CONVER_TO_MEM_ALIGN(x)      ((((x)+HGL_MEM_ALIGN-1)/HGL_MEM_ALIGN)*HGL_MEM_ALIGN)                   //内存对齐转换宏
 
