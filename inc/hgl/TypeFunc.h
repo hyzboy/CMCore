@@ -15,15 +15,17 @@ namespace hgl
     template<typename T>
     inline bool RangeCheck(const T &value)
     {
-        if(value<T::BEGIN_RANGE)return(false);
-        if(value>T::END_RANGE)return(false);
-        return(true);
+        return (value>=T::BEGIN_RANGE&&value<=T::END_RANGE);
     }
 
     #define ENUM_CLASS_FOR(ECTYPE,ctype,value)    \
             for(ctype value= (ctype)ECTYPE::BEGIN_RANGE;    \
                       value<=(ctype)ECTYPE::END_RANGE;  \
                       value++)
+
+    #define ENUM_CLASS_RANGE_ERROR_RETURN(value,return_value)       if(EnumClassRangeCheck(value))return(return_value);
+    #define ENUM_CLASS_RANGE_ERROR_RETURN_FALSE(value)              if(!EnumClassRangeCheck(value))return(false);
+    #define ENUM_CLASS_RANGE_ERROR_RETURN_NULLPTR(value)            if(!EnumClassRangeCheck(value))return(nullptr);
 
     #define HGL_CONVER_TO_MEM_ALIGN(x)      ((((x)+HGL_MEM_ALIGN-1)/HGL_MEM_ALIGN)*HGL_MEM_ALIGN)                   //内存对齐转换宏
 
