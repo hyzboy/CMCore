@@ -17,12 +17,8 @@ namespace hgl
 
     public:
 
-        PlugInManage(const OSString &n)
-        {
-            name=n;
-        }
-
-        virtual ~PlugInManage();
+        PlugInManage(const OSString &n);
+        virtual ~PlugInManage()=default;
 
         bool    RegistryPlugin(PlugIn *);                                       ///<注册一个内置插件
         uint    UnregistryPlugin(const OSString &);                             ///<释放一个内置插件

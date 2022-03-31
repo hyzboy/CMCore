@@ -1061,21 +1061,7 @@ namespace hgl
             --dst_size;
         }
 
-        if(dst_size<=0||src_size<=0)
-            return(0);
-
-        if(src_size)
-        {
-            if(dst_size)
-                return chricmp(*src,*dst);
-            else
-                return 1;
-        }
-
-        if(dst_size)
-            return -1;
-        else
-            return 0;
+        return src_size-dst_size;
     }
 
     /**

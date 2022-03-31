@@ -23,6 +23,10 @@ namespace hgl
 
     public:
 
+        using CharType=T;
+
+    public:
+
         String()=default;
 
         String(InstClass *ic)
@@ -629,10 +633,12 @@ namespace hgl
             if(!data.valid())
                 return(bs.Length());
 
-            if(bs.Length()<=0)
+            const int len=bs.Length();
+
+            if(len<=0)
                 return 1;
 
-            return data->CaseComp(bs.data->c_str());
+            return data->CaseComp(bs.data->c_str(),len);
         }
 
         /**

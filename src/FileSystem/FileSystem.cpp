@@ -379,5 +379,72 @@ namespace hgl
 
             return(true);
         }
+
+        /**
+         * 在多个目录内查找一个文件
+         * @param filename 要查找的文件名称
+         * @param paths 要查找的目录
+         * @param user_data 用户自定义数据
+         * @param ff 查找响应事件函数
+         */
+        const uint FindFileOnPaths(const OSString &filename,const OSStringList &paths,void *user_data,OnFindedFileFUNC ff)
+        {
+            if(filename.IsEmpty()||paths.GetCount()<=0)return(0);
+            if(ff==nullptr)return 0;
+
+            uint count=0;
+            bool exist;
+            OSString full_filename;
+
+            for(const OSString *pn:paths)
+            {
+                full_filename=MergeFilename(*pn,filename);
+
+                exist=FileExist(full_filename);
+
+                if(exist)
+                    ++count;
+
+                if(!ff(full_filename,user_data,exist))
+                    return(count);
+            }
+
+            return count;
+        }
+        
+        /**
+         * 在多个目录内查找一个文件，这个文件可能有多个文件名
+         * @param filenames 要查找的文件名称
+         * @param paths 要查找的目录
+         * @param user_data 用户自定义数据
+         * @param ff 查找响应事件函数
+         */
+        const uint FindFileOnPaths(const OSStringList &filenames,const OSStringList &paths,void *user_data,OnFindedFileFUNC ff)
+        {
+            if(filenames.GetCount()<=0||paths.GetCount()<=0)return(0);
+            if(ff==nullptr)return 0;
+
+            uint count=0;
+            bool exist;
+            OSString full_filename;
+
+            for(const OSString *pn:paths)
+            {
+                for(const OSString *fn:filenames)
+                {
+                    full_filename=MergeFilename(*pn,*fn);
+
+                    exist=FileExist(full_filename);
+
+                    if(exist)
+                        ++count;
+
+                    if(!ff(full_filename,user_data,exist))
+                        return(count);
+                }
+            }
+
+            return count;
+        }
     }//namespace filesystem
 }//namespace hgl

@@ -48,6 +48,19 @@ namespace hgl
         bool GetCurrentProgramPath(OSString &);                                                         ///<取得当前程序所在路径
         bool GetLocalAppdataPath(OSString &);                                                           ///<取得当前用户应用程序数据存放路径
 
+        bool GetOSLibararyPath(OSString &);                                                             ///<取得操作系统共用动态库路径
+        
+        /**
+         * @param filename 要查找的文件名称
+         * @param user_data 用户自定义数据
+         * @param exist 文件是否存在
+         * @return 是否继续查找
+         */
+        typedef bool (*OnFindedFileFUNC)(const OSString &filename,void *user_data,bool exist);
+
+        const uint FindFileOnPaths(const OSString &filename,const OSStringList &paths,void *user_data,OnFindedFileFUNC ff);         ///<在多个目录内查找一个文件
+        const uint FindFileOnPaths(const OSStringList &filenames,const OSStringList &paths,void *user_data,OnFindedFileFUNC ff);    ///<在多个目录内查找一个文件，这个文件可能有多个文件名
+
         /**
         * 文件名长度限制
         * 
