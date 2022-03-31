@@ -19,7 +19,9 @@ namespace hgl
     {
         if(!pi_module)return;
         
-        plugin_interface->Close();
+        if(plugin_interface->Close)
+            plugin_interface->Close();
+
         plugin_interface=nullptr;
 
         delete pi_module;
@@ -73,6 +75,9 @@ namespace hgl
     bool ExternalPlugIn::GetInterface(uint ver,void *interface_data)
     {
         if(!plugin_interface)return(false);
+
+        if(!plugin_interface->GetInterface)
+            return(false);
 
         return plugin_interface->GetInterface(ver,interface_data);
     }

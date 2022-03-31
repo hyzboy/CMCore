@@ -5,6 +5,29 @@ namespace hgl
 {
     using namespace filesystem;
 
+    PlugInManage::PlugInManage(const OSString &n)
+    {
+        name=OS_TEXT("CMP.")+n;
+
+        OSString pn;
+
+        if(filesystem::GetCurrentPath(pn))
+        {
+            AddFindPath(pn);
+
+            pn=MergeFilename(pn,OS_TEXT("Plug-ins"));
+            AddFindPath(pn);
+        }
+
+        if(filesystem::GetCurrentProgramPath(pn))
+        {
+            AddFindPath(pn);
+
+            pn=MergeFilename(pn,OS_TEXT("Plug-ins"));
+            AddFindPath(pn);
+        }
+    }
+
     bool PlugInManage::RegistryPlugin(PlugIn *pi)
     {
         if(!pi)return(false);

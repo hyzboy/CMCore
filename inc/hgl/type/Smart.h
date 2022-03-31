@@ -204,6 +204,7 @@ namespace hgl
         }
 
                 T *     get         ()const{return sd?sd->data:0;}
+          const T *     const_get   ()const{return sd?sd->data:0;}
         virtual bool    valid       ()const{return sd;}
                 int     use_count   ()const{return sd?sd->count:-1;}
                 bool    only        ()const{return sd?sd->count==1:true;}

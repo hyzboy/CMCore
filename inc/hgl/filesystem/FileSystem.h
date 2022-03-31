@@ -47,7 +47,6 @@ namespace hgl
         bool GetLocalAppdataPath(OSString &);                                                           ///<取得当前用户应用程序数据存放路径
 
         bool GetOSLibararyPath(OSString &);                                                             ///<取得操作系统共用动态库路径
-
         
         /**
          * @param filename 要查找的文件名称
