@@ -5,6 +5,7 @@
 #include<hgl/type/String.h>
 #include<hgl/io/DataInputStream.h>
 #include<hgl/io/DataOutputStream.h>
+#include<initializer_list>
 
 namespace hgl
 {
@@ -15,28 +16,29 @@ namespace hgl
     */
     template<typename T> class StringList                                                           ///字符串列表处理类
     {
-        static T NullString;
+        using StringClass=String<T>;
+        static StringClass NullString;
 
     protected:
 
-        ObjectList<T> Items;
+        ObjectList<StringClass> Items;
 
     public: //属性
 
-        T **GetDataList()const{return Items.GetData();}                                             ///<取得字符串列表指针数据
+        StringClass **GetDataList()const{return Items.GetData();}                                             ///<取得字符串列表指针数据
         const int GetCount()const{return Items.GetCount();}                                         ///<字符串列表行数虚拟变量
 
-        T **begin()  const{return Items.GetData();}
-        T **end()    const{return Items.GetData()+Items.GetCount();}
+        StringClass **begin()  const{return Items.GetData();}
+        StringClass **end()    const{return Items.GetData()+Items.GetCount();}
 
     public: //操作符重载
 
-        T &operator[](int n)const
+        StringClass &operator[](int n)const
         {
             if(n<0||n>=Items.GetCount())
                 return NullString;
 
-            T *result=Items[n];
+            StringClass *result=Items[n];
 
             if(result)
                 return(*result);
@@ -44,12 +46,12 @@ namespace hgl
                 return NullString;
         }
 
-        StringList<T> &operator = (const StringList<T> &sl)
+        StringList<StringClass> &operator = (const StringList<StringClass> &sl)
         {
             Clear();
 
             const int n=sl.GetCount();
-            T *str;
+            StringClass *str;
 
             for(int i=0;i<n;i++)
             {
@@ -63,7 +65,13 @@ namespace hgl
     public: //方法
 
         StringList()=default;                                                                       ///<本类构造函数
-        //注：这里不要实现StringList(T &)或StringList(T *)之类
+        StringList(const std::initializer_list<T *> &lt)
+        {
+            for(T *str:lt)
+                Add(str);
+        }
+
+        //注：这里不要实现StringList(StringClass &)或StringList(StringClass *)之类
         virtual ~StringList(){Clear();}                                                             ///<本类析构函数
 
         /**
@@ -71,17 +79,17 @@ namespace hgl
         * @param str 要增加的字符串
         * @return 增加字符串成功后的索引
         */
-        int Add(const T &str){return Items.Add(new T(str));}                                        ///<添加字符串
+        int Add(const StringClass &str){return Items.Add(new StringClass(str));}                                        ///<添加字符串
 
         /**
         * 增加一个字符串列表到当前字符串列表中
         * @param sl 要增加的字符串列表
         */
-        int Add(const StringList<T> &sl)                                                            ///<添加字符串
+        int Add(const StringList<StringClass> &sl)                                                            ///<添加字符串
         {
             const int count=sl.GetCount();
 
-            T **str=sl.Items.GetData();
+            StringClass **str=sl.Items.GetData();
 
             for(int i=0;i<count;i++)
             {
@@ -108,11 +116,11 @@ namespace hgl
          * @param str 要删除的字符串
          * @return 成功删除的行数
          */
-        int Delete(const T &str)
+        int Delete(const StringClass &str)
         {
             int count=Items.GetCount();
             int result=0;
-            T** sl = Items.GetData();
+            StringClass** sl = Items.GetData();
             sl += count - 1;
 
             while(count--)
@@ -134,10 +142,10 @@ namespace hgl
         * @param str 要查找的字符串
         * @return 查找到的字符串的索引,未找到返回-1
         */
-        int  Find(const T &str) const                                                               ///<查找字符串,未找到返回-1
+        int  Find(const StringClass &str) const                                                               ///<查找字符串,未找到返回-1
         {
             const int count=Items.GetCount();
-            T** sl = Items.GetData();
+            StringClass** sl = Items.GetData();
 
             for(int i=0;i<count;i++)
                 if((*sl)->Comp(str)==0)
@@ -153,10 +161,10 @@ namespace hgl
         * @param str 要指找的字符串
         * @return 查找到的字符串的索引,未找到返回-1
         */
-        int  CaseFind(const T &str) const                                                           ///<查找字符串,英文无视大小写,未找到返回-1
+        int  CaseFind(const StringClass &str) const                                                           ///<查找字符串,英文无视大小写,未找到返回-1
         {
             const int count=Items.GetCount();
-            T** sl = Items.GetData();
+            StringClass** sl = Items.GetData();
 
             for (int i = 0; i < count; i++)
                 if ((*sl)->CaseComp(str) == 0)
@@ -173,11 +181,11 @@ namespace hgl
         * @param cn 限定的要查找字符串的最大长度
         * @return 查找到的字符串的索引,未找到返回-1
         */
-        int  Find(const T &str,const int cn) const                                                  ///<查找字符串,未找到返回-1
+        int  Find(const StringClass &str,const int cn) const                                                  ///<查找字符串,未找到返回-1
         {
             const int count=Items.GetCount();
 
-            T** sl = Items.GetData();
+            StringClass** sl = Items.GetData();
 
             for(int i=0;i<count;i++)
                 if((*sl)->Comp(str,cn)==0)
@@ -194,11 +202,11 @@ namespace hgl
         * @param cn 限定的要查找字符串的最大长度
         * @return 查找到的字符串的索引,未找到返回-1
         */
-        int  CaseFind(const T &str,const int cn) const                                              ///<查找字符串,英文无视大小写,未找到返回-1
+        int  CaseFind(const StringClass &str,const int cn) const                                              ///<查找字符串,英文无视大小写,未找到返回-1
         {
             const int count=Items.GetCount();
 
-            T** sl = Items.GetData();
+            StringClass** sl = Items.GetData();
 
             for (int i = 0; i < count; i++)
                 if ((*sl)->CaseComp(str, cn) == 0)
@@ -214,10 +222,10 @@ namespace hgl
         * @param index 要插入字符串的位置
         * @param str 要插入的字符串
         */
-        void Insert(int index,const T &str)                                                         ///<在指定位置插入一个字符串
+        void Insert(int index,const StringClass &str)                                                         ///<在指定位置插入一个字符串
         {
             if(index<Items.GetCount())
-                Items.List<T *>::Insert(index,new T(str));
+                Items.List<StringClass *>::Insert(index,new StringClass(str));
         }
 
         /**
@@ -230,10 +238,10 @@ namespace hgl
             Items.Exchange(index1,index2);
         }
 
-        const T &GetString(int n)const{return *(Items[n]);}                                         ///<取得指定行字符串
+        const StringClass &GetString(int n)const{return *(Items[n]);}                                         ///<取得指定行字符串
     };//template<typename T> class StringList
 
-    template<typename T> T StringList<T>::NullString;                                               ///<空字符串实例
+    template<typename T> String<T> StringList<T>::NullString;                                               ///<空字符串实例
 
     /**
      * 以不可打印字符为分隔拆解一个字符串到一个字符串列表
@@ -242,7 +250,7 @@ namespace hgl
      * @param size 字符串长度
      * @return 字符串行数
      */
-    template<typename T> int SplitToStringListBySpace(StringList<String<T> > &sl,const T *str,int size)
+    template<typename T> int SplitToStringListBySpace(StringList<T> &sl,const T *str,int size)
     {
         if(!str||size<=0)return(-1);
 
@@ -297,7 +305,7 @@ namespace hgl
      * @param split_char 分隔字符
      * @return 字符串行数
      */
-    template<typename T> int SplitToStringList(StringList<String<T> > &sl,const T *str,int size,const T &split_char)
+    template<typename T> int SplitToStringList(StringList<T> &sl,const T *str,int size,const T &split_char)
     {
         if(!str||size<=0)return(-1);
 
@@ -344,7 +352,7 @@ namespace hgl
         return count;
     }//int SplitToStringList
 
-    template<typename T> int SplitToStringListFromString(StringList<String<T> > &sl,const String<T> &str,const T &split_char)
+    template<typename T> int SplitToStringListFromString(StringList<T> &sl,const String<T> &str,const T &split_char)
     {
         return SplitToStringList<T>(sl,str.c_str(),str.Length(),split_char);
     }
@@ -358,7 +366,7 @@ namespace hgl
      * @param maxSize 最多执行次数
      * @return 字符串行数
      */
-    template<typename T> int SplitToStringList(StringList<String<T> > &sl,const T *str,int size,const T &split_char,int maxSize)
+    template<typename T> int SplitToStringList(StringList<T> &sl,const T *str,int size,const T &split_char,int maxSize)
     {
         if(!str||size<=0)return(-1);
 
@@ -417,7 +425,7 @@ namespace hgl
         return count;
     }//int SplitToStringList
 
-    template<typename T> int SplitToStringList(StringList<String<T> > &sl,const String<T> &str,const T &split_char,int maxSize)
+    template<typename T> int SplitToStringList(StringList<T> &sl,const String<T> &str,const T &split_char,int maxSize)
     {
         return SplitToStringList<T>(sl,str.c_str(),str.Length(),split_char,maxSize);
     }
@@ -429,7 +437,7 @@ namespace hgl
      * @param size 字符串长度
      * @return 字符串行数
      */
-    template<typename T> int SplitToStringListByEnter(StringList<String<T> > &sl,const T *str,int size)
+    template<typename T> int SplitToStringListByEnter(StringList<T> &sl,const T *str,int size)
     {
         if(!str||size<=0)return(-1);
 
@@ -495,12 +503,12 @@ namespace hgl
         return count;
     }//int SplitToStringList
     
-    template<typename T> int SplitToStringListByEnter(StringList<String<T> > &sl,const String<T> &str)
+    template<typename T> int SplitToStringListByEnter(StringList<T> &sl,const String<T> &str)
     {
         return SplitToStringListByEnter<T>(sl,str.c_str(),str.Length());
     }
 
-    template<typename T> int SplitToStringList(StringList<String<T> > &sl,const String<T> &str)
+    template<typename T> int SplitToStringList(StringList<T> &sl,const String<T> &str)
     {
         return SplitToStringList<T>(sl,str.c_str(),str.Length());
     }
@@ -513,7 +521,7 @@ namespace hgl
      * @param size 字符串长度
      * @return 字符串行数
      */
-    template<typename T> int SplitToMultiStringList(StringList<String<T> > **sl,int slc,const T *str,int size)
+    template<typename T> int SplitToMultiStringList(StringList<T> **sl,int slc,const T *str,int size)
     {
         if(!str||size<=0)return(-1);
         if(slc<=0)return(-1);
@@ -586,7 +594,7 @@ namespace hgl
         return count;
     }//int SplitToStringList
 
-    template<typename T> int SplitToMultiStringList(StringList<String<T> > **sl,int slc,const String<T> &str)
+    template<typename T> int SplitToMultiStringList(StringList<T> **sl,int slc,const String<T> &str)
     {
         if(!sl||slc<=0)return(false);
 
@@ -602,7 +610,7 @@ namespace hgl
      * @param end_line 换行符
      * @return 字符串
      */
-    template<typename T> String<T> ToString(const StringList<String<T>> &sl,const String<T> &end_line)
+    template<typename T> String<T> ToString(const StringList<T> &sl,const String<T> &end_line)
     {
         int total_chars=0;
 
@@ -636,12 +644,16 @@ namespace hgl
         return String<T>::newOf(str,total_chars);
     }
 
-    using  UTF8StringList=StringList< UTF8String>;
-    using UTF16StringList=StringList<UTF16String>;
-    using UTF32StringList=StringList<UTF32String>;
-    using  AnsiStringList=StringList< AnsiString>;
-    using  WideStringList=StringList< WideString>;
-    using    OSStringList=StringList<   OSString>;
+#define DEFINE_STRING_LIST(name)    using name##StringList=StringList<name##String::CharType>;
+
+    DEFINE_STRING_LIST(UTF8)
+    DEFINE_STRING_LIST(UTF16)
+    DEFINE_STRING_LIST(UTF32)
+    DEFINE_STRING_LIST(Ansi)
+    DEFINE_STRING_LIST(Wide)
+    DEFINE_STRING_LIST(OS)
+
+#undef DEFINE_STRING_LIST
 
     template<typename T,ByteOrderMask bom> struct ReadStringFromDIS
     {
@@ -678,7 +690,7 @@ namespace hgl
      * @param dis 数据输入流
      * @return 字符串行数
      */
-    template<typename T,ByteOrderMask bom> int LoadStringList(StringList<String<T> > &sl,io::DataInputStream *dis)
+    template<typename T,ByteOrderMask bom> int LoadStringList(StringList<T> &sl,io::DataInputStream *dis)
     {
         if(!dis)return(-1);
 
