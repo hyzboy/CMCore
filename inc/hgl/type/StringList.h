@@ -85,7 +85,7 @@ namespace hgl
         * 增加一个字符串列表到当前字符串列表中
         * @param sl 要增加的字符串列表
         */
-        int Add(const StringList<StringClass> &sl)                                                            ///<添加字符串
+        int Add(const StringList<T> &sl)                                                            ///<添加字符串
         {
             const int count=sl.GetCount();
 
