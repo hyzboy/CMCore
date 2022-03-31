@@ -333,18 +333,6 @@ namespace hgl
         }
 
         /**
-         * 和一个字符串进行比较,英文不区分大小写
-         * @param sc 比较字符串
-         * @return <0 我方小
-         * @return 0 等同
-         * @return >0 我方大
-         */
-        const int CaseComp(const SelfClass &sc)const
-        {
-            return hgl::stricmp(buffer,length,sc.buffer,sc.length);
-        }
-
-        /**
          * 和那一个字符串进行比较,英文不区分大小写
          * @param str 比较字符串
          * @return <0 我方小
