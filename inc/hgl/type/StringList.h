@@ -9,8 +9,6 @@
 
 namespace hgl
 {
-    class HAC;
-
     /**
     * 字符串列表处理类，用于保存字符串列表。
     */
@@ -25,11 +23,11 @@ namespace hgl
 
     public: //属性
 
-        StringClass **GetDataList()const{return Items.GetData();}                                             ///<取得字符串列表指针数据
-        const int GetCount()const{return Items.GetCount();}                                         ///<字符串列表行数虚拟变量
+        StringClass **  GetDataList ()const{return Items.GetData();}                                ///<取得字符串列表指针数据
+        const int       GetCount    ()const{return Items.GetCount();}                               ///<字符串列表行数虚拟变量
 
-        StringClass **begin()  const{return Items.GetData();}
-        StringClass **end()    const{return Items.GetData()+Items.GetCount();}
+        StringClass **  begin       ()const{return Items.GetData();}
+        StringClass **  end         ()const{return Items.GetData()+Items.GetCount();}
 
     public: //操作符重载
 
@@ -79,7 +77,7 @@ namespace hgl
         * @param str 要增加的字符串
         * @return 增加字符串成功后的索引
         */
-        int Add(const StringClass &str){return Items.Add(new StringClass(str));}                                        ///<添加字符串
+        int Add(const StringClass &str){return Items.Add(new StringClass(str));}                    ///<添加字符串
 
         /**
         * 增加一个字符串列表到当前字符串列表中
