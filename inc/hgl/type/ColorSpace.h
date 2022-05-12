@@ -66,6 +66,26 @@ namespace hgl
             g=-0.9689f*x+1.8758f*y+0.0416f*z;
             b= 0.0557f*x-0.2040f*y+1.0570f*z;
         }
+
+        template<typename T>
+        inline constexpr T Clamp(const T &value,const T &min_value,const T &max_value)
+        {
+            if(value<min_value)return min_value;
+            if(value>max_value)return max_value;
+
+            return value;
+        }
+
+        template<typename T>
+        inline constexpr T Clamp(const T &value)
+        {
+            return Clamp<T>(value,T(0),T(1));
+        }
+
+        template<> inline constexpr uint8 Clamp<uint8>(const uint8 &value)
+        {
+            return Clamp<uint8>(value,0,255);
+        }
     }//namespace graph
 }//namespace hgl
 #endif//HGL_COLOR_SPACE_INCLUDE
