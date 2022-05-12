@@ -17,9 +17,9 @@ namespace hgl
             ENUM_CLASS_RANGE(Linear,YCbCr)
         };//enum class ColorSpace
 
-        constexpr double SRGB_GAMMA         =1.0f/2.2f;
-        constexpr double SRGB_INVERSE_GAMMA =2.2f;
-        constexpr double SRGB_ALPHA         =0.055f;
+        constexpr double GAMMA      =2.4f;
+        constexpr double INV_GAMMA  =1.0f/GAMMA;
+        constexpr double SRGB_ALPHA =0.055f;
 
         template<typename T>
         inline constexpr T sRGB2Linear(const T &in)
@@ -27,7 +27,7 @@ namespace hgl
             if(in<=0.4045)
                 return (double)in/12.92;
             else
-                return pow((double(in)+SRGB_ALPHA)/(1.0f+SRGB_ALPHA),2.4f);
+                return pow((double(in)+SRGB_ALPHA)/(1.0f+SRGB_ALPHA),GAMMA);
         }
 
         template<typename T>
@@ -36,19 +36,25 @@ namespace hgl
             if(in<=0.0031308f)
                 return double(in)*12.92f;
             else
-                return (1.0f+SRGB_ALPHA)*pow(double(in),1.0f/2.4f)-SRGB_ALPHA;
+                return pow(double(in),INV_GAMMA)*(1.0f+SRGB_ALPHA)-SRGB_ALPHA;
         }
 
         template<typename T>
-        inline constexpr T sRGB2LinearApprox(const T &in)
+        inline constexpr T sRGB2LinearCheaper(const T &in)
         {
-            return (T)pow(double(in),SRGB_INVERSE_GAMMA);
+            return (T)pow(double(in),GAMMA);
         }
 
         template<typename T>
-        inline constexpr T Linear2sRGBApprox(const T &in)
+        inline constexpr T Linear2sRGBCheaper(const T &in)
         {
-            return (T)pow((double)in,SRGB_GAMMA);
+            return (T)pow((double)in,INV_GAMMA);
+        }
+
+        template<typename T>
+        inline constexpr T sRGB2LinearCheapest(const T &in)
+        {
+            return in*in;
         }
 
         template<typename T>
