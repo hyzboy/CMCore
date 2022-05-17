@@ -1,5 +1,6 @@
 ﻿#include<hgl/type/Color3f.h>
 #include<hgl/type/Color.h>
+#include<hgl/type/ColorSpace.h>
 namespace hgl
 {
     void Color3f::Clamp()
@@ -16,8 +17,8 @@ namespace hgl
     */
     void Color3f::To(float nr,float ng,float nb,float pos)
     {
-        if(pos==0)return;
-        if(pos==1)
+        if(pos<=0)return;
+        if(pos>=1)
         {
             r=nr;
             g=ng;

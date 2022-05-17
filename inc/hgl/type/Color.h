@@ -9,16 +9,6 @@ namespace hgl
     #define DEF_RGB_U8_TO_F(r,g,b)      {float(r)/255.0f,float(g)/255.0f,float(b)/255.0f}
     #define DEF_RGBA_U8_TO_F(r,g,b,a)   {float(r)/255.0f,float(g)/255.0f,float(b)/255.0f,float(a)/255.0f}
 
-    inline constexpr uint8 RGB2Lum(const uint8 red,const uint8 green,const uint8 blue)
-    {
-        return float(red)*0.299+float(green)*0.587+float(blue)*0.114;
-    }
-
-    inline constexpr float RGB2Lumf(const float red,const float green,const float blue)
-    {
-        return red*0.299+green*0.587+blue*0.114;
-    }
-
     const Color3f GetSpectralColor(const double l);                            ///<根据光谱值获取对应的RGB值
 
     /**
