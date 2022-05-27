@@ -146,12 +146,10 @@ SET(FILESYSTEM_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/filesystem)
 
 SET(FILESYSTEM_HEADER_FILES ${FILESYSTEM_INCLUDE_PATH}/EnumFile.h
                             ${FILESYSTEM_INCLUDE_PATH}/EnumVolume.h
-                            ${FILESYSTEM_INCLUDE_PATH}/Filename.h
                             ${FILESYSTEM_INCLUDE_PATH}/FileSystem.h)
 
 SET(FILESYSTEM_SOURCE_FILES FileSystem/FileSystem.cpp
-                            FileSystem/EnumFile.cpp
-                            FileSystem/Filename.cpp)
+                            FileSystem/EnumFile.cpp)
 
 SOURCE_GROUP("FileSystem" FILES ${FILESYSTEM_HEADER_FILES} ${FILESYSTEM_SOURCE_FILES})
 
