@@ -4,31 +4,61 @@
 #include<hgl/type/String.h>
 #include<hgl/CodePage.h>
 
-#if HGL_OS == HGL_OS_Windows
-inline hgl::OSString std_to_os(const std::string &str)
+namespace hgl
 {
-    return hgl::to_u16((hgl::u8char *)str.c_str(),(int)(str.length()));
-}
+    #if HGL_OS == HGL_OS_Windows
+    inline hgl::OSString ToOSString(const std::string &str)
+    {
+        return hgl::to_u16((hgl::u8char *)str.c_str(),(int)(str.length()));
+    }
 
-inline std::string to_std(const hgl::OSString &str)
-{
-    hgl::UTF8String u8_str=hgl::to_u8(str);
+    inline hgl::OSString ToOSString(const std::wstring &str)
+    {
+        return hgl::OSString(str.c_str(),(int)str.length());
+    }
 
-    return std::string((char *)u8_str.c_str(),str.Length());
-}
-#else
-inline hgl::OSString std_to_os(const std::string &str)
-{
-    return hgl::OSString(str.c_str(),str.size());
-}
+    inline hgl::UTF8String ToUTF8String(const std::wstring &str)
+    {
+        return hgl::to_u8(str.c_str(),(int)str.length());
+    }
 
-inline std::string to_std(const hgl::OSString &str)
-{
-    return std::string(str.c_str(),str.Length());
-}
-#endif//
+    inline std::string ToStdString(const hgl::OSString &str)
+    {
+        hgl::UTF8String u8_str=hgl::to_u8(str);
 
-inline hgl::UTF8String std_to_u8(const std::string &str)
-{
-    return hgl::UTF8String((hgl::u8char *)str.c_str(),int(str.size()));
+        return std::string((char *)u8_str.c_str(),str.Length());
+    }
+
+    inline std::wstring ToStdWString(const hgl::OSString &str)
+    {
+        return std::wstring(str.c_str(),str.Length());
+    }
+    #else
+    inline hgl::OSString ToOSString(const std::string &str)
+    {
+        return hgl::OSString(str.c_str(),str.size());
+    }
+
+    inline hgl::OSString ToOSString(const std::wstring &str)
+    {
+        return hgl::to_u8(str.c_str(),str.size());
+    }
+
+    inline std::string ToStdString(const hgl::OSString &str)
+    {
+        return std::string(str.c_str(),str.Length());
+    }
+
+    inline std::wstring ToStdWString(const OSString &str)
+    {
+        hgl::WideString w_str=hgl::to_wide<sizeof(wchar_t)>(str);
+
+        return std::wstring(w_str.c_str(),w_str.Length());
+    }
+    #endif//
+
+    inline hgl::UTF8String ToUTF8String(const std::string &str)
+    {
+        return hgl::UTF8String((hgl::u8char *)str.c_str(),int(str.size()));
+    }
 }
