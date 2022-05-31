@@ -251,7 +251,7 @@ namespace hgl
             if(!new_items)
                 return(false);
 
-            items=new_items;
+            this->items=new_items;
         }
 
         return(true);

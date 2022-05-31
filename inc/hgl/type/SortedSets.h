@@ -15,7 +15,7 @@ namespace hgl
         List<T> data_list;
 
         bool    FindPos(const T &,int &)const;                                                      ///<查找数据如果插入后，会所在的位置，返回是否存在这个数据
-        int     FindPos(const T &flag)const{int pos;return FindPos(flag,pos)?return(pos):-1;}       ///<查找数据如果插入后，会所在的位置
+        int     FindPos(const T &flag)const{int pos;return FindPos(flag,pos)?pos:-1;}               ///<查找数据如果插入后，会所在的位置
 
     public: //属性
 
