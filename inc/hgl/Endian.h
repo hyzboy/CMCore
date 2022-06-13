@@ -24,6 +24,9 @@ namespace hgl
 
             //日文
             ShiftJIS                =932,               ///<日文ShiftJIS
+            EUC_JP                  =20932,             ///<日文JIS 0208-1990 and 0212-1990
+            ISO2022JP               =50220,             ///<ISO 2022 Japanese with no halfwidth Katakana; Japanese (JIS)
+            csISO2022JP             =50221,             ///<ISO 2022 Japanese with halfwidth Katakana; Japanese (JIS-Allow 1 byte Kana)
             JISX                    =50222,             ///<日文JIS X/ISO 2022
 
             //韩文
@@ -105,7 +108,7 @@ namespace hgl
 
             ByteOrderMask bom;          ///<字节序枚举
             const CharSetName *char_set;///<字符集名称
-            CharCodePage code_page;     ///<代码页
+            uint16 code_page;           ///<代码页
         };
 
         /**
@@ -113,11 +116,11 @@ namespace hgl
          */
         constexpr BOMFileHeader BOMData[size_t(ByteOrderMask::RANGE_SIZE)]=
         {
-            {3,{0xEF,0xBB,0xBF}     ,ByteOrderMask::UTF8,   &utf8_charset      ,CharCodePage::UTF8     },
-            {2,{0xFF,0xFE}          ,ByteOrderMask::UTF16LE,&utf16le_charset   ,CharCodePage::UTF16LE  },
-            {2,{0xFE,0xFF}          ,ByteOrderMask::UTF16BE,&utf16be_charset   ,CharCodePage::UTF16BE  },
-            {4,{0xFF,0xFE,0x00,0x00},ByteOrderMask::UTF32LE,&utf32le_charset   ,CharCodePage::UTF32LE  },
-            {4,{0x00,0x00,0xFE,0xFF},ByteOrderMask::UTF32BE,&utf32be_charset   ,CharCodePage::UTF32BE  }
+            {3,{0xEF,0xBB,0xBF}     ,ByteOrderMask::UTF8,   &utf8_charset      ,(uint16)CharCodePage::UTF8     },
+            {2,{0xFF,0xFE}          ,ByteOrderMask::UTF16LE,&utf16le_charset   ,(uint16)CharCodePage::UTF16LE  },
+            {2,{0xFE,0xFF}          ,ByteOrderMask::UTF16BE,&utf16be_charset   ,(uint16)CharCodePage::UTF16BE  },
+            {4,{0xFF,0xFE,0x00,0x00},ByteOrderMask::UTF32LE,&utf32le_charset   ,(uint16)CharCodePage::UTF32LE  },
+            {4,{0x00,0x00,0xFE,0xFF},ByteOrderMask::UTF32BE,&utf32be_charset   ,(uint16)CharCodePage::UTF32BE  }
         };
 
         inline ByteOrderMask CheckBOM(const void *data)

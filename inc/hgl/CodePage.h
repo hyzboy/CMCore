@@ -7,52 +7,58 @@ namespace hgl
 {
     struct CodePageAndCharSet
     {
-        CharCodePage codepage;
+        uint16 codepage;
         CharSetName charset;
     };
-
+    
+    #define HGL_CODE_PAGE_AND_CHAR_SET(codepage,charset) {uint16(CharCodePage::codepage),charset}
+    
     constexpr struct CodePageAndCharSet CodePage2CharSet[]=
     {
-        {CharCodePage::NONE,           "us-ascii"  },
 
-        {CharCodePage::GBK,            "gbk"       },
-        {CharCodePage::Big5,           "big5"      },
-        {CharCodePage::GB2312,         "gb2312"    },
-        {CharCodePage::GB18030,        "gb18030"   },
+        HGL_CODE_PAGE_AND_CHAR_SET(NONE,                    "us-ascii"  ),
 
-        {CharCodePage::ShiftJIS,       "shift-jis"     },
-        {CharCodePage::JISX,           "iso-2022-jp"   },
+        HGL_CODE_PAGE_AND_CHAR_SET(GBK,                     "gbk"       ),
+        HGL_CODE_PAGE_AND_CHAR_SET(Big5,                    "big5"      ),
+        HGL_CODE_PAGE_AND_CHAR_SET(GB2312,                  "gb2312"    ),
+        HGL_CODE_PAGE_AND_CHAR_SET(GB18030,                 "gb18030"   ),
+        
+        HGL_CODE_PAGE_AND_CHAR_SET(ShiftJIS,                "shift-jis"     ),
+        HGL_CODE_PAGE_AND_CHAR_SET(EUC_JP,                  "EUC-JP"        ),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO2022JP,               "iso-2022-jp"   ),
+        HGL_CODE_PAGE_AND_CHAR_SET(csISO2022JP,             "csISO2022JP"   ),
+        HGL_CODE_PAGE_AND_CHAR_SET(JISX,                    "iso-2022-jp"   ),
 
-        {CharCodePage::Korean,         "ks_c_5601-1987"},
+        HGL_CODE_PAGE_AND_CHAR_SET(Korean,                  "ks_c_5601-1987"),
 
-        {CharCodePage::MacJanpan,              "x-mac-japanese"    },
-        {CharCodePage::MacTraditionalChinese,  "x-mac-chinesetrad" },
-        {CharCodePage::MacSimplifiedChinese,   "x-mac-chinesesimp" },
+        HGL_CODE_PAGE_AND_CHAR_SET(MacJanpan,               "x-mac-japanese"    ),
+        HGL_CODE_PAGE_AND_CHAR_SET(MacTraditionalChinese,   "x-mac-chinesetrad" ),
+        HGL_CODE_PAGE_AND_CHAR_SET(MacSimplifiedChinese,    "x-mac-chinesesimp" ),
 
-        {CharCodePage::ISO_8859_1,         "iso-8859-1"},
-        {CharCodePage::ISO_8859_2,         "iso-8859-2"},
-        {CharCodePage::ISO_8859_3,         "iso-8859-3"},
-        {CharCodePage::ISO_8859_4,         "iso-8859-4"},
-        {CharCodePage::ISO_8859_5,         "iso-8859-5"},
-        {CharCodePage::ISO_8859_6,         "iso-8859-6"},
-        {CharCodePage::ISO_8859_7,         "iso-8859-7"},
-        {CharCodePage::ISO_8859_8,         "iso-8859-8"},
-        {CharCodePage::ISO_8859_9,         "iso-8859-9"},
-        {CharCodePage::ISO_8859_13,        "iso-8859-13"},
-        {CharCodePage::ISO_8859_15,        "iso-8859-15"},
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_1,         "iso-8859-1"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_2,         "iso-8859-2"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_3,         "iso-8859-3"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_4,         "iso-8859-4"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_5,         "iso-8859-5"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_6,         "iso-8859-6"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_7,         "iso-8859-7"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_8,         "iso-8859-8"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_9,         "iso-8859-9"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_13,        "iso-8859-13"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_15,        "iso-8859-15"),
 
-        {CharCodePage::UTF7,           "utf-7"     },
-        {CharCodePage::UTF8,           "utf-8"     },
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF7,           "utf-7"     ),
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF8,           "utf-8"     ),
 
-        {CharCodePage::UTF16LE,        "utf-16le"  },
-        {CharCodePage::UTF16BE,        "utf-16be"  },
-        {CharCodePage::UTF32LE,        "utf-32le"  },
-        {CharCodePage::UTF32BE,        "utf-32be"  },
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF16LE,        "utf-16le"  ),
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF16BE,        "utf-16be"  ),
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF32LE,        "utf-32le"  ),
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF32BE,        "utf-32be"  ),
     };//const struct
 
     constexpr int CharSetCount=sizeof(CodePage2CharSet)/sizeof(CodePageAndCharSet);
 
-    inline const char *FindCharSet(CharCodePage ccp)
+    inline const char *FindCharSet(uint16 ccp)
     {
         for(int i=0;i<CharSetCount;i++)
             if(CodePage2CharSet[i].codepage==ccp)
@@ -63,84 +69,87 @@ namespace hgl
 
     constexpr struct CodePageAndCharSet CodeSet2CharPage[]=
     {
-        {CharCodePage::NONE,           "us-ascii"  },
+        HGL_CODE_PAGE_AND_CHAR_SET(NONE,                    "us-ascii"  ),
+        
+        HGL_CODE_PAGE_AND_CHAR_SET(GBK,                     "gbk"       ),
+        
+        HGL_CODE_PAGE_AND_CHAR_SET(Big5,                    "big5"      ),
+        HGL_CODE_PAGE_AND_CHAR_SET(Big5,                    "bigfive"   ),
 
-        {CharCodePage::GBK,            "gbk"       },
+        HGL_CODE_PAGE_AND_CHAR_SET(GB2312,                  "gb2312"    ),
+        HGL_CODE_PAGE_AND_CHAR_SET(GB18030,                 "gb18030"   ),
+        
+        HGL_CODE_PAGE_AND_CHAR_SET(ShiftJIS,                "shift_jis"     ),
+        HGL_CODE_PAGE_AND_CHAR_SET(EUC_JP,                  "EUC-JP"        ),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO2022JP,               "iso-2022-jp"   ),
+        HGL_CODE_PAGE_AND_CHAR_SET(csISO2022JP,             "csISO2022JP"   ),
+        HGL_CODE_PAGE_AND_CHAR_SET(JISX,                    "iso-2022-jp"   ),
 
-        {CharCodePage::Big5,           "big5"      },
-        {CharCodePage::Big5,           "bigfive"   },
+        HGL_CODE_PAGE_AND_CHAR_SET(Korean,                  "ks_c_5601-1987"),
 
-        {CharCodePage::GB2312,         "gb2312"    },
-        {CharCodePage::GB18030,        "gb18030"   },
-
-        {CharCodePage::ShiftJIS,       "shift_jis"     },
-        {CharCodePage::JISX,           "iso-2022-jp"   },
-
-        {CharCodePage::Korean,         "ks_c_5601-1987"},
-
-        {CharCodePage::MacJanpan,              "x-mac-japanese"    },
-        {CharCodePage::MacTraditionalChinese,  "x-mac-chinesetrad" },
-        {CharCodePage::MacSimplifiedChinese,   "x-mac-chinesesimp" },
+        HGL_CODE_PAGE_AND_CHAR_SET(MacJanpan,               "x-mac-japanese"    ),
+        HGL_CODE_PAGE_AND_CHAR_SET(MacTraditionalChinese,   "x-mac-chinesetrad" ),
+        HGL_CODE_PAGE_AND_CHAR_SET(MacSimplifiedChinese,    "x-mac-chinesesimp" ),
      
-        {CharCodePage::ISO_8859_1,         "iso-8859-1"},
-        {CharCodePage::ISO_8859_2,         "iso-8859-2"},
-        {CharCodePage::ISO_8859_3,         "iso-8859-3"},
-        {CharCodePage::ISO_8859_4,         "iso-8859-4"},
-        {CharCodePage::ISO_8859_5,         "iso-8859-5"},
-        {CharCodePage::ISO_8859_6,         "iso-8859-6"},
-        {CharCodePage::ISO_8859_7,         "iso-8859-7"},
-        {CharCodePage::ISO_8859_8,         "iso-8859-8"},
-        {CharCodePage::ISO_8859_9,         "iso-8859-9"},
-        {CharCodePage::ISO_8859_13,        "iso-8859-13"},
-        {CharCodePage::ISO_8859_15,        "iso-8859-15"},
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_1,         "iso-8859-1"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_2,         "iso-8859-2"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_3,         "iso-8859-3"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_4,         "iso-8859-4"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_5,         "iso-8859-5"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_6,         "iso-8859-6"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_7,         "iso-8859-7"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_8,         "iso-8859-8"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_9,         "iso-8859-9"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_13,        "iso-8859-13"),
+        HGL_CODE_PAGE_AND_CHAR_SET(ISO_8859_15,        "iso-8859-15"),
 
-        {CharCodePage::UTF7,           "utf-7"      },
-        {CharCodePage::UTF8,           "utf-8"      },
-        {CharCodePage::UTF16LE,        "utf-16le"   },
-        {CharCodePage::UTF16BE,        "utf-16be"   },
-        {CharCodePage::UTF32LE,        "utf-32le"   },
-        {CharCodePage::UTF32BE,        "utf-32be"   },
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF7,           "utf-7"      ),
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF8,           "utf-8"      ),
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF16LE,        "utf-16le"   ),
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF16BE,        "utf-16be"   ),
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF32LE,        "utf-32le"   ),
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF32BE,        "utf-32be"   ),
 
-        {CharCodePage::UTF16LE,        "utf-16"     },
-        {CharCodePage::UTF16BE,        "unicodeFFFE"},
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF16LE,        "utf-16"     ),
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF16BE,        "unicodeFFFE"),
 
-        {CharCodePage::UTF16LE,        "ucs-2le"    },
-        {CharCodePage::UTF16BE,        "ucs-2be"    },
-        {CharCodePage::UTF32LE,        "ucs-4le"    },
-        {CharCodePage::UTF32BE,        "ucs-4be"    }
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF16LE,        "ucs-2le"    ),
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF16BE,        "ucs-2be"    ),
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF32LE,        "ucs-4le"    ),
+        HGL_CODE_PAGE_AND_CHAR_SET(UTF32BE,        "ucs-4be"    )
     };//const struct CharSet Characters
 
     constexpr int CharPageCount=sizeof(CodeSet2CharPage)/sizeof(CodePageAndCharSet);
 
-    inline CharCodePage FindCodePage(const u8char *char_set)
+    inline uint16 FindCodePage(const u8char *char_set)
     {
         for(int i=0;i<CharPageCount;i++)
             if(!charset_cmp(CodePage2CharSet[i].charset,char_set))
                 return CodePage2CharSet[i].codepage;
 
-        return CharCodePage::NONE;
+        return (uint16)CharCodePage::NONE;
     }
 
     struct CharSet
     {
-        CharCodePage codepage;
+        uint16 codepage;
         CharSetName charset;
 
     public:
 
         CharSet()
         {
-            codepage=CharCodePage::NONE;
+            codepage=0;
             hgl::strcpy(charset,CHAR_SET_NAME_MAX_LENGTH,"us-ascii");
         }
 
-        CharSet(CharCodePage ccp,const char *cs)
+        CharSet(uint16 ccp,const char *cs)
         {
             codepage=ccp;
             hgl::strcpy(charset,CHAR_SET_NAME_MAX_LENGTH,cs);
         }
 
-        CharSet(CharCodePage);
+        CharSet(uint16);
         CharSet(const u8char *);
 
         CharSet(const CodePageAndCharSet &cs)
@@ -153,7 +162,7 @@ namespace hgl
         CompOperator(const CharSet &,_Comp)
     };//struct CharacterSet
 
-    inline CharSet::CharSet(CharCodePage ccp)
+    inline CharSet::CharSet(uint16 ccp)
     {
         codepage=ccp;
         hgl::strcpy(charset,CHAR_SET_NAME_MAX_LENGTH,FindCharSet(ccp));

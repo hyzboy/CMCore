@@ -4,9 +4,9 @@ namespace hgl
 {
     CharSet DefaultCharSet();
 
-    CharSet UTF8CharSet     (CharCodePage::UTF8,   utf8_charset    );
-    CharSet UTF16LECharSet  (CharCodePage::UTF16LE,utf16le_charset );
-    CharSet UTF16BECharSet  (CharCodePage::UTF16BE,utf16be_charset );
+    CharSet UTF8CharSet     ((uint16)CharCodePage::UTF8,   utf8_charset    );
+    CharSet UTF16LECharSet  ((uint16)CharCodePage::UTF16LE,utf16le_charset );
+    CharSet UTF16BECharSet  ((uint16)CharCodePage::UTF16BE,utf16be_charset );
 
     int    u16_to_u8(u8char *dst,int dst_size,const u16char *src,const int src_size)
     {
