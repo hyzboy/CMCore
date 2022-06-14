@@ -16,6 +16,8 @@ namespace hgl
         {
             NONE=0,                                     ///<起始定义，无意义
 
+            IBM437                  =437,               ///<OEM United States (dos)
+
             //中文
             GBK                     =936,               ///<中国GBK标准中文
             Big5                    =950,               ///<中国台湾Big5标准繁体中文

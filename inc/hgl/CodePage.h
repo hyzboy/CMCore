@@ -17,6 +17,7 @@ namespace hgl
     {
 
         HGL_CODE_PAGE_AND_CHAR_SET(NONE,                    "us-ascii"  ),
+        HGL_CODE_PAGE_AND_CHAR_SET(IBM437,                  "IBM437"    ),
 
         HGL_CODE_PAGE_AND_CHAR_SET(GBK,                     "gbk"       ),
         HGL_CODE_PAGE_AND_CHAR_SET(Big5,                    "big5"      ),
@@ -70,6 +71,7 @@ namespace hgl
     constexpr struct CodePageAndCharSet CodeSet2CharPage[]=
     {
         HGL_CODE_PAGE_AND_CHAR_SET(NONE,                    "us-ascii"  ),
+        HGL_CODE_PAGE_AND_CHAR_SET(IBM437,                  "IBM437"    ),
         
         HGL_CODE_PAGE_AND_CHAR_SET(GBK,                     "gbk"       ),
         
@@ -185,16 +187,36 @@ namespace hgl
     #else
         #define OSCharSet   UTF8CharSet
     #endif//
-
+    
     /**
-     * 使用指定字符集转换字符串到 u16char *字符串
+     * 获取字符串转换到utf16字符串后的长度
      * @param charset   字符集
-     * @param dst       u16char *字符串缓冲区，自动分配，需手动delete[]
+     * @param src       原始字符串
+     * @param src_size  字符串长度,-1表示全部
+     * @return 转换成功后的字符串字符数
+     */
+    int get_utf16_length(const CharSet &charset,const void *src,const int src_size=-1);
+    
+    /**
+     * 使用指定字符集转换字符串到utf16字符串
+     * @param charset   字符集
+     * @param dst       utf16字符串缓冲区，自动分配，需手动delete[]
      * @param src       原始字符串
      * @param src_size  字符串长度,-1表示全部
      * @return 转换成功后的字符串字符数
      */
     int to_utf16(const CharSet &charset,u16char **dst,const void *src,const int src_size=-1);
+    
+    /**
+     * 使用指定字符集转换字符串到utf16字符串
+     * @param charset   字符集
+     * @param dst       utf16字符串缓冲区
+     * @param dst_size  最大可写入长度
+     * @param src       原始字符串
+     * @param src_size  字符串长度,-1表示全部
+     * @return 转换成功后的字符串字符数
+     */
+    int to_utf16(const CharSet &charset,u16char *dst,const int dst_size,const void *src,const int src_size=-1);
 
     int to_utf8(const CharSet &charset,u8char **dst,const void *src,const int src_size=-1);
 
