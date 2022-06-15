@@ -285,8 +285,15 @@ namespace hgl
     {
         return to_u8(ws.c_str(),ws.Length());
     }
-
 #if HGL_OS == HGL_OS_Windows
+           AnsiString ToAnsiString(const CharSet &cs,const UTF16String &str);
+    inline AnsiString ToAnsiString(const UTF16String &str)
+    {
+        const CharSet cs((uint16)0);
+        
+        return ToAnsiString(cs,str);
+    }
+    
     inline OSString ToOSString(const u8char *str){return to_u16(str);}
     inline OSString ToOSString(const UTF8String &str){return to_u16(str.c_str(), (int)(str.Length()));}
 
