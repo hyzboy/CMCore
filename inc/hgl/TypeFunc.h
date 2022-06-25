@@ -375,9 +375,23 @@ namespace hgl
     template<typename T>
     inline void hgl_set(T *data,const T value,const size_t count)
     {
+        if(!data||count<=0)return;
+
         for(size_t i=0;i<count;i++)
         {
             *data=value;
+            ++data;
+        }
+    }
+
+    template<typename T>
+    inline void hgl_set(T *data,const T *src,const size_t count)
+    {
+        if(!data||!src||count<=0)return;
+
+        for(size_t i=0;i<count;i++)
+        {
+            memcpy(data,src,sizeof(T));
             ++data;
         }
     }
