@@ -19,7 +19,7 @@ file(GLOB TYPE_TEMPLATE_HEADER ${TYPE_INCLUDE_PATH}/*.h)
 
 SET(TYPE_SOURCE_FILES   Type/Collection.cpp)
 
-SOURCE_GROUP("DataType\\Collection" FILES   ${TYPE_INCLUDE_PATH}/Collection.h
+SOURCE_GROUP("DataType\\Collection" FILES ${TYPE_INCLUDE_PATH}/Collection.h
                                           ${COLLECTION_SOURCE})
 
 SET(SYSTEM_INFO_SOURCE  ${CORE_PLATFORM_INCLUDE_PATH}/SystemInfo.h
@@ -145,12 +145,11 @@ SET(IO_SOURCE_FILES ${IO_BASE_FILES}
 SET(FILESYSTEM_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/filesystem)
 
 SET(FILESYSTEM_HEADER_FILES ${FILESYSTEM_INCLUDE_PATH}/EnumFile.h
-                        ${FILESYSTEM_INCLUDE_PATH}/EnumVolume.h
-                        ${FILESYSTEM_INCLUDE_PATH}/Filename.h
-                        ${FILESYSTEM_INCLUDE_PATH}/FileSystem.h)
+                            ${FILESYSTEM_INCLUDE_PATH}/EnumVolume.h
+                            ${FILESYSTEM_INCLUDE_PATH}/FileSystem.h)
 
 SET(FILESYSTEM_SOURCE_FILES FileSystem/FileSystem.cpp
-                        FileSystem/EnumFile.cpp)
+                            FileSystem/EnumFile.cpp)
 
 SOURCE_GROUP("FileSystem" FILES ${FILESYSTEM_HEADER_FILES} ${FILESYSTEM_SOURCE_FILES})
 

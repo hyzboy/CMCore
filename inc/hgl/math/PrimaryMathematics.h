@@ -1,9 +1,9 @@
-#ifndef HGL_Primary_Mathematics_INCLUDE
+ï»¿#ifndef HGL_Primary_Mathematics_INCLUDE
 #define HGL_Primary_Mathematics_INCLUDE
 namespace hgl
 {
     /**
-     * ÇóÒ»ÅúÊıµÄºÏ
+     * æ±‚ä¸€æ‰¹æ•°çš„åˆ
      */
     template<typename T>
     const T sum(const T *data,const int count)
@@ -20,7 +20,7 @@ namespace hgl
     }
 
     /**
-     * ÇóÒ»ÅúÊıµÄºÏ
+     * æ±‚ä¸€æ‰¹æ•°çš„åˆ
      */
     template<typename R,typename T>
     const R sum(const T *data,const int count)

@@ -165,7 +165,12 @@ namespace hgl
 
         T &operator[](int n)
         {
-            return buf+n;
+            return buf[n];
+        }
+
+        const T &operator[](int n)const
+        {
+            return buf[n];
         }
     };//template<typename T> class MemBlock
 

@@ -23,15 +23,20 @@ namespace hgl
             llHint,         //提示，不重要，debug状态默认出对话框
             llLog           //记录一下
         };//enum LogLevel
+        
+        bool InitLogger(const OSString &app_name);
+        
+        void Log(LogLevel level,const u16char *str,int size);
+        void Log(LogLevel level,const u8char *str,int size);
 
         inline  void Log(LogLevel ll,const UTF16String &str)
         {
-            std::wcout<<str.c_str()<<std::endl;
+            Log(ll,str.c_str(),str.Length());
         }
 
         inline  void Log(LogLevel ll,const UTF8String &str)
         {
-            std::cout<<(char *)str.c_str()<<std::endl;
+            Log(ll,str.c_str(),str.Length());
         }
 
         #ifdef HGL_SUPPORT_CHAR8_T

@@ -2,6 +2,7 @@
 #define HGL_FILESYSTEM_FILENAME_INCLUDE
 
 #include<hgl/type/StringList.h>
+#include<hgl/math/PrimaryMathematics.h>
 
 /**
 * Maximum Path Length Limitation
@@ -68,7 +69,7 @@ namespace hgl
         {
             int str_len[count];
 
-            for(int i=0;i<count;++)
+            for(int i=0;i<count;i++)
                 str_len=strlen(str_list[i]);
 
             return ComboFilename(str_list,str_len,count,spear_char);
