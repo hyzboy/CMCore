@@ -29,7 +29,7 @@ namespace hgl
             tc->ProcEndThread();
         }
 
-        if(tc->IsExitDelete())
+        if(tc->DeletedAfterExit())
         {
             tc->live_lock.Unlock();
 

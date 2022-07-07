@@ -163,8 +163,18 @@ SET(BASE_TIME_SOURCE_FILES  Time/DateTime.cpp
 SOURCE_GROUP("Time\\Header Files" FILES ${BASE_TIME_HEADER_FILES})
 SOURCE_GROUP("Time\\Source Files" FILES ${BASE_TIME_SOURCE_FILES})
 
-SET(BASE_THREAD_SOURCE   Other/ThreadFunc.cpp)
-SOURCE_GROUP("Thread" FILES ${BASE_THREAD_SOURCE})
+
+FILE(GLOB BASE_THREAD_HEADER_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/*.h)
+SET(BASE_THREAD_SOURCE_FILES   Other/ThreadFunc.cpp)
+
+SOURCE_GROUP("Thread" FILES ${BASE_THREAD_HEADER_FILES}
+                            ${BASE_THREAD_SOURCE_FILES})
+
+FILE(GLOB BASE_EVENT_HEADER_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/event/*.*)
+FILE(GLOB BASE_EVENT_SOURCE_FILES Event/*.*)
+
+SOURCE_GROUP("Event" FILES  ${BASE_EVENT_HEADER_FILES}
+                            ${BASE_EVENT_SOURCE_FILES})
 
 file(GLOB BASE_PLUG_IN_HEADER ${CMCORE_ROOT_INCLUDE_PATH}/hgl/plugin/*.h)
 file(GLOB BASE_PLUG_IN_SOURCE PlugIn/*.cpp)
@@ -203,7 +213,12 @@ add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
                         ${BASE_TIME_SOURCE_FILES}
 
                         ${BASE_OTHER_SOURCE}
-                        ${BASE_THREAD_SOURCE}
+                        
+                        ${BASE_THREAD_HEADER_FILES}
+                        ${BASE_THREAD_SOURCE_FILES}
+                        
+                        ${BASE_EVENT_HEADER_FILES}
+                        ${BASE_EVENT_SOURCE_FILES}
 
                         ${BASE_PLUG_IN_HEADER}
                         ${BASE_PLUG_IN_SOURCE}

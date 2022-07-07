@@ -68,9 +68,9 @@ namespace hgl
                     return(true);
                 }
 
-        virtual void ProcEndThread(){}                                                                ///<结程结束运行函数,在Execute后被调用
+        virtual void ProcEndThread(){}                                                              ///<结程结束运行函数,在Execute后被调用
 
-        virtual bool IsExitDelete()const{return true;}                                              ///<返回在退出线程时，是否删除本对象(注:此函数不可动态变动值)
+        virtual bool DeletedAfterExit()const{return true;}                                          ///<返回在退出线程时，是否删除本对象(注:此函数不可动态变动值)
 
                 bool IsLive()                                                                       ///<当前线程是否还活着
                 {
@@ -113,8 +113,6 @@ namespace hgl
     };//class Thread
 
     void WaitThread(Thread **,int,double time=0);                                                   ///<等待多个线程中的一个完成
-
-    bool CreateThread(Thread *);                                                                    ///<创建一个线程
 
     /**
      * 简单的多线程管理

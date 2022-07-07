@@ -125,6 +125,11 @@ namespace hgl
             {4,{0x00,0x00,0xFE,0xFF},ByteOrderMask::UTF32BE,&utf32be_charset   ,(uint16)CharCodePage::UTF32BE  }
         };
 
+        inline const BOMFileHeader *GetBOM(const ByteOrderMask &bom)
+        {
+            return RangeCheck(bom)?BOMData+uint(bom)-uint(ByteOrderMask::BEGIN_RANGE):nullptr;
+        }
+
         inline ByteOrderMask CheckBOM(const void *data)
         {
             const BOMFileHeader *bom=BOMData;
