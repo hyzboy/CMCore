@@ -110,9 +110,9 @@ namespace hgl
         {
             String<T> fullname;
 
-            if(pathname.GetEndChar()==directory_separator_char)                 //结尾有分隔符
+            if(pathname.GetLastChar()==directory_separator_char)                 //结尾有分隔符
             {
-                if(filename.GetBeginChar()==directory_separator_char)           //开头有分隔符
+                if(filename.GetFirstChar()==directory_separator_char)           //开头有分隔符
                 {
                     fullname.SetString(pathname.c_str(),pathname.Length()-1);   //少取一个字符
                 }
@@ -125,7 +125,7 @@ namespace hgl
             {
                 fullname=pathname;
 
-                if(filename.GetBeginChar()!=directory_separator_char)           //开头没有分隔符
+                if(filename.GetFirstChar()!=directory_separator_char)           //开头没有分隔符
                 {
                     fullname.Strcat(directory_separator_str);                   //添加分隔符
                 }

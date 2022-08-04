@@ -221,12 +221,12 @@ namespace hgl
             return(true);
         }
 
-        const T GetBeginChar()const
+        const T GetFirstChar()const
         {
             return buffer?*buffer:0;
         }
 
-        const T GetEndChar()const
+        const T GetLastChar()const
         {
             return buffer?*(buffer+length-1):0;
         }

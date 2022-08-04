@@ -183,15 +183,15 @@ namespace hgl
 
         virtual ~String()=default;
 
-        const T GetBeginChar()const                                                                 ///<取得当前字符串第一个字符
+        const T GetFirstChar()const                                                                 ///<取得当前字符串第一个字符
         {
-            return(data.valid()?data->GetBeginChar():0);
+            return(data.valid()?data->GetFirstChar():0);
         }
 
-        const T GetEndChar()const                                                                   ///<取得当前字符串最后一个字符
+        const T GetLastChar()const                                                                   ///<取得当前字符串最后一个字符
         {
             //          if(!this)return(0);
-            return(data.valid()?data->GetEndChar():0);
+            return(data.valid()?data->GetLastChar():0);
         }
 
         const int Length()const                                                                     ///<当前字符串长度
@@ -869,41 +869,35 @@ namespace hgl
 
     protected:
 
-        typedef const T *(*ConvFunc)(const T *,int &);
+        typedef const T *(*ConvFunc)(const T *,int &,const bool (*trimfunc)(const T &));
 
-        bool StrConv(ConvFunc conv)
+        SelfClass StrConv(ConvFunc conv) const
         {
             if(!data.valid()||data->GetLength()<=0)
-                return(false);
+                return SelfClass();
 
             int new_len=data->GetLength();
 
-            const T *new_str=conv(data->c_str(),new_len);
+            const T *new_str=conv(data->c_str(),new_len,isspace<T>);
 
-            if(new_len>0)
-            {
-                SetString(new_str,new_len);
-                return(true);
-            }
-            else
-            {
-                Clear();
-                return(false);
-            }
+            if(new_len<=0)
+                return SelfClass();
+            
+            return SelfClass(new_str,new_len);
         }
 
     public:
 
-        bool TrimLeft(){return StrConv(trimleft);}                                                  ///<删除字符串前端的空格、换行等不可视字符串
-        bool TrimRight(){return StrConv(trimright);}                                                ///<删除字符串后端的空格、换行等不可视字符串
-        bool Trim(){return StrConv(trim);}                                                          ///<删除字符串两端的空格、换行等不可视字符串
+        SelfClass TrimLeft  ()const{return StrConv(trimleft);}                                      ///<删除字符串前端的空格、换行等不可视字符串
+        SelfClass TrimRight ()const{return StrConv(trimright);}                                     ///<删除字符串后端的空格、换行等不可视字符串
+        SelfClass Trim      ()const{return StrConv(trim);}                                          ///<删除字符串两端的空格、换行等不可视字符串
 
         bool TrimLeft(int n){return Delete(0,n);}                                                   ///<删除字符串前端的指定个字符
         bool TrimRight(int n){return Unlink()?data->TrimRight(n):false;}                            ///<删除字符串后端的指定个字符
 
         bool ClipLeft(int n){return Unlink()?data->ClipLeft(n):false;}                              ///<截取字符串前端的指定个字符,等同TrimRight(lengths-n))
         bool ClipRight(int n){return Delete(0,Length()-n);}                                         ///<截取字符串后端的指定个字符,等同TrimLeft(length-n)
-        bool Clip(uint pos,int num)                                                                  ///<从指定位置删除指定个字符
+        bool Clip(uint pos,int num)                                                                 ///<从指定位置删除指定个字符
         {
             if(!Unlink())
                 return(false);
