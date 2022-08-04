@@ -20,10 +20,8 @@
 #define HGL_OS_OpenBSD              HGL_MERGE32('O','B','S','D')
 #define HGL_OS_Linux                HGL_MERGE32('L','i','n','u')
 #define HGL_OS_Cygwin               HGL_MERGE32('C','y','g','w')
-#define HGL_OS_PSVita               HGL_MERGE32('P','S','V',' ')
 #define HGL_OS_PS4                  HGL_MERGE32('P','S','4',' ')
 #define HGL_OS_PS5                  HGL_MERGE32('P','S','5',' ')
-#define HGL_OS_AIX                  HGL_MERGE32('A','I','X',' ')
 #define HGL_OS_Android              HGL_MERGE32('A','n','d','r')
 #define HGL_OS_Wasm                 HGL_MERGE32('W','a','s','m')
 
@@ -32,12 +30,9 @@
 #define HGL_CPU_MIPS                HGL_MERGE32('M','I','P','S')
 #define HGL_CPU_MIPSel              HGL_MERGE32('M','I','e','l')
 #define HGL_CPU_MIPS64              HGL_MERGE32('M','I','6','4')
-#define HGL_CPU_PowerPC             HGL_MERGE32('P','P','C',' ')
 #define HGL_CPU_PowerPC64           HGL_MERGE32('P','P','6','4')
-#define HGL_CPU_Cell                HGL_MERGE32('C','E','L','L')
 #define HGL_CPU_ARMv7               HGL_MERGE32('A','R','M','7')
 #define HGL_CPU_ARMv8               HGL_MERGE32('A','R','M','8')
-#define HGL_CPU_ARMv9               HGL_MERGE32('A','R','M','9')
 
 #define HGL_COMPILER_Microsoft      HGL_MERGE32('M','S','C',' ')
 #define HGL_COMPILER_GNU            HGL_MERGE32('G','N','U',' ')
@@ -45,7 +40,6 @@
 #define HGL_COMPILER_MinGW64        HGL_MERGE32('M','G','6','4')
 #define HGL_COMPILER_Intel          HGL_MERGE32('I','n','t','e')
 #define HGL_COMPILER_IBM            HGL_MERGE32('I','B','M',' ')
-#define HGL_COMPILER_DigitalMars    HGL_MERGE32('D','i','M','a')
 #define HGL_COMPILER_LLVM           HGL_MERGE32('L','L','V','M')
 #define HGL_COMPILER_PGI            HGL_MERGE32('P','G','I',' ')
 
@@ -90,11 +84,6 @@
      || defined(__ppc__) || defined(__PPC__) || defined(__ppc) \
      || defined(_M_PPC) ||defined(_M_MPPC) \
      || defined(_ARCH_PPC) || defined(_ARCH_PWR)
-    #ifdef __PPU__
-        #define HGL_CPU             HGL_CPU_Cell
-        #define HGL_CPU_NAME        OS_TEXT("Cell")
-        #define HGL_LIB_CPU_NAME    OS_TEXT("Cell")
-    #else
         #ifdef defined(__ppc64__)||defined(__PPC64__)||defined(__powerpc64__)   \
              ||defined(_ARCH_PPC64)||defined(__64BIT__)
             #define HGL_CPU             HGL_CPU_PowerPC64
@@ -105,23 +94,9 @@
             #define HGL_CPU_NAME        OS_TEXT("PowerPC")
             #define HGL_LIB_CPU_NAME    OS_TEXT("PowerPC")
         #endif//PowerPC64
-    #endif
 
     #define HGL_MIN_MEMORY_ALLOC_BYTES  8
     #define HGL_ENDIAN                  HGL_BIG_ENDIAN
-#elif defined(__arm__)||defined(__arm)  \
-    ||defined(_ARM) \
-    ||defined(_M_ARM)  \
-    ||defined(__ARM_ARCH__7__)  \
-    ||defined(__ARM_ARCH__7A__) \
-    ||defined(__ARM_ARCH__7R__) \
-    ||defined(__ARM_ARCH__7M__) \
-    ||defined(__ARM_ARCH__7S__)
-        #define HGL_CPU                     HGL_CPU_ARMv7
-        #define HGL_CPU_NAME                OS_TEXT("ARMv7")
-        #define HGL_LIB_CPU_NAME            OS_TEXT("ARMv7")
-        #define HGL_MIN_MEMORY_ALLOC_BYTES  4
-        #define HGL_ENDIAN                  HGL_LITTLE_ENDIAN
 #elif defined(__aarch64__)
     #define HGL_CPU                     HGL_CPU_ARMv8
     #define HGL_CPU_NAME                OS_TEXT("ARMv8")
@@ -175,12 +150,8 @@
     #define HGL_OS          HGL_OS_Linux
 #elif defined(__CYGWIN__)
     #define HGL_OS          HGL_OS_Cygwin
-#elif defined(SN_TARGET_PSP2)||defined(__PSV__)||defined(__psv__)||defined(_PSV)||defined(__PSVita__)||defined(__PSVita)
-    #define HGL_OS          HGL_OS_PSP2
 #elif defined(SN_TARGET_ORBIS)
     #define HGL_OS          HGL_OS_PS4
-#elif defined(_AIX)||defined(__AIX)||defined(__AIX__)||defined(__aix)||defined(__aix__)
-    #define HGL_OS          HGL_OS_AIX
 #endif//
 
 #if defined(__clang__)
@@ -299,30 +270,6 @@
 
     #include<hgl/platform/os/Apple.h>
     #include<hgl/platform/compiler/LLVM.h>
-
-#elif HGL_OS == HGL_OS_PSP2
-
-    #include<hgl/platform/os/psp2.h>
-
-    #if HGL_COMPILER == HGL_COMPILER_GNU
-        #include<hgl/platform/compiler/GNU.h>
-    #else
-        #error Unrecognized compiler
-    #endif
-
-#elif HGL_OS == HGL_OS_AIX
-
-    #include<hgl/platform/os/aix.h>
-
-    #if HGL_COMPILER == HGL_COMPILER_IBM
-        #include<hgl/platform/compiler/IBM.h>
-    #elif HGL_COMPILER == HGL_COMPILER_SGI
-        #include<hgl/platform/compiler/SGI.h>
-    #elif HGL_COMPILER == HGL_COMPILER_GNU
-        #include<hgl/platform/compiler/GNU.h>
-    #else
-        #error Unrecognized compiler
-    #endif
 
 #elif HGL_OS == HGL_OS_Android
 
