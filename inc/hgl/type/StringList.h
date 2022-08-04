@@ -140,7 +140,7 @@ namespace hgl
         * @param str 要查找的字符串
         * @return 查找到的字符串的索引,未找到返回-1
         */
-        int  Find(const StringClass &str) const                                                               ///<查找字符串,未找到返回-1
+        int  Find(const StringClass &str) const                                                     ///<查找字符串,未找到返回-1
         {
             const int count=Items.GetCount();
             StringClass** sl = Items.GetData();
@@ -159,7 +159,7 @@ namespace hgl
         * @param str 要指找的字符串
         * @return 查找到的字符串的索引,未找到返回-1
         */
-        int  CaseFind(const StringClass &str) const                                                           ///<查找字符串,英文无视大小写,未找到返回-1
+        int  CaseFind(const StringClass &str) const                                                 ///<查找字符串,英文无视大小写,未找到返回-1
         {
             const int count=Items.GetCount();
             StringClass** sl = Items.GetData();
@@ -179,7 +179,7 @@ namespace hgl
         * @param cn 限定的要查找字符串的最大长度
         * @return 查找到的字符串的索引,未找到返回-1
         */
-        int  Find(const StringClass &str,const int cn) const                                                  ///<查找字符串,未找到返回-1
+        int  Find(const StringClass &str,const int cn) const                                        ///<查找字符串,未找到返回-1
         {
             const int count=Items.GetCount();
 
@@ -200,7 +200,7 @@ namespace hgl
         * @param cn 限定的要查找字符串的最大长度
         * @return 查找到的字符串的索引,未找到返回-1
         */
-        int  CaseFind(const StringClass &str,const int cn) const                                              ///<查找字符串,英文无视大小写,未找到返回-1
+        int  CaseFind(const StringClass &str,const int cn) const                                    ///<查找字符串,英文无视大小写,未找到返回-1
         {
             const int count=Items.GetCount();
 
@@ -220,7 +220,7 @@ namespace hgl
         * @param index 要插入字符串的位置
         * @param str 要插入的字符串
         */
-        void Insert(int index,const StringClass &str)                                                         ///<在指定位置插入一个字符串
+        void Insert(int index,const StringClass &str)                                               ///<在指定位置插入一个字符串
         {
             if(index<Items.GetCount())
                 Items.List<StringClass *>::Insert(index,new StringClass(str));
@@ -236,411 +236,10 @@ namespace hgl
             Items.Exchange(index1,index2);
         }
 
-        const StringClass &GetString(int n)const{return *(Items[n]);}                                         ///<取得指定行字符串
+        const StringClass &GetString(int n)const{return *(Items[n]);}                               ///<取得指定行字符串
     };//template<typename T> class StringList
 
-    template<typename T> String<T> StringList<T>::NullString;                                               ///<空字符串实例
-
-    /**
-     * 以不可打印字符为分隔拆解一个字符串到一个字符串列表
-     * @param sl 字符串列表处理类
-     * @param str 字符串
-     * @param size 字符串长度
-     * @return 字符串行数
-     */
-    template<typename T> int SplitToStringListBySpace(StringList<T> &sl,const T *str,int size)
-    {
-        if(!str||size<=0)return(-1);
-
-        int count=0;
-        const T *p,*sp;
-
-        sp=p=str;
-
-        while(size>0)
-        {
-            if(!(*p))
-            {
-                if(p>sp)
-                {
-                    sl.Add(String<T>(sp,p-sp));
-                    ++count;
-                }
-
-                --size;
-                return count;
-            }
-
-            if(isspace(*p))
-            {
-                if(p>sp)
-                {
-                    sl.Add(String<T>(sp,p-sp));
-                    ++count;
-                }
-
-                sp=p+1; ///<跳过分割符
-            }
-
-            ++p;
-            --size;
-        }
-
-        if(p>sp)
-        {
-            sl.Add(String<T>(sp,p-sp));
-            ++count;
-        }
-
-        return count;
-    }//int SplitToStringList
-
-    /**
-     * 以指定字符为分隔拆解一个字符串到一个字符串列表
-     * @param sl 字符串列表处理类
-     * @param str 字符串
-     * @param size 字符串长度
-     * @param split_char 分隔字符
-     * @return 字符串行数
-     */
-    template<typename T> int SplitToStringList(StringList<T> &sl,const T *str,int size,const T &split_char)
-    {
-        if(!str||size<=0)return(-1);
-
-        int count=0;
-        const T *p,*sp;
-
-        sp=p=str;
-
-        while(size>0)
-        {
-            if(!(*p))
-            {
-                if(p>sp)
-                {
-                    sl.Add(String<T>(sp,p-sp));
-                    ++count;
-                }
-
-                --size;
-                return count;
-            }
-
-            if(*p==split_char)
-            {
-                if(p>sp)
-                {
-                    sl.Add(String<T>(sp,p-sp));
-                    ++count;
-                }
-
-                sp=p+1; ///<跳过分割符
-            }
-
-            ++p;
-            --size;
-        }
-
-        if(p>sp)
-        {
-            sl.Add(String<T>(sp,p-sp));
-            ++count;
-        }
-
-        return count;
-    }//int SplitToStringList
-
-    template<typename T> int SplitToStringListFromString(StringList<T> &sl,const String<T> &str,const T &split_char)
-    {
-        return SplitToStringList<T>(sl,str.c_str(),str.Length(),split_char);
-    }
-
-    /**
-     * 以指定字符为分隔拆解一个字符串到一个字符串列表
-     * @param sl 字符串列表处理类
-     * @param str 字符串
-     * @param size 字符串长度
-     * @param split_char 分隔字符
-     * @param maxSize 最多执行次数
-     * @return 字符串行数
-     */
-    template<typename T> int SplitToStringList(StringList<T> &sl,const T *str,int size,const T &split_char,int maxSize)
-    {
-        if(!str||size<=0)return(-1);
-
-        int count=0;
-        const T *p,*sp;
-
-        sp=p=str;
-
-        while(size>0)
-        {
-            if(!(*p))
-            {
-                if(p>sp)
-                {
-                    sl.Add(String<T>(sp,p-sp));
-                    ++count;
-                }
-
-                --size;
-                return count;
-            }
-
-            if(*p==split_char)
-            {
-                if(p>sp)
-                {
-                    sl.Add(String<T>(sp,p-sp));
-                    ++count;
-                }
-
-                sp=p+1; ///<跳过分割符
-                if(maxSize >0 && count >=maxSize-1)
-                {
-                    ++p;
-                    --size;
-                    if(size > 0)
-                    {
-                        sl.Add(String<T>(sp,size));
-                        ++count;
-                    }
-
-                    return count;
-                }
-            }
-
-            ++p;
-            --size;
-        }
-
-        if(p>sp)
-        {
-            sl.Add(String<T>(sp,p-sp));
-            ++count;
-        }
-
-        return count;
-    }//int SplitToStringList
-
-    template<typename T> int SplitToStringList(StringList<T> &sl,const String<T> &str,const T &split_char,int maxSize)
-    {
-        return SplitToStringList<T>(sl,str.c_str(),str.Length(),split_char,maxSize);
-    }
-
-    /**
-     * 拆解一个多行字符串到一个字符串列表
-     * @param sl 字符串列表处理类
-     * @param str 字符串
-     * @param size 字符串长度
-     * @return 字符串行数
-     */
-    template<typename T> int SplitToStringListByEnter(StringList<T> &sl,const T *str,int size)
-    {
-        if(!str||size<=0)return(-1);
-
-        int count=0;
-        const T *p,*sp;
-
-        sp=p=str;
-
-        while(size>0)
-        {
-            if(!(*p))
-            {
-                if(p>sp)
-                {
-                    sl.Add(String<T>(sp,p-sp));
-                    ++count;
-                }
-
-                --size;
-                return count;
-            }
-
-            if(*p==0x0D)            // \r
-            {
-                sl.Add(String<T>(sp,p-sp));
-                ++count;
-
-                ++p;
-                --size;
-
-                if(*p==0x0A)        // \r\n,Windows下的断行是(\r\n)0x0D+0x0A，而其它系统是仅有一个
-                {
-                    ++p;
-                    --size;
-                }
-
-                sp=p;
-            }
-            else
-            if(*p==0x0A)            // \n
-            {
-                sl.Add(String<T>(sp,p-sp));
-                ++count;
-
-                ++p;
-                --size;
-
-                sp=p;
-            }
-            else
-            {
-                ++p;
-                --size;
-            }
-        }
-
-        if(p>sp)
-        {
-            sl.Add(String<T>(sp,p-sp));
-            ++count;
-        }
-
-        return count;
-    }//int SplitToStringList
-    
-    template<typename T> int SplitToStringListByEnter(StringList<T> &sl,const String<T> &str)
-    {
-        return SplitToStringListByEnter<T>(sl,str.c_str(),str.Length());
-    }
-
-    template<typename T> int SplitToStringList(StringList<T> &sl,const String<T> &str)
-    {
-        return SplitToStringList<T>(sl,str.c_str(),str.Length());
-    }
-
-    /**
-     * 拆解一个多行字符串到多个字符串列表
-     * @param sl 字符串列表处理类
-     * @param slc 字符串列表处理类个数
-     * @param str 字符串
-     * @param size 字符串长度
-     * @return 字符串行数
-     */
-    template<typename T> int SplitToMultiStringList(StringList<T> **sl,int slc,const T *str,int size)
-    {
-        if(!str||size<=0)return(-1);
-        if(slc<=0)return(-1);
-
-        int index=0;
-        int count=0;
-        const T *p,*sp;
-
-        sp=p=str;
-
-        while(size>0)
-        {
-            if(!(*p))
-            {
-                if(p>sp)
-                {
-                    sl[index]->Add(String<T>(sp,p-sp));
-                    if(++index==slc)index=0;
-                    ++count;
-                }
-
-                --size;
-                return count;
-            }
-
-            if(*p==0x0D)            // \r
-            {
-                sl[index]->Add(String<T>(sp,p-sp));
-                if(++index==slc)index=0;
-
-                ++count;
-
-                ++p;
-                --size;
-
-                if(*p==0x0A)        // \r\n,Windows下的断行是(\r\n)0x0D+0x0A，而其它系统是仅有一个
-                {
-                    ++p;
-                    --size;
-                }
-
-                sp=p;
-            }
-            else
-            if(*p==0x0A)            // \n
-            {
-                sl[index]->Add(String<T>(sp,p-sp));
-                if(++index==slc)index=0;
-
-                ++count;
-
-                ++p;
-                --size;
-
-                sp=p;
-            }
-            else
-            {
-                ++p;
-                --size;
-            }
-        }
-
-        if(p>sp)
-        {
-            sl[index]->Add(String<T>(sp,p-sp));
-            ++count;
-        }
-
-        return count;
-    }//int SplitToStringList
-
-    template<typename T> int SplitToMultiStringList(StringList<T> **sl,int slc,const String<T> &str)
-    {
-        if(!sl||slc<=0)return(false);
-
-        if(slc==1)
-            return SplitToStringList<T>(**sl,str.c_str(),str.Length());
-        else
-            return SplitToMultiStringList<T>(sl,slc,str.c_str(),str.Length());
-    }
-
-    /**
-     * 将一个字符串列表整合成一个字符串
-     * @param sl 要整合的字符串列表
-     * @param end_line 换行符
-     * @return 字符串
-     */
-    template<typename T> String<T> ToString(const StringList<T> &sl,const String<T> &end_line)
-    {
-        int total_chars=0;
-
-        const int line=sl.GetCount();
-        String<T> **sp=sl.GetDataList();
-
-        for(int i=0;i<line;i++)
-        {
-            total_chars+=(*sp)->Length();
-
-            ++sp;
-        }
-
-        total_chars+=line*end_line.Length();
-
-        T *str=new T[total_chars+1];
-        T *tp=str;
-
-        sp=sl.GetDataList();
-        for(int i=0;i<line;i++)
-        {
-            hgl_cpy(tp,(*sp)->c_str(),(*sp)->Length());
-            tp+=(*sp)->Length();
-            hgl_cpy(tp,end_line.c_str(),end_line.Length());
-            tp+=end_line.Length();
-
-            ++sp;
-        }
-
-        str[total_chars]=0;
-        return String<T>::newOf(str,total_chars);
-    }
+    template<typename T> String<T> StringList<T>::NullString;                                       ///<空字符串实例
 
 #define DEFINE_STRING_LIST(name)    using name##StringList=StringList<name##String::CharType>;
 

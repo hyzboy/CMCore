@@ -58,6 +58,8 @@ SOURCE_GROUP("Datatype\\Color\\Source Files" FILES ${COLOR_SOURCE_FILES})
 SET(STRING_HEADER_FILES ${TYPE_INCLUDE_PATH}/String.h
                         ${TYPE_INCLUDE_PATH}/StringInstance.h
                         ${TYPE_INCLUDE_PATH}/StringList.h
+                        ${TYPE_INCLUDE_PATH}/SplitString.h
+                        ${TYPE_INCLUDE_PATH}/MergeString.h
                         ${TYPE_INCLUDE_PATH}/StdString.h)
 
 SET(TEXT_HEADER_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Endian.h
