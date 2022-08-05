@@ -60,6 +60,9 @@ SET(STRING_HEADER_FILES ${TYPE_INCLUDE_PATH}/String.h
                         ${TYPE_INCLUDE_PATH}/StringList.h
                         ${TYPE_INCLUDE_PATH}/SplitString.h
                         ${TYPE_INCLUDE_PATH}/MergeString.h
+                        ${TYPE_INCLUDE_PATH}/LoadString.h
+                        ${TYPE_INCLUDE_PATH}/LoadStringList.h
+                        ${TYPE_INCLUDE_PATH}/SaveStringList.h
                         ${TYPE_INCLUDE_PATH}/StdString.h)
 
 SET(TEXT_HEADER_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Endian.h
@@ -70,7 +73,8 @@ SET(TEXT_HEADER_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Endian.h
 SET(TEXT_SOURCE_FILES   Text/Endian.cpp
                         Text/CodePage.cpp
                         Text/UnicodeBlocks.cpp
-                        Text/StringList.cpp)
+                        Text/LoadString.cpp
+                        Text/LoadStringList.cpp)
 
 SOURCE_GROUP("Text\\String" FILES   ${STRING_HEADER_FILES}
                                     Text/StringList.cpp)

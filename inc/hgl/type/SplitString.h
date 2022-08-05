@@ -1,11 +1,11 @@
-#ifndef HGL_SPLIT_STRING_INCLUDE
+ï»¿#ifndef HGL_SPLIT_STRING_INCLUDE
 #define HGL_SPLIT_STRING_INCLUDE
 
 #include<hgl/type/StringList.h>
 namespace hgl
 {
     /**
-     * ²ğ·Ö×Ö·û´®Ä£°åÀà
+     * æ‹†åˆ†å­—ç¬¦ä¸²æ¨¡æ¿ç±»
      */
     template<typename T> class SplitString
     {
@@ -13,9 +13,9 @@ namespace hgl
 
         virtual ~SplitString()=default;
         
-        virtual void OnNewString(const T *,const int)=0;                                            ///<·¢ÏÖÒ»¸öĞÂµÄ×Ö·û´®
+        virtual void OnNewString(const T *,const int)=0;                                            ///<å‘ç°ä¸€ä¸ªæ–°çš„å­—ç¬¦ä¸²
 
-        virtual bool isSeparatorChar(const T &)=0;                                                  ///<ÊÇ·ñÊÇ·Ö¸ô·û
+        virtual bool isSeparatorChar(const T &)=0;                                                  ///<æ˜¯å¦æ˜¯åˆ†éš”ç¬¦
         virtual uint isSeparator(const T *str)
         {
             uint size=0;
@@ -64,10 +64,10 @@ namespace hgl
                         ++count;
                     }
 
-                    p+=sc;      ///<Ìø¹ı·Ö¸î·û
+                    p+=sc;      ///<è·³è¿‡åˆ†å‰²ç¬¦
                     size-=sc;
 
-                    sp=p; 
+                    sp=p;
                 }
                 else
                 {
@@ -92,7 +92,7 @@ namespace hgl
     };//template<typename T> class SplitString
     
     /**
-     * ²ğ·Ö×Ö·û´®µ½×Ö·û´®ÁĞ±íÄ£°åÀà
+     * æ‹†åˆ†å­—ç¬¦ä¸²åˆ°å­—ç¬¦ä¸²åˆ—è¡¨æ¨¡æ¿ç±»
      */
     template<typename T> class SplitStringToStringList:public SplitString<T>
     {
@@ -132,7 +132,7 @@ namespace hgl
     };//template<typename T> class SplitStringToStringList:public SplitString
 
     /**
-     * »ùÓÚº¯ÊıºÍÖ¸¶¨Ìõ¼ş²ğ·Ö×Ö·û´®µ½×Ö·û´®ÁĞ±íÄ£°åÀà
+     * åŸºäºå‡½æ•°å’ŒæŒ‡å®šæ¡ä»¶æ‹†åˆ†å­—ç¬¦ä¸²åˆ°å­—ç¬¦ä¸²åˆ—è¡¨æ¨¡æ¿ç±»
      */
     template<typename T,typename C> class SplitStringToStringListByCondition:public SplitStringToStringList<T>
     {
@@ -141,7 +141,7 @@ namespace hgl
 
     public:
 
-        SplitStringToStringListByCondition(StringList<T> *sl,const C (*func)(const T &),const C is_con):SplitStringToStringList(sl)
+        SplitStringToStringListByCondition(StringList<T> *sl,const C (*func)(const T &),const C is_con):SplitStringToStringList<T>(sl)
         {
             isFunc=func;
             is_condition=is_con;
@@ -169,40 +169,40 @@ namespace hgl
     };//template<typename T,typename C> class SplitStringToStringListByCondition:public SplitStringToStringList<T>
 
     /**
-     * ÒÔ²»¿É´òÓ¡×Ö·ûÎª·Ö¸ô²ğ½âÒ»¸ö×Ö·û´®µ½Ò»¸ö×Ö·û´®ÁĞ±í
-     * @param sl ×Ö·û´®ÁĞ±í´¦ÀíÀà
-     * @param str ×Ö·û´®
-     * @param size ×Ö·û´®³¤¶È
-     * @return ×Ö·û´®ĞĞÊı
+     * ä»¥ä¸å¯æ‰“å°å­—ç¬¦ä¸ºåˆ†éš”æ‹†è§£ä¸€ä¸ªå­—ç¬¦ä¸²åˆ°ä¸€ä¸ªå­—ç¬¦ä¸²åˆ—è¡¨
+     * @param sl å­—ç¬¦ä¸²åˆ—è¡¨å¤„ç†ç±»
+     * @param str å­—ç¬¦ä¸²
+     * @param size å­—ç¬¦ä¸²é•¿åº¦
+     * @return å­—ç¬¦ä¸²è¡Œæ•°
      */
     template<typename T> int SplitToStringListBySpace(StringList<T> &sl,const T *str,int size)
     {
         if(!str||size<=0)return(-1);
 
-        SplitStringToStringListByCondition split(&sl,isspace,true);
+        SplitStringToStringListByCondition<T,bool> split(&sl,isspace,true);
 
         return split.Split(str,size);
     }//int SplitToStringListBySpace
 
 #define SPLIT_STRING_TO_STRING_LIST(name)   template<typename T> int SplitToStringListBy##name(StringList<T> &sl,const String<T> &str)  \
                                             {   \
-                                                return SplitToStringListBy##name(sl,str.c_str(),str.Length());  \
+                                                return SplitToStringListBy##name<T>(sl,str.c_str(),str.Length());  \
                                             }
 
     SPLIT_STRING_TO_STRING_LIST(Space)
 
     /**
-     * ²ğ·Ö´úÂëÓÃ×Ö·û´®µ½Ò»¸ö×Ö·û´®ÁĞ±í
-     * @param sl ×Ö·û´®ÁĞ±í´¦ÀíÀà
-     * @param str ×Ö·û´®
-     * @param size ×Ö·û´®³¤¶È
-     * @return ×Ö·û´®ĞĞÊı
+     * æ‹†åˆ†ä»£ç ç”¨å­—ç¬¦ä¸²åˆ°ä¸€ä¸ªå­—ç¬¦ä¸²åˆ—è¡¨
+     * @param sl å­—ç¬¦ä¸²åˆ—è¡¨å¤„ç†ç±»
+     * @param str å­—ç¬¦ä¸²
+     * @param size å­—ç¬¦ä¸²é•¿åº¦
+     * @return å­—ç¬¦ä¸²è¡Œæ•°
      */
     template<typename T> int SplitToStringListByCodes(StringList<T> &sl,const T *str,int size)
     {
         if(!str||size<=0)return(-1);
 
-        SplitStringToStringListByCondition split(&sl,iscodechar,false);
+        SplitStringToStringListByCondition<T,bool> split(&sl,iscodechar,false);
 
         return split.Split(str,size);
     }//int SplitToStringListByCodes
@@ -210,17 +210,17 @@ namespace hgl
     SPLIT_STRING_TO_STRING_LIST(Codes)
 
     /**
-     * ²ğ·ÖÊı×Ö´®µ½Ò»¸ö×Ö·û´®ÁĞ±í
-     * @param sl ×Ö·û´®ÁĞ±í´¦ÀíÀà
-     * @param str ×Ö·û´®
-     * @param size ×Ö·û´®³¤¶È
-     * @return ×Ö·û´®ĞĞÊı
+     * æ‹†åˆ†æ•°å­—ä¸²åˆ°ä¸€ä¸ªå­—ç¬¦ä¸²åˆ—è¡¨
+     * @param sl å­—ç¬¦ä¸²åˆ—è¡¨å¤„ç†ç±»
+     * @param str å­—ç¬¦ä¸²
+     * @param size å­—ç¬¦ä¸²é•¿åº¦
+     * @return å­—ç¬¦ä¸²è¡Œæ•°
      */
     template<typename T> int SplitToStringListByDigit(StringList<T> &sl,const T *str,int size)
     {
         if(!str||size<=0)return(-1);
 
-        SplitStringToStringListByCondition split(&sl,isdigit,false);
+        SplitStringToStringListByCondition<T,bool> split(&sl,isdigit,false);
 
         return split.Split(str,size);
     }//int SplitToStringListByDigit
@@ -228,17 +228,17 @@ namespace hgl
     SPLIT_STRING_TO_STRING_LIST(Digit)
     
     /**
-     * ²ğ·Ö16½øÖÆÊı×Ö´®µ½Ò»¸ö×Ö·û´®ÁĞ±í
-     * @param sl ×Ö·û´®ÁĞ±í´¦ÀíÀà
-     * @param str ×Ö·û´®
-     * @param size ×Ö·û´®³¤¶È
-     * @return ×Ö·û´®ĞĞÊı
+     * æ‹†åˆ†16è¿›åˆ¶æ•°å­—ä¸²åˆ°ä¸€ä¸ªå­—ç¬¦ä¸²åˆ—è¡¨
+     * @param sl å­—ç¬¦ä¸²åˆ—è¡¨å¤„ç†ç±»
+     * @param str å­—ç¬¦ä¸²
+     * @param size å­—ç¬¦ä¸²é•¿åº¦
+     * @return å­—ç¬¦ä¸²è¡Œæ•°
      */
     template<typename T> int SplitToStringListByXDigit(StringList<T> &sl,const T *str,int size)
     {
         if(!str||size<=0)return(-1);
 
-        SplitStringToStringListByCondition split(&sl,isxdigit,false);
+        SplitStringToStringListByCondition<T,bool> split(&sl,isxdigit,false);
 
         return split.Split(str,size);
     }//int SplitToStringListByXDigit
@@ -246,17 +246,17 @@ namespace hgl
     SPLIT_STRING_TO_STRING_LIST(XDigit)
 
     /**
-     * ²ğ·Ö¸¡µãÊı×Ö´®µ½Ò»¸ö×Ö·û´®ÁĞ±í
-     * @param sl ×Ö·û´®ÁĞ±í´¦ÀíÀà
-     * @param str ×Ö·û´®
-     * @param size ×Ö·û´®³¤¶È
-     * @return ×Ö·û´®ĞĞÊı
+     * æ‹†åˆ†æµ®ç‚¹æ•°å­—ä¸²åˆ°ä¸€ä¸ªå­—ç¬¦ä¸²åˆ—è¡¨
+     * @param sl å­—ç¬¦ä¸²åˆ—è¡¨å¤„ç†ç±»
+     * @param str å­—ç¬¦ä¸²
+     * @param size å­—ç¬¦ä¸²é•¿åº¦
+     * @return å­—ç¬¦ä¸²è¡Œæ•°
      */
     template<typename T> int SplitToStringListByFloat(StringList<T> &sl,const T *str,int size)
     {
         if(!str||size<=0)return(-1);
 
-        SplitStringToStringListByCondition split(&sl,isfloat,false);
+        SplitStringToStringListByCondition<T,bool> split(&sl,isfloat,false);
 
         return split.Split(str,size);
     }//int SplitToStringListByFloat
@@ -264,7 +264,7 @@ namespace hgl
     SPLIT_STRING_TO_STRING_LIST(Float)
     
     /**
-     * »ùÓÚÖ¸¶¨×Ö·û²ğ·Ö×Ö·û´®µ½×Ö·û´®ÁĞ±íÄ£°åÀà
+     * åŸºäºæŒ‡å®šå­—ç¬¦æ‹†åˆ†å­—ç¬¦ä¸²åˆ°å­—ç¬¦ä¸²åˆ—è¡¨æ¨¡æ¿ç±»
      */
     template<typename T> class SplitStringToStringListByChar:public SplitStringToStringList<T>
     {
@@ -272,7 +272,7 @@ namespace hgl
 
     public:
 
-        SplitStringToStringListByChar(StringList<T> *sl,const T &sc):SplitStringToStringList(sl)
+        SplitStringToStringListByChar(StringList<T> *sl,const T &sc):SplitStringToStringList<T>(sl)
         {
             separator_char=sc;
         }
@@ -285,27 +285,29 @@ namespace hgl
     };//template<typename T,typename C> class SplitStringToStringListByChar:public SplitStringToStringList<T>
 
     /**
-     * ÒÔÖ¸¶¨×Ö·ûÎª·Ö¸ô²ğ½âÒ»¸ö×Ö·û´®µ½Ò»¸ö×Ö·û´®ÁĞ±í
-     * @param sl ×Ö·û´®ÁĞ±í´¦ÀíÀà
-     * @param str ×Ö·û´®
-     * @param size ×Ö·û´®³¤¶È
-     * @param split_char ·Ö¸ô×Ö·û
-     * @return ×Ö·û´®ĞĞÊı
+     * ä»¥æŒ‡å®šå­—ç¬¦ä¸ºåˆ†éš”æ‹†è§£ä¸€ä¸ªå­—ç¬¦ä¸²åˆ°ä¸€ä¸ªå­—ç¬¦ä¸²åˆ—è¡¨
+     * @param sl å­—ç¬¦ä¸²åˆ—è¡¨å¤„ç†ç±»
+     * @param str å­—ç¬¦ä¸²
+     * @param size å­—ç¬¦ä¸²é•¿åº¦
+     * @param split_char åˆ†éš”å­—ç¬¦
+     * @return å­—ç¬¦ä¸²è¡Œæ•°
      */
     template<typename T> int SplitToStringListByChar(StringList<T> &sl,const T *str,int size,const T &split_char)
     {
-        SplitStringToStringListByChar split(&sl,split_char);
+        SplitStringToStringListByChar<T> split(&sl,split_char);
 
         return split.Split(str,size);
     }//int SplitToStringList
     
     template<typename T> int SplitToStringListByChar(StringList<T> &sl,const String<T> &str,const T &split_char)
     {
-        return SplitToStringList<T>(sl,str.c_str(),str.Length(),split_char);
+        SplitStringToStringListByChar<T> split(&sl,split_char);
+
+        return split.Split(str.c_str(),str.Length());
     }
     
     /**
-     * »ùÓÚÖ¸¶¨µÄ¶à¸ö×Ö·û²ğ·Ö×Ö·û´®µ½×Ö·û´®ÁĞ±íÄ£°åÀà
+     * åŸºäºæŒ‡å®šçš„å¤šä¸ªå­—ç¬¦æ‹†åˆ†å­—ç¬¦ä¸²åˆ°å­—ç¬¦ä¸²åˆ—è¡¨æ¨¡æ¿ç±»
      */
     template<typename T> class SplitStringToStringListByChars:public SplitStringToStringList<T>
     {
@@ -313,11 +315,11 @@ namespace hgl
 
     public:
 
-        SplitStringToStringListByChar(StringList<T> *sl,const String<T> &sc):SplitStringToStringList(sl)
+        SplitStringToStringListByChars(StringList<T> *sl,const String<T> &sc):SplitStringToStringList<T>(sl)
         {
             separator_char=sc;
         }
-        virtual ~SplitStringToStringListByChar()=default;
+        virtual ~SplitStringToStringListByChars()=default;
 
         bool isSeparatorChar(const T &ch) override
         {
@@ -326,37 +328,39 @@ namespace hgl
     };//template<typename T,typename C> class SplitStringToStringListByChars:public SplitStringToStringList<T>
     
     /**
-     * ÒÔÖ¸¶¨×Ö·ûÎª·Ö¸ô²ğ½âÒ»¸ö×Ö·û´®µ½Ò»¸ö×Ö·û´®ÁĞ±í
-     * @param sl ×Ö·û´®ÁĞ±í´¦ÀíÀà
-     * @param str ×Ö·û´®
-     * @param size ×Ö·û´®³¤¶È
-     * @param split_char ·Ö¸ô×Ö·û
-     * @return ×Ö·û´®ĞĞÊı
+     * ä»¥æŒ‡å®šå­—ç¬¦ä¸ºåˆ†éš”æ‹†è§£ä¸€ä¸ªå­—ç¬¦ä¸²åˆ°ä¸€ä¸ªå­—ç¬¦ä¸²åˆ—è¡¨
+     * @param sl å­—ç¬¦ä¸²åˆ—è¡¨å¤„ç†ç±»
+     * @param str å­—ç¬¦ä¸²
+     * @param size å­—ç¬¦ä¸²é•¿åº¦
+     * @param split_char åˆ†éš”å­—ç¬¦
+     * @return å­—ç¬¦ä¸²è¡Œæ•°
      */
     template<typename T> int SplitToStringListByChars(StringList<T> &sl,const T *str,int size,const String<T> &split_chars)
     {
-        SplitStringToStringListByChars split(&sl,split_chars);
+        SplitStringToStringListByChars<T> split(&sl,split_chars);
 
         return split.Split(str,size);
     }//int SplitToStringList
     
     template<typename T> int SplitToStringListByChars(StringList<T> &sl,const String<T> &str,const String<T> &split_chars)
     {
-        return SplitToStringList<T>(sl,str.c_str(),str.Length(),split_chars);
+        SplitStringToStringListByChars<T> split(&sl,split_chars);
+
+        return split.Split(str.c_str(),str.Length());
     }
 
     /**
-     * ²ğ½âÒ»¸ö¶àĞĞ×Ö·û´®µ½Ò»¸ö×Ö·û´®ÁĞ±í
-     * @param sl ×Ö·û´®ÁĞ±í´¦ÀíÀà
-     * @param str ×Ö·û´®
-     * @param size ×Ö·û´®³¤¶È
-     * @return ×Ö·û´®ĞĞÊı
+     * æ‹†è§£ä¸€ä¸ªå¤šè¡Œå­—ç¬¦ä¸²åˆ°ä¸€ä¸ªå­—ç¬¦ä¸²åˆ—è¡¨
+     * @param sl å­—ç¬¦ä¸²åˆ—è¡¨å¤„ç†ç±»
+     * @param str å­—ç¬¦ä¸²
+     * @param size å­—ç¬¦ä¸²é•¿åº¦
+     * @return å­—ç¬¦ä¸²è¡Œæ•°
      */
     template<typename T> int SplitToStringListByEnter(StringList<T> &sl,const T *str,int size)
     {
         const T sc[2]={T('\r'),T('\n')};
 
-        SplitStringToStringListByChars split(&sl,sc);
+        SplitStringToStringListByChars<T> split(&sl,sc);
 
         return split.Split(str,size);
     }//int SplitToStringList
@@ -365,77 +369,77 @@ namespace hgl
 
     #undef SPLIT_STRING_TO_STRING_LIST
 
-    /**
-     * ÒÔÖ¸¶¨×Ö·ûÎª·Ö¸ô²ğ½âÒ»¸ö×Ö·û´®µ½Ò»¸ö×Ö·û´®ÁĞ±í
-     * @param sl ×Ö·û´®ÁĞ±í´¦ÀíÀà
-     * @param str ×Ö·û´®
-     * @param size ×Ö·û´®³¤¶È
-     * @param split_char ·Ö¸ô×Ö·û
-     * @param maxSize ×î¶àÖ´ĞĞ´ÎÊı
-     * @return ×Ö·û´®ĞĞÊı
-     */
-    template<typename T> int SplitToStringList(StringList<T> &sl,const T *str,int size,const T &split_char,int maxSize)
-    {
-        if(!str||size<=0)return(-1);
+    ///**
+    // * ä»¥æŒ‡å®šå­—ç¬¦ä¸ºåˆ†éš”æ‹†è§£ä¸€ä¸ªå­—ç¬¦ä¸²åˆ°ä¸€ä¸ªå­—ç¬¦ä¸²åˆ—è¡¨
+    // * @param sl å­—ç¬¦ä¸²åˆ—è¡¨å¤„ç†ç±»
+    // * @param str å­—ç¬¦ä¸²
+    // * @param size å­—ç¬¦ä¸²é•¿åº¦
+    // * @param split_char åˆ†éš”å­—ç¬¦
+    // * @param maxSize æœ€å¤šæ‰§è¡Œæ¬¡æ•°
+    // * @return å­—ç¬¦ä¸²è¡Œæ•°
+    // */
+    //template<typename T> int SplitToStringList(StringList<T> &sl,const T *str,int size,const T &split_char,int maxSize)
+    //{
+    //    if(!str||size<=0)return(-1);
 
-        int count=0;
-        const T *p,*sp;
+    //    int count=0;
+    //    const T *p,*sp;
 
-        sp=p=str;
+    //    sp=p=str;
 
-        while(size>0)
-        {
-            if(!(*p))
-            {
-                if(p>sp)
-                {
-                    sl.Add(String<T>(sp,p-sp));
-                    ++count;
-                }
+    //    while(size>0)
+    //    {
+    //        if(!(*p))
+    //        {
+    //            if(p>sp)
+    //            {
+    //                sl.Add(String<T>(sp,p-sp));
+    //                ++count;
+    //            }
 
-                --size;
-                return count;
-            }
+    //            --size;
+    //            return count;
+    //        }
 
-            if(*p==split_char)
-            {
-                if(p>sp)
-                {
-                    sl.Add(String<T>(sp,p-sp));
-                    ++count;
-                }
+    //        if(*p==split_char)
+    //        {
+    //            if(p>sp)
+    //            {
+    //                sl.Add(String<T>(sp,p-sp));
+    //                ++count;
+    //            }
 
-                sp=p+1; ///<Ìø¹ı·Ö¸î·û
-                if(maxSize >0 && count >=maxSize-1)
-                {
-                    ++p;
-                    --size;
-                    if(size > 0)
-                    {
-                        sl.Add(String<T>(sp,size));
-                        ++count;
-                    }
+    //            sp=p+1; ///<è·³è¿‡åˆ†å‰²ç¬¦
+    //            if(maxSize >0 && count >=maxSize-1)
+    //            {
+    //                ++p;
+    //                --size;
+    //                if(size > 0)
+    //                {
+    //                    sl.Add(String<T>(sp,size));
+    //                    ++count;
+    //                }
 
-                    return count;
-                }
-            }
+    //                return count;
+    //            }
+    //        }
 
-            ++p;
-            --size;
-        }
+    //        ++p;
+    //        --size;
+    //    }
 
-        if(p>sp)
-        {
-            sl.Add(String<T>(sp,p-sp));
-            ++count;
-        }
+    //    if(p>sp)
+    //    {
+    //        sl.Add(String<T>(sp,p-sp));
+    //        ++count;
+    //    }
 
-        return count;
-    }//int SplitToStringList
+    //    return count;
+    //}//int SplitToStringList
 
-    template<typename T> int SplitToStringList(StringList<T> &sl,const String<T> &str,const T &split_char,int maxSize)
-    {
-        return SplitToStringList<T>(sl,str.c_str(),str.Length(),split_char,maxSize);
-    }
+    //template<typename T> int SplitToStringList(StringList<T> &sl,const String<T> &str,const T &split_char,int maxSize)
+    //{
+    //    return SplitToStringList<T>(sl,str.c_str(),str.Length(),split_char,maxSize);
+    //}
 }//namespace hgl
 #endif//HGL_SPLIT_STRING_INCLUDE

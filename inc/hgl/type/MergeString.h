@@ -1,14 +1,14 @@
-#ifndef HGL_MERGE_STRING_INCLUDE
+ï»¿#ifndef HGL_MERGE_STRING_INCLUDE
 #define HGL_MERGE_STRING_INCLUDE
 
 #include<hgl/type/StringList.h>
 namespace hgl
 {
     /**
-     * ½«Ò»¸ö×Ö·û´®ÁĞ±íÕûºÏ³ÉÒ»¸ö×Ö·û´®
-     * @param sl ÒªÕûºÏµÄ×Ö·û´®ÁĞ±í
-     * @param end_line »»ĞĞ·û
-     * @return ×Ö·û´®
+     * å°†ä¸€ä¸ªå­—ç¬¦ä¸²åˆ—è¡¨æ•´åˆæˆä¸€ä¸ªå­—ç¬¦ä¸²
+     * @param sl è¦æ•´åˆçš„å­—ç¬¦ä¸²åˆ—è¡¨
+     * @param end_line æ¢è¡Œç¬¦
+     * @return å­—ç¬¦ä¸²
      */
     template<typename T> String<T> MergeString(const StringList<T> &sl,const String<T> &end_line)
     {

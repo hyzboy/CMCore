@@ -126,7 +126,8 @@ namespace hgl
     {
         return((ch>='0'&&ch<='9')
         ||(ch>='a'&&ch<='f')
-        ||(ch>='A'&&ch<='F'));
+        ||(ch>='A'&&ch<='F')
+        ||ch=='x'||ch=='X');
     }
 
     /**
