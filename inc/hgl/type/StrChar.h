@@ -2465,7 +2465,7 @@ namespace hgl
     const int find_str_array(int count,const T **str_array,const T *str)
     {
         for(int i=1;i<count;i++)
-            if(stricmp<T>(str_array[i],str)==0)return(i);
+            if(stricmp(str_array[i],str)==0)return(i);
 
             return(-1);
     }
