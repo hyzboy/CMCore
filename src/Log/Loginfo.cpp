@@ -3,6 +3,7 @@
 #include<hgl/type/DateTime.h>
 #include<hgl/type/List.h>
 #include<hgl/thread/RWLock.h>
+#include<hgl/filesystem/FileSystem.h>
 
 namespace hgl
 {
@@ -55,14 +56,22 @@ namespace hgl
             Time t;
 
             ToDateTime(d,t);
+            
+            OSString cur_path;
+            OSString cur_program;
+    
+            filesystem::GetCurrentPath(cur_path);
+            filesystem::GetCurrentProgram(cur_program);
 
-            const OSString str= OS_TEXT("Create Log Date/Time: ")+
+            const OSString str= OS_TEXT("Starting Log at ")+
                                 OSString::valueOf(d.GetYear  ())+OS_TEXT("-")+
                                 OSString::valueOf(d.GetMonth ())+OS_TEXT("-")+
                                 OSString::valueOf(d.GetDay   ())+OS_TEXT(" ")+
                                 OSString::valueOf(t.GetHour  ())+OS_TEXT(":")+
                                 OSString::valueOf(t.GetMinute())+OS_TEXT(":")+
-                                OSString::valueOf(t.GetSecond())+OS_TEXT("\n");
+                                OSString::valueOf(t.GetSecond())+OS_TEXT("\n")+
+                                OS_TEXT("Current program: ") + cur_program.c_str() + OS_TEXT("\n")+
+                                OS_TEXT("Current path: ") + cur_path.c_str() + OS_TEXT("\n");
 
             WriteLog(llLog,str.c_str(),str.Length());
 
