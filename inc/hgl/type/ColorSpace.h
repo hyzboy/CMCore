@@ -5,15 +5,6 @@
 
 namespace hgl
 {
-    enum class ColorSpace
-    {
-        Linear=0,
-        sRGB,
-        YCbCr,
-
-        ENUM_CLASS_RANGE(Linear,YCbCr)
-    };//enum class ColorSpace
-
     constexpr double GAMMA      =2.4f;
     constexpr double INV_GAMMA  =1.0f/GAMMA;
     constexpr double SRGB_ALPHA =0.055f;
