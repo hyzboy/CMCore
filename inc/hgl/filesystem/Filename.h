@@ -110,7 +110,7 @@ namespace hgl
         {
             String<T> fullname;
 
-            if(pathname.GetLastChar()==directory_separator_char)                 //结尾有分隔符
+            if(pathname.GetLastChar()==directory_separator_char)                //结尾有分隔符
             {
                 if(filename.GetFirstChar()==directory_separator_char)           //开头有分隔符
                 {
@@ -340,8 +340,10 @@ namespace hgl
         inline UTF8String MergeFilename(const UTF8String &pathname,const UTF8String &filename)          ///<组合路径名与文件名
         {return MergeFilename<u8char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_U8STR);}
 
+    #if HGL_OS == HGL_OS_Windows
         inline WideString MergeFilename(const WideString &pathname,const WideString &filename)          ///<组合路径名与文件名
         {return MergeFilename<wchar_t>(pathname,filename,L'\\',L"\\");}
+    #endif//HGL_OS == HGL_OS_Windows
 
         OSString FixFilename(const OSString &filename);                                                 ///<修正部分文件名问题
     }//namespace filesystem
