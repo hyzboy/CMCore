@@ -36,6 +36,23 @@ namespace hgl
         str[6] = (value & 2)?'1':'0';
         str[7] = (value & 1)?'1':'0';
     }
+
+    constexpr uint8 HGL_B0000=0;
+    constexpr uint8 HGL_B0001=1;
+    constexpr uint8 HGL_B0010=2;
+    constexpr uint8 HGL_B0011=3;
+    constexpr uint8 HGL_B0100=4;
+    constexpr uint8 HGL_B0101=5;
+    constexpr uint8 HGL_B0110=6;
+    constexpr uint8 HGL_B0111=7;
+    constexpr uint8 HGL_B1000=8;
+    constexpr uint8 HGL_B1001=9;
+    constexpr uint8 HGL_B1010=10;
+    constexpr uint8 HGL_B1011=11;
+    constexpr uint8 HGL_B1100=12;
+    constexpr uint8 HGL_B1101=13;
+    constexpr uint8 HGL_B1110=14;
+    constexpr uint8 HGL_B1111=15;
     
     constexpr uint8 HGL_B00000000=0;
     constexpr uint8 HGL_B00000001=1;
