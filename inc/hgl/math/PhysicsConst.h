@@ -75,5 +75,41 @@ namespace hgl
     {
         return m0/sqrt(1-(v*v)/(HGL_SPEED_OF_LIGHT*HGL_SPEED_OF_LIGHT));
     }
+
+    /** 
+     * 摄氏度到华氏度
+     */
+    template<typename T>
+    inline T Celsius2Fahrenheit(const T &c)
+    {
+        return c*1.8+32;
+    }
+
+    /**
+     * 华氏度到摄氏度
+     */
+    template<typename T>
+    inline T Fahrenheit2Celsius(const T &f)
+    {
+        return (f - 32) / 1.8;
+    }
+    
+    /**
+     * 摄氏度到开氏度
+     */
+    template<typename T>
+    inline T Celsius2Kelvin(const T &c)
+    {
+        return c + 273.15;
+    }
+
+    /**
+     * 开氏度到摄氏度
+     */
+    template<typename T>
+    inline T Kelvin2Celsius(const T &k)
+    {
+        return k - 273.15;
+    }
 }//namespace hgl
 #endif//HGL_MATH_PHYSICS_CONST_INCLUDE

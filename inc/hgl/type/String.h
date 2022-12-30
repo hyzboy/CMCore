@@ -188,7 +188,7 @@ namespace hgl
             return(data.valid()?data->GetFirstChar():0);
         }
 
-        const T GetLastChar()const                                                                   ///<取得当前字符串最后一个字符
+        const T GetLastChar()const                                                                  ///<取得当前字符串最后一个字符
         {
             //          if(!this)return(0);
             return(data.valid()?data->GetLastChar():0);
