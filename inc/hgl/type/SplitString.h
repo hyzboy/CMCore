@@ -441,5 +441,38 @@ namespace hgl
     //{
     //    return SplitToStringList<T>(sl,str.c_str(),str.Length(),split_char,maxSize);
     //}
+
+    /**
+     * 以指定字符串为分隔拆解出一个字符串的左右两部分
+     * @param str 要拆解的字符串
+     * @param center 分隔字符串
+     * @param left 左边字符串
+     * @param right 右边字符串
+     */
+    template<typename C>
+    void SpliteByString(const String<C> &str,const String<C> &center,String<C> *left,String<C> *right)
+    {
+        if(str.IsEmpty())return;
+        if(center.IsEmpty())return;
+    
+        int pos = str.FindString(center);
+
+        if(pos < 0)
+        {
+            if(left)
+                *left = str;
+        
+            if(right)
+                *right = String<C>();
+        }
+        else
+        {
+            if(left)
+                *left = str.SubString(0, pos);
+
+            if(right)
+                *right = str.SubString(pos + center.Length());
+        }
+    }
 }//namespace hgl
 #endif//HGL_SPLIT_STRING_INCLUDE
