@@ -358,7 +358,7 @@ namespace hgl
      */
     template<typename T> int SplitToStringListByEnter(StringList<T> &sl,const T *str,int size)
     {
-        const T sc[2]={T('\r'),T('\n')};
+        const T sc[]={T('\r'),T('\n'),0};
 
         SplitStringToStringListByChars<T> split(&sl,sc);
 
