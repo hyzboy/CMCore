@@ -463,15 +463,25 @@ namespace hgl
                 *left = str;
         
             if(right)
-                *right = String<C>();
+                right->Clear();
         }
         else
         {
             if(left)
-                *left = str.SubString(0, pos);
+            {
+                if(pos==0)
+                    left->Clear();
+                else
+                    *left = str.SubString(0, pos);
+            }
 
             if(right)
-                *right = str.SubString(pos + center.Length());
+            {
+                if(pos+center.Length()>=str.Length())
+                    right->Clear();
+                else
+                    *right = str.SubString(pos + center.Length());
+            }
         }
     }
 }//namespace hgl
