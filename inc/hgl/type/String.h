@@ -1112,7 +1112,7 @@ namespace hgl
             if(start<0||start>data->GetLength()-str.Length())
                 return(-1);
 
-            const T *result=strstr(data->c_str()+start,str.c_str());
+            const T *result=strstr(data->c_str()+start,data->GetLength()-start,str.c_str(),str.Length());
 
             if(result)
                 return result-(data->c_str());
