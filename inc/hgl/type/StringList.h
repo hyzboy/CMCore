@@ -174,6 +174,22 @@ namespace hgl
         }
 
         /**
+         * 确认字符串确在,英文区分大小写
+         */
+        bool Exist(const StringClass &str) const                                                    ///<确认字符串确在,英文区分大小写
+        {
+            return Find(str)!=-1;
+        }
+
+        /**
+         * 确认字符串确在,英文无视大小写
+         */
+        bool CaseExist(const StringClass &str) const                                                ///<确认字符串确在,英文无视大小写
+        {
+            return CaseFind(str)!=-1;
+        }
+
+        /**
         * 查找字符串，并指定最大比较长度
         * @param str 要查找的字符串
         * @param cn 限定的要查找字符串的最大长度
