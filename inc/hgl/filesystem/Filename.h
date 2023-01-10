@@ -250,9 +250,9 @@ namespace hgl
                 return filename;
             else
             if(include_spear_char)
-                return filename.SubString(0,pos);
+                return filename.SubString(0,pos+1);
             else
-                return filename.SubString(0,pos-1);
+                return filename.SubString(0,pos);
         }
 
         /**
