@@ -120,14 +120,14 @@ namespace hgl
         {
             if(!string_list)return(-1);
 
-            return SplitString::Split(str,size);
+            return SplitString<T>::Split(str,size);
         }
 
         virtual int Split(const String<T> &str) override
         {
             if(!string_list)return(-1);
 
-            return SplitString::Split(str.c_str(),str.Length());
+            return SplitString<T>::Split(str.c_str(),str.Length());
         }
     };//template<typename T> class SplitStringToStringList:public SplitString
 
@@ -157,14 +157,14 @@ namespace hgl
         {
             if(!isFunc)return(-1);
 
-            return SplitStringToStringList::Split(str,size);
+            return SplitStringToStringList<T>::Split(str,size);
         }
 
         virtual int Split(const String<T> &str) override
         {
             if(!isFunc)return(-1);
 
-            return SplitStringToStringList::Split(str.c_str(),str.Length());
+            return SplitStringToStringList<T>::Split(str.c_str(),str.Length());
         }
     };//template<typename T,typename C> class SplitStringToStringListByCondition:public SplitStringToStringList<T>
 
