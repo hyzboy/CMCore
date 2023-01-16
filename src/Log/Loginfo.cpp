@@ -73,7 +73,7 @@ namespace hgl
                                 OS_TEXT("Current program: ") + cur_program.c_str() + OS_TEXT("\n")+
                                 OS_TEXT("Current path: ") + cur_path.c_str() + OS_TEXT("\n");
 
-            WriteLog(llLog,str.c_str(),str.Length());
+            WriteLog(LogLevel::Log,str.c_str(),str.Length());
 
             return(true);
         }
@@ -207,8 +207,8 @@ namespace hgl
          */
         bool InitLogger(const OSString &app_name)
         {
-            AddLogger(CreateLoggerConsole(llLog));
-            AddLogger(CreateLoggerFile(app_name,llLog));
+            AddLogger(CreateLoggerConsole(LogLevel::Log));
+            AddLogger(CreateLoggerFile(app_name,LogLevel::Log));
 
             return InitLog();
         }

@@ -16,13 +16,13 @@ namespace hgl
 {
     namespace logger
     {
-        enum LogLevel
+        enum class LogLevel
         {
-            llError=0,      //错误，肯定出对话框
-            llProblem,      //问题，默认出对话框
-            llHint,         //提示，不重要，debug状态默认出对话框
-            llLog           //记录一下
-        };//enum LogLevel
+            Error=0,      //错误，肯定出对话框
+            Problem,      //问题，默认出对话框
+            Hint,         //提示，不重要，debug状态默认出对话框
+            Log           //记录一下
+        };//enum class LogLevel
         
         bool InitLogger(const OSString &app_name);
         
@@ -56,14 +56,14 @@ namespace hgl
             Log(ll,str+U8_TEXT(">>LogFrom(\"")+UTF8String((u8char *)filename)+U8_TEXT("\", ")+UTF8String::valueOf(line)+U8_TEXT(" line,func:\"")+UTF8String((u8char *)funcname)+U8_TEXT("\")"));
         }
 
-        #define LOG_INFO(str)       {Log(llLog,     str);}
-        #define LOG_HINT(str)       {Log(llHint,    str);}
-        #define LOG_PROBLEM(str)    {Log(llProblem, str);}
-        #define LOG_ERROR(str)      {Log(llError,   str);}
+        #define LOG_INFO(str)       {Log(LogLevel::Log,     str);}
+        #define LOG_HINT(str)       {Log(LogLevel::Hint,    str);}
+        #define LOG_PROBLEM(str)    {Log(LogLevel::Problem, str);}
+        #define LOG_ERROR(str)      {Log(LogLevel::Error,   str);}
 
-        #define RETURN_FALSE        {DebugLog(llLog,OS_TEXT("return(false)"),                                   __FILE__,__LINE__,__HGL_FUNC__);return(false);}
-        #define RETURN_ERROR(v)     {DebugLog(llLog,OS_TEXT("return error(")+OSString::valueOf(v)+OS_TEXT(")"), __FILE__,__LINE__,__HGL_FUNC__);return(v);}
-        #define RETURN_ERROR_NULL   {DebugLog(llLog,OS_TEXT("return error(nullptr)"),                           __FILE__,__LINE__,__HGL_FUNC__);return(nullptr);}
+        #define RETURN_FALSE        {DebugLog(LogLevel::Log,OS_TEXT("return(false)"),                                   __FILE__,__LINE__,__HGL_FUNC__);return(false);}
+        #define RETURN_ERROR(v)     {DebugLog(LogLevel::Log,OS_TEXT("return error(")+OSString::valueOf(v)+OS_TEXT(")"), __FILE__,__LINE__,__HGL_FUNC__);return(v);}
+        #define RETURN_ERROR_NULL   {DebugLog(LogLevel::Log,OS_TEXT("return error(nullptr)"),                           __FILE__,__LINE__,__HGL_FUNC__);return(nullptr);}
 
         #define RETURN_BOOL(proc)   {if(proc)return(true);RETURN_FALSE}
 
