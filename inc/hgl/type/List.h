@@ -228,6 +228,9 @@ namespace hgl
             CusObjectList<T>::Clear();
         }
     };//class ObjectList
+
+    #define OBJECT_LIST_ARRAY_CLEAR(object_list)         for(auto &obj:object_list)obj.Clear();    
+    #define OBJECT_LIST_ARRAY_CLEAR_DATA(object_list)    for(auto &obj:object_list)obj.ClearData();
 }//namespace hgl
 #include<hgl/type/ObjectList.cpp>
 #endif//HGL_LIST_INCLUDE
