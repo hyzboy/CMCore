@@ -153,7 +153,7 @@ namespace hgl
         return result;
     }
 
-    template<typename K,typename V,typename DataPair> class _MapObject:public _Map<K,V *,DataPair>
+    template<typename K,typename V,typename DataPair> class _ObjectMap:public _Map<K,V *,DataPair>
     {
     protected:
 
@@ -175,8 +175,8 @@ namespace hgl
 
     public:
 
-        _MapObject()=default;
-        virtual ~_MapObject()
+        _ObjectMap()=default;
+        virtual ~_ObjectMap()
         {
             if(SuperClass::GetCount()>0)
             {
@@ -326,9 +326,9 @@ namespace hgl
         }
 
         void Clear(){DeleteAll();}
-    };//class _MapObject
+    };//class _ObjectMap
 
-    template<typename K,typename V,typename DataPair> class CusMapObject:public _MapObject<K,V,DataPair>
+    template<typename K,typename V,typename DataPair> class CustomObjectMap:public _ObjectMap<K,V,DataPair>
     {
     protected:
 
@@ -337,21 +337,21 @@ namespace hgl
 
     public:
 
-        CusMapObject()=default;
-        virtual ~CusMapObject()
+        CustomObjectMap()=default;
+        virtual ~CustomObjectMap()
         {
-            _MapObject<K,V,DataPair>::Clear();
+            _ObjectMap<K,V,DataPair>::Clear();
         }
-    };//class CusMapObject
+    };//class CustomObjectMap
 
-    template<typename K,typename V> class MapObject:public CusMapObject<K,V,Pair<K,V *> >
+    template<typename K,typename V> class ObjectMap:public CustomObjectMap<K,V,Pair<K,V *> >
     {
     public:
 
-        MapObject()=default;
-        virtual ~MapObject()
+        ObjectMap()=default;
+        virtual ~ObjectMap()
         {
-            CusMapObject<K,V,Pair<K,V *> >::Clear();
+            CustomObjectMap<K,V,Pair<K,V *> >::Clear();
         }
 
         V *operator[](const K &index)const
@@ -363,7 +363,7 @@ namespace hgl
             else
                 return nullptr;
         };
-    };//class MapObject
+    };//class ObjectMap
 }//namespace hgl
 #include<hgl/type/Map.cpp>
 #endif//HGL_MAP_INCLUDE

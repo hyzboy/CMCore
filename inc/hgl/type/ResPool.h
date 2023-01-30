@@ -35,7 +35,7 @@ namespace hgl
 
         using ActiveItem=RefData<V>;
 
-        MapObject<K,ActiveItem> active_items;               ///<活跃的数据
+        ObjectMap<K,ActiveItem> active_items;               ///<活跃的数据
         Map<K,V> idle_items;                                ///<引用计数为0的
 
     public:
