@@ -110,7 +110,7 @@ namespace hgl
         int GetYear     ()const{return year;}                                                       ///<年
         int GetMonth    ()const{return month;}                                                      ///<月
         int GetDay      ()const{return day;}                                                        ///<日
-        int GetMaxDays  ()const{return max_days_per_month;}                                                 ///<本月天数
+        int GetMaxDays  ()const{return max_days_per_month;}                                         ///<本月天数
         int GetWeekDay  ()const{return week_day;}                                                   ///<星期,0为星期天
         int GetYearDay  ()const{return year_day;}                                                   ///<今天为这一年的第几天
 
