@@ -7,6 +7,9 @@ namespace hgl
      */
     int LoadStringFromText(UTF8String &full_text,const void *source_data,const int size,const CharSet &cs)
     {
+        if(!source_data||size<=0)
+            return 0;
+
         u8char *str=nullptr;
         int char_count=0;
 
