@@ -64,12 +64,12 @@ namespace hgl
             filesystem::GetCurrentProgram(cur_program);
 
             const OSString str= OS_TEXT("Starting Log at ")+
-                                OSString::valueOf(d.GetYear  ())+OS_TEXT("-")+
-                                OSString::valueOf(d.GetMonth ())+OS_TEXT("-")+
-                                OSString::valueOf(d.GetDay   ())+OS_TEXT(" ")+
-                                OSString::valueOf(t.GetHour  ())+OS_TEXT(":")+
-                                OSString::valueOf(t.GetMinute())+OS_TEXT(":")+
-                                OSString::valueOf(t.GetSecond())+OS_TEXT("\n")+
+                                OSString::numberOf(d.GetYear  ())+OS_TEXT("-")+
+                                OSString::numberOf(d.GetMonth ())+OS_TEXT("-")+
+                                OSString::numberOf(d.GetDay   ())+OS_TEXT(" ")+
+                                OSString::numberOf(t.GetHour  ())+OS_TEXT(":")+
+                                OSString::numberOf(t.GetMinute())+OS_TEXT(":")+
+                                OSString::numberOf(t.GetSecond())+OS_TEXT("\n")+
                                 OS_TEXT("Current program: ") + cur_program.c_str() + OS_TEXT("\n")+
                                 OS_TEXT("Current path: ") + cur_path.c_str() + OS_TEXT("\n");
 

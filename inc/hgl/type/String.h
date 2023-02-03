@@ -111,7 +111,7 @@ namespace hgl
 
         #define BASE_STRING_NUMBER_CONSTRUCT(type,func) \
         String(const type num)=delete;  \
-        static String<T> valueOf(const type value)  \
+        static String<T> numberOf(const type value)  \
         {   \
             StringInstance<T> *si=new StringInstance<T>();  \
             \
@@ -137,7 +137,7 @@ namespace hgl
 
         String(const int *value,int N)=delete;
 
-        static String<T> valueOf(const int *value,int N)
+        static String<T> numberOf(const int *value,int N)
         {
             const int size=N*sizeof(int)*8;
             int len;
@@ -160,7 +160,7 @@ namespace hgl
 
         String(const float *value,int N)=delete;
 
-        static String<T> valueOf(const float *value,int N)
+        static String<T> numberOf(const float *value,int N)
         {
             const int size=N*sizeof(float)*16;
             int len;
