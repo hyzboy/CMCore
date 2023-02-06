@@ -99,6 +99,27 @@ namespace hgl
         }
 
         /**
+        * 增加一个字符串列表到当前字符串列表中，同时做去重复处理
+        * @param sl 要增加的字符串列表
+        */
+        int AddUnique(const StringList<T> &sl)                                                            ///<添加字符串
+        {
+            const int count=sl.GetCount();
+
+            StringClass **str=sl.Items.GetData();
+
+            for(int i=0;i<count;i++)
+            {
+                if(Find(**str)==-1)
+                    Add(**str);
+
+                ++str;
+            }
+
+            return(count);
+        }
+
+        /**
         * 清除所有字符串
         */
         void Clear(){Items.Clear();}                                                                ///<删除列表中的所有字符串
