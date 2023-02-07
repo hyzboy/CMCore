@@ -23,15 +23,15 @@ namespace hgl
 
             const int64 total=is->Available();
 
-            if(size)
-                *size=total;
-
             if(total<=0)
                 return(nullptr);
 
             void *result=new char[total];
 
-            *size=is->ReadFully(result,total);
+            int64 read_size=is->ReadFully(result,total);
+            
+            if(size)
+                *size=read_size;
             return result;
         }
     }//namespace io

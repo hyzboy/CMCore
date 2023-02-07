@@ -1,6 +1,5 @@
-﻿#include<hgl/type/Color4f.h>
-#include<hgl/type/Color.h>
-#include<hgl/type/ColorSpace.h>
+﻿#include<hgl/color/Color4f.h>
+#include<hgl/color/Color.h>
 namespace hgl
 {
     void Color4f::Clamp()

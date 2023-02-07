@@ -1,8 +1,7 @@
 ﻿#ifndef HGL_COLOR_4_FLOAT_INCLUDE
 #define HGL_COLOR_4_FLOAT_INCLUDE
 
-#include<hgl/type/Color3f.h>
-#include<hgl/type/DataType.h>
+#include<hgl/color/Color3f.h>
 namespace hgl
 {
     #define HGL_FLOAT_TO_U32(c1,c2,c3,c4)   uint32( \
@@ -65,6 +64,7 @@ namespace hgl
         uint32 ToARGB8()const{ return HGL_FLOAT_TO_ARGB8(r, g, b, a); }                             ///<输出一个argb8格式的颜色数据
         uint32 ToABGR8()const{ return HGL_FLOAT_TO_ABGR8(r, g, b, a); }                             ///<输出一个abgr8格式的颜色数据
 
+        float ToGrey(){return RGB2Lum(r,g,b);}
         void Grey();                                                                                ///<将当前色彩变成灰色
 
         //操作符重载

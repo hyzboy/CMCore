@@ -1,6 +1,7 @@
 ﻿#ifndef HGL_COLOR_3_FLOAT_INCLUDE
 #define HGL_COLOR_3_FLOAT_INCLUDE
 
+#include<hgl/color/Lum.h>
 namespace hgl
 {
     /**
@@ -53,8 +54,7 @@ namespace hgl
         void Yellow(){r=1,g=1,b=0;}                                                                 ///<黄色
         void Purple(){r=1,g=0,b=1;}                                                                 ///<紫色
 
-        void Grey(float v){r=v,g=v,b=v;Clamp();}                                                    ///<灰色
-        void Grey(float,float,float);                                                               ///<指彩色变成灰色
+        float ToGrey(){return RGB2Lum(r,g,b);}
         void Grey();                                                                                ///<将当前色彩变成灰色
 
         //操作符重载

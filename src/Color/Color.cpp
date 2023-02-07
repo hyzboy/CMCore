@@ -1,22 +1,42 @@
-﻿#include<hgl/type/Color.h>
+﻿#include<hgl/color/Color.h>
+#include<hgl/color/YCbCr.h>
 
 namespace hgl
 {
+    #define DEF_RGB_U8_TO_F(r,g,b)      {float(r)/255.0f,float(g)/255.0f,float(b)/255.0f}
+    #define DEF_RGBA_U8_TO_F(r,g,b,a)   {float(r)/255.0f,float(g)/255.0f,float(b)/255.0f,float(a)/255.0f}
+
+    #define HEXColor3(value)     (0x##value>>16),((0x##value&0xFF00)>>8),(0x##value&0xFF)
+    #define HEXColor3f(value)    float(0x##value>>16)/255.0f,float((0x##value&0xFF00)>>8)/255.0f,float(0x##value&0xFF)/255.0f
+
+    struct COLOR_DEF
+    {
+        uint8 red,green,blue;
+        uint32 rgba;
+        uint32 abgr;
+        
+        float r,g,b;
+        float y,cb,cr;
+
+        char eng_name[32];
+        u16char chs_name[16];
+    };
+
     #undef DEF_COLOR
-    #define    DEF_COLOR(eng_name,red,green,blue,chs_name)    {   \
-                                                        red,    \
-                                                        green,  \
-                                                        blue,   \
-                                                        int(double(red)*0.299+double(green)*0.587+double(blue)*0.114), \
-                                                        \
-                                                        float(double(red)/255.0f),   \
-                                                        float(double(green)/255.0f), \
-                                                        float(double(blue)/255.0f),  \
-                                                        float((double(red)*0.299+double(green)*0.587+double(blue)*0.114)/255.0f),\
-                                                        \
-                                                        #eng_name, \
-                                                        U16_TEXT(chs_name)  \
-                                                    },
+    #define    DEF_COLOR(eng_name,red,green,blue,chs_name)  {   \
+                                                                red,green,blue, \
+                                                                (red<<24)|(green<<16)|(blue<<8), \
+                                                                (blue<<16)|(green<<8)|red, \
+                                                                float(double(red)/255.0f),   \
+                                                                float(double(green)/255.0f), \
+                                                                float(double(blue)/255.0f),  \
+                                                                float(RGB2Lum(double(red)/255.0f,double(green)/255.0f,double(blue)/255.0f)),\
+                                                                float(RGB2Cb(double(red)/255.0f,double(green)/255.0f,double(blue)/255.0f)),\
+                                                                float(RGB2Cr(double(red)/255.0f,double(green)/255.0f,double(blue)/255.0f)),\
+                                                                \
+                                                                #eng_name, \
+                                                                U16_TEXT(chs_name)  \
+                                                            },
 
     COLOR_DEF prv_color[size_t(COLOR::RANGE_SIZE)]=
     {
@@ -277,6 +297,48 @@ namespace hgl
     };
 
     #undef DEF_COLOR
+
+    const uint32 GetRGBA(const enum class COLOR &ce,const uint8 &alpha)
+    {
+        const COLOR_DEF &c=prv_color[size_t(ce)];
+
+        return c.rgba|alpha;
+    }
+
+    const uint32 GetABGR(const enum class COLOR &ce,const uint8 &alpha)
+    {
+        const COLOR_DEF &c=prv_color[size_t(ce)];
+
+        return c.abgr|(alpha<<24);
+    }
+
+    const Color3f GetColor3f(const enum class COLOR &ce)
+    {
+        const COLOR_DEF &c=prv_color[size_t(ce)];
+
+        return Color3f(c.r,c.g,c.b);
+    }
+
+    const Color4f GetColor4f(const enum class COLOR &ce,const float &alpha)
+    {
+        const COLOR_DEF &c=prv_color[size_t(ce)];
+
+        return Color4f(c.r,c.g,c.b,alpha);
+    }
+
+    const Color3f GetYCbCrColor3f(const enum class COLOR &ce)
+    {
+        const COLOR_DEF &c=prv_color[size_t(ce)];
+
+        return Color3f(c.y,c.cb,c.cr);
+    }
+
+    const Color4f GetYCbCrColor4f(const enum class COLOR &ce,const float &alpha)
+    {
+        const COLOR_DEF &c=prv_color[size_t(ce)];
+
+        return Color4f(c.y,c.cb,c.cr,alpha);
+    }
 
     /**
      * 根据光谱值获取对应的RGB值

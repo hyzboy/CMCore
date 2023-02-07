@@ -13,7 +13,7 @@ namespace hgl
      * Approximates acos(x) with a max absolute error of 9.0x10^-3.
      * Valid in the range -1..1.
      */
-    inline float Lacos(float x)
+    inline const float Lacos(float x)
     {
         // Lagarde 2014, "Inverse trigonometric functions GPU optimization for AMD GCN architecture"
         // This is the approximation of degree 1, with a max absolute error of 9.0x10^-3
@@ -27,16 +27,35 @@ namespace hgl
      * Approximates acos(x) with a max absolute error of 9.0x10^-3.
      * Valid only in the range 0..1.
      */
-    inline float LacosPositive(float x)
+    inline const float LacosPositive(float x)
     {
-        float p = -0.1565827 * x + 1.570796;
-        return p * sqrt(1.0 - x);
+        return (-0.1565827 * x + 1.570796) * sqrt(1.0 - x);
     }
 
+    inline constexpr double ApproxSin(double angle)
+    {
+        return angle*(1.27323954f-angle*angle*(0.405284735f-angle*angle*(0.075133f-angle*angle*0.0078f)));
+    }
+
+    inline constexpr double ApproxCos(double angle)
+    {
+        return 1.27323954f-angle*angle*(0.405284735f-angle*angle*(0.075133f-angle*angle*0.0078f));
+    }
+
+    inline constexpr double ApproxAtan2(double x,double y)
+    {
+        return x/(1.27323954f+y*y*(0.405284735f+y*y*(0.075133f+y*y*0.0078f)));
+    }
+
+    inline constexpr double ApproxAtan(double z)
+    {
+        return z*(1.27323954f-z*z*(0.405284735f-z*z*(0.075133f-z*z*0.0078f)));
+    }
+    
     /**
      * 低精度atan函数
      */
-    inline double Latan(double z)
+    inline constexpr double Latan(double z)
     {
         constexpr double n1 = 0.97239411f;
         constexpr double n2 = -0.19194795f;
@@ -49,7 +68,7 @@ namespace hgl
     /**
      * 近似Pow2.2，使用此函数等于pow(x,2.2)
      */
-    inline double LPow22(double x)
+    inline constexpr double LPow22(double x)
     {
         return x*(1.12*x - 0.12);
     }

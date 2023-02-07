@@ -1,34 +1,10 @@
 ﻿#ifndef HGL_COLOR_TABLE_INCLUDE
 #define HGL_COLOR_TABLE_INCLUDE
 
-#include<hgl/platform/Platform.h>
 #include<hgl/TypeFunc.h>
-#include<hgl/type/Color4f.h>
+#include<hgl/color/Color4f.h>
 namespace hgl
 {
-    #define DEF_RGB_U8_TO_F(r,g,b)      {float(r)/255.0f,float(g)/255.0f,float(b)/255.0f}
-    #define DEF_RGBA_U8_TO_F(r,g,b,a)   {float(r)/255.0f,float(g)/255.0f,float(b)/255.0f,float(a)/255.0f}
-
-    #define HEXColor3(value)     (0x##value>>16),((0x##value&0xFF00)>>8),(0x##value&0xFF)
-    #define HEXColor3f(value)    float(0x##value>>16)/255.0f,float((0x##value&0xFF00)>>8)/255.0f,float(0x##value&0xFF)/255.0f
-
-    const Color3f GetSpectralColor(const double l);                            ///<根据光谱值获取对应的RGB值
-
-    /**
-    * 颜色数据定义
-    */
-    struct COLOR_DEF            ///颜色数据定义
-    {
-        int red,green,blue;     ///<三原色
-        int yum;                ///<亮度
-
-        float r,g,b;            ///<三原色浮点值
-        float y;                ///<亮度浮点值
-
-        char eng_name[32];      ///<英文名称
-        u16char chs_name[16];   ///<中文名称
-    };
-
     /**
     * 颜色枚举
     */
@@ -281,20 +257,19 @@ namespace hgl
         ENUM_CLASS_RANGE(AliceBlue,YellowGreen)
     };//enum COLOR_ENUM
 
-    extern COLOR_DEF prv_color[size_t(COLOR::RANGE_SIZE)];
+    const uint32 GetRGBA(const enum class COLOR &ce,const uint8 &alpha);
+    const uint32 GetABGR(const enum class COLOR &ce,const uint8 &alpha);
 
-    inline const Color3f GetColor3f(const enum class COLOR &ce)
-    {
-        const COLOR_DEF &c=prv_color[size_t(ce)];
+    const Color3f GetColor3f(const enum class COLOR &ce);
+    const Color4f GetColor4f(const enum class COLOR &ce,const float &alpha);
 
-        return Color3f(c.r,c.g,c.b);
-    }
-
-    inline const Color4f GetColor4f(const enum class COLOR &ce,const float &alpha)
-    {
-        const COLOR_DEF &c=prv_color[size_t(ce)];
-
-        return Color4f(c.r,c.g,c.b,alpha);
-    }
+    const Color3f GetYCbCrColor3f(const enum class COLOR &ce);
+    const Color4f GetYCbCrColor4f(const enum class COLOR &ce,const float &alpha);
+    
+    /**
+     * 根据光谱值获取对应的RGB值
+     * @param l 光谱值(从400到700)
+     */
+    const Color3f GetSpectralColor(const double l);
 }//namespace hgl
 #endif//HGL_COLOR_TABLE_INCLUDE

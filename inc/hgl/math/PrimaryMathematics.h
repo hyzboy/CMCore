@@ -35,5 +35,20 @@ namespace hgl
 
         return result;
     }
+
+    template<typename T,typename T2>
+    inline constexpr T Clamp(const T &value,const T2 &min_value,const T2 &max_value)
+    {
+        if(value<min_value)return min_value;
+        if(value>max_value)return max_value;
+
+        return value;
+    }
+
+    template<typename T>
+    inline constexpr T Clamp(const T &value)
+    {
+        return Clamp<T>(value,0,1);
+    }
 }//namespace hgl
 #endif//HGL_Primary_Mathematics_INCLUDE

@@ -42,14 +42,8 @@ SOURCE_GROUP("Math\\Header Files" FILES ${MATH_HEADER_FILES})
 SOURCE_GROUP("Math\\Source Files" FILES ${MATH_SOURCE_FILES})
 
 ##Color--------------------------------------------------------
-SET(COLOR_HEADER_FILES  ${TYPE_INCLUDE_PATH}/Color.h
-                        ${TYPE_INCLUDE_PATH}/ColorSpace.h
-                        ${TYPE_INCLUDE_PATH}/Color3f.h
-                        ${TYPE_INCLUDE_PATH}/Color4f.h)
-
-SET(COLOR_SOURCE_FILES  Color/Color.cpp
-                        Color/Color3f.cpp
-                        Color/Color4f.cpp)
+FILE(GLOB COLOR_HEADER_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/color/*.h)
+FILE(GLOB COLOR_SOURCE_FILES Color/*.cpp)
 
 SOURCE_GROUP("Datatype\\Color\\Header Files" FILES ${COLOR_HEADER_FILES})
 SOURCE_GROUP("Datatype\\Color\\Source Files" FILES ${COLOR_SOURCE_FILES})
