@@ -48,6 +48,8 @@ namespace hgl
         virtual int  Add(const T *,int n);                                                          ///<增加一批数据
                 int  Add(const List<T> &l){return Add(l.items,l.count);}                            ///<增加一批数据
 
+        const   bool IsEmpty()const{return count==0;}                                               ///<是否是空的
+
         virtual void Clear();                                                                       ///<清除所有数据
         virtual void ClearData();                                                                   ///<清除所有数据，但不清空缓冲区
         virtual int  Find(const T &)const;                                                          ///<查找指定数据的索引
