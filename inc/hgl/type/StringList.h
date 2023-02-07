@@ -29,6 +29,8 @@ namespace hgl
         StringClass **  begin       ()const{return Items.GetData();}
         StringClass **  end         ()const{return Items.GetData()+Items.GetCount();}
 
+        const bool      IsEmpty     ()const { return Items.IsEmpty(); }                             ///<字符串列表是否为空
+
     public: //操作符重载
 
         StringClass &operator[](int n)const
@@ -78,6 +80,19 @@ namespace hgl
         * @return 增加字符串成功后的索引
         */
         int Add(const StringClass &str){return Items.Add(new StringClass(str));}                    ///<添加字符串
+
+        /**
+         * 增加一行字符串到当前列表中,同时做重复判断，重复则不添加
+         */
+        int AddUnique(const StringClass &str)
+        {
+            int pos=Find(str);
+
+            if(pos!=-1)
+                return pos;
+
+            return Items.Add(new StringClass(str));
+        }
 
         /**
         * 增加一个字符串列表到当前字符串列表中
