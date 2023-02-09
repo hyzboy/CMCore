@@ -29,14 +29,23 @@ namespace hgl
         mantissa=(*p&0x000FFFFFFFFFFFFF);
     }
 
-    constexpr float MergeFloat(const bool sign_bit,const uint exponent,const uint mantissa)
+    constexpr half_float MergeFloat16(const bool sign_bit,const uint exponent,const uint mantissa)
     {
-        return float((sign_bit?0x80000000:0)|(exponent<<23)|mantissa);
+        return half_float((sign_bit?0x8000:0)|(exponent<<10)|mantissa);
+    }
+
+    constexpr float MergeFloat32(const bool sign_bit,const uint exponent,const uint mantissa)
+    {
+        uint32 value=((sign_bit?0x80000000:0)|(exponent<<23)|mantissa);
+
+        return *(float *)&value;
     }
 
     constexpr double MergeFloat64(const bool sign_bit,const uint exponent,const uint64 mantissa)
     {
-        return double((sign_bit?0x8000000000000000:0)|(uint64(exponent)<<52)|mantissa);
+        uint64 value=((sign_bit?0x8000000000000000:0)|(uint64(exponent)<<52)|mantissa);
+
+        return *(double *)&value;
     }
 
     /**
