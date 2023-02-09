@@ -138,5 +138,36 @@ namespace hgl
             src+=4;
         }
     }
+
+    inline void Pattle16ToRGBA8(uint32 *target,const uint8 *source,const uint32 *pattle,const uint32 width,const uint32 height)
+    {
+        for(uint y=0;y<height;y++)
+        {
+            for(uint x=0;x<width;x+=2)
+            {
+                *target=pattle[(*source)>>4];
+                ++target;
+
+                *target=pattle[(*source)&0xF];
+                ++target;
+                
+                ++source;
+            }
+        }
+    }
+
+    inline void Pattle256ToRGBA8(uint32 *target,const uint8 *source,const uint32 *pattle,const uint32 width,const uint32 height)
+    {
+        for(uint y=0;y<height;y++)
+        {
+            for(uint x=0;x<width;x++)
+            {
+                *target=pattle[*source];
+                   
+                ++target;
+                ++source;
+            }
+        }
+    }
 }//namespace hgl
 #endif//HGL_COLOR_FORMAT_INCLUDE
