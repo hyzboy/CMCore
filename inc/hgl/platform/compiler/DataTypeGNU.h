@@ -14,7 +14,8 @@ namespace hgl
 
     using  int64    =  signed long long;    ///<有符号64位整型
     using uint64    =unsigned long long;    ///<无符号64位整型
-
+    
+    using half_float=uint16;
     using float32   =float;
     using float64   =double;
 

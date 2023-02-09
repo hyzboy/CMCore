@@ -25,33 +25,26 @@ namespace hgl
         }
     }
 
-    constexpr uint16 RGBA8toA1RGB5(const uint8 r,const uint8 g,const uint8 b,const uint8 a)
-    {
-           return ((a>>7)<<15)
-                 |((r<<7)&0x7C00)
-                 |((g<<2)&0x3E0)
-                 | (b>>3);
-    }
-
-    inline void RGBA8toA1RGB5(uint16 *target,uint8 *src,uint size)
-    {
-        for(uint i=0;i<size;i++)
-        {
-            *target=( (src[3]>>7)<<15)
-                    |((src[0]<<7)&0x7C00)
-                    |((src[1]<<2)&0x3E0)
-                    | (src[2]>>3);
-           
-            ++target;
-            src+=4;
-        }
-    }
-
     // Bit depth    Sign bit present    Exponent bits   Mantissa bits
     //  32              Yes                 8               23
     //  16              Yes                 5               10
     //  11              No                  5               6
     //  10              No                  5               5
+
+    inline void RGB32FtoB10GR11UF(uint32 *target,const float *source,uint size)
+    {
+        const uint32 *src=(uint32 *)source;
+
+        for(uint i=0;i<size;i++)
+        {
+            *target=   ((src[2]&0x7FE0)<<17)
+                      |((src[1]&0x7FF0)<<7)
+                      | (src[0]&0x7FF0)>>4;
+
+            ++target;
+            source+=3;
+        }
+    }
     
     constexpr uint32 RGB16FtoB10GR11UF(const half_float r, const half_float g, const half_float b)
     {

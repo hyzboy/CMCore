@@ -1,5 +1,6 @@
 #ifndef HGL_DATATYPE_WINDOWS_INCLUDE
 #define HGL_DATATYPE_WINDOWS_INCLUDE
+
 namespace hgl
 {
     using  int8     =  signed __int8 ;  ///<有符号 8位整型
@@ -10,7 +11,8 @@ namespace hgl
     using uint32    =unsigned __int32;  ///<无符号32位整型
     using  int64    =  signed __int64;  ///<有符号64位整型
     using uint64    =unsigned __int64;  ///<无符号64位整型
-
+    
+    using half_float=uint16;
     using float32   =float;
     using float64   =double;
     

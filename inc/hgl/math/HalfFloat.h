@@ -1,12 +1,101 @@
-#ifndef HGL_HALF_FLOAT_INCLUDE
+﻿#ifndef HGL_HALF_FLOAT_INCLUDE
 #define HGL_HALF_FLOAT_INCLUDE
 
 #include<hgl/platform/Platform.h>
 
 namespace hgl
 {
-    using half_float=uint16;
+    // Bit depth    Sign bit present    Exponent bits   Mantissa bits
+    //  32              Yes                 8               23
+    //  16              Yes                 5               10
+    //  11              No                  5               6
+    //  10              No                  5               5
 
+    inline void SplitFloat32(bool &sign_bit,uint &exponent,uint &mantissa,const float value)
+    {
+        uint32 *p=(uint32 *)&value;
+    
+        sign_bit=(*p&0x80000000)!=0;
+        exponent=(*p&0x7F800000)>>23;
+        mantissa=(*p&0x007FFFFF);
+    }
+
+    inline void SplitFloat64(bool &sign_bit,uint &exponent,uint64 &mantissa,const double value)
+    {
+        uint64 *p=(uint64 *)&value;
+       
+        sign_bit=(*p&0x8000000000000000)!=0;
+        exponent=(*p&0x7FF0000000000000)>>52;
+        mantissa=(*p&0x000FFFFFFFFFFFFF);
+    }
+
+    constexpr float MergeFloat(const bool sign_bit,const uint exponent,const uint mantissa)
+    {
+        return float((sign_bit?0x80000000:0)|(exponent<<23)|mantissa);
+    }
+
+    constexpr double MergeFloat64(const bool sign_bit,const uint exponent,const uint64 mantissa)
+    {
+        return double((sign_bit?0x8000000000000000:0)|(uint64(exponent)<<52)|mantissa);
+    }
+
+    /**
+    * 标准版float32转float16处理
+    */
+    void Float32toFloat16(half_float *output,const float *input,const uint count)
+    {
+        const uint32 *src=(const uint32 *)input;
+        uint16 *dst=output;
+    
+        for(uint i=0;i<count;i++)
+        {
+            uint32 value=src[i];
+    
+            uint32 sign_bit=value&0x80000000;
+            uint32 exponent=(value&0x7F800000)>>23;
+            uint32 mantissa=value&0x007FFFFF;
+    
+            if(exponent==0xFF)
+            {
+                if(mantissa==0)
+                    dst[i]=sign_bit>>16;
+                else
+                    dst[i]=0x7FFF;
+            }
+            else
+            {
+                if(exponent==0)
+                {
+                    if(mantissa==0)
+                        dst[i]=sign_bit>>16;
+                    else
+                    {
+                        uint32 mantissa_bit=0x00800000;
+                                     
+                        while((mantissa&mantissa_bit)==0)
+                        {
+                            mantissa_bit>>=1;
+                            --exponent;
+                        }
+                                     
+                        exponent+=1;
+                        mantissa&=~mantissa_bit;
+                    }
+                }
+                else
+                {
+                    exponent+=15-127;
+                    mantissa>>=13;
+                }
+           
+                dst[i]=sign_bit>>16|exponent<<10|mantissa;
+            }
+        }
+    }
+
+    /**
+    * 快速版float32转float16处理
+    */
     inline const half_float float2half(const float &f)
     {
         const uint32 x = *((uint32 *)&f);

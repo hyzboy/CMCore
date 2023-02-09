@@ -13,6 +13,7 @@ namespace hgl
     using u32=uint32;
     using u64=uint64;
 
+    using f16=half_float;
     using f32=float;
     using f64=double;
 
