@@ -2,6 +2,7 @@
 #define HGL_HALF_FLOAT_INCLUDE
 
 #include<hgl/platform/Platform.h>
+#include<hgl/math/Math.h>
 
 namespace hgl
 {
@@ -143,6 +144,44 @@ namespace hgl
             ++target;
             ++source;
         }
-    }   
+    }
+
+    inline void half2u16(uint16 *output,const half_float *input,const uint count)
+    {
+        union
+        {
+            float f;
+            uint32 u;
+        }x;
+
+        for(uint i=0;i<count;i++)
+        {
+            x.u=((((*input)&0x8000)<<16) | ((((*input)&0x7c00)+0x1C000)<<13) | (((*input)&0x03FF)<<13));
+
+            *output=Clamp(x.f)*65535;
+
+            ++output;
+            ++input;
+        }
+    }
+
+    inline void half2u8(uint8 *output,const half_float *input,const uint count)
+    {
+        union
+        {
+            float f;
+            uint32 u;
+        }x;
+
+        for(uint i=0;i<count;i++)
+        {
+            x.u=((((*input)&0x8000)<<16) | ((((*input)&0x7c00)+0x1C000)<<13) | (((*input)&0x03FF)<<13));
+
+            *output=Clamp(x.f)*255;
+
+            ++output;
+            ++input;
+        }
+    }
 }//namespace hgl
 #endif//HGL_HALF_FLOAT_INCLUDE
