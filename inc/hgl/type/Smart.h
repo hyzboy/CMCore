@@ -539,6 +539,15 @@ namespace hgl
                 delete[] obj;
         }
 
+        void set(T *o,const size_t count)
+        {
+            if(obj)
+                delete[] obj;
+
+            obj=o;
+            size=count;
+        }
+
         T *alloc(const size_t count)
         {
             if(!obj)
