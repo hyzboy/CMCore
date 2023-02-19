@@ -577,5 +577,53 @@ namespace hgl
             ++idp;
         }
     }
+
+    /**
+     * 统计出所有在in_list中出现的数据，产生的结果写入with_list
+     */
+    template<typename K,typename V,typename DataPair>
+    void _Map<K,V,DataPair>::WithList(_Map<K,V,DataPair>::DataPairList &with_list,const List<K> &in_list)
+    {
+        with_list.ClearData();
+        const int count=this->GetCount();
+
+        if(count<=0)return;
+
+        with_list.PreMalloc(count);
+
+        const DataPair *sp=this->GetDataList();
+
+        for(int i=0;i<count;i++)
+        {
+            if(in_list.IsExist(*sp))
+                with_list.Add(*sp);
+
+            ++sp;
+        }
+    }
+    
+    /**
+     * 统计出所有没有出现在in_list中的数据，产生的结果写入without_list
+     */
+    template<typename K,typename V,typename DataPair>
+    void _Map<K,V,DataPair>::WithoutList(_Map<K,V,DataPair>::DataPairList &without_list,const List<K> &in_list)
+    {
+        without_list.ClearData();
+        const int count=this->GetCount();
+
+        if(count<=0)return;
+
+        without_list.PreMalloc(count);
+
+        const DataPair *sp=this->GetDataList();
+
+        for(int i=0;i<count;i++)
+        {
+            if(!in_list.IsExist(*sp))
+                without_list.Add(*sp);
+
+            ++sp;
+        }
+    }
 }//namespace hgl
 #endif//HGL_MAP_CPP

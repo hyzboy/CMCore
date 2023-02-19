@@ -24,8 +24,8 @@ namespace hgl
 
     public:
 
-        const DataPair *begin()const{return data_list.begin();}
-        const DataPair *end()const{return data_list.end();}
+//        DataPair **begin()const{return data_list.begin();}
+//        DataPair **end()const{return data_list.end();}
 
     public: //方法
 
@@ -60,7 +60,7 @@ namespace hgl
         DataPair **     GetDataList()const{return data_list.GetData();}                             ///<取得纯数据线性列表
 
                 template<typename IT>
-                int     GetKey(IT &il_list)                                                         ///<取得所有索引合集
+                int     GetKeyList(IT &il_list)                                                     ///<取得所有索引合集
                 {
                     const int count=data_list.GetCount();
 
@@ -79,7 +79,7 @@ namespace hgl
                 }
 
                 template<typename IT>
-                int     GetValue(IT &il_list)                                                      ///<取得所有数值合集
+                int     GetValueList(IT &il_list)                                                  ///<取得所有数值合集
                 {
                     const int count=data_list.GetCount();
 
@@ -95,7 +95,28 @@ namespace hgl
                     }
 
                     return count;
+                } 
+
+                template<typename ITK,typename ITV>
+                int     GetList(ITK &key_list,ITV &value_list)                                      ///<取得所有索引合集
+                {
+                    const int count=data_list.GetCount();
+
+                    if(count<=0)
+                        return count;
+
+                    DataPair **idp=data_list.GetData();
+
+                    for(int i=0;i<count;i++)
+                    {
+                        key_list.Add((*idp)->left);
+                        value_list.Add((*idp)->right);
+                        ++idp;
+                    }
+
+                    return count;
                 }
+
 
             DataPair *  GetItem(int n){return GetListObject(data_list,n);}                          ///<取指定序号的数据
                 bool    GetBySerial(int,K &,V &) const;                                             ///<取指定序号的数据
@@ -111,28 +132,8 @@ namespace hgl
                 void    EnumAllValue(void (*enum_func)(V));                                         ///<枚举所有数值
                 void    EnumValue(bool (*enum_func)(V));                                            ///<枚举所有数值(返回true/false表示是否继续)
 
-                /**
-                 * 统计出不在in_list中的数据，产生的结果写入without_list
-                 */
-                void WithoutList(DataPairList &without_list,const List<K> &in_list)
-                {
-                    without_list.ClearData();
-                    const int count=this->GetCount();
-
-                    if(count<=0)return;
-
-                    without_list.PreMalloc(count);
-
-                    const DataPair *sp=this->GetDataList();
-
-                    for(int i=0;i<count;i++)
-                    {
-                        if(!in_list.IsExist(*sp))
-                            without_list.Add(*sp);
-
-                        ++sp;
-                    }
-                }
+                void    WithList(DataPairList &with_list,const List<K> &in_list);                   ///<统计出所有在in_list中出现的数据，产生的结果写入with_list
+                void    WithoutList(DataPairList &without_list,const List<K> &in_list);             ///<统计出所有没有出现在in_list中的数据，产生的结果写入without_list
     };//class _Map
 
     template<typename K,typename V> class Map:public _Map<K,V,Pair<K,V> >
