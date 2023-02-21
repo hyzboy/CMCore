@@ -321,7 +321,7 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int Comp(const uint pos,const T *str,const uint num)const
+        const int Comp(const int pos,const T *str,const uint num)const
         {
             if(!str)
                 return(length-pos);
