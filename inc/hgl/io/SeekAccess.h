@@ -21,7 +21,7 @@ namespace hgl
             virtual bool    CanSize()const=0;                                                       ///<是否可以取得尺寸
 
             virtual bool    Restart()=0;                                                            ///<复位访问指针
-            virtual int64   Seek(int64,SeekOrigin=SeekOrigin::Begin)=0;                                       ///<移动访问指针
+            virtual int64   Seek(int64,SeekOrigin=SeekOrigin::Begin)=0;                             ///<移动访问指针
             virtual int64   Tell()const=0;                                                          ///<返回当前访问位置
             virtual int64   GetSize()const=0;                                                       ///<取得文件长度
         };//class SeekAccess
