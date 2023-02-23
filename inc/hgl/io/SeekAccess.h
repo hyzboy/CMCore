@@ -1,18 +1,12 @@
 ﻿#ifndef HGL_IO_SEEK_ACCESS_INCLUDE
 #define HGL_IO_SEEK_ACCESS_INCLUDE
 
-#include<hgl/type/DataType.h>
+#include<hgl/platform/Platform.h>
+#include<hgl/io/SeekOrigin.h>
 namespace hgl
 {
     namespace io
     {
-        enum class SeekOrigin       /// 资源偏移方向枚举
-        {
-            Begin=0,              ///<从资源最开始处开始，offset必须大于0。移到资源的offset位置
-            Current,              ///<从资源当前位置开始，移到资源的Position+offset位置
-            End                   ///<从资源的结束位置开始，offset必须小于0，表示结束前的字符数
-        };//enum SeekOrigin
-
         /**
         * 定位访问功能基类
         */
