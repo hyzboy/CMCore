@@ -33,6 +33,7 @@ namespace hgl
         virtual ~_Map()=default;
 
         const   int     GetCount()const{return data_list.GetCount();}                               ///<取得数据总量
+        const   bool    IsEmpty()const{return data_list.IsEmpty();}                                 ///<是否为空
 
         DataPair *      Add(const K &,const V &);                                                   ///<添加一个数据，数果索引已存在，返回nullptr
                 void    Add(DataPair *);                                                            ///<添加一个数据
