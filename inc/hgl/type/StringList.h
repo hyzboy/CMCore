@@ -29,7 +29,7 @@ namespace hgl
         StringClass **  begin       ()const{return Items.GetData();}
         StringClass **  end         ()const{return Items.GetData()+Items.GetCount();}
 
-        const bool      IsEmpty     ()const { return Items.IsEmpty(); }                             ///<字符串列表是否为空
+        const bool      IsEmpty     ()const{return Items.IsEmpty();}                                ///<字符串列表是否为空
 
     public: //操作符重载
 
@@ -65,6 +65,7 @@ namespace hgl
     public: //方法
 
         StringList()=default;                                                                       ///<本类构造函数
+        StringList(const StringList &)=delete;                                                      ///<禁用，防止出现StringList = const StringList &的情况
         StringList(const std::initializer_list<T *> &lt)
         {
             for(T *str:lt)
