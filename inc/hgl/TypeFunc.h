@@ -468,6 +468,24 @@ namespace hgl
     {
         memset(data,0,sizeof(T)*count);
     }
+
+    template<typename T>
+    inline T *array_alloc(const uint count)
+    {
+        return (T *)hgl_malloc(count*sizeof(T));
+    }
+
+    template<typename T>
+    inline T *array_realloc(T *origin,const uint count)
+    {
+        return (T *)hgl_realloc(origin,count*sizeof(T));
+    }
+
+    template<typename T>
+    inline void array_free(T *items)
+    {
+        hgl_free(items);
+    }
 }//namespace hgl
 
 /**
