@@ -407,7 +407,7 @@ namespace hgl
      * @param data 新的数据内容
      */
     template<typename K,typename V,typename DataPair>
-    bool _Map<K,V,DataPair>::Update(const K &flag,const V &data)
+    bool _Map<K,V,DataPair>::ChangeOrAdd(const K &flag,const V &data)
     {
         int result;
         DataPair *dp;
