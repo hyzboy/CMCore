@@ -24,6 +24,10 @@ namespace hgl
         Bisque,               ///<桔黄色
         Black,                ///<黑色
         BlanchedAlmond,       ///<白杏色
+
+        BlenderYellow,
+        BlenderBlue,
+
         Blue,                 ///<蓝色
         BlueViolet,           ///<紫罗兰色
         Brown,                ///<褐色

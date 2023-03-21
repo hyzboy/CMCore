@@ -54,6 +54,10 @@ namespace hgl
         DEF_COLOR(Bisque,                 255,228,196,"桔黄色")
         DEF_COLOR(Black,                    0,  0,  0,"黑色")
         DEF_COLOR(BlanchedAlmond,         255,235,205,"白杏色")
+    
+        DEF_COLOR(BlenderYellow,        0xE8,0x7D,0x0D,"Blender黄")
+        DEF_COLOR(BlenderBlue,          0x26,0x57,0x87,"Blender蓝")
+
         DEF_COLOR(Blue,                     0,  0,255,"蓝色")
         DEF_COLOR(BlueViolet,             138, 43,226,"紫罗兰蓝")
         DEF_COLOR(Brown,                  165, 42, 42,"褐色")
