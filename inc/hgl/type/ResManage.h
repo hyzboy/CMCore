@@ -4,13 +4,13 @@
 #include<hgl/type/Map.h>
 namespace hgl
 {
-    template<typename K,typename V> struct RefKeyValue:public Pair<K,V *>       ///<带引用计数的Key/value数据结构
+    template<typename K,typename V> struct RefKeyValue:public KeyValue<K,V *>       ///<带引用计数的Key/value数据结构
     {
         int ref_count;              ///<引用计数
 
     public:
 
-        RefKeyValue():Pair<K,V *>()
+        RefKeyValue():KeyValue<K,V *>()
         {
             ref_count=1;
         }

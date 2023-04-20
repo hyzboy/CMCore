@@ -7,25 +7,31 @@
 #include<hgl/thread/RWLock.h>
 namespace hgl
 {
+    template<typename K,typename V> struct KeyValue
+    {
+        K key;
+        V value;
+    };
+
     /**
     * 索引数据模板
     */
-    template<typename K,typename V,typename DataPair> class _Map
+    template<typename K,typename V,typename KVData> class _Map
     {
     protected:
     
-        using ThisClass=_Map<K,V,DataPair>;
+        using ThisClass=_Map<K,V,KVData>;
 
-        using DataPairPool=ObjectPool<DataPair>;
-        using DataPairList=List<DataPair *>;
+        using KVDataPool=ObjectPool<KVData>;
+        using KVDataList=List<KVData *>;
 
-        DataPairPool data_pool;
-        DataPairList data_list;
+        KVDataPool data_pool;
+        KVDataList data_list;
 
     public:
 
-//        DataPair **begin()const{return data_list.begin();}
-//        DataPair **end()const{return data_list.end();}
+//        KVData **begin()const{return data_list.begin();}
+//        KVData **end()const{return data_list.end();}
 
     public: //方法
 
@@ -35,8 +41,8 @@ namespace hgl
         const   int     GetCount()const{return data_list.GetCount();}                               ///<取得数据总量
         const   bool    IsEmpty()const{return data_list.IsEmpty();}                                 ///<是否为空
 
-        DataPair *      Add(const K &,const V &);                                                   ///<添加一个数据，数果索引已存在，返回nullptr
-                void    Add(DataPair *);                                                            ///<添加一个数据
+                KVData *Add(const K &,const V &);                                                   ///<添加一个数据，数果索引已存在，返回nullptr
+                void    Add(KVData *);                                                              ///<添加一个数据
                 bool    FindPos(const K &,int &)const;                                              ///<查找数据如果插入后，会所在的位置，返回是否存在这个数据
                 int     FindPos(const K &flag)const{int pos;FindPos(flag,pos);return(pos);}         ///<查找数据如果插入后，会所在的位置
                 int     Find(const K &)const;                                                       ///<查找数据是否存在，返回-1表示数据不存在
@@ -57,8 +63,8 @@ namespace hgl
         virtual void    Clear();                                                                    ///<清除所有数据
         virtual void    ClearData();                                                                ///<清除所有数据，但不释放内存
 
-        DataPairList &  GetList(){return data_list;}                                                ///<取得线性列表
-        DataPair **     GetDataList()const{return data_list.GetData();}                             ///<取得纯数据线性列表
+        KVDataList &    GetList(){return data_list;}                                                ///<取得线性列表
+        KVData **       GetDataList()const{return data_list.GetData();}                             ///<取得纯数据线性列表
 
                 template<typename IT>
                 int     GetKeyList(IT &il_list)                                                     ///<取得所有索引合集
@@ -68,11 +74,11 @@ namespace hgl
                     if(count<=0)
                         return count;
 
-                    DataPair **idp=data_list.GetData();
+                    KVData **idp=data_list.GetData();
 
                     for(int i=0;i<count;i++)
                     {
-                        il_list.Add((*idp)->left);
+                        il_list.Add((*idp)->key);
                         ++idp;
                     }
 
@@ -87,11 +93,11 @@ namespace hgl
                     if(count<=0)
                         return count;
 
-                    DataPair **idp=data_list.GetData();
+                    KVData **idp=data_list.GetData();
 
                     for(int i=0;i<count;i++)
                     {
-                        il_list.Add((*idp)->right);
+                        il_list.Add((*idp)->value);
                         ++idp;
                     }
 
@@ -106,12 +112,12 @@ namespace hgl
                     if(count<=0)
                         return count;
 
-                    DataPair **idp=data_list.GetData();
+                    KVData **idp=data_list.GetData();
 
                     for(int i=0;i<count;i++)
                     {
-                        key_list.Add((*idp)->left);
-                        value_list.Add((*idp)->right);
+                        key_list.Add((*idp)->key);
+                        value_list.Add((*idp)->value);
                         ++idp;
                     }
 
@@ -119,7 +125,7 @@ namespace hgl
                 }
 
 
-            DataPair *  GetItem(int n){return GetListObject(data_list,n);}                          ///<取指定序号的数据
+                KVData *GetItem(int n){return GetListObject(data_list,n);}                          ///<取指定序号的数据
                 bool    GetBySerial(int,K &,V &) const;                                             ///<取指定序号的数据
                 bool    GetKey(int,K &);                                                            ///<取指定序号的索引
                 bool    GetValue(int,V &);                                                          ///<取指定序号的数据
@@ -133,11 +139,11 @@ namespace hgl
                 void    EnumAllValue(void (*enum_func)(V));                                         ///<枚举所有数值
                 void    EnumValue(bool (*enum_func)(V));                                            ///<枚举所有数值(返回true/false表示是否继续)
 
-                void    WithList(DataPairList &with_list,const List<K> &in_list);                   ///<统计出所有在in_list中出现的数据，产生的结果写入with_list
-                void    WithoutList(DataPairList &without_list,const List<K> &in_list);             ///<统计出所有没有出现在in_list中的数据，产生的结果写入without_list
+                void    WithList(KVDataList &with_list,const List<K> &in_list);                     ///<统计出所有在in_list中出现的数据，产生的结果写入with_list
+                void    WithoutList(KVDataList &without_list,const List<K> &in_list);               ///<统计出所有没有出现在in_list中的数据，产生的结果写入without_list
     };//class _Map
 
-    template<typename K,typename V> class Map:public _Map<K,V,Pair<K,V> >
+    template<typename K,typename V> class Map:public _Map<K,V,KeyValue<K,V> >
     {
     public:
 
@@ -155,19 +161,19 @@ namespace hgl
         return result;
     }
 
-    template<typename K,typename V,typename DataPair> class _ObjectMap:public _Map<K,V *,DataPair>
+    template<typename K,typename V,typename KVData> class _ObjectMap:public _Map<K,V *,KVData>
     {
     protected:
 
-        typedef _Map<K,V *,DataPair> SuperClass;
+        typedef _Map<K,V *,KVData> SuperClass;
 
         virtual void    DeleteObject(const K &,V *)=0;                                              ///<删除一个数据
-                void    DeleteObject(DataPair *ds)
+                void    DeleteObject(KVData *ds)
                 {
                     if(!ds)return;
 
-                    if(ds->right)                                                                   ///<存在数据就是nullptr的可能
-                        DeleteObject(ds->left,ds->right);
+                    if(ds->value)                                                                   ///<存在数据就是nullptr的可能
+                        DeleteObject(ds->key,ds->value);
                 }
 
                 void    DeleteObject(int index)
@@ -274,7 +280,7 @@ namespace hgl
             while(n--)
                 DeleteObject(n);
 
-            _Map<K,V *,DataPair>::Clear();
+            _Map<K,V *,KVData>::Clear();
         }
 
         /**
@@ -290,10 +296,10 @@ namespace hgl
             {
                 DeleteObject(index);
 
-                DataPair *dp=GetListObject(this->data_list,index);
+                KVData *dp=GetListObject(this->data_list,index);
 
                 if(dp)
-                    dp->right=data;
+                    dp->value=data;
             }
             else
             {
@@ -315,12 +321,12 @@ namespace hgl
             {
                 DeleteObject(index);
 
-                DataPair *dp=GetListObject(this->data_list,index);
+                KVData *dp=GetListObject(this->data_list,index);
 
                 if(!dp)
                     return(false);
 
-                dp->right=data;
+                dp->value=data;
                 return(true);
             }
             else
@@ -330,7 +336,7 @@ namespace hgl
         void Clear(){DeleteAll();}
     };//class _ObjectMap
 
-    template<typename K,typename V,typename DataPair> class CustomObjectMap:public _ObjectMap<K,V,DataPair>
+    template<typename K,typename V,typename KVData> class CustomObjectMap:public _ObjectMap<K,V,KVData>
     {
     protected:
 
@@ -342,18 +348,18 @@ namespace hgl
         CustomObjectMap()=default;
         virtual ~CustomObjectMap()
         {
-            _ObjectMap<K,V,DataPair>::Clear();
+            _ObjectMap<K,V,KVData>::Clear();
         }
     };//class CustomObjectMap
 
-    template<typename K,typename V> class ObjectMap:public CustomObjectMap<K,V,Pair<K,V *> >
+    template<typename K,typename V> class ObjectMap:public CustomObjectMap<K,V,KeyValue<K,V *> >
     {
     public:
 
         ObjectMap()=default;
         virtual ~ObjectMap()
         {
-            CustomObjectMap<K,V,Pair<K,V *> >::Clear();
+            CustomObjectMap<K,V,KeyValue<K,V *> >::Clear();
         }
 
         V *operator[](const K &index)const
@@ -361,7 +367,7 @@ namespace hgl
             auto *obj=GetListObject(this->data_list,this->Find(index));
 
             if(obj)
-                return obj->right;
+                return obj->value;
             else
                 return nullptr;
         };

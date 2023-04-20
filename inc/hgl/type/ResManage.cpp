@@ -19,7 +19,7 @@ namespace hgl
         {
             ResItem *obj=items.GetItem(n);
 
-            Clear(obj->right);
+            Clear(obj->value);
         }
 
         items.Clear();
@@ -36,7 +36,7 @@ namespace hgl
 
             if(obj->ref_count<=0)
             {
-                Clear(obj->right);
+                Clear(obj->value);
                 items.DeleteBySerial(n);
             }
         }
@@ -64,7 +64,7 @@ namespace hgl
 
         ResItem *obj=items.GetItem(index);
 
-        return obj->right;
+        return obj->value;
     }
 
     template<typename K,typename V>
@@ -78,7 +78,7 @@ namespace hgl
 
             ++obj->ref_count;
 
-            return obj->right;
+            return obj->value;
         }
 
         return(nullptr);
@@ -113,7 +113,7 @@ namespace hgl
             ++obj->ref_count;
 
         if(key)
-            *key=obj->left;
+            *key=obj->key;
 
         if(ref_count)
             *ref_count=obj->ref_count;
@@ -139,7 +139,7 @@ namespace hgl
 
         if(zero_clear)
         {
-            Clear(obj->right);
+            Clear(obj->value);
 
             items.DeleteBySerial(index);
         }
