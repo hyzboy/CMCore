@@ -132,7 +132,7 @@ namespace hgl
             }
 
             pos=idle_items.GetValueAndSerial(key,value);
-            if(pos>0)                   //在限制列表中找
+            if(pos>0)                   //在闲置列表中找
             {
                 active_items.Add(key,new ActiveItem(value));
                 idle_items.DeleteBySerial(pos);
