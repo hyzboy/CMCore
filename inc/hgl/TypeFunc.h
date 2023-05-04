@@ -451,6 +451,18 @@ namespace hgl
         return data;
     }
 
+    template<typename T>
+    inline int hgl_cmp(const T &a,const T &b)
+    {
+        return memcmp(&a,&b,sizeof(T));
+    }
+
+    template<typename T>
+    inline int hgl_cmp(const T *a,const T *b,const size_t count)
+    {
+        return memcmp(a,b,count*sizeof(T));
+    }
+
     /**
      * 指定类型数据清0
      */
