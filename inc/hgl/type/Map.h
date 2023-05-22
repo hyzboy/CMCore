@@ -51,7 +51,7 @@ namespace hgl
                 bool    ValueExist(const V &value)const{return(FindByValue(value)!=-1);}            ///<确认这个数据是否存在
                 bool    Check(const K &key,const V &value)const;                                    ///<确认数据是否是这个
         virtual int     GetValueAndSerial(const K &,V &) const;                                     ///<取得数据与索引
-                bool    Get(const K &key,V &value){return(GetValueAndSerial(key,value)>=0);}        ///<取得数据
+                bool    Get(const K &key,V &value)const{return(GetValueAndSerial(key,value)>=0);}   ///<取得数据
         virtual bool    Delete(const K &,V &);                                                      ///<将指定数据从列表中移除，并获得这个数据
         virtual bool    DeleteByKey(const K &);                                                     ///<根据索引将指定数据从列表中移除
         virtual int     DeleteByKey(const K *,const int);                                           ///<根据索引将指定数据从列表中批量移除
