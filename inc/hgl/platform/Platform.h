@@ -15,6 +15,7 @@
 #define HGL_OS_macOS                HGL_MERGE32('m','a','c',' ')
 #define HGL_OS_iOS                  HGL_MERGE32('i','O','S',' ')
 #define HGL_OS_iPadOS               HGL_MERGE32('i','P','O','S')
+#define HGL_OS_tvOS                 HGL_MERGE32('t','v','O','S')
 #define HGL_OS_FreeBSD              HGL_MERGE32('F','B','S','D')
 #define HGL_OS_NetBSD               HGL_MERGE32('N','B','S','D')
 #define HGL_OS_OpenBSD              HGL_MERGE32('O','B','S','D')
@@ -27,12 +28,15 @@
 
 #define HGL_CPU_X86_32              HGL_MERGE32('8','6','3','2')
 #define HGL_CPU_X86_64              HGL_MERGE32('8','6','6','4')
+#define HGL_CPU_X86S                HGL_MERGE32('x','8','6','S')
 #define HGL_CPU_MIPS                HGL_MERGE32('M','I','P','S')
 #define HGL_CPU_MIPSel              HGL_MERGE32('M','I','e','l')
 #define HGL_CPU_MIPS64              HGL_MERGE32('M','I','6','4')
 #define HGL_CPU_PowerPC64           HGL_MERGE32('P','P','6','4')
 #define HGL_CPU_ARMv7               HGL_MERGE32('A','R','M','7')
 #define HGL_CPU_ARMv8               HGL_MERGE32('A','R','M','8')
+#define HGL_CPU_ARMv9               HGL_MERGE32('A','R','M','9')
+#define HGL_CPU_Apple               HGL_MERGE32('A','P','P','L')
 
 #define HGL_COMPILER_Microsoft      HGL_MERGE32('M','S','C',' ')
 #define HGL_COMPILER_GNU            HGL_MERGE32('G','N','U',' ')
@@ -41,7 +45,6 @@
 #define HGL_COMPILER_Intel          HGL_MERGE32('I','n','t','e')
 #define HGL_COMPILER_IBM            HGL_MERGE32('I','B','M',' ')
 #define HGL_COMPILER_LLVM           HGL_MERGE32('L','L','V','M')
-#define HGL_COMPILER_PGI            HGL_MERGE32('P','G','I',' ')
 
 #define HGL_BIG_ENDIAN      'B'
 #define HGL_LITTLE_ENDIAN   'L'
