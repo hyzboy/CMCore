@@ -26,20 +26,17 @@
 #define HGL_OS_Android              HGL_MERGE32('A','n','d','r')
 #define HGL_OS_Wasm                 HGL_MERGE32('W','a','s','m')
 
-#define HGL_CPU_X86_32              HGL_MERGE32('8','6','3','2')
 #define HGL_CPU_X86_64              HGL_MERGE32('8','6','6','4')
 #define HGL_CPU_MIPS                HGL_MERGE32('M','I','P','S')
 #define HGL_CPU_MIPSel              HGL_MERGE32('M','I','e','l')
 #define HGL_CPU_MIPS64              HGL_MERGE32('M','I','6','4')
 #define HGL_CPU_PowerPC64           HGL_MERGE32('P','P','6','4')
-#define HGL_CPU_ARMv7               HGL_MERGE32('A','R','M','7')
 #define HGL_CPU_ARMv8               HGL_MERGE32('A','R','M','8')
 #define HGL_CPU_ARMv9               HGL_MERGE32('A','R','M','9')
 #define HGL_CPU_Apple               HGL_MERGE32('A','P','P','L')
 
 #define HGL_COMPILER_Microsoft      HGL_MERGE32('M','S','C',' ')
 #define HGL_COMPILER_GNU            HGL_MERGE32('G','N','U',' ')
-#define HGL_COMPILER_MinGW32        HGL_MERGE32('M','G','3','2')
 #define HGL_COMPILER_MinGW64        HGL_MERGE32('M','G','6','4')
 #define HGL_COMPILER_Intel          HGL_MERGE32('I','n','t','e')
 #define HGL_COMPILER_IBM            HGL_MERGE32('I','B','M',' ')
@@ -55,12 +52,6 @@
     #define HGL_CPU_NAME                OS_TEXT("X86-64Bit")
     #define HGL_LIB_CPU_NAME            OS_TEXT("x64")
     #define HGL_MIN_MEMORY_ALLOC_BYTES  8
-    #define HGL_ENDIAN                  HGL_LITTLE_ENDIAN
-#elif defined(i386) || defined(__i386__) || defined(__i386) ||defined(_M_IX86)
-    #define HGL_CPU                     HGL_CPU_X86_32
-    #define HGL_CPU_NAME                OS_TEXT("X86-32Bit")
-    #define HGL_LIB_CPU_NAME            OS_TEXT("x86")
-    #define HGL_MIN_MEMORY_ALLOC_BYTES  4
     #define HGL_ENDIAN                  HGL_LITTLE_ENDIAN
 #elif defined(_M_MIPS)||defined(_MIPS_ARCH)||defined(__mips__)||defined(__mips)||defined(mips)||defined(__MIPS__)
     #define HGL_MIN_MEMORY_ALLOC_BYTES  4
@@ -135,13 +126,15 @@
 
     #include "TargetConditionals.h"
     #if TARGET_OS_IPHONE
-        #if TARGET_IPHONE_SIMULATOR
-            #define HGL_OS  HGL_OS_iOS_Simulator
-        #else
+        //#if TARGET_IPHONE_SIMULATOR
+        //    #define HGL_OS  HGL_OS_iOS_Simulator
+        //#else
             #define HGL_OS  HGL_OS_iOS
-        #endif//TARGET_IPHONE_SIMULATOR
+        //#endif//TARGET_IPHONE_SIMULATOR
     #elif TARGET_OS_MAC
         #define HGL_OS      HGL_OS_macOS
+    #elif TARGET_OS_TV
+        #define HGL_OS      HGL_OS_tvOS
     #endif//
 #elif defined(__ANDROID__)
     #define HGL_OS          HGL_OS_Android
@@ -158,8 +151,10 @@
     #define HGL_OS          HGL_OS_Linux
 #elif defined(__CYGWIN__)
     #define HGL_OS          HGL_OS_Cygwin
-#elif defined(SN_TARGET_ORBIS)
+#elif defined(SN_TARGET_ORBIS) || defined(__ORBIS__)
     #define HGL_OS          HGL_OS_PS4
+#else
+    #error Unknown OS.
 #endif//
 
 #if defined(__clang__)
@@ -206,13 +201,7 @@
         #include<hgl/platform/compiler/LLVM.h>
     #elif HGL_COMPILER == HGL_COMPILER_Intel
         #include<hgl/platform/compiler/Intel.h>
-    #elif HGL_COMPILER == HGL_COMPILER_IBM
-        #include<hgl/platform/compiler/IBM.h>
-    #elif HGL_COMPILER == HGL_COMPILER_MinGW32
-        #include<hgl/platform/compiler/GNU.h>
-    #elif HGL_COMPILER == HGL_COMPILER_MinGW64
-        #include<hgl/platform/compiler/GNU.h>
-    #elif HGL_COMPILER == HGL_COMPILER_GNU
+    #elif defined(HGL_COMPILER == HGL_COMPILER_MinGW64)||defined(HGL_COMPILER == HGL_COMPILER_GNU)
         #include<hgl/platform/compiler/GNU.h>
     #else
         #error Unrecognized compiler
@@ -246,14 +235,10 @@
 
     #include<hgl/platform/os/Linux.h>
 
-    #if HGL_COMPILER == HGL_COMPILER_CBuilder
-        #include<hgl/platform/compiler/CBuilder.h>
-    #elif HGL_COMPILER == HGL_COMPILER_Intel
+    #if HGL_COMPILER == HGL_COMPILER_Intel
         #include<hgl/platform/compiler/Intel.h>
     #elif HGL_COMPILER == HGL_COMPILER_IBM
         #include<hgl/platform/compiler/IBM.h>
-    #elif HGL_COMPILER == HGL_COMPILER_Watcom
-        #include<hgl/platform/compiler/Watcom.h>
     #elif HGL_COMPILER == HGL_COMPILER_LLVM
         #include<hgl/platform/compiler/LLVM.h>
     #elif HGL_COMPILER == HGL_COMPILER_GNU
@@ -262,19 +247,7 @@
         #error Unrecognized compiler
     #endif
 
-#elif HGL_OS == HGL_OS_macOS
-
-    #include<hgl/platform/os/Apple.h>
-
-    #if HGL_COMPILER == HGL_COMPILER_Intel
-        #include<hgl/platform/compiler/Intel.h>
-    #elif HGL_COMPILER == HGL_COMPILER_LLVM
-        #include<hgl/platform/compiler/LLVM.h>
-    #else
-        #error Unrecognized compiler
-    #endif
-
-#elif HGL_OS == HGL_OS_iOS
+#elif defined(HGL_OS == HGL_OS_macOS)||defined(HGL_OS == HGL_OS_iOS)||defined(HGL_OS == HGL_OS_tvOS)
 
     #include<hgl/platform/os/Apple.h>
     #include<hgl/platform/compiler/LLVM.h>
@@ -282,14 +255,7 @@
 #elif HGL_OS == HGL_OS_Android
 
     #include<hgl/platform/os/Android.h>
-
-    #if HGL_COMPILER == HGL_COMPILER_LLVM
-        #include<hgl/platform/compiler/LLVM.h>
-    #elif HGL_COMPILER == HGL_COMPILER_GNU
-        #include<hgl/platform/compiler/GNU.h>
-    #else
-        #error Unrecognized compiler
-    #endif//GNU
+    #include<hgl/platform/compiler/LLVM.h>
 #endif//HGL_OS
 
 namespace hgl
