@@ -28,7 +28,6 @@
 
 #define HGL_CPU_X86_32              HGL_MERGE32('8','6','3','2')
 #define HGL_CPU_X86_64              HGL_MERGE32('8','6','6','4')
-#define HGL_CPU_X86S                HGL_MERGE32('x','8','6','S')
 #define HGL_CPU_MIPS                HGL_MERGE32('M','I','P','S')
 #define HGL_CPU_MIPSel              HGL_MERGE32('M','I','e','l')
 #define HGL_CPU_MIPS64              HGL_MERGE32('M','I','6','4')
@@ -83,7 +82,7 @@
         #define HGL_LIB_CPU_NAME            OS_TEXT("MIPS64")
         #define HGL_ENDIAN                  HGL_BIG_ENDIAN
 #elif defined(__powerpc__) || defined(__powerpc)    \
-     ||defined(__POWERPC__) \
+     || defined(__POWERPC__) \
      || defined(__ppc__) || defined(__PPC__) || defined(__ppc) \
      || defined(_M_PPC) ||defined(_M_MPPC) \
      || defined(_ARCH_PPC) || defined(_ARCH_PWR)
@@ -100,15 +99,21 @@
 
     #define HGL_MIN_MEMORY_ALLOC_BYTES  8
     #define HGL_ENDIAN                  HGL_BIG_ENDIAN
-#elif defined(__aarch64__)
+#elif defined(__aarch64__) || defined(__arm64__) || defined(__ARM64__) || defined(_M_ARM64)
     #define HGL_CPU                     HGL_CPU_ARMv8
     #define HGL_CPU_NAME                OS_TEXT("ARMv8")
     #define HGL_LIB_CPU_NAME            OS_TEXT("ARMv8")
     #define HGL_MIN_MEMORY_ALLOC_BYTES  4
     #define HGL_ENDIAN                  HGL_LITTLE_ENDIAN
+#elif defined(__ARM_ARCH_9__) || defined(_M_ARM_ARCH_9) || (defined(__ARM_ARCH) && __ARM_ARCH>=9)
+    #define HGL_CPU                     HGL_CPU_ARMv9
+    #define HGL_CPU_NAME                OS_TEXT("ARMv9")
+    #define HGL_LIB_CPU_NAME            OS_TEXT("ARMv9")
+    #define HGL_MIN_MEMORY_ALLOC_BYTES  4
+    #define HGL_ENDIAN                  HGL_LITTLE_ENDIAN
 #elif defined(__wasm__)
 
-    #error Not support WebAssembly.please wait update......
+    #error Not support WebAssembly.
 
     #define HGL_OS          HGL_OS_Wasm
     #define HGL_COMPILER    HGL_COMPILER_LLVM
