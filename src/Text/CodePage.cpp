@@ -258,7 +258,7 @@ namespace hgl
         if(!cs)return(false);
         if(!bom)return(false);
 
-        if(!RangeCheck<ByteOrderMask>(bom->bom))return(false);
+        RANGE_CHECK_RETURN_FALSE(bom->bom)
 
         cs->codepage=bom->code_page;
         memcpy(cs->charset,bom->char_set,sizeof(CharSetName));
