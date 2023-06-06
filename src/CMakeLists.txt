@@ -35,11 +35,13 @@ SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
                         ${MATH_INCLUDE_PATH}/Vector.h
                         ${MATH_INCLUDE_PATH}/PrimaryMathematics.h
                         ${MATH_INCLUDE_PATH}/PhysicsConst.h
+                        ${MATH_INCLUDE_PATH}/HalfFloat.h
                         )
 
 SET(MATH_SOURCE_FILES   Math/LAtan.cpp
                         Math/LSinCos.cpp
-                        Math/Matrix4f.cpp)
+                        Math/Matrix4f.cpp
+                        Math/HalfFloat.cpp)
 
 SOURCE_GROUP("Math\\Header Files" FILES ${MATH_HEADER_FILES})
 SOURCE_GROUP("Math\\Source Files" FILES ${MATH_SOURCE_FILES})
