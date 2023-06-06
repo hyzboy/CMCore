@@ -27,9 +27,6 @@ namespace hgl
                         T *     GetData         ()const{return items;}                              ///<提供原始数据项
                         int     GetBytes        ()const{return count*sizeof(T);}                    ///<取得原始数据总字节数
 
-                        T *     GetBegin        (){return (items&&count>0)?items:nullptr;}          ///<取得第一个数据项指针
-                        T *     GetEnd          (){return (items&&count>0)?items+count-1:nullptr;}  ///<取得最后一个数据项指针
-
                         T *     begin           ()const{return items;}
                         T *     end             ()const{return items+count;}
 
