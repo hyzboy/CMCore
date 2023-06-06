@@ -12,7 +12,7 @@ namespace hgl
         * 全部Windows所支持代码页请参见 http://msdn.microsoft.com/en-us/library/dd317756
         *                            https://docs.microsoft.com/en-us/windows/win32/intl/code-page-identifiers
         */
-        enum class CharCodePage                         ///代码页枚举
+        enum class CharCodePage:uint16                  ///代码页枚举
         {
             NONE=0,                                     ///<起始定义，无意义
 
