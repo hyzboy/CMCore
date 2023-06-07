@@ -1,11 +1,11 @@
-#pragma once
+Ôªø#pragma once
 
 #include<hgl/type/DataType.h>
 
 namespace hgl
 {
     /**
-    * ≥ﬂ¥Áƒ£∞Â
+    * Â∞∫ÂØ∏Ê®°Êùø
     */
     template<typename T> struct Size2
     {
@@ -24,8 +24,8 @@ namespace hgl
             height=h;
         }
 
-        const bool isLandscape()const{return width>height;}                     ///< «∑Ò∫·µƒ
-        const bool isPortrait()const{return width<height;}                      ///< «∑Ò ˙µƒ
+        const bool isLandscape()const{return width>height;}                     ///<ÊòØÂê¶Ê®™ÁöÑ
+        const bool isPortrait()const{return width<height;}                      ///<ÊòØÂê¶Á´ñÁöÑ
 
         void Swap()
         {
@@ -34,7 +34,19 @@ namespace hgl
             height=t;
         }
 
-        Size2<T> Swapped(){return Size2<T>(height,width);}                      ///<ªÒ»°“ª∏ˆ∫· ˙Ωªªªµƒ≥ﬂ¥Á
+        Size2<T> Swapped()const{return Size2<T>(height,width);}                 ///<Ëé∑Âèñ‰∏Ä‰∏™Ê®™Á´ñ‰∫§Êç¢ÁöÑÂ∞∫ÂØ∏
+
+        const bool operator == (const Size2<T> &s) const
+        {
+            if(width!=s.width)return(false);
+            if(height!=s.height)return(false);
+            return(true);
+        }
+
+        const bool operator != (const Size2<T> &s) const
+        {
+            return !operator==(s);
+        }
     };//template<typename T> struct Size2
 
     using Size2i    =Size2<int>;
