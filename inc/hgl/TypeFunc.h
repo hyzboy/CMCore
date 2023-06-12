@@ -143,6 +143,24 @@ namespace hgl
         return count;
     }
 
+    template<typename T>
+    inline constexpr int GetBitOffset(const T value)
+    {
+        int offset=0;
+        T bit=1;
+
+        for(int i=0;i<sizeof(T)*8;i++)
+        {
+            if(value&bit)
+                return offset;
+
+            bit<<=1;
+            ++offset;
+        }
+
+        return -1;
+    }
+
     constexpr uint      HGL_SIZE_1KB    =1024;
     constexpr uint      HGL_SIZE_1MB    =HGL_SIZE_1KB*1024;
     constexpr uint      HGL_SIZE_1GB    =HGL_SIZE_1MB*1024;
