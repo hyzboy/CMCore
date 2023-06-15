@@ -50,7 +50,7 @@ namespace hgl
         }
     };
 
-    using FontMap=ObjectMap<OSString,FontInfo>;
+    using FontInfoList=List<FontInfo>;
 
-    void EnumOSFonts(FontMap *);
+    void EnumOSFonts(FontInfoList *);
 }//namespace hgl
