@@ -66,6 +66,7 @@ SET(STRING_HEADER_FILES ${TYPE_INCLUDE_PATH}/String.h
 
 SET(TEXT_HEADER_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Endian.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/CodePage.h
+                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/text/FontInfo.h
                         ${TYPE_INCLUDE_PATH}/UnicodeBlocks.h
                         ${TYPE_INCLUDE_PATH}/StrChar.h)
 
