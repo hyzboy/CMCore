@@ -86,13 +86,13 @@ namespace hgl
         virtual bool Begin(T &)const;                                                               ///<取第一个数据
         virtual bool End(T &)const;                                                                 ///<取最后一个数据
 
-        virtual void Enum(void (*enum_func)(T &))                                                   ///<枚举所有数据成员
+        virtual void Enum(void (*enum_func)(int,T &))                                               ///<枚举所有数据成员
         {
             T *obj=items;
 
             for(int i=0;i<count;i++)
             {
-                enum_func(*obj);
+                enum_func(i,*obj);
                 ++obj;
             }
         }

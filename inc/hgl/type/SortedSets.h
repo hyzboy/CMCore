@@ -79,7 +79,7 @@ namespace hgl
 
                 bool    Rand            (T &)const;                                                 ///<随机取得一个
 
-        virtual void    Enum            (void (*enum_func)(T &)){data_list.Enum(enum_func);}        ///<枚举所有数据成员
+        virtual void    Enum            (void (*enum_func)(int,T &)){data_list.Enum(enum_func);}    ///<枚举所有数据成员
     };//template<typename T> class SortedSets
 }//namespace hgl
 #include<hgl/type/SortedSets.cpp>
