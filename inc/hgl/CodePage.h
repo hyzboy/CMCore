@@ -145,13 +145,13 @@ namespace hgl
             hgl::strcpy(charset,CHAR_SET_NAME_MAX_LENGTH,"us-ascii");
         }
 
-        CharSet(uint16 ccp,const char *cs)
+        CharSet(const uint16 ccp,const char *cs)
         {
             codepage=ccp;
             hgl::strcpy(charset,CHAR_SET_NAME_MAX_LENGTH,cs);
         }
 
-        CharSet(uint16);
+        CharSet(const uint16);
         CharSet(const u8char *);
 
         CharSet(const CodePageAndCharSet &cs)
@@ -164,7 +164,7 @@ namespace hgl
         CompOperator(const CharSet &,_Comp)
     };//struct CharacterSet
 
-    inline CharSet::CharSet(uint16 ccp)
+    inline CharSet::CharSet(const uint16 ccp)
     {
         codepage=ccp;
         hgl::strcpy(charset,CHAR_SET_NAME_MAX_LENGTH,FindCharSet(ccp));
