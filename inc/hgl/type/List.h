@@ -83,8 +83,8 @@ namespace hgl
                 void Set(int,const T &);                                                            ///<设置指定索引处的数据
                 bool Rand(T &)const;                                                                ///<随机取得一个数据
 
-        virtual bool Begin(T &)const;                                                               ///<取第一个数据
-        virtual bool End(T &)const;                                                                 ///<取最后一个数据
+        virtual bool First(T &)const;                                                               ///<取第一个数据
+        virtual bool Last(T &)const;                                                                ///<取最后一个数据
 
         virtual void Enum(void (*enum_func)(int,T &))                                               ///<枚举所有数据成员
         {
