@@ -1,4 +1,4 @@
-#ifndef HGL_IO_KEYBOARD_EVENT_INCLUDE
+ï»¿#ifndef HGL_IO_KEYBOARD_EVENT_INCLUDE
 #define HGL_IO_KEYBOARD_EVENT_INCLUDE
 
 #include<hgl/io/event/InputEvent.h>
@@ -7,15 +7,15 @@ namespace hgl
     namespace io
     {
         /**
-        * °´¼üÃ¶¾Ù¶¨Òå
+        * æŒ‰é”®æžšä¸¾å®šä¹‰
         */
         enum class KeyboardButton
         {
             NONE=0,
-                                //Ö÷¼üÅÌÇø
+                                //ä¸»é”®ç›˜åŒº
             Esc,                ///<ESC
 
-                                //F¹¦ÄÜ¼ü
+                                //FåŠŸèƒ½é”®
             F1,                 ///<F1
             F2,                 ///<F2
             F3,                 ///<F3
@@ -29,26 +29,26 @@ namespace hgl
             F11,                ///<F11
             F12,                ///<F12
 
-            Grave,              //<`ºÅ(Ö÷¼üÅÌÊý×Ö¼ü1×ó±ßµÄ°´Å¥)
+            Grave,              //<`å·(ä¸»é”®ç›˜æ•°å­—é”®1å·¦è¾¹çš„æŒ‰é’®)
 
-                                //10¸öÊý×Ö
-            _0,                 ///<Êý×Ö¼ü0
-            _1,                 ///<Êý×Ö¼ü1
-            _2,                 ///<Êý×Ö¼ü2
-            _3,                 ///<Êý×Ö¼ü3
-            _4,                 ///<Êý×Ö¼ü4
-            _5,                 ///<Êý×Ö¼ü5
-            _6,                 ///<Êý×Ö¼ü6
-            _7,                 ///<Êý×Ö¼ü7
-            _8,                 ///<Êý×Ö¼ü8
-            _9,                 ///<Êý×Ö¼ü9
+                                //10ä¸ªæ•°å­—
+            _0,                 ///<æ•°å­—é”®0
+            _1,                 ///<æ•°å­—é”®1
+            _2,                 ///<æ•°å­—é”®2
+            _3,                 ///<æ•°å­—é”®3
+            _4,                 ///<æ•°å­—é”®4
+            _5,                 ///<æ•°å­—é”®5
+            _6,                 ///<æ•°å­—é”®6
+            _7,                 ///<æ•°å­—é”®7
+            _8,                 ///<æ•°å­—é”®8
+            _9,                 ///<æ•°å­—é”®9
 
-            Minus,              ///< - (¼õºÅ)
-            Equals,             ///< = (µÈºÅ)
-            BackSlash,          ///< \ (·´Ð±¸Ü)
-            BackSpace,          ///< ÍË¸ñ¼ü
+            Minus,              ///< - (å‡å·)
+            Equals,             ///< = (ç­‰å·)
+            BackSlash,          ///< \ (åæ–œæ )
+            BackSpace,          ///< é€€æ ¼é”®
 
-            Tab,                ///<Tab¼ü
+            Tab,                ///<Tabé”®
 
             A,                  ///<A
             B,                  ///<B
@@ -80,66 +80,66 @@ namespace hgl
             LeftBracket,        ///<[
             RightBracket,       ///<]
 
-            CapsLock,           ///<´óÐ´Ëø¶¨¼ü
+            CapsLock,           ///<å¤§å†™é”å®šé”®
 
-            Semicolon,          ///<; (·ÖºÅ)
-            Apostrophe,         ///<' (µ¥ÒýºÅ)
-            Enter,              ///<»Ø³µ¼ü
+            Semicolon,          ///<; (åˆ†å·)
+            Apostrophe,         ///<' (å•å¼•å·)
+            Enter,              ///<å›žè½¦é”®
 
-            LeftShift,          ///<×ó±ßµÄShift¼ü
+            LeftShift,          ///<å·¦è¾¹çš„Shifté”®
 
-            Comma,              ///<, (¶ººÅ)
-            Period,             ///<. (¾äºÅ)
-            Slash,              ///</ (³ýºÅ)
-            RightShift,         ///<ÓÒ±ßµÄShift¼ü
+            Comma,              ///<, (é€—å·)
+            Period,             ///<. (å¥å·)
+            Slash,              ///</ (é™¤å·)
+            RightShift,         ///<å³è¾¹çš„Shifté”®
 
-            LeftCtrl,           ///<×ó±ßµÄCtrl¼ü
-            LeftOS,             ///<×ó±ßµÄOS¼ü(Win/Apple¼ü)
-            LeftAlt,            ///<×ó±ßµÄAlt¼ü
-            Space,              ///<¿Õ¸ñ¼ü
-            RightAlt,           ///<ÓÒ±ßµÄAlt¼ü
-            RightOS,            ///<ÓÒ±ßµÄOS¼ü(Win/Apple¼ü)
-            RightMenu,          ///<ÓÒ±ßµÄMenu¼ü
-            RightCtrl,          ///<ÓÒ±ßµÄCtrl¼ü
+            LeftCtrl,           ///<å·¦è¾¹çš„Ctrlé”®
+            LeftOS,             ///<å·¦è¾¹çš„OSé”®(Win/Appleé”®)
+            LeftAlt,            ///<å·¦è¾¹çš„Alté”®
+            Space,              ///<ç©ºæ ¼é”®
+            RightAlt,           ///<å³è¾¹çš„Alté”®
+            RightOS,            ///<å³è¾¹çš„OSé”®(Win/Appleé”®)
+            RightMenu,          ///<å³è¾¹çš„Menué”®
+            RightCtrl,          ///<å³è¾¹çš„Ctrlé”®
 
-                                //ÖÐ¼üÅÌÇø
-            PrintScreen,        ///<´òÓ¡ÆÁÄ»¼ü
-            ScrollLock,         ///<¹ö¶¯Ëø¶¨¼ü
-            Pause,              ///<ÔÝÍ£¼ü
+                                //ä¸­é”®ç›˜åŒº
+            PrintScreen,        ///<æ‰“å°å±å¹•é”®
+            ScrollLock,         ///<æ»šåŠ¨é”å®šé”®
+            Pause,              ///<æš‚åœé”®
 
-            Insert,             ///<²åÈë¼ü
-            Delete,             ///<É¾³ý¼ü
-            Home,               ///<ÐÐÊ×¼ü
-            End,                ///<ÐÐÎ²¼ü
-            PageUp,             ///<ÏòÇ°·­Ò³¼ü
-            PageDown,           ///<Ïòºó·­Ò³¼ü
+            Insert,             ///<æ’å…¥é”®
+            Delete,             ///<åˆ é™¤é”®
+            Home,               ///<è¡Œé¦–é”®
+            End,                ///<è¡Œå°¾é”®
+            PageUp,             ///<å‘å‰ç¿»é¡µé”®
+            PageDown,           ///<å‘åŽç¿»é¡µé”®
 
-            Up,                 ///<¡ü¹â±ê¼ü
-            Down,               ///<¡ý¹â±ê¼ü
-            Left,               ///<¡û¹â±ê¼ü
-            Right,              ///<¡ú¹â±ê¼ü
+            Up,                 ///<â†‘å…‰æ ‡é”®
+            Down,               ///<â†“å…‰æ ‡é”®
+            Left,               ///<â†å…‰æ ‡é”®
+            Right,              ///<â†’å…‰æ ‡é”®
 
-                                //Ð¡¼üÅÌÇø
-            NumLock,            ///<Ð¡¼üÅÌ Êý×ÖËø¶¨¼ü
+                                //å°é”®ç›˜åŒº
+            NumLock,            ///<å°é”®ç›˜ æ•°å­—é”å®šé”®
 
-            NumAdd,             ///<Ð¡¼üÅÌ +
-            NumSubtract,        ///<Ð¡¼üÅÌ -
-            NumMultiply,        ///<Ð¡¼üÅÌ *
-            NumDivide,          ///<Ð¡¼üÅÌ /
+            NumAdd,             ///<å°é”®ç›˜ +
+            NumSubtract,        ///<å°é”®ç›˜ -
+            NumMultiply,        ///<å°é”®ç›˜ *
+            NumDivide,          ///<å°é”®ç›˜ /
 
-            Num0,               ///<Ð¡¼üÅÌ 0
-            Num1,               ///<Ð¡¼üÅÌ 1
-            Num2,               ///<Ð¡¼üÅÌ 2
-            Num3,               ///<Ð¡¼üÅÌ 3
-            Num4,               ///<Ð¡¼üÅÌ 4
-            Num5,               ///<Ð¡¼üÅÌ 5
-            Num6,               ///<Ð¡¼üÅÌ 6
-            Num7,               ///<Ð¡¼üÅÌ 7
-            Num8,               ///<Ð¡¼üÅÌ 8
-            Num9,               ///<Ð¡¼üÅÌ 9
+            Num0,               ///<å°é”®ç›˜ 0
+            Num1,               ///<å°é”®ç›˜ 1
+            Num2,               ///<å°é”®ç›˜ 2
+            Num3,               ///<å°é”®ç›˜ 3
+            Num4,               ///<å°é”®ç›˜ 4
+            Num5,               ///<å°é”®ç›˜ 5
+            Num6,               ///<å°é”®ç›˜ 6
+            Num7,               ///<å°é”®ç›˜ 7
+            Num8,               ///<å°é”®ç›˜ 8
+            Num9,               ///<å°é”®ç›˜ 9
 
-            NumDecimal,         ///<Ð¡¼üÅÌ . (Ð¡Êýµã/É¾³ý¼ü)
-            NumEnter,           ///<Ð¡¼üÅÌ »Ø³µ¼ü
+            NumDecimal,         ///<å°é”®ç›˜ . (å°æ•°ç‚¹/åˆ é™¤é”®)
+            NumEnter,           ///<å°é”®ç›˜ å›žè½¦é”®
 
             ENUM_CLASS_RANGE(NONE,NumEnter)
         };//enum KeyboardButton
@@ -227,7 +227,7 @@ namespace hgl
         public:
 
             /**
-             * Ä³°´¼üÊÇ·ñ°´ÏÂ×´Ì¬
+             * æŸæŒ‰é”®æ˜¯å¦æŒ‰ä¸‹çŠ¶æ€
              */
             const bool HasPressed(const KeyboardButton &kb)const
             {
@@ -237,7 +237,7 @@ namespace hgl
             }
 
             /**
-             * Éè¶¨µ±Ç°Ê±¼ä
+             * è®¾å®šå½“å‰æ—¶é—´
              */
             void SetCurTime(const double &ct)
             {
@@ -245,7 +245,7 @@ namespace hgl
             }
 
             /**
-             * »ñÈ¡°´¼ü°´ÏÂµÄÊ±¼ä 
+             * èŽ·å–æŒ‰é”®æŒ‰ä¸‹çš„æ—¶é—´ 
              */
             const double GetPressedTime(const KeyboardButton &kb)const
             {   

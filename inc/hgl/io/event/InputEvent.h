@@ -1,4 +1,4 @@
-#ifndef HGL_IO_INPUT_EVENT_INCLUDE
+ï»¿#ifndef HGL_IO_INPUT_EVENT_INCLUDE
 #define HGL_IO_INPUT_EVENT_INCLUDE
 
 #include<hgl/type/SortedSets.h>
@@ -9,15 +9,15 @@ namespace hgl
     {
         struct EventHeader
         {
-            uint8 type;      ///<ÊäÈëÔ´ÀàÐÍ
-            uint8 index;     ///<ÊäÈëÔ´Ë÷Òý(±ÈÈçÍ¬Ò»Éè±¸ÓÐ¶à¸ö)
-            uint16 id;       ///<ÊÂ¼þid
+            uint8 type;      ///<è¾“å…¥æºç±»åž‹
+            uint8 index;     ///<è¾“å…¥æºç´¢å¼•(æ¯”å¦‚åŒä¸€è®¾å¤‡æœ‰å¤šä¸ª)
+            uint16 id;       ///<äº‹ä»¶id
         };
 
         constexpr size_t EventHeaderBytes=sizeof(EventHeader);
 
         /**
-         * ÊÂ¼þ´¦Àí½á¹û
+         * äº‹ä»¶å¤„ç†ç»“æžœ
          */
         enum class EventProcResult
         {
