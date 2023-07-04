@@ -130,10 +130,28 @@ namespace hgl
         BASE_STRING_NUMBER_CONSTRUCT(int64, itos);
         BASE_STRING_NUMBER_CONSTRUCT(uint64,utos);
 
-        BASE_STRING_NUMBER_CONSTRUCT(float, ftos);
-        BASE_STRING_NUMBER_CONSTRUCT(double,ftos);
-
         #undef BASE_STRING_NUMBER_CONSTRUCT
+
+        #define BASE_STRING_FLOAT_CONSTRUCT(type,func) \
+        String(const type num)=delete;  \
+        static String<T> floatOf(const type value,const uint frac_num)  \
+        {   \
+            StringInstance<T> *si=new StringInstance<T>();  \
+            \
+            const int len=8*sizeof(type);   \
+            \
+            T *tmp_str=new T[len];   \
+            \
+            func(tmp_str,len,frac_num,value);  \
+            si->InitFromInstance(tmp_str,hgl::strlen(tmp_str)); \
+            \
+            return String<T>(si);   \
+        }
+
+        BASE_STRING_FLOAT_CONSTRUCT(float, ftos);
+        BASE_STRING_FLOAT_CONSTRUCT(double,ftos);
+
+        #undef BASE_STRING_FLOAT_CONSTRUCT
 
         String(const int *value,int N)=delete;
 
@@ -246,7 +264,7 @@ namespace hgl
         }
 
         /**
-         * 根据一个C指针风格字符串设置当前字符串内容
+         * 根据一个C指针风格字符串设置当前字符串内容(当前字符串指针的数据会被复制创建)
          * @param str 字符串内容，在len<0的情况下，需以0为结尾
          * @param len 字符串长度，如果str以0为结尾，可以为负值，将启用自动计算长度
          */
@@ -263,7 +281,7 @@ namespace hgl
         }
 
         /**
-         * 根据一个C指针风格字符串设置当前字符串内容
+         * 根据一个C指针风格字符串设置当前字符串内容(基于一块已经分配好的内存,初始化后当前指针的内存会被使用)
          * @param str 字符串内容，在len<0的情况下，需以0为结尾
          * @param len 字符串长度
          */
