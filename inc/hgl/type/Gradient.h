@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include<hgl/type/DataType.h>
 #include<hgl/type/List.h>
@@ -13,7 +13,7 @@ namespace hgl
     };
 
     /**
-    * ½¥±äÀà
+    * æ¸å˜ç±»
     */
     template<typename P,typename T> class Gradient
     {
