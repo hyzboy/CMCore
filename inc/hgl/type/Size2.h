@@ -47,6 +47,31 @@ namespace hgl
         {
             return !operator==(s);
         }
+
+        Size2 operator + (const Size2<T> &s) const
+        {
+            return Size2<T>(width+s.width,height+s.height);
+        }
+
+        Size2 operator - (const Size2<T> &s) const
+        {
+            return Size2<T>(width-s.width,height-s.height);
+        }
+
+        #define SIZE2_OPERATOR_SELF(op)    template<typename N> const Size2 &operator op (const N &n) {width op n;height op n;return *this;}
+            SIZE2_OPERATOR_SELF(+=)
+            SIZE2_OPERATOR_SELF(-=)
+            SIZE2_OPERATOR_SELF(*=)
+            SIZE2_OPERATOR_SELF(/=)
+        #undef SIZE2_OPERATOR_SELF
+
+        #define SIZE2_OPERATOR_INTERACTIVE(op) template<typename N> Size2 operator op (const N &n) const {return Size2<T>(width op n,height op n);}
+            SIZE2_OPERATOR_INTERACTIVE(+)
+            SIZE2_OPERATOR_INTERACTIVE(-)
+            SIZE2_OPERATOR_INTERACTIVE(*)
+            SIZE2_OPERATOR_INTERACTIVE(/)
+        #undef SIZE2_OPERATOR_INTERACTIVE
+
     };//template<typename T> struct Size2
 
     using Size2i    =Size2<int>;
