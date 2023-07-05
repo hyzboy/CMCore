@@ -1,4 +1,4 @@
-#ifndef HGL_IO_DEVICE_MOUSE_EVENT_INCLUDE
+Ôªø#ifndef HGL_IO_DEVICE_MOUSE_EVENT_INCLUDE
 #define HGL_IO_DEVICE_MOUSE_EVENT_INCLUDE
 
 #include<hgl/TypeFunc.h>
@@ -7,7 +7,7 @@ namespace hgl
     namespace io
     {        
         /**
-        *  ÷±˙∞¥º¸√∂æŸ
+        * ÊâãÊüÑÊåâÈîÆÊûö‰∏æ
         */
         enum class JoystickButton
         {
@@ -33,10 +33,10 @@ namespace hgl
             Left        =JoystickButton::Left,
             Right       =JoystickButton::Right,
 
-            Fork        =JoystickButton::_0,           // ≤Ê
-            Circle      =JoystickButton::_1,           // ‘≤
-            Square      =JoystickButton::_2,           // ∑Ω
-            Triangle    =JoystickButton::_3,           // »˝Ω«
+            Fork        =JoystickButton::_0,           // Âèâ
+            Circle      =JoystickButton::_1,           // ÂúÜ
+            Square      =JoystickButton::_2,           // Êñπ
+            Triangle    =JoystickButton::_3,           // ‰∏âËßí
 
             L1          =JoystickButton::_6,       L2        =JoystickButton::_4,
             R1          =JoystickButton::_7,       R2        =JoystickButton::_5,
@@ -54,7 +54,7 @@ namespace hgl
         //    R=JoystickButton::_5,
 
         //    //XBOX/XBOX360
-        //    //XBOX,                     //Œ˜πœº¸
+        //    //XBOX,                     //Ë•øÁìúÈîÆ
         //};
     }//namespace io
 }//namespace hgl

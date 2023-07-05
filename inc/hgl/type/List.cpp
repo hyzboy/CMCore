@@ -24,7 +24,7 @@ namespace hgl
     }
 
     template<typename T>
-    bool List<T>::Begin(T &ti)const
+    bool List<T>::First(T &ti)const
     {
         if(!items||count<=0)
             return(false);
@@ -34,7 +34,7 @@ namespace hgl
     }
 
     template<typename T>
-    bool List<T>::End(T &ti)const
+    bool List<T>::Last(T &ti)const
     {
         if(!items||count<=0)
             return(false);

@@ -1,4 +1,4 @@
-#ifndef HGL_EVENT_PROC_INCLUDE
+ï»¿#ifndef HGL_EVENT_PROC_INCLUDE
 #define HGL_EVENT_PROC_INCLUDE
 
 #include<hgl/type/Queue.h>
@@ -6,7 +6,7 @@
 namespace hgl
 {
     /**
-     * ÊÂ¼ş»ùÀà
+     * äº‹ä»¶åŸºç±»
      */
     class EventProc
     {
@@ -21,7 +21,7 @@ namespace hgl
     using EventProcQueue=Queue<EventProc *>;
 
     /**
-        * Ö´ĞĞÒ»¸öÊÂ¼ş
+        * æ‰§è¡Œä¸€ä¸ªäº‹ä»¶
         */
     inline bool UpdateEvent(EventProcQueue *epq)
     {
@@ -42,9 +42,9 @@ namespace hgl
     }
 
     /**
-        * Ë¢ĞÂÖ´ĞĞÊÂ¼ş¶ÓÁĞ
-        * @param epq ÊÂ¼ş¶ÓÁĞ
-        * @param max_count ×î´óË¢ĞÂ¸öÊı(-1±íÊ¾ÎŞÏŞÖÆ)
+        * åˆ·æ–°æ‰§è¡Œäº‹ä»¶é˜Ÿåˆ—
+        * @param epq äº‹ä»¶é˜Ÿåˆ—
+        * @param max_count æœ€å¤§åˆ·æ–°ä¸ªæ•°(-1è¡¨ç¤ºæ— é™åˆ¶)
         */
     inline int UpdateEventQueue(EventProcQueue *epq,int max_count=-1)
     {

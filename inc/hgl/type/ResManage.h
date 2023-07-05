@@ -51,7 +51,7 @@ namespace hgl
 
         virtual int         Release(const K &,bool zero_clear=false);           ///<释放一个数据
         virtual int         Release(V *,bool zero_clear=false);                 ///<释放一个数据
-    };//template<typename F,typename T> class ResManage
+    };//template<typename K,typename V> class ResManage
 
     /**
      * 使用int类做数标致的资源管理器
@@ -82,7 +82,10 @@ namespace hgl
 
             return id_count++;
         }
-    };//template<typename F,typename T> class IDResManage:public ResManage<F,T>
+    };//template<typename K,typename V> class IDResManage:public ResManage<K,V>
+
+    template<typename V> using ID32ResManage=IDResManage<uint32,V>;
+    template<typename V> using ID64ResManage=IDResManage<uint64,V>;
 }//namespace hgl
 #include<hgl/type/ResManage.cpp>
 #endif//HGL_RES_MANAGE_INCLUDE
