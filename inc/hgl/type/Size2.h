@@ -20,6 +20,11 @@ namespace hgl
 
         Size2(const T &w,const T &h)
         {
+            Set(w,h);
+        }
+
+        void Set(const T &w,const T &h)
+        {
             width=w;
             height=h;
         }
@@ -72,6 +77,30 @@ namespace hgl
             SIZE2_OPERATOR_INTERACTIVE(/)
         #undef SIZE2_OPERATOR_INTERACTIVE
 
+        /**
+        * 计算另一个尺寸在当前尺寸内的等比缩放多大可以正好
+        * @param allow_over 允许超出
+        */
+        const float alcScale(const Size2<T> &s,const bool allow_over) const
+        {
+            if(width<=0||height<=0)return(0);
+            if(s.width<=0||s.height<=0)return(0);
+
+            float scale=float(width)/float(s.width);
+
+            if(allow_over)
+            {
+                if(scale*float(s.height)<float(height))
+                    scale=float(height)/float(s.height);
+            }
+            else
+            {
+                if(scale*float(s.height)>float(height))
+                    scale=float(height)/float(s.height);
+            }
+
+            return(scale);
+        }
     };//template<typename T> struct Size2
 
     using Size2i    =Size2<int>;
