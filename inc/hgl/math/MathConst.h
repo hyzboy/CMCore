@@ -20,14 +20,23 @@ namespace hgl
     constexpr double HGL_SQRT2      =1.41421356237309504880168872420969807;
     constexpr double HGL_SQRT1_2    =0.707106781186547524401;
 
-    constexpr double HGL_COS_ANG_0  =1;
-    constexpr double HGL_COS_ANG_45 =0.707106781187;
-    constexpr double HGL_COS_ANG_90 =0;
-    constexpr double HGL_COS_ANG_135=-0.707106781187;
-    constexpr double HGL_COS_ANG_180=-1;
-    constexpr double HGL_COS_ANG_225=-0.707106781187;
-    constexpr double HGL_COS_ANG_270=0;
-    constexpr double HGL_COS_ANG_315=0.707106781187;
+    constexpr double HGL_COS_0  =1;
+    constexpr double HGL_COS_45 =0.707106781187;
+    constexpr double HGL_COS_90 =0;
+    constexpr double HGL_COS_135=-0.707106781187;
+    constexpr double HGL_COS_180=-1;
+    constexpr double HGL_COS_225=-0.707106781187;
+    constexpr double HGL_COS_270=0;
+    constexpr double HGL_COS_315=0.707106781187;
+
+    constexpr double HGL_SIN_0  =0;
+    constexpr double HGL_SIN_45 =0.707106781187;
+    constexpr double HGL_SIN_90 =1;
+    constexpr double HGL_SIN_135=0.707106781187;
+    constexpr double HGL_SIN_180=0;
+    constexpr double HGL_SIN_225=-0.707106781187;
+    constexpr double HGL_SIN_270=-1;
+    constexpr double HGL_SIN_315=-0.707106781187;
 
     #define HGL_DEF_DEG2RAD(ang)    constexpr double HGL_RAD_##ang=double(ang)*(HGL_PI/180.0f);
 
