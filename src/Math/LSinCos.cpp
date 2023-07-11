@@ -1,6 +1,6 @@
 ﻿namespace hgl
 {
-    namespace algorithm
+    namespace
     {
         constexpr unsigned int SINV[91] = { 0,
             17452406, 34899496, 52335956, 69756473, 87155742, 104528463,
@@ -18,53 +18,53 @@
             956304755, 961261695, 965925826, 970295726, 974370064, 978147600,
             981627183, 984807753, 987688340, 990268068, 992546151, 994521895,
             996194698, 997564050, 998629534, 999390827, 999847695, 1000000000 };
+    }
 
-        double Lsin(int angle)
-        {
-            double sf;
+    double Lsin(int angle)
+    {
+        double sf;
 
-            if (angle > 360 || angle < -360)angle = angle - (angle / 360) * 360;
-            if (angle < 0)angle = 360 + angle;
-            if (angle > 180)sf = -1; else sf = 1;
+        if (angle > 360 || angle < -360)angle = angle - (angle / 360) * 360;
+        if (angle < 0)angle = 360 + angle;
+        if (angle > 180)sf = -1; else sf = 1;
 
-            if (angle > 90 && angle <= 180)angle = 180 - angle; else
-                if (angle > 180 && angle <= 270)angle = angle - 180; else
-                    if (angle > 270)angle = 360 - angle;
+        if (angle > 90 && angle <= 180)angle = 180 - angle; else
+            if (angle > 180 && angle <= 270)angle = angle - 180; else
+                if (angle > 270)angle = 360 - angle;
 
-            return sf*SINV[angle] / 10.0e8;
-        }
+        return sf*SINV[angle] / 10.0e8;
+    }
 
-        double Lcos(int angle)
-        {
-            double cf;
+    double Lcos(int angle)
+    {
+        double cf;
 
-            if (angle > 360 || angle < -360)angle = angle - (angle / 360) * 360;
-            if (angle < 0)angle = 360 + angle;
-            if (angle < 270 && angle>90)cf = -1; else cf = 1;
+        if (angle > 360 || angle < -360)angle = angle - (angle / 360) * 360;
+        if (angle < 0)angle = 360 + angle;
+        if (angle < 270 && angle>90)cf = -1; else cf = 1;
 
-            if (angle > 90 && angle <= 180)angle = 180 - angle; else
-                if (angle > 180 && angle <= 270)angle = angle - 180; else
-                    if (angle > 270)angle = 360 - angle;
+        if (angle > 90 && angle <= 180)angle = 180 - angle; else
+            if (angle > 180 && angle <= 270)angle = angle - 180; else
+                if (angle > 270)angle = 360 - angle;
 
-            return cf*SINV[90 - angle] / 10.0e8;
-        }
+        return cf*SINV[90 - angle] / 10.0e8;
+    }
 
-        void Lsincos(int angle, double &s, double &c)
-        {
-            double sf;
-            double cf;
+    void Lsincos(int angle, double &s, double &c)
+    {
+        double sf;
+        double cf;
 
-            if (angle > 360 || angle < -360)angle = angle - (angle / 360) * 360;
-            if (angle < 0)angle = 360 + angle;
-            if (angle > 180)sf = -1; else sf = 1;
-            if (angle < 270 && angle>90)cf = -1; else cf = 1;
+        if (angle > 360 || angle < -360)angle = angle - (angle / 360) * 360;
+        if (angle < 0)angle = 360 + angle;
+        if (angle > 180)sf = -1; else sf = 1;
+        if (angle < 270 && angle>90)cf = -1; else cf = 1;
 
-            if (angle > 90 && angle <= 180)angle = 180 - angle; else
-                if (angle > 180 && angle <= 270)angle = angle - 180; else
-                    if (angle > 270)angle = 360 - angle;
+        if (angle > 90 && angle <= 180)angle = 180 - angle; else
+            if (angle > 180 && angle <= 270)angle = angle - 180; else
+                if (angle > 270)angle = 360 - angle;
 
-            s = sf*SINV[angle] / 10.0e8;
-            c = cf*SINV[90 - angle] / 10.0e8;
-        }
-    }//namespace algorithm
+        s = sf*SINV[angle] / 10.0e8;
+        c = cf*SINV[90 - angle] / 10.0e8;
+    }
 }//namespace hgl
