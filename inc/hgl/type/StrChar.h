@@ -448,7 +448,7 @@ namespace hgl
      * @return str2在str1中所在位置的指针
      */
     template<typename T1,typename T2>
-    T1 *strstr(T1 *str1,const uint size1,T2 *str2,const uint size2)
+    T1 *strstr(T1 *str1,const uint size1,const T2 *str2,const uint size2)
     {
         if(!str1||!str2)return(nullptr);
         if(!*str1||!*str2)return(nullptr);
@@ -488,7 +488,7 @@ namespace hgl
      * @return str2在str1中所在位置的指针
      */
     template<typename T1,typename T2>
-    T1 *strrstr(T1 *str1,const uint size1,T2 *str2,const uint size2)
+    T1 *strrstr(T1 *str1,const uint size1,const T2 *str2,const uint size2)
     {
         if(!str1||!str2)return(nullptr);
         if(!*str1||!*str2)return(nullptr);
@@ -525,19 +525,20 @@ namespace hgl
      * @param size2 str2的长度
      * @return str2在str1中所在位置的指针
      */
-    template<typename T>
-    T *stristr(T *str1,const uint size1,T *str2,const uint size2)
+    template<typename T1,typename T2>
+    T1 *stristr(T1 *str1,const uint size1,T2 *str2,const uint size2)
     {
-        T *cp = (T *) str1;
-        T *s1, *s2;
+        T1 *cp = (T1 *) str1;
+        T1 *s1;
+        T2 *s2;
 
         if ( !*str2)
-            return (T *)str1;
+            return (T1 *)str1;
 
         while (*cp)
         {
             s1 = cp;
-            s2 = (T *) str2;
+            s2 = (T2 *) str2;
 
             while ( *s1 && *s2 )
             {
