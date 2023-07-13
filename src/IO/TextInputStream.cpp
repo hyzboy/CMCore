@@ -1,4 +1,4 @@
-#include<hgl/io/TextInputStream.h>
+﻿#include<hgl/io/TextInputStream.h>
 
 namespace hgl
 {
@@ -69,7 +69,7 @@ namespace hgl
         {
             uint8 *p=buffer;
 
-            if(stream_pos==0)       //�ʼ���Ǽ��һ��BOMͷ
+            if(stream_pos==0)       //最开始，那检测一下BOM头
             {
                 if(cur_buf_size>=2)
                 {
