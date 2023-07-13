@@ -114,9 +114,11 @@ SET(IO_FILE_FILES   ${IO_INCLUDE_PATH}/FileAccess.h
                   ${IO_INCLUDE_PATH}/FileInputStream.h
                   ${IO_INCLUDE_PATH}/FileOutputStream.h
                   ${IO_INCLUDE_PATH}/RandomAccessFile.h
+                  ${IO_INCLUDE_PATH}/TextInputStream.h
                   ${IO_INCLUDE_PATH}/TextOutputStream.h
                   IO/FileAccess.cpp
                   IO/FileInputStream.cpp
+                  IO/TextInputStream.cpp
                   IO/FileOutputStream.cpp
                   IO/RandomAccessFile.cpp)
 
