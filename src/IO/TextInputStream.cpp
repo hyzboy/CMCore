@@ -15,6 +15,7 @@ namespace hgl
             stream_size=input_stream->Available();
 
             bom=ByteOrderMask::NONE;
+            default_bom=ByteOrderMask::UTF8;
             callback=nullptr;
         }
 
@@ -37,14 +38,19 @@ namespace hgl
                 else
                 if(*p=='\r')
                 {
-                    ++p;
-                    if(*p=='\n')
+                    if(p[1]=='\n')
                     {
-                        callback->OnLine(sp,p-sp-1,true);
-                        ++line_count;
-                        ++p;
-                        sp=p;
+                        callback->OnLine(sp,p-sp,true);
+                        p+=2;
                     }
+                    else
+                    {
+                        callback->OnLine(sp,p-sp,true);
+                        ++p;
+                    }
+
+                    ++line_count;
+                    sp=p;
                 }
                 else
                     ++p;
@@ -78,6 +84,10 @@ namespace hgl
 
                         p+=bfh->size;
                     }
+                    else
+                    {
+                        bom=default_bom;
+                    }   
                 }
             }
 

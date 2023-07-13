@@ -59,6 +59,7 @@ namespace hgl
 
             ByteOrderMask bom;                                                                      ///<BOM头
 
+            ByteOrderMask default_bom;                                                              ///<缺省BOM，在没有BOM头时使用
             ParseCallback *callback;                                                                ///<回调函数
 
         private:
@@ -74,6 +75,8 @@ namespace hgl
             {
                 SAFE_CLEAR_ARRAY(buffer);
             }
+
+            void SetDefaultBOM(const ByteOrderMask &bo){default_bom=bo;}                            ///<设置缺省BOM头}
 
             /**
             * 运行并解晰文本
