@@ -12,6 +12,41 @@ namespace hgl
         */
         class TextInputStream
         {
+        public:
+
+            struct ParseCallback
+            {
+                virtual bool OnBOM(const ByteOrderMask &){return true;}                                  ///<读取到BOM头的回调函数
+
+                /**
+                * 读取到一行文本的回调函数(ansi/utf8)
+                * @param text 读取到的文本内容
+                * @param len 读取到的文本字长度
+                * @param line_end 当前行是否结束
+                */
+                virtual bool OnLine(const char *text,const int len,const bool line_end){return true;}
+
+                /**
+                * 读取到一行文本的回调函数(utf16le/utf16be)
+                * @param text 读取到的文本内容
+                * @param len 读取到的文本字长度
+                * @param line_end 当前行是否结束
+                */
+                virtual bool OnLine(const u16char *text,const int len,const bool line_end){return true;}
+
+                /**
+                * 读取到一行文本的回调函数(utf32le/utf32be)
+                * @param text 读取到的文本内容
+                * @param len 读取到的文本字长度
+                * @param line_end 当前行是否结束
+                */
+                virtual bool OnLine(const u32char *text,const int len,const bool line_end){return true;}
+
+                virtual bool OnEnd(){return true;}                                                      ///<读取结束的回调函数
+                virtual bool OnReadError(){return true;}                                                ///<读取错误的回调函数
+                virtual bool OnParseError(){return true;}                                               ///<解析错误的回调函数
+            };
+
         private:
 
             InputStream *input_stream;                                                              ///<输入流
@@ -23,6 +58,8 @@ namespace hgl
             int64 stream_pos,stream_size;                                                           ///<流当前位置/大小
 
             ByteOrderMask bom;                                                                      ///<BOM头
+
+            ParseCallback *callback;                                                                ///<回调函数
 
         private:
 
@@ -38,41 +75,12 @@ namespace hgl
                 SAFE_CLEAR_ARRAY(buffer);
             }
 
-            virtual bool OnBOM(const ByteOrderMask &){return true;}                                  ///<读取到BOM头的回调函数
-
-            /**
-            * 读取到一行文本的回调函数(ansi/utf8)
-            * @param text 读取到的文本内容
-            * @param len 读取到的文本字长度
-            * @param line_end 当前行是否结束
-            */
-            virtual bool OnLine(const char *text,const int len,const bool line_end){return true;}
-
-            /**
-            * 读取到一行文本的回调函数(utf16le/utf16be)
-            * @param text 读取到的文本内容
-            * @param len 读取到的文本字长度
-            * @param line_end 当前行是否结束
-            */
-            virtual bool OnLine(const u16char *text,const int len,const bool line_end){return true;}
-
-            /**
-            * 读取到一行文本的回调函数(utf32le/utf32be)
-            * @param text 读取到的文本内容
-            * @param len 读取到的文本字长度
-            * @param line_end 当前行是否结束
-            */
-            virtual bool OnLine(const u32char *text,const int len,const bool line_end){return true;}
-
-            virtual bool OnEnd(){return true;}                                                      ///<读取结束的回调函数
-            virtual bool OnReadError(){return true;}                                                ///<读取错误的回调函数
-            virtual bool OnParseError(){return true;}                                               ///<解析错误的回调函数
-
             /**
             * 运行并解晰文本
+            * @param pc 解晰结果回调函数
             * @return 解析出的文本行数
             */
-            virtual int Run();
+            virtual int Run(ParseCallback *pc);
         };//class TextInputStream
     }//namespace io
 }//namespace hgl

@@ -15,6 +15,7 @@ namespace hgl
             stream_size=input_stream->Available();
 
             bom=ByteOrderMask::NONE;
+            callback=nullptr;
         }
 
         template<typename T> int TextInputStream::Parse(const T *p)
@@ -28,7 +29,7 @@ namespace hgl
             {
                 if(*p=='\n')
                 {
-                    OnLine(sp,p-sp,true);
+                    callback->OnLine(sp,p-sp,true);
                     ++line_count;
                     ++p;
                     sp=p;
@@ -39,7 +40,7 @@ namespace hgl
                     ++p;
                     if(*p=='\n')
                     {
-                        OnLine(sp,p-sp-1,true);
+                        callback->OnLine(sp,p-sp-1,true);
                         ++line_count;
                         ++p;
                         sp=p;
@@ -51,7 +52,7 @@ namespace hgl
 
             if(sp<end)
             {
-                OnLine(sp,end-sp,false);
+                callback->OnLine(sp,end-sp,false);
                 ++line_count;
             }
 
@@ -89,9 +90,12 @@ namespace hgl
                 return Parse<char>((char *)p);
         }
 
-        int TextInputStream::Run()
+        int TextInputStream::Run(ParseCallback *pc)
         {
+            if(!pc)return(-2);
             if(!input_stream)return(-1);
+
+            callback=pc;
 
             int64 read_size;
 
@@ -109,7 +113,7 @@ namespace hgl
 
                 if(cur_buf_size!=read_size)
                 {
-                    OnReadError();
+                    callback->OnReadError();
                     return(-1);
                 }
 
@@ -117,7 +121,7 @@ namespace hgl
 
                 if(result<0)
                 {
-                    OnReadError();
+                    callback->OnReadError();
                     return(result);
                 }
 
@@ -125,6 +129,8 @@ namespace hgl
 
                 stream_pos+=cur_buf_size;
             }
+
+            callback->OnEnd();
 
             return line_count;
         }
