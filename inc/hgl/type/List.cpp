@@ -87,15 +87,15 @@ namespace hgl
 
             return items;
         }
-        else
+        else if(count+1>alloc_count)
         {
             alloc_count=power_to_2(count+1);
 
             items=(T *)hgl_align_realloc<T>(items,alloc_count);
-
-            ++count;
-            return(items+(count-1));
         }
+
+        ++count;
+        return(items+(count-1));
     }
 
     /**
@@ -112,7 +112,7 @@ namespace hgl
             alloc_count=1;
             items=hgl_align_malloc<T>(1);
         }
-        else
+        else if(count+1>alloc_count)
         {
             alloc_count=power_to_2(count+1);
 
@@ -141,7 +141,7 @@ namespace hgl
             alloc_count=power_to_2(n);
             items=hgl_align_malloc<T>(alloc_count);
         }
-        else
+        else if(count+n>alloc_count)
         {
             alloc_count=power_to_2(count+n);
 
@@ -177,7 +177,7 @@ namespace hgl
 
             items=hgl_align_malloc<T>(alloc_count);
         }
-        else
+        else if(count+n>alloc_count)
         {
             alloc_count=power_to_2(count+n);
 
@@ -401,7 +401,7 @@ namespace hgl
 
                 items=hgl_align_malloc<T>(alloc_count);
             }
-            else
+            else if(count+1>alloc_count)
             {
                 alloc_count=power_to_2(count+1);
 
