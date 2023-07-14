@@ -20,11 +20,14 @@ namespace hgl
     */
     template<typename K,typename V> class ObjectManage
     {
+    public:
+
+        using KVObject=RefKeyValue<K,V>;
+
     protected:
 
-        using ResItem=RefKeyValue<K,V>;
 
-        _Map<K,V *,ResItem> items;
+        _Map<K,V *,KVObject> items;
 
     protected:
 
@@ -43,7 +46,7 @@ namespace hgl
 
             while(n--)
             {
-                ResItem *obj=items.GetItem(n);
+                KVObject *obj=items.GetItem(n);
 
                 Clear(obj->value);
             }
@@ -57,7 +60,7 @@ namespace hgl
 
             while(n--)
             {
-                ResItem *obj=items.GetItem(n);
+                KVObject *obj=items.GetItem(n);
 
                 if(obj->ref_count<=0)
                 {
@@ -87,7 +90,7 @@ namespace hgl
             if(index==-1)
                 return(nullptr);
 
-            ResItem *obj=items.GetItem(index);
+            KVObject *obj=items.GetItem(index);
 
             return obj->value;
         }
@@ -98,7 +101,7 @@ namespace hgl
 
             if(index!=-1)
             {
-                ResItem *obj=items.GetItem(index);
+                KVObject *obj=items.GetItem(index);
 
                 ++obj->ref_count;
 
@@ -126,7 +129,7 @@ namespace hgl
 
             if(index==-1)return(false);
 
-            ResItem *obj=items.GetItem(index);
+            KVObject *obj=items.GetItem(index);
 
             if(inc_ref_count)
                 ++obj->ref_count;
@@ -155,7 +158,7 @@ namespace hgl
                 return(-1);
             }
 
-            ResItem *obj=items.GetItem(index);
+            KVObject *obj=items.GetItem(index);
 
             --obj->ref_count;
 
