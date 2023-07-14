@@ -1,4 +1,4 @@
-#include<hgl/type/LoadString.h>
+#include<hgl/io/LoadString.h>
 #include<hgl/filesystem/FileSystem.h>
 namespace hgl
 {
