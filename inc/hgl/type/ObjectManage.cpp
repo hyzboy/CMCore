@@ -1,17 +1,17 @@
-﻿#ifndef HGL_RES_MANAGE_CPP
-#define HGL_RES_MANAGE_CPP
+﻿#ifndef HGL_OBJECT_MANAGE_CPP
+#define HGL_OBJECT_MANAGE_CPP
 
-#include<hgl/type/ResManage.h>
+#include<hgl/type/ObjectManage.h>
 namespace hgl
 {
     template<typename K,typename V>
-    ResManage<K,V>::~ResManage()
+    ObjectManage<K,V>::~ObjectManage()
     {
         Clear();
     }
 
     template<typename K,typename V>
-    void ResManage<K,V>::Clear()
+    void ObjectManage<K,V>::Clear()
     {
         int n=items.GetCount();
 
@@ -26,7 +26,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    void ResManage<K,V>::ClearFree()
+    void ObjectManage<K,V>::ClearFree()
     {
         int n=items.GetCount();
 
@@ -43,7 +43,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    bool ResManage<K,V>::Add(const K &flag,V *obj)
+    bool ObjectManage<K,V>::Add(const K &flag,V *obj)
     {
         if(!obj)return(false);
 
@@ -55,7 +55,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    V *ResManage<K,V>::Find(const K &flag)
+    V *ObjectManage<K,V>::Find(const K &flag)
     {
         int index=items.Find(flag);
 
@@ -68,7 +68,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    V *ResManage<K,V>::Get(const K &flag)
+    V *ObjectManage<K,V>::Get(const K &flag)
     {
         int index=items.Find(flag);
 
@@ -88,7 +88,7 @@ namespace hgl
      * 确认指定数据是否存在
      */
     template<typename K,typename V>
-    bool ResManage<K,V>::ValueExist(V *value)
+    bool ObjectManage<K,V>::ValueExist(V *value)
     {
         return(items.FindByValue(value)!=-1);
     }
@@ -101,7 +101,7 @@ namespace hgl
      * @param 是否增加引用计数
      */
     template<typename K,typename V>
-    bool ResManage<K,V>::GetKeyByValue(V *value,K *key,uint *ref_count,bool inc_ref_count)
+    bool ObjectManage<K,V>::GetKeyByValue(V *value,K *key,uint *ref_count,bool inc_ref_count)
     {
         int index=items.FindByValue(value);
 
@@ -122,7 +122,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    int ResManage<K,V>::ReleaseBySerial(int index,bool zero_clear)
+    int ObjectManage<K,V>::ReleaseBySerial(int index,bool zero_clear)
     {
         if(index==-1)
         {
@@ -148,15 +148,15 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    int ResManage<K,V>::Release(const K &flag,bool zero_clear)
+    int ObjectManage<K,V>::Release(const K &flag,bool zero_clear)
     {
         return ReleaseBySerial(items.Find(flag),zero_clear);
     }
 
     template<typename K,typename V>
-    int ResManage<K,V>::Release(V *td,bool zero_clear)
+    int ObjectManage<K,V>::Release(V *td,bool zero_clear)
     {
         return ReleaseBySerial(items.FindByValue(td),zero_clear);
     }
 }//namespace hgl
-#endif//HGL_RES_MANAGE_CPP
+#endif//HGL_OBJECT_MANAGE_CPP

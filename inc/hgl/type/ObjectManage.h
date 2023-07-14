@@ -1,5 +1,4 @@
-﻿#ifndef HGL_RES_MANAGE_INCLUDE
-#define HGL_RES_MANAGE_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/Map.h>
 namespace hgl
@@ -17,9 +16,9 @@ namespace hgl
     };
 
     /**
-    * 资源管理器,它没有缓冲管理，仅仅是管理数据，并保证不会被重复加载
+    * 对象管理器,它没有缓冲管理，仅仅是管理数据，并保证不会被重复加载
     */
-    template<typename K,typename V> class ResManage
+    template<typename K,typename V> class ObjectManage
     {
     protected:
 
@@ -31,11 +30,11 @@ namespace hgl
 
     protected:
 
-        virtual void Clear(V *obj){delete obj;}                                 ///<资源释放虚拟函数(缺省为直接delete对象)
+        virtual void Clear(V *obj){delete obj;}                                 ///<对象释放虚拟函数(缺省为直接delete对象)
 
     public:
 
-        virtual ~ResManage();
+        virtual ~ObjectManage();
 
         virtual void        Clear();                                            ///<清除所有数据
         virtual void        ClearFree();                                        ///<清除所有引用计数为0的数据
@@ -51,19 +50,19 @@ namespace hgl
 
         virtual int         Release(const K &,bool zero_clear=false);           ///<释放一个数据
         virtual int         Release(V *,bool zero_clear=false);                 ///<释放一个数据
-    };//template<typename K,typename V> class ResManage
+    };//template<typename K,typename V> class ObjectManage
 
     /**
-     * 使用int类做数标致的资源管理器
+     * 使用整型数据类做数标识的对象管理器
      */
-    template<typename K,typename V> class IDResManage:public ResManage<K,V>
+    template<typename K,typename V> class IDObjectManage:public ObjectManage<K,V>
     {
         K id_count=0;
 
     public:
 
-        using ResManage<K,V>::ResManage;
-        virtual ~IDResManage()=default;
+        using ObjectManage<K,V>::ObjectManage;
+        virtual ~IDObjectManage()=default;
 
         virtual K Add(V *value)
         {
@@ -73,19 +72,19 @@ namespace hgl
                 K key;
                 uint count;
 
-                if(ResManage<K,V>::GetKeyByValue(value,&key,&count,true))
+                if(ObjectManage<K,V>::GetKeyByValue(value,&key,&count,true))
                     return key;
             }
 
-            if(!ResManage<K,V>::Add(id_count,value))
+            if(!ObjectManage<K,V>::Add(id_count,value))
                 return(-1);
 
             return id_count++;
         }
-    };//template<typename K,typename V> class IDResManage:public ResManage<K,V>
+    };//template<typename K,typename V> class IDObjectManage:public ObjectManage<K,V>
 
-    template<typename V> using ID32ResManage=IDResManage<uint32,V>;
-    template<typename V> using ID64ResManage=IDResManage<uint64,V>;
+    template<typename V> using U32ObjectManage=IDObjectManage<uint32,V>;
+    template<typename V> using U64ObjectManage=IDObjectManage<uint64,V>;
 }//namespace hgl
-#include<hgl/type/ResManage.cpp>
-#endif//HGL_RES_MANAGE_INCLUDE
+
+#include<hgl/type/ObjectManage.cpp>
