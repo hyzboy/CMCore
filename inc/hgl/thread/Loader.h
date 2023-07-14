@@ -2,7 +2,7 @@
 #define HGL_LOADER_INCLUDE
 
 #include<cm.h>
-#include<hgl/type/BaseString.h>
+#include<hgl/type/String.h>
 #include<hgl/object/EnumObject.h>
 #include<hgl/thread/Thread.h>
 namespace hgl
