@@ -105,8 +105,8 @@ SET(IO_DATA_FILES ${IO_INCLUDE_PATH}/DataInputStream.h
 SET(IO_MEMORY_STREAM_FILES  ${IO_INCLUDE_PATH}/MemoryInputStream.h
                             ${IO_INCLUDE_PATH}/MemoryOutputStream.h)
 
-SET(IO_MEM_BLOCK_FILES  ${IO_INCLUDE_PATH}/LoadMemBlock.h
-                        ${IO_INCLUDE_PATH}/SaveMemBlock.h)
+SET(IO_DATA_ARRAY_FILES ${IO_INCLUDE_PATH}/LoadDataArray.h
+                        ${IO_INCLUDE_PATH}/SaveDataArray.h)
 
 SET(IO_FILE_FILES ${IO_INCLUDE_PATH}/FileAccess.h
                   ${IO_INCLUDE_PATH}/FileInputStream.h
@@ -139,22 +139,22 @@ SOURCE_GROUP("IO\\Event"   FILES ${INPUT_EVENT_FILES})
 
 SOURCE_GROUP("IO\\Base"         FILES ${IO_BASE_FILES})
 SOURCE_GROUP("IO\\DataIOStream" FILES ${IO_DATA_FILES})
-SOURCE_GROUP("IO\\MemBlock"     FILES ${IO_MEM_BLOCK_FILES})
+SOURCE_GROUP("IO\\DataArray"    FILES ${IO_DATA_ARRAY_FILES})
 SOURCE_GROUP("IO\\MemoryStream" FILES ${IO_MEMORY_STREAM_FILES})
 SOURCE_GROUP("IO\\File"         FILES ${IO_FILE_FILES})
 SOURCE_GROUP("IO\\Jave"         FILES ${IO_JAVA_FILES})
 SOURCE_GROUP("IO\\Text"         FILES ${IO_TEXT_FILES})
 SOURCE_GROUP("ID\\StringList"   FILES ${IO_STRING_LIST_FILES})
 
-SET(IO_SOURCE_FILES ${IO_BASE_FILES}
-                  ${IO_DATA_FILES}
-                  ${IO_MEM_BLOCK_FILES}
-                  ${IO_MEMORY_STREAM_FILES}
-                  ${IO_FILE_FILES}
-                  ${IO_JAVA_FILES}
-                  ${IO_TEXT_FILES}
-                  ${IO_STRING_LIST_FILES}
-                  ${INPUT_EVENT_FILES})
+SET(IO_SOURCE_FILES     ${IO_BASE_FILES}
+                      ${IO_DATA_FILES}
+                      ${IO_DATA_ARRAY_FILES}
+                      ${IO_MEMORY_STREAM_FILES}
+                      ${IO_FILE_FILES}
+                      ${IO_JAVA_FILES}
+                      ${IO_TEXT_FILES}
+                      ${IO_STRING_LIST_FILES}
+                      ${INPUT_EVENT_FILES})
 
 SET(FILESYSTEM_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/filesystem)
 
