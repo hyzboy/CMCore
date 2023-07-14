@@ -21,7 +21,8 @@ namespace hgl
         const	size_t GetBytes		()const{return count*sizeof(T);}								///<取得阵列已使用的字节数
         const	size_t GetAllocBytes()const{return alloc_count*sizeof(T);}							///<取得阵列已分配空间字节数
 
-                T *     GetData()const{return items;}
+        const   T *     GetData()const{return items;}
+                T *     data()        {return items;}
 
     public:
 
