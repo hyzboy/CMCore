@@ -2,9 +2,6 @@
 #define HGL_MEM_BLOCK_INCLUDE
 
 #include<hgl/type/DataType.h>
-#include<hgl/io/FileInputStream.h>
-#include<hgl/filesystem/FileSystem.h>
-#include<hgl/thread/ThreadMutex.h>
 namespace hgl
 {
     /**
@@ -24,6 +21,12 @@ namespace hgl
         const	size_t GetMaxLength	()const{return buf_size;}										///<取得内存块最大长度(注：非字节数)
         const	size_t GetBytes		()const{return cur_size*sizeof(T);}								///<取得内存块字节数
         const	size_t GetMaxBytes	()const{return buf_size*sizeof(T);}								///<取得内存块最大字节数
+
+                T *     begin       (){return buf;}                                                 ///<取得内存块起始指针
+                T *     end         (){return buf+cur_size;}                                        ///<取得内存块结束地址指针
+
+        const   T *     begin       ()const{return buf;}                                            ///<取得内存块起始
+        const   T *     end         ()const{return buf+cur_size;}                                   ///<取得内存块结束地址指针
 
         /**
          * 分配指定空间出来，供未来使用
@@ -173,36 +176,5 @@ namespace hgl
             return buf[n];
         }
     };//template<typename T> class MemBlock
-
-    /**
-     * 加载一个文件到内存块类中
-     */
-    template<typename T> MemBlock<T> *LoadFileToMemBlock(const OSString &filename)
-    {
-        io::FileInputStream fis;
-
-        if(!fis.Open(filename))return(nullptr);
-
-        const size_t file_size	=fis.GetSize();
-        const size_t size		=(file_size+sizeof(T)-1)/sizeof(T);
-
-        MemBlock<T> *mb=new MemBlock<T>(size);
-
-        fis.Read(mb->data(),file_size);
-
-        return(mb);
-    }
-
-    /**
-     * 保存一个内存块到文件
-     */
-    template<typename T> bool SaveMemBlockToFile(const OSString &filename,const MemBlock<T> &mb)
-    {
-        const size_t size=mb.bytes();
-
-        if(size<=0)return(true);
-
-        return(hgl::filesystem::SaveMemoryToFile(filename,mb.data(),mb.bytes())==size);
-    }
 }//namespace hgl
 #endif//HGL_MEM_BLOCK_INCLUDE
