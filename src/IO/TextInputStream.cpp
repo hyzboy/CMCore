@@ -16,10 +16,18 @@ namespace hgl
 
             bom=ByteOrderMask::NONE;
             default_bom=ByteOrderMask::UTF8;
-            callback=nullptr;
+
+            callback_u8=nullptr;
+            callback_u16=nullptr;
+            callback_u32=nullptr;
+            event_callback=nullptr;
         }
 
-        template<typename T> int TextInputStream::Parse(const T *p)
+        template<> void TextInputStream::SetParseCallback(ParseCallback<char> *pc){callback_u8=pc;}
+        template<> void TextInputStream::SetParseCallback(ParseCallback<u16char> *pc){callback_u16=pc;}
+        template<> void TextInputStream::SetParseCallback(ParseCallback<u32char> *pc){callback_u32=pc;}
+
+        template<typename T> int TextInputStream::Parse(const T *p,ParseCallback<T> *pc)
         {
             const T *sp=(const T *)p;
             const T *end=(const T *)(buffer+cur_buf_size);
@@ -30,7 +38,7 @@ namespace hgl
             {
                 if(*p=='\n')
                 {
-                    callback->OnLine(sp,p-sp,true);
+                    pc->OnLine(sp,p-sp,true);
                     ++line_count;
                     ++p;
                     sp=p;
@@ -40,12 +48,12 @@ namespace hgl
                 {
                     if(p[1]=='\n')
                     {
-                        callback->OnLine(sp,p-sp,true);
+                        pc->OnLine(sp,p-sp,true);
                         p+=2;
                     }
                     else
                     {
-                        callback->OnLine(sp,p-sp,true);
+                        pc->OnLine(sp,p-sp,true);
                         ++p;
                     }
 
@@ -58,7 +66,7 @@ namespace hgl
 
             if(sp<end)
             {
-                callback->OnLine(sp,end-sp,false);
+                pc->OnLine(sp,end-sp,false);
                 ++line_count;
             }
 
@@ -92,20 +100,30 @@ namespace hgl
             }
 
             if(bom==ByteOrderMask::UTF16LE||bom==ByteOrderMask::UTF16BE)
-                return Parse<u16char>((u16char *)p);
+            {
+                if(!callback_u16)return(-1);
+                return Parse<u16char>((u16char *)p,callback_u16);
+            }
             else
             if(bom==ByteOrderMask::UTF32LE||bom==ByteOrderMask::UTF32BE)
-                return Parse<u32char>((u32char *)p);
+            {
+                if(!callback_u32)return(-1);
+                return Parse<u32char>((u32char *)p,callback_u32);
+            }
             else
-                return Parse<char>((char *)p);
+            {
+                if(!callback_u8)return(-1);
+                return Parse<char>((char *)p,callback_u8);
+            }
         }
 
-        int TextInputStream::Run(ParseCallback *pc)
+        int TextInputStream::Run()
         {
-            if(!pc)return(-2);
             if(!input_stream)return(-1);
-
-            callback=pc;
+            
+            if(!callback_u8
+             &&!callback_u16
+             &&!callback_u32)return(-2);            
 
             int64 read_size;
 
@@ -123,7 +141,9 @@ namespace hgl
 
                 if(cur_buf_size!=read_size)
                 {
-                    callback->OnReadError();
+                    if(event_callback)
+                        event_callback->OnReadError();
+
                     return(-1);
                 }
 
@@ -131,7 +151,9 @@ namespace hgl
 
                 if(result<0)
                 {
-                    callback->OnReadError();
+                    if(event_callback)
+                        event_callback->OnReadError();
+
                     return(result);
                 }
 
@@ -140,7 +162,8 @@ namespace hgl
                 stream_pos+=cur_buf_size;
             }
 
-            callback->OnEnd();
+            if(event_callback)
+                event_callback->OnEnd();
 
             return line_count;
         }
