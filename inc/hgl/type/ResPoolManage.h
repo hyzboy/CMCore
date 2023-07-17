@@ -2,11 +2,11 @@
 #define HGL_RES_POOL_MANAGE_INCLUDE
 
 #include<hgl/type/Pool.h>
-#include<hgl/type/ResManage.h>
+#include<hgl/type/ObjectManage.h>
 
 namespace hgl
 {
-    template <typename K,typename V,typename OP> class _ResPoolManage:public ResManage<K,V>
+    template <typename K,typename V,typename OP> class _ResPoolManage:public ObjectManage<K,V>
     {
     protected:
 
@@ -21,7 +21,7 @@ namespace hgl
 
         _ResPoolManage(OP *op):data_pool(op){}
         virtual ~_ResPoolManage()=default;
-    };//template <typename K,typename V,typename OP> class _ResPoolManage:public ResManage<K,V>
+    };//template <typename K,typename V,typename OP> class _ResPoolManage:public ObjectManage<K,V>
 
     /**
      * 资源池是Pool/ResManage两个模板的组合应用

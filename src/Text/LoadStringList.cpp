@@ -1,5 +1,5 @@
-﻿#include<hgl/type/LoadStringList.h>
-#include<hgl/type/LoadString.h>
+﻿#include<hgl/io/LoadStringList.h>
+#include<hgl/io/LoadString.h>
 #include<hgl/type/SplitString.h>
 #include<hgl/filesystem/FileSystem.h>
 
