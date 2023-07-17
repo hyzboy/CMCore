@@ -180,6 +180,23 @@ namespace hgl
     }
 
     /**
+    * 根据索引取得指定数据的指针<Br>
+    * 比如定义了Map<int ID,struct DATA>，直接返回DATA需要复制会消耗一些时间，直接返回DATA *会更好一些
+    */
+    template<typename K,typename V,typename KVData>
+    V *_Map<K,V,KVData>::GetPointer(const K &key)const
+    {
+        int index=Find(key);
+
+        if(index==-1)
+            return(nullptr);
+
+        KVData *obj=GetListObject(data_list,index);
+
+        return &(obj->value);
+    }
+
+    /**
     * 根据索引取得数据与序号
     * @param flag 数据索引
     * @param data 数据存放处
