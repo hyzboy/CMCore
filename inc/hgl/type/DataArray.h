@@ -11,15 +11,17 @@ namespace hgl
     protected:
 
         T *items;
-        size_t count;
-        size_t alloc_count;
+        size_t count;                                                                               ///<当前数据数量
+        size_t alloc_count;                                                                         ///<已分配的数据数量
 
     public:
 
-                size_t GetCount	    ()const{return count;}										    ///<取得数据数量(注：非字节数)
-        const	size_t GetAllocCount()const{return alloc_count;}									///<取得已分配的阵列大小(注：非字节数)
-        const	size_t GetBytes		()const{return count*sizeof(T);}								///<取得阵列已使用的字节数
-        const	size_t GetAllocBytes()const{return alloc_count*sizeof(T);}							///<取得阵列已分配空间字节数
+                size_t  GetCount	    ()const{return count;}										///<取得数据数量(注：非字节数)
+        const	size_t  GetAllocCount   ()const{return alloc_count;}								///<取得已分配的阵列大小(注：非字节数)
+        const	size_t  GetBytes		()const{return count*sizeof(T);}							///<取得阵列已使用的字节数
+        const	size_t  GetAllocBytes   ()const{return alloc_count*sizeof(T);}						///<取得阵列已分配空间字节数
+
+        const   bool    IsEmpty         ()const{count==0;}                                          ///<是否为空
 
         const   T *     GetData()const{return items;}
                 T *     data()        {return items;}
@@ -72,7 +74,7 @@ namespace hgl
 
         DataArray()
         {
-            items=0;
+            items=nullptr;
             count=0;
             alloc_count=0;
         }
@@ -80,7 +82,7 @@ namespace hgl
         DataArray(size_t size)
         {
             if(size<=0)
-                items=0;
+                items=nullptr;
             else
                 items=(T *)hgl_malloc(size*sizeof(T));
 
@@ -103,8 +105,7 @@ namespace hgl
 
         void Clear()
         {
-            if(items)
-                hgl_free(items);
+            SAFE_FREE(items);
 
             count=0;
             alloc_count=0;
@@ -122,18 +123,6 @@ namespace hgl
         }
 
         /**
-         * 设置数据,请保证数据使用hgl_malloc分配，否则会因为释放函数不配对出现错误
-         */
-        void SetData(T *d,int s)
-        {
-            Clear();
-
-            items=d;
-            alloc_count=s;
-            count=s;
-        }
-
-        /**
          * 解除数据关联
          */
         void Unlink()
@@ -143,64 +132,33 @@ namespace hgl
             alloc_count=0;
         }
 
-        /**
-         * 复制内存块中的数据
-         * @param d 复制出来的数据指针
-         * @param s 要复制出来的数据个数
-         */
-        void CopyData(const T *d,int s)
+        operator T *()const
         {
-            SetCount(s);
-            memcpy(items,d,s*sizeof(T));
+            return items;
+        }
+
+        T *operator ->()const
+        {
+            return items;
+        }
+
+        T &operator[](int n)
+        {
+            return items[n];
+        }
+
+        const T &operator[](int n)const
+        {
+            return items[n];
         }
 
         /**
-        * 删除列表中的指定项,删除后将最后一个数据移到被删除的位置
-        * @param index 要删除的数据项的索引值
-        * @return 是否成功
-        */
-        bool Delete(int index)
-        {
-            if(count>0&&index>=0&&index<count)
-            {
-                --count;
-
-                if(index<count)
-                    memcpy(items+index,items+count,sizeof(T));      //将最后一个数据移到当前位置
-
-                return(true);
-            }
-            else
-                return(false);
-        }
-
-        /**
-        * 删除列表中的指定项，删除后将后面的数据整体前移
-        * @param index 要删除的数据项的索引值
-        * @return 是否成功
-        */
-        bool DeleteMove(int index)
-        {
-            if(count>0&&index>=0&&index<count)
-            {
-                --count;
-
-                if(index<count)
-                    memmove(items+index,items+index+1,(count-index)*sizeof(T));
-
-                return(true);
-            }
-            else
-                return(false);
-        }
-
-        /**
-        * 删除列表中的指定项
+        * 删除列表中的指定项(不关心顺序，如果删除中间的数据，可能会将最后面的数据拿过来填补)
         * @param start 要删除的数据项的索引起始值
         * @param number 要删除的数据项数量
         * @return 是否成功
         */
-        bool Delete(int start,int number)
+        bool Delete(int start,int number=1)
         {
             if(start>=count)return(false);
 
@@ -223,24 +181,33 @@ namespace hgl
             return(true);
         }
 
-        operator T *()const
+        /**
+        * 删除列表中的指定项(关心顺序，删除中间数据后，会将后面的数据整体前移)
+        * @param start 要删除的数据项的索引值
+        * @param number 要删除的数据项数量
+        * @return 是否成功
+        */
+        bool DeleteMove(int start,int number=1)
         {
-            return items;
-        }
+            if(start>=count)return(false);
 
-        T *operator ->()const
-        {
-            return items;
-        }
+            if(start<0)
+            {
+                number+=start;
+                start=0;
+            }
 
-        T &operator[](int n)
-        {
-            return items[n];
-        }
+            if(start+number>count)
+                number=count-start;
 
-        const T &operator[](int n)const
-        {
-            return items[n];
+            if(number<=0)return(false);
+
+            count-=number;
+
+            if(start<count)
+                memmove(items+start,items+start+number,(count-start)*sizeof(T));
+
+            return(true);
         }
     };//template<typename T> class DataArray
 }//namespace hgl

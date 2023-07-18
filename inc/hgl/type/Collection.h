@@ -138,7 +138,7 @@ namespace hgl
         }
 
         template<typename T>
-        int64 indexOfValue(const T &value)                                                               ///<获取数据在合集中的索引
+        int64 indexOfValue(const T &value)                                                          ///<获取数据在合集中的索引
         {
             CheckElementEqual<T> cee(value);
 
@@ -148,7 +148,7 @@ namespace hgl
         virtual bool isMember(const void *value) const{return indexOf(value)!=-1;}                  ///<判断当前数据是否是其成员
 
         template<typename T>
-        bool  isMemberValue(const T &value)const{return indexOf<T>(value)!=-1;}                          ///<判断当前数据是否是其成员
+        bool  isMemberValue(const T &value)const{return indexOf<T>(value)!=-1;}                     ///<判断当前数据是否是其成员
 
         virtual int64 RemoveCondition(CheckElement *condition,int max_count=1);                     ///<按条件移除
         
@@ -183,7 +183,7 @@ namespace hgl
     };//class Collection
 
     /**
-     * 合集数据枚举器.
+     * 合集数据枚举器
      */
     template<typename T> class ElementEnumerator
     {

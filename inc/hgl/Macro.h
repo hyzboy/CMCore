@@ -1,5 +1,4 @@
-﻿#ifndef HGL_MACRO_INCLUDE
-#define HGL_MACRO_INCLUDE
+﻿#pragma once
 
 namespace hgl
 {
@@ -57,64 +56,18 @@ namespace hgl
 
     #define SAFE_FREE_OBJECT_ARRAY(name,num)    {   \
                                                     if(name)    \
+                                                    {    \
                                                         FREE_OBJECT_ARRAY(name,num);    \
+                                                \
+                                                        name=null;  \
+                                                    }\
                                                 }
 
     #define SAFE_FREE(name)             {   \
                                             if(name)    \
+                                            {   \
                                                 hgl_free(name); \
+                                                name=nullptr;   \
+                                            }   \
                                         }
-
-    #define SAFE_RECREATE(name,code)    {   \
-                                            if(name)    \
-                                                delete name;    \
-                                            \
-                                            name=code;  \
-                                        }
-
-    #define ARRAY_CALL(name,num,code)   {   \
-                                            int array_call_number=num;  \
-                                            \
-                                            while(array_call_number--)  \
-                                                name[array_call_number]->code;  \
-                                        }
-
-    #define LOAD_FUNC(type,func)    type func(void *buf,int buf_size)   \
-                                    {   \
-                                        if(!buf||buf_size<=0)return 0;  \
-                                        \
-                                        MemoryInputStream ms(buf,buf_size); \
-                                        \
-                                        return(func(&ms));  \
-                                    }   \
-                                    \
-                                    type func(const UTF16String &filename)  \
-                                    {   \
-                                        FileInputStream fs; \
-                                        \
-                                        if(fs.Open(filename))   \
-                                            return(func(&fs));  \
-                                        else    \
-                                            return 0;   \
-                                    }
-
-    #define SAVE_FUNC(type,func)    bool func(type data,void *buf,int buf_size) \
-                                    {   \
-                                        if(!buf||buf_size<=0)return(false); \
-                                        \
-                                        MemoryOutputStream ms(buf,buf_size);    \
-                                        \
-                                        return(func(data,&ms)); \
-                                    }   \
-                                    \
-                                    bool func(type data,const UTF16String &filename)    \
-                                    {   \
-                                        FileOutputStream fs;    \
-                                        \
-                                        if(fs.CreateTrunc(filename))    \
-                                            return(func(data,&fs)); \
-                                        else    \
-                                            return(false);  \
-                                    }
 }//namespace hgl
-#endif//HGL_MACRO_INCLUDE
