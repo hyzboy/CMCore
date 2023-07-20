@@ -44,30 +44,6 @@ namespace hgl
     constexpr u32char U32_FULL_WIDTH_SPACE=U32_TEXT('　');      //全角空格
 
     template<typename T>
-    inline T *zero_new(const int count)
-    {
-        T *result=new T[count];
-
-        if(!result)
-            return(nullptr);
-
-        memset(result,0,count*sizeof(T));
-        return result;
-    }
-
-    template<typename T>
-    inline T *zero_malloc(const int count)
-    {
-        T *result=hgl_malloc(count*sizeof(T));
-
-        if(!result)
-            return(nullptr);
-
-        memset(result,0,count*sizeof(T));
-        return result;
-    }
-
-    template<typename T>
     inline void hgl_call_construct(T *obj)      //呼叫构造函数
     {
         new (static_cast<void *>(obj)) T();
@@ -403,6 +379,14 @@ namespace hgl
             *data=value;
             ++data;
         }
+    }
+
+    template<>
+    inline void hgl_set<uint8>(uint8 *data,const uint8 value,const size_t count)
+    {
+        if(!data||count<=0)return;
+
+        memset(data,value,count);
     }
 
     template<typename T>
