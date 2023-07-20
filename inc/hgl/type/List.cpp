@@ -19,7 +19,7 @@ namespace hgl
         if(!items||index<0||index>=count)
             return(false);
 
-        memcpy(&ti,items+index,sizeof(T));
+        hgl_cpy<T>(ti,items[index]);
         return(true);
     }
 
@@ -29,7 +29,7 @@ namespace hgl
         if(!items||count<=0)
             return(false);
 
-        memcpy(&ti,items,sizeof(T));
+        hgl_cpy<T>(ti,*items);
         return(true);
     }
 
@@ -39,37 +39,19 @@ namespace hgl
         if(!items||count<=0)
             return(false);
 
-        memcpy(&ti,items+count-1,sizeof(T));
+        hgl_cpy<T>(ti,items[count-1]);
         return(true);
     }
 
     template<typename T>
-    bool List<T>::Rand(T &ti)const
+    bool List<T>::Set(int index,const T &val)
     {
-        if(!items||count<=0)
+        if(!items||index<0||index>=count)
             return(false);
-#ifdef _WIN32
-        memcpy(&ti,items+(rand()%count),sizeof(T));
-#else
-        memcpy(&ti,items+(lrand48()%count),sizeof(T));
-#endif
-        return(true);
-    }
 
-    template<typename T>
-    void List<T>::Set(int index,const T &val)
-    {
-        #ifdef _DEBUG
-            if(!items||index<0||index>=count)
-            {
-                LOG_ERROR(OS_TEXT("List<>::Set(index=")+OSString(index)+OS_TEXT(",T &) error,DataCount=")+OSString(count));
-            }
-            else
-                memcpy(items+index,&val,sizeof(T));//items[index]=val;
-        #else
-            if(index>=0&&index<count)
-                memcpy(items+index,&val,sizeof(T));//items[index]=val;
-        #endif//_DEBUG
+        hgl_cpy<T>(items[index],val);//items[index]=val;
+
+        return(true);
     }
 
     /**
@@ -79,20 +61,8 @@ namespace hgl
     template<typename T>
     T *List<T>::Add()
     {
-        if(!items)
-        {
-            count=1;
-            alloc_count=1;
-            items=hgl_align_malloc<T>(1);
-
-            return items;
-        }
-        else if(count+1>alloc_count)
-        {
-            alloc_count=power_to_2(count+1);
-
-            items=(T *)hgl_align_realloc<T>(items,alloc_count);
-        }
+        if(!PreAlloc(count+1))
+            return(nullptr);
 
         ++count;
         return(items+(count-1));
@@ -106,20 +76,10 @@ namespace hgl
     template<typename T>
     int List<T>::Add(const T &data)
     {
-        if(!items)
-        {
-            count=0;
-            alloc_count=1;
-            items=hgl_align_malloc<T>(1);
-        }
-        else if(count+1>alloc_count)
-        {
-            alloc_count=power_to_2(count+1);
+        if(!PreAlloc(count+1))
+            return(-1);
 
-            items=(T *)hgl_align_realloc<T>(items,alloc_count);
-        }
-
-        memcpy(items+count,&data,sizeof(T));//items[count]=data;
+        hgl_cpy<T>(items[count],data);//items[count]=data;
         return(count++);
     }
 
@@ -135,25 +95,15 @@ namespace hgl
     {
         if(n<=0)return(-1);
 
-        if(!items)
-        {
-            count=0;
-            alloc_count=power_to_2(n);
-            items=hgl_align_malloc<T>(alloc_count);
-        }
-        else if(count+n>alloc_count)
-        {
-            alloc_count=power_to_2(count+n);
-
-            items=(T *)hgl_align_realloc<T>(items,alloc_count);
-        }
+        if(!PreAlloc(count+n))
+            return(-2);
 
         T *p=items;
         int result=count;
 
         for(int i=0;i<n;i++)
         {
-            memcpy(p,&data,sizeof(T));//items[count]=data;
+            hgl_cpy<T>(*p,data);//items[count]=data;
             ++p;
         }
 
@@ -170,21 +120,13 @@ namespace hgl
     template<typename T>
     int List<T>::Add(const T *data,int n)
     {
-        if(!items)
-        {
-            count=0;
-            alloc_count=power_to_2(n);
+        if(!data||n<=0)
+            return(-1);
 
-            items=hgl_align_malloc<T>(alloc_count);
-        }
-        else if(count+n>alloc_count)
-        {
-            alloc_count=power_to_2(count+n);
+        if(!PreAlloc(count+n))
+            return(-1);
 
-            items=(T *)hgl_align_realloc<T>(items,alloc_count);
-        }
-
-        memcpy(items+count,data,n*sizeof(T));
+        hgl_cpy<T>(items+count,data,n);
 
         int r=count;
 
@@ -253,73 +195,84 @@ namespace hgl
     }
 
     /**
-    * 删除列表中的指定项,删除后将最后一个数据移到被删除的位置
-    * @param index 要删除的数据项的索引值
+    * 删除列表中的指定项(关心顺序，删除中间数据后，会将后面的数据整体前移)
+    * @param start 要删除的数据项的索引值
     * @return 是否成功
     */
     template<typename T>
-    bool List<T>::Delete(int index)
-    {
-        if(count>0&&index>=0&&index<count)
-        {
-            --count;
-
-            if(index<count)
-                memcpy(items+index,items+count,sizeof(T));      //将最后一个数据移到当前位置
-
-            return(true);
-        }
-        else
-            return(false);
-    }
-
-    /**
-    * 删除列表中的指定项，删除后将后面的数据整体前移
-    * @param index 要删除的数据项的索引值
-    * @return 是否成功
-    */
-    template<typename T>
-    bool List<T>::DeleteMove(int index)
-    {
-        if(count>0&&index>=0&&index<count)
-        {
-            --count;
-
-            if(index<count)
-                memmove(items+index,items+index+1,(count-index)*sizeof(T));
-
-            return(true);
-        }
-        else
-            return(false);
-    }
-
-    /**
-    * 删除列表中的指定项
-    * @param start 要删除的数据项的索引起始值
-    * @param number 要删除的数据项数量
-    * @return 是否成功
-    */
-    template<typename T>
-    bool List<T>::Delete(int start,int number)
+    bool List<T>::DeleteMove(int start,int delete_count)
     {
         if(start>=count)return(false);
 
         if(start<0)
         {
-            number+=start;
+            delete_count+=start;
             start=0;
         }
 
-        if(start+number>count)
-            number=count-start;
+        if(start+delete_count>count)
+            delete_count=count-start;
 
-        if(number<=0)return(false);
+        if(delete_count<=0)return(false);
 
-        count-=number;
+        const int end_count=count-(start+delete_count);
 
-        if(start<count)
-            memmove(items+start,items+start+number,(count-start)*sizeof(T));
+        if(end_count>0)
+            hgl_cpy<T>(items+start,items+start+delete_count,end_count);
+
+        count-=delete_count;
+
+        return(true);
+    }
+
+    /**
+    * 删除列表中的指定项(不关心顺序，如果删除中间的数据，可能会将最后面的数据拿过来填补)
+    * @param start 要删除的数据项的索引起始值
+    * @param delete_count 要删除的数据项数量
+    * @return 是否成功
+    */
+    template<typename T>
+    bool List<T>::Delete(int start,int delete_count)
+    {
+        if(start>=count)return(false);
+
+        if(start<0)
+        {
+            delete_count+=start;
+            start=0;
+        }
+
+        if(start+delete_count>count)
+            delete_count=count-start;
+
+        if(delete_count<=0)return(false);
+
+        const int64 end_count=count-(start+delete_count);               //删除的数据段后面的数据个数
+
+        if(end_count>0)
+        {
+            if(end_count<=delete_count)                                 //后面的数据个数比删除的数据个数少，直接整体移动
+            {
+                //[------------][***********]
+                //      ^             v
+                //      ^             v
+                //      +<<<<<<<<<<<<<+
+
+                hgl_cpy<T>(items+start,items+start+delete_count,end_count);
+            }
+            else                                                        //后面的数据个数比删除的数据个数多，那就只移动等长的最后一段数据
+            {
+                //[---][**********][***]
+                //  ^                v
+                //  ^                v
+                //  +<<<<<<<<<<<<<<<<+
+
+                hgl_cpy<T>(items+start,items+(count-delete_count),delete_count);
+            }
+
+            count-=delete_count;
+        }
+        //else{后面都没数据了，那就啥都不用干了}
 
         return(true);
     }
@@ -371,16 +324,14 @@ namespace hgl
     void List<T>::Exchange(int a,int b)
     {
         //T t;
-        char t[sizeof(T)];
+        //char t[sizeof(T)];
 
 //      t=items[a];
 
 //      items[a]=items[b];
 //      items[b]=t;
 
-        memcpy(&t,items+a,sizeof(T));
-        memcpy(items+a,items+b,sizeof(T));
-        memcpy(items+b,&t,sizeof(T));
+        hgl_swap(items[a],items[b]);
     }
 
     /**
@@ -389,33 +340,25 @@ namespace hgl
     * @param data 要插入的数据
     */
     template<typename T>
-    void List<T>::Insert(int index,const T &data)
+    bool List<T>::Insert(int index,const T &data)
     {
         if(index<0)index=0;
 
         if(index<count)
         {
-            if(!items)
-            {
-                alloc_count=1;
+            if(!PreAlloc(count+1))
+                return(false);
 
-                items=hgl_align_malloc<T>(alloc_count);
-            }
-            else if(count+1>alloc_count)
-            {
-                alloc_count=power_to_2(count+1);
+            hgl_move<T>(items+index+1,items+index,count-index);
 
-                items=(T *)hgl_align_realloc<T>(items,alloc_count);
-            }
-
-            memmove(items+index+1,items+index,(count-index)*sizeof(T));
-
-            memcpy(items+index,&data,sizeof(T));//items[index]=data;
+            hgl_cpy<T>(items[index],data);//items[index]=data;
 
             ++count;
         }
         else
             Add(data);
+
+        return(true);
     }
 
     /**
@@ -434,16 +377,16 @@ namespace hgl
         //T t;
         char t[sizeof(T)];
 
-        memcpy(&t,items+index,sizeof(T));//t=items[index];
+        hgl_cpy<T>(*(T *)&t,items[index]);//t=items[index];
 
-        if(index<newindex)memmove(items+index      ,items+index+1  ,(newindex-index)*sizeof(T));
-                    else memmove(items+newindex+1 ,items+newindex ,(index-newindex)*sizeof(T));
+        if(index<newindex)hgl_move<T>(items+index      ,items+index+1  ,newindex-index);
+                     else hgl_move<T>(items+newindex+1 ,items+newindex ,index-newindex);
 
-        memcpy(items+newindex,&t,sizeof(T));//items[newindex]=t;
+        hgl_cpy<T>(items[newindex],*(T *)&t);//items[newindex]=t;
     }
 
     template<typename T>
-    bool List<T>::PreMalloc(int new_count)
+    bool List<T>::PreAlloc(int new_count)
     {
         if(alloc_count>=new_count)return(true);
 
@@ -457,7 +400,7 @@ namespace hgl
         }
         else
         {
-            T *new_items=(T *)hgl_align_realloc<T>(items,alloc_count);
+            T *new_items=hgl_align_realloc<T>(items,alloc_count);
 
             if(!new_items)return(false);
 
@@ -477,7 +420,7 @@ namespace hgl
             return(true);
         }
 
-        if(!PreMalloc(new_count))
+        if(!PreAlloc(new_count))
             return(false);
 
         count=new_count;

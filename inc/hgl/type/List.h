@@ -23,7 +23,7 @@ namespace hgl
                         int     GetAllocCount   ()const{return alloc_count;}                        ///<取得已分配容量
                         int     GetCount        ()const{return count;}                              ///<取得列表内数据数量
         virtual         bool    SetCount        (int);                                              ///<设置列表内数据数量
-        virtual         bool    PreMalloc       (int);                                              ///<预分配指定数量的数据空间
+        virtual         bool    PreAlloc        (int);                                              ///<预分配指定数量的数据空间
                         T *     GetData         ()const{return items;}                              ///<提供原始数据项
                         int     GetBytes        ()const{return count*sizeof(T);}                    ///<取得原始数据总字节数
 
@@ -51,13 +51,12 @@ namespace hgl
         virtual void ClearData();                                                                   ///<清除所有数据，但不清空缓冲区
         virtual int  Find(const T &)const;                                                          ///<查找指定数据的索引
         virtual bool IsExist(const T &flag)const{return Find(flag)!=-1;}                            ///<确认数据项是否存在
-        virtual bool Delete(int);                                                                   ///<删除指定索引的数据
-        virtual bool Delete(int,int);                                                               ///<删除指定索引的数据
-        virtual bool DeleteMove(int);                                                               ///<删除指定索引的数据,将后面紧邻的数据前移
+        virtual bool Delete(int,int=1);                                                             ///<删除指定索引的数据
+        virtual bool DeleteMove(int,int=1);                                                         ///<删除指定索引的数据,将后面紧邻的数据前移
         virtual bool DeleteByValue(const T &);                                                      ///<删除一个指定数据
         virtual void DeleteByValue(const T *,int);                                                  ///<删除一批指定的数据
         virtual void Exchange(int,int);                                                             ///<根据索引交换两个数据
-        virtual void Insert(int,const T &);                                                         ///<在指定索引处插入一个数据
+        virtual bool Insert(int,const T &);                                                         ///<在指定索引处插入一个数据
         virtual void Move(int,int);                                                                 ///<移动一个数据到移指索引处
 
                 void DeleteClear();                                                                 ///<清除所有数据并全部调用delete
@@ -80,8 +79,7 @@ namespace hgl
                 }
 
                 bool Get(int,T &)const;                                                             ///<取得指定索引处的数据
-                void Set(int,const T &);                                                            ///<设置指定索引处的数据
-                bool Rand(T &)const;                                                                ///<随机取得一个数据
+                bool Set(int,const T &);                                                            ///<设置指定索引处的数据
 
         virtual bool First(T &)const;                                                               ///<取第一个数据
         virtual bool Last(T &)const;                                                                ///<取最后一个数据
@@ -107,7 +105,7 @@ namespace hgl
 
                     if(count<=0)return;
 
-                    without_list.PreMalloc(count);
+                    without_list.PreAlloc(count);
 
                     const T *sp=this->GetData();
 
@@ -161,7 +159,7 @@ namespace hgl
 
 //      virtual T *     Append();                                                                   ///<追加一个数据
 //      virtual T *     Insert(int);                                                                ///<在指定索引处创建一个数据
-                void    Insert(int,const ItemPointer &);                                            ///<在指定索引处插入一个数据
+                bool    Insert(int,const ItemPointer &);                                            ///<在指定索引处插入一个数据
 
         virtual void    Clear();                                                                    ///<清除所有数据
         virtual void    ClearData();                                                                ///<清除所有数据，但不清空缓冲区
