@@ -32,7 +32,7 @@ namespace hgl
         virtual ~SortedSets()=default;
 
                 void    SetCount        (int count){data_list.SetCount(count);}                     ///<指定数据数量，一般用于批量加载前的处理
-                void    PreMalloc       (int count){data_list.PreMalloc(count);}                    ///<预分配指定数量的数据空间
+                void    PreAlloc        (int count){data_list.PreAlloc(count);}                     ///<预分配指定数量的数据空间
 
         const   int     Find            (const T &)const;                                           ///<查找数据位置,不存在返回-1
         const   bool    IsMember        (const T &v)const{return(Find(v)!=-1);}                     ///<确认是否成员

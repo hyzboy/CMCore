@@ -6,7 +6,7 @@
 namespace hgl
 {
     template<typename T>
-    void Pool<T>::PreMalloc(int num,bool set_to_max_count)
+    void Pool<T>::PreAlloc(int num,bool set_to_max_count)
     {
         if(num<=0)return;
 

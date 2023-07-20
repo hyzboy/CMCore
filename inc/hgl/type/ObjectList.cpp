@@ -64,9 +64,9 @@ namespace hgl
     * 在指定位置插入一个对象
     */
     template<typename T>
-    void CusObjectList<T>::Insert(int index,const ItemPointer &obj)
+    bool CusObjectList<T>::Insert(int index,const ItemPointer &obj)
     {
-        List<T *>::Insert(index,obj);
+        return List<T *>::Insert(index,obj);
     }
 
     /**

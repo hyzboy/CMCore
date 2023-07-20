@@ -9,7 +9,7 @@ namespace hgl
     /**
     * 多线程环形数据流,用于随时被读或写的情况以及在多线程应用中同时被读与写的情况。
     */
-    template<typename T> class RingBuffer:protected ThreadMutex                                                             ///多线程环形数据流
+    template<typename T> class RingBuffer:protected ThreadMutex                                     ///多线程环形数据流
     {
     protected:
 

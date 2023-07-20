@@ -606,7 +606,7 @@ namespace hgl
 
         if(count<=0)return;
 
-        with_list.PreMalloc(count);
+        with_list.PreAlloc(count);
 
         const KVData *sp=this->GetDataList();
 
@@ -630,7 +630,7 @@ namespace hgl
 
         if(count<=0)return;
 
-        without_list.PreMalloc(count);
+        without_list.PreAlloc(count);
 
         const KVData *sp=this->GetDataList();
 
