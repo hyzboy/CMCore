@@ -2,6 +2,7 @@
 
 #include<hgl/type/DataType.h>
 #include<hgl/type/ArrayRearrangeHelper.h>
+#include<hgl/type/ArrayItemProcess.h>
 namespace hgl
 {
     /**
@@ -22,18 +23,16 @@ namespace hgl
         const	int     GetBytes		()const{return count*sizeof(T);}							///<取得阵列已使用的字节数
         const	int     GetAllocBytes   ()const{return alloc_count*sizeof(T);}						///<取得阵列已分配空间字节数
 
-        const   bool    IsEmpty         ()const{count==0;}                                          ///<是否为空
+        const   bool    IsEmpty         ()const{return(count==0);}                                  ///<是否为空
 
-        const   T *     GetData()const{return items;}
-                T *     data()        {return items;}
+                T *     GetData         ()const{return items;}
+                T *     data            ()const{return items;}
 
     public:
 
-                T *     begin       (){return items;}                                               ///<取得阵列起始地址指针
-                T *     end         (){return items+count;}                                         ///<取得阵列结束地址指针
-
-        const   T *     begin       ()const{return items;}                                          ///<取得阵列起始地址指针
-        const   T *     end         ()const{return items+count;}                                    ///<取得阵列结束地址指针
+                T *     begin           ()const{return items;}                                      ///<取得阵列起始地址指针
+                T *     end             ()const{return items+count;}                                ///<取得阵列结束地址指针
+                T *     last            ()const{return items+(count-1);}                            ///<取得阵列最后一个数据地址指针
 
     public:
 
@@ -55,20 +54,25 @@ namespace hgl
 
         /**
          * 设置阵列长度
+         * @param size 阵列长度
+         * @return 设置成功后的阵列长度
          */
-        void SetCount(int size)																	///<设置阵列长度(注：非字节数)
+        int SetCount(int size)																	///<设置阵列长度(注：非字节数)
         {
             Alloc(size);
 
             count=size;
+            return count;
         }
 
         /**
          * 增加阵列长度
+         * @param size 增加的长度
+         * @return 增加后的阵列长度
          */
-        void AddCount(int size)
+        int AddCount(int size)
         {
-            SetCount(count+size);
+            return SetCount(count+size);
         }
 
     public:
@@ -151,6 +155,53 @@ namespace hgl
         const T &operator[](int n)const
         {
             return items[n];
+        }
+
+        const bool Read(T *obj,int index)const
+        {
+            if(!obj||index<0||index>=count)return(false);
+
+            hgl_cpy(*obj,items[index]);
+            return(true);
+        }
+
+        const bool Write(const T *obj,int index)
+        {
+            if(!obj||index<0||index>=count)return(false);
+
+            hgl_cpy(items[index],*obj);
+            return(true);
+        }
+
+        const bool Write(const T *obj,int start,const int num=1)
+        {
+            if(!obj||start<0||start>=count||start+num>count)return(false);
+
+            hgl_cpy(items+start,*obj,num);
+            return(true);
+        }
+
+        /**
+        * 复制整个阵列
+        */
+        void operator = (const DataArray<T> &da)
+        {
+            if(lt.count<=0)
+            {
+                count=0;
+                return;
+            }
+
+            SetCount(da.GetCount());
+
+            hgl_cpy<T>(items,da.items,count);
+        }
+
+        void operator = (const std::initializer_list<T> &l)
+        {
+            SetCount((int)l.size());
+
+            hgl_cpy<T>(items,l.begin(),count);
         }
 
         /**
@@ -248,6 +299,9 @@ namespace hgl
 
         /**
         * 移动数据一定量的数据到新的位置
+        * @param new_index 新的位置
+        * @param old_index 旧的位置
+        * @param move_number 要移动的数据个数
         */
         bool Move(int new_index,int old_index,int move_number=1)
         {
@@ -280,12 +334,6 @@ namespace hgl
 
                     //   [----mid----][old]
 
-                    //int mid_start=move_number;
-                    //int mid_count=count-mid_start;
-
-                    //hgl_cpy(new_items,          items+mid_start,mid_count   );     //mid
-                    //hgl_cpy(new_items+mid_count,items,          move_number );     //old
-
                     result=ArrayRearrange(  new_items,items,count,
                                             {
                                                 move_number,            //old
@@ -304,16 +352,6 @@ namespace hgl
                     //        [left][right]
 
                     //   [left][old][right]
-
-                    //int left_start=move_number;
-                    //int left_count=new_index-left_start;
-
-                    //int right_start=new_index;
-                    //int right_count=count-right_start;
-
-                    //hgl_cpy(new_items,                          items+left_start,   left_count);     //left
-                    //hgl_cpy(new_items+left_count,               items,              move_number);    //old
-                    //hgl_cpy(new_items+left_count+move_number,   right_start,        right_count);    //right
 
                     result=ArrayRearrange(  new_items,items,count,
                                             {
@@ -339,9 +377,6 @@ namespace hgl
 
                     //   [old][----left----]
 
-                    //hgl_cpy(new_items,              items+old_index,move_number);   //old
-                    //hgl_cpy(new_items+move_number,  items,          old_index);     //left
-
                     result=ArrayRearrange(  new_items,items,count,
                                             {
                                                 old_index,      //left
@@ -360,12 +395,6 @@ namespace hgl
                     //   [left][-mid-][old]
 
                     //   [left][old][-mid-]
-
-                    //int mid_count=old_index-new_index;
-
-                    //hgl_cpy(new_items,                      items,          new_index   );  //left
-                    //hgl_cpy(new_items+new_index,            items+old_index,move_number );  //old
-                    //hgl_cpy(new_items+new_index+move_number,items+new_index,mid_count   );  //mid
 
                     result=ArrayRearrange(  new_items,items,count,
                                             {
@@ -490,6 +519,52 @@ namespace hgl
                 hgl_free(new_items);
                 return(false);
             }
+        }
+
+        /**
+         * 查找数据在数组中的位置
+         * @param data 要查找的数据
+         * @return <0 未找到或其它错误
+         */
+        int Find(const T &data)
+        {
+            return FindDataAtArray<T>(items,count,data);
+        }
+
+        /**
+         * 在指定位置插入数据
+         */
+        bool Insert(int pos,const T *data,const int data_number)
+        {
+            if(!data||data_number<=0)
+                return(false);
+
+            if(pos<0)pos=0;
+            if(pos>count)pos=count;
+
+            if(count+data_number>alloc_count)
+            {
+                int new_alloc_count=alloc_count+data_number;
+
+                T *new_items=hgl_align_malloc<T>(new_alloc_count);
+
+                hgl_cpy(new_items,items,pos);
+                hgl_cpy(new_items+pos,data,data_number);
+                hgl_cpy(new_items+pos+data_number,items+pos,(count-pos));
+
+                hgl_free(items);
+                items=new_items;
+                alloc_count=new_alloc_count;
+            }
+            else
+            {
+                hgl_move(items+pos+data_number,items+pos,count-pos);
+                hgl_cpy(items+pos,data,data_number);
+            }
+
+            count+=data_number;
+
+            return(true);
         }
     };//template<typename T> class DataArray
 }//namespace hgl

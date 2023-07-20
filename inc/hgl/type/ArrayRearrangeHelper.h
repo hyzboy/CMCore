@@ -151,4 +151,3 @@ namespace hgl
         return arh.Rearrange(new_array,old_array,index);
     }
 }//namespace hgl
-
