@@ -127,6 +127,9 @@ namespace hgl
      */
     bool Collection::Insert(const uint64 offset,const void *element)
     {
+        if(!element)
+            return(false);
+
         if(data_count==0)
             return Add(element);
 
