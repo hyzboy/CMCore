@@ -1,68 +1,189 @@
-﻿#ifndef HGL_LIST_INCLUDE
-#define HGL_LIST_INCLUDE
+﻿#pragma once
 
 #include<stdlib.h>
 #include<initializer_list>
-#include<hgl/type/DataType.h>
+#include<hgl/type/DataArray.h>
 
 namespace hgl
 {
     /**
     * List类用于保存数据列表。可以在列表中添加、删除、查找、访问和排序数据。
     */
-    template <typename T> class List                                                                ///列表处理类
+    template<typename T> class List                                                                 ///列表处理类
     {
     protected:
 
-        int count=0;                                                                                ///<当前数据数量
-        int alloc_count=0;                                                                          ///<当前已分配空间数量
-        T *items=nullptr;
+        DataArray<T> data_array;
 
     public: //属性
 
-                        int     GetAllocCount   ()const{return alloc_count;}                        ///<取得已分配容量
-                        int     GetCount        ()const{return count;}                              ///<取得列表内数据数量
-        virtual         bool    SetCount        (int);                                              ///<设置列表内数据数量
-        virtual         bool    PreAlloc        (int);                                              ///<预分配指定数量的数据空间
-                        T *     GetData         ()const{return items;}                              ///<提供原始数据项
-                        int     GetBytes        ()const{return count*sizeof(T);}                    ///<取得原始数据总字节数
+                const   int     GetAllocCount   ()const{return data_array.GetAllocCount();}         ///<取得已分配容量
+                const   int     GetCount        ()const{return data_array.GetCount();}              ///<取得列表内数据数量
+        virtual         bool    SetCount        (int count){return data_array.SetCount(count);}     ///<设置列表内数据数量
+        virtual         bool    PreAlloc        (int count){return data_array.Alloc(count);}        ///<预分配指定数量的数据空间
 
-                        T *     begin           ()const{return items;}
-                        T *     end             ()const{return items+count;}
+                const   bool    IsEmpty         ()const{return data_array.IsEmpty();}               ///<确认列表是否为空
+
+                        T *     GetData         ()const{return data_array.GetData();}               ///<提供原始数据项
+                        int     GetBytes        ()const{return data_array.GetBytes();}              ///<取得原始数据总字节数
+
+                        T *     begin           ()const{return data_array.begin();}
+                        T *     end             ()const{return data_array.end();}
+
+    public:
+
+            operator        DataArray<T> & ()       {return data_array;}
+            operator const  DataArray<T> & ()const  {return data_array;}
 
     public: //方法
 
-        List(){};                                                                                   ///<本类构造函数
+        List()=default;                                                                             ///<本类构造函数
         List(const T *lt,const int n){Add(lt,n);}                                                   ///<本类构造函数
         List(const List<T> &lt){operator=(lt);}                                                     ///<本类构造函数
         List(const std::initializer_list<T> &lt){operator=(lt);}
 
         virtual ~List(){Clear();}                                                                   ///<本类析构函数
 
-        virtual T *  Add();                                                                         ///<添加一个空数据
-        virtual int  Add(const T &);                                                                ///<增加一个数据
-        virtual int  RepeatAdd(const T &,int n);                                                    ///<重复增加一个数据
-        virtual int  Add(const T *,int n);                                                          ///<增加一批数据
+        /**
+         * 向列表中添加一个空数据
+         * @return 这个数据的指针
+         */
+        virtual T *  Add()
+        {
+            data_array.AddCount(1);
+            return data_array.last();
+        }
+
+        /**
+        * 向列表中添加一个数据对象
+        * @param data 要添加的数据对象
+        * @return 这个数据的索引号
+        */
+        virtual int  Add(const T &data)
+        {
+            const int index=GetCount();
+
+            data_array.AddCount(1);
+
+            data_array.WriteAt(data,index);
+            
+            return index;
+        }
+
+        /**
+        * 重复向列表中添加一个数据对象
+        * @param data 要添加的数据对象
+        * @param n 要添加的数据个数
+        * @return 这个数据的索引号
+        * @return -1 出错
+        */
+        virtual int  RepeatAdd(const T &data,int n)
+        {
+            if(n<=0)return(-1);
+
+            const int ec=data_array.GetCount();
+
+            data_array.AddCount(n);
+
+            hgl_set(data_array.data()+ec,data,n);
+
+            return(ec);
+        }
+
+        /**
+        * 向列表中添加一批数据对象
+        * @param data 要添加的数据对象
+        * @param n 要添加的数据数量
+        * @return 起始数据的索引号
+        */
+        virtual int  Add(const T *data,int n)
+        {
+            if(!data||n<=0)
+                return(-1);
+
+            const int ec=data_array.GetCount();
+
+            data_array.AddCount(n);
+
+            data_array.WriteAt(data,ec,n);
+
+            return(ec);
+        }
+
                 int  Add(const List<T> &l){return Add(l.items,l.count);}                            ///<增加一批数据
 
-        const   bool IsEmpty()const{return count==0;}                                               ///<是否是空的
+        virtual void Clear(){data_array.Clear();}                                                   ///<清除所有数据
+        virtual void ClearData(){data_array.ClearData();}                                           ///<清除所有数据，但不清空缓冲区
 
-        virtual void Clear();                                                                       ///<清除所有数据
-        virtual void ClearData();                                                                   ///<清除所有数据，但不清空缓冲区
-        virtual int  Find(const T &)const;                                                          ///<查找指定数据的索引
+        virtual int  Find(const T &data)const{return data_array.Find(data);}                        ///<查找指定数据的索引
         virtual bool IsExist(const T &flag)const{return Find(flag)!=-1;}                            ///<确认数据项是否存在
-        virtual bool Delete(int,int=1);                                                             ///<删除指定索引的数据
-        virtual bool DeleteMove(int,int=1);                                                         ///<删除指定索引的数据,将后面紧邻的数据前移
-        virtual bool DeleteByValue(const T &);                                                      ///<删除一个指定数据
-        virtual void DeleteByValue(const T *,int);                                                  ///<删除一批指定的数据
-        virtual void Exchange(int,int);                                                             ///<根据索引交换两个数据
-        virtual bool Insert(int,const T &);                                                         ///<在指定索引处插入一个数据
-        virtual void Move(int,int);                                                                 ///<移动一个数据到移指索引处
 
-                void DeleteClear();                                                                 ///<清除所有数据并全部调用delete
+        virtual bool Delete(int start,int num=1){return data_array.Delete(start,num);}              ///<删除指定索引的数据
+        virtual bool DeleteMove(int start,int num=1){return data_array.DeleteMove(start,num);}      ///<删除指定索引的数据,将后面紧邻的数据前移
 
-        virtual void operator = (const List<T> &);                                                  ///<操作符重载复制一个列表
-        virtual void operator = (const std::initializer_list<T> &l);
+        /**
+        * 删除列表中的指定项
+        * @param data 要删除的数据项
+        * @return 是否成功
+        */
+        virtual bool DeleteByValue(const T &data)
+        {
+            const int pos=Find(data);
+
+            return(pos>=0?Delete(pos,1):pos);
+        }
+
+        /**
+        * 删除列表中的指定项
+        * @param data 要删除的数据项
+        * @param n 要删除的数据个数
+        * @return 成功删除的数据个数
+        */
+        virtual int  DeleteByValue(const T *data,int n)
+        {
+            int result=0;
+
+            while(n--)
+            {
+                int index=Find(*data);
+
+                ++data;
+
+                if(index!=-1)
+                    if(Delete(index))
+                        ++result;
+            }
+
+            return result;
+        }
+
+        virtual void Exchange(int a,int b){data_array.Exchange(a,b);}                               ///<根据索引交换两个数据
+        virtual bool Insert(int pos,const T &data){return data_array.Insert(pos,&data,1);}          ///<在指定索引处插入一个数据
+
+        /**
+        * 在指定索引处插入一批数据
+        * @param pos 插入的位置
+        * @param data 要插入的数据
+        * @param number 要插入的数据个数
+        */
+        virtual bool Insert(int pos,const T *data,const int number)
+        {
+            return data_array.Insert(pos,data,number);
+        }
+
+        /**
+        * 移动一批数据到新的位置 
+        * @param new_pos 新的位置
+        * @param old_pos 原来的位置
+        * @param move_count 要移动的数据个数
+        */
+        virtual bool Move(const int new_pos,const int old_pos,const int move_count)
+        {
+            return data_array.Move(new_pos,old_pos,move_count);
+        }
+
+        virtual void operator = (const DataArray<T> &da){data_array=da;}                            ///<操作符重载复制一个列表
+        virtual void operator = (const std::initializer_list<T> &l){data_array=l;}                  ///<操作符重载复制一个列表
 
         virtual void operator += (const T &obj){Add(obj);}                                          ///<操作符重载添加一个数据
         virtual void operator << (const T &obj){Add(obj);}                                          ///<操作符重载添加一个数据
@@ -78,45 +199,11 @@ namespace hgl
                     return(index>=count?nullptr:items+index);
                 }
 
-                bool Get(int,T &)const;                                                             ///<取得指定索引处的数据
-                bool Set(int,const T &);                                                            ///<设置指定索引处的数据
+                bool Get(int index,      T &data)const  {return data_array.ReadAt (data,index);}    ///<取得指定索引处的数据
+        virtual bool Set(int index,const T &data)       {return data_array.WriteAt(data,index);}    ///<设置指定索引处的数据
 
-        virtual bool First(T &)const;                                                               ///<取第一个数据
-        virtual bool Last(T &)const;                                                                ///<取最后一个数据
-
-        virtual void Enum(void (*enum_func)(int,T &))                                               ///<枚举所有数据成员
-        {
-            T *obj=items;
-
-            for(int i=0;i<count;i++)
-            {
-                enum_func(i,*obj);
-                ++obj;
-            }
-        }
-
-                /**
-                 * 统计出不在in_list中的数据，产生的结果写入without_list
-                 */
-                void WithoutList(List<T> &without_list,const List<T> &in_list)
-                {
-                    without_list.ClearData();
-                    const int count=this->GetCount();
-
-                    if(count<=0)return;
-
-                    without_list.PreAlloc(count);
-
-                    const T *sp=this->GetData();
-
-                    for(int i=0;i<count;i++)
-                    {
-                        if(!in_list.IsExist(*sp))
-                            without_list.Add(*sp);
-
-                        ++sp;
-                    }
-                }
+        virtual bool GetFirst   (T &data)const{return data_array.ReadAt(data,0);}                   ///<取第一个数据
+        virtual bool GetLast    (T &data)const{return data_array.ReadAt(data,GetCount()-1);}        ///<取最后一个数据
     };//template <typename T> class List
 
     template<typename T> T *GetListObject(const List<T *> &list,const int index)
@@ -129,105 +216,3 @@ namespace hgl
         return(nullptr);
     }
 }//namespace hgl
-
-#include<hgl/type/List.cpp>
-//--------------------------------------------------------------------------------------------------
-namespace hgl
-{
-    /**
-    * 自定义对象列表处理类与标准列表处理类的区别在于它对数据生成/清除时会多调用虚拟函数Create/Delte
-    */
-    template<typename T> class CusObjectList:public List<T *>                                       ///对象列表处理类
-    {
-    public:
-
-        virtual bool    SetCount(int) override;
-
-//      virtual T *     CreateObject()=0;                                                           ///<创建一个数据，但不加入列表
-        virtual void    DeleteObject(T *)=0;                                                        ///<删除一个数据
-
-    public:
-
-        typedef T *ItemPointer;
-
-    public: //方法
-
-        CusObjectList(){}
-        virtual ~CusObjectList();
-
-    public:
-
-//      virtual T *     Append();                                                                   ///<追加一个数据
-//      virtual T *     Insert(int);                                                                ///<在指定索引处创建一个数据
-                bool    Insert(int,const ItemPointer &);                                            ///<在指定索引处插入一个数据
-
-        virtual void    Clear();                                                                    ///<清除所有数据
-        virtual void    ClearData();                                                                ///<清除所有数据，但不清空缓冲区
-
-        virtual bool    IsExist(const T *flag)const{return this->Find((T *)flag)!=-1;}              ///<确认数据项是否存在
-
-        virtual bool    Unlink(int index){return List<T *>::Delete(index);}                         ///<将指定索引处的数据与列表断开
-        virtual bool    UnlinkMove(int index){return List<T *>::DeleteMove(index);}                 ///<将指定索引处的数据与列表断开,将前移后面的数据
-        virtual bool    Unlink(int start,int number){return List<T *>::Delete(start,number);}       ///<将指定索引处的数据与列表断开
-        virtual bool    UnlinkByValue(const ItemPointer &ip){return List<T *>::DeleteByValue(ip);}  ///<将一个指定数据与列表断开
-        virtual void    UnlinkByValue(const ItemPointer *ip,int n){List<T *>::DeleteByValue(ip,n);} ///<将一批指定数据与列表断开
-        virtual void    UnlinkAll(){List<T *>::ClearData();}                                        ///<断开所有数据
-
-        virtual bool    Delete(int);                                                                ///<删除指定索引处的数据
-        virtual bool    DeleteMove(int);                                                            ///<删除指定索引处的数据
-        virtual bool    DeleteByValue(const ItemPointer &);                                         ///<删除指定的一个数据
-        virtual void    DeleteByValue(const ItemPointer *,int);                                     ///<删除指定的一批数据
-        virtual void    DeleteAll();                                                                ///<删除所有数据
-
-        virtual ItemPointer &operator[](int n)const                                                 ///<操作符重载取得指定索引处的数据
-        {
-            static T *null_pointer=nullptr;
-
-            if(n<0||n>=this->count)
-                return(null_pointer);
-
-            return this->items[n];
-        }
-
-        virtual void Enum(void (*enum_func)(T *))                                                     ///<枚举所有数据成员
-        {
-            T **obj=this->items;
-
-            for(int i=0;i<this->count;i++)
-            {
-                enum_func(*obj);
-
-                ++obj;
-            }
-        }
-    };//template <typename T> class CusObjectList
-
-    /**
-    * 对象列表处理类<br>
-    * 将自定义对象列表中的Create重载为new,Delete重载为delete
-    */
-    template<typename T> class ObjectList:public CusObjectList<T>
-    {
-    private:
-
-//      virtual T *     CreateObject(){return(new T);}                                              ///<创建一个数据
-        virtual void    DeleteObject(T *obj){if(obj)delete obj;}                                    ///<删除一个数据
-
-    public:
-
-        T **begin()const{return this->items;}
-        T **end()const{return this->items+this->count;}
-
-    public:
-
-        virtual ~ObjectList()
-        {
-            CusObjectList<T>::Clear();
-        }
-    };//class ObjectList
-
-    #define OBJECT_LIST_ARRAY_CLEAR(object_list)         for(auto &obj:object_list)obj.Clear();    
-    #define OBJECT_LIST_ARRAY_CLEAR_DATA(object_list)    for(auto &obj:object_list)obj.ClearData();
-}//namespace hgl
-#include<hgl/type/ObjectList.cpp>
-#endif//HGL_LIST_INCLUDE

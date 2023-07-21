@@ -39,10 +39,10 @@ namespace hgl
         /**
          * 分配指定空间出来，供未来使用
          */
-        void Alloc(int size)
+        bool Alloc(int size)
         {
             if(size<=alloc_count)
-                return;
+                return(true);
 
             alloc_count=power_to_2(size);
 
@@ -50,6 +50,8 @@ namespace hgl
                 items=hgl_align_malloc<T>(alloc_count);
             else
                 items=hgl_align_realloc<T>(items,alloc_count);
+
+            return(items!=nullptr);
         }
 
         /**
@@ -157,27 +159,40 @@ namespace hgl
             return items[n];
         }
 
-        const bool Read(T *obj,int index)const
+        T *GetPointer(int n)const
         {
-            if(!obj||index<0||index>=count)return(false);
+            return (n<0||n>=count)?nullptr:items+n;
+        }
 
-            hgl_cpy(*obj,items[index]);
+        const bool ReadAt(T &obj,int const index)const
+        {
+            if(index<0||index>=count)return(false);
+
+            hgl_cpy(obj,items[index]);
             return(true);
         }
 
-        const bool Write(const T *obj,int index)
+        const bool ReadAt(T *obj,int const start,const int num)const
         {
-            if(!obj||index<0||index>=count)return(false);
+            if(!obj||start<0||start+num>count)return(false);
 
-            hgl_cpy(items[index],*obj);
+            hgl_cpy(obj,items+start,num);
             return(true);
         }
 
-        const bool Write(const T *obj,int start,const int num=1)
+        const bool WriteAt(const T &obj,const int index)
         {
-            if(!obj||start<0||start>=count||start+num>count)return(false);
+            if(index<0||index>=count)return(false);
 
-            hgl_cpy(items+start,*obj,num);
+            hgl_cpy(items[index],obj);
+            return(true);
+        }
+
+        const bool WriteAt(const T *obj,const int start,const int num)
+        {
+            if(!obj||start<0||start+num>count)return(false);
+
+            hgl_cpy(items+start,obj,num);
             return(true);
         }
 
@@ -186,7 +201,7 @@ namespace hgl
         */
         void operator = (const DataArray<T> &da)
         {
-            if(lt.count<=0)
+            if(da.count<=0)
             {
                 count=0;
                 return;
@@ -526,9 +541,9 @@ namespace hgl
          * @param data 要查找的数据
          * @return <0 未找到或其它错误
          */
-        int Find(const T &data)
+        const int Find(const T &data)const
         {
-            return FindDataAtArray<T>(items,count,data);
+            return FindDataPositionInArray<T>(items,count,data);
         }
 
         /**
@@ -558,7 +573,9 @@ namespace hgl
             }
             else
             {
-                hgl_move(items+pos+data_number,items+pos,count-pos);
+                if(pos<count)
+                    hgl_move(items+pos+data_number,items+pos,count-pos);
+
                 hgl_cpy(items+pos,data,data_number);
             }
 
@@ -566,5 +583,143 @@ namespace hgl
 
             return(true);
         }
+
+        bool Insert(int pos,const T &data)
+        {
+            return Insert(pos,&data,1);
+        }
+
+        /**
+            * 统计出不在without_list中的数据，产生的结果写入result_list
+            */
+        void WithoutList(DataArray<T> &result_list,const DataArray<T> &without_list)
+        {
+            result_list.ClearData();
+            const int count=this->GetCount();
+
+            if(count<=0)return;
+
+            result_list.ClearData();
+            result_list.PreAlloc(count);
+
+            int result=0;
+
+            T *p=result_list.items;
+
+            for(const T *sp:*this)
+            {
+                if(!without_list.IsExist(*sp))
+                {
+                    *p=*sp;
+                    ++p;
+                    ++result;
+                }
+            }
+
+            result_list.SetCount(result);
+        }
+
+        //int     Intersection    (SortedSets<T> &result,const SortedSets<T> &sets);          ///<取得与指定合集的交集
+        //int     Intersection    (const SortedSets<T> &set);                                 ///<取得与指定合集的交集数量
+
+        ///**
+        //    * 取得与指定交集is的合集，但排斥cs合集中的数据
+        //    * @param result 结果合集
+        //    * @param is 求交集的合集
+        //    * @param cs 求排斥的合集
+        //    * @return 结果数量
+        //    */
+        //int     Intersection    (SortedSets<T> &result,const SortedSets<T> &is,const SortedSets<T> &cs);
+
+        //int     Difference      (const SortedSets<T> &is);                                  ///<求差集数量
+
+        ///**
+        // * 求当前合集与另一个数据集的交集
+        // * @param result 结果存放合集
+        // * @param list 要计算交集的数据集
+        // * @return 交集数量
+        // */
+        //int Intersection(SortedSets<T> &result,const SortedSets<T> &list)
+        //{
+        //    if(data_list.GetCount()<=0)
+        //        return(0);
+
+        //    if(list.GetCount()<=0)
+        //        return(0);
+
+        //    data_list.Enum([&](T &obj)
+        //    {
+        //        if(list->IsMember(obj))
+        //            result.Add(obj);
+        //    });
+
+        //    return result.GetCount();
+        //}
+
+        //int Intersection(const SortedSets<T> &list)
+        //{
+        //    if(data_list.GetCount()<=0)
+        //        return(0);
+
+        //    if(list.GetCount()<=0)
+        //        return(0);
+
+        //    int count=0;
+
+        //    T *obj=data_list.GetData();
+        //    for(int i=0;i<data_list.GetCount();i++)
+        //    {
+        //        if(list.IsMember(*obj))
+        //            ++count;
+
+        //        ++obj;
+        //    }
+
+        //    return count;
+        //}
+
+        //int Intersection(SortedSets<T> &result,const SortedSets<T> &il,const SortedSets<T> &cl)
+        //{
+        //    if(data_list.GetCount()<=0)
+        //        return(0);
+
+        //    if(il.GetCount()<=0)
+        //        return(0);
+
+        //    T *obj=data_list.GetData();
+        //    for(int i=0;i<data_list.GetCount();i++)
+        //    {
+        //        if(il.IsMember(*obj))
+        //            if(!cl.IsMember(*obj))
+        //                result.Add(*obj);
+        //        ++obj;
+        //    }
+
+        //    return result.GetCount();
+        //}
+
+        //int Difference(const DataArray &is)
+        //{
+        //    if(data_list.GetCount()<=0)
+        //        return(is.GetCount());
+
+        //    if(is.GetCount()<=0)
+        //        return(data_list.GetCount());
+
+        //    int count=0;
+
+        //    T *obj=data_list.GetData();
+        //    for(int i=0;i<data_list.GetCount();i++)
+        //    {
+        //        if(!is.IsMember(*obj))
+        //            ++count;
+
+        //        ++obj;
+        //    }
+
+        //    return count;
+        //}
+
+        //int     Clear           (const SortedSets<T> &clear_sets);                          ///<清除指定合集中所有数据
     };//template<typename T> class DataArray
 }//namespace hgl
