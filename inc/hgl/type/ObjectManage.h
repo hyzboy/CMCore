@@ -65,7 +65,7 @@ namespace hgl
                 if(obj->ref_count<=0)
                 {
                     Clear(obj->value);
-                    items.DeleteBySerial(n);
+                    items.DeleteAt(n);
                 }
             }
         }
@@ -169,7 +169,7 @@ namespace hgl
             {
                 Clear(obj->value);
 
-                items.DeleteBySerial(index);
+                items.DeleteAt(index);
             }
 
             return 0;

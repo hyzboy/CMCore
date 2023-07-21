@@ -342,7 +342,7 @@ namespace hgl
     template<typename K,typename V,typename KVData>
     bool _Map<K,V,KVData>::DeleteByKey(const K &flag)
     {
-        return DeleteBySerial(Find(flag));
+        return DeleteAt(Find(flag));
     }
 
     /**
@@ -360,7 +360,7 @@ namespace hgl
 
         for(int i=0;i<count;i++)
         {
-            if(DeleteBySerial(Find(*fp)))
+            if(DeleteAt(Find(*fp)))
                 ++total;
 
             ++fp;
@@ -378,7 +378,7 @@ namespace hgl
     template<typename K,typename V,typename KVData>
     bool _Map<K,V,KVData>::DeleteByValue(const V &data)
     {
-        return DeleteBySerial(FindByValue(data));
+        return DeleteAt(FindByValue(data));
     }
 
     /**
@@ -387,7 +387,7 @@ namespace hgl
     * @return 是否成功
     */
     template<typename K,typename V,typename KVData>
-    bool _Map<K,V,KVData>::DeleteBySerial(int index)
+    bool _Map<K,V,KVData>::DeleteAt(int index)
     {
         if(index<0
          ||index>=data_list.GetCount())return(false);
@@ -405,7 +405,7 @@ namespace hgl
      * @return 是否成功
      */
     template<typename K,typename V,typename KVData>
-    bool _Map<K,V,KVData>::DeleteBySerial(int start,int number)
+    bool _Map<K,V,KVData>::DeleteAt(int start,int number)
     {
         KVData **dp=data_list.GetData()+start;
 

@@ -135,7 +135,7 @@ namespace hgl
             if(pos>0)                   //在闲置列表中找
             {
                 active_items.Add(key,new ActiveItem(value));
-                idle_items.DeleteBySerial(pos);
+                idle_items.DeleteAt(pos);
                 return(true);
             }
 
@@ -167,7 +167,7 @@ namespace hgl
                 if(ai->ref_count==0)
                 {
                     idle_items.Add(key,ai->data);
-                    active_items.DeleteBySerial(pos);
+                    active_items.DeleteAt(pos);
                 }
 
                 return;

@@ -57,8 +57,8 @@ namespace hgl
         virtual bool    DeleteByKey(const K &);                                                     ///<根据索引将指定数据从列表中移除
         virtual int     DeleteByKey(const K *,const int);                                           ///<根据索引将指定数据从列表中批量移除
         virtual bool    DeleteByValue(const V &);                                                   ///<根据数据将指定数据从列表中移除
-        virtual bool    DeleteBySerial(int);                                                        ///<根据序号将指定数据从列表中移除
-        virtual bool    DeleteBySerial(int,int);                                                    ///<根据序号将指定数据从列表中移除
+        virtual bool    DeleteAt(int);                                                        ///<根据序号将指定数据从列表中移除
+        virtual bool    DeleteAt(int,int);                                                    ///<根据序号将指定数据从列表中移除
         virtual bool    ChangeOrAdd(const K &,const V &);                                           ///<更改一个数据的内容(如不存在则添加)
         virtual bool    Change(const K &,const V &);                                                ///<更改一个数据的内容(如不存在则更改失效)
         virtual void    Clear();                                                                    ///<清除所有数据
@@ -222,7 +222,7 @@ namespace hgl
         {
             if(index<0||index>=this->data_list.GetCount())return(false);
 
-            SuperClass::DeleteBySerial(index);
+            SuperClass::DeleteAt(index);
 
             return(true);
         }
@@ -242,7 +242,7 @@ namespace hgl
         */
         bool DeleteByKey(const K &flag)
         {
-            return DeleteBySerial(SuperClass::Find(flag));
+            return DeleteAt(SuperClass::Find(flag));
         }
 
         /**
@@ -252,7 +252,7 @@ namespace hgl
         */
         bool DeleteByValue(V *tp)
         {
-            return DeleteBySerial(this->FindByValue(tp));
+            return DeleteAt(this->FindByValue(tp));
         }
 
         /**
@@ -260,12 +260,12 @@ namespace hgl
         * @param index 要删除的数据的序列号
         * @return 是否删除成功
         */
-        bool DeleteBySerial(int index)
+        bool DeleteAt(int index)
         {
             if(index<0||index>=this->data_list.GetCount())return(false);
 
             DeleteObject(index);
-            SuperClass::DeleteBySerial(index);
+            SuperClass::DeleteAt(index);
 
             return(true);
         }
