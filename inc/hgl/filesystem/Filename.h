@@ -7,6 +7,19 @@
 /**
 * Maximum Path Length Limitation
 * https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=cmd
+* 
+* 
+* File name rules
+* 
+*   Windows
+* 
+*       + drive_letter
+*       |           + directory separator
+*       |           |        + filename separator
+*       v           v        v
+*       C:\directory\filename.ext
+*          ----v---- ---v---  -v-
+*            path      name   ext
 */
 
 namespace hgl
