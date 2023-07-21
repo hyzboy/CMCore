@@ -402,6 +402,15 @@ namespace hgl
     }
 
     /**
+     * 指定类型数据清0
+     */
+    template<typename T>
+    inline void hgl_zero(T &data)
+    {
+        memset(&data,0,sizeof(T));
+    }
+
+    /**
      * 指定类型数据块清0
      */
     template<typename T>
@@ -464,24 +473,6 @@ namespace hgl
     inline int hgl_cmp(const T *a,const T *b,const size_t count)
     {
         return memcmp(a,b,count*sizeof(T));
-    }
-
-    /**
-     * 指定类型数据清0
-     */
-    template<typename T>
-    inline void hgl_zero(T &data)
-    {
-        memset(&data,0,sizeof(T));
-    }
-
-    /**
-     * 指定类型数据清0
-     */
-    template<typename T>
-    inline void hgl_zero(T *data,const uint count)
-    {
-        memset(data,0,sizeof(T)*count);
     }
 
     template<typename T>
