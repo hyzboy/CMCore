@@ -168,7 +168,7 @@ namespace hgl
      * @return 转换出的值
      */
     double FromDateTime(const int year,const int month,const int day,
-                        const int hour,const int minute=0,const int second=0,const int micro_second=0,const int gmt_off=0);
+                        const int hour,const int minute=0,const int second=0,const int micro_second=0);
 
     /**
      * 根据Date/Time转换出以秒为单位的时间值

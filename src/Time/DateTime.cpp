@@ -342,7 +342,6 @@ namespace hgl
     double FromDateTime(const Date &d,const Time &t)
     {
         return FromDateTime(d.GetYear(),d.GetMonth(),d.GetDay(),
-                            t.GetHour(),t.GetMinute(),t.GetSecond(),t.GetMicroSecond(),
-                            t.GetGMT());
+                            t.GetHour(),t.GetMinute(),t.GetSecond(),t.GetMicroSecond());
     }
 }//namespace hgl
