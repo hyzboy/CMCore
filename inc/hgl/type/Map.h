@@ -57,8 +57,8 @@ namespace hgl
         virtual bool    DeleteByKey(const K &);                                                     ///<根据索引将指定数据从列表中移除
         virtual int     DeleteByKey(const K *,const int);                                           ///<根据索引将指定数据从列表中批量移除
         virtual bool    DeleteByValue(const V &);                                                   ///<根据数据将指定数据从列表中移除
-        virtual bool    DeleteAt(int);                                                        ///<根据序号将指定数据从列表中移除
-        virtual bool    DeleteAt(int,int);                                                    ///<根据序号将指定数据从列表中移除
+        virtual bool    DeleteAt(int);                                                              ///<根据序号将指定数据从列表中移除
+        virtual bool    DeleteAt(int,int);                                                          ///<根据序号将指定数据从列表中移除
         virtual bool    ChangeOrAdd(const K &,const V &);                                           ///<更改一个数据的内容(如不存在则添加)
         virtual bool    Change(const K &,const V &);                                                ///<更改一个数据的内容(如不存在则更改失效)
         virtual void    Clear();                                                                    ///<清除所有数据
