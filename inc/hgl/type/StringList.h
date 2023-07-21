@@ -1,7 +1,7 @@
 ﻿#ifndef HGL_STRINGLIST_INCLUDE
 #define HGL_STRINGLIST_INCLUDE
 
-#include<hgl/type/List.h>
+#include<hgl/type/ObjectList.h>
 #include<hgl/type/String.h>
 #include<hgl/io/DataInputStream.h>
 #include<hgl/io/DataOutputStream.h>
@@ -46,7 +46,7 @@ namespace hgl
                 return NullString;
         }
 
-        StringList<StringClass> &operator = (const StringList<StringClass> &sl)
+        StringList<T> &operator = (const StringList<T> &sl)
         {
             Clear();
 
