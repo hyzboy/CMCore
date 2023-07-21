@@ -3,7 +3,7 @@
 namespace hgl
 {
     /**
-     * 阵列数据英处理回调
+     * 阵列数据项处理回调
      */
     template<typename T> struct ArrayItemProcessCallback
     {

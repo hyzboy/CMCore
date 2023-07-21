@@ -1,7 +1,6 @@
-#ifndef HGL_LOADER_INCLUDE
-#define HGL_LOADER_INCLUDE
+#pragma once
 
-#include<cm.h>
+
 #include<hgl/type/String.h>
 #include<hgl/object/EnumObject.h>
 #include<hgl/thread/Thread.h>
@@ -71,4 +70,3 @@ namespace hgl
         LoaderStatus GetStatus();                                                                   ///<取得状态
     };//class Loader
 }//namespace hgl
-#endif//HGL_LOADER_INCLUDE
