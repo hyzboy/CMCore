@@ -55,15 +55,15 @@ namespace hgl
                                                 void cpy(type *t,type *s){*t=*s;}   \
                                             };
 
-        COMPARATOR_ORIGIN_TYPE(hgl::int8)
-        COMPARATOR_ORIGIN_TYPE(hgl::int16)
-        COMPARATOR_ORIGIN_TYPE(hgl::int32)
-        COMPARATOR_ORIGIN_TYPE(hgl::int64)
+        COMPARATOR_ORIGIN_TYPE(int8)
+        COMPARATOR_ORIGIN_TYPE(int16)
+        COMPARATOR_ORIGIN_TYPE(int32)
+        COMPARATOR_ORIGIN_TYPE(int64)
 
-        COMPARATOR_ORIGIN_TYPE(hgl::uint8)
-        COMPARATOR_ORIGIN_TYPE(hgl::uint16)
-        COMPARATOR_ORIGIN_TYPE(hgl::uint32)
-        COMPARATOR_ORIGIN_TYPE(hgl::uint64)
+        COMPARATOR_ORIGIN_TYPE(uint8)
+        COMPARATOR_ORIGIN_TYPE(uint16)
+        COMPARATOR_ORIGIN_TYPE(uint32)
+        COMPARATOR_ORIGIN_TYPE(uint64)
 
         COMPARATOR_ORIGIN_TYPE(float)
         COMPARATOR_ORIGIN_TYPE(double)
