@@ -32,6 +32,9 @@ namespace hgl
 
     public:
 
+            DataArray<T> &      GetArray()          {return data_array;}
+            const DataArray<T> &GetArray()const     {return data_array;}
+
             operator        DataArray<T> & ()       {return data_array;}
             operator const  DataArray<T> & ()const  {return data_array;}
 
