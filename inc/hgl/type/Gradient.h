@@ -8,12 +8,12 @@ namespace hgl
 {
     template<typename P,typename T> struct GradientStop
     {
-        P pos;
-        T data;
+        P pos;                          ///<进度数据
+        T data;                         ///<数据
     };
 
     /**
-    * 渐变类
+    * 数据渐变类模板
     */
     template<typename P,typename T> class Gradient
     {
@@ -44,6 +44,9 @@ namespace hgl
             dirty=true;
         }
 
+        /**
+        * 添加一个渐变点
+        */
         void Add(const P &pos,const T &data)
         {
             GS gs;
@@ -61,11 +64,14 @@ namespace hgl
             dirty=true;
         }
 
-        const bool GetLowest(P &pos)const
+        /**
+        * 取得最低渐变进度
+        */
+        const bool GetLowestPosition(P &pos)const
         {
             GS gs;
 
-            if(stop_list.First(gs))
+            if(stop_list.GetFirst(gs))
             {
                 pos=gs.pos;
                 return(true);
@@ -74,13 +80,48 @@ namespace hgl
             return false;
         }
 
-        const bool GetHighest(P &pos)const
+        /**
+        * 取得最高渐变进度
+        */
+        const bool GetHighestPosition(P &pos)const
         {
             GS gs;
 
-            if(stop_list.Last(gs))
+            if(stop_list.GetLast(gs))
             {
                 pos=gs.pos;
+                return(true);
+            }
+
+            return false;
+        }
+
+        /**
+        * 取得最低渐变结果  
+        */
+        const bool GetLowestData(T &data)const
+        {
+            GS gs;
+
+            if(stop_list.GetFirst(gs))
+            {
+                data=gs.data;
+                return(true);
+            }
+
+            return false;
+        }
+
+        /**
+        * 取得最高渐变结果
+        */
+        const bool GetHighestData(T &data)const
+        {
+            GS gs;
+
+            if(stop_list.GetLast(gs))
+            {
+                data=gs.data;
                 return(true);
             }
 
@@ -92,6 +133,11 @@ namespace hgl
             result=start+(end-start)*pos;
         }
 
+        /**
+        * 取得指定进度下的渐变结果
+        * @param pos 进度
+        * @param result 结果
+        */
         const void Get(T &result,const P &pos)
         {
             const uint count=stop_list.GetCount();
@@ -141,4 +187,18 @@ namespace hgl
                                             }   \
                                             \
                                             template<> void name::Get(T &result,const T &start,const T &end,const float &pos)
+
+    /*
+    HGL_GRADIENT_DEFINE(GradientColor3f,float,Lum)
+    {
+        result=start+(end-start)*pos;
+    }
+
+    HGL_GRADIENT_DEFINE(GradientColor3u8,uint,Color3b)
+    {
+        result.r=start.r+float(end.r-start.r)*pos;
+        result.g=start.g+float(end.g-start.g)*pos;
+        result.b=start.b+float(end.b-start.b)*pos;
+    }
+*/
 }//namespace hgl
