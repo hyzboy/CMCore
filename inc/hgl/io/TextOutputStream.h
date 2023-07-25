@@ -79,6 +79,14 @@ namespace hgl
             }
 
             template<typename N>
+            bool WriteLine(const N *str)
+            {
+                if(!str||!*str)return(false);
+
+                return WriteLine(str,hgl::strlen(str));
+            }
+
+            template<typename N>
             bool WriteLine(const String<N> &str)
             {
                 return WriteLine(str.c_str(),str.Length());
