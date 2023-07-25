@@ -559,13 +559,13 @@ namespace hgl
 
             if(count+data_number>alloc_count)
             {
-                int new_alloc_count=alloc_count+data_number;
+                int new_alloc_count=power_to_2(alloc_count+data_number);
 
                 T *new_items=hgl_align_malloc<T>(new_alloc_count);
 
-                hgl_cpy(new_items,items,pos);
-                hgl_cpy(new_items+pos,data,data_number);
-                hgl_cpy(new_items+pos+data_number,items+pos,(count-pos));
+                if(pos>0)       hgl_cpy(new_items,items,pos);
+                                hgl_cpy(new_items+pos,data,data_number);
+                if(pos<count)   hgl_cpy(new_items+pos+data_number,items+pos,(count-pos));
 
                 hgl_free(items);
                 items=new_items;
