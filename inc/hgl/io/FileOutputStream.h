@@ -88,6 +88,19 @@ namespace hgl
             FileOutputStream *operator &(){return fos;}
             FileOutputStream *operator ->(){return fos;}
         };//class OpenFileInputStream
+
+        inline FileOutputStream *CreateFileOutputStream(const OSString &filename,FileOpenMode fom=FileOpenMode::CreateTrunc)///<创建一个文件输出流
+        {
+            auto *fos=new FileOutputStream();
+
+            if(!fos->Open(filename,fom))
+            {
+                delete fos;
+                return(nullptr);
+            }
+
+            return fos;
+        }
     }//namespace io
 }//namespace hgl
 #endif//HGL_IO_FILE_OUTPUT_STREAM_INCLUDE
