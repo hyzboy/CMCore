@@ -524,6 +524,7 @@ namespace hgl
      * @param str2 要查找的字符串
      * @param size2 str2的长度
      * @return str2在str1中所在位置的指针
+     * @return nullptr 没有找到
      */
     template<typename T1,typename T2>
     T1 *stristr(T1 *str1,const uint size1,T2 *str2,const uint size2)
@@ -568,7 +569,7 @@ namespace hgl
             ++cp;
         }
 
-        return(0);
+        return(nullptr);
     }
 
     /**

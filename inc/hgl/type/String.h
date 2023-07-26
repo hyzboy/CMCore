@@ -153,6 +153,12 @@ namespace hgl
 
         #undef BASE_STRING_FLOAT_CONSTRUCT
 
+        template<typename N1,typename N2>
+        static String<T> percentOf(const N1 numerator,const N2 denominator,const uint frac_num)
+        {
+            return String<T>::floatOf(double(numerator)/double(denominator)*100.0f,frac_num);
+        }
+
         String(const int *value,int N)=delete;
 
         static String<T> numberOf(const int *value,int N)
