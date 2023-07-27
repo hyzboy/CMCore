@@ -26,7 +26,7 @@ namespace hgl
 
                 virtual bool OnBOM(const ByteOrderMask &){return true;}                                  ///<读取到BOM头的回调函数
 
-                virtual bool OnLine(const T *text,const int line){return true;}
+                virtual bool OnLine(const T *text,const int len){return true;}
 
                 /**
                 * 读取到一行文本的回调函数
@@ -110,9 +110,5 @@ namespace hgl
             */
             virtual int Run();
         };//class TextInputStream
-
-        /**
-         *   
-         */
     }//namespace io
 }//namespace hgl
