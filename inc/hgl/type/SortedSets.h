@@ -121,8 +121,8 @@ namespace hgl
             return total;
         }
 
-        void    Clear           (){delete_list.Clear();}                                    ///<清除数据
-        void    ClearData       (){delete_list.ClearData();}                                ///<清除数据，但不释放内存
+        void    Clear           (){data_list.Clear();}                                      ///<清除数据
+        void    ClearData       (){data_list.ClearData();}                                  ///<清除数据，但不释放内存
 
         bool    Get             (const int index,T &data)                                   ///<根据序列号取得指定数据
         {
