@@ -133,7 +133,8 @@ namespace hgl
 
         for(int i=0;i<count;i++)
         {
-            if((*data_array)->value==data)
+            //if((*data_array)->value==data)
+            if(hgl_cmp(data_array[i]->value,data)==0)
                 return(i);
 
             ++data_array;
