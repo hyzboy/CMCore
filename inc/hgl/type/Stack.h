@@ -5,8 +5,6 @@ namespace hgl
 {
     /**
     * Stack模板类用于保存一个先进后出、后进先出的数据堆栈
-    *
-    * 注：这个类还在测试中，请不要修改这个类的源代码，如有修改意见，请致电作者。
     */
     template<typename T> class Stack                                                                ///堆栈顺序数据访问类
     {
@@ -75,8 +73,10 @@ namespace hgl
                     return(true);
                 }
 
-        virtual void Clear(){data_array.Clear();}                                                   ///<清除所有数据
-        virtual void Free(){data_array.Free();}                                                     ///<清除所有数据并释放内存
+    public:
+
+        virtual void Clear  (){data_array.Clear();}                                                 ///<清除所有数据
+        virtual void Free   (){data_array.Free();}                                                  ///<清除所有数据并释放内存
 
         virtual void operator =(const DataArray<T> &da)                                             ///<复制一个堆栈
                 {

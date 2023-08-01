@@ -11,7 +11,10 @@ namespace hgl
         if(num<=0)return;
 
         for(int i=0;i<num;i++)
-            Inactive.Push(Create());
+        {
+            T value=Create();
+            Inactive.Push(value);
+        }
 
         alloc_count+=num;
         if(alloc_count>history_max)
@@ -160,14 +163,14 @@ namespace hgl
 
         Clear(p,ic);
 
-        Inactive.ClearData();
+        Inactive.Clear();
     }
 
     template<typename T>
     void Pool<T>::ClearAll()
     {
         Clear(Inactive.GetData(),Inactive.GetCount());
-        Inactive.ClearData();
+        Inactive.Clear();
 
         Clear(Active.GetData(),Active.GetCount());
         Active.ClearData();
