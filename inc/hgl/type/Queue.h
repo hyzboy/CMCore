@@ -47,7 +47,7 @@ namespace hgl
         bool IsExist    (const T &data)const{return this->Find(data)!=-1;}                          ///<确认是否有这个数据
         bool Delete     (int);                                                                      ///<删除队列中指定编号的数据
 
-        void Clear      ();                                                                         ///<清除所有数据
+        void Free       ();                                                                         ///<清除所有数据
         void ClearData  ();                                                                         ///<清除所有数据，但不释放内存
 
         bool GetItem    (int n,T &ti)                                                               ///<取得指定项数据

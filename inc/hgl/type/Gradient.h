@@ -60,7 +60,7 @@ namespace hgl
 
         void Clear()
         {
-            stop_list.Clear();
+            stop_list.Free();
             dirty=true;
         }
 

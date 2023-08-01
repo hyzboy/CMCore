@@ -107,10 +107,10 @@ namespace hgl
 
         virtual ~DataArray()
         {
-            Clear();
+            Free();
         }
 
-        void Clear()
+        void Free()
         {
             SAFE_FREE(items);
 
@@ -118,7 +118,7 @@ namespace hgl
             alloc_count=0;
         }
 
-        void ClearData()
+        void Clear()
         {
             count=0;
         }
@@ -594,12 +594,12 @@ namespace hgl
             */
         void WithoutList(DataArray<T> &result_list,const DataArray<T> &without_list)
         {
-            result_list.ClearData();
+            result_list.Clear();
             const int count=this->GetCount();
 
             if(count<=0)return;
 
-            result_list.ClearData();
+            result_list.Clear();
             result_list.PreAlloc(count);
 
             int result=0;

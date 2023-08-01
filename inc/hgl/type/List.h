@@ -45,7 +45,7 @@ namespace hgl
         List(const List<T> &lt){operator=(lt);}                                                     ///<本类构造函数
         List(const std::initializer_list<T> &lt){operator=(lt);}
 
-        virtual ~List(){Clear();}                                                                   ///<本类析构函数
+        virtual ~List(){Free();}                                                                    ///<本类析构函数
 
         /**
          * 向列表中添加一个空数据
@@ -115,8 +115,8 @@ namespace hgl
 
                 int  Add(const List<T> &l){return Add(l.items,l.count);}                            ///<增加一批数据
 
-        virtual void Clear(){data_array.Clear();}                                                   ///<清除所有数据
-        virtual void ClearData(){data_array.ClearData();}                                           ///<清除所有数据，但不清空缓冲区
+        virtual void Free(){data_array.Free();}                                                    ///<清除所有数据
+        virtual void ClearData(){data_array.Clear();}                                               ///<清除所有数据，但不清空缓冲区
 
         virtual int  Find(const T &data)const{return data_array.Find(data);}                        ///<查找指定数据的索引
         virtual bool IsExist(const T &flag)const{return Find(flag)!=-1;}                            ///<确认数据项是否存在

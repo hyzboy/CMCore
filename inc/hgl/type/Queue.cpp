@@ -79,7 +79,7 @@ namespace hgl
     * 清除队列中的所有数据
     */
     template<typename T>
-    void Queue<T>::Clear()
+    void Queue<T>::Free()
     {
         if(max_count==0)
             if(cur_count)
@@ -233,7 +233,7 @@ namespace hgl
     {
         if(ori.cur_count==0)return;
 
-        Clear();
+        Free();
 
         max_count=ori.cur_count;
         cur_count=ori.cur_count;
@@ -259,7 +259,7 @@ namespace hgl
         while(n--)
             delete Queue<T *>::items[n];
 
-        Queue<T *>::Clear();
+        Queue<T *>::Free();
     }
 }
 #endif//HGL_QUEUE_CPP

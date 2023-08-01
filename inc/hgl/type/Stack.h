@@ -1,7 +1,6 @@
-﻿#ifndef HGL_STACK_INCLUDE
-#define HGL_STACK_INCLUDE
+﻿#pragma once
 
-#include<hgl/type/DataType.h>
+#include<hgl/type/DataArray.h>
 namespace hgl
 {
     /**
@@ -13,47 +12,123 @@ namespace hgl
     {
     protected:
 
-        int max_count;
-        int alloc_count;
-        int cur_count;
-        T *items;
+        DataArray<T> data_array;
 
     public: //属性
 
-        int   GetCount      ()      const{return cur_count;}                                        ///<取得堆栈中数据的个数
-        bool  SetCount      (int c);                                                                ///<直接设置堆栈中数据的个数
+                const   int     GetAllocCount   ()const{return data_array.GetAllocCount();}         ///<取得已分配容量
+                const   int     GetCount        ()const{return data_array.GetCount();}              ///<取得列表内数据数量
+        virtual         bool    SetCount        (int count){return data_array.SetCount(count);}     ///<设置列表内数据数量
+        virtual         bool    PreAlloc        (int count){return data_array.Alloc(count);}        ///<预分配指定数量的数据空间
 
-        int   GetMaxCount   ()      const{return max_count;}                                        ///<取得堆栈中的最大数据个数
-        void  SetMaxCount   (int);                                                                  ///<设置堆栈中的最大数据个数
+                const   bool    IsEmpty         ()const{return data_array.IsEmpty();}               ///<确认列表是否为空
 
-        T *   GetData       ()           {return items;}                                            ///<取得原始数据
+                        T *     GetData         ()const{return data_array.GetData();}               ///<提供原始数据项
+                        int     GetBytes        ()const{return data_array.GetBytes();}              ///<取得原始数据总字节数
+
+                        T *     begin           ()const{return data_array.begin();}
+                        T *     end             ()const{return data_array.end();}
+
+    public:
+
+            DataArray<T> &      GetArray()          {return data_array;}
+            const DataArray<T> &GetArray()const     {return data_array;}
+
+            operator        DataArray<T> & ()       {return data_array;}
+            operator const  DataArray<T> & ()const  {return data_array;}
 
     public: //方法
 
-        Stack(int=0);
-        virtual ~Stack();
+        Stack()=default;
+        virtual ~Stack()=default;
 
-                bool Peek(T &);                                                                     ///<尝试访问一个数据
-        virtual bool Pop(T &);                                                                      ///<弹出一个数据
-                bool Push(T &);                                                                     ///<压入一个数据
-                bool Push(T *,int);                                                                 ///<压入多个数据
+        virtual bool Push(T *data,int count)                                                        ///<压入多个数据
+                {
+                    if(!data||count<=0)return(false);
 
-        virtual void Clear();                                                                       ///<清除所有数据
+                    int offset=data_array.GetCount();
 
-                bool GetItem(int,T &);
+                    data_array.AddCount(count);
 
-        virtual void operator =(const Stack<T> &);
+                    data_array.WriteAt(data,offset,count);
+
+                    return(true);
+                }
+
+        virtual bool Push(T &data){return Push(&data,1)==1;}                                        ///<压入一个数据
+
+        virtual bool Peek(T &data)                                                                  ///<尝试访问一个数据
+                {
+                    if(data_array.GetCount()<=0)return(false);
+
+                    return data_array.ReadAt(data,data_array.GetCount()-1);
+                }
+
+        virtual bool Pop(T &data)                                                                   ///<弹出一个数据
+                {
+                    if(data_array.GetCount()<=0)return(false);
+
+                    if(!data_array.ReadAt(data,data_array.GetCount()-1))
+                        return(false);
+
+                    data_array.AddCount(-1);
+                    return(true);
+                }
+
+        virtual void Clear(){data_array.Clear();}                                                   ///<清除所有数据
+        virtual void Free(){data_array.Free();}                                                     ///<清除所有数据并释放内存
+
+        virtual void operator =(const DataArray<T> &da)                                             ///<复制一个堆栈
+                {
+                    data_array.SetCount(da.GetCount());
+
+                    data_array.WriteAt(da.GetData(),0,da.GetCount());
+                }
+
+        virtual void operator =(const Stack<T> &s){this->operator=(s.data_array);}
     };//template<typename T> class Stack
 
-    template<typename T> class StackObject:public Stack<T *>                                        ///堆栈对象
+    template<typename T> class ObjectStack:public Stack<T *>                                        ///堆栈对象
     {
+    protected:
+
+        virtual void DeleteObject(T *obj){if(obj)delete obj;}
+
     public:
 
         using Stack<T *>::Stack;
-        virtual ~StackObject(){Clear();};
+        virtual ~ObjectStack() override {Free();}
 
-        void Clear();
-    };//template<typename T> class StackObject
+        virtual bool Push(T *obj)
+        {
+            if(!obj)return(false);
+
+            return Stack<T *>::Push(obj);
+        }
+
+        virtual T *Pop()
+        {
+            T *obj;
+
+            if(!Stack<T *>::Pop(obj))
+                return(nullptr);
+
+            return obj;
+        }
+
+        void Clear()
+        {
+            for(T *obj:data_array)
+                DeleteObject(obj);
+
+            data_array.Clear();
+        }
+
+        void Free()
+        {
+            ObjectStack<T>::Clear();
+
+            data_array.Free();
+        }
+    };//template<typename T> class ObjectStack
 }//namespace hgl
-#include<hgl/type/Stack.cpp>
-#endif//HGL_STACK_INCLUDE

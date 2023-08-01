@@ -18,7 +18,7 @@ namespace hgl
     public: //方法
 
         using List<T *>::List;
-        virtual ~ObjectList(){Clear();}
+        virtual ~ObjectList(){Free();}
 
     public:
 
@@ -30,10 +30,10 @@ namespace hgl
                     return List<T *>::Insert(index,obj);
                 }
 
-        virtual void    Clear() override                                                            ///<清除所有数据
+        virtual void    Free() override                                                             ///<清除所有数据
         {
             ClearData();
-            List<T *>::Clear();
+            List<T *>::Free();
         }
 
         virtual void    ClearData() override                                                        ///<清除所有数据，但不清空缓冲区

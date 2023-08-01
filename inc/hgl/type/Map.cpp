@@ -480,7 +480,7 @@ namespace hgl
     void _Map<K,V,KVData>::Clear()
     {
         data_pool.ClearAll();
-        data_list.Clear();
+        data_list.Free();
     }
 
     /**

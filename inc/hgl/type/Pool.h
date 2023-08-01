@@ -44,7 +44,7 @@ namespace hgl
         Pool(){alloc_count=0;history_max=0;max_count=0;}
         virtual ~Pool()=default;
 
-        virtual void    PreAlloc(int,bool set_to_max=false);                                       ///<预分配空间
+        virtual void    PreAlloc(int,bool set_to_max=false);                                        ///<预分配空间
 
         virtual int     SetMaxCount(int);                                                           ///<设定最大数量限制
 

@@ -96,7 +96,7 @@ namespace hgl
                 ++log;
             }
 
-            log_list->Clear();
+            log_list->Free();
         }
     }//namespace logger
 
