@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 
 #include<hgl/TypeFunc.h>
 namespace hgl
 {
     /**
-    * Ô­ÉúÊı¾İÉúÃüÖÜÆÚ´¦Àí»Øµ÷
+    * åŸç”Ÿæ•°æ®ç”Ÿå‘½å‘¨æœŸå¤„ç†å›è°ƒ
     */
     template<typename T> struct RawLifetimeCallback
     {
@@ -18,7 +18,7 @@ namespace hgl
     };
 
     /**
-    * ¶ÔÏñÉúÃüÖÜÆÚ´¦Àí»Øµ÷ 
+    * å¯¹åƒç”Ÿå‘½å‘¨æœŸå¤„ç†å›è°ƒ 
     */
     template<typename T> struct ObjectLifetimeCallback:public RawLifetimeCallback<T *>
     {
@@ -27,7 +27,7 @@ namespace hgl
     };//struct ObjectLifetimeCallback
 
     /**
-    * È±Ê¡¶ÔÏñÉúÃüÖÜÆÚ´¦Àí»Øµ÷ 
+    * ç¼ºçœå¯¹åƒç”Ÿå‘½å‘¨æœŸå¤„ç†å›è°ƒ 
     */
     template<typename T> struct DefaultObjectLifetimeCallback:public ObjectLifetimeCallback<T>
     {
