@@ -20,6 +20,14 @@ namespace hgl
         {
             hgl_zero(dst,count);
         }
+
+    public: //活跃事件
+
+        virtual bool OnCreate   (T *){return true;}         ///<被创建
+        virtual bool OnActive   (T *){return true;}         ///<切换到激活
+        virtual bool OnIdle     (T *){return true;}         ///<切换到空闲
+        virtual bool OnReuse    (T *){return true;}         ///<被重用(空间被重用，旧数据需要清除)
+        virtual bool OnRelease  (T *){return true;}         ///<被释放
     };
 
     /**
