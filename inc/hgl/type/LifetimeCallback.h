@@ -15,6 +15,11 @@ namespace hgl
         {
             hgl_cpy(dst,src,count);
         }
+
+        virtual void Init(T *dst,int count)
+        {
+            hgl_zero(dst,count);
+        }
     };
 
     /**
