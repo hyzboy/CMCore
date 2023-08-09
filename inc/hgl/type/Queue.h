@@ -135,7 +135,7 @@ namespace hgl
                 if(data_array[read_index].GetCount()>read_offset)       //还有没读完的，需要清掉
 
                 dlc->Clear(data_array[read_index].GetData()+read_offset,
-                            data_array[read_index].GetCount()-read_offset);
+                           data_array[read_index].GetCount()-read_offset);
             }
 
             data_array[0].Clear();
@@ -158,10 +158,7 @@ namespace hgl
     public:
 
         using Queue<T *>::Queue;
-        virtual ~ObjectQueue()
-        {
-            Free();
-        }
+        virtual ~ObjectQueue() override { Free(); }
 
         virtual bool Push(T *obj)
         {

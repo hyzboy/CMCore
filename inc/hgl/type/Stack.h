@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/DataArray.h>
+#include<hgl/type/LifetimeCallback.h>
 namespace hgl
 {
     /**
@@ -75,8 +76,19 @@ namespace hgl
 
     public:
 
-        virtual void Clear  (){data_array.Clear();}                                                 ///<清除所有数据
-        virtual void Free   (){data_array.Free();}                                                  ///<清除所有数据并释放内存
+        virtual void Clear  (DataLifetimeCallback<T> *dlc=nullptr)                                  ///<清除所有数据
+        {
+            if(dlc)
+                dlc->Clear(data_array.GetData(),data_array.GetCount());
+
+            data_array.Clear();
+        }
+
+        virtual void Free   (DataLifetimeCallback<T> *dlc=nullptr)                                  ///<清除所有数据并释放内存
+        {
+            Clear(dlc);
+            data_array.Free();
+        }
 
         virtual void operator =(const DataArray<T> &da)                                             ///<复制一个堆栈
                 {
@@ -90,9 +102,7 @@ namespace hgl
 
     template<typename T> class ObjectStack:public Stack<T *>                                        ///堆栈对象
     {
-    protected:
-
-        virtual void DeleteObject(T *obj){if(obj)delete obj;}
+        DefaultObjectLifetimeCallback<T> default_olc;
 
     public:
 
@@ -116,17 +126,17 @@ namespace hgl
             return obj;
         }
 
-        void Clear()
+        void Clear(ObjectLifetimeCallback<T> *olc=nullptr)
         {
-            for(T *obj:data_array)
-                DeleteObject(obj);
+            if(!olc)
+                olc=&default_olc;
 
-            data_array.Clear();
+            Stack<T *>::Clear(olc);
         }
 
-        void Free()
+        void Free(ObjectLifetimeCallback<T> *olc=nullptr)
         {
-            ObjectStack<T>::Clear();
+            ObjectStack<T>::Clear(olc);
 
             data_array.Free();
         }
