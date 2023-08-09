@@ -539,11 +539,18 @@ namespace hgl
         /**
          * 查找数据在数组中的位置
          * @param data 要查找的数据
+         * @param start 开始查找的位置
+         * @param find_count 要查找的最大数量
          * @return <0 未找到或其它错误
          */
-        const int Find(const T &data)const
+        const int Find(const T &data,const int start=0,int find_count=-1)const
         {
-            return FindDataPositionInArray<T>(items,count,data);
+            if(!items||count<=0||start<0||start>=count)return(-1);
+
+            if(find_count<0||find_count>count-start)
+                find_count=count;
+
+            return FindDataPositionInArray<T>(items+start,find_count,data);
         }
 
         /**

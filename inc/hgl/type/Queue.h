@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/DataArray.h>
+#include<hgl/type/LifetimeCallback.h>
 namespace hgl
 {
     /**
@@ -41,7 +42,7 @@ namespace hgl
                                                                 data_array[1].GetAllocCount();}     ///<取得已分配的数据数量
 
                 const   int     GetCount        ()const{return  data_array[0].GetCount()+
-                                                                data_array[1].GetCount();}          ///<取得列表内数据数量
+                                                                data_array[1].GetCount()-read_offset;}///<取得列表内数据数量
 
         virtual         bool    PreAlloc        (int count)                                         ///<预分配数据空间
                         {
@@ -52,6 +53,14 @@ namespace hgl
                         }
 
                 const   bool    IsEmpty         ()const{return GetCount()==0;}                      ///<确认列表是否为空
+
+                const   bool    IsExist         (const T &data)const
+                        {
+                            if(data_array[read_index].Find(data,read_offset)!=-1)
+                                return(true);
+
+                            return data_array[write_index].Find(data)!=-1;
+                        }
 
     public: //方法
 
@@ -100,7 +109,7 @@ namespace hgl
 
         virtual bool Pop    (T &data)                                                               ///<弹出一个数据
         {
-            if(data_array[read_index].GetCount()>=read_offset)
+            if(data_array[read_index].GetCount()<=read_offset)
             {
                 if(data_array[write_index].GetCount()<=0)
                    return(false);
@@ -108,37 +117,51 @@ namespace hgl
                 data_array[read_index].Clear();
 
                 SwapIndex();
-
-                data_array[read_index].ReadAt(data,0);
-
-                ++read_offset;
             }
-            else
-            {
-                data_array[read_index].ReadAt(data,read_offset);
 
-                ++read_offset;
-            }
+            data_array[read_index].ReadAt(data,read_offset);
+
+            ++read_offset;
 
             return(true);
         }
 
     public:
 
-        virtual void Clear  (){data_array[0].Clear();data_array[1].Clear();}                        ///<清除所有数据
-        virtual void Free   (){data_array[0].Free();data_array[1].Free();}                          ///<清除所有数据并释放内存
+        virtual void Clear  (DataLifetimeCallback<T> *dlc=nullptr)                                  ///<清除所有数据
+        {
+            if(dlc)
+            {
+                if(data_array[read_index].GetCount()>read_offset)       //还有没读完的，需要清掉
+
+                dlc->Clear(data_array[read_index].GetData()+read_offset,
+                            data_array[read_index].GetCount()-read_offset);
+            }
+
+            data_array[0].Clear();
+            data_array[1].Clear();
+        }
+
+        virtual void Free   (DataLifetimeCallback<T> *dlc=nullptr)                                  ///<清除所有数据并释放内存
+        {
+            Clear(dlc);
+
+            data_array[0].Free();
+            data_array[1].Free();
+        }
     };//template<typename T> class Queue
 
     template<typename T> class ObjectQueue:public Queue<T *>                                        ///对象队列
     {
-    protected:
-
-        virtual void DeleteObject(T *obj){if(obj)delete obj;}
+        DefaultObjectLifetimeCallback<T> default_olc;
 
     public:
 
         using Queue<T *>::Queue;
-        virtual ~ObjectQueue(){Free();}
+        virtual ~ObjectQueue()
+        {
+            Free();
+        }
 
         virtual bool Push(T *obj)
         {
@@ -157,21 +180,17 @@ namespace hgl
             return obj;
         }
 
-        void Clear()
+        void Clear(ObjectLifetimeCallback<T> *olc=nullptr)
         {
-            for(T *obj:data_array[0])
-                DeleteObject(obj);
-
-            for(T *obj:data_array[1])
-                DeleteObject(obj);
-
-            data_array[0].Clear();
-            data_array[1].Clear();
+            if(!olc)
+                olc=&default_olc;
+            
+            Queue<T *>::Clear(olc);
         }
 
-        void Free()
+        void Free(ObjectLifetimeCallback<T> *olc=nullptr)
         {
-            ObjectQueue<T>::Clear();
+            ObjectQueue<T>::Clear(olc);
 
             data_array[0].Free();
             data_array[1].Free();

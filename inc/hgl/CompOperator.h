@@ -23,12 +23,12 @@ template<typename T> class Comparator                                           
 public:
 
     /**
-    * 比较函数，需被特例化或派生实现
+    * 比较函数，需被特例化或派生实现. 正确情况下此函数不应该会被调用
     */
-    virtual int compare(const T &a,const T &b)const
-    {
-        return 0;   //  如 return(a-b); ，但这个函数正确情况下不应该会被调用
-    }
+    virtual int compare(const T &a,const T &b)const;
+    //{
+    //    return 0;   //  如 return(a-b);
+    //}
 
     /**
         * 交换函数
