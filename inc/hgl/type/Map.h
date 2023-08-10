@@ -167,13 +167,15 @@ namespace hgl
 
         typedef _Map<K,V *,KVData> SuperClass;
 
-        virtual void    DeleteObject(const K &,V *)=0;                                              ///<删除一个数据
+        DefaultObjectLifetimeCallback<V> default_olc;
+        DataLifetimeCallback<V *> *olc;
+
                 void    DeleteObject(KVData *ds)
                 {
                     if(!ds)return;
 
-                    if(ds->value)                                                                   ///<存在数据就是nullptr的可能
-                        DeleteObject(ds->key,ds->value);
+                    if(olc)
+                        olc->Clear(&(ds->value));
                 }
 
                 void    DeleteObject(int index)
@@ -183,14 +185,19 @@ namespace hgl
 
     public:
 
-        _ObjectMap()=default;
+        _ObjectMap()
+        {
+            olc=&default_olc;
+        }
+
         virtual ~_ObjectMap()
         {
-            if(SuperClass::GetCount()>0)
-            {
-                //LOG_ERROR(u"这是一个严重的程序设计错误，会产生纯虚函数调用，请在派生类的析构函数中调用Clear函数以清除数据。");
-                //LOG_ERROR(OS_TEXT("This is a serious design errors, will produce the pure virtual function call, please call in the destructor of the derived class the <Clear> function to clear the data."));
-            }
+            Clear();
+        }
+
+        virtual void    SetDataLifetimeCallback(DataLifetimeCallback<V *> *cb)                        ///<设定数据生命周期回调函数
+        {
+            olc=cb?cb:&default_olc;
         }
 
         /**
@@ -280,7 +287,7 @@ namespace hgl
             while(n--)
                 DeleteObject(n);
 
-            _Map<K,V *,KVData>::Clear();
+            SuperClass::Clear();
         }
 
         /**
@@ -334,33 +341,6 @@ namespace hgl
         }
 
         void Clear(){DeleteAll();}
-    };//class _ObjectMap
-
-    template<typename K,typename V,typename KVData> class CustomObjectMap:public _ObjectMap<K,V,KVData>
-    {
-    protected:
-
-        //virtual T *       CreateObject(const F &){return(new T);}                                     ///<创建一个数据
-        virtual void    DeleteObject(const K &,V *obj){delete obj;}                                 ///<删除一个数据
-
-    public:
-
-        CustomObjectMap()=default;
-        virtual ~CustomObjectMap()
-        {
-            _ObjectMap<K,V,KVData>::Clear();
-        }
-    };//class CustomObjectMap
-
-    template<typename K,typename V> class ObjectMap:public CustomObjectMap<K,V,KeyValue<K,V *> >
-    {
-    public:
-
-        ObjectMap()=default;
-        virtual ~ObjectMap()
-        {
-            CustomObjectMap<K,V,KeyValue<K,V *> >::Clear();
-        }
 
         V *operator[](const K &index)const
         {
@@ -371,7 +351,9 @@ namespace hgl
             else
                 return nullptr;
         };
-    };//class ObjectMap
+    };//class _ObjectMap
+
+    template<typename K,typename V> using ObjectMap=_ObjectMap<K,V,KeyValue<K,V *> >;
 }//namespace hgl
 #include<hgl/type/Map.cpp>
 #endif//HGL_MAP_INCLUDE
