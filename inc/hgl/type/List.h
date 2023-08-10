@@ -78,7 +78,7 @@ namespace hgl
         * @param data 要添加的数据对象
         * @param n 要添加的数据个数
         * @return 这个数据的索引号
-        * @return -1 出错
+        * @return >0 出错
         */
         virtual int  RepeatAdd(const T &data,int n)
         {
@@ -115,11 +115,11 @@ namespace hgl
 
                 int  Add(const List<T> &l){return Add(l.items,l.count);}                            ///<增加一批数据
 
-        virtual void Free(){data_array.Free();}                                                    ///<清除所有数据
+        virtual void Free(){data_array.Free();}                                                     ///<清除所有数据
         virtual void ClearData(){data_array.Clear();}                                               ///<清除所有数据，但不清空缓冲区
 
         virtual int  Find(const T &data)const{return data_array.Find(data);}                        ///<查找指定数据的索引
-        virtual bool IsExist(const T &flag)const{return Find(flag)!=-1;}                            ///<确认数据项是否存在
+        virtual bool IsExist(const T &flag)const{return Find(flag)>=0;}                             ///<确认数据项是否存在
 
         virtual bool Delete(int start,int num=1){return data_array.Delete(start,num);}              ///<删除指定索引的数据
         virtual bool DeleteMove(int start,int num=1){return data_array.DeleteMove(start,num);}      ///<删除指定索引的数据,将后面紧邻的数据前移
@@ -152,7 +152,7 @@ namespace hgl
 
                 ++data;
 
-                if(index!=-1)
+                if(index>=0)
                     if(Delete(index))
                         ++result;
             }

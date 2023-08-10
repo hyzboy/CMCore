@@ -133,9 +133,11 @@ namespace hgl
             if(dlc)
             {
                 if(data_array[read_index].GetCount()>read_offset)       //还有没读完的，需要清掉
+                    dlc->Clear(data_array[read_index].GetData()+read_offset,
+                               data_array[read_index].GetCount()-read_offset);
 
-                dlc->Clear(data_array[read_index].GetData()+read_offset,
-                           data_array[read_index].GetCount()-read_offset);
+                dlc->Clear(data_array[write_index].GetData(),
+                           data_array[write_index].GetCount());
             }
 
             data_array[0].Clear();
@@ -167,17 +169,24 @@ namespace hgl
             return Queue<T *>::Push(obj);
         }
 
-        virtual T *Pop()
+        virtual bool Push(T **obj_list,int count)
         {
-            T *obj;
+            if(!obj_list)return(false);
 
-            if(!Queue<T *>::Pop(obj))
-                return(nullptr);
-
-            return obj;
+            return Queue<T *>::Push(obj_list,count);
         }
 
-        void Clear(ObjectLifetimeCallback<T> *olc=nullptr)
+        //virtual T *Pop()
+        //{
+        //    T *obj;
+
+        //    if(!Queue<T *>::Pop(obj))
+        //        return(nullptr);
+
+        //    return obj;
+        //}
+
+        void Clear(DataLifetimeCallback<T *> *olc=nullptr)
         {
             if(!olc)
                 olc=&default_olc;
@@ -185,7 +194,7 @@ namespace hgl
             Queue<T *>::Clear(olc);
         }
 
-        void Free(ObjectLifetimeCallback<T> *olc=nullptr)
+        void Free(DataLifetimeCallback<T *> *olc=nullptr)
         {
             ObjectQueue<T>::Clear(olc);
 

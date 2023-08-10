@@ -26,7 +26,6 @@ namespace hgl
 
         virtual bool OnActive   (T *,int count=1){return true;}         ///<切换到激活
         virtual bool OnIdle     (T *,int count=1){return true;}         ///<切换到空闲
-        virtual bool OnClear    (T *,int count=1){return true;}         ///<被释放
     };
 
     /**

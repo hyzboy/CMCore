@@ -38,7 +38,7 @@ namespace hgl
     template<typename T> static int FindDataPositionInArray(const T *data_list,const int count,const T &data)
     {
         if(!data_list)return(-1);
-        if(count<=0)return(-2);
+        if(count<=0)return(-1);
 
         const T *p=data_list;
 
@@ -51,7 +51,7 @@ namespace hgl
             ++p;
         }
 
-        return -3;
+        return -1;
     }
 
     template<typename T,typename O> static int FindDataPositionInArray(const T &data_list,const O &data)
