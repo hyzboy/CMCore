@@ -57,7 +57,11 @@ namespace hgl
             history_max=0;
             dlc=&default_dlc;
         }
-        virtual ~_Pool()=default;
+
+        virtual ~_Pool()
+        {
+            Clear();        //有一些数据需要特别的Clear处理，所以不能依赖Active/InActive模板本身的自晰构
+        }
 
         virtual void    SetDataLifetimeCallback(DataLifetimeCallback<T> *cb)                        ///<设定数据生命周期回调函数
                         {
@@ -183,20 +187,14 @@ namespace hgl
                         {
                             Inactive.Clear(dlc);
                         }
+
+        virtual void    Clear()                                                                     ///<清除所有数据
+                        {
+                            ClearActive();
+                            ClearInactive();
+                        }
     };//template<typename T,typename AT,typename IT> class _Pool
 
     template<typename T> using Pool         =_Pool<T,   List<T>,    Queue<T>,       DataLifetimeCallback<T>>;           ///<数据池模板
-
-    template<typename T> class ObjectPool:public _Pool<T *, List<T *>,  ObjectQueue<T>, DefaultObjectLifetimeCallback<T>>  ///<对象池
-    {
-    public:
-
-        using _Pool<T *, List<T *>,  ObjectQueue<T>, DefaultObjectLifetimeCallback<T>>::_Pool;
-
-        virtual ~ObjectPool() override
-        {
-            ClearActive();
-            ClearInactive();
-        }
-    };
+    template<typename T> using ObjectPool   =_Pool<T *, List<T *>,  ObjectQueue<T>, DefaultObjectLifetimeCallback<T>>;  ///<对象池
 }//namespace hgl

@@ -154,7 +154,7 @@ namespace hgl
     {
         KVData *dp;
         
-        if(!data_pool.Acquire(dp))
+        if(!data_pool.GetOrCreate(dp))
             return(nullptr);
 
         dp->key=flag;
@@ -442,7 +442,7 @@ namespace hgl
         }
         else
         {
-            if(data_pool.Acquire(dp))
+            if(data_pool.GetOrCreate(dp))
             {
                 dp->key=flag;
                 dp->value=data;
@@ -479,7 +479,7 @@ namespace hgl
     template<typename K,typename V,typename KVData>
     void _Map<K,V,KVData>::Clear()
     {
-        data_pool.ClearAll();
+        data_pool.Clear();
         data_list.Free();
     }
 
@@ -489,7 +489,7 @@ namespace hgl
     template<typename K,typename V,typename KVData>
     void _Map<K,V,KVData>::ClearData()
     {
-        data_pool.ReleaseAll();
+        data_pool.ReleaseActive();
         data_list.ClearData();
     }
 
@@ -498,7 +498,7 @@ namespace hgl
     {
         Clear();
 
-        data_pool.ClearAll();
+        data_pool.Clear();
         data_list.ClearData();
 
         const int count=ftd.data_list.GetCount();
@@ -524,7 +524,7 @@ namespace hgl
     }
 
     template<typename K,typename V,typename KVData>
-    void _Map<K,V,KVData>::Enum(void (*enum_func)(const K &,V))
+    void _Map<K,V,KVData>::Enum(void (*enum_func)(const K &,V &))
     {
         const int count=data_list.GetCount();
 
@@ -560,7 +560,7 @@ namespace hgl
     }
 
     template<typename K,typename V,typename KVData>
-    void _Map<K,V,KVData>::EnumAllValue(void (*enum_func)(V))
+    void _Map<K,V,KVData>::EnumAllValue(void (*enum_func)(V &))
     {
         const int count=data_list.GetCount();
 
@@ -578,7 +578,7 @@ namespace hgl
     }
 
     template<typename K,typename V,typename KVData>
-    void _Map<K,V,KVData>::EnumValue(bool (*enum_func)(V))
+    void _Map<K,V,KVData>::EnumValue(bool (*enum_func)(V &))
     {
         const int count=data_list.GetCount();
 
