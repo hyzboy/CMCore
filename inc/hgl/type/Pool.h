@@ -6,7 +6,9 @@
 namespace hgl
 {
     /**
-    * 数据池模板用于管于两个队列，一个在用的，一个空闲的。默认情部下空闲队列使用Queue模板管理(先入先出，总是使用最早扔进去的数据，可手动换成Stack性能更好)，活动队列使用List模板管理(无序)。
+    * 数据池模板用于管于两个队列，一个在用的，一个空闲的。<br>
+    * 默认情部下空闲队列使用Queue模板管理(先入先出，总是使用最早扔进去的数据。可手动换成Stack运行性能更好，但逻辑性能更差。)，
+    * 活动队列使用List模板管理(无序)。
     */
     template<typename T,typename AT,typename IT,typename DEFAULT_DLC> class _Pool                                        ///数据池
     {
@@ -15,15 +17,15 @@ namespace hgl
         DEFAULT_DLC default_dlc;
 
         AT Active;
-        IT Inactive;
+        IT Idle;
 
         int max_active_count;
         int history_max;                                                                            ///<历史最大数量
 
         void UpdateHistoryMax()
         {
-            if(Active.GetCount()+Inactive.GetCount()>history_max)
-                history_max=Active.GetCount()+Inactive.GetCount();
+            if(Active.GetCount()+Idle.GetCount()>history_max)
+                history_max=Active.GetCount()+Idle.GetCount();
         }
 
     protected:
@@ -33,13 +35,13 @@ namespace hgl
     public: //属性
 
         int GetActiveCount()    const{return Active.GetCount();}                                    ///<取得活动数据数量
-        int GetInactiveCount()  const{return Inactive.GetCount();}                                  ///<取得非活动数据数量
+        int GetIdleCount()      const{return Idle.GetCount();}                                      ///<取得非活动数据数量
         int GetHistoryMaxCount()const{return history_max;}                                          ///<取得历史性最大数据数量
 
         DataArray<T> & GetActiveArray(){return Active.GetArray();}                                  ///<取得所有活跃数据
 
         bool IsActive   (const T &data)const{return Active.IsExist(data);}                          ///<是否为活跃的
-        bool IsInactive (const T &data)const{return Inactive.IsExist(data);}                        ///<是否为非活跃的
+        bool IsIdle     (const T &data)const{return Idle.IsExist(data);}                            ///<是否为非活跃的
 
         bool IsFull()const                                                                          ///<活跃队列是否已满
         {
@@ -71,7 +73,7 @@ namespace hgl
         virtual void    PreAlloc(int count,bool set_to_max=false)                                   ///<预分配空间
                         {
                             Active.PreAlloc(count);
-                            Inactive.PreAlloc(count);
+                            Idle.PreAlloc(count);
 
                             if(set_to_max)
                                 max_active_count=count;
@@ -94,7 +96,7 @@ namespace hgl
 
         virtual bool    GetOrCreate(T &value)                                                       ///<获取一个数据(如果没有空余，创建新的)
                         {
-                            if(!Inactive.Pop(value))
+                            if(!Idle.Pop(value))
                             {
                                 if(IsFull())
                                     return(false);
@@ -114,7 +116,7 @@ namespace hgl
 
         virtual bool    Get(T &value)                                                               ///<获取一个数据(如果没有空余，返回失败)
                         {
-                            if(!Inactive.Pop(value))
+                            if(!Idle.Pop(value))
                                 return(false);
 
                             dlc->OnActive(&value);
@@ -142,7 +144,7 @@ namespace hgl
                             {
                                 Active.Delete(index);
 
-                                if(!Inactive.Push(value))
+                                if(!Idle.Push(value))
                                     return(false);
 
                                 dlc->OnIdle(&value);
@@ -172,7 +174,7 @@ namespace hgl
                         {
                             dlc->OnIdle(Active.GetData(),Active.GetCount());
 
-                            Inactive.Push(Active.GetData(),Active.GetCount());
+                            Idle.Push(Active.GetData(),Active.GetCount());
                             Active.ClearData();
                         }
 
@@ -183,15 +185,15 @@ namespace hgl
                             Active.ClearData();
                         }
 
-        virtual void    ClearInactive()                                                             ///<清除所有非活跃数据
+        virtual void    ClearIdle()                                                                 ///<清除所有非活跃数据
                         {
-                            Inactive.Clear(dlc);
+                            Idle.Clear(dlc);
                         }
 
         virtual void    Clear()                                                                     ///<清除所有数据
                         {
                             ClearActive();
-                            ClearInactive();
+                            ClearIdle();
                         }
     };//template<typename T,typename AT,typename IT> class _Pool
 
