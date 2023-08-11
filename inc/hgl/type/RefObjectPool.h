@@ -1,5 +1,4 @@
-﻿#ifndef HGL_RES_POOL_INCLUDE
-#define HGL_RES_POOL_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/Map.h>
 namespace hgl
@@ -18,7 +17,7 @@ namespace hgl
         }
     };//template<typename T> struct RefData
 
-    struct ResPoolStats
+    struct RefPoolStats
     {
          int active;        ///<有多少个key是活跃的
          int idle;          ///<有多少个key是闲置的
@@ -27,9 +26,9 @@ namespace hgl
     };
 
     /**
-     * 附带引用计数的资源池列表
+     * 附带引用计数的对象池列表
      */
-    template<typename K,typename V> class ResPool
+    template<typename K,typename V> class RefObjectPool
     {
     protected:
 
@@ -40,7 +39,7 @@ namespace hgl
 
     public:
 
-        virtual ~ResPool()=default;
+        virtual ~RefObjectPool()=default;
 
         const int GetActiveCount()const{return active_items.GetCount();}        ///<取得活跃项数量
         const int GetIdleCount()const{return idle_items.GetCount();}            ///<取得闲置项数量
@@ -51,7 +50,7 @@ namespace hgl
          * @param key_list  要扫描的key列表
          * @param key_count 要扫描的key数量
          */
-        void Stats(ResPoolStats &stats,const K *key_list,const int key_count)
+        void Stats(RefPoolStats &stats,const K *key_list,const int key_count)
         {
             hgl_zero(stats);
 
@@ -173,6 +172,5 @@ namespace hgl
                 return;
             }
         }
-    };//template<typename K,typename V> class ResPool
+    };//template<typename K,typename V> class RefObjectPool
 }//namespace hgl
-#endif//HGL_RES_POOL_INCLUDE
