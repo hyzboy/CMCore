@@ -175,14 +175,14 @@ namespace hgl
                             dlc->OnIdle(Active.GetData(),Active.GetCount());
 
                             Idle.Push(Active.GetData(),Active.GetCount());
-                            Active.ClearData();
+                            Active.Clear();
                         }
 
         virtual void    ClearActive()
                         {
                             dlc->Clear(Active.GetData(),Active.GetCount());
 
-                            Active.ClearData();
+                            Active.Clear();
                         }
 
         virtual void    ClearIdle()                                                                 ///<清除所有非活跃数据

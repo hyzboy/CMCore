@@ -140,7 +140,7 @@ namespace hgl
                 max_size=0;
             }
 
-            void ClearData()
+            void Clear()
             {
                 cur_pos=0;
                 buf_size=0;

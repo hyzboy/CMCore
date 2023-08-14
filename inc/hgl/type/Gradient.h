@@ -32,7 +32,7 @@ namespace hgl
 
             Comparator<GS> comp;
 
-            hgl::Sort(stop_list.GetArray(),&comp);
+            ::Sort(stop_list.GetArray(),&comp);
 
             dirty=false;
         }

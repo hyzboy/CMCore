@@ -176,7 +176,7 @@ namespace hgl
                 ++p;
             }
 
-            thread_set.ClearData();
+            thread_set.Clear();
         }
 
         /**

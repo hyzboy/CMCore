@@ -477,7 +477,7 @@ namespace hgl
     * 清除所有数据
     */
     template<typename K,typename V,typename KVData>
-    void _Map<K,V,KVData>::Clear()
+    void _Map<K,V,KVData>::Free()
     {
         data_pool.Clear();
         data_list.Free();
@@ -487,19 +487,19 @@ namespace hgl
     * 清除所有数据，但不释放内存
     */
     template<typename K,typename V,typename KVData>
-    void _Map<K,V,KVData>::ClearData()
+    void _Map<K,V,KVData>::Clear()
     {
         data_pool.ReleaseActive();
-        data_list.ClearData();
+        data_list.Clear();
     }
 
     template<typename K,typename V,typename KVData>
     void _Map<K,V,KVData>::operator=(const ThisClass &ftd)
     {
-        Clear();
+        Free();
 
         data_pool.Clear();
-        data_list.ClearData();
+        data_list.Clear();
 
         const int count=ftd.data_list.GetCount();
 
@@ -602,7 +602,7 @@ namespace hgl
     template<typename K,typename V,typename KVData>
     void _Map<K,V,KVData>::WithList(_Map<K,V,KVData>::KVDataList &with_list,const List<K> &in_list)
     {
-        with_list.ClearData();
+        with_list.Clear();
         const int count=this->GetCount();
 
         if(count<=0)return;
@@ -626,7 +626,7 @@ namespace hgl
     template<typename K,typename V,typename KVData>
     void _Map<K,V,KVData>::WithoutList(_Map<K,V,KVData>::KVDataList &without_list,const List<K> &in_list)
     {
-        without_list.ClearData();
+        without_list.Clear();
         const int count=this->GetCount();
 
         if(count<=0)return;

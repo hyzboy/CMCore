@@ -54,7 +54,7 @@ namespace hgl
         {
             lock.Lock();
                 proc_list.Add(join_list);
-                join_list.ClearData();
+                join_list.Clear();
             lock.Unlock();
 
             return proc_list;
@@ -124,7 +124,7 @@ namespace hgl
 
             lock.Lock();
                 proc_list.Add(join_list);
-                join_list.ClearData();
+                join_list.Clear();
             lock.Unlock();
 
             return(true);
@@ -140,7 +140,7 @@ namespace hgl
 
             lock.Lock();
                 proc_list.Add(join_list);
-                join_list.ClearData();
+                join_list.Clear();
             lock.Unlock();
 
             return(true);

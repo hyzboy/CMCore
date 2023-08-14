@@ -138,7 +138,7 @@ namespace hgl
         /**
         * 清除所有字符串
         */
-        void Clear(){Items.ClearData();}                                                                ///<删除列表中的所有字符串
+        void Clear(){Items.Clear();}                                                                ///<删除列表中的所有字符串
 
         /**
         * 删除指定的字符串

@@ -51,7 +51,7 @@ namespace hgl
                 Clear(obj->value);
             }
 
-            items.Clear();
+            items.Free();
         }
 
         virtual void        ClearFree()                                         ///<清除所有引用计数为0的对象

@@ -61,8 +61,8 @@ namespace hgl
         virtual bool    DeleteAt(int,int);                                                          ///<根据序号将指定数据从列表中移除
         virtual bool    ChangeOrAdd(const K &,const V &);                                           ///<更改一个数据的内容(如不存在则添加)
         virtual bool    Change(const K &,const V &);                                                ///<更改一个数据的内容(如不存在则更改失效)
-        virtual void    Clear();                                                                    ///<清除所有数据
-        virtual void    ClearData();                                                                ///<清除所有数据，但不释放内存
+        virtual void    Free();                                                                     ///<清除所有数据，并释放内存
+        virtual void    Clear();                                                                    ///<清除所有数据，但不释放内存
 
         KVDataList &    GetList(){return data_list;}                                                ///<取得线性列表
         KVData **       GetDataList()const{return data_list.GetData();}                             ///<取得纯数据线性列表
@@ -239,7 +239,7 @@ namespace hgl
         */
         void UnlinkAll()
         {
-            SuperClass::Clear();
+            SuperClass::Free();
         }
 
         /**
@@ -287,7 +287,7 @@ namespace hgl
             while(n--)
                 DeleteObject(n);
 
-            SuperClass::Clear();
+            SuperClass::Free();
         }
 
         /**

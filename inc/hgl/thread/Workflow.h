@@ -134,7 +134,7 @@ namespace hgl
 
                     this->OnFinish(wt_index);
 
-                    wl.ClearData();
+                    wl.Clear();
                 }
 
                 return(true);

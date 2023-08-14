@@ -32,16 +32,16 @@ namespace hgl
 
         virtual void    Free() override                                                             ///<清除所有数据
         {
-            ClearData();
+            Clear();
             List<T *>::Free();
         }
 
-        virtual void    ClearData() override                                                        ///<清除所有数据，但不清空缓冲区
+        virtual void    Clear() override                                                        ///<清除所有数据，但不清空缓冲区
         {
             for(auto *obj:data_array)
                 DeleteObject(obj);
 
-            List<T *>::ClearData();
+            List<T *>::Clear();
         }
 
         virtual bool    IsExist(const ItemPointer &flag)const override                              ///<确认数据项是否存在
@@ -54,7 +54,7 @@ namespace hgl
         virtual bool    Unlink(int start,int number){return List<T *>::Delete(start,number);}       ///<将指定索引处的数据与列表断开
         virtual bool    UnlinkByValue(const ItemPointer &ip){return List<T *>::DeleteByValue(ip);}  ///<将一个指定数据与列表断开
         virtual void    UnlinkByValue(const ItemPointer *ip,int n){List<T *>::DeleteByValue(ip,n);} ///<将一批指定数据与列表断开
-        virtual void    UnlinkAll(){List<T *>::ClearData();}                                        ///<断开所有数据
+        virtual void    UnlinkAll(){List<T *>::Clear();}                                        ///<断开所有数据
 
     private:
 
@@ -157,7 +157,7 @@ namespace hgl
 
             if(new_count<=0)
             {
-                ClearData();
+                Clear();
                 return(true);
             }
 
@@ -194,6 +194,6 @@ namespace hgl
         }
     };//template <typename T> class ObjectList
 
-    #define OBJECT_LIST_ARRAY_CLEAR(object_list)         for(auto &obj:object_list)obj.Clear();    
-    #define OBJECT_LIST_ARRAY_CLEAR_DATA(object_list)    for(auto &obj:object_list)obj.ClearData();
+    #define OBJECT_LIST_ARRAY_FREE(object_list)     for(auto &obj:object_list)obj.Free();
+    #define OBJECT_LIST_ARRAY_CLEAR(object_list)    for(auto &obj:object_list)obj.Clear();
 }//namespace hgl

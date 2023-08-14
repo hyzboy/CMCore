@@ -88,7 +88,7 @@ namespace hgl
                 }
                 else
                 {
-                    data_list[recv_index].ClearData();      //清空接收区的数据
+                    data_list[recv_index].Clear();          //清空接收区的数据
 
                     post_lock.Lock();
                     _Swap();
