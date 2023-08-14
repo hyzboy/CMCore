@@ -34,17 +34,6 @@ namespace hgl
     template<typename T> struct ObjectLifetimeCallback:public DataLifetimeCallback<T *>
     {
         virtual bool Create(T **) override=0;
-        virtual void Clear(T **) override=0;
-
-        virtual void Clear(T **obj,int count) override=0;
-    };//struct ObjectLifetimeCallback
-
-    /**
-    * 缺省对像生命周期处理回调 
-    */
-    template<typename T> struct DefaultObjectLifetimeCallback:public ObjectLifetimeCallback<T>
-    {
-        virtual bool Create(T **obj) override {*obj=new T;return(true);}
         virtual void Clear(T **obj) override {if(obj&&*obj)delete *obj;}
 
         virtual void Clear(T **obj,int count) override
@@ -58,5 +47,13 @@ namespace hgl
                 ++obj;
             }
         }
+    };//struct ObjectLifetimeCallback
+
+    /**
+    * 缺省对像生命周期处理回调 
+    */
+    template<typename T> struct DefaultObjectLifetimeCallback:public ObjectLifetimeCallback<T>
+    {
+        virtual bool Create(T **obj) override {*obj=new T;return(true);}        
     };//struct DefaultObjectLifetimeCallback
 }//namespace hgl
