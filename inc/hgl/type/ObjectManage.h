@@ -26,32 +26,44 @@ namespace hgl
 
     protected:
 
-
         _Map<K,V *,KVObject> items;
 
-    protected:
+        ObjectLifetimeCallback<V> *dlc;                                             ///<数据生命周期回调函数
 
-        virtual void Clear(V *obj){delete obj;}                                 ///<对象释放虚拟函数(缺省为直接delete对象)
+        ObjectLifetimeCallback<V> default_dlc;
 
     public:
+
+        ObjectManage()
+        {
+            dlc=&default_dlc;
+        }
 
         virtual ~ObjectManage()
         {
             Clear();
         }
 
+        virtual void    SetDataLifetimeCallback(ObjectLifetimeCallback<V> *cb)                        ///<设定数据生命周期回调函数
+        {
+            dlc=cb;
+        }
+
         virtual void        Clear()                                             ///<清除所有对象
         {
-            int n=items.GetCount();
-
-            while(n--)
+            if(dlc)
             {
-                KVObject *obj=items.GetItem(n);
+                int n=items.GetCount();
 
-                Clear(obj->value);
+                while(n--)
+                {
+                    KVObject *obj=items.GetItem(n);
+
+                    dlc->Clear(&(obj->value));
+                }
             }
 
-            items.Free();
+            items.Clear();
         }
 
         virtual void        ClearFree()                                         ///<清除所有引用计数为0的对象
@@ -64,7 +76,9 @@ namespace hgl
 
                 if(obj->ref_count<=0)
                 {
-                    Clear(obj->value);
+                    if(dlc)
+                        dlc->Clear(&(obj->value));
+
                     items.DeleteAt(n);
                 }
             }
@@ -167,7 +181,8 @@ namespace hgl
 
             if(zero_clear)
             {
-                Clear(obj->value);
+                if(dlc)
+                    dlc->Clear(&(obj->value));
 
                 items.DeleteAt(index);
             }

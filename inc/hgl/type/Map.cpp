@@ -152,13 +152,13 @@ namespace hgl
     template<typename K,typename V,typename KVData>
     KVData *_Map<K,V,KVData>::Add(const K &flag,const V &data)
     {
-        KVData *dp;
+        KVData *dp=new KVData;
         
-        if(!data_pool.GetOrCreate(dp))
-            return(nullptr);
-
         dp->key=flag;
         dp->value=data;
+
+        if(!data_pool.AppendToActive(dp))
+            return(nullptr);
 
         int pos;
 
@@ -442,14 +442,18 @@ namespace hgl
         }
         else
         {
-            if(data_pool.GetOrCreate(dp))
+            if(!data_pool.GetOrCreate(dp))
             {
-                dp->key=flag;
-                dp->value=data;
+                dp=new KVData;
 
-                data_list.Insert(result,dp);
-                return(true);
+                data_pool.AppendToActive(dp);
             }
+
+            dp->key=flag;
+            dp->value=data;
+
+            data_list.Insert(result,dp);
+            return(true);
         }
 
         return(false);

@@ -33,7 +33,7 @@ namespace hgl
     */
     template<typename T> struct ObjectLifetimeCallback:public DataLifetimeCallback<T *>
     {
-        virtual bool Create(T **) override=0;
+        virtual bool Create(T **) override {return false;}
         virtual void Clear(T **obj) override {if(obj&&*obj)delete *obj;}
 
         virtual void Clear(T **obj,int count) override
@@ -54,6 +54,6 @@ namespace hgl
     */
     template<typename T> struct DefaultObjectLifetimeCallback:public ObjectLifetimeCallback<T>
     {
-        virtual bool Create(T **obj) override {*obj=new T;return(true);}        
+        virtual bool Create(T **obj) override {*obj=new T;return(true);}
     };//struct DefaultObjectLifetimeCallback
 }//namespace hgl

@@ -167,7 +167,8 @@ namespace hgl
 
         typedef _Map<K,V *,KVData> SuperClass;
 
-        DataLifetimeCallback<V *> *olc;
+        ObjectLifetimeCallback<V> *olc;
+        ObjectLifetimeCallback<V> default_olc;
 
                 void    DeleteObject(KVData *ds)
                 {
@@ -186,7 +187,7 @@ namespace hgl
 
         _ObjectMap()
         {
-            olc=nullptr;
+            olc=&default_olc;
         }
 
         virtual ~_ObjectMap()
@@ -194,7 +195,7 @@ namespace hgl
             Clear();
         }
 
-        virtual void    SetDataLifetimeCallback(DataLifetimeCallback<V *> *cb)                        ///<设定数据生命周期回调函数
+        virtual void    SetDataLifetimeCallback(ObjectLifetimeCallback<V> *cb)                      ///<设定数据生命周期回调函数
         {
             olc=cb;
         }
@@ -281,10 +282,8 @@ namespace hgl
         */
         void DeleteAll()
         {
-            int n=this->data_list.GetCount();
-
-            while(n--)
-                DeleteObject(n);
+            for(auto &it:this->data_list)
+                DeleteObject(it);
 
             SuperClass::Free();
         }
