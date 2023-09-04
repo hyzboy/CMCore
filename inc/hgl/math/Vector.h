@@ -247,17 +247,17 @@ namespace hgl
         result.y = start.y + (end.y - start.y)*pos;
     }
 
-    inline bool IsNearlyEqual(const float v1,const float v2,const float gap)
+    inline bool is_nearly_equal(const float v1,const float v2,const float gap)
     {
         return fabsf(v1-v2)<=gap;
     }
 
-    inline bool IsNearlyEqual(const Vector2f &v1,const Vector2f &v2,const float gap)
+    inline bool is_nearly_equal(const Vector2f &v1,const Vector2f &v2,const float gap)
     {
         return length_squared_2d(v1,v2)<=(gap*gap);
     }
 
-    inline bool IsNearlyEqual(const Vector3f &v1,const Vector3f &v2,const float gap)
+    inline bool is_nearly_equal(const Vector3f &v1,const Vector3f &v2,const float gap)
     {
         return length_squared(v1,v2)<=(gap*gap);
     }
