@@ -262,18 +262,47 @@ namespace hgl
         return length_squared(v1,v2)<=(gap*gap);
     }
 
-    inline float ray_angle_cos(const Vector3f &ray_dir, const Vector3f &ray_pos, const Vector3f &pos)
+    /**
+    * 计算射线与点的夹角(cos)
+    */
+    inline float ray_intersection_angle_cos(const Vector3f &ray_dir, const Vector3f &ray_pos, const Vector3f &pos)
     {
         return dot(ray_dir, normalized(pos - ray_pos));
     }
 
     /**
-        * 做一个2D旋转计算
-        * @param result 结果
-        * @param source 原始点坐标
-        * @param center 圆心坐标
-        * @param ang 旋转角度
-        */
+    * 计算射线与点的夹角(弧度)
+    */
+    inline float ray_intersection_angle_radian(const Vector3f &ray_dir, const Vector3f &ray_pos, const Vector3f &pos)
+    {
+        double val=dot(ray_dir, normalized(pos - ray_pos));
+
+        if(val>1)return 0;
+        if(val<-1)return HGL_PI;
+    
+        return acos(val);
+    }
+
+    /**
+     * 计算射线与点的夹角(角度)
+     */
+    inline float ray_intersection_angle_degree(const Vector3f &ray_dir, const Vector3f &ray_pos, const Vector3f &pos)
+    {
+        double val=dot(ray_dir, normalized(pos - ray_pos));
+
+        if(val>1)return 0;
+        if(val<-1)return 180;
+    
+        return rad2deg(acos(val));
+    }
+
+    /**
+    * 做一个2D旋转计算
+    * @param result 结果
+    * @param source 原始点坐标
+    * @param center 圆心坐标
+    * @param ang 旋转角度
+    */
     template<typename T1, typename T2, typename T3>
     inline void rotate2d(T1 &result, const T2 &source, const T3 &center, const double ang)
     {
