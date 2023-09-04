@@ -115,6 +115,16 @@ namespace hgl
         return clamp<double>(in,0.0f,1.0f);
     }
 
+    template<> inline const uint8 clamp(const uint8 in)
+    {
+        return clamp<uint8>(in,0,0xFF);
+    }
+
+    template<> inline const uint16 clamp(const uint16 in)
+    {
+        return clamp<uint16>(in,0,0xFFFF);
+    }
+
     template<typename T>
     inline T normalized(const T &v)
     {
