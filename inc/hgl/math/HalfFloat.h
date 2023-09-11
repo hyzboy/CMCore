@@ -54,16 +54,6 @@ namespace hgl
     */
     void Float32toFloat16(half_float *output,const float *input,const uint count);
 
-    /**
-    * 快速版float32转float16处理
-    */
-    inline const half_float float2half(const float &f)
-    {
-        const uint32 x = *((uint32 *)&f);
-
-        return ((x>>16)&0x8000)|((((x&0x7f800000)-0x38000000)>>13)&0x7c00)|((x>>13)&0x03ff);
-    }
-    
     inline const float half2float(const half_float &hf)
     {
         union
@@ -82,16 +72,6 @@ namespace hgl
         while (count--)
         {
             *target = (((*source & 0x8000) << 16) | (((*source & 0x7c00) + 0x1C000) << 13) | ((*source & 0x03FF) << 13));
-            ++target;
-            ++source;
-        }
-    }
-
-    inline void float_to_half(half_float *target,const float *source,uint32 count)
-    {
-        while (count--)
-        {
-            *target = float2half(*source);
             ++target;
             ++source;
         }
