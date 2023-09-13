@@ -10,7 +10,7 @@ namespace hgl
     * 默认情部下空闲队列使用Queue模板管理(先入先出，总是使用最早扔进去的数据。可手动换成Stack运行性能更好，但逻辑性能更差。)，
     * 活动队列使用List模板管理(无序)。
     */
-    template<typename T,typename AT,typename IT,typename DEFAULT_DLC> class _Pool                                        ///数据池
+    template<typename T,typename AT,typename IT,typename DEFAULT_DLC> class _Pool                   ///数据池
     {
     protected:
 
@@ -214,6 +214,6 @@ namespace hgl
                         }
     };//template<typename T,typename AT,typename IT> class _Pool
 
-    template<typename T> using Pool         =_Pool<T,   List<T>,    Queue<T>,       DataLifetimeCallback<T>>;                      ///<数据池模板
+    template<typename T> using Pool         =_Pool<T,   List<T>,    Queue<T>,       DataLifetimeCallback<T>>;                  ///<数据池模板
     template<typename T> using ObjectPool   =_Pool<T *, List<T *>,  ObjectQueue<T>, ObjectLifetimeCallback<T>>;                ///<对象池
 }//namespace hgl
