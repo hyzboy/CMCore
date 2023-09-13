@@ -84,6 +84,37 @@ namespace hgl
             }
         }
 
+        /*
+         * 添加一批数据
+         */
+        int     Add             (T *dl,const int count)
+        {
+            if(!dl||count<=0)return -1;
+
+            if(count==1)
+                return Add(*dl);
+
+            data_list.Alloc(data_list.GetCount()+count);
+
+            {
+                int pos;
+                int result=0;
+
+                for(int i=0;i<count;i++)
+                {
+                    if(FindPos(*dl,pos))
+                        break;
+
+                    data_list.Insert(pos,*dl);
+
+                    ++dl;
+                    ++result;
+                }
+
+                return result;
+            }
+        }
+
         bool    DeleteAt        (const int pos){return data_list.DeleteMove(pos,1);}        ///<删除一个数据,使用序号
 
         bool    Delete          (const T &data)                                             ///<删除一个数据
