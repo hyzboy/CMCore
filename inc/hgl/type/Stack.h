@@ -74,6 +74,17 @@ namespace hgl
                     return(true);
                 }
 
+        virtual bool Pop(T *data,int count)
+                {
+                    if(data_array.GetCount()<count)return(false);
+
+                    if(!data_array.ReadAt(data,data_array.GetCount()-count,count))
+                        return(false);
+
+                    data_array.AddCount(-count);
+                    return(true);
+                }
+
     public:
 
         virtual void Clear  (DataLifetimeCallback<T> *dlc=nullptr)                                  ///<清除所有数据
