@@ -3,6 +3,7 @@
 
 #include<hgl/TypeFunc.h>
 #include<hgl/color/Color4f.h>
+#include<hgl/math/Vector.h>
 namespace hgl
 {
     /**
@@ -260,6 +261,9 @@ namespace hgl
 
         ENUM_CLASS_RANGE(AliceBlue,YellowGreen)
     };//enum COLOR_ENUM
+
+    bool GetRGB(const enum class COLOR &ce,Vector3u8 &);
+    bool GetBGR(const enum class COLOR &ce,Vector3u8 &);
 
     const uint32 GetRGBA(const enum class COLOR &ce,const uint8 &alpha);
     const uint32 GetABGR(const enum class COLOR &ce,const uint8 &alpha);

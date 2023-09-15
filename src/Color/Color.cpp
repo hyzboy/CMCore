@@ -302,6 +302,32 @@ namespace hgl
 
     #undef DEF_COLOR
 
+    bool GetRGB(const enum class COLOR &ce,Vector3u8 &color)
+    {
+        RANGE_CHECK_RETURN_FALSE(ce);
+    
+        const COLOR_DEF &c=prv_color[size_t(ce)];
+
+        color.r=c.red;
+        color.g=c.green;
+        color.b=c.blue;
+
+        return(true);
+    }
+
+    bool GetBGR(const enum class COLOR &ce,Vector3u8 &color)
+    {
+        RANGE_CHECK_RETURN_FALSE(ce);
+    
+        const COLOR_DEF &c=prv_color[size_t(ce)];
+
+        color.b=c.red;
+        color.g=c.green;
+        color.r=c.blue;
+
+        return(true);
+    }
+
     const uint32 GetRGBA(const enum class COLOR &ce,const uint8 &alpha)
     {
         const COLOR_DEF &c=prv_color[size_t(ce)];
