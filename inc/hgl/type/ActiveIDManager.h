@@ -18,7 +18,7 @@ namespace hgl
 
     private:
 
-        bool Create(int *id_list,int count)
+        bool Create(int *id_list,const int count)
         {
             if(!id_list||count<=0)return(false);
 
@@ -62,7 +62,7 @@ namespace hgl
          * 创建若干ID，并置于活跌ID列表中。（注：不从闲置列表中获取)
          * @return 成功添加的个数
          */
-        int CreateActive(int *id,int count=1)
+        int CreateActive(int *id,const int count=1)
         {
             if(!id||count<=0)return(0);
 
@@ -75,7 +75,7 @@ namespace hgl
          * 创建若干ID，并置于闲置ID列表中。(注：无视闲置列表中已存在的ID)
          * @return 成功添加的个数
          */
-        int CreateIdle(int count=1)
+        int CreateIdle(const int count=1)
         {
             if(count<=0)return(0);
 
@@ -95,7 +95,7 @@ namespace hgl
         /**
          * 激活指定量的ID数据(优先从Idle中取,没有不会创建新的。激活后会被放入Active列表)
          */
-        bool Get(int *id,int count=1)
+        bool Get(int *id,const int count=1)
         {
             if(!id||count<=0)return(false);
 
@@ -110,7 +110,7 @@ namespace hgl
         /**
         * 激活指定量的ID数据(优从从Idle中取，如果不够则创建新的。激活后会被放入Active列表)
         */
-        bool GetOrCreate(int *id,int count=1)
+        bool GetOrCreate(int *id,const int count=1)
         {
             if(!id||count<=0)return(false);
 
