@@ -22,6 +22,13 @@ SET(TYPE_SOURCE_FILES   Type/Collection.cpp)
 SOURCE_GROUP("DataType\\Collection" FILES ${TYPE_INCLUDE_PATH}/Collection.h
                                           ${COLLECTION_SOURCE})
 
+SET(ACTIVE_MANAGER_FILES    ${TYPE_INCLUDE_PATH}/ActiveIDManager.h
+                            ${TYPE_INCLUDE_PATH}/ActiveMemoryBlockManager.h
+                            Type/ActiveIDManager.cpp
+                            Type/ActiveMemoryBlockManager.cpp)
+
+SOURCE_GROUP("DataType\\ActiveManager" FILES ${ACTIVE_MANAGER_FILES})
+
 SET(SYSTEM_INFO_SOURCE  ${CORE_PLATFORM_INCLUDE_PATH}/SystemInfo.h
                         SystemInfo.cpp)
 
@@ -214,6 +221,8 @@ add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
 
                         ${TYPE_TEMPLATE_HEADER}
                         ${TYPE_SOURCE_FILES}
+
+                        ${ACTIVE_MANAGER_FILES}
 
                         ${IO_SOURCE_FILES}
 
