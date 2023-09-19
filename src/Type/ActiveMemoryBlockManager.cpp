@@ -86,6 +86,14 @@ namespace hgl
 
         return(result);
     }
+
+    void *ActiveMemoryBlockManager::GetData(const int id)const
+    {
+        if(!id||id<0||id>=aim.GetHistoryMaxId())
+            return(nullptr);
+
+        return (uint8 *)(data_mb->Get())+id*unit_size;
+    }
     
     bool ActiveMemoryBlockManager::GetData(void *da,const int id)const
     {

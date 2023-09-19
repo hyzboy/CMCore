@@ -42,6 +42,8 @@ namespace hgl
         int  WriteDataArray (void **da,const int *idp,const int count);
         int  WriteDataArray (void *da,const int *idp,const int count)const;
 
+        void *GetData(const int id)const;
+    
         bool GetData(void *,const int id)const;
         bool GetData(void **da,const int *idp,const int count)const;                                ///<根据ID获取数据
         bool GetData(void *da,const int *idp,const int count)const;                                 ///<根据ID获取数据，并整齐排列到一起
