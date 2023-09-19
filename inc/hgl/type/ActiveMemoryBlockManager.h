@@ -52,6 +52,7 @@ namespace hgl
         int CreateIdle(int *da,const int count=1);
 
         bool Get(int *da,const int count=1);
+        bool GetOrCreate(int *da,const int count=1);
 
         int Release(int *id,const int count=1);    
         int ReleaseAllActive();

@@ -181,6 +181,20 @@ namespace hgl
         return(true);
     }
 
+    bool ActiveMemoryBlockManager::GetOrCreate(int *da,const int count)
+    {
+        if(!da||count<=0)return(false);
+
+        if(GetIdleCount()<count)
+            CreateIdle(nullptr,count-GetIdleCount());
+
+        if(!Get(da,count))
+            return(false);
+
+        ReallocDataBlock();
+        return(true);
+    }
+
     int ActiveMemoryBlockManager::Release(int *id,const int count)
     {
         return aim.Release(id,count);
