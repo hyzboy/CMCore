@@ -42,43 +42,57 @@ namespace hgl
         return data_mb->Write(unit_size*id,d,unit_size);
     }
 
-    bool ActiveMemoryBlockManager::WriteDataArray(void **da,const int *idp,const int count)
+    int ActiveMemoryBlockManager::WriteDataArray(void **da,const int *idp,const int count)
     {
-        if(!da||!idp||count<=0)return(false);
+        if(!da||!idp||count<=0)return(0);
 
         uint8 *sp=(uint8 *)(data_mb->Get());
+        int result=0;
 
         for(int i=0;i<count;i++)
         {
-            if(*idp<0||*idp>=aim.GetHistoryMaxId())
-                return(false);
-
-            memcpy(sp+(*idp)*unit_size,da,unit_size);
+            if(*idp>=0&&*idp<aim.GetHistoryMaxId())
+            {
+                memcpy(sp+(*idp)*unit_size,*da,unit_size);
+                ++result;
+            }
 
             ++da;
             ++idp;
         }
 
-        return(true);
+        return(result);
     }
 
-    bool ActiveMemoryBlockManager::WriteDataArray(void *da,const int *idp,const int count)const
+    int ActiveMemoryBlockManager::WriteDataArray(void *da,const int *idp,const int count)const
     {
-        if(!da||!idp||count<=0)return(false);
+        if(!da||!idp||count<=0)return(0);
 
         uint8 *sp=(uint8 *)da;
         uint8 *tp=(uint8 *)(data_mb->Get());
+        int result=0;
 
         for(int i=0;i<count;i++)
         {
-            if(*idp<0||*idp>=aim.GetHistoryMaxId())
-                return(false);
-
-            memcpy(tp+(*idp)*unit_size,sp,unit_size);
+            if(*idp>=0&&*idp<aim.GetHistoryMaxId())
+            {
+                memcpy(tp+(*idp)*unit_size,sp,unit_size);
+                ++result;
+            }
 
             sp+=unit_size;
             ++idp;
         }
+
+        return(result);
+    }
+    
+    bool ActiveMemoryBlockManager::GetData(void *da,const int id)const
+    {
+        if(!id||id<0||id>=aim.GetHistoryMaxId())
+            return(false);
+
+        memcpy(da,(uint8 *)(data_mb->Get())+id*unit_size,unit_size);
 
         return(true);
     }
@@ -86,7 +100,7 @@ namespace hgl
     /**
         * 根据ID获取数据
         */
-    bool ActiveMemoryBlockManager::GetDataArrayPointer(void **da,const int *idp,const int count)const
+    bool ActiveMemoryBlockManager::GetData(void **da,const int *idp,const int count)const
     {
         if(!da||!idp||count<=0)return(false);
 

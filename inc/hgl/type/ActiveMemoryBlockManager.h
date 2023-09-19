@@ -5,6 +5,10 @@
 
 namespace hgl
 {
+    /**
+    * 活跃内存块管理类<br>
+    * 通过ActiveIDManager管理活跃的数据ID，在要使用时通过ID来获取或写入数据。
+    */
     class ActiveMemoryBlockManager
     {
         uint unit_size;                     ///<单个数据大小
@@ -35,11 +39,14 @@ namespace hgl
     public:
 
         bool WriteData      (void *d,const int id);
-        bool WriteDataArray (void **da,const int *idp,const int count);
-        bool WriteDataArray (void *da,const int *idp,const int count)const;
+        int  WriteDataArray (void **da,const int *idp,const int count);
+        int  WriteDataArray (void *da,const int *idp,const int count)const;
 
-        bool GetDataArrayPointer(void **da,const int *idp,const int count)const;                    ///<根据ID获取数据
+        bool GetData(void *,const int id)const;
+        bool GetData(void **da,const int *idp,const int count)const;                                ///<根据ID获取数据
         bool GetData(void *da,const int *idp,const int count)const;                                 ///<根据ID获取数据，并整齐排列到一起
+
+    public:
 
         int CreateActive(int *da,const int count=1);
         int CreateIdle(int *da,const int count=1);
