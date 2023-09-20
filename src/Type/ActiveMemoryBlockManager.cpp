@@ -89,7 +89,7 @@ namespace hgl
 
     void *ActiveMemoryBlockManager::GetData(const int id)const
     {
-        if(!id||id<0||id>=aim.GetHistoryMaxId())
+        if(id<0||id>=aim.GetHistoryMaxId())
             return(nullptr);
 
         return (uint8 *)(data_mb->Get())+id*unit_size;
@@ -97,7 +97,7 @@ namespace hgl
     
     bool ActiveMemoryBlockManager::GetData(void *da,const int id)const
     {
-        if(!id||id<0||id>=aim.GetHistoryMaxId())
+        if(id<0||id>=aim.GetHistoryMaxId())
             return(false);
 
         memcpy(da,(uint8 *)(data_mb->Get())+id*unit_size,unit_size);
@@ -199,7 +199,6 @@ namespace hgl
         if(!Get(da,count))
             return(false);
 
-        ReallocDataBlock();
         return(true);
     }
 
