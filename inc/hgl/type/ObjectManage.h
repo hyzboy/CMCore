@@ -28,7 +28,7 @@ namespace hgl
 
         _Map<K,V *,KVObject> items;
 
-        ObjectLifetimeCallback<V> *dlc;                                             ///<数据生命周期回调函数
+        ObjectLifetimeCallback<V> *dlc;                                         ///<数据生命周期回调函数
 
         ObjectLifetimeCallback<V> default_dlc;
 
@@ -44,7 +44,7 @@ namespace hgl
             Clear();
         }
 
-        virtual void    SetDataLifetimeCallback(ObjectLifetimeCallback<V> *cb)                        ///<设定数据生命周期回调函数
+        virtual void    SetDataLifetimeCallback(ObjectLifetimeCallback<V> *cb)  ///<设定数据生命周期回调函数
         {
             dlc=cb;
         }
