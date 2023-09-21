@@ -125,6 +125,9 @@ namespace hgl
             return String<T>(si);   \
         }
 
+        static String<T> numberOf(const float value)=delete;
+        static String<T> numberOf(const double value)=delete;
+
         BASE_STRING_NUMBER_CONSTRUCT(int,   itos);
         BASE_STRING_NUMBER_CONSTRUCT(uint,  utos);
         BASE_STRING_NUMBER_CONSTRUCT(int64, itos);
