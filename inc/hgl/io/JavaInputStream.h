@@ -63,7 +63,7 @@ namespace hgl
 
             bool    readUTF             (UTF16String &str)
             {
-                return in?in->ReadUTF8ShortString(str);
+                return in?in->ReadUTF8ShortString(str):false;
             }
         };//class JavaInputStream
     }//namespace io
