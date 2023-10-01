@@ -26,8 +26,12 @@ namespace hgl
         Black,                ///<黑色
         BlanchedAlmond,       ///<白杏色
 
-        BlenderYellow,
-        BlenderBlue,
+        BlenderYellow,        ///<Blender Logo 黄色
+        BlenderBlue,          ///<Blender Logo 蓝色
+
+        BlenderAxisRed,       ///<Blender坐标轴红色
+        BlenderAxisGreen,     ///<Blender坐标轴绿色
+        BlenderAxisBlue,      ///<Blender坐标轴蓝色
 
         Blue,                 ///<蓝色
         BlueViolet,           ///<紫罗兰色

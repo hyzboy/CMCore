@@ -58,6 +58,10 @@ namespace hgl
         DEF_COLOR(BlenderYellow,        0xE8,0x7D,0x0D,"Blender黄")
         DEF_COLOR(BlenderBlue,          0x26,0x57,0x87,"Blender蓝")
 
+        DEF_COLOR(BlenderAxisRed,       0xDD,0x39,0x4F,"Blender轴红")
+        DEF_COLOR(BlenderAxisGreen,     0x7C,0xBF,0x1B,"Blender轴绿")
+        DEF_COLOR(BlenderAxisBlue,      0x35,0x77,0xCD,"Blender轴蓝")
+
         DEF_COLOR(Blue,                     0,  0,255,"蓝色")
         DEF_COLOR(BlueViolet,             138, 43,226,"紫罗兰蓝")
         DEF_COLOR(Brown,                  165, 42, 42,"褐色")
