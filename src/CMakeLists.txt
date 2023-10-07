@@ -120,11 +120,8 @@ SET(IO_FILE_FILES ${IO_INCLUDE_PATH}/FileAccess.h
                   ${IO_INCLUDE_PATH}/FileInputStream.h
                   ${IO_INCLUDE_PATH}/FileOutputStream.h
                   ${IO_INCLUDE_PATH}/RandomAccessFile.h
-                  ${IO_INCLUDE_PATH}/TextInputStream.h
-                  ${IO_INCLUDE_PATH}/TextOutputStream.h
                   IO/FileAccess.cpp
                   IO/FileInputStream.cpp
-                  IO/TextInputStream.cpp
                   IO/FileOutputStream.cpp
                   IO/RandomAccessFile.cpp)
 
@@ -132,11 +129,14 @@ SET(IO_JAVA_FILES   ${IO_INCLUDE_PATH}/JavaInputStream.h
                     ${IO_INCLUDE_PATH}/JavaOutputStream.h)
 
 SET(IO_TEXT_FILES   IO/TextOutputStream.cpp
+                    IO/TextInputStream.cpp
+                    ${IO_INCLUDE_PATH}/TextInputStream.h
+                    ${IO_INCLUDE_PATH}/TextOutputStream.h
                     Text/LoadString.cpp
-                    Text/LoadStringList.cpp)
+                    Text/LoadStringList.cpp
 
-SET(IO_STRING_LIST_FILES    ${IO_INCLUDE_PATH}/LoadStringList.h
-                            ${IO_INCLUDE_PATH}/SaveStringList.h)
+                    ${IO_INCLUDE_PATH}/LoadStringList.h
+                    ${IO_INCLUDE_PATH}/SaveStringList.h)
 
 SET(INPUT_EVENT_FILES   ${IO_INCLUDE_PATH}/event/KeyboardEvent.h
                         ${IO_INCLUDE_PATH}/event/MouseEvent.h
@@ -152,7 +152,6 @@ SOURCE_GROUP("IO\\MemoryStream" FILES ${IO_MEMORY_STREAM_FILES})
 SOURCE_GROUP("IO\\File"         FILES ${IO_FILE_FILES})
 SOURCE_GROUP("IO\\Jave"         FILES ${IO_JAVA_FILES})
 SOURCE_GROUP("IO\\Text"         FILES ${IO_TEXT_FILES})
-SOURCE_GROUP("IO\\StringList"   FILES ${IO_STRING_LIST_FILES})
 
 SET(IO_SOURCE_FILES   ${IO_BASE_FILES}
                       ${IO_DATA_FILES}
@@ -161,7 +160,6 @@ SET(IO_SOURCE_FILES   ${IO_BASE_FILES}
                       ${IO_FILE_FILES}
                       ${IO_JAVA_FILES}
                       ${IO_TEXT_FILES}
-                      ${IO_STRING_LIST_FILES}
                       ${INPUT_EVENT_FILES})
 
 SET(FILESYSTEM_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/filesystem)
