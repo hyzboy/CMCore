@@ -2211,7 +2211,9 @@ namespace hgl
             else
                 *bp++=m-10+A;
 
-            if ((value = value / base) == 0)
+            value/=base;                
+
+            if(!value)
                 break;
         }
 
