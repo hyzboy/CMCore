@@ -7,12 +7,17 @@ namespace hgl
         TextInputStream::TextInputStream(InputStream *i,const int buf_size)
         {
             input_stream=i;
-            buffer_size=buf_size;
-            buffer=new uint8[buffer_size];
-            cur_buf_size=0;
 
             stream_pos=0;
             stream_size=input_stream->Available();
+
+            if(buf_size>0)
+                buffer_size=buf_size;
+            else
+                buffer_size=stream_size;
+
+            buffer=new uint8[buffer_size];
+            cur_buf_size=0;
 
             bom=ByteOrderMask::NONE;
             default_bom=ByteOrderMask::UTF8;
