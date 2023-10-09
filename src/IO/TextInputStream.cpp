@@ -16,8 +16,28 @@ namespace hgl
             else
                 buffer_size=stream_size;
 
-            buffer=new uint8[buffer_size];
+            buffer=new char[buffer_size];
             cur_buf_size=0;
+
+            bom=ByteOrderMask::NONE;
+            default_bom=ByteOrderMask::UTF8;
+
+            callback_u8=nullptr;
+            callback_u16=nullptr;
+            callback_u32=nullptr;
+            event_callback=nullptr;
+        }
+
+        TextInputStream::TextInputStream(char *buf,const int buf_size)
+        {
+            input_stream=nullptr;
+
+            stream_pos=0;
+            stream_size=0;
+
+            buffer=buf;
+            buffer_size=buf_size;
+            cur_buf_size=buf_size;            
 
             bom=ByteOrderMask::NONE;
             default_bom=ByteOrderMask::UTF8;
@@ -80,7 +100,7 @@ namespace hgl
 
         int TextInputStream::TextBlockParse()
         {
-            uint8 *p=buffer;
+            uint8 *p=(uint8 *)buffer;
 
             if(stream_pos==0)       //最开始，那检测一下BOM头
             {
@@ -124,11 +144,19 @@ namespace hgl
 
         int TextInputStream::Run()
         {
-            if(!input_stream)return(-1);
-            
             if(!callback_u8
              &&!callback_u16
-             &&!callback_u32)return(-2);            
+             &&!callback_u32)return(-2);
+
+            if(!input_stream)
+            {
+                if(buffer)
+                {
+                    return TextBlockParse();
+                }
+
+                return(-1);
+            }
 
             int64 read_size;
 

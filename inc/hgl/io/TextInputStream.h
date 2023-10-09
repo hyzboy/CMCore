@@ -67,7 +67,7 @@ namespace hgl
 
             InputStream *input_stream;                                                              ///<输入流
 
-            uint8 *buffer;                                                                          ///<缓冲区
+            char *buffer;                                                                           ///<缓冲区
             int32 buffer_size;                                                                      ///<缓冲区大小
             int32 cur_buf_size;                                                                     ///<当前缓冲区大小
 
@@ -92,9 +92,13 @@ namespace hgl
         public:
 
             TextInputStream(InputStream *i,const int buf_size=HGL_SIZE_1MB);
+            TextInputStream(char *buf,const int buf_size);
             virtual ~TextInputStream()
             {
-                SAFE_CLEAR_ARRAY(buffer);
+                if(input_stream)    //有input_stream证明是从流加载的，需要删除临时缓冲区
+                {
+                    SAFE_CLEAR_ARRAY(buffer);
+                }                
             }
 
             void SetDefaultBOM(const ByteOrderMask &bo){default_bom=bo;}                            ///<设置缺省BOM头}
