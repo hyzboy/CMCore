@@ -26,7 +26,7 @@ namespace hgl
 
                 virtual bool OnBOM(const ByteOrderMask &){return true;}                                  ///<读取到BOM头的回调函数
 
-                virtual bool OnLine(const T *text,const int len){return true;}
+                virtual bool OnLine(T *text,const int len){return true;}
 
                 /**
                 * 读取到一行文本的回调函数
@@ -34,7 +34,7 @@ namespace hgl
                 * @param len 读取到的文本字长度
                 * @param line_end 当前行是否结束
                 */
-                virtual bool OnLine(const T *text,const int len,const bool line_end)
+                virtual bool OnLine(T *text,const int len,const bool line_end)
                 {
                     if(!line_end)
                     {
@@ -85,7 +85,7 @@ namespace hgl
 
         private:
 
-            template<typename T> int Parse(const T *,ParseCallback<T> *);
+            template<typename T> int Parse(T *,ParseCallback<T> *);
 
             int TextBlockParse();                                                                   ///<文本块解析
 

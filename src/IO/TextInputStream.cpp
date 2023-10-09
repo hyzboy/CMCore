@@ -52,10 +52,10 @@ namespace hgl
         template<> void TextInputStream::SetParseCallback(ParseCallback<u16char> *pc){callback_u16=pc;}
         template<> void TextInputStream::SetParseCallback(ParseCallback<u32char> *pc){callback_u32=pc;}
 
-        template<typename T> int TextInputStream::Parse(const T *p,ParseCallback<T> *pc)
+        template<typename T> int TextInputStream::Parse(T *p,ParseCallback<T> *pc)
         {
-            const T *sp=(const T *)p;
-            const T *end=(const T *)(buffer+cur_buf_size);
+            T *sp=(T *)p;
+            T *end=(T *)(buffer+cur_buf_size);
 
             int line_count=0;
 
