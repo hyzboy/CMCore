@@ -24,6 +24,8 @@ namespace hgl
 
             public:
 
+                virtual ~ParseCallback()=default;
+
                 virtual bool OnBOM(const ByteOrderMask &){return true;}                                  ///<读取到BOM头的回调函数
 
                 virtual bool OnLine(T *text,const int len){return true;}
