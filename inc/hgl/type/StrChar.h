@@ -2466,10 +2466,21 @@ namespace hgl
     }
 
     template<typename T>
-    const int find_str_in_array(int count,const T **str_array,const T *str)
+    const int find_str_in_array(int count,const T **str_array,const T *str,int str_len=0)
     {
+        if(str_len<=0)
+            str_len=hgl::strlen(str);
+
+        int len;
+
         for(int i=0;i<count;i++)
-            if(stricmp(str_array[i],str,strlen(str_array[i]))==0)return(i);
+        {
+            len=strlen(str_array[i]);
+
+            if(len!=str_len)continue;
+
+            if(stricmp(str_array[i],str,len)==0)return(i);
+        }
 
         return(-1);
     }
