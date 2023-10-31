@@ -111,5 +111,62 @@ namespace hgl
     {
         return k - 273.15;
     }
+
+    /**
+     * 公里到英里.
+     */
+    template<typename T>
+    inline T Kilometer2Mile(const T &k)
+    {
+        return k * 0.621371192;
+    }
+
+    /**
+     * 英里到公里.
+     */
+    template<typename T>
+    inline T Mile2Kilometer(const T &m)
+    {
+        return m * 1.609344;
+    }
+
+    /**
+     * 英寸到厘米.
+     */
+    template<typename T>
+    inline T Inch2Centimeter(const T &i)
+    {
+        return i * 2.54;
+    }
+
+    /**
+     * 厘米到英寸.
+     */
+    template<typename T>
+    inline T Centimeter2Inch(const T &c)
+    {
+        return c * 0.393700787;
+    }
+
+    /**
+     * 公里到海里.
+     */
+    template<typename T>
+    inline T Kilometer2NauticalMile(const T &k)
+    {
+        return k * 0.539956803;
+    }
+
+    /**
+     * 海里到公里.
+     */
+    template<typename T>
+    inline T NauticalMile2Kilometer(const T &n)
+    {
+        return n * 1.852;
+    }
 }//namespace hgl
 #endif//HGL_MATH_PHYSICS_CONST_INCLUDE
+
+
+
