@@ -10,9 +10,17 @@
 
 namespace hgl
 {
+    using Quat4f=glm::quat;
+
+    using Matrix2f=glm::mat2;
     using Matrix3f=glm::mat3;
     using Matrix4f=glm::mat4;
     using Matrix3x4f=glm::mat3x4;
+
+    constexpr const Matrix2f Identity2f=Matrix2f(1.0f);
+    constexpr const Matrix3f Identity3f=Matrix3f(1.0f);
+    constexpr const Matrix4f Identity4f=Matrix4f(1.0f);
+    constexpr const Matrix3f Identity3x4f=Matrix3x4f(1.0f);
 
     inline Matrix4f inverse(const Matrix4f &m)
     {
