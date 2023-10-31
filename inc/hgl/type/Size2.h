@@ -70,12 +70,14 @@ namespace hgl
             SIZE2_OPERATOR_SELF(/=)
         #undef SIZE2_OPERATOR_SELF
 
-        #define SIZE2_OPERATOR_INTERACTIVE(op) template<typename N> Size2 operator op (const N &n) const {return Size2<T>(width op n,height op n);}
-            SIZE2_OPERATOR_INTERACTIVE(+)
-            SIZE2_OPERATOR_INTERACTIVE(-)
-            SIZE2_OPERATOR_INTERACTIVE(*)
-            SIZE2_OPERATOR_INTERACTIVE(/)
-        #undef SIZE2_OPERATOR_INTERACTIVE
+    #define SIZE2_OPERATOR_INTERACTIVE(op) template<typename N> Size2<T> operator op (const N &n) const {return Size2<T>(width op n,height op n);}  \
+                                           template<typename N> Size2<T> operator op (const Size2<N> &n) const {return Size2<T>(width op n.Width(),height op n.Height());}
+
+        SIZE2_OPERATOR_INTERACTIVE(+)
+        SIZE2_OPERATOR_INTERACTIVE(-)
+        SIZE2_OPERATOR_INTERACTIVE(*)
+        SIZE2_OPERATOR_INTERACTIVE(/)
+    #undef SIZE2_OPERATOR_INTERACTIVE
 
         /**
         * 计算另一个尺寸在当前尺寸内的等比缩放多大可以正好
