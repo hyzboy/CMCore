@@ -58,10 +58,11 @@ namespace hgl
         void Grey();                                                                                ///<将当前色彩变成灰色
 
         //操作符重载
-        void operator = (const float *v){r=*v++;g=*v++;b=*v;}
+        const Color3f &operator = (const float *v){r=*v++;g=*v++;b=*v;return *this;}
+        const Color3f &operator = (const Color3f &v){r=v.r;g=v.g;b=v.b;return *this;}
 
-        bool operator == (const Color3f &);
-        bool operator != (const Color3f &);
+        bool operator == (const Color3f &)const;
+        bool operator != (const Color3f &)const;
 
         void operator += (const Color3f &v){r+=v.r;g+=v.g;b+=v.b;Clamp();}
         void operator -= (const Color3f &v){r-=v.r;g-=v.g;b-=v.b;Clamp();}

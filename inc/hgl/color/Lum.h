@@ -14,5 +14,10 @@ namespace hgl
     {
         return (r*54+g*183+b*19)>>8;
     }
+
+    template<typename T> constexpr T RGB2LumBT2020(const T &r,const T &g,const T &b)
+    {
+        return 0.2627f*r+0.6780f*g+0.0593f*b;
+    }
 }//namespace hgl
 #endif//HGL_COLOR_LUM_INCLUDE

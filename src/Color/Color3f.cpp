@@ -39,7 +39,7 @@ namespace hgl
         b=lum;
     }
     //--------------------------------------------------------------------------------------------------
-    bool Color3f::operator == (const Color3f &v)
+    bool Color3f::operator == (const Color3f &v) const
     {
         if(r!=v.r)return(false);
         if(g!=v.g)return(false);
@@ -48,7 +48,7 @@ namespace hgl
         return(true);
     }
     //--------------------------------------------------------------------------------------------------
-    bool Color3f::operator != (const Color3f &v)
+    bool Color3f::operator != (const Color3f &v) const
     {
         if(r!=v.r)return(true);
         if(g!=v.g)return(true);
