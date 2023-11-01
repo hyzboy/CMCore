@@ -2587,10 +2587,53 @@ namespace hgl
         return(count);
     }
 
+    /**
+     * 解析一个由多个浮点数组成的字符串，结果扔进指定数组中。任何非当前进制的字符串都将被视为分隔符。
+     * 
+     * \param str           要解晰的原始字符串
+     * \param result        存放解晰结果的数组
+     * \param max_count     数组最大个数量限制
+     * \param end_char      结尾字符，默认为0
+     * \param end_pointer   字符串结束指针
+     * \return              解晰出来的数据数量
+     */
     template<typename T,typename I> inline const int parse_float_array(const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseFloatArray<T,I> pna;return parse_number_array<T,I>(&pna,str,result,max_count,end_char,end_pointer);}
+
+    /**
+     * 解析一个由多个有符号整数组成的字符串，结果扔进指定数组中。任何非当前进制的字符串都将被视为分隔符。
+     * 
+     * \param str           要解晰的原始字符串
+     * \param result        存放解晰结果的数组
+     * \param max_count     数组最大个数量限制
+     * \param end_char      结尾字符，默认为0
+     * \param end_pointer   字符串结束指针
+     * \return              解晰出来的数据数量
+     */
     template<typename T,typename I> inline const int parse_int_array  (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseIntArray<T,I>   pna;return parse_number_array<T,I>(pna,str,result,max_count,end_char,end_pointer);}
+
+    /**
+     * 解析一个由多个无符号整数组成的字符串，结果扔进指定数组中。任何非当前进制的字符串都将被视为分隔符。
+     * 
+     * \param str           要解晰的原始字符串
+     * \param result        存放解晰结果的数组
+     * \param max_count     数组最大个数量限制
+     * \param end_char      结尾字符，默认为0
+     * \param end_pointer   字符串结束指针
+     * \return              解晰出来的数据数量
+     */
     template<typename T,typename I> inline const int parse_uint_array (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseUIntArray<T,I>  pna;return parse_number_array<T,I>(pna,str,result,max_count,end_char,end_pointer);}
-    template<typename T,typename I> inline const int parse_xint_array (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseHexArray<T,I>   pna;return parse_number_array<T,I>(pna,str,result,max_count,end_char,end_pointer);}
+
+    /**
+     * 解析一个由多个16进制整数组成的字符串，结果扔进指定数组中。任何非当前进制的字符串都将被视为分隔符。
+     * 
+     * \param str           要解晰的原始字符串
+     * \param result        存放解晰结果的数组
+     * \param max_count     数组最大个数量限制
+     * \param end_char      结尾字符，默认为0
+     * \param end_pointer   字符串结束指针
+     * \return              解晰出来的数据数量
+     */
+    template<typename T,typename I> inline const int parse_hex_array  (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseHexArray<T,I>   pna;return parse_number_array<T,I>(pna,str,result,max_count,end_char,end_pointer);}
 
     /**
      * 解析数值阵列字符串到数组,如"1,2,3"或"1 2 3"
@@ -2647,10 +2690,45 @@ namespace hgl
         return(count);
     }
 
+    /**
+     * 解析一个由多个浮点数组成的字符串，结果扔进指定列表中。任何非当前进制的字符串都将被视为分隔符。
+     * 
+     * \param str           要解晰的原始字符串
+     * \param len           字符串长度
+     * \param result_list   存放解晰结果的列表
+     * \return              解晰出来的数据数量
+     */
     template<typename T,typename I,typename SET> inline const int parse_float_array   (const T *str,const int len,SET &result_list){ParseFloatArray<T,I> pna;return parse_number_array<T,I,SET>(&pna,str,len,result_list);}
+
+    /**
+     * 解析一个由多个有符号整数组成的字符串，结果扔进指定列表中。任何非当前进制的字符串都将被视为分隔符。
+     * 
+     * \param str           要解晰的原始字符串
+     * \param len           字符串长度
+     * \param result_list   存放解晰结果的列表
+     * \return              解晰出来的数据数量
+     */
     template<typename T,typename I,typename SET> inline const int parse_int_array     (const T *str,const int len,SET &result_list){ParseIntArray<T,I>   pna;return parse_number_array<T,I,SET>(&pna,str,len,result_list);}
+
+    /**
+     * 解析一个由多个无符号整数组成的字符串，结果扔进指定列表中。任何非当前进制的字符串都将被视为分隔符。
+     * 
+     * \param str           要解晰的原始字符串
+     * \param len           字符串长度
+     * \param result_list   存放解晰结果的列表
+     * \return              解晰出来的数据数量
+     */
     template<typename T,typename I,typename SET> inline const int parse_uint_array    (const T *str,const int len,SET &result_list){ParseUIntArray<T,I>  pna;return parse_number_array<T,I,SET>(&pna,str,len,result_list);}
-    template<typename T,typename I,typename SET> inline const int parse_xint_array    (const T *str,const int len,SET &result_list){ParseHexArray<T,I>   pna;return parse_number_array<T,I,SET>(&pna,str,len,result_list);}
+
+    /**
+     * 解析一个由多个16进制整数组成的字符串，结果扔进指定列表中。任何非当前进制的字符串都将被视为分隔符。
+     * 
+     * \param str           要解晰的原始字符串
+     * \param len           字符串长度
+     * \param result_list   存放解晰结果的列表
+     * \return              解晰出来的数据数量
+     */
+    template<typename T,typename I,typename SET> inline const int parse_hex_array     (const T *str,const int len,SET &result_list){ParseHexArray<T,I>   pna;return parse_number_array<T,I,SET>(&pna,str,len,result_list);}
 
     /**
      * 按指定分隔符拆分字符串为多个字符串
