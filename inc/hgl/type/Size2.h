@@ -1,13 +1,14 @@
 ﻿#pragma once
 
 #include<hgl/type/DataType.h>
+#include<hgl/math/Vector.h>
 
 namespace hgl
 {
     /**
     * 尺寸模板
     */
-    template<typename T> struct Size2
+    template<typename T> class Size2
     {
         T width,height;
 
@@ -16,6 +17,13 @@ namespace hgl
         Size2()
         {
             width=height=0;
+        }
+
+        template<typename O>
+        Size2(const Size2<O> &s)
+        {
+            width =T(s.Width());
+            height=T(s.Height());
         }
 
         Size2(const T &w,const T &h)
@@ -27,6 +35,26 @@ namespace hgl
         {
             width=w;
             height=h;
+        }
+
+        void SetWidth(const T &w)
+        {
+            width=w;
+        }
+
+        void SetHeight(const T &h)
+        {
+            height=h;
+        }
+
+        const T Width()const{return width;}
+        const T Height()const{return height;}
+
+        template<typename O>
+        void operator = (const Size2<O> &s)
+        {
+            width =T(s.Width());
+            height=T(s.Height());
         }
 
         const bool isLandscape()const{return width>height;}                     ///<是否横的
@@ -70,14 +98,16 @@ namespace hgl
             SIZE2_OPERATOR_SELF(/=)
         #undef SIZE2_OPERATOR_SELF
 
-    #define SIZE2_OPERATOR_INTERACTIVE(op) template<typename N> Size2<T> operator op (const N &n) const {return Size2<T>(width op n,height op n);}  \
-                                           template<typename N> Size2<T> operator op (const Size2<N> &n) const {return Size2<T>(width op n.Width(),height op n.Height());}
+        #define SIZE2_OPERATOR_INTERACTIVE(op) template<typename N> Size2<T> operator op (const N &n) const {return Size2<T>(width op n,height op n);}  \
+                                                template<typename N> Size2<T> operator op (const Size2<N> &n) const {return Size2<T>(width op n.Width(),height op n.Height());}
 
-        SIZE2_OPERATOR_INTERACTIVE(+)
-        SIZE2_OPERATOR_INTERACTIVE(-)
-        SIZE2_OPERATOR_INTERACTIVE(*)
-        SIZE2_OPERATOR_INTERACTIVE(/)
-    #undef SIZE2_OPERATOR_INTERACTIVE
+            SIZE2_OPERATOR_INTERACTIVE(+)
+            SIZE2_OPERATOR_INTERACTIVE(-)
+            SIZE2_OPERATOR_INTERACTIVE(*)
+            SIZE2_OPERATOR_INTERACTIVE(/)
+        #undef SIZE2_OPERATOR_INTERACTIVE
+
+
 
         /**
         * 计算另一个尺寸在当前尺寸内的等比缩放多大可以正好
@@ -103,6 +133,10 @@ namespace hgl
 
             return(scale);
         }
+
+        const T Area()const{return width*height;}                               ///<面积
+
+        operator glm::vec<2,T,glm::defaultp>()const{return glm::vec<2,T,glm::defaultp>(width,height);}
     };//template<typename T> struct Size2
 
     using Size2i    =Size2<int>;
