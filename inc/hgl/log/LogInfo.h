@@ -62,7 +62,7 @@ namespace hgl
         #define LOG_ERROR(str)      {Log(LogLevel::Error,   str);}
 
         #define RETURN_FALSE        {DebugLog(LogLevel::Log,OS_TEXT("return(false)"),                                   __FILE__,__LINE__,__HGL_FUNC__);return(false);}
-        #define RETURN_ERROR(v)     {DebugLog(LogLevel::Log,OS_TEXT("return error(")+OSString::numberOf(v)+OS_TEXT(")"), __FILE__,__LINE__,__HGL_FUNC__);return(v);}
+        #define RETURN_ERROR(v)     {DebugLog(LogLevel::Log,OS_TEXT("return error(")+OSString::numberOf(v)+OS_TEXT(")"),__FILE__,__LINE__,__HGL_FUNC__);return(v);}
         #define RETURN_ERROR_NULL   {DebugLog(LogLevel::Log,OS_TEXT("return error(nullptr)"),                           __FILE__,__LINE__,__HGL_FUNC__);return(nullptr);}
 
         #define RETURN_BOOL(proc)   {if(proc)return(true);RETURN_FALSE}

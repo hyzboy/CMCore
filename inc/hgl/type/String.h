@@ -1344,6 +1344,8 @@ namespace hgl
     using OSString      =String<os_char>;
     using WideString    =String<wchar_t>;
 
+    using ShaderString  =UTF8String;
+
     template<typename C> bool ToNumber(const String<C> &str,int &value){return str.ToInt(value);}
     template<typename C> bool ToNumber(const String<C> &str,uint &value){return str.ToUint(value);}
     template<typename C> bool ToNumber(const String<C> &str,float &value){return str.ToFloat(value);}
