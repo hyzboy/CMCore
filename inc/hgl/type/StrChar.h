@@ -264,6 +264,24 @@ namespace hgl
     }
 
     /**
+     * 测试当前字符是否为文件名可用字符(不含路径分隔符)
+     */
+    template<typename T>
+    const bool isfilenamechar(const T &ch)
+    {
+        return(ch=='.'||iscodechar(ch));
+    }
+
+    /**
+     * 测试当前字符是否不是文件名可用字符
+     */
+    template<typename T>
+    const bool notfilenamechar(const T &ch)
+    {
+        return(!isfilenamechar(ch));
+    }
+
+    /**
      * 测试当前字符是否为BASE64编码字符
      */
     template<typename T>
