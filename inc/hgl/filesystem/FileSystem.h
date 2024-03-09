@@ -33,7 +33,7 @@ namespace hgl
         bool SaveMemoryToFile(const OSString &,int64,const void *,int64);                               ///<保存一块内存到一个文件
 
         bool IsDirectory(const os_char *);
-        inline  bool IsDirectory(const OSString &str){return IsDirectory(str.c_str());}                 ///<判断这个名称是否是目录
+        inline bool IsDirectory(const OSString &str){return IsDirectory(str.c_str());}                  ///<判断这个名称是否是目录
 
 #if HGL_OS != HGL_OS_Windows
         bool IsLink(const os_char *);                                                                   ///<判断这个名称是否是链接

@@ -1,12 +1,13 @@
-#pragma once
+ï»¿#pragma once
 
+#include<hgl/type/List.h>
 #include<hgl/type/DataArray.h>
 
 namespace hgl
 {
     /**
-     * ÀÛ¼ÆÄÚ´æ¹ÜÀí<br>
-     * ÓÃÓÚ²»¶Ï·ÖÅä¹Ì¶¨ÈİÁ¿µÄÄÚ´æ¿é£¬µ«²»¶¯Ì¬µ÷Õû£¬×îºóÍ³Ò»ÊÍ·ÅµÄÇé¿ö¡£
+     * ç´¯è®¡å†…å­˜ç®¡ç†<br>
+     * ç”¨äºä¸æ–­åˆ†é…å›ºå®šå®¹é‡çš„å†…å­˜å—ï¼Œä½†ä¸åŠ¨æ€è°ƒæ•´ï¼Œæœ€åç»Ÿä¸€é‡Šæ”¾çš„æƒ…å†µã€‚
      */
     class AccumMemoryManager
     {
@@ -20,43 +21,44 @@ namespace hgl
 
     private:
 
-        int64 total_bytes=0;           ///<×Ü×Ö½ÚÊı
-
-        DataArray<AccumMemoryManager::Block> block_list;
-        DataArray<char> data_array;     ///<Êı¾İ
+        List<Block>         block_list;                     ///<æ•°æ®å—åˆ—è¡¨
+        DataArray<char>     data_array;                     ///<æ•°æ®
 
     public:
 
         AccumMemoryManager()=default;
         ~AccumMemoryManager()=default;
 
-        const int64 GetTotalBytes()const{return total_bytes;}
-        const int64 GetBlockCount()const{return block_list.GetCount();}
+        const int64 GetTotalBytes()const{return data_array.GetBytes();}         ///<å–å¾—æ€»å…±ç”³è¯·çš„å†…å­˜æ€»å­—èŠ‚æ•°
+        const int64 GetBlockCount()const{return block_list.GetCount();}         ///<å–å¾—å†…å­˜æ•°æ®å—æ•°é‡
 
-        const void *Acquire(const int64 size)
+        Block *Acquire(const int64 size)                                        ///<ç”³è¯·ä¸€å—å†…å­˜
         {
             if(size<=0)return(nullptr);
 
-            Block b;
+            Block *b=block_list.Add();
 
-            b.offset=total_bytes;
-            b.size=size;
+            b->offset   =data_array.GetBytes();
+            b->size     =size;
 
             data_array.AddCount(size);
 
-            return data_array.GetPointer(b.offset);
+            return b;
+        }
+
+        void *Access(const Block *b)                                            ///<è®¿é—®ä¸€å—å†…å­˜
+        {
+            return b?data_array.GetPointer(b->offset):nullptr;
         }
 
         void Clear()
         {
-            total_bytes=0;
             block_list.Clear();
             data_array.Clear();
         }
 
         void Free()
         {
-            total_bytes=0;
             block_list.Free();
             data_array.Free();
         }
