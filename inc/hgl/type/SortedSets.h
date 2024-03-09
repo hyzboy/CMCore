@@ -14,15 +14,15 @@ namespace hgl
 
         DataArray<T> data_list;
 
-        bool    FindPos(const T &flag,int &pos)const                                                ///<查找数据如果插入后，会所在的位置，返回是否存在这个数据
+        bool    FindPos(const T &flag,int64 &pos)const                                              ///<查找数据如果插入后，会所在的位置，返回是否存在这个数据
                 {return FindInsertPositionInSortedArray(&pos,data_list,flag);}
 
-        int     FindPos(const T &flag)const{int pos;return FindPos(flag,pos)?pos:-1;}               ///<查找数据如果插入后，会所在的位置
+        int64   FindPos(const T &flag)const{int64 pos;return FindPos(flag,pos)?pos:-1;}             ///<查找数据如果插入后，会所在的位置
 
     public: //属性
 
                 T *             GetData     ()const{return data_list.GetData();}                    ///<取得数据指针
-                int             GetCount    ()const{return data_list.GetCount();}                   ///<取得数据总量
+                int64           GetCount    ()const{return data_list.GetCount();}                   ///<取得数据总量
 
         const   bool            IsEmpty     ()const{return data_list.IsEmpty();}                    ///<确认列表是否为空
 
@@ -40,15 +40,15 @@ namespace hgl
         SortedSets()=default;
         virtual ~SortedSets()=default;
 
-        void    SetCount        (int count){data_list.SetCount(count);}                             ///<指定数据数量，一般用于批量加载前的处理
-        void    PreAlloc        (int count){data_list.Alloc(count);}                                ///<预分配指定数量的数据空间
+        void    SetCount        (int64 count){data_list.SetCount(count);}                           ///<指定数据数量，一般用于批量加载前的处理
+        void    PreAlloc        (int64 count){data_list.Alloc(count);}                              ///<预分配指定数量的数据空间
 
         /**
          * 查找数据是否存在
          * @param flag 数据
          * @return 数据所在索引，-1表示不存在
          */
-        int     Find            (const T &flag)const
+        int64   Find            (const T &flag)const
         {
             return FindDataPositionInSortedArray(data_list,flag);
         }
@@ -61,7 +61,7 @@ namespace hgl
         * @return 插入的位置
         * @reutrn -1 数据已存在，添加失败
         */
-        int     Add             (const T &data)
+        int64   Add             (const T &data)
         {
             if(data_list.GetCount()<=0)
             {
@@ -73,7 +73,7 @@ namespace hgl
             }
             else
             {
-                int pos;
+                int64 pos;
 
                 if(FindPos(data,pos))
                     return(-1);         //数据已存在
@@ -87,7 +87,7 @@ namespace hgl
         /*
          * 添加一批数据
          */
-        int     Add             (T *dl,const int count)
+        int64   Add             (T *dl,const int64 count)
         {
             if(!dl||count<=0)return -1;
 
@@ -97,10 +97,10 @@ namespace hgl
             data_list.Alloc(data_list.GetCount()+count);
 
             {
-                int pos;
-                int result=0;
+                int64 pos;
+                int64 result=0;
 
-                for(int i=0;i<count;i++)
+                for(int64 i=0;i<count;i++)
                 {
                     if(FindPos(*dl,pos))
                         break;
@@ -115,11 +115,11 @@ namespace hgl
             }
         }
 
-        bool    DeleteAt        (const int pos){return data_list.DeleteMove(pos,1);}        ///<删除一个数据,使用序号
+        bool    DeleteAt        (const int64 pos){return data_list.DeleteMove(pos,1);}      ///<删除一个数据,使用序号
 
         bool    Delete          (const T &data)                                             ///<删除一个数据
         {
-            int pos=Find(data);
+            int64 pos=Find(data);
 
             if(pos==-1)return(false);
 
@@ -132,12 +132,12 @@ namespace hgl
         * @param count 数据个数
         * @return 成功删除的数据个数
         */
-        int Delete(T *dp,const int count)
+        int64 Delete(T *dp,const int64 count)
         {
-            int total=0;
-            int pos;
+            int64 total=0;
+            int64 pos;
 
-            for(int i=0;i<count;i++)
+            for(int64 i=0;i<count;i++)
             {
                 pos=Find(*dp);
                 if(pos!=-1)
@@ -155,7 +155,7 @@ namespace hgl
         void    Free            (){data_list.Free();}                                       ///<清除数据，并释放内存
         void    Clear           (){data_list.Clear();}                                      ///<清除数据，但不释放内存
 
-        bool    Get             (const int index,T &data)                                   ///<根据序列号取得指定数据
+        bool    Get             (const int64 index,T &data)                                 ///<根据序列号取得指定数据
         {
             if(index<0||index>=data_list.GetCount())
                 return(false);

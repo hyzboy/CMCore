@@ -13,15 +13,15 @@ namespace hgl
     protected:
 
         T *items;
-        int count;                                                                                  ///<当前数据数量
-        int alloc_count;                                                                            ///<已分配的数据数量
+        int64 count;                                                                                ///<当前数据数量
+        int64 alloc_count;                                                                          ///<已分配的数据数量
 
     public:
 
-                int     GetCount	    ()const{return count;}										///<取得数据数量(注：非字节数)
-        const	int     GetAllocCount   ()const{return alloc_count;}								///<取得已分配的阵列大小(注：非字节数)
-        const	int     GetBytes		()const{return count*sizeof(T);}							///<取得阵列已使用的字节数
-        const	int     GetAllocBytes   ()const{return alloc_count*sizeof(T);}						///<取得阵列已分配空间字节数
+                int64   GetCount        ()const{return count;}                                      ///<取得数据数量(注：非字节数)
+        const   int64   GetAllocCount   ()const{return alloc_count;}                                ///<取得已分配的阵列大小(注：非字节数)
+        const   int64   GetBytes        ()const{return count*sizeof(T);}                            ///<取得阵列已使用的字节数
+        const   int64   GetAllocBytes   ()const{return alloc_count*sizeof(T);}                      ///<取得阵列已分配空间字节数
 
         const   bool    IsEmpty         ()const{return(count==0);}                                  ///<是否为空
 
@@ -39,7 +39,7 @@ namespace hgl
         /**
          * 分配指定空间出来，供未来使用
          */
-        bool Alloc(int size)
+        bool Alloc(int64 size)
         {
             if(size<=alloc_count)
                 return(true);
@@ -59,7 +59,7 @@ namespace hgl
          * @param size 阵列长度
          * @return 设置成功后的阵列长度
          */
-        int SetCount(int size)																	///<设置阵列长度(注：非字节数)
+        int64 SetCount(int64 size)                                                                  ///<设置阵列长度(注：非字节数)
         {
             Alloc(size);
 
@@ -72,7 +72,7 @@ namespace hgl
          * @param size 增加的长度
          * @return 增加后的阵列长度
          */
-        int AddCount(int size)
+        int64 AddCount(int64 size)
         {
             return SetCount(count+size);
         }
@@ -86,7 +86,7 @@ namespace hgl
             alloc_count=0;
         }
 
-        DataArray(int size)
+        DataArray(int64 size)
         {
             if(size<=0)
                 items=nullptr;
@@ -149,22 +149,22 @@ namespace hgl
             return items;
         }
 
-        T &operator[](int n)
+        T &operator[](int64 n)
         {
             return items[n];
         }
 
-        const T &operator[](int n)const
+        const T &operator[](int64 n)const
         {
             return items[n];
         }
 
-        T *GetPointer(int n)const
+        T *GetPointer(int64 n)const
         {
             return (n<0||n>=count)?nullptr:items+n;
         }
 
-        const bool ReadAt(T &obj,int const index)const
+        const bool ReadAt(T &obj,int64 const index)const
         {
             if(index<0||index>=count)return(false);
 
@@ -172,7 +172,7 @@ namespace hgl
             return(true);
         }
 
-        const bool ReadAt(T *obj,int const start,const int num)const
+        const bool ReadAt(T *obj,const int64 start,const int64 num)const
         {
             if(!obj||start<0||start+num>count)return(false);
 
@@ -180,7 +180,7 @@ namespace hgl
             return(true);
         }
 
-        const bool WriteAt(const T &obj,const int index)
+        const bool WriteAt(const T &obj,const int64 index)
         {
             if(index<0||index>=count)return(false);
 
@@ -188,7 +188,7 @@ namespace hgl
             return(true);
         }
 
-        const bool WriteAt(const T *obj,const int start,const int num)
+        const bool WriteAt(const T *obj,const int64 start,const int64 num)
         {
             if(!obj||start<0||start+num>count)return(false);
 
@@ -214,7 +214,7 @@ namespace hgl
 
         void operator = (const std::initializer_list<T> &l)
         {
-            SetCount((int)l.size());
+            SetCount((int64)l.size());
 
             hgl_cpy<T>(items,l.begin(),count);
         }
@@ -225,7 +225,7 @@ namespace hgl
         * @param delete_count 要删除的数据项数量
         * @return 是否成功
         */
-        bool Delete(int start,int delete_count=1)
+        bool Delete(int64 start,int64 delete_count=1)
         {
             if(!items)return(false);
             if(start>=count)return(false);
@@ -276,7 +276,7 @@ namespace hgl
         * @param start 要删除的数据项的索引值
         * @return 是否成功
         */
-        bool DeleteMove(int start,int delete_count=1)
+        bool DeleteMove(int64 start,int64 delete_count=1)
         {
             if(!items)return(false);
             if(start>=count)return(false);
@@ -292,7 +292,7 @@ namespace hgl
 
             if(delete_count<=0)return(false);
 
-            const int end_count=count-(start+delete_count);
+            const int64 end_count=count-(start+delete_count);
 
             if(end_count>0)
                 hgl_cpy<T>(items+start,items+start+delete_count,end_count);
@@ -307,7 +307,7 @@ namespace hgl
         * @param a 第一个数据的位置
         * @param b 第二个数据的位置
         */
-        void Exchange(int a,int b)
+        void Exchange(int64 a,int64 b)
         {
             hgl_swap(items[a],items[b]);
         }
@@ -318,7 +318,7 @@ namespace hgl
         * @param old_index 旧的位置
         * @param move_number 要移动的数据个数
         */
-        bool Move(int new_index,int old_index,int move_number=1)
+        bool Move(int64 new_index,int64 old_index,int64 move_number=1)
         {
             if(!items)return(false);
             if(new_index==old_index)return(false);
@@ -333,7 +333,7 @@ namespace hgl
             if(move_number<=0)return(false);
 
             //直接创建新缓冲区复制过去，放弃旧缓冲区
-            const int new_alloc_count=power_to_2(count);
+            const int64 new_alloc_count=power_to_2(count);
             T *new_items=hgl_align_malloc<T>(new_alloc_count);
 
             bool result;
@@ -543,7 +543,7 @@ namespace hgl
          * @param find_count 要查找的最大数量
          * @return <0 未找到或其它错误
          */
-        const int Find(const T &data,const int start=0,int find_count=-1)const
+        const int64 Find(const T &data,const int64 start=0,int64 find_count=-1)const
         {
             if(!items||count<=0||start<0||start>=count)return(-1);
 
@@ -556,7 +556,7 @@ namespace hgl
         /**
          * 在指定位置插入数据
          */
-        bool Insert(int pos,const T *data,const int data_number)
+        bool Insert(int64 pos,const T *data,const int64 data_number)
         {
             if(!data||data_number<=0)
                 return(false);
@@ -566,7 +566,7 @@ namespace hgl
 
             if(count+data_number>alloc_count)
             {
-                int new_alloc_count=power_to_2(alloc_count+data_number);
+                int64 new_alloc_count=power_to_2(alloc_count+data_number);
 
                 T *new_items=hgl_align_malloc<T>(new_alloc_count);
 
@@ -591,7 +591,7 @@ namespace hgl
             return(true);
         }
 
-        bool Insert(int pos,const T &data)
+        bool Insert(int64 pos,const T &data)
         {
             return Insert(pos,&data,1);
         }
@@ -602,14 +602,14 @@ namespace hgl
         void WithoutList(DataArray<T> &result_list,const DataArray<T> &without_list)
         {
             result_list.Clear();
-            const int count=this->GetCount();
+            const int64 count=this->GetCount();
 
             if(count<=0)return;
 
             result_list.Clear();
             result_list.PreAlloc(count);
 
-            int result=0;
+            int64 result=0;
 
             T *p=result_list.items;
 
@@ -626,8 +626,8 @@ namespace hgl
             result_list.SetCount(result);
         }
 
-        //int     Intersection    (SortedSets<T> &result,const SortedSets<T> &sets);          ///<取得与指定合集的交集
-        //int     Intersection    (const SortedSets<T> &set);                                 ///<取得与指定合集的交集数量
+        //int64     Intersection    (SortedSets<T> &result,const SortedSets<T> &sets);          ///<取得与指定合集的交集
+        //int64     Intersection    (const SortedSets<T> &set);                                 ///<取得与指定合集的交集数量
 
         ///**
         //    * 取得与指定交集is的合集，但排斥cs合集中的数据
@@ -636,9 +636,9 @@ namespace hgl
         //    * @param cs 求排斥的合集
         //    * @return 结果数量
         //    */
-        //int     Intersection    (SortedSets<T> &result,const SortedSets<T> &is,const SortedSets<T> &cs);
+        //int64     Intersection    (SortedSets<T> &result,const SortedSets<T> &is,const SortedSets<T> &cs);
 
-        //int     Difference      (const SortedSets<T> &is);                                  ///<求差集数量
+        //int64     Difference      (const SortedSets<T> &is);                                  ///<求差集数量
 
         ///**
         // * 求当前合集与另一个数据集的交集
@@ -646,7 +646,7 @@ namespace hgl
         // * @param list 要计算交集的数据集
         // * @return 交集数量
         // */
-        //int Intersection(SortedSets<T> &result,const SortedSets<T> &list)
+        //int64 Intersection(SortedSets<T> &result,const SortedSets<T> &list)
         //{
         //    if(data_list.GetCount()<=0)
         //        return(0);
@@ -663,7 +663,7 @@ namespace hgl
         //    return result.GetCount();
         //}
 
-        //int Intersection(const SortedSets<T> &list)
+        //int64 Intersection(const SortedSets<T> &list)
         //{
         //    if(data_list.GetCount()<=0)
         //        return(0);
@@ -671,10 +671,10 @@ namespace hgl
         //    if(list.GetCount()<=0)
         //        return(0);
 
-        //    int count=0;
+        //    int64 count=0;
 
         //    T *obj=data_list.GetData();
-        //    for(int i=0;i<data_list.GetCount();i++)
+        //    for(int64 i=0;i<data_list.GetCount();i++)
         //    {
         //        if(list.IsMember(*obj))
         //            ++count;
@@ -685,7 +685,7 @@ namespace hgl
         //    return count;
         //}
 
-        //int Intersection(SortedSets<T> &result,const SortedSets<T> &il,const SortedSets<T> &cl)
+        //int64 Intersection(SortedSets<T> &result,const SortedSets<T> &il,const SortedSets<T> &cl)
         //{
         //    if(data_list.GetCount()<=0)
         //        return(0);
@@ -694,7 +694,7 @@ namespace hgl
         //        return(0);
 
         //    T *obj=data_list.GetData();
-        //    for(int i=0;i<data_list.GetCount();i++)
+        //    for(int64 i=0;i<data_list.GetCount();i++)
         //    {
         //        if(il.IsMember(*obj))
         //            if(!cl.IsMember(*obj))
@@ -705,7 +705,7 @@ namespace hgl
         //    return result.GetCount();
         //}
 
-        //int Difference(const DataArray &is)
+        //int64 Difference(const DataArray &is)
         //{
         //    if(data_list.GetCount()<=0)
         //        return(is.GetCount());
@@ -713,10 +713,10 @@ namespace hgl
         //    if(is.GetCount()<=0)
         //        return(data_list.GetCount());
 
-        //    int count=0;
+        //    int64 count=0;
 
         //    T *obj=data_list.GetData();
-        //    for(int i=0;i<data_list.GetCount();i++)
+        //    for(int64 i=0;i<data_list.GetCount();i++)
         //    {
         //        if(!is.IsMember(*obj))
         //            ++count;
@@ -727,6 +727,6 @@ namespace hgl
         //    return count;
         //}
 
-        //int     Clear           (const SortedSets<T> &clear_sets);                          ///<清除指定合集中所有数据
+        //int64     Clear           (const SortedSets<T> &clear_sets);                          ///<清除指定合集中所有数据
     };//template<typename T> class DataArray
 }//namespace hgl

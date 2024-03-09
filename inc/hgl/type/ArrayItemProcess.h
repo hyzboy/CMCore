@@ -35,14 +35,14 @@ namespace hgl
     /**
      * 查找数据在无序阵列中的位置
      */
-    template<typename T> static int FindDataPositionInArray(const T *data_list,const int count,const T &data)
+    template<typename T> static int FindDataPositionInArray(const T *data_list,const int64 count,const T &data)
     {
         if(!data_list)return(-1);
         if(count<=0)return(-1);
 
         const T *p=data_list;
 
-        for(int i=0;i<count;i++)
+        for(int64 i=0;i<count;i++)
         {
             //if(*p==data)
             if(!memcmp(p,&data,sizeof(T)))
@@ -54,7 +54,7 @@ namespace hgl
         return -1;
     }
 
-    template<typename T,typename O> static int FindDataPositionInArray(const T &data_list,const O &data)
+    template<typename T,typename O> static int64 FindDataPositionInArray(const T &data_list,const O &data)
     {
         return FindDataPositionInArray(data_list.GetData(),data_list.GetCount(),data);
     }
@@ -62,10 +62,10 @@ namespace hgl
     /**
      * 查找数据在有序阵列中的位置
      */
-    template<typename T> static int FindDataPositionInSortedArray(const T *data_array,const int count,const T &flag)
+    template<typename T> static int64 FindDataPositionInSortedArray(const T *data_array,const int64 count,const T &flag)
     {
-        int left=0,right=count-1;                //使用left,right而不使用min,max是为了让代码能够更好的阅读。
-        int mid;
+        int64 left=0,right=count-1;                //使用left,right而不使用min,max是为了让代码能够更好的阅读。
+        int64 mid;
 
         while(left<=right)
         {
@@ -91,7 +91,7 @@ namespace hgl
         return(-1);
     }
 
-    template<typename T,typename O> static int FindDataPositionInSortedArray(const T &data_array,const O &flag)
+    template<typename T,typename O> static int64 FindDataPositionInSortedArray(const T &data_array,const O &flag)
     {
         return FindDataPositionInSortedArray(data_array.GetData(),data_array.GetCount(),flag);
     }
@@ -104,10 +104,10 @@ namespace hgl
     * @param flag 要查找的数据
     * @return 这个数据是否已经存在
     */
-    template<typename T> static bool FindInsertPositionInSortedArray(int *pos,const T *data_array,const int count,const T &flag)
+    template<typename T> static bool FindInsertPositionInSortedArray(int64 *pos,const T *data_array,const int64 count,const T &flag)
     {   
-        int left=0,right=count-1;
-        int mid;
+        int64 left=0,right=count-1;
+        int64 mid;
 
         while(left<=right)
         {
@@ -182,7 +182,7 @@ namespace hgl
         return(false);
     }
 
-    template<typename T,typename O> static bool FindInsertPositionInSortedArray(int *pos,const T &data_array,const O &flag)
+    template<typename T,typename O> static bool FindInsertPositionInSortedArray(int64 *pos,const T &data_array,const O &flag)
     {
         return FindInsertPositionInSortedArray(pos,data_array.GetData(),data_array.GetCount(),flag);
     }

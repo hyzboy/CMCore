@@ -8,24 +8,24 @@ namespace hgl
     */
     class ArrayRearrangeHelper
     {
-        int data_count;         ///<数据总量
-        int left_count;         ///<剩余数量
-        int data_offset;        ///<当前访问偏移
+        int64 data_count;         ///<数据总量
+        int64 left_count;         ///<剩余数量
+        int64 data_offset;        ///<当前访问偏移
 
-        int field_count;        //分段数量
+        int64 field_count;        ///<分段数量
         
         struct Field
         {
-            int start;
-            int count;
+            int64 start;
+            int64 count;
         };
         
         Field *field_list;
-        int field_index;
+        int64 field_index;
 
     public:
 
-        ArrayRearrangeHelper(int dc,int fc)
+        ArrayRearrangeHelper(int64 dc,int64 fc)
         {
             data_count=dc;
             left_count=dc;
@@ -45,7 +45,7 @@ namespace hgl
         /**
         * 添加一个分段
         */
-        bool AddField(int count)
+        bool AddField(int64 count)
         {
             if(count<0)return(false);
             if(count>left_count)return(false);
@@ -63,9 +63,9 @@ namespace hgl
         /**
         * 添加多个分段
         */
-        bool AddField(const std::initializer_list<int> &count_list)
+        bool AddField(const std::initializer_list<int64> &count_list)
         {
-            for(const int count:count_list)
+            for(const int64 count:count_list)
                 if(!AddField(count))
                    return(false);
 
@@ -100,7 +100,7 @@ namespace hgl
         * 重新排列数据到一个新的数组中
         */
         template<typename T>
-        bool Rearrange(T *new_array,const T *old_array,const int *index)
+        bool Rearrange(T *new_array,const T *old_array,const int64 *index)
         {
             if(!Finish())
                 return(false);
@@ -108,7 +108,7 @@ namespace hgl
             T *p=new_array;
             Field *f;
 
-            for(int i=0;i<field_index;i++)
+            for(int64 i=0;i<field_index;i++)
             {
                 if(*index<0||*index>=field_index)
                     return(false);
@@ -125,20 +125,23 @@ namespace hgl
         }
 
         template<typename T>
-        bool Rearrange(T *new_array,const T *old_array,const std::initializer_list<int> &index)
+        bool Rearrange(T *new_array,const T *old_array,const std::initializer_list<int64> &index)
         {
             return Rearrange(new_array,old_array,index.begin());
         }
     };//class ArrayRearrangeHelper
 
     template<typename T>
-    inline bool ArrayRearrange(T *new_array,const T *old_array,const int count,const std::initializer_list<int> &field_list,const std::initializer_list<int> &index)
+    inline bool ArrayRearrange(       T *new_array,
+                                const T *old_array,const int64 count,
+                                const std::initializer_list<int64> &field_list,
+                                const std::initializer_list<int64> &index)
     {
-        int field_count=(int)field_list.size();
+        int64 field_count=(int)field_list.size();
 
-        int total=0;
+        int64 total=0;
 
-        for(const int fc:field_list)total+=fc;
+        for(const int64 fc:field_list)total+=fc;
 
         if(total<count)
             ++field_count;
