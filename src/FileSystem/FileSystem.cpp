@@ -1,7 +1,6 @@
 ﻿#include <hgl/filesystem/FileSystem.h>
 #include <hgl/log/LogInfo.h>
-#include <hgl/io/FileInputStream.h>
-#include <hgl/io/FileOutputStream.h>
+#include <hgl/io/FileAccess.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -89,11 +88,11 @@ namespace hgl
         */
         bool FileComp(const OSString &filename1,const OSString &filename2,const size_t buf_size)
         {
-            io::FileInputStream fp1,fp2;
+            io::FileAccess fp1,fp2;
             int64 fs1,fs2;
 
-            if(!fp1.Open(filename1))return(false);
-            if(!fp2.Open(filename2))return(false);
+            if(!fp1.OpenRead(filename1))return(false);
+            if(!fp2.OpenRead(filename2))return(false);
 
             fs1=fp1.GetSize();
             fs2=fp2.GetSize();
@@ -124,16 +123,16 @@ namespace hgl
         
         void *LoadFileToMemory(const OSString &filename,int64 &size,bool append_zero)
         {
-            io::FileInputStream fs;
+            io::FileAccess fa;
 
-            if(!fs.Open(filename))
+            if(!fa.OpenRead(filename))
                 return(nullptr);
 
-            size=fs.GetSize();
+            size=fa.GetSize();
 
             char *fb=new char[append_zero?size+1:size];
 
-            if(fs.Read(fb,size)==size)
+            if(fa.Read(fb,size)==size)
             {
                 if(append_zero)
                     fb[size]=0;
@@ -170,7 +169,7 @@ namespace hgl
         */
         int64 SaveMemoryToFile(const OSString &filename,const void *buf,const int64 &size)
         {
-            io::FileOutputStream fs;
+            io::FileAccess fs;
 
             if(!fs.CreateTrunc(filename))
                 return(-1);
@@ -189,7 +188,7 @@ namespace hgl
         */
         int64 SaveMemoryToFile(const OSString &filename,void **buf_list,const int64 *buf_size,const int &buf_count)
         {
-            io::FileOutputStream fs;
+            io::FileAccess fs;
 
             if(!fs.CreateTrunc(filename))
                 return(-1);
@@ -291,9 +290,9 @@ namespace hgl
             if(!filename||!*filename||length==0)
                 return(nullptr);
 
-            io::FileInputStream fs;
+            io::FileAccess fs;
 
-            if(!fs.Open(filename))
+            if(!fs.OpenRead(filename))
                 return(nullptr);
 
             const int64 file_length=fs.GetSize();
@@ -336,9 +335,9 @@ namespace hgl
         */
         bool SaveMemoryToFile(const OSString &filename,int64 offset,const void *data,int64 length)
         {
-            io::FileOutputStream fs;
+            io::FileAccess fs;
 
-            if(!fs.Open(filename))
+            if(!fs.CreateTrunc(filename))
                 return(false);
 
             return fs.Write(offset,data,length);
