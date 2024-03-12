@@ -75,6 +75,13 @@ namespace hgl
                             float aspect_ratio,                                
                             float znear,
                             float zfar);
+    /**
+     * 产生一个lookat变换矩阵
+     * @param eye 眼睛位置
+     * @param target 目标位置
+     * @param up 向上向量
+     */
+    Matrix4f lookat(const Vector3f &eye,const Vector3f &target,const Vector3f &up);
 
     inline Matrix4f translate(const Vector3f &v)
     {
