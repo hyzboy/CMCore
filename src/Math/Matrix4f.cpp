@@ -102,7 +102,7 @@ namespace hgl
           0.0f
         );
 
-        //经查证，此代码等于glm::perspectiveRH_ZO之后将[1][1]乘-1，在SaschaWillems的范例中，如果反装Y，则[1][1]确实要乘-1。
+        //经查证，此代码等于glm::perspectiveRH_ZO之后将[1][1]乘-1，在SaschaWillems的范例中，如果反转Y轴，则[1][1]确实要乘-1。
     }
 
     Matrix4f lookat(const Vector3f &eye,const Vector3f &target,const Vector3f &up)
