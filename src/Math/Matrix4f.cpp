@@ -68,8 +68,8 @@ namespace hgl
 
     /**
      * 生成一个透视矩阵
+     * @param field_of_view 视野(角度)
      * @param aspect_ratio 宽高比
-     * @param field_of_view 视野
      * @param znear 近截面
      * @param zfar 远截面
      */
@@ -77,7 +77,7 @@ namespace hgl
                             float aspect_ratio,
                             float znear,
                             float zfar)
-    {
+    { 
         float f = 1.0f / tanf( deg2rad( 0.5f * field_of_view ) );
 
         return Matrix4f(
@@ -93,22 +93,23 @@ namespace hgl
 
           0.0f,
           0.0f,
-          zfar / (znear - zfar),
+          zfar/(znear-zfar),
           -1.0f,
       
           0.0f,
           0.0f,
-          (znear * zfar) / (znear - zfar),
+          -(znear * zfar) / (zfar-znear),
           0.0f
         );
+
+        //经查证，此代码等于glm::perspectiveRH_ZO之后将[1][1]乘-1，在SaschaWillems的范例中，如果反装Y，则[1][1]确实要乘-1。
     }
 
     Matrix4f lookat(const Vector3f &eye,const Vector3f &target,const Vector3f &up)
     {
         Vector3f forward=normalize(target-eye);
-        Vector3f right=normalize(cross(forward,up));
-
-        Vector3f nup=cross(right,forward);
+        Vector3f right  =normalize(cross(forward,up));
+        Vector3f nup    =cross(right,forward);
 
         return Matrix4f(   right.x,
                              nup.x,
@@ -122,7 +123,7 @@ namespace hgl
 
                            right.z,
                              nup.z,
-                   -forward.z/2.0f,
+                        -forward.z,
                               0.0f,
 
                  -dot(eye,right  ),
@@ -130,5 +131,7 @@ namespace hgl
                   dot(eye,forward),
                               1.0f
         );
+
+        //经查证，此代码完全等于glm::lookAtRH，无任何差别
     }
 }//namespace hgl

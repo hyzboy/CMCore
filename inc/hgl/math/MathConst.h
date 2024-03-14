@@ -55,17 +55,19 @@ namespace hgl
     /**
      * 角度转弧度
      */
-    inline constexpr double deg2rad(const double deg)
+    template<typename T>
+    inline constexpr T deg2rad(const T deg)
     {
-        return deg*(HGL_PI/180.0f);
+        return T(deg*(HGL_PI/180.0f));
     }
 
     /**
      * 弧度转角度
      */
-    inline constexpr double rad2deg(const double rad)
+    template<typename T>
+    inline constexpr T rad2deg(const T rad)
     {
-        return rad*(180.0f/HGL_PI);
+        return T(rad*(180.0f/HGL_PI));
     }
 
     /**
