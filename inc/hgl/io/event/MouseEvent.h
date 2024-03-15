@@ -56,6 +56,8 @@ namespace hgl
 
             MouseEvent():InputEvent(InputEventSource::Mouse)
             {
+                med=nullptr;
+                x=y=0;
                 hgl_zero(pressed_statues);
             }
             virtual ~MouseEvent()=default;

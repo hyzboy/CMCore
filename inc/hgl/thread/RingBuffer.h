@@ -309,6 +309,8 @@ namespace hgl
         RingBufferSafeWrite(io::RingOutputStream *ros)
         {
             rb=ros->GetRingBuffer();
+
+            size=-1;
         }
 
         int Start()

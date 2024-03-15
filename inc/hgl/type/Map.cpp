@@ -194,6 +194,7 @@ namespace hgl
 
         KVData *obj=GetListObject(data_list,index);
 
+        if(!obj)return(nullptr);
         return &(obj->value);
     }
 
