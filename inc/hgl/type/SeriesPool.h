@@ -66,10 +66,21 @@ namespace hgl
             return(true);
         }
     };//template<typename T> class SeriesPool
+    
+    using SeriesSize=SeriesPool<size_t>;
 
-    using SeriesInt=SeriesPool<int>;
+    using SeriesInt =SeriesPool<int>;
     using SeriesUInt=SeriesPool<uint>;
 
-    using SeriesInt64=SeriesPool<int64>;
-    using SeriesUInt64=SeriesPool<uint64>;
+    using SeriesI8  =SeriesPool<int8>;
+    using SeriesU8  =SeriesPool<uint8>;
+
+    using SeriesI16 =SeriesPool<int16>;
+    using SeriesU16 =SeriesPool<uint16>;
+
+    using SeriesI32 =SeriesPool<int32>;
+    using SeriesU32 =SeriesPool<uint32>;
+
+    using SeriesI64 =SeriesPool<int64>;
+    using SeriesU64 =SeriesPool<uint64>;
 }//namespace hgl
