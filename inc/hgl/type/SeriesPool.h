@@ -4,7 +4,8 @@
 namespace hgl
 {
     /**
-     * 序号池
+     * 序号池<br>
+     * 没什么用，就是一个序号堆栈而已。
      */
     template<typename T> class SeriesPool
     {
@@ -21,10 +22,29 @@ namespace hgl
 
     public:
 
+        SeriesPool()
+        {
+            max_count=0;
+            series_data=nullptr;
+        }
+
         SeriesPool(const T &count)
         {
+            series_data=nullptr;
+            Init(count);
+        }
+
+        bool Init(const T &count)
+        {
+            if(series_data)
+                return(false);
+
             max_count=count;
             series_data=new T[max_count];
+
+            if(!series_data)
+                return(false);
+
             end=series_data+max_count;
             access=end;
 
@@ -37,6 +57,8 @@ namespace hgl
                     ++p;
                 }
             }
+
+            return(true);
         }
 
         virtual ~SeriesPool()
@@ -47,6 +69,7 @@ namespace hgl
         bool Acquire(T *sp)
         {
             if(!sp)return(false);
+            if(!series_data)return(false);
 
             if(access<=series_data)
                 return(false);
@@ -57,6 +80,8 @@ namespace hgl
 
         bool Release(const T &s)
         {
+            if(!series_data)return(false);
+
             if(access>=end)
                 return(false);
 
