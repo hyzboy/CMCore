@@ -15,6 +15,7 @@ namespace hgl
         {
             fp=-1;
             mode=FileOpenMode::None;
+            hgl_zero(file_state);
         }
 
         FileAccess::~FileAccess()

@@ -38,6 +38,7 @@ namespace hgl
 
     Time::Time()
     {
+        gmt_off=0;
         hours=0;
         minutes=0;
         seconds=0;
@@ -51,6 +52,7 @@ namespace hgl
 
     Time::Time(int h,int m,int s,int ms)
     {
+        gmt_off=0;
         hours=h;
         minutes=m;
         seconds=s;
