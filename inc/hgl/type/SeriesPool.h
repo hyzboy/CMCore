@@ -1,5 +1,5 @@
 ﻿#pragma once
-//#include<hgl/type/DataType.h>
+#include<hgl/type/DataType.h>
 
 namespace hgl
 {
@@ -18,7 +18,11 @@ namespace hgl
 
     public:
 
-        const int GetMaxCount()const{return max_count;}
+        const T *   GetRawData  ()const{return series_data;}                    ///<取得原始数据指针
+
+        const T     GetMaxCount ()const{return max_count;}                      ///<取得最大数量
+        const T     GetFreeCount()const{return access-series_data;}             ///<取得空闲数量
+        const T     GetUseCount ()const{return end-access;}                     ///<取得使用数量
 
     public:
 
