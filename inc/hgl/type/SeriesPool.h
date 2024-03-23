@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include<hgl/type/DataType.h>
+#include<hgl/type/SortedSets.h>
+#include<random>
 
 namespace hgl
 {
@@ -18,7 +19,7 @@ namespace hgl
 
     public:
 
-        const T *   GetRawData  ()const{return series_data;}                    ///<取得原始数据指针
+              T *   GetRawData  ()const{return series_data;}                    ///<取得原始数据指针
 
         const T     GetMaxCount ()const{return max_count;}                      ///<取得最大数量
         const T     GetFreeCount()const{return access-series_data;}             ///<取得空闲数量
@@ -68,6 +69,34 @@ namespace hgl
         virtual ~SeriesPool()
         {
             delete[] series_data;
+        }
+
+        /**
+         * 初始化随机序号
+         */
+        void InitRandomSeries(T min_value=0,T max_value=0)
+        {
+            if(min_value==0&&max_value==0)
+                max_value=max_count-1;
+
+            SortedSets<T> ss;           //使用排序集合用来储存随机序号
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<T> dis(min_value,max_value);
+
+            T *p=series_data;
+            T value;
+
+            do
+            {
+                value=dis(gen);
+
+                if(ss.Add(value)>=0)                                    //加入随机序号，因为使用的是集合，所以不会重复
+                {
+                    *p=value;                                           //加入到序号池中
+                    ++p;
+                }
+            }while(ss.GetCount()<max_count);                            //如果满了就退出循环
         }
 
         bool Acquire(T *sp)
