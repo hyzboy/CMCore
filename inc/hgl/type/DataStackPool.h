@@ -6,7 +6,8 @@
 namespace hgl
 {
     /**
-     * 数据堆栈池(一种简单的数据池结构，不支持动态调整大小)
+     * 数据堆栈池(一种简单的数据池结构，不支持动态调整大小)<br>
+     * 仅用于一些只有申请和释放操作的情况，感觉没什么用处，但又经常需要。
      */
     template<typename T> class DataStackPool
     {
@@ -15,6 +16,11 @@ namespace hgl
         T *data_array;                      ///<数据区
         T *end;                             ///<结束指针
         SeriesInt series;                   ///<序号池
+
+    public:
+
+        T *GetRawData()const{return data_array;}                    ///<取得原始数据指针
+        SeriesInt *GetSeries(){return &series;}                     ///<取得序号池
 
     public:
 
