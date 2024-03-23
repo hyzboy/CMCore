@@ -15,18 +15,23 @@ SET(CORE_PLATFORM_HEADER_FILES  ${CORE_PLATFORM_HEADER_FILES}
 
 SET(TYPE_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type)
 
-file(GLOB TYPE_TEMPLATE_HEADER ${TYPE_INCLUDE_PATH}/*.h)
+SET(TYPE_COLLECTION_SOURCE  ${TYPE_INCLUDE_PATH}/Collection.h
+                            Type/Collection.cpp)
+                            
+SOURCE_GROUP("DataType\\Collection" FILES ${TYPE_COLLECTION_SOURCE})
 
-SET(TYPE_SOURCE_FILES   Type/Collection.cpp)
+SET(TYPE_DATA_CHAIN_SOURCE  ${TYPE_INCLUDE_PATH}/DataChain.h
+                            Type/DataChain.cpp)
 
-SOURCE_GROUP("DataType\\Collection" FILES ${TYPE_INCLUDE_PATH}/Collection.h
-                                          ${COLLECTION_SOURCE})
+SOURCE_GROUP("DataType\\DataChain" FILES ${TYPE_DATA_CHAIN_SOURCE})
 
 SET(ACTIVE_MANAGER_FILES    ${TYPE_INCLUDE_PATH}/ActiveIDManager.h
                             ${TYPE_INCLUDE_PATH}/ActiveMemoryBlockManager.h
                             ${TYPE_INCLUDE_PATH}/ActiveDataManager.h
                             Type/ActiveIDManager.cpp
                             Type/ActiveMemoryBlockManager.cpp)
+
+file(GLOB TYPE_TEMPLATE_HEADER ${TYPE_INCLUDE_PATH}/*.h)
 
 SOURCE_GROUP("DataType\\ActiveManager" FILES ${ACTIVE_MANAGER_FILES})
 
@@ -217,12 +222,14 @@ add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
                         ${STRING_HEADER_FILES}
                         ${TEXT_HEADER_FILES}
                         ${TEXT_SOURCE_FILES}
-                        
 
                         ${ACTIVE_MANAGER_FILES}
 
                         ${TYPE_TEMPLATE_HEADER}
                         ${TYPE_SOURCE_FILES}
+
+                        ${TYPE_COLLECTION_SOURCE}
+                        ${TYPE_DATA_CHAIN_SOURCE}
 
                         ${IO_SOURCE_FILES}
 
