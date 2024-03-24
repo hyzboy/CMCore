@@ -128,10 +128,30 @@ namespace hgl
                 ud_set.Delete(ud);
                 return(true);
             }
-            else if(cur->start==ud_end)   //接在一起了
+            else if(cur->start==ud_end)     //接在一起了
             {
                 cur->count+=ud->count;
                 cur->start-=ud->count;
+
+                free_count+=ud->count;      //空闲数量增加
+                ud_set.Delete(ud);
+                return(true);
+            }
+            else if(cur->start>ud_end)      //在前面
+            {
+                ChainNode *new_cn=node_pool.Acquire();
+
+                new_cn->prev=cur->prev;
+                new_cn->next=cur;
+                new_cn->start=ud->start;
+                new_cn->count=ud->count;
+
+                if(cur->prev)
+                    cur->prev->next=new_cn;
+                else
+                    start=new_cn;
+
+                cur->prev=new_cn;
 
                 free_count+=ud->count;      //空闲数量增加
                 ud_set.Delete(ud);
