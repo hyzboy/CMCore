@@ -54,6 +54,7 @@ namespace hgl
                 bool Alloc  (const uint64);                     ///<分配指定长度的空间
         virtual void Free   ()=0;                               ///<释放数据空间
         virtual void Clear  (){data_size=0;}
+        virtual bool Write  (const void *source,const uint64 offset,const uint64 size)=0;
     };//class AbstractMemoryAllocator
 
     class MemoryAllocator:public AbstractMemoryAllocator
@@ -71,6 +72,17 @@ namespace hgl
         using AbstractMemoryAllocator::AbstractMemoryAllocator;
         virtual ~MemoryAllocator();
         virtual void Free() override;
+
+        virtual bool Write(const void *source,const uint64 offset,const uint64 size) override
+        {
+            if(!source||size==0)return(false);
+
+            if(offset+size>data_size)
+                return(false);
+
+            memcpy((uint8 *)memory_block+offset,source,size);
+            return(true);
+        }
     };//class MemoryAllocator:public AbstractMemoryAllocator
 }//namespace hgl
 #endif//HGL_MEMORY_ALLOCATOR_INCLUDE
