@@ -2,10 +2,20 @@
 
 namespace hgl
 {
-    DataChain::DataChain(const int mc):series(mc),node_pool(mc),ud_pool(mc)
+    DataChain::DataChain()
+    {
+        max_count=0;
+        free_count=0;
+    }
+        
+    bool DataChain::Init(const int mc)
     {
         max_count=mc;
         free_count=mc;
+
+        series.Init(mc);
+        node_pool.Init(mc);
+        ud_pool.Init(mc);
 
         ud_set.PreAlloc(mc);
 

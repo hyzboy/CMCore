@@ -24,11 +24,19 @@ namespace hgl
 
     public:
 
-        DataStackPool(const int max_count):series(max_count)
+        DataStackPool()
+        {
+            data_array=nullptr;
+            end=nullptr;
+        }
+
+        bool Init(const int max_count)
         {
             data_array=hgl_zero_new<T>(max_count);
 
             end=data_array+max_count;
+
+            series.Init(max_count);
         }
 
         ~DataStackPool()

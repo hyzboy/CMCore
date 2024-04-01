@@ -84,8 +84,10 @@ namespace hgl
 
     public:
 
-        DataChain(const int mc);
+        DataChain();
         virtual ~DataChain()=default;
+
+        bool Init(const int mc);                            ///<初始化数据链
 
         UserNode *Acquire(const int acquire_count);         ///<请求一个数据区块
         bool Release(UserNode *ud);                         ///<释放一个数据区块
