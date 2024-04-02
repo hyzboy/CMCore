@@ -26,6 +26,8 @@ namespace hgl
         start->next=nullptr;
         start->start=0;
         start->count=max_count;
+
+        return(true);
     }
 
     DataChain::UserNode *DataChain::Acquire(const int acquire_count)

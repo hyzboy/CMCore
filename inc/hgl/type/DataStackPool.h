@@ -36,7 +36,7 @@ namespace hgl
 
             end=data_array+max_count;
 
-            series.Init(max_count);
+            return series.Init(max_count);
         }
 
         ~DataStackPool()
