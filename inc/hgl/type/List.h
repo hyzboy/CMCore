@@ -218,4 +218,6 @@ namespace hgl
 
         return(nullptr);
     }
+
+    using CharPointerList=hgl::List<const char *>;
 }//namespace hgl
