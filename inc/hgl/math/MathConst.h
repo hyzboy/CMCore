@@ -14,41 +14,46 @@ namespace hgl
 
     template<typename T> bool IsNearlyZero(const T value)
     {
-        return(abs(value)<HGL_FLOAT_KINDA_SMALL);
+        return(abs(value)<=HGL_FLOAT_KINDA_SMALL);
     }
 
-    constexpr double HGL_E          =2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274;        //欧拉数(自然对数的底数)
-    constexpr double HGL_LOG2E      =1.44269504088896340736;
-    constexpr double HGL_LOG10E     =0.434294481903251827651;
-    constexpr double HGL_LN2        =0.693147180559945309417;
-    constexpr double HGL_LN10       =2.30258509299404568402;
-    constexpr double HGL_PI         =3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117068;
-    constexpr double HGL_PI_2       =1.57079632679489661923;
-    constexpr double HGL_PI_4       =0.785398163397448309616;
-    constexpr double HGL_PI_3_4     =2.356194490192344928938;
-    constexpr double HGL_1_PI       =0.318309886183790671538;
-    constexpr double HGL_2_PI       =0.636619772367581343076;
-    constexpr double HGL_2_SQRTPI   =1.12837916709551257390;
-    constexpr double HGL_SQRT2      =1.41421356237309504880168872420969807;
-    constexpr double HGL_SQRT1_2    =0.707106781186547524401;
+    template<typename T> bool IsNearlyEqual(const T a,const T b)
+    {
+        return(abs(a-b)<=HGL_FLOAT_KINDA_SMALL);
+    }
 
-    constexpr double HGL_COS_0  =1;
-    constexpr double HGL_COS_45 =0.707106781187;
-    constexpr double HGL_COS_90 =0;
-    constexpr double HGL_COS_135=-0.707106781187;
-    constexpr double HGL_COS_180=-1;
-    constexpr double HGL_COS_225=-0.707106781187;
-    constexpr double HGL_COS_270=0;
-    constexpr double HGL_COS_315=0.707106781187;
+    constexpr const double HGL_E          =2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274;        //欧拉数(自然对数的底数)
+    constexpr const double HGL_LOG2E      =1.44269504088896340736;
+    constexpr const double HGL_LOG10E     =0.434294481903251827651;
+    constexpr const double HGL_LN2        =0.693147180559945309417;
+    constexpr const double HGL_LN10       =2.30258509299404568402;
+    constexpr const double HGL_PI         =3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117068;
+    constexpr const double HGL_PI_2       =1.57079632679489661923;
+    constexpr const double HGL_PI_4       =0.785398163397448309616;
+    constexpr const double HGL_PI_3_4     =2.356194490192344928938;
+    constexpr const double HGL_1_PI       =0.318309886183790671538;
+    constexpr const double HGL_2_PI       =0.636619772367581343076;
+    constexpr const double HGL_2_SQRTPI   =1.12837916709551257390;
+    constexpr const double HGL_SQRT2      =1.41421356237309504880168872420969807;
+    constexpr const double HGL_SQRT1_2    =0.707106781186547524401;
 
-    constexpr double HGL_SIN_0  =0;
-    constexpr double HGL_SIN_45 =0.707106781187;
-    constexpr double HGL_SIN_90 =1;
-    constexpr double HGL_SIN_135=0.707106781187;
-    constexpr double HGL_SIN_180=0;
-    constexpr double HGL_SIN_225=-0.707106781187;
-    constexpr double HGL_SIN_270=-1;
-    constexpr double HGL_SIN_315=-0.707106781187;
+    constexpr const double HGL_COS_0  =1;
+    constexpr const double HGL_COS_45 =0.707106781187;
+    constexpr const double HGL_COS_90 =0;
+    constexpr const double HGL_COS_135=-0.707106781187;
+    constexpr const double HGL_COS_180=-1;
+    constexpr const double HGL_COS_225=-0.707106781187;
+    constexpr const double HGL_COS_270=0;
+    constexpr const double HGL_COS_315=0.707106781187;
+
+    constexpr const double HGL_SIN_0  =0;
+    constexpr const double HGL_SIN_45 =0.707106781187;
+    constexpr const double HGL_SIN_90 =1;
+    constexpr const double HGL_SIN_135=0.707106781187;
+    constexpr const double HGL_SIN_180=0;
+    constexpr const double HGL_SIN_225=-0.707106781187;
+    constexpr const double HGL_SIN_270=-1;
+    constexpr const double HGL_SIN_315=-0.707106781187;
 
     #define HGL_DEF_DEG2RAD(ang)    constexpr double HGL_RAD_##ang=double(ang)*(HGL_PI/180.0f);
 
