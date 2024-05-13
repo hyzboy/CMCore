@@ -377,5 +377,35 @@ namespace hgl
                         hgl_max(v1.z,v2.z),
                         hgl_max(v1.w,v2.w));
     }
+
+    template<typename T,glm::qualifier Q>
+    const bool IsNearlyZero(const glm::vec<2,T,Q> &v)
+    {
+        return IsNearlyZero(v.x)
+             &&IsNearlyZero(v.y);
+    }
+
+    template<typename T,glm::qualifier Q>
+    const bool IsNearlyZero(const glm::vec<3,T,Q> &v)
+    {
+        return IsNearlyZero(v.x)
+             &&IsNearlyZero(v.y)
+             &&IsNearlyZero(v.z);
+    }
+
+    template<typename T,glm::qualifier Q>
+    const bool IsNearlyEqual(const glm::vec<2,T,Q> &a,const glm::vec<2,T,Q> &b)
+    {
+        return IsNearlyZero(a.x-b.x)
+             &&IsNearlyZero(a.y-b.y);
+    }
+
+    template<typename T,glm::qualifier Q>
+    const bool IsNearlyEqual(const glm::vec<3,T,Q> &a,const glm::vec<3,T,Q> &b)
+    {
+        return IsNearlyZero(a.x-b.x)
+             &&IsNearlyZero(a.y-b.y)
+             &&IsNearlyZero(a.z-b.z);
+    }
 }//namespace hgl
 #endif//HGL_ALGORITHM_MATH_VECTOR_INCLUDE
