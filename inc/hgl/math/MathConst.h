@@ -5,6 +5,18 @@
 
 namespace hgl
 {
+    constexpr const float HGL_FLOAT_MIN         =1.175494351e-38f;              ///<最小浮点数
+    constexpr const float HGL_FLOAT_MAX         =3.402823466e+38f;              ///<最大浮点数
+    constexpr const float HGL_FLOAT_EPSILON     =1.192092896e-07f;              ///<浮点数精度
+    constexpr const float HGL_FLOAT_ZERO        =0.000001f;                     ///<浮点数零值
+    constexpr const float HGL_FLOAT_KINDA_SMALL =1.e-4f;                        ///<浮点数很小值
+    constexpr const float HGL_FLOAT_SMALL       =1.e-8f;                        ///<浮点数小值
+
+    template<typename T> bool IsNearlyZero(const T value)
+    {
+        return(abs(value)<HGL_FLOAT_KINDA_SMALL);
+    }
+
     constexpr double HGL_E          =2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274;        //欧拉数(自然对数的底数)
     constexpr double HGL_LOG2E      =1.44269504088896340736;
     constexpr double HGL_LOG10E     =0.434294481903251827651;
