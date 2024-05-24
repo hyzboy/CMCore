@@ -192,7 +192,7 @@ namespace hgl
      * 求数值对齐后的值
      */
     template<typename T>
-    inline T hgl_align(const T &value,const T &alignment)
+    inline T hgl_align(const T value,const T alignment)
     {    
         return ((value+alignment-1)/alignment)*alignment;
     }
@@ -201,7 +201,7 @@ namespace hgl
      * 求数值对齐后的值(仅支持2次幂)
      */
     template<typename T>
-    inline T hgl_align_pow2(const T &value,const T &alignment)
+    inline T hgl_align_pow2(const T value,const T alignment)
     {    
         const T align_size=alignment-1;
 
