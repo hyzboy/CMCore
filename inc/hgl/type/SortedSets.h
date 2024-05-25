@@ -21,14 +21,15 @@ namespace hgl
 
     public: //属性
 
-                T *             GetData     ()const{return data_list.GetData();}                    ///<取得数据指针
-                int64           GetCount    ()const{return data_list.GetCount();}                   ///<取得数据总量
+                T *     GetData         ()const{return data_list.GetData();}                    ///<取得数据指针
+                int64   GetCount        ()const{return data_list.GetCount();}                   ///<取得数据总量
+                int64   GetAllocCount   ()const{return data_list.GetAllocCount();}              ///<取得已分配空间数量
 
-        const   bool            IsEmpty     ()const{return data_list.IsEmpty();}                    ///<确认列表是否为空
+        const   bool    IsEmpty         ()const{return data_list.IsEmpty();}                    ///<确认列表是否为空
 
-                T *             begin       ()const{return data_list.begin();}
-                T *             end         ()const{return data_list.end();}
-                T *             last        ()const{return data_list.last();}
+                T *     begin           ()const{return data_list.begin();}
+                T *     end             ()const{return data_list.end();}
+                T *     last            ()const{return data_list.last();}
 
     public:
 
