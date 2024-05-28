@@ -13,6 +13,9 @@ namespace hgl
 
     #define CompOperatorMemcmp(name)    int _Comp(name data)const{return memcmp(this,&data,sizeof(name));}  \
                                         CompOperator(name,_Comp)
+
+    #define CompOperatorMemcmpPointer(name)    int _Comp(const name *data)const{return memcmp(this,data,sizeof(name));}  \
+                                                CompOperator(const name *,_Comp)
 }//namespace hgl
 
 /**
