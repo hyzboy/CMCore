@@ -22,6 +22,10 @@ namespace hgl
     using Vector3b=glm::bvec3;
     using Vector4b=glm::bvec4;
 
+    using Vector2i8=glm::u8vec2;
+    using Vector3i8=glm::u8vec3;
+    using Vector4i8=glm::u8vec4;
+
     using Vector2u8=glm::u8vec2;
     using Vector3u8=glm::u8vec3;
     using Vector4u8=glm::u8vec4;
