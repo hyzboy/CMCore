@@ -20,7 +20,7 @@ namespace hgl
 
                 int64   GetCount        ()const{return count;}                                      ///<取得数据数量(注：非字节数)
         const   int64   GetAllocCount   ()const{return alloc_count;}                                ///<取得已分配的阵列大小(注：非字节数)
-        const   int64   GetBytes        ()const{return count*sizeof(T);}                            ///<取得阵列已使用的字节数
+        const   int64   GetTotalBytes   ()const{return count*sizeof(T);}                            ///<取得阵列已使用的字节数
         const   int64   GetAllocBytes   ()const{return alloc_count*sizeof(T);}                      ///<取得阵列已分配空间字节数
 
         const   bool    IsEmpty         ()const{return(count==0);}                                  ///<是否为空

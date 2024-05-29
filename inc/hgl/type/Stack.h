@@ -23,7 +23,7 @@ namespace hgl
                 const   bool    IsEmpty         ()const{return data_array.IsEmpty();}               ///<确认列表是否为空
 
                         T *     GetData         ()const{return data_array.GetData();}               ///<提供原始数据项
-                        int     GetBytes        ()const{return data_array.GetBytes();}              ///<取得原始数据总字节数
+                        int     GetTotalBytes   ()const{return data_array.GetTotalBytes();}         ///<取得原始数据总字节数
 
                         T *     begin           ()const{return data_array.begin();}
                         T *     end             ()const{return data_array.end();}

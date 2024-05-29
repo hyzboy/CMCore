@@ -29,7 +29,7 @@ namespace hgl
         AccumMemoryManager()=default;
         ~AccumMemoryManager()=default;
 
-        const int64 GetTotalBytes()const{return data_array.GetBytes();}         ///<取得总共申请的内存总字节数
+        const int64 GetTotalBytes()const{return data_array.GetTotalBytes();}    ///<取得总共申请的内存总字节数
         const int64 GetBlockCount()const{return block_list.GetCount();}         ///<取得内存数据块数量
 
         Block *Acquire(const int64 size)                                        ///<申请一块内存
@@ -38,7 +38,7 @@ namespace hgl
 
             Block *b=block_list.Add();
 
-            b->offset   =data_array.GetBytes();
+            b->offset   =data_array.GetTotalBytes();
             b->size     =size;
 
             data_array.AddCount(size);
