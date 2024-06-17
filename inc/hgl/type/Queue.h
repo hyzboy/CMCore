@@ -198,8 +198,8 @@ namespace hgl
         {
             ObjectQueue<T>::Clear(olc);
 
-            data_array[0].Free();
-            data_array[1].Free();
+            this->data_array[0].Free();
+            this->data_array[1].Free();
         }
     };//template<typename T> class ObjectQueue
 }//namespace hgl

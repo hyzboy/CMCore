@@ -36,9 +36,9 @@ namespace hgl
             List<T *>::Free();
         }
 
-        virtual void    Clear() override                                                        ///<清除所有数据，但不清空缓冲区
+        virtual void    Clear() override                                                            ///<清除所有数据，但不清空缓冲区
         {
-            for(auto *obj:data_array)
+            for(auto *obj:List<T *>::data_array)
                 DeleteObject(obj);
 
             List<T *>::Clear();
@@ -46,7 +46,7 @@ namespace hgl
 
         virtual bool    IsExist(const ItemPointer &flag)const override                              ///<确认数据项是否存在
         {
-            return this->Find((T *)flag)!=-1;
+            return List<T *>::Find((T *)flag)!=-1;
         }
 
         virtual bool    Unlink(int index){return List<T *>::Delete(index);}                         ///<将指定索引处的数据与列表断开
@@ -54,13 +54,13 @@ namespace hgl
         virtual bool    Unlink(int start,int number){return List<T *>::Delete(start,number);}       ///<将指定索引处的数据与列表断开
         virtual bool    UnlinkByValue(const ItemPointer &ip){return List<T *>::DeleteByValue(ip);}  ///<将一个指定数据与列表断开
         virtual void    UnlinkByValue(const ItemPointer *ip,int n){List<T *>::DeleteByValue(ip,n);} ///<将一批指定数据与列表断开
-        virtual void    UnlinkAll(){List<T *>::Clear();}                                        ///<断开所有数据
+        virtual void    UnlinkAll(){List<T *>::Clear();}                                            ///<断开所有数据
 
     private:
 
         bool    _Delete(int index,int num)
         {
-            if(index<0||num<=0||index+num>=GetCount())
+            if(index<0||num<=0||index+num>=List<T *>::GetCount())
                 return(false);
 
             ItemPointer *p=data_array.data()+index;
