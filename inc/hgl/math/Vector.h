@@ -10,37 +10,29 @@
 
 namespace hgl
 {
-    using Vector2f=glm::vec2;
-    using Vector3f=glm::vec3;
-    using Vector4f=glm::vec4;
+#define DEF_VECTOR(flag,glm_type)   using Vector1##flag=glm::glm_type##1;\
+                                    using Vector2##flag=glm::glm_type##2;\
+                                    using Vector3##flag=glm::glm_type##3;\
+                                    using Vector4##flag=glm::glm_type##4;
 
-    using Vector2d=glm::dvec2;
-    using Vector3d=glm::dvec3;
-    using Vector4d=glm::dvec4;
+    DEF_VECTOR(f,vec)
+    DEF_VECTOR(d,dvec)
+    DEF_VECTOR(b,bvec)
 
-    using Vector2b=glm::bvec2;
-    using Vector3b=glm::bvec3;
-    using Vector4b=glm::bvec4;
+    DEF_VECTOR(i,ivec)
+    DEF_VECTOR(u,uvec)
 
-    using Vector2i8=glm::u8vec2;
-    using Vector3i8=glm::u8vec3;
-    using Vector4i8=glm::u8vec4;
+    DEF_VECTOR(i8,i8vec)
+    DEF_VECTOR(i16,i16vec)
+    DEF_VECTOR(i32,i32vec)
+    DEF_VECTOR(i64,i64vec)
 
-    using Vector2u8=glm::u8vec2;
-    using Vector3u8=glm::u8vec3;
-    using Vector4u8=glm::u8vec4;
+    DEF_VECTOR(u8,u8vec)
+    DEF_VECTOR(u16,u16vec)
+    DEF_VECTOR(u32,u32vec)
+    DEF_VECTOR(u64,u64vec)
 
-    using Vector2u16=glm::u16vec2;
-    using Vector3u16=glm::u16vec3;
-    using Vector4u16=glm::u16vec4;
-
-    using Vector2i=glm::ivec2;
-    using Vector3i=glm::ivec3;
-    using Vector4i=glm::ivec4;
-
-    using Vector2u=glm::uvec2;
-    using Vector3u=glm::uvec3;
-    using Vector4u=glm::uvec4;
+#undef DEF_VECTOR
 
     inline bool operator == (const Vector2f &lhs,const Vector2f &rhs)
     {

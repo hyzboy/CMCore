@@ -15,7 +15,10 @@ namespace hgl
     using Matrix2f=glm::mat2;
     using Matrix3f=glm::mat3;
     using Matrix4f=glm::mat4;
+    using Matrix2x4f=glm::mat2x4;
     using Matrix3x4f=glm::mat3x4;
+    using Matrix4x2f=glm::mat4x2;
+    using Matrix4x3f=glm::mat4x3;
 
     constexpr const Matrix2f Identity2f=Matrix2f(1.0f);
     constexpr const Matrix3f Identity3f=Matrix3f(1.0f);
