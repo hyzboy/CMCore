@@ -630,7 +630,7 @@ namespace hgl
 
         ~AutoDeleteObjectArray()
         {
-            SAFE_CLEAR_OBJECT_ARRAY(items,count);
+            SAFE_CLEAR_OBJECT_ARRAY_OBJECT(items,count);
         }
 
         TP *operator -> (){return items;}

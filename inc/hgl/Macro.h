@@ -26,7 +26,7 @@ namespace hgl
                                         }   \
                                     }
 
-    #define SAFE_CLEAR_OBJECT_ARRAY(name,num)   {   \
+    #define SAFE_CLEAR_OBJECT_ARRAY_OBJECT(name,num)   {   \
                                                     if(name&&num>=0)    \
                                                     {   \
                                                         int safe_clear_object_array_number=num; \
@@ -39,6 +39,13 @@ namespace hgl
                                                         name=nullptr;   \
                                                     }   \
                                                 }
+
+    #define SAFE_CLEAR_OBJECT_ARRAY(name)   {   \
+                                                for(auto *obj:name)\
+                                                {   \
+                                                    SAFE_CLEAR(obj);    \
+                                                }   \
+                                            }
 
     #define FREE_OBJECT_ARRAY(name,num) {   \
                                             if(name&&num>=0)    \
