@@ -73,7 +73,9 @@ SET(STRING_HEADER_FILES ${TYPE_INCLUDE_PATH}/String.h
                         ${TYPE_INCLUDE_PATH}/StringList.h
                         ${TYPE_INCLUDE_PATH}/SplitString.h
                         ${TYPE_INCLUDE_PATH}/MergeString.h
-                        ${TYPE_INCLUDE_PATH}/StdString.h)
+                        ${TYPE_INCLUDE_PATH}/StdString.h
+                        ${TYPE_INCLUDE_PATH}/ConstStringSet.h
+)
 
 SET(TEXT_HEADER_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Endian.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/CodePage.h
@@ -83,7 +85,8 @@ SET(TEXT_HEADER_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Endian.h
 
 SET(TEXT_SOURCE_FILES   Text/Endian.cpp
                         Text/CodePage.cpp
-                        Text/UnicodeBlocks.cpp)
+                        Text/UnicodeBlocks.cpp
+                        Text/ConstStringSetSaveToTextStream.cpp)
 
 SOURCE_GROUP("Text\\String" FILES   ${STRING_HEADER_FILES}
                                     Text/StringList.cpp)

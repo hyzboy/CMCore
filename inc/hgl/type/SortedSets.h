@@ -156,7 +156,7 @@ namespace hgl
         void    Free            (){data_list.Free();}                                       ///<清除数据，并释放内存
         void    Clear           (){data_list.Clear();}                                      ///<清除数据，但不释放内存
 
-        bool    Get             (const int64 index,T &data)                                 ///<根据序列号取得指定数据
+        bool    Get             (const int64 index,T &data) const                           ///<根据序列号取得指定数据
         {
             if(index<0||index>=data_list.GetCount())
                 return(false);

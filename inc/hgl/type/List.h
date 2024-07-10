@@ -202,7 +202,7 @@ namespace hgl
         virtual bool GetLast    (T &data)const{return data_array.ReadAt(data,GetCount()-1);}        ///<取最后一个数据
     };//template <typename T> class List
 
-    template<typename T> T *GetListObject(const List<T *> &list,const int index)
+    template<typename T> T *GetObjectFromList(const List<T *> &list,const int index)
     {
         T *obj;
 
