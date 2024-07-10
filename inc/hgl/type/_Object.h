@@ -1,5 +1,7 @@
-﻿#ifndef HGL__OBJECT_INCLUDE
-#define HGL__OBJECT_INCLUDE
+﻿#pragma once
+
+#include <typeindex>
+#include <typeinfo>
 
 namespace hgl
 {
@@ -32,5 +34,17 @@ namespace hgl
             return ((u *)(&Mthd))->v;
         }
     };//struct MethodPtr
+
+    template<size_t ClassCounter> class IDObject:public _Object
+    {
+    public:
+
+        static const size_t GetClassID(){return ClassID;}
+        static const char *GetClassName(){return ClassName;}
+        static const char *GetClassRawName(){return ClassRawName;}
+
+    public:
+
+        virtual ~IDObject()=default;
+    };
 }//namespace hgl
-#endif//HGL__OBJECT_INCLUDE
