@@ -15,6 +15,14 @@ SET(CORE_PLATFORM_HEADER_FILES  ${CORE_PLATFORM_HEADER_FILES}
 
 SET(TYPE_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type)
 
+SET(TYPE_IDNAME_HEADER_FILES    ${TYPE_INCLUDE_PATH}/ConstStringSet.h
+                                ${TYPE_INCLUDE_PATH}/IDName.h)
+
+SET(TYPE_IDNAME_SOURCE_FILES    Text/ConstStringSetSaveToTextStream.cpp
+                                Type/IDName.cpp)
+
+SOURCE_GROUP("DataType\\IDName" FILES ${TYPE_IDNAME_HEADER_FILES} ${TYPE_IDNAME_SOURCE_FILES})
+
 SET(TYPE_COLLECTION_SOURCE  ${TYPE_INCLUDE_PATH}/Collection.h
                             Type/Collection.cpp)
                             
@@ -74,7 +82,6 @@ SET(STRING_HEADER_FILES ${TYPE_INCLUDE_PATH}/String.h
                         ${TYPE_INCLUDE_PATH}/SplitString.h
                         ${TYPE_INCLUDE_PATH}/MergeString.h
                         ${TYPE_INCLUDE_PATH}/StdString.h
-                        ${TYPE_INCLUDE_PATH}/ConstStringSet.h
 )
 
 SET(TEXT_HEADER_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Endian.h
@@ -85,8 +92,7 @@ SET(TEXT_HEADER_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Endian.h
 
 SET(TEXT_SOURCE_FILES   Text/Endian.cpp
                         Text/CodePage.cpp
-                        Text/UnicodeBlocks.cpp
-                        Text/ConstStringSetSaveToTextStream.cpp)
+                        Text/UnicodeBlocks.cpp)
 
 SOURCE_GROUP("Text\\String" FILES   ${STRING_HEADER_FILES}
                                     Text/StringList.cpp)
@@ -236,6 +242,9 @@ add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
                         ${TYPE_DATA_CHAIN_SOURCE}
 
                         ${IO_SOURCE_FILES}
+
+                        ${TYPE_IDNAME_HEADER_FILES}
+                        ${TYPE_IDNAME_SOURCE_FILES}
 
                         ${MATH_HEADER_FILES}
                         ${MATH_SOURCE_FILES}
