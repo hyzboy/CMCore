@@ -167,5 +167,20 @@ namespace hgl
     {
         return normalize(m*v);
     }
+
+    inline Matrix3f TransformMatrix(const Matrix3f &root,const Matrix3f &child)
+    {
+        return root*child;
+    }
+
+    inline Matrix3f TransformMatrix(const Matrix4f &root,const Matrix3f &child)
+    {
+        return Matrix3f(root*Matrix4f(child));
+    }
+
+    inline Matrix4f TransformMatrix(const Matrix4f &root,const Matrix4f &child)
+    {
+        return root*child;
+    }
 }//namespace hgl
 #endif//HGL_ALGORITHM_MATH_VECTOR_MATRIX_INCLUDE
