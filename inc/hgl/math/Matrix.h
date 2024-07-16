@@ -143,9 +143,29 @@ namespace hgl
 
     inline Vector3f rotate(const Vector3f &v3f,float angle,const Vector3f &axis)
     {
-		Vector4f result = rotate(angle, axis)*Vector4f(v3f, 1.0f);
+        Vector4f result = rotate(angle, axis)*Vector4f(v3f, 1.0f);
 
-		return Vector3f(result.x,result.y,result.z);
+        return Vector3f(result.x,result.y,result.z);
+    }
+
+    inline Vector3f TransformPosition(const Matrix4f &m,const Vector3f &v)
+    {
+        return Vector3f(m*Vector4f(v,1.0f));
+    }
+
+    inline Vector3f TransformDirection(const Matrix4f &m,const Vector3f &v)
+    {
+        return Vector3f(m*Vector4f(v,0.0f));
+    }
+
+    inline Vector3f TransformNormal(const Matrix4f &m,const Vector3f &v)
+    {
+        return normalize(Vector3f(transpose(inverse(m))*Vector4f(v,0.0f)));
+    }
+
+    inline Vector3f TransformNormal(const Matrix3f &m,const Vector3f &v)
+    {
+        return normalize(m*v);
     }
 }//namespace hgl
 #endif//HGL_ALGORITHM_MATH_VECTOR_MATRIX_INCLUDE
