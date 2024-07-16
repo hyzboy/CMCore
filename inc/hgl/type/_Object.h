@@ -47,4 +47,6 @@ namespace hgl
 
         virtual ~IDObject()=default;
     };
+
+    #define HGL_IDOBJECT    IDObject<__COUNTER__>
 }//namespace hgl
