@@ -192,7 +192,7 @@ namespace hgl
      * @param deviation 允许的误差值
      */
     template<typename M>
-    inline float DeviationMatrixComp(const M &m1,const M &m2,const float deviation=HGL_FLOAT_KINDA_SMALL)
+    inline float DeviationMatrixComp(const M &m1,const M &m2,const float deviation=HGL_FLOAT_SMALL)
     {
         float *f1=(float *)&m1;
         float *f2=(float *)&m2;
