@@ -125,7 +125,7 @@ namespace hgl
 
         const SC *GetString(const int id)const                                      ///<根据ID取得字符串
         {
-            if(id<0||id>=count)return(nullptr);
+            if(id<0||id>=GetCount())return(nullptr);
             
             size_t offset;
 
@@ -180,7 +180,6 @@ namespace hgl
         }
     };//class ConstStringSet
 
-    using ConstAnsiStringSet    =ConstStringSet<char>;
     using ConstWideStringSet    =ConstStringSet<wchar_t>;
     using ConstUTF8StringSet    =ConstStringSet<u8char>;
     using ConstUTF16StringSet   =ConstStringSet<u16char>;

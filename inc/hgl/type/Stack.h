@@ -149,7 +149,7 @@ namespace hgl
         {
             ObjectStack<T>::Clear(olc);
 
-            data_array.Free();
+            this->data_array.Free();
         }
     };//template<typename T> class ObjectStack
 }//namespace hgl

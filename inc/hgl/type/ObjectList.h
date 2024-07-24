@@ -63,7 +63,7 @@ namespace hgl
             if(index<0||num<=0||index+num>=List<T *>::GetCount())
                 return(false);
 
-            ItemPointer *p=data_array.data()+index;
+            ItemPointer *p=this->data_array.data()+index;
 
             for(int i=0;i<num;i++)
             {
@@ -134,7 +134,7 @@ namespace hgl
 
         virtual T *operator[](int n)const                                                           ///<操作符重载取得指定索引处的数据
         {
-            T **obj=data_array.GetPointer(n);
+            T **obj=this->data_array.GetPointer(n);
 
             if(!obj)return(nullptr);
 
@@ -145,13 +145,13 @@ namespace hgl
         {
             if(!enum_func)return;
 
-            for(auto *obj:data_array)
+            for(auto *obj:this->data_array)
                 enum_func(obj);
         }
 
         virtual bool SetCount(const int new_count) override
         {
-            const int cur_count=GetCount();
+            const int cur_count=this->GetCount();
 
             if(new_count==cur_count)return(true);
 
@@ -163,10 +163,10 @@ namespace hgl
 
             if(new_count>cur_count)
             {
-                if(!data_array.SetCount(new_count))
+                if(!this->data_array.SetCount(new_count))
                     return(false);
 
-                ItemPointer *p=data_array.GetPointer(cur_count);
+                ItemPointer *p=this->data_array.GetPointer(cur_count);
 
                 hgl_zero<ItemPointer>(p,new_count-cur_count);
 
@@ -176,14 +176,14 @@ namespace hgl
             {
                 const int del_count=cur_count-new_count;
 
-                Delete(GetCount()-del_count,del_count);
+                Delete(this->GetCount()-del_count,del_count);
                 return(true);
             }
         }
 
         virtual bool Set(int index,const ItemPointer &data) override
         {
-            ItemPointer *p=data_array.GetPointer(index);
+            ItemPointer *p=this->data_array.GetPointer(index);
 
             if(!p)return(false);
 
