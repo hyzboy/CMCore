@@ -12,18 +12,20 @@ namespace hgl
 {
     using Quat4f=glm::quat;
 
-    using Matrix2f=glm::mat2;
-    using Matrix3f=glm::mat3;
-    using Matrix4f=glm::mat4;
-    using Matrix2x4f=glm::mat2x4;
-    using Matrix3x4f=glm::mat3x4;
-    using Matrix4x2f=glm::mat4x2;
-    using Matrix4x3f=glm::mat4x3;
+#define DEFINE_MATRIX(num)  using Matrix##num##f=glm::mat##num;  \
+                            constexpr const Matrix##num##f Identity##num##f=Matrix##num##f(1.0f); \
+                            inline bool IsIdentity(const Matrix##num##f &m){return(hgl_cmp(m,Identity##num##f)==0);}    \
+                            inline int FastMatrixComp(const Matrix##num##f &m1,const Matrix##num##f &m2){return hgl_cmp(m1,m2);}
 
-    constexpr const Matrix2f Identity2f=Matrix2f(1.0f);
-    constexpr const Matrix3f Identity3f=Matrix3f(1.0f);
-    constexpr const Matrix4f Identity4f=Matrix4f(1.0f);
-    constexpr const Matrix3f Identity3x4f=Matrix3x4f(1.0f);
+    DEFINE_MATRIX(2)
+    DEFINE_MATRIX(3)
+    DEFINE_MATRIX(4)
+    DEFINE_MATRIX(2x4)
+    DEFINE_MATRIX(3x4)
+    DEFINE_MATRIX(4x2)
+    DEFINE_MATRIX(4x3)
+
+#undef DEFINE_MATRIX
 
     inline Matrix4f inverse(const Matrix4f &m)
     {
@@ -143,9 +145,68 @@ namespace hgl
 
     inline Vector3f rotate(const Vector3f &v3f,float angle,const Vector3f &axis)
     {
-		Vector4f result = rotate(angle, axis)*Vector4f(v3f, 1.0f);
+        Vector4f result = rotate(angle, axis)*Vector4f(v3f, 1.0f);
 
-		return Vector3f(result.x,result.y,result.z);
+        return Vector3f(result.x,result.y,result.z);
+    }
+
+    inline Vector3f TransformPosition(const Matrix4f &m,const Vector3f &v)
+    {
+        return Vector3f(m*Vector4f(v,1.0f));
+    }
+
+    inline Vector3f TransformDirection(const Matrix4f &m,const Vector3f &v)
+    {
+        return Vector3f(m*Vector4f(v,0.0f));
+    }
+
+    inline Vector3f TransformNormal(const Matrix4f &m,const Vector3f &v)
+    {
+        return normalize(Vector3f(transpose(inverse(m))*Vector4f(v,0.0f)));
+    }
+
+    inline Vector3f TransformNormal(const Matrix3f &m,const Vector3f &v)
+    {
+        return normalize(m*v);
+    }
+
+    inline Matrix3f TransformMatrix(const Matrix3f &root,const Matrix3f &child)
+    {
+        return root*child;
+    }
+
+    inline Matrix3f TransformMatrix(const Matrix4f &root,const Matrix3f &child)
+    {
+        return Matrix3f(root*Matrix4f(child));
+    }
+
+    inline Matrix4f TransformMatrix(const Matrix4f &root,const Matrix4f &child)
+    {
+        return root*child;
+    }
+
+    /**
+     * 带误差的比较两个浮点矩阵是否相等
+     * @param m1 矩阵1
+     * @param m2 矩阵2
+     * @param deviation 允许的误差值
+     */
+    template<typename M>
+    inline float DeviationMatrixComp(const M &m1,const M &m2,const float deviation=HGL_FLOAT_KINDA_SMALL)
+    {
+        float *f1=(float *)&m1;
+        float *f2=(float *)&m2;
+        float gap;
+
+        for(int i=0;i<sizeof(M)/sizeof(float);i++)
+        {
+            gap=*f1-*f2;
+
+            if(fabsf(gap)<deviation)
+                return(gap);
+        }
+
+        return 0;
     }
 }//namespace hgl
 #endif//HGL_ALGORITHM_MATH_VECTOR_MATRIX_INCLUDE
