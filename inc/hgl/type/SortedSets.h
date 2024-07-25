@@ -133,7 +133,7 @@ namespace hgl
         * @param count 数据个数
         * @return 成功删除的数据个数
         */
-        int64 Delete(T *dp,const int64 count)
+        int64 Delete(const T *dp,const int64 count)
         {
             int64 total=0;
             int64 pos;
@@ -151,6 +151,11 @@ namespace hgl
             }
 
             return total;
+        }
+
+        int64 Delete(const DataArray<T> &da)
+        {
+            return Delete(da.GetData(),da.GetCount());
         }
 
         void    Free            (){data_list.Free();}                                       ///<清除数据，并释放内存
