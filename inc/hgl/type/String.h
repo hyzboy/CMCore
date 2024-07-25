@@ -97,15 +97,11 @@ namespace hgl
 
         String(const InstClass &si)
         {
-            if((&si)==nullptr)return;
-
             data=si;
         }
 
         String(const SelfClass &bs)
         {
-            if((&bs)==nullptr)return;
-
             Set(bs);
         }
 
@@ -480,9 +476,6 @@ namespace hgl
          */
         bool Insert(const uint pos,const SelfClass &str)
         {
-            if((&str)==nullptr)
-                return(false);
-
             return Insert(pos,str.c_str(),str.Length());
         }
 
@@ -498,9 +491,6 @@ namespace hgl
          */
         bool Strcat(const SelfClass &bs)
         {
-            if((&bs)==nullptr)
-                return(false);
-
             return Insert(Length(),bs);
         }
 
