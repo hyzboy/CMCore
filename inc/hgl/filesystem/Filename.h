@@ -95,12 +95,17 @@ namespace hgl
         template<typename T>
         inline const String<T> ComboFilename(const StringList<T> &sl,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
         {
-            T **str_list=AutoDeleteArray<T *>(sl.GetCount());
-            int *str_len=AutoDeleteArray<int>(sl.GetCount());
+            const int count=sl.GetCount();
+
+            if(count<=0)
+                return String<T>();
+
+            AutoDeleteArray<T *> str_list(count);
+            AutoDeleteArray<int> str_len(count);
 
             int index=0;
 
-            for(auto str:sl)
+            for(String<T> *str:sl)
             {
                 if(str->IsEmpty())
                     continue;
@@ -111,7 +116,7 @@ namespace hgl
                 ++index;
             }
 
-            return ComboFilename(str_list,str_len,sl.GetCount(),spear_char);
+            return ComboFilename(str_list.data(),str_len,count,spear_char);
         }
 
         /**
@@ -349,6 +354,11 @@ namespace hgl
             else
                 return old_name+String<T>::charOf(split_char)+new_extname;
         }
+
+    #ifdef HGL_SUPPORT_CHAR8_T
+        inline AnsiString MergeFilename(const AnsiString &pathname,const AnsiString &filename)          ///<组合路径名与文件名
+        {return MergeFilename<char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_RAWSTR);}
+    #endif//HGL_SUPPORT_CHAR8_T
 
         inline UTF8String MergeFilename(const UTF8String &pathname,const UTF8String &filename)          ///<组合路径名与文件名
         {return MergeFilename<u8char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_U8STR);}
