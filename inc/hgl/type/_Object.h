@@ -35,18 +35,18 @@ namespace hgl
         }
     };//struct MethodPtr
 
-    template<size_t ClassCounter> class IDObject:public _Object
-    {
-    public:
+    //template<size_t ClassCounter> class IDObject:public _Object
+    //{
+    //public:
 
-        static const size_t GetClassID(){return ClassID;}
-        static const char *GetClassName(){return ClassName;}
-        static const char *GetClassRawName(){return ClassRawName;}
+    //    static const size_t GetClassID(){return ClassID;}
+    //    static const char *GetClassName(){return ClassName;}
+    //    static const char *GetClassRawName(){return ClassRawName;}
 
-    public:
+    //public:
 
-        virtual ~IDObject()=default;
-    };
+    //    virtual ~IDObject()=default;
+    //};
 
-    #define HGL_IDOBJECT    IDObject<__COUNTER__>
+    //#define HGL_IDOBJECT    IDObject<__COUNTER__>
 }//namespace hgl

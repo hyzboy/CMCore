@@ -294,6 +294,7 @@ namespace hgl
         return ToAnsiString(cs,str);
     }
     
+    inline OSString ToOSString(const char *str){return to_u16((u8char *)str);}
     inline OSString ToOSString(const u8char *str){return to_u16(str);}
     inline OSString ToOSString(const UTF8String &str){return to_u16(str.c_str(), (int)(str.Length()));}
 
