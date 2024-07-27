@@ -34,19 +34,4 @@ namespace hgl
             return ((u *)(&Mthd))->v;
         }
     };//struct MethodPtr
-
-    //template<size_t ClassCounter> class IDObject:public _Object
-    //{
-    //public:
-
-    //    static const size_t GetClassID(){return ClassID;}
-    //    static const char *GetClassName(){return ClassName;}
-    //    static const char *GetClassRawName(){return ClassRawName;}
-
-    //public:
-
-    //    virtual ~IDObject()=default;
-    //};
-
-    //#define HGL_IDOBJECT    IDObject<__COUNTER__>
 }//namespace hgl
