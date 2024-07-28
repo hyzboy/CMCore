@@ -7,10 +7,14 @@
 //   而MGL是行矩阵，需要反过来pos*matrix
 
 #include<glm/gtc/matrix_transform.hpp>
+#include<glm/gtc/quaternion.hpp>
+#include<glm/gtc/constants.hpp>
+#include<glm/gtx/quaternion.hpp>
 
 namespace hgl
 {
-    using Quat4f=glm::quat;
+    using Quatf=glm::quat;
+    constexpr const Quatf IdentityQuatf=Quatf(1,0,0,0);
 
 #define DEFINE_MATRIX(num)  using Matrix##num##f=glm::mat##num;  \
                             constexpr const Matrix##num##f Identity##num##f=Matrix##num##f(1.0f); \
@@ -150,6 +154,22 @@ namespace hgl
         return Vector3f(result.x,result.y,result.z);
     }
 
+    inline Quatf RotationQuat(const float angle,const Vector3f &axis)
+    {
+        return glm::angleAxis(glm::radians(angle),axis);
+    }
+
+    inline Matrix4f ToMatrix(const Quatf &quat)
+    {
+        return glm::toMat4(quat);
+    }
+
+    inline void ExtractedQuat(const Quatf &quat,Vector3f &axis,float &angle)
+    {
+        angle=glm::degrees(glm::angle(quat));
+        axis=glm::axis(quat);
+    }
+    
     inline Vector3f TransformPosition(const Matrix4f &m,const Vector3f &v)
     {
         return Vector3f(m*Vector4f(v,1.0f));
@@ -208,5 +228,170 @@ namespace hgl
 
         return 0;
     }
+
+    // 函数用于从 glm::mat4 中提取平移、旋转和缩放
+    bool DecomposeTransform(const Matrix4f & transform, Vector3f & outTranslation, Quatf & outRotation, Vector3f & outScale);
+
+    /**
+     * 变换矩阵<Br>
+     * 便于分散管理平移、旋转、缩放等数值
+     */
+    class TransformMatrix4f
+    {
+    protected:
+
+        Matrix4f matrix;
+        Matrix4f inverse_matrix;
+        Matrix4f transpose_inverse_matrix;
+
+        bool matrix_dirty;
+
+        Vector3f translation_vector;
+
+        Quatf rotation_quat;
+        Vector3f rotation_axis;
+        float rotate_angle;
+
+        Vector3f scale_vector;
+
+    protected:
+
+        void UpdateMatrix()
+        {
+            if(!matrix_dirty)
+                return;
+
+            matrix=translate(translation_vector)*ToMatrix(rotation_quat)*scale(scale_vector);
+            inverse_matrix=inverse(matrix);
+            transpose_inverse_matrix=transpose(inverse_matrix);
+
+            matrix_dirty=false;
+        }
+
+        void UpdateQuat()
+        {
+            rotation_quat=RotationQuat(rotate_angle,rotation_axis);
+            matrix_dirty=true;
+        }
+
+    public:
+
+        const Matrix4f &GetMatrix()
+        {
+            UpdateMatrix();
+            return matrix;
+        }
+
+        const Matrix4f &GetInverseMatrix()
+        {
+            UpdateMatrix();
+            return inverse_matrix;
+        }
+
+        const Vector3f &GetTranslation  ()const{return translation_vector;}
+        const Vector3f &GetScale        ()const{return scale_vector;}
+
+        const Quatf &   GetRotationQuat ()const{return rotation_quat;}
+        const Vector3f &GetRotationAxis ()const{return rotation_axis;}
+        const float     GetRotateAngle  ()const{return rotate_angle;}
+
+        void SetTranslation(const Vector3f &v)
+        {
+            translation_vector=v;
+            matrix_dirty=true;
+        }
+
+        void SetRotation(const Quatf &q)
+        {
+            rotation_quat=q;
+            ExtractedQuat(q,rotation_axis,rotate_angle);
+            matrix_dirty=true;
+        }
+
+        void SetRotation(const Vector3f &axis,float angle)
+        {
+            rotation_axis=axis;
+            rotate_angle=angle;
+            UpdateQuat();
+        }
+
+        void SetRotationAxis(const Vector3f &axis)
+        {
+            rotation_axis=axis;
+            UpdateQuat();
+        }
+
+        void SetRotateAngle(float angle)
+        {
+            rotate_angle=angle;
+            UpdateQuat();
+        }
+
+        void SetScale(const Vector3f &v)
+        {
+            scale_vector=v;
+            matrix_dirty=true;
+        }
+
+    public:
+
+        TransformMatrix4f()
+        {
+            matrix=Identity4f;
+            inverse_matrix=Identity4f;
+
+            matrix_dirty=false;
+
+            translation_vector=Vector3f(0,0,0);
+            rotation_quat=Quatf(1,0,0,0);
+            rotation_axis=Vector3f(0,0,0);
+            rotate_angle=0;
+            scale_vector=Vector3f(1,1,1);
+        }
+
+        TransformMatrix4f(const Matrix4f &m)
+        {
+            SetFromMatrix4f(m);
+        }
+
+        void SetFromMatrix4f(const Matrix4f &m)
+        {
+            matrix=m;
+            inverse_matrix=inverse(m);
+
+            matrix_dirty=false;
+
+            DecomposeTransform(m,translation_vector,rotation_quat,scale_vector);
+
+            ExtractedQuat(rotation_quat,rotation_axis,rotate_angle);
+        }
+
+        inline Vector3f TransformPosition(const Vector3f &v)
+        {
+            return Vector3f(matrix*Vector4f(v,1.0f));
+        }
+
+        inline Vector3f TransformDirection(const Vector3f &v)
+        {
+            return Vector3f(matrix*Vector4f(v,0.0f));
+        }
+
+        inline Vector3f TransformNormal(const Vector3f &v)
+        {
+            return normalize(Vector3f(transpose_inverse_matrix*Vector4f(v,0.0f)));
+        }
+
+        inline Matrix3f TransformMatrix(const Matrix3f &child)
+        {
+            return Matrix3f(matrix*Matrix4f(child));
+        }
+
+        inline Matrix4f TransformMatrix(const Matrix4f &child)
+        {
+            return matrix*child;
+        }
+    };//TransformMatrix4f
+
+    constexpr const size_t TransformMatrix4fLength=sizeof(TransformMatrix4f);
 }//namespace hgl
 #endif//HGL_ALGORITHM_MATH_VECTOR_MATRIX_INCLUDE

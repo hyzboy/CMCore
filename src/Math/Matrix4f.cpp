@@ -134,4 +134,37 @@ namespace hgl
 
         //经查证，此代码完全等于glm::lookAtRH，无任何差别
     }
+
+    // 函数用于从 glm::mat4 中提取平移、旋转和缩放
+    bool DecomposeTransform(const Matrix4f & transform, Vector3f & outTranslation, Quatf & outRotation, Vector3f & outScale)
+    {
+        using namespace glm;
+        mat4 LocalMatrix(transform);
+
+        // 提取平移
+        outTranslation = vec3(LocalMatrix[3]);
+
+        // 提取缩放和旋转
+        vec3 Row[3];
+
+        for (int i = 0; i < 3; ++i)
+            for (int j = 0; j < 3; ++j)
+                Row[i][j] = LocalMatrix[i][j];
+
+        // 提取缩放
+        outScale.x = length(Row[0]);
+        outScale.y = length(Row[1]);
+        outScale.z = length(Row[2]);
+
+        // 归一化行向量以提取旋转
+        if (outScale.x) Row[0] /= outScale.x;
+        if (outScale.y) Row[1] /= outScale.y;
+        if (outScale.z) Row[2] /= outScale.z;
+
+        // 提取旋转
+        mat3 RotationMatrix(Row[0], Row[1], Row[2]);
+        outRotation = quat_cast(RotationMatrix);
+
+        return true;
+    }
 }//namespace hgl
