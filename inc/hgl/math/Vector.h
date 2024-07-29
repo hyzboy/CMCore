@@ -10,6 +10,11 @@
 
 namespace hgl
 {
+    enum class AXIS
+    {
+        X,Y,Z
+    };
+
 #define DEF_VECTOR(flag,glm_type)   using Vector1##flag=glm::glm_type##1;\
                                     using Vector2##flag=glm::glm_type##2;\
                                     using Vector3##flag=glm::glm_type##3;\
@@ -33,6 +38,18 @@ namespace hgl
     DEF_VECTOR(u64,u64vec)
 
 #undef DEF_VECTOR
+
+    inline const Vector3f GetAxisVector(const AXIS &axis)
+    {
+        switch(axis)
+        {
+            case AXIS::X:return Vector3f(1,0,0);
+            case AXIS::Y:return Vector3f(0,1,0);
+            case AXIS::Z:return Vector3f(0,0,1);
+        }
+
+        return Vector3f(0,0,0);
+    }
 
     inline bool operator == (const Vector2f &lhs,const Vector2f &rhs)
     {

@@ -179,7 +179,7 @@ namespace hgl
     {
         return glm::slerp(from,to,t);
     }
-    
+
     inline Vector3f TransformPosition(const Matrix4f &m,const Vector3f &v)
     {
         return Vector3f(m*Vector4f(v,1.0f));
@@ -318,7 +318,7 @@ namespace hgl
             matrix_dirty=true;
         }
 
-        void SetRotation(const Vector3f &axis,float angle)
+        void SetRotation(const Vector3f &axis,const float angle)
         {
             rotation_axis=axis;
             rotate_angle=angle;
@@ -328,6 +328,19 @@ namespace hgl
         void SetRotationAxis(const Vector3f &axis)
         {
             rotation_axis=axis;
+            UpdateQuat();
+        }
+
+        void SetRotation(const AXIS &axis,const float angle)
+        {
+            rotation_axis=GetAxisVector(axis);
+            rotate_angle=angle;
+            UpdateQuat();
+        }
+
+        void SetRotationAxis(const AXIS &axis)
+        {
+            rotation_axis=GetAxisVector(axis);
             UpdateQuat();
         }
 
