@@ -50,9 +50,9 @@ namespace hgl
     {
         switch(axis)
         {
-            case AXIS::X:return Vector3f(1,0,0);
-            case AXIS::Y:return Vector3f(0,1,0);
-            case AXIS::Z:return Vector3f(0,0,1);
+            case AXIS::X:return AxisVector::X;
+            case AXIS::Y:return AxisVector::Y;
+            case AXIS::Z:return AxisVector::Z;
         }
 
         return Vector3f(0,0,0);
@@ -255,39 +255,25 @@ namespace hgl
         return sqrt(length_squared_2d(v1, v2));
     }
 
-    inline Vector2f to(const Vector2f &start, const Vector2f &end, float pos)
-    {
-        return Vector2f(start.x + (end.x - start.x)*pos,
-                        start.y + (end.y - start.y)*pos);
-    }
-
-    inline Vector3f to(const Vector3f &start, const Vector3f &end, float pos)
-    {
-        return Vector3f(start.x + (end.x - start.x)*pos,
-                        start.y + (end.y - start.y)*pos,
-                        start.z + (end.z - start.z)*pos);
-    }
-
     template<typename T>
-    inline void to_2d(T &result, const T &start, const T &end, float pos)
+    inline T lerp(const T &from,const T &to,const float alpha)
     {
-        result.x = start.x + (end.x - start.x)*pos;
-        result.y = start.y + (end.y - start.y)*pos;
+        return from + (to - from) * alpha;
     }
 
-    inline bool is_nearly_equal(const float v1,const float v2,const float gap)
+    inline bool is_nearly_equal(const float v1,const float v2,const float deviation=HGL_FLOAT_SMALL)
     {
-        return fabsf(v1-v2)<=gap;
+        return fabsf(v1-v2)<=HGL_FLOAT_SMALL;
     }
 
-    inline bool is_nearly_equal(const Vector2f &v1,const Vector2f &v2,const float gap)
+    inline bool is_nearly_equal(const Vector2f &v1,const Vector2f &v2,const float deviation=HGL_FLOAT_SMALL)
     {
-        return length_squared_2d(v1,v2)<=(gap*gap);
+        return length_squared_2d(v1,v2)<=HGL_FLOAT_SMALL;
     }
 
-    inline bool is_nearly_equal(const Vector3f &v1,const Vector3f &v2,const float gap)
+    inline bool is_nearly_equal(const Vector3f &v1,const Vector3f &v2,const float deviation=HGL_FLOAT_SMALL)
     {
-        return length_squared(v1,v2)<=(gap*gap);
+        return length_squared(v1,v2)<=HGL_FLOAT_SMALL;
     }
 
     /**
