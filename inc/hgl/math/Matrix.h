@@ -236,7 +236,7 @@ namespace hgl
      * 变换矩阵<Br>
      * 便于分散管理平移、旋转、缩放等数值
      */
-    class TransformMatrix4f
+    class Transform
     {
     protected:
 
@@ -335,7 +335,7 @@ namespace hgl
 
     public:
 
-        TransformMatrix4f()
+        Transform()
         {
             matrix=Identity4f;
             inverse_matrix=Identity4f;
@@ -349,7 +349,7 @@ namespace hgl
             scale_vector=Vector3f(1,1,1);
         }
 
-        TransformMatrix4f(const Matrix4f &m)
+        Transform(const Matrix4f &m)
         {
             SetFromMatrix4f(m);
         }
@@ -390,8 +390,8 @@ namespace hgl
         {
             return matrix*child;
         }
-    };//TransformMatrix4f
+    };//Transform
 
-    constexpr const size_t TransformMatrix4fLength=sizeof(TransformMatrix4f);
+    constexpr const size_t TransformMatrix4fLength=sizeof(Transform);
 }//namespace hgl
 #endif//HGL_ALGORITHM_MATH_VECTOR_MATRIX_INCLUDE
