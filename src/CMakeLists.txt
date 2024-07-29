@@ -58,6 +58,9 @@ SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
                         ${MATH_INCLUDE_PATH}/PrimaryMathematics.h
                         ${MATH_INCLUDE_PATH}/PhysicsConst.h
                         ${MATH_INCLUDE_PATH}/HalfFloat.h
+                        ${MATH_INCLUDE_PATH}/LerpType.h
+                        ${MATH_INCLUDE_PATH}/Lerp2D.h
+                        ${MATH_INCLUDE_PATH}/Lerp3D.h
                         )
 
 SET(MATH_SOURCE_FILES   Math/LAtan.cpp
