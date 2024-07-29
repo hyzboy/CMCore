@@ -39,9 +39,12 @@ namespace hgl
 
 #undef DEF_VECTOR
 
-    constexpr const Vector3f XAxisVector=Vector3f(1,0,0);
-    constexpr const Vector3f YAxisVector=Vector3f(0,1,0);
-    constexpr const Vector3f ZAxisVector=Vector3f(0,0,1);
+    namespace AxisVector
+    {
+        constexpr const Vector3f X=Vector3f(1,0,0);
+        constexpr const Vector3f Y=Vector3f(0,1,0);
+        constexpr const Vector3f Z=Vector3f(0,0,1);
+    };
 
     inline const Vector3f GetAxisVector(const AXIS &axis)
     {
