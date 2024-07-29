@@ -169,6 +169,16 @@ namespace hgl
         angle=glm::degrees(glm::angle(quat));
         axis=glm::axis(quat);
     }
+
+    inline Quatf LerpQuat(const Quatf &from,const Quatf &to,const float t)
+    {
+        return glm::lerp(from,to,t);
+    }
+
+    inline Quatf SLerpQuat(const Quatf &from,const Quatf &to,const float t)
+    {
+        return glm::slerp(from,to,t);
+    }
     
     inline Vector3f TransformPosition(const Matrix4f &m,const Vector3f &v)
     {
@@ -393,5 +403,7 @@ namespace hgl
     };//Transform
 
     constexpr const size_t TransformMatrix4fLength=sizeof(Transform);
+
+    Transform Blend(const Transform &from,const Transform &to,const float t);
 }//namespace hgl
 #endif//HGL_ALGORITHM_MATH_VECTOR_MATRIX_INCLUDE
