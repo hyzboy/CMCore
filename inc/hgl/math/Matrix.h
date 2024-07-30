@@ -321,6 +321,14 @@ namespace hgl
             matrix_dirty=true;
         }
 
+        void ClearRotation()
+        {
+            rotation_quat=IdentityQuatf;
+            rotation_axis=Vector3f(0,0,0);
+            rotate_angle=0;
+            matrix_dirty=true;
+        }
+
         void SetRotation(const Quatf &q)
         {
             rotation_quat=q;
@@ -358,6 +366,12 @@ namespace hgl
         {
             rotate_angle=angle;
             UpdateQuat();
+        }
+
+        void SetScale(const float &v)
+        {
+            scale_vector=Vector3f(v,v,v);
+            matrix_dirty=true;
         }
 
         void SetScale(const Vector3f &v)
