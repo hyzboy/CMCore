@@ -292,6 +292,8 @@ namespace hgl
             return matrix;
         }
 
+        operator const Matrix4f &(){return GetMatrix();}
+
         const Matrix4f &GetInverseMatrix()
         {
             UpdateMatrix();
@@ -304,6 +306,14 @@ namespace hgl
         const Quatf &   GetRotationQuat ()const{return rotation_quat;}
         const Vector3f &GetRotationAxis ()const{return rotation_axis;}
         const float     GetRotateAngle  ()const{return rotate_angle;}
+        
+        void SetTranslation(const float x,const float y,const float z)
+        {
+            translation_vector.x=x;
+            translation_vector.y=y;
+            translation_vector.z=z;
+            matrix_dirty=true;
+        }
 
         void SetTranslation(const Vector3f &v)
         {
