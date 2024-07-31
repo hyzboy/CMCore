@@ -195,4 +195,21 @@ namespace hgl
 
         return glm::rotate(Matrix4f(1.0f),angle,axis);
     }
+
+    /**
+    * 计算一个方向旋转成另一个方向的四元数
+    */
+    const Quatf GetRotateQuat(const Vector3f &world_position,const Vector3f &cur_direction,const Vector3f &new_direction)
+    {
+        Vector3f axis=glm::cross(cur_direction,new_direction);
+
+        if(glm::length2(axis)<0.0001)
+            return Quatf(1.0f,0.0f,0.0f,0.0f);
+
+        axis=glm::normalize(axis);
+
+        float angle=acos(glm::dot(cur_direction,new_direction));
+
+        return glm::angleAxis(angle,axis);
+    }
 }//namespace hgl
