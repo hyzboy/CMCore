@@ -414,14 +414,9 @@ namespace hgl
              &&IsNearlyEqual(a.z,b.z);
     }
 
-    inline const Vector3f LerpDirection(const Vector3f &center,const Vector3f &from_direction,const Vector3f &to_direction,const float alpha)
+    inline const Vector3f LerpDirection(const Vector3f &old_direction,const Vector3f &new_direction,const float alpha)
     {
-        return glm::normalize(center + (from_direction - center) * alpha + (to_direction - center) * alpha);
-    }
-
-    inline const Vector3f SLerpDirection(const Vector3f &center,const Vector3f &from,const Vector3f &to,const float alpha)
-    {
-        return glm::normalize(glm::slerp(from - center, to - center, alpha) + center);
+        return glm::normalize(old_direction*(1.0f-alpha)+new_direction*alpha);
     }
 }//namespace hgl
 #endif//HGL_ALGORITHM_MATH_VECTOR_INCLUDE

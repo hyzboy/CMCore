@@ -215,8 +215,8 @@ namespace hgl
         return root*child;
     }
 
-    const Matrix4f GetRotateMatrix(const Vector3f &world_position,const Vector3f &cur_direction,const Vector3f &new_direction);    
-    const Quatf GetRotateQuat(const Vector3f &world_position,const Vector3f &cur_direction,const Vector3f &new_direction);
+    const Matrix4f GetRotateMatrix(const Vector3f &world_position,const Vector3f &old_direction,const Vector3f &new_direction);    
+    const Quatf GetRotateQuat(const Vector3f &world_position,const Vector3f &old_direction,const Vector3f &new_direction);
 
     /**
      * 带误差的比较两个浮点矩阵是否相等
