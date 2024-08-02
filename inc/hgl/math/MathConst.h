@@ -55,7 +55,7 @@ namespace hgl
     constexpr const double HGL_SIN_270=-1;
     constexpr const double HGL_SIN_315=-0.707106781187;
 
-    #define HGL_DEF_DEG2RAD(ang)    constexpr double HGL_RAD_##ang=double(ang)*(HGL_PI/180.0f);
+    #define HGL_DEF_DEG2RAD(ang)    constexpr const double HGL_RAD_##ang=double(ang)*(HGL_PI/180.0f);
 
     HGL_DEF_DEG2RAD(0)
     HGL_DEF_DEG2RAD(45)
@@ -103,25 +103,6 @@ namespace hgl
         double per=pow(10,num);
 
         return double(floor(value*per))/per;
-    }
-    
-    /**
-     * 正圆面积计算
-     * @param radius 半径
-     */
-    inline constexpr double CircleArea(const double radius)
-    {
-        return(radius*radius*HGL_PI);
-    }
-
-    /**
-     * 椭圆面积计算
-     * @param l_radius 长半径
-     * @param s_radius 短半径
-     */
-    inline constexpr double ElipseArea(const double l_radius,const double s_radius)
-    {
-        return(l_radius*s_radius*HGL_PI);
     }
 
     /**

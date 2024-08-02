@@ -51,6 +51,8 @@ SET(MATH_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/math)
 ##Math--------------------------------------------------------
 SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
                         ${MATH_INCLUDE_PATH}/FastTriangle.h
+                        ${MATH_INCLUDE_PATH}/Bezier.h
+                        ${MATH_INCLUDE_PATH}/Area.h
                         ${MATH_INCLUDE_PATH}/Math.h
                         ${MATH_INCLUDE_PATH}/MathConst.h
                         ${MATH_INCLUDE_PATH}/Matrix.h
