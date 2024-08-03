@@ -56,6 +56,7 @@ SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
                         ${MATH_INCLUDE_PATH}/Math.h
                         ${MATH_INCLUDE_PATH}/MathConst.h
                         ${MATH_INCLUDE_PATH}/Matrix.h
+                        ${MATH_INCLUDE_PATH}/Transform.h
                         ${MATH_INCLUDE_PATH}/Vector.h
                         ${MATH_INCLUDE_PATH}/PrimaryMathematics.h
                         ${MATH_INCLUDE_PATH}/PhysicsConst.h
@@ -68,7 +69,8 @@ SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
 SET(MATH_SOURCE_FILES   Math/LAtan.cpp
                         Math/LSinCos.cpp
                         Math/Matrix4f.cpp
-                        Math/HalfFloat.cpp)
+                        Math/HalfFloat.cpp
+                        Math/Transform.cpp)
 
 SOURCE_GROUP("Math\\Header Files" FILES ${MATH_HEADER_FILES})
 SOURCE_GROUP("Math\\Source Files" FILES ${MATH_SOURCE_FILES})
