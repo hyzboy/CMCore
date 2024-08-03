@@ -440,7 +440,7 @@ namespace hgl
     template<typename T>
     inline float CalculateAngle(const T &a,const T &b)
     {
-        return std::acos(dotProduct/(ma*mb));
+        return std::acos(CalculateRadian(a,b));
     }
 }//namespace hgl
 #endif//HGL_ALGORITHM_MATH_VECTOR_INCLUDE
