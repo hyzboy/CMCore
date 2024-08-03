@@ -15,10 +15,10 @@ namespace hgl
         X,Y,Z
     };
 
-#define DEF_VECTOR(flag,glm_type)   using Vector1##flag=glm::glm_type##1;\
-                                    using Vector2##flag=glm::glm_type##2;\
-                                    using Vector3##flag=glm::glm_type##3;\
-                                    using Vector4##flag=glm::glm_type##4;
+#define DEF_VECTOR(flag,glm_type)   using Vector1##flag=glm::glm_type##1; constexpr const Vector1##flag ZeroVector1##flag=Vector1##flag(0);         constexpr const Vector1##flag OneVector1##flag=Vector1##flag(1);\
+                                    using Vector2##flag=glm::glm_type##2; constexpr const Vector2##flag ZeroVector2##flag=Vector2##flag(0,0);       constexpr const Vector2##flag OneVector2##flag=Vector2##flag(1,1);\
+                                    using Vector3##flag=glm::glm_type##3; constexpr const Vector3##flag ZeroVector3##flag=Vector3##flag(0,0,0);     constexpr const Vector3##flag OneVector3##flag=Vector3##flag(1,1,1);\
+                                    using Vector4##flag=glm::glm_type##4; constexpr const Vector4##flag ZeroVector4##flag=Vector4##flag(0,0,0,0);   constexpr const Vector4##flag OneVector4##flag=Vector4##flag(1,1,1,1);
 
     DEF_VECTOR(f,vec)
     DEF_VECTOR(d,dvec)
@@ -261,17 +261,17 @@ namespace hgl
         return from + (to - from) * alpha;
     }
 
-    inline bool is_nearly_equal(const float v1,const float v2,const float deviation=HGL_FLOAT_KINDA_SMALL)
+    inline bool is_nearly_equal(const float v1,const float v2,const float deviation=HGL_FLOAT_SMALL)
     {
         return fabsf(v1-v2)<=deviation;
     }
 
-    inline bool is_nearly_equal(const Vector2f &v1,const Vector2f &v2,const float deviation=HGL_FLOAT_KINDA_SMALL)
+    inline bool is_nearly_equal(const Vector2f &v1,const Vector2f &v2,const float deviation=HGL_FLOAT_SMALL)
     {
         return length_squared_2d(v1,v2)<=deviation;
     }
 
-    inline bool is_nearly_equal(const Vector3f &v1,const Vector3f &v2,const float deviation=HGL_FLOAT_KINDA_SMALL)
+    inline bool is_nearly_equal(const Vector3f &v1,const Vector3f &v2,const float deviation=HGL_FLOAT_SMALL)
     {
         return length_squared(v1,v2)<=deviation;
     }
