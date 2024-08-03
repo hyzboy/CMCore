@@ -418,5 +418,29 @@ namespace hgl
     {
         return glm::normalize(old_direction*(1.0f-alpha)+new_direction*alpha);
     }
+
+    /**
+    * 求两个方向之间的弧度
+    */
+    template<typename T>
+    inline float CalculateRadian(const T &a,const T &b)
+    {
+        float ma=glm::length(a);
+        float mb=glm::length(b);
+
+        if(IsNearlyZero(ma)||IsNearlyZero(mb))
+            return 0.0f;
+
+        return glm::clamp(glm::dot(a,b)/(ma*mb),-1.0f,1.0f);
+    }
+
+    /**
+    * 求两个方向之间的角度
+    */
+    template<typename T>
+    inline float CalculateAngle(const T &a,const T &b)
+    {
+        return std::acos(dotProduct/(ma*mb));
+    }
 }//namespace hgl
 #endif//HGL_ALGORITHM_MATH_VECTOR_INCLUDE
