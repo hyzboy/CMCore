@@ -15,10 +15,10 @@ namespace hgl
         X,Y,Z
     };
 
-#define DEF_VECTOR(flag,glm_type)   using Vector1##flag=glm::glm_type##1; constexpr const Vector1##flag ZeroVector1##flag=Vector1##flag(0);         constexpr const Vector1##flag OneVector1##flag=Vector1##flag(1);\
-                                    using Vector2##flag=glm::glm_type##2; constexpr const Vector2##flag ZeroVector2##flag=Vector2##flag(0,0);       constexpr const Vector2##flag OneVector2##flag=Vector2##flag(1,1);\
-                                    using Vector3##flag=glm::glm_type##3; constexpr const Vector3##flag ZeroVector3##flag=Vector3##flag(0,0,0);     constexpr const Vector3##flag OneVector3##flag=Vector3##flag(1,1,1);\
-                                    using Vector4##flag=glm::glm_type##4; constexpr const Vector4##flag ZeroVector4##flag=Vector4##flag(0,0,0,0);   constexpr const Vector4##flag OneVector4##flag=Vector4##flag(1,1,1,1);
+#define DEF_VECTOR(flag,glm_type)   using Vector1##flag=glm::glm_type##1; const Vector1##flag ZeroVector1##flag=Vector1##flag(0);         const Vector1##flag OneVector1##flag=Vector1##flag(1);\
+                                    using Vector2##flag=glm::glm_type##2; const Vector2##flag ZeroVector2##flag=Vector2##flag(0,0);       const Vector2##flag OneVector2##flag=Vector2##flag(1,1);\
+                                    using Vector3##flag=glm::glm_type##3; const Vector3##flag ZeroVector3##flag=Vector3##flag(0,0,0);     const Vector3##flag OneVector3##flag=Vector3##flag(1,1,1);\
+                                    using Vector4##flag=glm::glm_type##4; const Vector4##flag ZeroVector4##flag=Vector4##flag(0,0,0,0);   const Vector4##flag OneVector4##flag=Vector4##flag(1,1,1,1);
 
     DEF_VECTOR(f,vec)
     DEF_VECTOR(d,dvec)
@@ -41,9 +41,9 @@ namespace hgl
 
     namespace AxisVector
     {
-        constexpr const Vector3f X=Vector3f(1,0,0);
-        constexpr const Vector3f Y=Vector3f(0,1,0);
-        constexpr const Vector3f Z=Vector3f(0,0,1);
+        const Vector3f X=Vector3f(1,0,0);
+        const Vector3f Y=Vector3f(0,1,0);
+        const Vector3f Z=Vector3f(0,0,1);
     };
 
     inline const Vector3f GetAxisVector(const AXIS &axis)

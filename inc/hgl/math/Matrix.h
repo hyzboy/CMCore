@@ -14,10 +14,10 @@
 namespace hgl
 {
     using Quatf=glm::quat;
-    constexpr const Quatf IdentityQuatf=Quatf(1,0,0,0);
+    const Quatf IdentityQuatf(1,0,0,0);     //w,x,y,z
 
 #define DEFINE_MATRIX(num)  using Matrix##num##f=glm::mat##num;  \
-                            constexpr const Matrix##num##f Identity##num##f=Matrix##num##f(1.0f); \
+                            const Matrix##num##f Identity##num##f=Matrix##num##f(1.0f); \
                             inline bool IsIdentityMatrix(const Matrix##num##f &m){return(hgl_cmp(m,Identity##num##f)==0);}    \
                             inline int FastMatrixComp(const Matrix##num##f &m1,const Matrix##num##f &m2){return hgl_cmp(m1,m2);}
 
