@@ -9,20 +9,28 @@ namespace hgl
      */
     class Transform
     {
-    protected:
+        uint32 version;     ///<版本号（注：用于记录任何变化，而不是matrix）
 
-        uint32 version;
+        void UpdateVersion()
+        {
+            if(version>=0x70000000)
+                version=0;
+            else
+                ++version;
+        }
+
+    protected:
 
         bool is_identity;
         bool is_zero_rotate;
         bool matrix_dirty;
 
+        //matrix其实用的少，所以在不取matrix时，并不会计算。
         Matrix4f matrix;
         Matrix4f inverse_matrix;
         Matrix4f transpose_inverse_matrix;
 
         Vector3f translation_vector;
-
         Quatf rotation_quat;
         Vector3f rotation_axis;
         float rotate_angle;
@@ -31,79 +39,15 @@ namespace hgl
 
     protected:
 
-        void UpdateQuat()
-        {
-            if(IsNearlyZero(rotate_angle))
-            {
-                if(is_zero_rotate)
-                    return;
-
-                is_zero_rotate=true;
-                rotation_quat=IdentityQuatf;
-                return;
-            }
-            else
-            {
-                is_zero_rotate=false;
-                rotation_quat=RotationQuat(rotate_angle,rotation_axis);
-            }
-
-            matrix_dirty=true;
-        }
+        void UpdateQuat();
 
     public:
 
-        void UpdateMatrix()
-        {
-            if(!matrix_dirty)
-                return;
+        void UpdateMatrix();
 
-            if(translation_vector==ZeroVector3f
-               &&rotation_quat==IdentityQuatf
-               &&scale_vector==OneVector3f)
-            {
-                if(is_identity)     //如果之前就是空的，那不更新版本号
-                {
-                    matrix_dirty=false;
-                    return;
-                }
-
-                SetToIdentity();
-            }
-            else
-            {
-                matrix=translate(translation_vector)*ToMatrix(rotation_quat)*scale(scale_vector);
-                inverse_matrix=inverse(matrix);
-                transpose_inverse_matrix=transpose(inverse_matrix);
-
-                is_identity=false;
-            }
-
-            matrix_dirty=false;
-
-            if(version>0xF0000000)
-                version=0;
-            else
-                ++version;
-        }
-
-        const uint32 GetVersion()
-        {
-            UpdateMatrix();
-            return version;
-        }
-
-        const bool IsIdentity()
-        {
-            UpdateMatrix();
-            return is_identity;
-        }
-
-        const Matrix4f &GetMatrix()
-        {
-            UpdateMatrix();
-            return matrix;
-        }
+        const uint32    GetVersion  (){UpdateMatrix();return version;}
+        const bool      IsIdentity  (){UpdateMatrix();return is_identity;}
+        const Matrix4f &GetMatrix   (){UpdateMatrix();return matrix;}
 
         const Matrix4f GetMatrix()const     //不能执行UpdateMatrix时的获取
         {
@@ -113,13 +57,15 @@ namespace hgl
                 return matrix;
         }
 
-        operator const Matrix4f &(){return GetMatrix();}
+        operator const Matrix4f &   (){return GetMatrix();}
+        operator const Transform &  (){UpdateMatrix();return *this;}
 
         const Matrix4f &GetInverseMatrix()
         {
             UpdateMatrix();
             return inverse_matrix;
         }
+
 
         const Vector3f &GetTranslation  ()const{return translation_vector;}
         const Vector3f &GetScale        ()const{return scale_vector;}
@@ -130,6 +76,16 @@ namespace hgl
 
         void SetTranslation(const float x,const float y,const float z)
         {
+            if(is_identity)
+            {
+                if(IsNearlyZero(x)
+                 &&IsNearlyZero(y)
+                 &&IsNearlyZero(z))
+                    return;
+            }
+
+            is_identity=false;
+
             translation_vector.x=x;
             translation_vector.y=y;
             translation_vector.z=z;
@@ -138,6 +94,16 @@ namespace hgl
 
         void SetTranslation(const Vector3f &v)
         {
+            if(is_identity)
+            {
+                if(IsNearlyZero(v.x)
+                 &&IsNearlyZero(v.y)
+                 &&IsNearlyZero(v.z))
+                    return;
+            }
+
+            is_identity=false;
+
             translation_vector=v;
             matrix_dirty=true;
         }
@@ -152,6 +118,14 @@ namespace hgl
 
         void SetRotation(const Quatf &q)
         {
+            if(is_identity)
+            {
+                if(q==IdentityQuatf)
+                    return;
+            }
+
+            is_identity=false;
+
             rotation_quat=q;
             ExtractedQuat(q,rotation_axis,rotate_angle);
             matrix_dirty=true;
@@ -159,6 +133,14 @@ namespace hgl
 
         void SetRotation(const Vector3f &axis,const float angle)
         {
+            if(is_identity)
+            {
+                if(IsNearlyZero(angle)==0)
+                    return;
+            }
+
+            is_identity=false;
+
             rotation_axis=axis;
             rotate_angle=angle;
             UpdateQuat();
@@ -166,6 +148,14 @@ namespace hgl
 
         void SetRotation(const AXIS &axis,const float angle)
         {
+            if(is_identity)
+            {
+                if(IsNearlyZero(angle)==0)
+                    return;
+            }
+
+            is_identity=false;
+
             rotation_axis=GetAxisVector(axis);
             rotate_angle=angle;
             UpdateQuat();
@@ -173,18 +163,43 @@ namespace hgl
 
         void SetRotateAngle(float angle)
         {
+            if(is_identity)
+            {
+                if(IsNearlyZero(angle)==0)
+                    return;
+            }
+
+            is_identity=false;
+
             rotate_angle=angle;
             UpdateQuat();
         }
 
         void SetScale(const float &v)
         {
+            if(is_identity)
+            {
+                if(IsNearlyEqual(v,1.0f))
+                    return;
+            }
+            is_identity=false;
+
             scale_vector=Vector3f(v,v,v);
             matrix_dirty=true;
         }
 
         void SetScale(const float x,const float y,const float z)
         {
+            if(is_identity)
+            {
+                if(IsNearlyEqual(x,1.0f)
+                 &&IsNearlyEqual(y,1.0f)
+                 &&IsNearlyEqual(z,1.0f))
+                    return;
+            }
+
+            is_identity=false;
+
             scale_vector.x=x;
             scale_vector.y=y;
             scale_vector.z=z;
@@ -194,6 +209,16 @@ namespace hgl
 
         void SetScale(const Vector3f &v)
         {
+            if(is_identity)
+            {
+                if(IsNearlyEqual(v.x,1.0f)
+                 &&IsNearlyEqual(v.y,1.0f)
+                 &&IsNearlyEqual(v.z,1.0f))
+                    return;
+            }
+
+            is_identity=false;
+
             scale_vector=v;
             matrix_dirty=true;
         }
@@ -203,113 +228,55 @@ namespace hgl
         Transform()
         {
             SetToIdentity();
+            version=0;
         }
 
         Transform(const Matrix4f &m)
         {
             SetFromMatrix4f(m);
+            version=0;
         }
 
         Transform(const Transform &t)
         {
             hgl_cpy(*this,t);
+            version=0;
         }
 
-        void SetToIdentity()
-        {
-            is_identity=true;
-            is_zero_rotate=true;
+        void SetToIdentity();
 
-            matrix=Identity4f;
-            inverse_matrix=Identity4f;
-
-            matrix_dirty=false;
-
-            translation_vector=ZeroVector3f;
-            rotation_quat=IdentityQuatf;
-            rotation_axis=ZeroVector3f;
-            rotate_angle=0;
-            scale_vector=OneVector3f;
-        }
-
-        const bool operator == (const Transform &t)
-        {
-            UpdateMatrix();
-
-            if(is_identity)
-            {
-                if(t.is_identity)
-                    return(true);
-                else
-                    return(false);
-            }
-            else
-            {
-                if(t.is_identity)
-                    return(false);
-            }
-
-            const Matrix4f tm=t.GetMatrix();
-
-            return matrix==tm;
-        }
+        const bool operator == (const Transform &t);
 
         void operator = (const Transform &t)
         {
+            if(operator==(t))
+                return;
+
+            uint32 old_version=version;
+
             hgl_cpy(*this,t);
 
+            version=++old_version;
             UpdateMatrix();
         }
 
-        void SetFromMatrix4f(const Matrix4f &m)
-        {
-            is_identity=IsIdentityMatrix(m);
+        void SetFromMatrix4f(const Matrix4f &m);
 
-            if(is_identity)
-            {
-                SetToIdentity();
-                return;
-            }
+        const bool IsIdentity()const{return is_identity;}
 
-            matrix=m;
-            inverse_matrix=inverse(m);
+        const bool IsLastVersion()const{return !matrix_dirty;}
 
-            matrix_dirty=false;
+        inline Vector3f TransformPosition   (const Vector3f &v){UpdateMatrix();return Vector3f(matrix*Vector4f(v,1.0f));}
+        inline Vector3f TransformDirection  (const Vector3f &v){UpdateMatrix();return Vector3f(matrix*Vector4f(v,0.0f));}
+        inline Vector3f TransformNormal     (const Vector3f &v){UpdateMatrix();return normalize(Vector3f(transpose_inverse_matrix*Vector4f(v,0.0f)));}
+        inline Matrix3f TransformMatrix     (const Matrix3f &child){UpdateMatrix();return Matrix3f(matrix*Matrix4f(child));}
+        inline Matrix4f TransformMatrix     (const Matrix4f &child){UpdateMatrix();return matrix*child;}
 
-            DecomposeTransform(m,translation_vector,rotation_quat,scale_vector);
-
-            ExtractedQuat(rotation_quat,rotation_axis,rotate_angle);
-        }
-
-        inline Vector3f TransformPosition(const Vector3f &v)
-        {
-            UpdateMatrix();
-            return Vector3f(matrix*Vector4f(v,1.0f));
-        }
-
-        inline Vector3f TransformDirection(const Vector3f &v)
-        {
-            UpdateMatrix();
-            return Vector3f(matrix*Vector4f(v,0.0f));
-        }
-
-        inline Vector3f TransformNormal(const Vector3f &v)
-        {
-            UpdateMatrix();
-            return normalize(Vector3f(transpose_inverse_matrix*Vector4f(v,0.0f)));
-        }
-
-        inline Matrix3f TransformMatrix(const Matrix3f &child)
-        {
-            UpdateMatrix();
-            return Matrix3f(matrix*Matrix4f(child));
-        }
-
-        inline Matrix4f TransformMatrix(const Matrix4f &child)
-        {
-            UpdateMatrix();
-            return matrix*child;
-        }
+        inline Vector3f InverseTransformPosition    (const Vector3f &v){UpdateMatrix();return Vector3f(inverse_matrix*Vector4f(v,1.0f));}
+        inline Vector3f InverseTransformDirection   (const Vector3f &v){UpdateMatrix();return Vector3f(inverse_matrix*Vector4f(v,0.0f));}
+        inline Vector3f InverseTransformNormal      (const Vector3f &v){UpdateMatrix();return normalize(Vector3f(transpose_inverse_matrix*Vector4f(v,0.0f)));}
+        inline Matrix3f InverseTransformMatrix      (const Matrix3f &child){UpdateMatrix();return Matrix3f(inverse_matrix*Matrix4f(child));}
+        inline Matrix4f InverseTransformMatrix      (const Matrix4f &child){UpdateMatrix();return inverse_matrix*child;}
 
         inline Transform TransformTransform(const Transform &child)
         {
@@ -327,6 +294,8 @@ namespace hgl
             return Transform(cur_matrix*child_matrix);
         }
     };//Transform
+
+    const Transform IdentityTransform;
 
     constexpr const size_t TransformMatrix4fLength=sizeof(Transform);
 
