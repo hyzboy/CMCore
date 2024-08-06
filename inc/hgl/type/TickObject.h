@@ -4,7 +4,7 @@
 
 namespace hgl
 {
-    class TickObject:public _Object
+    class TickObject:virtual public _Object
     {
     private:
 
