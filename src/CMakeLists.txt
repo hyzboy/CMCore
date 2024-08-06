@@ -48,6 +48,10 @@ SET(SYSTEM_INFO_SOURCE  ${CORE_PLATFORM_INCLUDE_PATH}/SystemInfo.h
 
 SET(MATH_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/math)
 
+SET(BASE_OBJECT_SOURCE_FILES    Object/TickObject.cpp)
+
+SOURCE_GROUP("DataType\\Object" FILES ${BASE_OBJECT_SOURCE_FILES})
+
 ##Math--------------------------------------------------------
 SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
                         ${MATH_INCLUDE_PATH}/FastTriangle.h
@@ -232,6 +236,8 @@ SOURCE_GROUP("Log\\Source Files" FILES ${BASE_LOG_SOURCE})
 
 add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
                         #${SYSTEM_INFO_SOURCE}
+
+                        ${BASE_OBJECT_SOURCE_FILES}
 
                         ${COLOR_HEADER_FILES}
                         ${COLOR_SOURCE_FILES}

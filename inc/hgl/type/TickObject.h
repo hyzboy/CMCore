@@ -1,0 +1,25 @@
+#pragma once
+
+#include<hgl/type/_Object.h>
+
+namespace hgl
+{
+    class TickObject:public _Object
+    {
+    private:
+
+        bool EnableTick=false;
+
+    public:
+
+        const bool &IsEnabledTick()const{return EnableTick;}
+        void        SetEnableTick(bool et){EnableTick=et;}
+
+    public:
+
+        TickObject()=default;
+        virtual ~TickObject()=default;
+
+        virtual void Tick()=0;
+    };//class TickObject:public _Object
+}//namespace hgl
