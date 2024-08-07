@@ -24,9 +24,6 @@ namespace hgl
 
     typedef void (_Object::*ObjectMemberFunc)();
 
-    //此代码取自AngelScript，感谢
-    #define GetMemberFuncPointer(c,m) MethodPtr<sizeof(void (c::*)())>::Convert((void (c::*)())(&c::m))
-
     template <int> struct MethodPtr
     {
         template<class M>
@@ -41,4 +38,7 @@ namespace hgl
             return ((u *)(&Mthd))->v;
         }
     };//struct MethodPtr
+
+    //此代码取自AngelScript，感谢
+    #define GetMemberFuncPointer(c,m) MethodPtr<sizeof(void (c::*)())>::Convert((void (c::*)())(&c::m))
 }//namespace hgl
