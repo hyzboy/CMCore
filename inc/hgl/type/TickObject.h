@@ -8,12 +8,12 @@ namespace hgl
     {
     private:
 
-        bool EnableTick=false;
+        bool enable_tick=false;
 
     public:
 
-        const bool &IsEnabledTick()const{return EnableTick;}
-        void        SetEnableTick(bool et){EnableTick=et;}
+        const bool &IsEnabledTick()const{return enable_tick;}
+        void        SetEnableTick(bool et){enable_tick=et;}
 
     public:
 
