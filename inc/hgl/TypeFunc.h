@@ -167,23 +167,29 @@ namespace hgl
     constexpr const int64     HGL_S64_MIN     =(-0x8000000000000000LL);
 #endif//_MSC_VER
 
-    template<typename T> T HGL_INTEGER_MAX();
-    template<typename T> T HGL_INTEGER_MIN();
+    template<typename T> constexpr const T HGL_INTEGER_MAX();
+    template<typename T> constexpr const T HGL_INTEGER_MIN();
+    template<typename T> constexpr const T HGL_UINTEGER_HALF();
 
-    template<> inline uint8     HGL_INTEGER_MAX<uint8   >() { return HGL_U8_MAX; }
-    template<> inline uint16    HGL_INTEGER_MAX<uint16  >() { return HGL_U16_MAX; }
-    template<> inline uint32    HGL_INTEGER_MAX<uint32  >() { return HGL_U32_MAX; }
-    template<> inline uint64    HGL_INTEGER_MAX<uint64  >() { return HGL_U64_MAX; }
+    template<> inline constexpr const uint8     HGL_INTEGER_MAX<uint8   >() { return HGL_U8_MAX; }
+    template<> inline constexpr const uint16    HGL_INTEGER_MAX<uint16  >() { return HGL_U16_MAX; }
+    template<> inline constexpr const uint32    HGL_INTEGER_MAX<uint32  >() { return HGL_U32_MAX; }
+    template<> inline constexpr const uint64    HGL_INTEGER_MAX<uint64  >() { return HGL_U64_MAX; }
 
-    template<> inline int8      HGL_INTEGER_MAX<int8    >() { return HGL_S8_MAX; }
-    template<> inline int16     HGL_INTEGER_MAX<int16   >() { return HGL_S16_MAX; }
-    template<> inline int32     HGL_INTEGER_MAX<int32   >() { return HGL_S32_MAX; }
-    template<> inline int64     HGL_INTEGER_MAX<int64   >() { return HGL_S64_MAX; }
+    template<> inline constexpr const uint8     HGL_UINTEGER_HALF<uint8 >() { return HGL_U8_MAX >> 1; }
+    template<> inline constexpr const uint16    HGL_UINTEGER_HALF<uint16>() { return HGL_U16_MAX >> 1; }
+    template<> inline constexpr const uint32    HGL_UINTEGER_HALF<uint32>() { return HGL_U32_MAX >> 1; }
+    template<> inline constexpr const uint64    HGL_UINTEGER_HALF<uint64>() { return HGL_U64_MAX >> 1; }
 
-    template<> inline int8      HGL_INTEGER_MIN<int8    >() { return HGL_S8_MIN; }
-    template<> inline int16     HGL_INTEGER_MIN<int16   >() { return HGL_S16_MIN; }
-    template<> inline int32     HGL_INTEGER_MIN<int32   >() { return HGL_S32_MIN; }
-    template<> inline int64     HGL_INTEGER_MIN<int64   >() { return HGL_S64_MIN; }
+    template<> inline constexpr const int8      HGL_INTEGER_MAX<int8    >() { return HGL_S8_MAX; }
+    template<> inline constexpr const int16     HGL_INTEGER_MAX<int16   >() { return HGL_S16_MAX; }
+    template<> inline constexpr const int32     HGL_INTEGER_MAX<int32   >() { return HGL_S32_MAX; }
+    template<> inline constexpr const int64     HGL_INTEGER_MAX<int64   >() { return HGL_S64_MAX; }
+
+    template<> inline constexpr const int8      HGL_INTEGER_MIN<int8    >() { return HGL_S8_MIN; }
+    template<> inline constexpr const int16     HGL_INTEGER_MIN<int16   >() { return HGL_S16_MIN; }
+    template<> inline constexpr const int32     HGL_INTEGER_MIN<int32   >() { return HGL_S32_MIN; }
+    template<> inline constexpr const int64     HGL_INTEGER_MIN<int64   >() { return HGL_S64_MIN; }
 
     constexpr char LowerHexChar[16]={'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};  ///<小写16进制字符
     constexpr char UpperHexChar[16]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};  ///<大写16进制字符
