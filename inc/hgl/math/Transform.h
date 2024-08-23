@@ -122,7 +122,7 @@ namespace hgl
         const Quatf &GetQuat()const { return quat; }
         void SetQuat(const Quatf &q)
         {
-            if (IsNearlyEqual(quat,q))
+            if(IsNearlyEqual(quat,q))
                 return;
 
             quat=q;

@@ -32,6 +32,11 @@ namespace hgl
 
 //#undef DEFINE_MATRIX
 
+    inline const bool IsNearlyEqual(const Quatf &q1,const Quatf &q2)
+    {
+        return glm::all(glm::epsilonEqual(q1,q2,glm::epsilon<float>()));
+    }
+
     inline Matrix4f inverse(const Matrix4f &m)
     {
         return glm::inverse(m);

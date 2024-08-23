@@ -7,6 +7,8 @@
 
 #include<hgl/math/FastTriangle.h>
 #include<glm/glm.hpp>
+#include<glm/gtc/constants.hpp>
+#include<glm/gtc/epsilon.hpp>
 
 namespace hgl
 {
@@ -261,19 +263,52 @@ namespace hgl
         return from + (to - from) * alpha;
     }
 
-    inline bool is_nearly_equal(const float v1,const float v2,const float deviation=HGL_FLOAT_SMALL)
+    inline bool IsNearlyEqual(const float v1,const float v2,const float epsilon=HGL_FLOAT_EPSILON)
     {
-        return fabsf(v1-v2)<=deviation;
+        return glm::epsilonEqual(v1,v2,epsilon);
     }
 
-    inline bool is_nearly_equal(const Vector2f &v1,const Vector2f &v2,const float deviation=HGL_FLOAT_SMALL)
+    inline bool IsNearlyEqual(const Vector2f &v1,const Vector2f &v2,const float epsilon=HGL_FLOAT_EPSILON)
     {
-        return length_squared_2d(v1,v2)<=deviation;
+        glm::bvec2 result=glm::epsilonEqual(v1,v2,epsilon);
+
+        return result.x && result.y;
     }
 
-    inline bool is_nearly_equal(const Vector3f &v1,const Vector3f &v2,const float deviation=HGL_FLOAT_SMALL)
+    inline bool IsNearlyEqual(const Vector2d &v1,const Vector2d &v2,const double epsilon=HGL_DOUBLE_EPSILON)
     {
-        return length_squared(v1,v2)<=deviation;
+        glm::bvec2 result=glm::epsilonEqual(v1,v2,epsilon);
+
+        return result.x && result.y;
+    }
+
+    inline bool IsNearlyEqual(const Vector3f &v1,const Vector3f &v2,const float epsilon=HGL_FLOAT_EPSILON)
+    {
+        glm::bvec3 result=glm::epsilonEqual(v1,v2,epsilon);
+
+        return result.x && result.y && result.z;
+    }
+
+    inline bool IsNearlyEqual(const Vector3d &v1,const Vector3d &v2,const double epsilon=HGL_DOUBLE_EPSILON)
+    {
+        glm::bvec3 result=glm::epsilonEqual(v1,v2,epsilon);
+
+        return result.x && result.y && result.z;
+    }
+
+    template<typename T,glm::qualifier Q>
+    inline const bool IsNearlyZero(const glm::vec<2,T,Q> &v)
+    {
+        return IsNearlyZero(v.x)
+             &&IsNearlyZero(v.y);
+    }
+
+    template<typename T,glm::qualifier Q>
+    inline const bool IsNearlyZero(const glm::vec<3,T,Q> &v)
+    {
+        return IsNearlyZero(v.x)
+             &&IsNearlyZero(v.y)
+             &&IsNearlyZero(v.z);
     }
 
     /**
@@ -382,36 +417,6 @@ namespace hgl
                         hgl_max(v1.y,v2.y),
                         hgl_max(v1.z,v2.z),
                         hgl_max(v1.w,v2.w));
-    }
-
-    template<typename T,glm::qualifier Q>
-    inline const bool IsNearlyZero(const glm::vec<2,T,Q> &v)
-    {
-        return IsNearlyZero(v.x)
-             &&IsNearlyZero(v.y);
-    }
-
-    template<typename T,glm::qualifier Q>
-    inline const bool IsNearlyZero(const glm::vec<3,T,Q> &v)
-    {
-        return IsNearlyZero(v.x)
-             &&IsNearlyZero(v.y)
-             &&IsNearlyZero(v.z);
-    }
-
-    template<typename T,glm::qualifier Q>
-    inline const bool IsNearlyEqual(const glm::vec<2,T,Q> &a,const glm::vec<2,T,Q> &b)
-    {
-        return IsNearlyEqual(a.x,b.x)
-             &&IsNearlyEqual(a.y,b.y);
-    }
-
-    template<typename T,glm::qualifier Q>
-    inline const bool IsNearlyEqual(const glm::vec<3,T,Q> &a,const glm::vec<3,T,Q> &b)
-    {
-        return IsNearlyEqual(a.x,b.x)
-             &&IsNearlyEqual(a.y,b.y)
-             &&IsNearlyEqual(a.z,b.z);
     }
 
     inline const Vector3f LerpDirection(const Vector3f &old_direction,const Vector3f &new_direction,const float alpha)
