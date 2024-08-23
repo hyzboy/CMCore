@@ -73,6 +73,18 @@ namespace hgl
 
         virtual constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformMatrix>(); }
 
+    public:
+
+        TransformMatrix() :TransformBase()
+        {
+            transform_matrix=Identity4f;
+        }
+
+        TransformMatrix(const Matrix4f &mat) :TransformBase()
+        {
+            transform_matrix=mat;
+        }
+
         const Matrix4f &GetTransformMatrix()const { return transform_matrix; }
 
         void SetTransformMatrix(const Matrix4f &mat)
@@ -98,6 +110,18 @@ namespace hgl
 
         virtual constexpr const size_t GetTypeHash()const override{return hgl::GetTypeHash<TransformTranslate3f>();}
 
+    public:
+
+        TransformTranslate3f():TransformBase()
+        {
+            offset=ZeroVector3f;
+        }
+
+        TransformTranslate3f(const Vector3f &o) :TransformBase()
+        {
+            offset=o;
+        }
+
         const Vector3f &GetOffset()const { return offset; }
         void SetOffset(const Vector3f &o)
         {
@@ -121,7 +145,9 @@ namespace hgl
         {
             mat=translate(offset);
         }
-    };//class TransformTranslate
+    };//class TransformTranslate3f
+
+    using TransformMove3f=TransformTranslate3f;
 
     class TransformRotateQuat :public TransformBase
     {
@@ -130,6 +156,18 @@ namespace hgl
     public:
 
         virtual constexpr const size_t GetTypeHash()const override{return hgl::GetTypeHash<TransformRotateQuat>();}
+
+    public:
+
+        TransformRotateQuat() :TransformBase()
+        {
+            quat=IdentityQuatf;
+        }
+
+        TransformRotateQuat(const Quatf &q) :TransformBase()
+        {
+            quat=q;
+        }
 
         const Quatf &GetQuat()const { return quat; }
         void SetQuat(const Quatf &q)
@@ -155,6 +193,20 @@ namespace hgl
     public:
 
         virtual constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformRotateAxis>(); }
+
+    public:
+
+        TransformRotateAxis():TransformBase()
+        {
+            axis=ZeroVector3f;
+            angle=0;
+        }
+
+        TransformRotateAxis(const Vector3f &a,float ang) :TransformBase()
+        {
+            axis=a;
+            angle=ang;
+        }
 
         const Vector3f &GetAxis()const { return axis; }
         const float GetAngle()const { return angle; }
@@ -201,6 +253,18 @@ namespace hgl
 
         virtual constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformRotateEuler>(); }
 
+    public:
+
+        TransformRotateEuler() :TransformBase()
+        {
+            euler=ZeroVector3f;
+        }
+
+        TransformRotateEuler(const Vector3f &e) :TransformBase()
+        {
+            euler=e;
+        }
+
         const Vector3f &GetEuler()const { return euler; }
 
         const float     GetPitch()const { return euler.x; }
@@ -225,6 +289,18 @@ namespace hgl
     public:
 
         virtual constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformScale3f>(); }
+
+    public:
+
+        TransformScale3f() :TransformBase()
+        {
+            scale3f=Vector3f(1,1,1);
+        }
+
+        TransformScale3f(const Vector3f &s) :TransformBase()
+        {
+            scale3f=s;
+        }
 
         const Vector3f &GetScale()const { return scale3f; }
         void SetScale(const Vector3f &s)
@@ -351,6 +427,73 @@ namespace hgl
         {
             transform_list.Add(tb);
             UpdateVersion();
+        }
+
+        TransformTranslate3f *AddTranslate(const Vector3f &v)
+        {
+            TransformTranslate3f *tt=new TransformTranslate3f(v);
+
+            AddTransform(tt);
+
+            return tt;
+        }
+
+        TransformMove3f *AddMove(const Vector3f &v){return AddTranslate(v); }
+
+        TransformRotateAxis *AddRotateAxis(const Vector3f &axis,const float angle)
+        {
+            TransformRotateAxis *tra=new TransformRotateAxis(axis,angle);
+
+            AddTransform(tra);
+
+            return tra;
+        }
+
+        TransformRotateQuat *AddRotateQuat(const Quatf &q)
+        {
+            TransformRotateQuat *trq=new TransformRotateQuat(q);
+
+            AddTransform(trq);
+
+            return trq;
+        }
+
+        TransformRotateEuler *AddRotateEuler(const Vector3f &euler)
+        {
+            TransformRotateEuler *tre=new TransformRotateEuler(euler);
+
+            AddTransform(tre);
+
+            return tre;
+        }
+
+        TransformScale3f *AddScale(const Vector3f &v)
+        {
+            TransformScale3f *ts=new TransformScale3f(v);
+
+            AddTransform(ts);
+
+            return ts;
+        }
+
+        TransformLookAt *AddLookAt(const Vector3f &eye,const Vector3f &center,const Vector3f &up)
+        {
+            TransformLookAt *tla=new TransformLookAt;
+
+            tla->SetLookAt(eye,center,up);
+
+            AddTransform(tla);
+
+            return tla;
+        }
+
+        TransformMatrix *AddMatrix(const Matrix4f &mat)
+        {
+            TransformMatrix *tm=new TransformMatrix(mat);
+
+            AddTransform(tm);
+
+            return tm;
         }
 
         void RemoveTransform(TransformBase *tb)

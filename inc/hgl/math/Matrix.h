@@ -19,8 +19,22 @@ namespace hgl
 
 #define DEFINE_MATRIX(num)  using Matrix##num##f=glm::mat##num;  \
                             const Matrix##num##f Identity##num##f=Matrix##num##f(1.0f); \
-                            inline bool IsIdentityMatrix(const Matrix##num##f &m){return(hgl_cmp(m,Identity##num##f)==0);}    \
-                            inline int FastMatrixComp(const Matrix##num##f &m1,const Matrix##num##f &m2){return hgl_cmp(m1,m2);}
+                            inline bool IsIdentityMatrix(const Matrix##num##f &m){return(hgl_cmp(m,Identity##num##f)==0);}  \
+                            inline bool IsNearlyEqual(const Matrix##num##f &m1,const Matrix##num##f &m2)    \
+                            {   \
+                                float *f1=(float *)&m1;\
+                                float *f2=(float *)&m2;\
+                            \
+                                for(int i=0;i<sizeof(Matrix##num##f)/sizeof(float);i++)  \
+                                {   \
+                                    if(!IsNearlyEqual(*f1,*f2))  \
+                                        return(false);  \
+                            \
+                                    ++f1;++f2;  \
+                                }   \
+                            \
+                                return(true);   \
+                            }
 
     DEFINE_MATRIX(2)
     DEFINE_MATRIX(3)
@@ -206,19 +220,19 @@ namespace hgl
         return normalize(m*v);
     }
 
-    inline Matrix3f TransformMatrix(const Matrix3f &root,const Matrix3f &child)
+    inline Matrix3f MatrixMult(const Matrix3f &parent,const Matrix3f &child)
     {
-        return root*child;
+        return parent*child;
     }
 
-    inline Matrix3f TransformMatrix(const Matrix4f &root,const Matrix3f &child)
+    inline Matrix3f MatrixMult(const Matrix4f &parent,const Matrix3f &child)
     {
-        return Matrix3f(root*Matrix4f(child));
+        return Matrix3f(parent*Matrix4f(child));
     }
 
-    inline Matrix4f TransformMatrix(const Matrix4f &root,const Matrix4f &child)
+    inline Matrix4f MatrixMult(const Matrix4f &parent,const Matrix4f &child)
     {
-        return root*child;
+        return parent*child;
     }
 
     const Matrix4f GetRotateMatrix(const Vector3f &world_position,const Vector3f &old_direction,const Vector3f &new_direction);    
