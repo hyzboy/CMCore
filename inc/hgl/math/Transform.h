@@ -40,6 +40,18 @@ namespace hgl
 
         const uint GetVersion()const{return version;}                       ///<取得当前数据版本号
 
+        virtual const uint MatrixTransform(Matrix4f &Mat)                   ///<将当前矩阵与Mat相乘，并返回当前矩阵版本号
+        {
+            if (cur_version != version)
+            {
+                UpdateMatrix(CurMatrix);
+                cur_version=version;
+            }
+
+            Mat*=CurMatrix;
+            return cur_version;
+        }
+
         virtual const uint GetMatrix(Matrix4f &mat)                         ///<取得当前矩阵，并返回当前矩阵版本号
         {
             if (cur_version != version)
@@ -183,64 +195,26 @@ namespace hgl
 
     class TransformRotateEuler :public TransformBase
     {
-        float pitch;        ///<绕X轴旋转弧度
-        float yaw;          ///<绕Y轴旋转弧度
-        float roll;         ///<绕Z轴旋转弧度
+        Vector3f euler;
 
     public:
 
         virtual constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformRotateEuler>(); }
 
-        const Vector3f &GetEuler()const { return Vector3f(pitch,yaw,roll); }
+        const Vector3f &GetEuler()const { return euler; }
 
-        const float GetPitch()const { return pitch; }
-        const float GetYaw()const { return yaw; }
-        const float GetRoll()const { return roll; }
+        const float     GetPitch()const { return euler.x; }
+        const float     GetYaw  ()const { return euler.y; }
+        const float     GetRoll ()const { return euler.z; }
 
-        void SetEuler(const Vector3f &e)
-        {
-            if (IsNearlyEqual(e.x,pitch)
-                &&IsNearlyEqual(e.y,yaw)
-                &&IsNearlyEqual(e.z,roll))
-                return;
-
-            pitch=e.x;
-            yaw=e.y;
-            roll=e.z;
-
-            UpdateVersion();
-        }
-
-        void SetPitch(float p)
-        {
-            if (IsNearlyEqual(pitch,p))
-                return;
-
-            pitch=p;
-            UpdateVersion();
-        }
-
-        void SetYaw(float y)
-        {
-            if (IsNearlyEqual(yaw,y))
-                return;
-
-            yaw=y;
-            UpdateVersion();
-        }
-
-        void SetRoll(float r)
-        {
-            if (IsNearlyEqual(roll,r))
-                return;
-
-            roll=r;
-            UpdateVersion();
-        }
+        void SetEuler   (const Vector3f &e  ){if(IsNearlyEqual(euler,  e))return;euler  =e;UpdateVersion();}
+        void SetPitch   (const float p      ){if(IsNearlyEqual(euler.x,p))return;euler.x=p;UpdateVersion();}
+        void SetYaw     (const float y      ){if(IsNearlyEqual(euler.y,y))return;euler.y=y;UpdateVersion();}
+        void SetRoll    (const float r      ){if(IsNearlyEqual(euler.z,r))return;euler.z=r;UpdateVersion();}
 
         virtual void UpdateMatrix(Matrix4f &mat) override
         {
-            mat=glm::eulerAngleXYZ(pitch,yaw,roll);
+            mat=glm::eulerAngleXYZ(euler.x,euler.y,euler.z);
         }
     };//class TransformRotateEuler
 
@@ -329,30 +303,91 @@ namespace hgl
     class TransformManager
     {
         uint version;
+        uint cur_version;
+
+        Matrix4f CurMatrix;
 
         ObjectList<TransformBase> transform_list;
 
+    private:
+        
+        virtual uint UpdateVersion()
+        {
+            //版本号只是为了记录变化，让程序知道和上次不一样，所以最大值是多少其实无所谓的
+            version=(version >= 1000000)?0:++version;
+
+            return version;
+        }
+
+        void UpdateMatrix(Matrix4f &cur_matrix)
+        {
+            cur_matrix=Identity4f;
+
+            if (transform_list.IsEmpty())
+                return;
+
+            for (TransformBase *tb : transform_list)
+                tb->MatrixTransform(cur_matrix);
+        }
+
     public:
 
-        TransformManager()=default;
+        TransformManager()
+        {
+            version=0;
+            cur_version=0;
+            CurMatrix=Identity4f;
+        }
         virtual ~TransformManager()=default;
 
         void Clear()
         {
             transform_list.Clear();
         }
+
+        const uint GetVersion()const{return version;}                       ///<取得当前数据版本号
       
         void AddTransform(TransformBase *tb)
         {
             transform_list.Add(tb);
+            UpdateVersion();
         }
 
         void RemoveTransform(TransformBase *tb)
         {
-            transform_list.DeleteByValue(tb);
+            if(!tb)
+                return;
+
+            const int pos=transform_list.Find(tb);
+            
+            if(pos<0)
+                return;
+
+            transform_list.DeleteMove(pos);     //使用DeleteMove是为了保持顺序(Delete可能会拿最后一个数据移到前面，而本类需要保持顺序)
+
+            UpdateVersion();
         }
 
+        uint GetMatrix(Matrix4f &result,const uint old_version)
+        {
+            if (old_version == cur_version)
+                return old_version;
 
+            if (transform_list.IsEmpty())
+            {
+                result=Identity4f;
+                return cur_version;
+            }
+            
+            if (cur_version != version)
+            {
+                UpdateMatrix(CurMatrix);
+                cur_version=version;
+            }
+
+            result=CurMatrix;
+            return cur_version;
+        }
     };//class TransformManager
 
     /**
