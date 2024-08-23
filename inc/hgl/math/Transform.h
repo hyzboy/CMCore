@@ -1,5 +1,6 @@
 #pragma once
 #include<hgl/math/Matrix.h>
+#include<hgl/type/ObjectList.h>
 
 namespace hgl
 {
@@ -324,6 +325,35 @@ namespace hgl
             mat=lookat(eye,center,up);
         }
     };//class TransformLookAt
+
+    class TransformManager
+    {
+        uint version;
+
+        ObjectList<TransformBase> transform_list;
+
+    public:
+
+        TransformManager()=default;
+        virtual ~TransformManager()=default;
+
+        void Clear()
+        {
+            transform_list.Clear();
+        }
+      
+        void AddTransform(TransformBase *tb)
+        {
+            transform_list.Add(tb);
+        }
+
+        void RemoveTransform(TransformBase *tb)
+        {
+            transform_list.DeleteByValue(tb);
+        }
+
+
+    };//class TransformManager
 
     /**
      * 变换矩阵<Br>
