@@ -41,6 +41,14 @@ namespace hgl
             cur_data=init_data;
         }
 
+        VersionData(const VersionData *vd)
+        {
+            version=vd->version;
+            cur_version=vd->cur_version;
+
+            cur_data=vd->cur_data;
+        }
+
         virtual ~VersionData()=default;
 
         const uint32    GetNewestVersion()const { return version; }                         ///<取得最新的版本号(注意数据可能不是最新的)
