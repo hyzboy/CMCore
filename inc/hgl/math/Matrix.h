@@ -220,21 +220,6 @@ namespace hgl
         return normalize(m*v);
     }
 
-    inline Matrix3f MatrixMult(const Matrix3f &parent,const Matrix3f &child)
-    {
-        return parent*child;
-    }
-
-    inline Matrix3f MatrixMult(const Matrix4f &parent,const Matrix3f &child)
-    {
-        return Matrix3f(parent*Matrix4f(child));
-    }
-
-    inline Matrix4f MatrixMult(const Matrix4f &parent,const Matrix4f &child)
-    {
-        return parent*child;
-    }
-
     const Matrix4f GetRotateMatrix(const Vector3f &world_position,const Vector3f &old_direction,const Vector3f &new_direction);    
     const Quatf GetRotateQuat(const Vector3f &world_position,const Vector3f &old_direction,const Vector3f &new_direction);
 
