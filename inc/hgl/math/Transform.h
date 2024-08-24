@@ -1,73 +1,42 @@
 #pragma once
 #include<hgl/math/Matrix.h>
 #include<hgl/type/ObjectList.h>
+#include<hgl/type/VersionData.h>
 
 namespace hgl
 {
     /**
     * 变换基类
     */
-    class TransformBase
+    class TransformBase:public VersionData<Matrix4f>
     {
-        uint version;
-        uint cur_version;
-
-        Matrix4f CurMatrix;
-
     protected:
 
-        virtual uint UpdateVersion()
-        {
-            //版本号只是为了记录变化，让程序知道和上次不一样，所以最大值是多少其实无所谓的
-            version=(version >= 1000000)?0:++version;
-
-            return version;
-        }
-
-        virtual void UpdateMatrix(Matrix4f &)=0;
+        virtual void MakeNewestData(Matrix4f &)=0;
 
     public:
 
-        TransformBase()
-        {
-            version=0;
-            cur_version=0;
-            CurMatrix=Identity4f;
-        }
+        TransformBase():VersionData(Identity4f){}
         virtual ~TransformBase()=default;
 
         virtual constexpr const size_t GetTypeHash()const=0;                ///<取得类型哈希值
 
-        const uint GetVersion()const{return version;}                       ///<取得当前数据版本号
-
-        virtual const uint MatrixTransform(Matrix4f &Mat)                   ///<将当前矩阵与Mat相乘，并返回当前矩阵版本号
+        const uint32 GetMatrix(Matrix4f &mat)                               ///<取得当前矩阵，并返回当前矩阵版本号
         {
-            if (cur_version != version)
-            {
-                UpdateMatrix(CurMatrix);
-                cur_version=version;
-            }
-
-            Mat*=CurMatrix;
-            return cur_version;
-        }
-
-        virtual const uint GetMatrix(Matrix4f &mat)                         ///<取得当前矩阵，并返回当前矩阵版本号
-        {
-            if (cur_version != version)
-            {
-                UpdateMatrix(CurMatrix);
-                cur_version=version;
-            }
-
-            mat=CurMatrix;
-            return cur_version;
+            return GetNewestVersionData(mat);
         }
     };//class TransformBase
 
     class TransformMatrix :public TransformBase
     {
         Matrix4f transform_matrix;
+
+    protected:
+
+        virtual void MakeNewestData(Matrix4f &mat) override
+        {
+            mat=transform_matrix;
+        }
 
     public:
 
@@ -95,16 +64,18 @@ namespace hgl
             transform_matrix=mat;
             UpdateVersion();
         }
-
-        virtual void UpdateMatrix(Matrix4f &mat) override
-        {
-            mat=transform_matrix;
-        }
     };//class TransformMatrix
 
     class TransformTranslate3f :public TransformBase
     {
         Vector3f offset;
+
+    protected:
+
+        virtual void MakeNewestData(Matrix4f &mat) override
+        {
+            mat=translate(offset);
+        }
 
     public:
 
@@ -140,11 +111,6 @@ namespace hgl
             offset+=o;
             UpdateVersion();
         }
-
-        virtual void UpdateMatrix(Matrix4f &mat) override
-        {
-            mat=translate(offset);
-        }
     };//class TransformTranslate3f
 
     using TransformMove3f=TransformTranslate3f;
@@ -152,6 +118,13 @@ namespace hgl
     class TransformRotateQuat :public TransformBase
     {
         Quatf quat;
+
+    protected:
+
+        virtual void MakeNewestData(Matrix4f &mat) override
+        {
+            mat=ToMatrix(quat);
+        }
 
     public:
 
@@ -178,17 +151,19 @@ namespace hgl
             quat=q;
             UpdateVersion();
         }
-
-        virtual void UpdateMatrix(Matrix4f &mat) override
-        {
-            mat=ToMatrix(quat);
-        }
     };//class TransformRotateQuat
 
     class TransformRotateAxis :public TransformBase
     {
         Vector3f axis;
         float angle;
+
+    protected:
+
+        virtual void MakeNewestData(Matrix4f &mat) override
+        {
+            mat=rotate(angle,axis);
+        }
 
     public:
 
@@ -238,16 +213,18 @@ namespace hgl
             angle=a;
             UpdateVersion();
         }
-
-        virtual void UpdateMatrix(Matrix4f &mat) override
-        {
-            mat=rotate(angle,axis);
-        }
     };//class TransformRotateAxis
 
     class TransformRotateEuler :public TransformBase
     {
         Vector3f euler;
+
+    protected:
+
+        virtual void MakeNewestData(Matrix4f &mat) override
+        {
+            mat=glm::eulerAngleXYZ(euler.x,euler.y,euler.z);
+        }
 
     public:
 
@@ -275,16 +252,18 @@ namespace hgl
         void SetPitch   (const float p      ){if(IsNearlyEqual(euler.x,p))return;euler.x=p;UpdateVersion();}
         void SetYaw     (const float y      ){if(IsNearlyEqual(euler.y,y))return;euler.y=y;UpdateVersion();}
         void SetRoll    (const float r      ){if(IsNearlyEqual(euler.z,r))return;euler.z=r;UpdateVersion();}
-
-        virtual void UpdateMatrix(Matrix4f &mat) override
-        {
-            mat=glm::eulerAngleXYZ(euler.x,euler.y,euler.z);
-        }
     };//class TransformRotateEuler
 
     class TransformScale3f :public TransformBase
     {
         Vector3f scale3f;
+
+    protected:
+
+        virtual void MakeNewestData(Matrix4f &mat) override
+        {
+            mat=scale(scale3f);
+        }
 
     public:
 
@@ -311,11 +290,6 @@ namespace hgl
             scale3f=s;
             UpdateVersion();
         }
-
-        virtual void UpdateMatrix(Matrix4f &mat) override
-        {
-            mat=scale(scale3f);
-        }
     };//class TransformScale
 
     class TransformLookAt :public TransformBase
@@ -323,6 +297,13 @@ namespace hgl
         Vector3f eye;
         Vector3f center;
         Vector3f up;
+
+    protected:
+
+        virtual void MakeNewestData(Matrix4f &mat) override
+        {
+            mat=lookat(eye,center,up);
+        }
 
     public:
 
@@ -369,51 +350,38 @@ namespace hgl
             up=pos;
             UpdateVersion();
         }
-
-        virtual void UpdateMatrix(Matrix4f &mat) override
-        {
-            mat=lookat(eye,center,up);
-        }
     };//class TransformLookAt
 
-    class TransformManager
+    class TransformManager: public TransformBase
     {
-        uint version;
-        uint cur_version;
-
-        Matrix4f CurMatrix;
-
         ObjectList<TransformBase> transform_list;
 
-    private:
-        
-        virtual uint UpdateVersion()
-        {
-            //版本号只是为了记录变化，让程序知道和上次不一样，所以最大值是多少其实无所谓的
-            version=(version >= 1000000)?0:++version;
+    protected:
 
-            return version;
-        }
-
-        void UpdateMatrix(Matrix4f &cur_matrix)
+        virtual void MakeNewestData(Matrix4f &mat) override
         {
-            cur_matrix=Identity4f;
+            mat=Identity4f;
 
             if (transform_list.IsEmpty())
                 return;
+            
+            Matrix4f TempMatrix;
 
             for (TransformBase *tb : transform_list)
-                tb->MatrixTransform(cur_matrix);
+            {
+                tb->GetMatrix(TempMatrix);
+
+                mat*=TempMatrix;
+            }
         }
+        
+    public:
+
+        virtual constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformManager>(); }
 
     public:
 
-        TransformManager()
-        {
-            version=0;
-            cur_version=0;
-            CurMatrix=Identity4f;
-        }
+        TransformManager()=default;
         virtual ~TransformManager()=default;
 
         void Clear()
@@ -421,8 +389,6 @@ namespace hgl
             transform_list.Clear();
         }
 
-        const uint GetVersion()const{return version;}                       ///<取得当前数据版本号
-      
         void AddTransform(TransformBase *tb)
         {
             transform_list.Add(tb);
@@ -509,27 +475,6 @@ namespace hgl
             transform_list.DeleteMove(pos);     //使用DeleteMove是为了保持顺序(Delete可能会拿最后一个数据移到前面，而本类需要保持顺序)
 
             UpdateVersion();
-        }
-
-        uint GetMatrix(Matrix4f &result,const uint old_version)
-        {
-            if (old_version == cur_version)
-                return old_version;
-
-            if (transform_list.IsEmpty())
-            {
-                result=Identity4f;
-                return cur_version;
-            }
-            
-            if (cur_version != version)
-            {
-                UpdateMatrix(CurMatrix);
-                cur_version=version;
-            }
-
-            result=CurMatrix;
-            return cur_version;
         }
     };//class TransformManager
 
