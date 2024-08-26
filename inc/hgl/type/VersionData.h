@@ -23,15 +23,6 @@ namespace hgl
 
         virtual void MakeNewestData(T &)=0;                                                         ///<生成最新的数据(需要派生类重载)
 
-        void UpdateVersionData()
-        {
-            if(IsNewestVersion())
-                return;
-
-            MakeNewestData(cur_data);
-            cur_version=version;
-        }
-
     public:
 
         VersionData(const T &init_data)
@@ -51,6 +42,28 @@ namespace hgl
 
         virtual ~VersionData()=default;
 
+        const T &operator = (const T &data)                                                       ///<赋值操作符
+        {
+            if (data == cur_data)
+                return cur_data;
+
+            cur_data=data;
+            cur_version=version;
+
+            UpdateVersion();
+
+            return cur_data;
+        }
+
+        void UpdateNewestData()
+        {
+            if(IsNewestVersion())
+                return;
+
+            MakeNewestData(cur_data);
+            cur_version=version;
+        }
+
         const uint32    GetNewestVersion()const { return version; }                         ///<取得最新的版本号(注意数据可能不是最新的)
         const uint32    GetCurrentVersion()const { return cur_version; }                    ///<取得当前数据的版本号
 
@@ -58,11 +71,11 @@ namespace hgl
 
         const T &       GetCurrentVersionData()const { return cur_data; }                   ///<取得当前版本的数据(注意可能不是最新的)
 
-        const T &       GetNewestVersionData(){UpdateVersionData();return cur_data;}        ///<取得最新版本的数据
+        const T &       GetNewestVersionData(){UpdateNewestData();return cur_data;}         ///<取得最新版本的数据
 
         const uint32    GetNewestVersionData(T &result)                                     ///<取得最新版本的数据
         {
-            UpdateVersionData();
+            UpdateNewestData();
 
             result=cur_data;
             return cur_version;

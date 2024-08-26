@@ -594,7 +594,6 @@ namespace hgl
         }
     };//class TransformManager
 
-    
     /**
      * 变换矩阵<Br>
      * 便于分散管理平移、旋转、缩放等数值
