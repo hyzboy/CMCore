@@ -190,6 +190,16 @@ namespace hgl
         axis=glm::axis(quat);
     }
 
+    inline const Vector3f &GetRotateAxis(const Quatf &quat)
+    {
+        return glm::axis(quat);
+    }
+
+    inline const float GetRotateAngle(const Quatf &quat)
+    {
+        return glm::degrees(glm::angle(quat));
+    }
+
     inline Quatf LerpQuat(const Quatf &from,const Quatf &to,const float t)
     {
         return glm::lerp(from,to,t);
@@ -198,6 +208,20 @@ namespace hgl
     inline Quatf SLerpQuat(const Quatf &from,const Quatf &to,const float t)
     {
         return glm::slerp(from,to,t);
+    }
+
+    inline Matrix4f MakeMatrix(const Vector3f &move,const Quatf &rotate_quat,const Vector3f &scale_xyz)
+    {
+        return glm::translate(Identity4f,move)
+              *glm::toMat4(rotate_quat)
+              *glm::scale(Identity4f,scale_xyz);
+    }
+
+    inline Matrix4f MakeMatrix(const Vector3f &move,const Vector3f &rotate_axis,const float &rotate_angle,const Vector3f &scale_xyz)
+    {
+        return glm::translate(Identity4f,move)
+              *glm::rotate(Identity4f,glm::radians(rotate_angle),rotate_axis)
+              *glm::scale(Identity4f,scale_xyz);
     }
 
     inline Vector3f TransformPosition(const Matrix4f &m,const Vector3f &v)
