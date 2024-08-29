@@ -50,16 +50,19 @@ namespace hgl
         TransformMatrix():TransformBase()
         {
             transform_matrix=Identity4f;
+            UpdateVersion();
         }
 
         TransformMatrix(const Matrix4f &mat):TransformBase()
         {
             transform_matrix=mat;
+            UpdateVersion();
         }
 
         TransformMatrix(const TransformMatrix *tm):TransformBase(tm)
         {
             transform_matrix=tm->transform_matrix;
+            UpdateVersion();
         }
 
         TransformBase *CreateSelfCopy()const
@@ -99,16 +102,19 @@ namespace hgl
         TransformTranslate3f():TransformBase()
         {
             offset=ZeroVector3f;
+            UpdateVersion();
         }
 
         TransformTranslate3f(const Vector3f &o):TransformBase()
         {
             offset=o;
+            UpdateVersion();
         }
 
         TransformTranslate3f(const TransformTranslate3f *tt):TransformBase(tt)
         {
             offset=tt->offset;
+            UpdateVersion();
         }
 
         TransformBase *CreateSelfCopy()const
@@ -158,16 +164,19 @@ namespace hgl
         TransformRotateQuat():TransformBase()
         {
             quat=IdentityQuatf;
+            UpdateVersion();
         }
 
         TransformRotateQuat(const Quatf &q):TransformBase()
         {
             quat=q;
+            UpdateVersion();
         }
 
         TransformRotateQuat(const TransformRotateQuat *trq):TransformBase(trq)
         {
             quat=trq->quat;
+            UpdateVersion();
         }
 
         TransformBase *CreateSelfCopy()const
@@ -208,18 +217,21 @@ namespace hgl
         {
             axis=ZeroVector3f;
             angle=0;
+            UpdateVersion();
         }
 
         TransformRotateAxis(const Vector3f &a,float ang):TransformBase()
         {
             axis=a;
             angle=ang;
+            UpdateVersion();
         }
 
         TransformRotateAxis(const TransformRotateAxis *tra):TransformBase(tra)
         {
             axis=tra->axis;
             angle=tra->angle;
+            UpdateVersion();
         }
 
         TransformBase *CreateSelfCopy()const
@@ -279,16 +291,19 @@ namespace hgl
         TransformRotateEuler():TransformBase()
         {
             euler=ZeroVector3f;
+            UpdateVersion();
         }
 
         TransformRotateEuler(const Vector3f &e):TransformBase()
         {
             euler=e;
+            UpdateVersion();
         }
 
         TransformRotateEuler(const TransformRotateEuler *tre):TransformBase(tre)
         {
             euler=tre->euler;
+            UpdateVersion();
         }
 
         TransformBase *CreateSelfCopy()const
@@ -328,16 +343,19 @@ namespace hgl
         TransformScale3f():TransformBase()
         {
             scale3f=Vector3f(1,1,1);
+            UpdateVersion();
         }
 
         TransformScale3f(const Vector3f &s):TransformBase()
         {
             scale3f=s;
+            UpdateVersion();
         }
 
         TransformScale3f(const TransformScale3f *ts):TransformBase(ts)
         {
             scale3f=ts->scale3f;
+            UpdateVersion();
         }
 
         TransformBase *CreateSelfCopy()const
@@ -380,6 +398,7 @@ namespace hgl
             eye     =OneVector3f;
             center  =ZeroVector3f;
             up      =AxisVector::Z;
+            UpdateVersion();
         }
 
         TransformLookAt(const Vector3f &e,const Vector3f &c,const Vector3f &u=AxisVector::Z)
@@ -387,6 +406,7 @@ namespace hgl
             eye     =e;
             center  =c;
             up      =u;
+            UpdateVersion();
         }
 
         TransformLookAt(const TransformLookAt *tla):TransformBase(tla)
@@ -394,6 +414,7 @@ namespace hgl
             eye     =tla->eye;
             center  =tla->center;
             up      =tla->up;
+            UpdateVersion();
         }
 
         TransformBase *CreateSelfCopy()const
@@ -480,6 +501,7 @@ namespace hgl
         {
             for(TransformBase *tb:tm->transform_list)
                 AddTransform(tb->CreateSelfCopy());
+            UpdateVersion();
         }
 
         TransformBase *CreateSelfCopy()const
