@@ -12,6 +12,10 @@ namespace hgl
     {
     protected:
 
+        Vector3f WorldPosition;
+
+    protected:
+
         virtual void MakeNewestData(Matrix4f &)=0;
 
     public:
@@ -22,8 +26,10 @@ namespace hgl
 
         virtual constexpr const size_t GetTypeHash()const=0;                ///<取得类型哈希值
 
-        const uint32 GetMatrix(Matrix4f &mat)                               ///<取得当前矩阵，并返回当前矩阵版本号
+        const uint32 GetMatrix(Matrix4f &mat,const Vector3f &wp)            ///<取得当前矩阵，并返回当前矩阵版本号
         {
+            WorldPosition=wp;
+
             return GetNewestVersionData(mat);
         }
 
@@ -482,7 +488,7 @@ namespace hgl
 
             for (TransformBase *tb : transform_list)
             {
-                tb->GetMatrix(TempMatrix);
+                tb->GetMatrix(TempMatrix,WorldPosition);
 
                 mat*=TempMatrix;
             }
@@ -491,6 +497,8 @@ namespace hgl
     public:
 
         virtual constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformManager>(); }
+
+        const bool IsEmpty()const { return transform_list.IsEmpty(); }
 
     public:
 
