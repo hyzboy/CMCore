@@ -13,6 +13,7 @@ namespace hgl
     protected:
 
         Vector3f WorldPosition;
+        Vector3f WorldNormal;
 
     protected:
 
@@ -26,14 +27,17 @@ namespace hgl
 
         virtual constexpr const size_t GetTypeHash()const=0;                ///<取得类型哈希值
 
-        const uint32 GetMatrix(Matrix4f &mat,const Vector3f &wp)            ///<取得当前矩阵，并返回当前矩阵版本号
+        const uint32 GetMatrix(Matrix4f &mat,const Vector3f &wp,const Vector3f &wn)            ///<取得当前矩阵，并返回当前矩阵版本号
         {
             WorldPosition=wp;
+            WorldNormal=wn;
 
             return GetNewestVersionData(mat);
         }
 
         virtual TransformBase *CreateSelfCopy()const=0;                     ///<创建一个自身的复制
+
+        virtual bool Update(){return false;}
     };//class TransformBase
 
     class TransformMatrix :public TransformBase
@@ -42,14 +46,14 @@ namespace hgl
 
     protected:
 
-        virtual void MakeNewestData(Matrix4f &mat) override
+        void MakeNewestData(Matrix4f &mat) override
         {
             mat=transform_matrix;
         }
 
     public:
 
-        virtual constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformMatrix>(); }
+        constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformMatrix>(); }
 
     public:
 
@@ -71,7 +75,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const
+        TransformBase *CreateSelfCopy()const override
         {
             return(new TransformMatrix(this));
         }
@@ -94,14 +98,14 @@ namespace hgl
 
     protected:
 
-        virtual void MakeNewestData(Matrix4f &mat) override
+        void MakeNewestData(Matrix4f &mat) override
         {
             mat=translate(offset);
         }
 
     public:
 
-        virtual constexpr const size_t GetTypeHash()const override{return hgl::GetTypeHash<TransformTranslate3f>();}
+        constexpr const size_t GetTypeHash()const override{return hgl::GetTypeHash<TransformTranslate3f>();}
 
     public:
 
@@ -123,7 +127,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const
+        TransformBase *CreateSelfCopy()const override
         {
             return(new TransformTranslate3f(this));
         }
@@ -156,14 +160,14 @@ namespace hgl
 
     protected:
 
-        virtual void MakeNewestData(Matrix4f &mat) override
+        void MakeNewestData(Matrix4f &mat) override
         {
             mat=ToMatrix(quat);
         }
 
     public:
 
-        virtual constexpr const size_t GetTypeHash()const override{return hgl::GetTypeHash<TransformRotateQuat>();}
+        constexpr const size_t GetTypeHash()const override{return hgl::GetTypeHash<TransformRotateQuat>();}
 
     public:
 
@@ -185,7 +189,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const
+        TransformBase *CreateSelfCopy()const override
         {
             return(new TransformRotateQuat(quat));
         }
@@ -208,14 +212,14 @@ namespace hgl
 
     protected:
 
-        virtual void MakeNewestData(Matrix4f &mat) override
+        void MakeNewestData(Matrix4f &mat) override
         {
             mat=rotate(angle,axis);
         }
 
     public:
 
-        virtual constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformRotateAxis>(); }
+        constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformRotateAxis>(); }
 
     public:
 
@@ -240,7 +244,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const
+        TransformBase *CreateSelfCopy()const override
         {
             return(new TransformRotateAxis(axis,angle));
         }
@@ -283,14 +287,14 @@ namespace hgl
 
     protected:
 
-        virtual void MakeNewestData(Matrix4f &mat) override
+        void MakeNewestData(Matrix4f &mat) override
         {
             mat=glm::eulerAngleXYZ(euler.x,euler.y,euler.z);
         }
 
     public:
 
-        virtual constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformRotateEuler>(); }
+        constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformRotateEuler>(); }
 
     public:
 
@@ -312,7 +316,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const
+        TransformBase *CreateSelfCopy()const override
         {
             return(new TransformRotateEuler(euler));
         }
@@ -335,14 +339,14 @@ namespace hgl
 
     protected:
 
-        virtual void MakeNewestData(Matrix4f &mat) override
+        void MakeNewestData(Matrix4f &mat) override
         {
             mat=scale(scale3f);
         }
 
     public:
 
-        virtual constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformScale3f>(); }
+        constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformScale3f>(); }
 
     public:
 
@@ -364,7 +368,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const
+        TransformBase *CreateSelfCopy()const override
         {
             return(new TransformScale3f(scale3f));
         }
@@ -388,14 +392,14 @@ namespace hgl
 
     protected:
 
-        virtual void MakeNewestData(Matrix4f &mat) override
+        void MakeNewestData(Matrix4f &mat) override
         {
             mat=lookat(eye,center,up);
         }
 
     public:
 
-        virtual constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformLookAt>(); }
+        constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformLookAt>(); }
 
     public:
 
@@ -423,7 +427,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const
+        TransformBase *CreateSelfCopy()const override
         {
             return(new TransformLookAt(eye,center,up));
         }
@@ -488,7 +492,7 @@ namespace hgl
 
             for (TransformBase *tb : transform_list)
             {
-                tb->GetMatrix(TempMatrix,WorldPosition);
+                tb->GetMatrix(TempMatrix,WorldPosition,WorldNormal);
 
                 mat*=TempMatrix;
             }
@@ -512,7 +516,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const
+        TransformBase *CreateSelfCopy()const override
         {
             TransformManager *tm=new TransformManager;
 
@@ -621,6 +625,23 @@ namespace hgl
             transform_list.DeleteMove(pos);     //使用DeleteMove是为了保持顺序(Delete可能会拿最后一个数据移到前面，而本类需要保持顺序)
 
             UpdateVersion();
+        }
+
+        virtual bool Update() override
+        {
+            bool has_update=false;
+
+            for(TransformBase *tb:transform_list)
+                if(tb->Update())
+                    has_update=true;
+
+            if(has_update)
+            {
+                UpdateVersion();
+                UpdateNewestData();
+            }
+
+            return has_update;
         }
     };//class TransformManager
 
