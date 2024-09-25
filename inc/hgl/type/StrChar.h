@@ -220,9 +220,9 @@ namespace hgl
              ||ch=='\v');
     }
 
-    #ifdef char8_t
+    #ifdef HGL_SUPPORT_CHAR8_T
     template<>
-    inline const bool isspace(const char8_t ch)
+    inline const bool isspace(const char8_t &ch)
     {
         return(ch==0
              ||ch==u8' '              //半角空格
