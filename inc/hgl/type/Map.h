@@ -47,8 +47,8 @@ namespace hgl
                 int     FindPos(const K &flag)const{int pos;FindPos(flag,pos);return(pos);}         ///<查找数据如果插入后，会所在的位置
                 int     Find(const K &)const;                                                       ///<查找数据是否存在，返回-1表示数据不存在
                 int     FindByValue(const V &)const;                                                ///<查找数据是否存在，返回-1表示数据不存在
-                bool    KeyExist(const K &key)const{return(Find(key)!=-1);}                         ///<确认这个数据是否存在
-                bool    ValueExist(const V &value)const{return(FindByValue(value)!=-1);}            ///<确认这个数据是否存在
+                bool    ContainsKey(const K &key)const{return(Find(key)!=-1);}                      ///<确认这个数据是否存在
+                bool    ContainsValue(const V &value)const{return(FindByValue(value)!=-1);}         ///<确认这个数据是否存在
                 bool    Check(const K &key,const V &value)const;                                    ///<确认数据是否是这个
         virtual V *     GetPointer(const K &key)const;                                              ///<取得数据指针
         virtual int     GetValueAndSerial(const K &,V &) const;                                     ///<取得数据与索引

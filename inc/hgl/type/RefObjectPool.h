@@ -57,10 +57,10 @@ namespace hgl
             const K *kp=key_list;
             for(int i=0;i<key_count;i++)
             {
-                if(active_items.KeyExist(*kp))
+                if(active_items.ContainsKey(*kp))
                     ++(stats.active);
                 else
-                if(idle_items.KeyExist(*kp))
+                if(idle_items.ContainsKey(*kp))
                     ++(stats.idle);
                 else
                     ++(stats.not_found);
@@ -74,22 +74,22 @@ namespace hgl
         /**
          * 确定指定key是否在活跃列表
          */
-        bool KeyExistActive(const K &key)const{return active_items.KeyExist(key);}
+        bool KeyExistActive(const K &key)const{return active_items.ContainsKey(key);}
 
         /**
          * 确定指定key是否在闲置列表
          */
-        bool KeyExistIdle(const K &key)const{return idle_items.KeyExist(key);}
+        bool KeyExistIdle(const K &key)const{return idle_items.ContainsKey(key);}
 
         /**
          * 确定指定key是否在列表中(包括活跃列表和闲置列表)
          */
-        bool KeyExist(const K &key)const
+        bool ContainsKey(const K &key)const
         {
-            if(active_items.KeyExist(key))
+            if(active_items.ContainsKey(key))
                 return(true);
 
-            if(idle_items.KeyExist(key))
+            if(idle_items.ContainsKey(key))
                 return(true);
 
             return(false);
@@ -109,7 +109,7 @@ namespace hgl
             if(active_items.Get(key,ai))                    //在活跃列表中找
                 return ai->ref_count;
 
-            if(idle_items.KeyExist(key))
+            if(idle_items.ContainsKey(key))
                 return 0;
 
             return -1;

@@ -90,7 +90,7 @@ namespace hgl
         {
             if(!obj)return(false);
 
-            if(items.KeyExist(key))
+            if(items.ContainsKey(key))
                 return(false);
 
             items.Add(key,obj);
@@ -125,7 +125,7 @@ namespace hgl
             return(nullptr);
         }
 
-        virtual bool        ValueExist(V *value)                                ///<确认这个对象是否存在
+        virtual bool        ContainsValue(V *value)                                ///<确认这个对象是否存在
         {
             return(items.FindByValue(value)!=-1);
         }

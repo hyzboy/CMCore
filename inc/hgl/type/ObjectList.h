@@ -44,7 +44,7 @@ namespace hgl
             List<T *>::Clear();
         }
 
-        virtual bool    IsExist(const ItemPointer &flag)const override                              ///<确认数据项是否存在
+        virtual bool    Contains(const ItemPointer &flag)const override                              ///<确认数据项是否存在
         {
             return List<T *>::Find((T *)flag)!=-1;
         }

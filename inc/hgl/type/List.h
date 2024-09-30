@@ -119,7 +119,7 @@ namespace hgl
         virtual void Clear(){data_array.Clear();}                                                   ///<清除所有数据，但不清空缓冲区
 
         virtual int  Find(const T &data)const{return data_array.Find(data);}                        ///<查找指定数据的索引
-        virtual bool IsExist(const T &flag)const{return Find(flag)>=0;}                             ///<确认数据项是否存在
+        virtual bool Contains(const T &flag)const{return Find(flag)>=0;}                            ///<确认数据项是否存在
 
         virtual bool Delete(int start,int num=1){return data_array.Delete(start,num);}              ///<删除指定索引的数据
         virtual bool DeleteMove(int start,int num=1){return data_array.DeleteMove(start,num);}      ///<删除指定索引的数据,将后面紧邻的数据前移

@@ -54,7 +54,7 @@ namespace hgl
             return FindDataPositionInSortedArray(data_list,flag);
         }
 
-        bool    IsMember        (const T &v)const{return(Find(v)!=-1);}                     ///<确认是否成员
+        bool    Contains        (const T &v)const{return(Find(v)!=-1);}                     ///<确认是否成员
 
         /**
         * 添加一个数据

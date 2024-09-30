@@ -40,8 +40,8 @@ namespace hgl
 
         DataArray<T> & GetActiveArray(){return Active.GetArray();}                                  ///<取得所有活跃数据
 
-        bool IsActive   (const T &data)const{return Active.IsExist(data);}                          ///<是否为活跃的
-        bool IsIdle     (const T &data)const{return Idle.IsExist(data);}                            ///<是否为非活跃的
+        bool IsActive   (const T &data)const{return Active.Contains(data);}                          ///<是否为活跃的
+        bool IsIdle     (const T &data)const{return Idle.Contains(data);}                            ///<是否为非活跃的
 
         bool IsFull()const                                                                          ///<活跃队列是否已满
         {

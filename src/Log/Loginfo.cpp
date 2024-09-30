@@ -18,7 +18,7 @@ namespace hgl
 
             OnlyWriteLock owl(log_list);
 
-            if(log_list->IsExist(log))        //重复添加
+            if(log_list->Contains(log))        //重复添加
                 return(false);
 
             log_list->Add(log);

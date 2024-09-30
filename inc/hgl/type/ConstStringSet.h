@@ -91,7 +91,7 @@ namespace hgl
 
     public:
 
-        const bool IsMember(const SC *str,int length)const                          ///<判断字符串是否为合集成员
+        const bool Contains(const SC *str,int length)const                          ///<判断字符串是否为合集成员
         {
             if(!str||!*str||length<=0)return(-1);
 
@@ -154,7 +154,11 @@ namespace hgl
             csv.id=GetID(str,length);
 
             if(csv.id>=0)
+            {
+                str_list.Get(csv.id,csv);
+
                 return csv.id;
+            }
 
             csv.str_data=&str_data;
             csv.id      =str_set.GetCount();

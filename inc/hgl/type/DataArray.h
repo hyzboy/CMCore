@@ -615,7 +615,7 @@ namespace hgl
 
             for(const T *sp:*this)
             {
-                if(!without_list.IsExist(*sp))
+                if(!without_list.Contains(*sp))
                 {
                     *p=*sp;
                     ++p;
@@ -656,7 +656,7 @@ namespace hgl
 
         //    data_list.Enum([&](T &obj)
         //    {
-        //        if(list->IsMember(obj))
+        //        if(list->Contains(obj))
         //            result.Add(obj);
         //    });
 
@@ -676,7 +676,7 @@ namespace hgl
         //    T *obj=data_list.GetData();
         //    for(int64 i=0;i<data_list.GetCount();i++)
         //    {
-        //        if(list.IsMember(*obj))
+        //        if(list.Contains(*obj))
         //            ++count;
 
         //        ++obj;
@@ -696,8 +696,8 @@ namespace hgl
         //    T *obj=data_list.GetData();
         //    for(int64 i=0;i<data_list.GetCount();i++)
         //    {
-        //        if(il.IsMember(*obj))
-        //            if(!cl.IsMember(*obj))
+        //        if(il.Contains(*obj))
+        //            if(!cl.Contains(*obj))
         //                result.Add(*obj);
         //        ++obj;
         //    }
@@ -718,7 +718,7 @@ namespace hgl
         //    T *obj=data_list.GetData();
         //    for(int64 i=0;i<data_list.GetCount();i++)
         //    {
-        //        if(!is.IsMember(*obj))
+        //        if(!is.Contains(*obj))
         //            ++count;
 
         //        ++obj;

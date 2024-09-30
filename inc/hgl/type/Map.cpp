@@ -618,7 +618,7 @@ namespace hgl
 
         for(int i=0;i<count;i++)
         {
-            if(in_list.IsExist(*sp))
+            if(in_list.Contains(*sp))
                 with_list.Add(*sp);
 
             ++sp;
@@ -642,7 +642,7 @@ namespace hgl
 
         for(int i=0;i<count;i++)
         {
-            if(!in_list.IsExist(*sp))
+            if(!in_list.Contains(*sp))
                 without_list.Add(*sp);
 
             ++sp;

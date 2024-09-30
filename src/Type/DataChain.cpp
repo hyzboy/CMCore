@@ -119,7 +119,7 @@ namespace hgl
         if(!ud)
             return(false);
 
-        if(!ud_set.IsMember(ud))
+        if(!ud_set.Contains(ud))
             return(false);
 
         const int ud_end=ud->GetEnd();

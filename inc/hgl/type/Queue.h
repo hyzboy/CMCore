@@ -54,7 +54,7 @@ namespace hgl
 
                 const   bool    IsEmpty         ()const{return GetCount()==0;}                      ///<确认列表是否为空
 
-                const   bool    IsExist         (const T &data)const
+                const   bool    Contains         (const T &data)const
                         {
                             if(data_array[read_index].Find(data,read_offset)!=-1)
                                 return(true);
