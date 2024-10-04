@@ -74,12 +74,12 @@ namespace hgl
         /**
          * 确定指定key是否在活跃列表
          */
-        bool KeyExistActive(const K &key)const{return active_items.ContainsKey(key);}
+        bool ContainsActiveKey(const K &key)const{return active_items.ContainsKey(key);}
 
         /**
          * 确定指定key是否在闲置列表
          */
-        bool KeyExistIdle(const K &key)const{return idle_items.ContainsKey(key);}
+        bool ContainsIdleKey(const K &key)const{return idle_items.ContainsKey(key);}
 
         /**
          * 确定指定key是否在列表中(包括活跃列表和闲置列表)
