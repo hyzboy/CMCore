@@ -5,9 +5,6 @@
 
 namespace hgl
 {
-    //对象属性位定义
-    #define HGL_OBJECT_ATTRIBUTE_BIT_TICK    0x00000001
-
     /**
     * 最终基类
     */
@@ -42,29 +39,6 @@ namespace hgl
     //此代码取自AngelScript，感谢
     #define GetMemberFuncPointer(c,m) MethodPtr<sizeof(void (c::*)())>::Convert((void (c::*)())(&c::m))
 
-    /**
-    * 取得一个类型的哈希值
-    */
-    template<typename T> inline constexpr const size_t GetTypeHash()
-    {
-        return typeid(T).hash_code();
-    }
-
-    class IDObject :public _Object
-    {
-    private:
-
-        size_t object_type_hash;               ///<最终类的类型哈希值
-
-    public:
-
-        IDObject(const size_t &oth)
-        {
-            object_type_hash=oth;
-        }
-
-        virtual ~IDObject()=default;
-
-        const size_t GetObjectTypeHash()const { return object_type_hash; }
-    };//class IDObject
+    template<typename T> inline constexpr const size_t GetTypeHash(){return typeid(T).hash_code();} ///<取得一个类型的哈希值
+    template<typename T> inline constexpr const char * GetTypeName(){return typeid(T).name();}      ///<取得一个类型的名称
 }//namespace hgl
