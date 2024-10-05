@@ -1,8 +1,5 @@
 ﻿#pragma once
 
-#include <typeindex>
-#include <typeinfo>
-
 namespace hgl
 {
     /**
@@ -10,9 +7,6 @@ namespace hgl
     */
     class _Object                                                                                       ///最终基类
     {
-    private:
-
-        unsigned int object_attribute_bits=0;                                                           ///<对象属性位集合
 
     public:
 
@@ -38,7 +32,4 @@ namespace hgl
 
     //此代码取自AngelScript，感谢
     #define GetMemberFuncPointer(c,m) MethodPtr<sizeof(void (c::*)())>::Convert((void (c::*)())(&c::m))
-
-    template<typename T> inline constexpr const size_t GetTypeHash(){return typeid(T).hash_code();} ///<取得一个类型的哈希值
-    template<typename T> inline constexpr const char * GetTypeName(){return typeid(T).name();}      ///<取得一个类型的名称
 }//namespace hgl
