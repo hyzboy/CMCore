@@ -1,4 +1,5 @@
 #pragma once
+#include<hgl/type/TypeInfo.h>
 #include<hgl/math/Matrix.h>
 #include<hgl/type/ObjectList.h>
 #include<hgl/type/VersionData.h>

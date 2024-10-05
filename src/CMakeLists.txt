@@ -13,6 +13,10 @@ SET(CORE_PLATFORM_HEADER_FILES  ${CORE_PLATFORM_HEADER_FILES}
                               ${CORE_PLATFORM_OS_FILES}
                               ${CORE_PLATFORM_COMPILER_FILES})
 
+SET(TYPE_INFO_FILE ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type/TypeInfo.h)
+
+SOURCE_GROUP("DataType" FILES ${TYPE_INFO_FILE})
+
 SET(TYPE_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type)
 
 SET(TYPE_IDNAME_HEADER_FILES    ${TYPE_INCLUDE_PATH}/ConstStringSet.h
@@ -48,9 +52,18 @@ SET(SYSTEM_INFO_SOURCE  ${CORE_PLATFORM_INCLUDE_PATH}/SystemInfo.h
 
 SET(MATH_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/math)
 
-SET(BASE_OBJECT_SOURCE_FILES    Object/TickObject.cpp)
+SET(BASE_OBJECT_HEADER_FILES    ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type/object/ObjectBaseInfo.h
+                                ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type/object/Object.h
+                                ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type/object/ObjectAllocator.h
+                                ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type/object/ObjectManager.h
+                                ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type/object/DefaultCreateObject.h)
 
-SOURCE_GROUP("DataType\\Object" FILES ${BASE_OBJECT_SOURCE_FILES})
+SET(BASE_OBJECT_SOURCE_FILES    Object/Object.cpp
+                                Object/ObjectManager.cpp
+                                Object/TickObject.cpp)
+
+SOURCE_GROUP("DataType\\Object" FILES ${BASE_OBJECT_HEADER_FILES}
+                                      ${BASE_OBJECT_SOURCE_FILES})
 
 ##Math--------------------------------------------------------
 SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
@@ -237,6 +250,8 @@ SOURCE_GROUP("Log\\Source Files" FILES ${BASE_LOG_SOURCE})
 add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
                         #${SYSTEM_INFO_SOURCE}
 
+                        ${TYPE_INFO_FILE}
+                        ${BASE_OBJECT_HEADER_FILES}
                         ${BASE_OBJECT_SOURCE_FILES}
 
                         ${COLOR_HEADER_FILES}
