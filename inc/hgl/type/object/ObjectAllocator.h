@@ -23,7 +23,7 @@ namespace hgl
          * @param not_release_objects_count 未释放的对象数量
          * @return 是否需要逐个释放(如返回true则会调用CleanNotReleaseObject逐个释放)
          */
-        virtual bool    PreUnjoin(int not_release_objects_count)
+        virtual bool    PreUnjoin(size_t not_release_objects_count)
         {
             //std::cerr<<"DefaultObjectManager::~DefaultObjectManager("<<GetTypename()<<") "<<object_set.size()<<" objects havn't been release."<<std::endl;
             return(true);

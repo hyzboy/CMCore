@@ -1,4 +1,5 @@
 #pragma once
+#include<hgl/type/TypeInfo.h>
 #include<hgl/type/object/ObjectBaseInfo.h>
 
 namespace hgl
@@ -37,10 +38,11 @@ namespace hgl
     \
         friend struct DefaultObjectAllocator<class_name>;\
     \
-        class_name(const ObjectBaseInfo &obi):Object(obi)=default;   \
+        using Object::Object; \
+        /*class_name(const ObjectBaseInfo &obi):Object(obi)*/   \
         /*{std::cout<<#class_name " Construct("<<GetSerialNumber()<<")"<<std::endl;}*/   \
     \
-        virtual ~class_name() override=default;  \
+        virtual ~class_name()=default;  \
         /*{std::cout<<#class_name " Destruct("<<GetSerialNumber()<<")"<<std::endl;}*/   \
     \
     public: \
