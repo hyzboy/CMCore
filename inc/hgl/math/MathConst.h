@@ -6,10 +6,13 @@
 
 namespace hgl
 {
-    constexpr const float HGL_FLOAT_MIN         =1.175494351e-38f;              ///<最小浮点数
-    constexpr const float HGL_FLOAT_MAX         =3.402823466e+38f;              ///<最大浮点数
-    constexpr const float HGL_FLOAT_EPSILON     =std::numeric_limits<float>::epsilon();     ///<浮点数精度最小值
-    constexpr const double HGL_DOUBLE_EPSILON   =std::numeric_limits<double>::epsilon();    ///<双精度浮点数精度最小值
+    constexpr const float   HGL_FLOAT_MIN       =std::numeric_limits<float>::min();             ///<最小浮点数
+    constexpr const float   HGL_FLOAT_MAX       =std::numeric_limits<float>::max();             ///<最大浮点数
+    constexpr const float   HGL_FLOAT_EPSILON   =std::numeric_limits<float>::epsilon();         ///<浮点数精度最小值
+
+    constexpr const double  HGL_DOUBLE_MIN      =std::numeric_limits<double>::min();            ///<最小双精度浮点数
+    constexpr const double  HGL_DOUBLE_MAX      =std::numeric_limits<double>::max();            ///<最大双精度浮点数
+    constexpr const double  HGL_DOUBLE_EPSILON  =std::numeric_limits<double>::epsilon();        ///<双精度浮点数精度最小值
 
     template<typename T> bool IsNearlyZero(const T value);
 
