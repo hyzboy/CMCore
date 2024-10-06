@@ -36,7 +36,7 @@ namespace hgl
             return GetNewestVersionData(mat);
         }
 
-        virtual TransformBase *CreateSelfCopy()const=0;                     ///<创建一个自身的复制
+        virtual TransformBase *CloneSelf()const=0;                     ///<创建一个自身的复制
 
         virtual bool Update(){return false;}
     };//class TransformBase
@@ -76,7 +76,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const override
+        TransformBase *CloneSelf()const override
         {
             return(new TransformMatrix(this));
         }
@@ -128,7 +128,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const override
+        TransformBase *CloneSelf()const override
         {
             return(new TransformTranslate3f(this));
         }
@@ -190,7 +190,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const override
+        TransformBase *CloneSelf()const override
         {
             return(new TransformRotateQuat(quat));
         }
@@ -245,7 +245,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const override
+        TransformBase *CloneSelf()const override
         {
             return(new TransformRotateAxis(axis,angle));
         }
@@ -317,7 +317,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const override
+        TransformBase *CloneSelf()const override
         {
             return(new TransformRotateEuler(euler));
         }
@@ -369,7 +369,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const override
+        TransformBase *CloneSelf()const override
         {
             return(new TransformScale3f(scale3f));
         }
@@ -428,7 +428,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const override
+        TransformBase *CloneSelf()const override
         {
             return(new TransformLookAt(eye,center,up));
         }
@@ -513,16 +513,16 @@ namespace hgl
         TransformManager(const TransformManager *tm):TransformBase(tm)
         {
             for(TransformBase *tb:tm->transform_list)
-                AddTransform(tb->CreateSelfCopy());
+                AddTransform(tb->CloneSelf());
             UpdateVersion();
         }
 
-        TransformBase *CreateSelfCopy()const override
+        TransformBase *CloneSelf()const override
         {
             TransformManager *tm=new TransformManager;
 
             for(TransformBase *tb:transform_list)
-                tm->AddTransform(tb->CreateSelfCopy());
+                tm->AddTransform(tb->CloneSelf());
 
             return tm;
         }
@@ -532,7 +532,7 @@ namespace hgl
             Clear();
 
             for(TransformBase *tb:tm.transform_list)
-                AddTransform(tb->CreateSelfCopy());
+                AddTransform(tb->CloneSelf());
         }
 
         void Clear()
