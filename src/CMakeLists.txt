@@ -2,6 +2,8 @@
 
 SET(CORE_PLATFORM_HEADER_FILES  ${CORE_PLATFORM_INCLUDE_PATH}/Platform.h)
 
+SET(TYPE_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type)
+
 FILE(GLOB CORE_PLATFORM_OS_FILES ${CORE_PLATFORM_INCLUDE_PATH}/os/*.h)
 FILE(GLOB CORE_PLATFORM_COMPILER_FILES ${CORE_PLATFORM_INCLUDE_PATH}/compiler/*.h)
 
@@ -13,11 +15,14 @@ SET(CORE_PLATFORM_HEADER_FILES  ${CORE_PLATFORM_HEADER_FILES}
                               ${CORE_PLATFORM_OS_FILES}
                               ${CORE_PLATFORM_COMPILER_FILES})
 
-SET(TYPE_INFO_FILE ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type/TypeInfo.h)
+SET(TYPE_INFO_FILE ${TYPE_INCLUDE_PATH}/TypeInfo.h)
 
 SOURCE_GROUP("DataType" FILES ${TYPE_INFO_FILE})
 
-SET(TYPE_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type)
+SET(BITS_ARRAY_FILES ${TYPE_INCLUDE_PATH}/BitsArray.h
+                    Type/BitsArray.cpp)
+
+SOURCE_GROUP("DataType\\BitsArray" FILES ${BITS_ARRAY_FILES})
 
 SET(TYPE_IDNAME_HEADER_FILES    ${TYPE_INCLUDE_PATH}/ConstStringSet.h
                                 ${TYPE_INCLUDE_PATH}/IDName.h)
@@ -52,11 +57,11 @@ SET(SYSTEM_INFO_SOURCE  ${CORE_PLATFORM_INCLUDE_PATH}/SystemInfo.h
 
 SET(MATH_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/math)
 
-SET(BASE_OBJECT_HEADER_FILES    ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type/object/ObjectBaseInfo.h
-                                ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type/object/Object.h
-                                ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type/object/ObjectAllocator.h
-                                ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type/object/ObjectManager.h
-                                ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type/object/DefaultCreateObject.h)
+SET(BASE_OBJECT_HEADER_FILES    ${TYPE_INCLUDE_PATH}/object/ObjectBaseInfo.h
+                                ${TYPE_INCLUDE_PATH}/object/Object.h
+                                ${TYPE_INCLUDE_PATH}/object/ObjectAllocator.h
+                                ${TYPE_INCLUDE_PATH}/object/ObjectManager.h
+                                ${TYPE_INCLUDE_PATH}/object/DefaultCreateObject.h)
 
 SET(BASE_OBJECT_SOURCE_FILES    Object/Object.cpp
                                 Object/ObjectManager.cpp
@@ -253,6 +258,8 @@ add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
                         ${TYPE_INFO_FILE}
                         ${BASE_OBJECT_HEADER_FILES}
                         ${BASE_OBJECT_SOURCE_FILES}
+
+                        ${BITS_ARRAY_FILES}
 
                         ${COLOR_HEADER_FILES}
                         ${COLOR_SOURCE_FILES}
