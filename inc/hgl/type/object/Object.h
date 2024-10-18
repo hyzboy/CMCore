@@ -1,5 +1,5 @@
 #pragma once
-#include<hgl/type/TypeInfo.h>
+#include<hgl/type/DataType.h>
 #include<hgl/type/object/ObjectBaseInfo.h>
 
 namespace hgl
@@ -24,6 +24,9 @@ namespace hgl
 
         template<typename T> friend class SafePtr;
         template<typename T> friend struct DefaultObjectAllocator;
+
+        NO_COPY(Object)
+        NO_MOVE(Object)
 
         Object(const ObjectBaseInfo &obi) noexcept { object_base_info=obi; }
         virtual ~Object()=default;

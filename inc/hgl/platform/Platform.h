@@ -276,5 +276,12 @@ namespace hgl
 #else
     #define __HGL_FUNC__    __FUNCTION__
 #endif//
+
+    #define NO_COPY(className)  className(const className &)=delete;  \
+                                className &operator=(const className &)=delete;
+
+    #define NO_MOVE(className)  className(className &&)=delete;  \
+                                className &operator=(className &&)=delete;
+
 }//namespace hgl
 #endif//HGL_PLATFORM_INCLUDE
