@@ -283,5 +283,8 @@ namespace hgl
     #define NO_MOVE(className)  className(className &&)=delete;  \
                                 className &operator=(className &&)=delete;
 
+    #define NO_COPY_NO_MOVE(className)  NO_COPY(className)  \
+                                        NO_MOVE(className)
+
 }//namespace hgl
 #endif//HGL_PLATFORM_INCLUDE
