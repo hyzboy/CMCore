@@ -30,8 +30,8 @@ namespace hgl
 
     public:
 
-//        KVData **begin()const{return data_list.begin();}
-//        KVData **end()const{return data_list.end();}
+        KVData **begin()const{return data_list.begin();}
+        KVData **end()const{return data_list.end();}
 
     public: //方法
 
