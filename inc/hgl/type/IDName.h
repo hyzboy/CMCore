@@ -87,7 +87,10 @@ namespace hgl
 
         const int Comp(const OrderedIDName &oin)const{return GetID()-oin.GetID();}
 
+        const int Comp(const OrderedIDName *oin)const{return GetID()-oin->GetID();}
+
         CompOperator(const OrderedIDName &,Comp)
+        CompOperator(const OrderedIDName *,Comp)
     };//class IDName
 
 #define DefineIDName(name,type) using name=OrderedIDName<type,__COUNTER__>; //使用__COUNTER__是为了让typeid()不同
