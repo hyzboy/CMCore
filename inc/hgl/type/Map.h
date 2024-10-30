@@ -1,5 +1,4 @@
-﻿#ifndef HGL_MAP_INCLUDE
-#define HGL_MAP_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/List.h>
 #include<hgl/type/Pair.h>
@@ -16,11 +15,11 @@ namespace hgl
     /**
     * 索引数据模板
     */
-    template<typename K,typename V,typename KVData> class _Map
+    template<typename K,typename V,typename KVData> class MapTemplate
     {
     protected:
     
-        using ThisClass=_Map<K,V,KVData>;
+        using ThisClass=MapTemplate<K,V,KVData>;
 
         using KVDataPool=ObjectPool<KVData>;
         using KVDataList=List<KVData *>;
@@ -35,8 +34,8 @@ namespace hgl
 
     public: //方法
 
-        _Map()=default;
-        virtual ~_Map()=default;
+        MapTemplate()=default;
+        virtual ~MapTemplate()=default;
 
         const   int     GetCount()const{return data_list.GetCount();}                               ///<取得数据总量
         const   bool    IsEmpty()const{return data_list.IsEmpty();}                                 ///<是否为空
@@ -125,7 +124,7 @@ namespace hgl
                     return count;
                 }
 
-                KVData *GetItem(int n){return GetObjectFromList(data_list,n);}                          ///<取指定序号的数据
+                KVData *GetItem(int n){return GetObjectFromList(data_list,n);}                      ///<取指定序号的数据
                 bool    GetBySerial(int,K &,V &) const;                                             ///<取指定序号的数据
                 bool    GetKey(int,K &);                                                            ///<取指定序号的索引
                 bool    GetValue(int,V &);                                                          ///<取指定序号的数据
@@ -141,9 +140,9 @@ namespace hgl
 
                 void    WithList(KVDataList &with_list,const List<K> &in_list);                     ///<统计出所有在in_list中出现的数据，产生的结果写入with_list
                 void    WithoutList(KVDataList &without_list,const List<K> &in_list);               ///<统计出所有没有出现在in_list中的数据，产生的结果写入without_list
-    };//class _Map
+    };//class MapTemplate
 
-    template<typename K,typename V> class Map:public _Map<K,V,KeyValue<K,V> >
+    template<typename K,typename V> class Map:public MapTemplate<K,V,KeyValue<K,V> >
     {
     public:
 
@@ -161,21 +160,19 @@ namespace hgl
         return result;
     }
 
-    template<typename K,typename V,typename KVData> class _ObjectMap:public _Map<K,V *,KVData>
+    template<typename K,typename V,typename KVData> class ObjectMapTemplate:public MapTemplate<K,V *,KVData>
     {
     protected:
 
-        typedef _Map<K,V *,KVData> SuperClass;
+        typedef MapTemplate<K,V *,KVData> SuperClass;
 
-        ObjectLifecycleManager<V> *olc;
-        ObjectLifecycleManager<V> default_olc;
+        ObjectLifecycleManager<V> *olm;
 
                 void    DeleteObject(KVData *ds)
                 {
                     if(!ds)return;
 
-                    if(olc)
-                        olc->Clear(&(ds->value));
+                    olm->Clear(&(ds->value));
                 }
 
                 void    DeleteObject(int index)
@@ -185,19 +182,14 @@ namespace hgl
 
     public:
 
-        _ObjectMap()
+        ObjectMapTemplate(ObjectLifecycleManager<V> *_olm)
         {
-            olc=&default_olc;
+            olm=_olm;
         }
 
-        virtual ~_ObjectMap()
+        virtual ~ObjectMapTemplate()
         {
             Clear();
-        }
-
-        virtual void    SetDataLifetimeCallback(ObjectLifecycleManager<V> *cb)                      ///<设定数据生命周期回调函数
-        {
-            olc=cb;
         }
 
         /**
@@ -349,9 +341,19 @@ namespace hgl
             else
                 return nullptr;
         };
-    };//class _ObjectMap
+    };//class ObjectMapTemplate
 
-    template<typename K,typename V> using ObjectMap=_ObjectMap<K,V,KeyValue<K,V *> >;
+    template<typename K,typename V> class ObjectMap:public ObjectMapTemplate<K,V,KeyValue<K,V *>>
+    {
+    protected:
+
+        ObjectLifecycleManager<V> DefaultOLM;
+
+    public:
+
+        ObjectMap():ObjectMapTemplate(&DefaultOLM){};
+        virtual ~ObjectMap()=default;
+    };//template<typename K,typename V> class ObjectMap:public ObjectMapTemplate<K,V,KeyValue<K,V *>>
 }//namespace hgl
+
 #include<hgl/type/Map.cpp>
-#endif//HGL_MAP_INCLUDE

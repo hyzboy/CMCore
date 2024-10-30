@@ -132,7 +132,7 @@ namespace hgl
 
     public:
 
-        virtual void Clear  ()                                  ///<清除所有数据
+        virtual void Clear  ()                                                                      ///<清除所有数据
         {
             if(dlm)
             {
@@ -148,7 +148,7 @@ namespace hgl
             data_array[1].Clear();
         }
 
-        virtual void Free   ()                                  ///<清除所有数据并释放内存
+        virtual void Free   ()                                                                      ///<清除所有数据并释放内存
         {
             Clear(dlm);
 
@@ -169,13 +169,13 @@ namespace hgl
         virtual ~Queue()=default;
     };//template<typename T> class Queue:public QueueTemplate<T>
 
-    template<typename T> class ObjectQueue:public QueueTemplate<T *>                                        ///对象队列
+    template<typename T> class ObjectQueue:public QueueTemplate<T *>                                ///对象队列
     {
-        DefaultObjectLifetimeCallback<T> default_olc;
+        ObjectLifecycleManager<T> DefaultOLM;
 
     public:
 
-        ObjectQueue():QueueTemplate(&default_olc){}
+        ObjectQueue():QueueTemplate(&DefaultOLM){}
         virtual ~ObjectQueue() override { Free(); }
 
         virtual bool Push(T *obj)
@@ -192,27 +192,19 @@ namespace hgl
             return Queue<T *>::Push(obj_list,count);
         }
 
-        //virtual T *Pop()
-        //{
-        //    T *obj;
-
-        //    if(!Queue<T *>::Pop(obj))
-        //        return(nullptr);
-
-        //    return obj;
-        //}
-
-        void Clear(DataLifecycleManager<T *> *olc=nullptr)
+        T *Pop()
         {
-            if(!olc)
-                olc=&default_olc;
-            
-            Queue<T *>::Clear(olc);
+            T *obj;
+
+            if(!Queue<T *>::Pop(obj))
+                return(nullptr);
+
+            return obj;
         }
 
-        void Free(DataLifecycleManager<T *> *olc=nullptr)
+        void Free()
         {
-            ObjectQueue<T>::Clear(olc);
+            ObjectQueue<T>::Clear();
 
             this->data_array[0].Free();
             this->data_array[1].Free();

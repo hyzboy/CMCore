@@ -9,7 +9,7 @@ namespace hgl
     * @return 数据所在索引，-1表示不存在
     */
     template<typename K,typename V,typename KVData>
-    int _Map<K,V,KVData>::Find(const K &flag)const
+    int MapTemplate<K,V,KVData>::Find(const K &flag)const
     {
         int left=0,right=data_list.GetCount()-1;                //使用left,right而不使用min,max是为了让代码能够更好的阅读。
         int mid;
@@ -42,7 +42,7 @@ namespace hgl
     }
 
     template<typename K,typename V,typename KVData>
-    bool _Map<K,V,KVData>::FindPos(const K &flag,int &pos)const
+    bool MapTemplate<K,V,KVData>::FindPos(const K &flag,int &pos)const
     {
         int left=0,right=data_list.GetCount()-1;
         int mid;
@@ -125,7 +125,7 @@ namespace hgl
     }
 
     template<typename K,typename V,typename KVData>
-    int _Map<K,V,KVData>::FindByValue(const V &data)const
+    int MapTemplate<K,V,KVData>::FindByValue(const V &data)const
     {
         const int count=data_list.GetCount();
 
@@ -150,7 +150,7 @@ namespace hgl
     * @return 新创建好的数据结构
     */
     template<typename K,typename V,typename KVData>
-    KVData *_Map<K,V,KVData>::Add(const K &flag,const V &data)
+    KVData *MapTemplate<K,V,KVData>::Add(const K &flag,const V &data)
     {
         KVData *dp=new KVData;
         
@@ -175,7 +175,7 @@ namespace hgl
     * @param obj 数据
     */
     template<typename K,typename V,typename KVData>
-    void _Map<K,V,KVData>::Add(KVData *obj)
+    void MapTemplate<K,V,KVData>::Add(KVData *obj)
     {
         data_list.Insert(FindPos(obj->key),obj);
     }
@@ -185,7 +185,7 @@ namespace hgl
     * 比如定义了Map<int ID,struct DATA>，直接返回DATA需要复制会消耗一些时间，直接返回DATA *会更好一些
     */
     template<typename K,typename V,typename KVData>
-    V *_Map<K,V,KVData>::GetValuePointer(const K &key)const
+    V *MapTemplate<K,V,KVData>::GetValuePointer(const K &key)const
     {
         int index=Find(key);
 
@@ -205,7 +205,7 @@ namespace hgl
     * @return 数据序号,<0表示失败
     */
     template<typename K,typename V,typename KVData>
-    int _Map<K,V,KVData>::GetValueAndSerial(const K &flag,V &data) const
+    int MapTemplate<K,V,KVData>::GetValueAndSerial(const K &flag,V &data) const
     {
         int index=Find(flag);
 
@@ -220,7 +220,7 @@ namespace hgl
     }
 
     template<typename K,typename V,typename KVData>
-    bool _Map<K,V,KVData>::Check(const K &key,const V &value) const
+    bool MapTemplate<K,V,KVData>::Check(const K &key,const V &value) const
     {
         int index=Find(key);
 
@@ -240,7 +240,7 @@ namespace hgl
     * @return 是否取得成功
     */
     template<typename K,typename V,typename KVData>
-    bool _Map<K,V,KVData>::GetBySerial(int index,K &f,V &t) const
+    bool MapTemplate<K,V,KVData>::GetBySerial(int index,K &f,V &t) const
     {
         if(index<0||index>=data_list.GetCount())return(false);
         
@@ -262,7 +262,7 @@ namespace hgl
     * @return 是否取得成功
     */
     template<typename K,typename V,typename KVData>
-    bool _Map<K,V,KVData>::GetKey(int index,K &f)
+    bool MapTemplate<K,V,KVData>::GetKey(int index,K &f)
     {
         if(index<0||index>=data_list.GetCount())return(false);
         
@@ -283,7 +283,7 @@ namespace hgl
     * @return 是否取得成功
     */
     template<typename K,typename V,typename KVData>
-    bool _Map<K,V,KVData>::GetValue(int index,V &t)
+    bool MapTemplate<K,V,KVData>::GetValue(int index,V &t)
     {
         if(index<0||index>=data_list.GetCount())return(false);
         
@@ -303,7 +303,7 @@ namespace hgl
      * @param t 数据
      */
     template<typename K,typename V,typename KVData>
-    bool _Map<K,V,KVData>::SetValueBySerial(int index,V &t)
+    bool MapTemplate<K,V,KVData>::SetValueBySerial(int index,V &t)
     {
         if(index<0||index>=data_list.GetCount())return(false);
 
@@ -319,7 +319,7 @@ namespace hgl
     * @return 是否成功
     */
     template<typename K,typename V,typename KVData>
-    bool _Map<K,V,KVData>::Delete(const K &flag,V &data)
+    bool MapTemplate<K,V,KVData>::Delete(const K &flag,V &data)
     {
         int index=Find(flag);
 
@@ -342,7 +342,7 @@ namespace hgl
     * @return 是否成功
     */
     template<typename K,typename V,typename KVData>
-    bool _Map<K,V,KVData>::DeleteByKey(const K &flag)
+    bool MapTemplate<K,V,KVData>::DeleteByKey(const K &flag)
     {
         return DeleteAt(Find(flag));
     }
@@ -354,7 +354,7 @@ namespace hgl
     * @return 是否成功
     */
     template<typename K,typename V,typename KVData>
-    int _Map<K,V,KVData>::DeleteByKey(const K *fp,const int count)
+    int MapTemplate<K,V,KVData>::DeleteByKey(const K *fp,const int count)
     {
         if(!fp||count<=0)return(0);
 
@@ -378,7 +378,7 @@ namespace hgl
     * @return 是否成功
     */
     template<typename K,typename V,typename KVData>
-    bool _Map<K,V,KVData>::DeleteByValue(const V &data)
+    bool MapTemplate<K,V,KVData>::DeleteByValue(const V &data)
     {
         return DeleteAt(FindByValue(data));
     }
@@ -389,7 +389,7 @@ namespace hgl
     * @return 是否成功
     */
     template<typename K,typename V,typename KVData>
-    bool _Map<K,V,KVData>::DeleteAt(int index)
+    bool MapTemplate<K,V,KVData>::DeleteAt(int index)
     {
         if(index<0
          ||index>=data_list.GetCount())return(false);
@@ -407,7 +407,7 @@ namespace hgl
      * @return 是否成功
      */
     template<typename K,typename V,typename KVData>
-    bool _Map<K,V,KVData>::DeleteAt(int start,int number)
+    bool MapTemplate<K,V,KVData>::DeleteAt(int start,int number)
     {
         KVData **dp=data_list.GetData()+start;
 
@@ -426,7 +426,7 @@ namespace hgl
      * @param data 新的数据内容
      */
     template<typename K,typename V,typename KVData>
-    bool _Map<K,V,KVData>::ChangeOrAdd(const K &flag,const V &data)
+    bool MapTemplate<K,V,KVData>::ChangeOrAdd(const K &flag,const V &data)
     {
         int result;
         KVData *dp;
@@ -467,7 +467,7 @@ namespace hgl
     * @param return 是否更改成功
     */
     template<typename K,typename V,typename KVData>
-    bool _Map<K,V,KVData>::Change(const K &flag,const V &data)
+    bool MapTemplate<K,V,KVData>::Change(const K &flag,const V &data)
     {
         KVData *dp=GetObjectFromList(data_list,Find(flag));
 
@@ -482,7 +482,7 @@ namespace hgl
     * 清除所有数据
     */
     template<typename K,typename V,typename KVData>
-    void _Map<K,V,KVData>::Free()
+    void MapTemplate<K,V,KVData>::Free()
     {
         data_pool.Clear();
         data_list.Free();
@@ -492,14 +492,14 @@ namespace hgl
     * 清除所有数据，但不释放内存
     */
     template<typename K,typename V,typename KVData>
-    void _Map<K,V,KVData>::Clear()
+    void MapTemplate<K,V,KVData>::Clear()
     {
         data_pool.ReleaseActive();
         data_list.Clear();
     }
 
     template<typename K,typename V,typename KVData>
-    void _Map<K,V,KVData>::operator=(const ThisClass &ftd)
+    void MapTemplate<K,V,KVData>::operator=(const ThisClass &ftd)
     {
         Free();
 
@@ -529,7 +529,7 @@ namespace hgl
     }
 
     template<typename K,typename V,typename KVData>
-    void _Map<K,V,KVData>::Enum(void (*enum_func)(const K &,V &))
+    void MapTemplate<K,V,KVData>::Enum(void (*enum_func)(const K &,V &))
     {
         const int count=data_list.GetCount();
 
@@ -547,7 +547,7 @@ namespace hgl
     }
 
     template<typename K,typename V,typename KVData>
-    void _Map<K,V,KVData>::EnumKey(void (*enum_func)(const K &))
+    void MapTemplate<K,V,KVData>::EnumKey(void (*enum_func)(const K &))
     {
         const int count=data_list.GetCount();
 
@@ -565,7 +565,7 @@ namespace hgl
     }
 
     template<typename K,typename V,typename KVData>
-    void _Map<K,V,KVData>::EnumAllValue(void (*enum_func)(V &))
+    void MapTemplate<K,V,KVData>::EnumAllValue(void (*enum_func)(V &))
     {
         const int count=data_list.GetCount();
 
@@ -583,7 +583,7 @@ namespace hgl
     }
 
     template<typename K,typename V,typename KVData>
-    void _Map<K,V,KVData>::EnumValue(bool (*enum_func)(V &))
+    void MapTemplate<K,V,KVData>::EnumValue(bool (*enum_func)(V &))
     {
         const int count=data_list.GetCount();
 
@@ -605,7 +605,7 @@ namespace hgl
      * 统计出所有在in_list中出现的数据，产生的结果写入with_list
      */
     template<typename K,typename V,typename KVData>
-    void _Map<K,V,KVData>::WithList(_Map<K,V,KVData>::KVDataList &with_list,const List<K> &in_list)
+    void MapTemplate<K,V,KVData>::WithList(MapTemplate<K,V,KVData>::KVDataList &with_list,const List<K> &in_list)
     {
         with_list.Clear();
         const int count=this->GetCount();
@@ -629,7 +629,7 @@ namespace hgl
      * 统计出所有没有出现在in_list中的数据，产生的结果写入without_list
      */
     template<typename K,typename V,typename KVData>
-    void _Map<K,V,KVData>::WithoutList(_Map<K,V,KVData>::KVDataList &without_list,const List<K> &in_list)
+    void MapTemplate<K,V,KVData>::WithoutList(MapTemplate<K,V,KVData>::KVDataList &without_list,const List<K> &in_list)
     {
         without_list.Clear();
         const int count=this->GetCount();

@@ -1,15 +1,17 @@
 ﻿#pragma once
 
 #include<hgl/type/DataArray.h>
-#include<hgl/type/LifetimeCallback.h>
+#include<hgl/type/LifecycleManager.h>
 namespace hgl
 {
     /**
     * Stack模板类用于保存一个先进后出、后进先出的数据堆栈
     */
-    template<typename T> class Stack                                                                ///堆栈顺序数据访问类
+    template<typename T> class StackTemplate                                                        ///堆栈顺序数据访问类
     {
     protected:
+        
+        DataLifecycleManager<T> *dlm;
 
         DataArray<T> data_array;
 
@@ -38,8 +40,8 @@ namespace hgl
 
     public: //方法
 
-        Stack()=default;
-        virtual ~Stack()=default;
+        StackTemplate(DataLifecycleManager<T> *_dlm){dlm=_dlm;}
+        virtual ~StackTemplate()=default;
 
         virtual bool Push(T *data,int count)                                                        ///<压入多个数据
                 {
@@ -87,15 +89,14 @@ namespace hgl
 
     public:
 
-        virtual void Clear  (DataLifecycleManager<T> *dlm=nullptr)                                  ///<清除所有数据
+        virtual void Clear  ()                                                                      ///<清除所有数据
         {
-            if(dlm)
-                dlm->Clear(data_array.GetData(),data_array.GetCount());
+            dlm->Clear(data_array.GetData(),data_array.GetCount());
 
             data_array.Clear();
         }
 
-        virtual void Free   (DataLifecycleManager<T> *dlm=nullptr)                                  ///<清除所有数据并释放内存
+        virtual void Free   ()                                                                      ///<清除所有数据并释放内存
         {
             Clear(dlm);
             data_array.Free();
@@ -109,15 +110,27 @@ namespace hgl
                 }
 
         virtual void operator =(const Stack<T> &s){this->operator=(s.data_array);}
-    };//template<typename T> class Stack
+    };//template<typename T> class StackTemplate
 
-    template<typename T> class ObjectStack:public Stack<T *>                                        ///堆栈对象
+    template<typename T> class Stack:public StackTemplate<T>
     {
-        DefaultObjectLifetimeCallback<T> default_olc;
+    protected:
+
+        DataLifecycleManager<T> DefaultDLM;
 
     public:
 
-        using Stack<T *>::Stack;
+        Stack():StackTemplate(&DefaultDLM){};
+        virtual ~Stack()=default;
+    };//template<typename T> class Stack:public StackTemplate<T>
+
+    template<typename T> class ObjectStack:public StackTemplate<T *>                                ///堆栈对象
+    {
+        ObjectLifecycleManager<T> DefaultOLM;
+
+    public:
+        
+        ObjectStack():StackTemplate(&DefaultOLM){}
         virtual ~ObjectStack() override {Free();}
 
         virtual bool Push(T *obj)
@@ -127,7 +140,7 @@ namespace hgl
             return Stack<T *>::Push(obj);
         }
 
-        virtual T *Pop()
+        T *Pop()
         {
             T *obj;
 
@@ -137,17 +150,9 @@ namespace hgl
             return obj;
         }
 
-        void Clear(ObjectLifecycleManager<T> *olc=nullptr)
+        void Free()
         {
-            if(!olc)
-                olc=&default_olc;
-
-            Stack<T *>::Clear(olc);
-        }
-
-        void Free(ObjectLifecycleManager<T> *olc=nullptr)
-        {
-            ObjectStack<T>::Clear(olc);
+            ObjectStack<T>::Clear();
 
             this->data_array.Free();
         }

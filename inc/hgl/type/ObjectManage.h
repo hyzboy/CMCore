@@ -26,7 +26,7 @@ namespace hgl
 
     protected:
 
-        _Map<K,V *,KVObject> items;
+        MapTemplate<K,V *,KVObject> items;
 
         ObjectLifecycleManager<V> *olm;                                         ///<数据生命周期回调函数
 
