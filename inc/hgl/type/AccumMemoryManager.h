@@ -48,7 +48,7 @@ namespace hgl
 
         void *Access(const Block *b)                                            ///<访问一块内存
         {
-            return b?data_array.GetPointer(b->offset):nullptr;
+            return b?data_array.At(b->offset):nullptr;
         }
 
         void Clear()

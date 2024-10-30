@@ -159,7 +159,7 @@ namespace hgl
             return items[n];
         }
 
-        T *GetPointer(int64 n)const
+        T *At(int64 n)const
         {
             return (n<0||n>=count)?nullptr:items+n;
         }

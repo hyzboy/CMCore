@@ -137,7 +137,7 @@ namespace hgl
 
         const ConstStringView<SC> *GetStringView(const int id)const                  ///<根据ID取得字符串视图
         {
-            return str_list.GetPointer(id);
+            return str_list.At(id);
         }
 
     public:

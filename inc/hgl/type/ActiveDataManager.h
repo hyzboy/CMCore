@@ -83,7 +83,7 @@ namespace hgl
 
             for(int i=0;i<count;i++)
             {
-                *da=data_array.GetPointer(*idp);
+                *da=data_array.At(*idp);
 
                 if(*da)++result;
 
