@@ -7,18 +7,20 @@ namespace hgl
     /**
      * 对象列表处理类与标准列表处理类的区别在于它对数据清除时会调用delete
      */
-    template<typename T> class ObjectList:public List<T *>                                          ///对象列表处理类
+    template<typename T> class ObjectListTemplate:public List<T *>                                  ///对象列表处理类
     {
+    protected:
+
+        DataLifecycleManager<T> *dlm;                                                               ///<数据生命周期回调函数
+
     public:
 
         using ItemPointer=T *;
 
-        virtual void    DeleteObject(T *obj){if(obj)delete obj;}
-
     public: //方法
 
-        using List<T *>::List;
-        virtual ~ObjectList(){Free();}
+        ObjectListTemplate(DataLifecycleManager<T> *_dlm):List<T *>(){dlm=_dlm;}
+        virtual ~ObjectListTemplate(){Free();}
 
     public:
 
@@ -38,8 +40,7 @@ namespace hgl
 
         virtual void    Clear() override                                                            ///<清除所有数据，但不清空缓冲区
         {
-            for(auto *obj:List<T *>::data_array)
-                DeleteObject(obj);
+            dlm->Clear(this->data_array.GetData(),this->data_array.GetCount());
 
             List<T *>::Clear();
         }
@@ -63,13 +64,7 @@ namespace hgl
             if(index<0||num<=0||index+num>=List<T *>::GetCount())
                 return(false);
 
-            ItemPointer *p=this->data_array.data()+index;
-
-            for(int i=0;i<num;i++)
-            {
-                DeleteObject(*p);
-                ++p;
-            }
+            dlm->Clear(this->data_array.GetData()+index,num);
 
             return true;
         }
@@ -121,20 +116,14 @@ namespace hgl
         {
             if(!obj_list||num<=0)return(-1);
 
-            ItemPointer *p=(ItemPointer *)obj_list;
-
-            for(int i=0;i<num;i++)
-            {
-                DeleteObject(*p);
-                ++p;
-            }
+            dlm->Clear(obj_list,num);
 
             return List<T *>::DeleteByValue(obj_list,num);
         }
 
         virtual T *operator[](int n)const                                                           ///<操作符重载取得指定索引处的数据
         {
-            T **obj=this->data_array.GetPointer(n);
+            T **obj=this->data_array.At(n);
 
             if(!obj)return(nullptr);
 
@@ -166,7 +155,7 @@ namespace hgl
                 if(!this->data_array.SetCount(new_count))
                     return(false);
 
-                ItemPointer *p=this->data_array.GetPointer(cur_count);
+                ItemPointer *p=this->data_array.At(cur_count);
 
                 hgl_zero<ItemPointer>(p,new_count-cur_count);
 
@@ -183,16 +172,26 @@ namespace hgl
 
         virtual bool Set(int index,const ItemPointer &data) override
         {
-            ItemPointer *p=this->data_array.GetPointer(index);
+            ItemPointer *p=this->data_array.At(index);
 
             if(!p)return(false);
 
-            DeleteObject(*p);
+            dlm->Clear(p);
             *p=data;
 
             return(true);
         }
     };//template <typename T> class ObjectList
+
+    template<typename T> class ObjectList:public ObjectListTemplate<T>
+    {
+        ObjectLifecycleManager<T> DefaultOLM;
+
+    public:
+
+        ObjectList():ObjectListTemplate<T>(&DefaultOLM){}
+        virtual ~ObjectList()=default;
+    };//template<typename T> class ObjectList:public ObjectListTemplate<T>
 
     #define OBJECT_LIST_ARRAY_FREE(object_list)     for(auto &obj:object_list)obj.Free();
     #define OBJECT_LIST_ARRAY_CLEAR(object_list)    for(auto &obj:object_list)obj.Clear();

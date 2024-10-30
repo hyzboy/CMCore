@@ -18,7 +18,7 @@ namespace hgl
     /**
     * 对象管理器,它没有缓冲管理，仅仅是统一管理对象，并保证不会被重复加载
     */
-    template<typename K,typename V> class ObjectManage
+    template<typename K,typename V> class ObjectManageTemplate
     {
     public:
 
@@ -28,30 +28,28 @@ namespace hgl
 
         _Map<K,V *,KVObject> items;
 
-        ObjectLifetimeCallback<V> *dlc;                                         ///<数据生命周期回调函数
-
-        ObjectLifetimeCallback<V> default_dlc;
+        ObjectLifecycleManager<V> *olm;                                         ///<数据生命周期回调函数
 
     public:
 
-        ObjectManage()
+        ObjectManageTemplate(ObjectLifecycleManager<V> *_olm)
         {
-            dlc=&default_dlc;
+            olm=_olm;
         }
 
-        virtual ~ObjectManage()
+        virtual ~ObjectManageTemplate()
         {
             Clear();
         }
 
-        virtual void    SetDataLifetimeCallback(ObjectLifetimeCallback<V> *cb)  ///<设定数据生命周期回调函数
+        virtual void    SetDataLifetimeCallback(ObjectLifecycleManager<V> *cb)  ///<设定数据生命周期回调函数
         {
-            dlc=cb;
+            olm=cb;
         }
 
         virtual void        Clear()                                             ///<清除所有对象
         {
-            if(dlc)
+            if(olm)
             {
                 int n=items.GetCount();
 
@@ -59,7 +57,7 @@ namespace hgl
                 {
                     KVObject *obj=items.GetItem(n);
 
-                    dlc->Clear(&(obj->value));
+                    olm->Clear(&(obj->value));
                 }
             }
 
@@ -76,8 +74,8 @@ namespace hgl
 
                 if(obj->ref_count<=0)
                 {
-                    if(dlc)
-                        dlc->Clear(&(obj->value));
+                    if(olm)
+                        olm->Clear(&(obj->value));
 
                     items.DeleteAt(n);
                 }
@@ -181,8 +179,8 @@ namespace hgl
 
             if(zero_clear)
             {
-                if(dlc)
-                    dlc->Clear(&(obj->value));
+                if(olm)
+                    olm->Clear(&(obj->value));
 
                 items.DeleteAt(index);
             }
@@ -211,7 +209,17 @@ namespace hgl
         {
             return ReleaseBySerial(items.FindByValue(td),zero_clear);
         }
-    };//template<typename K,typename V> class ObjectManage
+    };//template<typename K,typename V> class ObjectManageTemplate
+
+    template<typename K,typename V> class ObjectManage:public ObjectManageTemplate<K,V>
+    {
+        ObjectLifecycleManager<V> DefaultOLM;
+
+    public:
+
+        ObjectManage():ObjectManageTemplate(&DefaultOLM){}
+        virtual ~ObjectManage()=default;
+    };//template<typename K,typename V> class ObjectManage:public ObjectManageTemplate<K,V>
 
     /**
      * 使用整型对象类做数标识的对象管理器

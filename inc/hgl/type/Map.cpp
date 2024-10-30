@@ -185,7 +185,7 @@ namespace hgl
     * 比如定义了Map<int ID,struct DATA>，直接返回DATA需要复制会消耗一些时间，直接返回DATA *会更好一些
     */
     template<typename K,typename V,typename KVData>
-    V *_Map<K,V,KVData>::GetPointer(const K &key)const
+    V *_Map<K,V,KVData>::GetValuePointer(const K &key)const
     {
         int index=Find(key);
 

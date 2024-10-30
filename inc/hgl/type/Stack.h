@@ -87,17 +87,17 @@ namespace hgl
 
     public:
 
-        virtual void Clear  (DataLifetimeCallback<T> *dlc=nullptr)                                  ///<清除所有数据
+        virtual void Clear  (DataLifecycleManager<T> *dlm=nullptr)                                  ///<清除所有数据
         {
-            if(dlc)
-                dlc->Clear(data_array.GetData(),data_array.GetCount());
+            if(dlm)
+                dlm->Clear(data_array.GetData(),data_array.GetCount());
 
             data_array.Clear();
         }
 
-        virtual void Free   (DataLifetimeCallback<T> *dlc=nullptr)                                  ///<清除所有数据并释放内存
+        virtual void Free   (DataLifecycleManager<T> *dlm=nullptr)                                  ///<清除所有数据并释放内存
         {
-            Clear(dlc);
+            Clear(dlm);
             data_array.Free();
         }
 
@@ -137,7 +137,7 @@ namespace hgl
             return obj;
         }
 
-        void Clear(ObjectLifetimeCallback<T> *olc=nullptr)
+        void Clear(ObjectLifecycleManager<T> *olc=nullptr)
         {
             if(!olc)
                 olc=&default_olc;
@@ -145,7 +145,7 @@ namespace hgl
             Stack<T *>::Clear(olc);
         }
 
-        void Free(ObjectLifetimeCallback<T> *olc=nullptr)
+        void Free(ObjectLifecycleManager<T> *olc=nullptr)
         {
             ObjectStack<T>::Clear(olc);
 

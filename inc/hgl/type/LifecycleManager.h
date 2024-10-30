@@ -6,7 +6,7 @@ namespace hgl
     /**
     * 原生数据生命周期处理回调
     */
-    template<typename T> struct DataLifetimeCallback
+    template<typename T> struct DataLifecycleManager
     {
         virtual bool Create(T *){return true;}
         virtual void Clear(T *){};
@@ -31,7 +31,7 @@ namespace hgl
     /**
     * 对像生命周期处理回调 
     */
-    template<typename T> struct ObjectLifetimeCallback:public DataLifetimeCallback<T *>
+    template<typename T> struct ObjectLifecycleManager:public DataLifecycleManager<T *>
     {
         virtual bool Create(T **) override {return false;}
         virtual void Clear(T **obj) override {if(obj&&*obj)delete *obj;}
@@ -42,17 +42,19 @@ namespace hgl
 
             for(int i=0;i<count;i++)
             {
-                delete *obj;
+                if(*obj)
+                    delete *obj;
+
                 *obj=nullptr;
                 ++obj;
             }
         }
-    };//struct ObjectLifetimeCallback
+    };//struct ObjectLifecycleManager
 
     /**
     * 缺省对像生命周期处理回调 
     */
-    template<typename T> struct DefaultObjectLifetimeCallback:public ObjectLifetimeCallback<T>
+    template<typename T> struct DefaultObjectLifetimeCallback:public ObjectLifecycleManager<T>
     {
         virtual bool Create(T **obj) override {*obj=new T;return(true);}
     };//struct DefaultObjectLifetimeCallback

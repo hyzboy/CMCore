@@ -50,7 +50,7 @@ namespace hgl
                 bool    ContainsKey(const K &key)const{return(Find(key)!=-1);}                      ///<确认这个数据是否存在
                 bool    ContainsValue(const V &value)const{return(FindByValue(value)!=-1);}         ///<确认这个数据是否存在
                 bool    Check(const K &key,const V &value)const;                                    ///<确认数据是否是这个
-        virtual V *     GetPointer(const K &key)const;                                              ///<取得数据指针
+        virtual V *     GetValuePointer(const K &key)const;                                         ///<取得数据指针
         virtual int     GetValueAndSerial(const K &,V &) const;                                     ///<取得数据与索引
                 bool    Get(const K &key,V &value)const{return(GetValueAndSerial(key,value)>=0);}   ///<取得数据
         virtual bool    Delete(const K &,V &);                                                      ///<将指定数据从列表中移除，并获得这个数据
@@ -167,8 +167,8 @@ namespace hgl
 
         typedef _Map<K,V *,KVData> SuperClass;
 
-        ObjectLifetimeCallback<V> *olc;
-        ObjectLifetimeCallback<V> default_olc;
+        ObjectLifecycleManager<V> *olc;
+        ObjectLifecycleManager<V> default_olc;
 
                 void    DeleteObject(KVData *ds)
                 {
@@ -195,7 +195,7 @@ namespace hgl
             Clear();
         }
 
-        virtual void    SetDataLifetimeCallback(ObjectLifetimeCallback<V> *cb)                      ///<设定数据生命周期回调函数
+        virtual void    SetDataLifetimeCallback(ObjectLifecycleManager<V> *cb)                      ///<设定数据生命周期回调函数
         {
             olc=cb;
         }

@@ -1,15 +1,17 @@
 ﻿#pragma once
 
 #include<hgl/type/DataArray.h>
-#include<hgl/type/LifetimeCallback.h>
+#include<hgl/type/LifecycleManager.h>
 namespace hgl
 {
     /**
     * Queue模板类用于保存一个先进先出、后进后出的数据队列
     */
-    template<typename T> class Queue                                                                ///队列顺序数据访问类
+    template<typename T> class QueueTemplate                                                        ///队列顺序数据访问类
     {
     protected:
+
+        DataLifecycleManager<T> *dlm;
 
         DataArray<T> data_array[2];
 
@@ -64,14 +66,16 @@ namespace hgl
 
     public: //方法
 
-        Queue()
+        QueueTemplate(DataLifecycleManager<T> *_dlm)
         {
+            dlm=_dlm;
+
             write_index=0;
             read_index=1;
             read_offset=0;
         }
 
-        virtual ~Queue()=default;
+        virtual ~QueueTemplate()=default;
 
         virtual bool Push   (T *data,int count)                                                     ///<压入一批数据
         {
@@ -128,15 +132,15 @@ namespace hgl
 
     public:
 
-        virtual void Clear  (DataLifetimeCallback<T> *dlc=nullptr)                                  ///<清除所有数据
+        virtual void Clear  ()                                  ///<清除所有数据
         {
-            if(dlc)
+            if(dlm)
             {
                 if(data_array[read_index].GetCount()>read_offset)       //还有没读完的，需要清掉
-                    dlc->Clear(data_array[read_index].GetData()+read_offset,
+                    dlm->Clear(data_array[read_index].GetData()+read_offset,
                                data_array[read_index].GetCount()-read_offset);
 
-                dlc->Clear(data_array[write_index].GetData(),
+                dlm->Clear(data_array[write_index].GetData(),
                            data_array[write_index].GetCount());
             }
 
@@ -144,22 +148,34 @@ namespace hgl
             data_array[1].Clear();
         }
 
-        virtual void Free   (DataLifetimeCallback<T> *dlc=nullptr)                                  ///<清除所有数据并释放内存
+        virtual void Free   ()                                  ///<清除所有数据并释放内存
         {
-            Clear(dlc);
+            Clear(dlm);
 
             data_array[0].Free();
             data_array[1].Free();
         }
-    };//template<typename T> class Queue
+    };//template<typename T> class QueueTemplate
 
-    template<typename T> class ObjectQueue:public Queue<T *>                                        ///对象队列
+    template<typename T> class Queue:public QueueTemplate<T>
+    {
+    protected:
+
+        DataLifecycleManager<T> DefaultDLM;
+
+    public:
+
+        Queue():QueueTemplate(&DefaultDLM){};
+        virtual ~Queue()=default;
+    };//template<typename T> class Queue:public QueueTemplate<T>
+
+    template<typename T> class ObjectQueue:public QueueTemplate<T *>                                        ///对象队列
     {
         DefaultObjectLifetimeCallback<T> default_olc;
 
     public:
 
-        using Queue<T *>::Queue;
+        ObjectQueue():QueueTemplate(&default_olc){}
         virtual ~ObjectQueue() override { Free(); }
 
         virtual bool Push(T *obj)
@@ -186,7 +202,7 @@ namespace hgl
         //    return obj;
         //}
 
-        void Clear(DataLifetimeCallback<T *> *olc=nullptr)
+        void Clear(DataLifecycleManager<T *> *olc=nullptr)
         {
             if(!olc)
                 olc=&default_olc;
@@ -194,7 +210,7 @@ namespace hgl
             Queue<T *>::Clear(olc);
         }
 
-        void Free(DataLifetimeCallback<T *> *olc=nullptr)
+        void Free(DataLifecycleManager<T *> *olc=nullptr)
         {
             ObjectQueue<T>::Clear(olc);
 
