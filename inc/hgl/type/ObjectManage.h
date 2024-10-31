@@ -217,7 +217,7 @@ namespace hgl
 
     public:
 
-        ObjectManage():ObjectManageTemplate(&DefaultOLM){}
+        ObjectManage():ObjectManageTemplate<K,V>(&DefaultOLM){}
         virtual ~ObjectManage()=default;
     };//template<typename K,typename V> class ObjectManage:public ObjectManageTemplate<K,V>
 

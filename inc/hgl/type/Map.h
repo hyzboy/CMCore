@@ -351,7 +351,7 @@ namespace hgl
 
     public:
 
-        ObjectMap():ObjectMapTemplate(&DefaultOLM){};
+        ObjectMap():ObjectMapTemplate<K,V,KeyValue<K,V *>>(&DefaultOLM){};
         virtual ~ObjectMap()=default;
     };//template<typename K,typename V> class ObjectMap:public ObjectMapTemplate<K,V,KeyValue<K,V *>>
 }//namespace hgl

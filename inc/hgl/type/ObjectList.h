@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/List.h>
+#include<hgl/type/LifecycleManager.h>
 
 namespace hgl
 {
@@ -11,7 +12,7 @@ namespace hgl
     {
     protected:
 
-        DataLifecycleManager<T> *dlm;                                                               ///<数据生命周期回调函数
+        ObjectLifecycleManager<T> *dlm;                                                               ///<数据生命周期回调函数
 
     public:
 
@@ -19,7 +20,7 @@ namespace hgl
 
     public: //方法
 
-        ObjectListTemplate(DataLifecycleManager<T> *_dlm):List<T *>(){dlm=_dlm;}
+        ObjectListTemplate(ObjectLifecycleManager<T> *_dlm):List<T *>(){dlm=_dlm;}
         virtual ~ObjectListTemplate(){Free();}
 
     public:
@@ -53,8 +54,8 @@ namespace hgl
         virtual bool    Unlink(int index){return List<T *>::Delete(index);}                         ///<将指定索引处的数据与列表断开
         virtual bool    UnlinkMove(int index){return List<T *>::DeleteMove(index);}                 ///<将指定索引处的数据与列表断开,将前移后面的数据
         virtual bool    Unlink(int start,int number){return List<T *>::Delete(start,number);}       ///<将指定索引处的数据与列表断开
-        virtual bool    UnlinkByValue(const ItemPointer &ip){return List<T *>::DeleteByValue(ip);}  ///<将一个指定数据与列表断开
-        virtual void    UnlinkByValue(const ItemPointer *ip,int n){List<T *>::DeleteByValue(ip,n);} ///<将一批指定数据与列表断开
+        virtual bool    UnlinkByValue(ItemPointer &ip){return List<T *>::DeleteByValue(ip);}        ///<将一个指定数据与列表断开
+        virtual void    UnlinkByValue(ItemPointer *ip,int n){List<T *>::DeleteByValue(ip,n);}       ///<将一批指定数据与列表断开
         virtual void    UnlinkAll(){List<T *>::Clear();}                                            ///<断开所有数据
 
     private:
@@ -103,7 +104,7 @@ namespace hgl
             return List<T *>::DeleteMove(index,num);
         }
 
-        virtual bool    DeleteByValue(const ItemPointer &obj)  override                              ///<删除指定的一个数据
+        virtual bool    DeleteByValue(ItemPointer &obj)  override                              ///<删除指定的一个数据
         {
             if(!obj)return(false);
 
@@ -112,7 +113,7 @@ namespace hgl
             return List<T *>::DeleteByValue(obj);
         }
 
-        virtual int     DeleteByValue(const ItemPointer *obj_list,int num) override                  ///<删除指定的一批数据
+        virtual int     DeleteByValue(ItemPointer *obj_list,int num) override                  ///<删除指定的一批数据
         {
             if(!obj_list||num<=0)return(-1);
 

@@ -134,15 +134,12 @@ namespace hgl
 
         virtual void Clear  ()                                                                      ///<清除所有数据
         {
-            if(dlm)
-            {
-                if(data_array[read_index].GetCount()>read_offset)       //还有没读完的，需要清掉
-                    dlm->Clear(data_array[read_index].GetData()+read_offset,
-                               data_array[read_index].GetCount()-read_offset);
+            if(data_array[read_index].GetCount()>read_offset)       //还有没读完的，需要清掉
+                dlm->Clear( data_array[read_index].GetData()+read_offset,
+                            data_array[read_index].GetCount()-read_offset);
 
-                dlm->Clear(data_array[write_index].GetData(),
-                           data_array[write_index].GetCount());
-            }
+            dlm->Clear( data_array[write_index].GetData(),
+                        data_array[write_index].GetCount());
 
             data_array[0].Clear();
             data_array[1].Clear();
@@ -150,7 +147,7 @@ namespace hgl
 
         virtual void Free   ()                                                                      ///<清除所有数据并释放内存
         {
-            Clear(dlm);
+            Clear();
 
             data_array[0].Free();
             data_array[1].Free();
@@ -165,7 +162,7 @@ namespace hgl
 
     public:
 
-        Queue():QueueTemplate(&DefaultDLM){};
+        Queue():QueueTemplate<T>(&DefaultDLM){};
         virtual ~Queue()=default;
     };//template<typename T> class Queue:public QueueTemplate<T>
 
@@ -175,28 +172,28 @@ namespace hgl
 
     public:
 
-        ObjectQueue():QueueTemplate(&DefaultOLM){}
+        ObjectQueue():QueueTemplate<T *>(&DefaultOLM){}
         virtual ~ObjectQueue() override { Free(); }
 
         virtual bool Push(T *obj)
         {
             if(!obj)return(false);
 
-            return Queue<T *>::Push(obj);
+            return QueueTemplate<T *>::Push(obj);
         }
 
         virtual bool Push(T **obj_list,int count)
         {
             if(!obj_list)return(false);
 
-            return Queue<T *>::Push(obj_list,count);
+            return QueueTemplate<T *>::Push(obj_list,count);
         }
 
-        T *Pop()
+        T *PopObject()
         {
             T *obj;
 
-            if(!Queue<T *>::Pop(obj))
+            if(!QueueTemplate<T *>::Pop(obj))
                 return(nullptr);
 
             return obj;
@@ -204,7 +201,7 @@ namespace hgl
 
         void Free()
         {
-            ObjectQueue<T>::Clear();
+            QueueTemplate<T *>::Clear();
 
             this->data_array[0].Free();
             this->data_array[1].Free();

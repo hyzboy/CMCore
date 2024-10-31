@@ -63,11 +63,6 @@ namespace hgl
             Clear();        //有一些数据需要特别的Clear处理，所以不能依赖Active/InActive模板本身的自晰构
         }
 
-        virtual void    SetDataLifetimeCallback(DataLifecycleManager<T> *cb)                        ///<设定数据生命周期回调函数
-                        {
-                            dlm=cb;
-                        }
-
         virtual void    PreAlloc(int count,bool set_to_max=false)                                   ///<预分配空间
                         {
                             Active.PreAlloc(count);
@@ -101,12 +96,10 @@ namespace hgl
                                 if(IsFull())
                                     return(false);
 
-                                if(!dlm)return(false);
-
                                 if(!dlm->Create(&value))
                                     return(false);
                             }
-                            else if(dlm)
+                            else
                             {
                                 dlm->OnActive(&value);
                             }
@@ -121,8 +114,7 @@ namespace hgl
                             if(!Idle.Pop(value))
                                 return(false);
 
-                            if(dlm) 
-                                dlm->OnActive(&value);
+                            dlm->OnActive(&value);
 
                             Active.Add(value);
                             return(true);
@@ -158,8 +150,7 @@ namespace hgl
                                 if(!Idle.Push(value))
                                     return(false);
 
-                                if(dlm)
-                                    dlm->OnIdle(&value);
+                                dlm->OnIdle(&value);
 
                                 return(true);
                             }
@@ -185,8 +176,7 @@ namespace hgl
 
         virtual void    ReleaseActive()                                                             ///<释放所有活跃数据
                         {
-                            if(dlm)
-                                dlm->OnIdle(Active.GetData(),Active.GetCount());
+                            dlm->OnIdle(Active.GetData(),Active.GetCount());
 
                             Idle.Push(Active.GetData(),Active.GetCount());
                             Active.Clear();
@@ -194,15 +184,14 @@ namespace hgl
 
         virtual void    ClearActive()
                         {
-                            if(dlm)
-                                dlm->Clear(Active.GetData(),Active.GetCount());
+                            dlm->Clear(Active.GetData(),Active.GetCount());
 
                             Active.Clear();
                         }
 
         virtual void    ClearIdle()                                                                 ///<清除所有非活跃数据
                         {
-                            Idle.Clear(dlm);
+                            Idle.Clear();
                         }
 
         virtual void    Clear()                                                                     ///<清除所有数据
@@ -218,7 +207,7 @@ namespace hgl
 
     public:
 
-        PoolWithDLM():PoolTemplate(&DefaultLifecycleManager){}
+        PoolWithDLM():PoolTemplate<T,AT,IT>(&DefaultLifecycleManager){}
         virtual ~PoolWithDLM()=default;
     };//template<typename T,typename AT,typename IT,typename DLM> class PoolWithDLM:public PoolTemplate<T,AT,IT>
 

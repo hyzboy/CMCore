@@ -98,7 +98,7 @@ namespace hgl
 
         virtual void Free   ()                                                                      ///<清除所有数据并释放内存
         {
-            Clear(dlm);
+            Clear();
             data_array.Free();
         }
 
@@ -109,7 +109,7 @@ namespace hgl
                     data_array.WriteAt(da.GetData(),0,da.GetCount());
                 }
 
-        virtual void operator =(const Stack<T> &s){this->operator=(s.data_array);}
+        virtual void operator =(const StackTemplate<T> &s){this->operator=(s.data_array);}
     };//template<typename T> class StackTemplate
 
     template<typename T> class Stack:public StackTemplate<T>
@@ -120,7 +120,7 @@ namespace hgl
 
     public:
 
-        Stack():StackTemplate(&DefaultDLM){};
+        Stack():StackTemplate<T>(&DefaultDLM){};
         virtual ~Stack()=default;
     };//template<typename T> class Stack:public StackTemplate<T>
 
@@ -130,7 +130,7 @@ namespace hgl
 
     public:
         
-        ObjectStack():StackTemplate(&DefaultOLM){}
+        ObjectStack():StackTemplate<T *>(&DefaultOLM){}
         virtual ~ObjectStack() override {Free();}
 
         virtual bool Push(T *obj)

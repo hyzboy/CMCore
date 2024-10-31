@@ -129,7 +129,7 @@ namespace hgl
         * @param data 要删除的数据项
         * @return 是否成功
         */
-        virtual bool DeleteByValue(const T &data)
+        virtual bool DeleteByValue(T &data)
         {
             const int pos=Find(data);
 
@@ -142,7 +142,7 @@ namespace hgl
         * @param n 要删除的数据个数
         * @return 成功删除的数据个数
         */
-        virtual int  DeleteByValue(const T *data,int n)
+        virtual int  DeleteByValue(T *data,int n)
         {
             int result=0;
 
@@ -188,12 +188,12 @@ namespace hgl
         virtual void operator = (const DataArray<T> &da){data_array=da;}                            ///<操作符重载复制一个列表
         virtual void operator = (const std::initializer_list<T> &l){data_array=l;}                  ///<操作符重载复制一个列表
 
-        virtual void operator += (const T &obj){Add(obj);}                                          ///<操作符重载添加一个数据
-        virtual void operator << (const T &obj){Add(obj);}                                          ///<操作符重载添加一个数据
-        virtual void operator -= (const T &obj){DeleteByValue(obj);}                                ///<操作符重载删除一个数据
+        virtual void operator += (T &obj){Add(obj);}                                                ///<操作符重载添加一个数据
+        virtual void operator << (T &obj){Add(obj);}                                                ///<操作符重载添加一个数据
+        virtual void operator -= (T &obj){DeleteByValue(obj);}                                      ///<操作符重载删除一个数据
 
-                T *  At(const int index)     {return data_array.At(index);}         ///<取得指定序列号数据的索引
-        const   T *  At(const int index)const{return data_array.At(index);}         ///<取得指定序列号数据的索引
+                T *  At(const int index)     {return data_array.At(index);}                         ///<取得指定序列号数据的索引
+        const   T *  At(const int index)const{return data_array.At(index);}                         ///<取得指定序列号数据的索引
 
                 bool Get(int index,      T &data)const  {return data_array.ReadAt (data,index);}    ///<取得指定索引处的数据
         virtual bool Set(int index,const T &data)       {return data_array.WriteAt(data,index);}    ///<设置指定索引处的数据
