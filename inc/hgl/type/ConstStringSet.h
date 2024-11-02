@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/SortedSets.h>
+#include<hgl/type/SortedSet.h>
 #include<hgl/type/Map.h>
 #include<hgl/io/TextOutputStream.h>
 
@@ -74,7 +74,7 @@ namespace hgl
 
         DataArray<SC> str_data;                                 ///<字符串数据
 
-        SortedSets<ConstStringView<SC>> str_set;                ///<字符串集合
+        SortedSet<ConstStringView<SC>> str_set;                ///<字符串集合
 
         List<ConstStringView<SC>> str_list;                     ///<字符串列表
         Map<int,size_t> str_offset_map;                         ///<字符串映射

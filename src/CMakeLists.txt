@@ -58,6 +58,7 @@ SET(SYSTEM_INFO_SOURCE  ${CORE_PLATFORM_INCLUDE_PATH}/SystemInfo.h
 SET(MATH_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/math)
 
 SET(BASE_OBJECT_HEADER_FILES    ${TYPE_INCLUDE_PATH}/object/ObjectBaseInfo.h
+                                ${TYPE_INCLUDE_PATH}/object/ObjectRelation.h
                                 ${TYPE_INCLUDE_PATH}/object/Object.h
                                 ${TYPE_INCLUDE_PATH}/object/ObjectAllocator.h
                                 ${TYPE_INCLUDE_PATH}/object/ObjectManager.h
@@ -221,8 +222,8 @@ SET(BASE_TIME_HEADER_FILES  ${TYPE_INCLUDE_PATH}/DateTime.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Time.h)
 
 SET(BASE_TIME_SOURCE_FILES  Time/DateTime.cpp
-                        Time/TimeCount.cpp
-                        Time/TimeVal.cpp)
+                            Time/TimeCount.cpp
+                            Time/TimeVal.cpp)
 
 SOURCE_GROUP("Time\\Header Files" FILES ${BASE_TIME_HEADER_FILES})
 SOURCE_GROUP("Time\\Source Files" FILES ${BASE_TIME_SOURCE_FILES})

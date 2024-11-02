@@ -23,7 +23,7 @@ namespace hgl
 
     public:
 
-        const size_t GetHashCode()const{return object_hash_code;}
+        const size_t GetTypeHash()const{return object_hash_code;}
         const char * GetTypename()const{return object_type_name;}
         const size_t GetCount()const{return object_count;}
 
@@ -88,7 +88,7 @@ namespace hgl
         {
             ObjectBaseInfo obi
             {
-                .hash_code      =GetHashCode(),
+                .hash_code      =GetTypeHash(),
                 .object_manager =this,
                 .serial_number  =AcquireSerialNumber(),
                 .source_code_location=scl

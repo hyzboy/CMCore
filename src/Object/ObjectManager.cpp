@@ -24,7 +24,7 @@ namespace hgl
         if(!om)
             return(false);
 
-        const size_t hc=om->GetHashCode();
+        const size_t hc=om->GetTypeHash();
 
         auto *omm=GetObjectManagerMap();
 
@@ -43,7 +43,7 @@ namespace hgl
         if(!om)
             return;
 
-        const size_t hc=om->GetHashCode();
+        const size_t hc=om->GetTypeHash();
 
         auto *omm=GetObjectManagerMap();
 

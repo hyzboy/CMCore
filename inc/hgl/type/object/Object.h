@@ -13,11 +13,12 @@ namespace hgl
 
     public:
 
+        const ObjectSimpleInfo &GetObjectSimpleInfo () const noexcept { return object_base_info; }                          ///<获取对象简单信息
         const ObjectBaseInfo &  GetObjectBaseInfo   () const noexcept { return object_base_info; }                          ///<获取对象基本信息
 
               ObjectManager *   GetObjectManager    ()       noexcept { return object_base_info.object_manager; }           ///<获取对象管理器
 
-        const size_t            GetHashCode         () const noexcept { return object_base_info.hash_code; }                ///<获取对象数据类型的hash值
+        const size_t            GetTypeHash         () const noexcept { return object_base_info.hash_code; }                ///<获取对象数据类型的hash值
         const size_t            GetSerialNumber     () const noexcept { return object_base_info.serial_number; }            ///<获取对象的序列号
 
     protected:
@@ -32,6 +33,10 @@ namespace hgl
         virtual ~Object()=default;
     
         virtual void Deinitailize()=0;
+
+        virtual bool CheckType()
+        {
+        }
     };//class Object
 
     template<typename T> class DefaultObjectManager;
@@ -50,7 +55,7 @@ namespace hgl
     \
     public: \
     \
-        static const size_t StaticHashCode() noexcept {return GetTypeHash<class_name>();}   \
+        static const size_t StaticTypeHash() noexcept {return hgl::GetTypeHash<class_name>();}   \
 
 
 
@@ -150,7 +155,7 @@ namespace hgl
         template<typename OT>
         SafePtr<T> &operator=(SafePtr<OT> &spd)
         {
-            if(T::StaticHashCode()!=OT.StaticHashCode())
+            if(T::StaticTypeHash()!=OT::StaticTypeHash())
             {
                 Release();
                 return *this;

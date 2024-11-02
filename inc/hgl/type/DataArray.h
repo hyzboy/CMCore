@@ -626,8 +626,8 @@ namespace hgl
             result_list.SetCount(result);
         }
 
-        //int64     Intersection    (SortedSets<T> &result,const SortedSets<T> &sets);          ///<取得与指定合集的交集
-        //int64     Intersection    (const SortedSets<T> &set);                                 ///<取得与指定合集的交集数量
+        //int64     Intersection    (SortedSet<T> &result,const SortedSet<T> &sets);          ///<取得与指定合集的交集
+        //int64     Intersection    (const SortedSet<T> &set);                                 ///<取得与指定合集的交集数量
 
         ///**
         //    * 取得与指定交集is的合集，但排斥cs合集中的数据
@@ -636,9 +636,9 @@ namespace hgl
         //    * @param cs 求排斥的合集
         //    * @return 结果数量
         //    */
-        //int64     Intersection    (SortedSets<T> &result,const SortedSets<T> &is,const SortedSets<T> &cs);
+        //int64     Intersection    (SortedSet<T> &result,const SortedSet<T> &is,const SortedSet<T> &cs);
 
-        //int64     Difference      (const SortedSets<T> &is);                                  ///<求差集数量
+        //int64     Difference      (const SortedSet<T> &is);                                  ///<求差集数量
 
         ///**
         // * 求当前合集与另一个数据集的交集
@@ -646,7 +646,7 @@ namespace hgl
         // * @param list 要计算交集的数据集
         // * @return 交集数量
         // */
-        //int64 Intersection(SortedSets<T> &result,const SortedSets<T> &list)
+        //int64 Intersection(SortedSet<T> &result,const SortedSet<T> &list)
         //{
         //    if(data_list.GetCount()<=0)
         //        return(0);
@@ -663,7 +663,7 @@ namespace hgl
         //    return result.GetCount();
         //}
 
-        //int64 Intersection(const SortedSets<T> &list)
+        //int64 Intersection(const SortedSet<T> &list)
         //{
         //    if(data_list.GetCount()<=0)
         //        return(0);
@@ -685,7 +685,7 @@ namespace hgl
         //    return count;
         //}
 
-        //int64 Intersection(SortedSets<T> &result,const SortedSets<T> &il,const SortedSets<T> &cl)
+        //int64 Intersection(SortedSet<T> &result,const SortedSet<T> &il,const SortedSet<T> &cl)
         //{
         //    if(data_list.GetCount()<=0)
         //        return(0);
@@ -727,6 +727,6 @@ namespace hgl
         //    return count;
         //}
 
-        //int64     Clear           (const SortedSets<T> &clear_sets);                          ///<清除指定合集中所有数据
+        //int64     Clear           (const SortedSet<T> &clear_sets);                          ///<清除指定合集中所有数据
     };//template<typename T> class DataArray
 }//namespace hgl

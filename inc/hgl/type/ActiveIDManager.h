@@ -2,7 +2,7 @@
 
 #include<hgl/type/DataArray.h>
 #include<hgl/type/Stack.h>
-#include<hgl/type/SortedSets.h>
+#include<hgl/type/SortedSet.h>
 
 namespace hgl
 {
@@ -11,7 +11,7 @@ namespace hgl
     */
     class ActiveIDManager
     {
-        SortedSets<int> active_list;        ///<活跃ID列表
+        SortedSet<int> active_list;        ///<活跃ID列表
         Stack<int> idle_list;               ///<闲置ID列表
 
         int id_count;

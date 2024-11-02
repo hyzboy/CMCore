@@ -8,7 +8,7 @@ namespace hgl
      * 集合数据列表中不允许数据出现重复性，同时它会将数据排序</br>
      * 我们删除了批量添加数据的Add函数，因为每一次添加数据都会导致一次插入，这样效率太低了。我们建议将数据全部添加到List，再转换为SortedSets。</br>
      */
-    template<typename T> class SortedSets
+    template<typename T> class SortedSet
     {
     protected:
 
@@ -38,8 +38,8 @@ namespace hgl
 
     public:
 
-        SortedSets()=default;
-        virtual ~SortedSets()=default;
+        SortedSet()=default;
+        virtual ~SortedSet()=default;
 
         void    SetCount        (int64 count){data_list.SetCount(count);}                           ///<指定数据数量，一般用于批量加载前的处理
         void    PreAlloc        (int64 count){data_list.Alloc(count);}                              ///<预分配指定数量的数据空间
@@ -173,6 +173,6 @@ namespace hgl
         bool    GetFirst        (T &data){return hgl_cpy(data,*begin());}                   ///<取得最前面一个数据
         bool    GetLast         (T &data){return hgl_cpy(data,*last());}                    ///<取得最后面一个数据
 
-        void    operator       =(const SortedSets<T> &set){data_list=set.data_list;}        ///<等号操作符重载
-    };//template<typename T> class SortedSets
+        void    operator       =(const SortedSet<T> &set){data_list=set.data_list;}        ///<等号操作符重载
+    };//template<typename T> class SortedSet
 }//namespace hgl

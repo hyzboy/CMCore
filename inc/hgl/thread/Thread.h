@@ -2,7 +2,7 @@
 #define HGL_THREAD_INCLUDE
 
 #include<hgl/type/DataType.h>
-#include<hgl/type/SortedSets.h>
+#include<hgl/type/SortedSet.h>
 #include<hgl/type/String.h>
 #include<hgl/thread/ThreadMutex.h>
 #include<hgl/log/LogInfo.h>
@@ -121,7 +121,7 @@ namespace hgl
     {
     protected:
 
-        SortedSets<THREAD *> thread_set;
+        SortedSet<THREAD *> thread_set;
 
     public:
 
