@@ -6,7 +6,7 @@ namespace hgl
     /**
      * 有序合集</br>
      * 集合数据列表中不允许数据出现重复性，同时它会将数据排序</br>
-     * 我们删除了批量添加数据的Add函数，因为每一次添加数据都会导致一次插入，这样效率太低了。我们建议将数据全部添加到List，再转换为SortedSets。</br>
+     * 我们删除了批量添加数据的Add函数，因为每一次添加数据都会导致一次插入，这样效率太低了。我们建议将数据全部添加到List，再转换为SortedSet。</br>
      */
     template<typename T> class SortedSet
     {
@@ -33,16 +33,16 @@ namespace hgl
 
     public:
 
-        operator        DataArray<T> & ()       {return data_list;}                                 ///<取得原始数据阵列
-        operator const  DataArray<T> & ()const  {return data_list;}                                 ///<取得原始数据阵列
+        operator        DataArray<T> & ()       {return data_list;}                             ///<取得原始数据阵列
+        operator const  DataArray<T> & ()const  {return data_list;}                             ///<取得原始数据阵列
 
     public:
 
         SortedSet()=default;
         virtual ~SortedSet()=default;
 
-        void    SetCount        (int64 count){data_list.SetCount(count);}                           ///<指定数据数量，一般用于批量加载前的处理
-        void    PreAlloc        (int64 count){data_list.Alloc(count);}                              ///<预分配指定数量的数据空间
+        void    SetCount        (int64 count){data_list.SetCount(count);}                       ///<指定数据数量，一般用于批量加载前的处理
+        void    PreAlloc        (int64 count){data_list.Alloc(count);}                          ///<预分配指定数量的数据空间
 
         /**
          * 查找数据是否存在
@@ -54,7 +54,7 @@ namespace hgl
             return FindDataPositionInSortedArray(data_list,flag);
         }
 
-        bool    Contains        (const T &v)const{return(Find(v)!=-1);}                     ///<确认是否成员
+        bool    Contains        (const T &v)const{return(Find(v)!=-1);}                         ///<确认是否成员
 
         /**
         * 添加一个数据
