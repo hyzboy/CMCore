@@ -20,14 +20,14 @@ namespace hgl
 #define DEFINE_MATRIX(num)  using Matrix##num##f=glm::mat##num;  \
                             const Matrix##num##f Identity##num##f=Matrix##num##f(1.0f); \
                             inline bool IsIdentityMatrix(const Matrix##num##f &m){return(hgl_cmp(m,Identity##num##f)==0);}  \
-                            inline bool IsNearlyEqual(const Matrix##num##f &m1,const Matrix##num##f &m2)    \
+                            inline bool IsNearlyEqual(const Matrix##num##f &m1,const Matrix##num##f &m2,const float err=HGL_FLOAT_ERROR)    \
                             {   \
                                 float *f1=(float *)&m1;\
                                 float *f2=(float *)&m2;\
                             \
                                 for(int i=0;i<sizeof(Matrix##num##f)/sizeof(float);i++)  \
                                 {   \
-                                    if(!IsNearlyEqual(*f1,*f2))  \
+                                    if(!IsNearlyEqual(*f1,*f2,err))  \
                                         return(false);  \
                             \
                                     ++f1;++f2;  \
@@ -46,9 +46,9 @@ namespace hgl
 
 //#undef DEFINE_MATRIX
 
-    inline const bool IsNearlyEqual(const Quatf &q1,const Quatf &q2)
+    inline const bool IsNearlyEqual(const Quatf &q1,const Quatf &q2,const float err=HGL_FLOAT_ERROR)
     {
-        return glm::all(glm::epsilonEqual(q1,q2,glm::epsilon<float>()));
+        return glm::all(glm::epsilonEqual(q1,q2,err));
     }
 
     inline Matrix4f inverse(const Matrix4f &m)

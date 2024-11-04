@@ -263,37 +263,38 @@ namespace hgl
         return from + (to - from) * alpha;
     }
 
-    inline bool IsNearlyEqual(const float v1,const float v2,const float epsilon=HGL_FLOAT_EPSILON)
+    inline bool IsNearlyEqual(const Vector2f &v1,const Vector2f &v2,const float err=HGL_FLOAT_ERROR)
     {
-        return glm::epsilonEqual(v1,v2,epsilon);
+        if(!IsNearlyEqual(v1.x,v2.x,err))return(false);
+        if(!IsNearlyEqual(v1.y,v2.y,err))return(false);
+
+        return(true);
     }
 
-    inline bool IsNearlyEqual(const Vector2f &v1,const Vector2f &v2,const float epsilon=HGL_FLOAT_EPSILON)
+    inline bool IsNearlyEqual(const Vector2d &v1,const Vector2d &v2,const double err=HGL_DOUBLE_ERROR)
     {
-        glm::bvec2 result=glm::epsilonEqual(v1,v2,epsilon);
+        if(!IsNearlyEqual(v1.x,v2.x,err))return(false);
+        if(!IsNearlyEqual(v1.y,v2.y,err))return(false);
 
-        return result.x && result.y;
+        return(true);
     }
 
-    inline bool IsNearlyEqual(const Vector2d &v1,const Vector2d &v2,const double epsilon=HGL_DOUBLE_EPSILON)
+    inline bool IsNearlyEqual(const Vector3f &v1,const Vector3f &v2,const float err=HGL_FLOAT_ERROR)
     {
-        glm::bvec2 result=glm::epsilonEqual(v1,v2,epsilon);
+        if(!IsNearlyEqual(v1.x,v2.x,err))return(false);
+        if(!IsNearlyEqual(v1.y,v2.y,err))return(false);
+        if(!IsNearlyEqual(v1.z,v2.z,err))return(false);
 
-        return result.x && result.y;
+        return(true);
     }
 
-    inline bool IsNearlyEqual(const Vector3f &v1,const Vector3f &v2,const float epsilon=HGL_FLOAT_EPSILON)
+    inline bool IsNearlyEqual(const Vector3d &v1,const Vector3d &v2,const double err=HGL_DOUBLE_ERROR)
     {
-        glm::bvec3 result=glm::epsilonEqual(v1,v2,epsilon);
+        if(!IsNearlyEqual(v1.x,v2.x,err))return(false);
+        if(!IsNearlyEqual(v1.y,v2.y,err))return(false);
+        if(!IsNearlyEqual(v1.z,v2.z,err))return(false);
 
-        return result.x && result.y && result.z;
-    }
-
-    inline bool IsNearlyEqual(const Vector3d &v1,const Vector3d &v2,const double epsilon=HGL_DOUBLE_EPSILON)
-    {
-        glm::bvec3 result=glm::epsilonEqual(v1,v2,epsilon);
-
-        return result.x && result.y && result.z;
+        return(true);
     }
 
     template<typename T,glm::qualifier Q>

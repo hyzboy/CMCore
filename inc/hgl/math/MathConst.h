@@ -14,15 +14,15 @@ namespace hgl
     constexpr const double  HGL_DOUBLE_MAX      =std::numeric_limits<double>::max();            ///<最大双精度浮点数
     constexpr const double  HGL_DOUBLE_EPSILON  =std::numeric_limits<double>::epsilon();        ///<双精度浮点数精度最小值
 
-    template<typename T> bool IsNearlyZero(const T value);
+    constexpr const float   HGL_HALF_FLOAT_ERROR=0.001f;                                        ///<半精度浮点数最小误差值
+    constexpr const float   HGL_FLOAT_ERROR     =0.0001f;                                       ///<浮点数最小误差值
+    constexpr const double  HGL_DOUBLE_ERROR    =0.00000001;                                    ///<双精度浮点数最小误差值
 
-    template<> inline bool IsNearlyZero<float>(const float value){return(fabsf(value) <= HGL_FLOAT_EPSILON);}
-    template<> inline bool IsNearlyZero<double>(const double value){return(fabs(value) <= HGL_DOUBLE_EPSILON);}
+    inline bool IsNearlyZero(const float value,const float err=HGL_FLOAT_ERROR){return(fabsf(value) <= err);}
+    inline bool IsNearlyZero(const double value,const double err=HGL_DOUBLE_ERROR){return(fabs(value) <= err);}
 
-    template<typename T> bool IsNearlyEqual(const T a,const T b);
-
-    template<> inline bool IsNearlyEqual<float>(const float a,const float b){return(fabsf(a - b) <= HGL_FLOAT_EPSILON);}
-    template<> inline bool IsNearlyEqual<double>(const double a,const double b){return(fabs(a - b) <= HGL_DOUBLE_EPSILON); }
+    inline bool IsNearlyEqual(const float a,const float b,const float err=HGL_FLOAT_ERROR){return(fabsf(a - b) <= err);}
+    inline bool IsNearlyEqual(const double a,const double b,const double err=HGL_DOUBLE_ERROR){return(fabs(a - b) <= err); }
 
     constexpr const double HGL_E          =2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274;        //欧拉数(自然对数的底数)
     constexpr const double HGL_LOG2E      =1.44269504088896340736;
