@@ -50,15 +50,15 @@ namespace hgl
 
                 for(uint i=0;i<=0xFFFF;i++)
                 {
-                    strcpy(filename,HGL_MAX_PATH,fn);
+                    hgl::strcpy(filename,HGL_MAX_PATH,fn);
 
                     if(i)
                     {
-                        utos(num+1,14,i);
-                        strcat(filename,HGL_MAX_PATH,num,sizeof(num));
+                        hgl::utos(num+1,14,i);
+                        hgl::strcat(filename,HGL_MAX_PATH,num,sizeof(num));
                     }
 
-                    strcat(filename,HGL_MAX_PATH,OS_TEXT(".log.txt"),8);
+                    hgl::strcat(filename,HGL_MAX_PATH,OS_TEXT(".log"),4);
 
                     if(fos.CreateTrunc(filename))//创建成功
                     {
