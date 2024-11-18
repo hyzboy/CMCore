@@ -146,6 +146,10 @@ namespace hgl
     {
     public:
 
+        using Iterator=KeyValue<K,V>;
+
+    public:
+
         Map()=default;
         virtual ~Map()=default;
     };//class Map

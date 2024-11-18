@@ -10,5 +10,4 @@ namespace hgl
     };
 
     #define HGL_SOURCE_CODE_LOCATION    __FILE__,__FUNCTION__,__LINE__
-
 }//namespace hgl

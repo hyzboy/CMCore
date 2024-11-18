@@ -1,6 +1,7 @@
 #pragma once
 #include<hgl/type/DataType.h>
 #include<hgl/type/object/ObjectBaseInfo.h>
+#include<hgl/type/object/ObjectRelation.h>
 
 namespace hgl
 {
@@ -33,10 +34,6 @@ namespace hgl
         virtual ~Object()=default;
     
         virtual void Deinitailize()=0;
-
-        virtual bool CheckType()
-        {
-        }
     };//class Object
 
     template<typename T> class DefaultObjectManager;
