@@ -86,13 +86,12 @@ namespace hgl
         template<typename ...ARGS>
         SafePtrData<T> *CreateObject(const SourceCodeLocation &scl,ARGS...args)
         {
-            ObjectBaseInfo obi
-            {
-                .hash_code      =GetTypeHash(),
-                .object_manager =this,
-                .serial_number  =AcquireSerialNumber(),
-                .source_code_location=scl
-            };
+            ObjectBaseInfo obi;
+
+            obi.hash_code      =GetTypeHash();
+            obi.object_manager =this;
+            obi.serial_number  =AcquireSerialNumber();
+            obi.source_code_location=scl;
 
             Object *obj=object_allocator->Create(obi);
 
