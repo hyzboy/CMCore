@@ -148,7 +148,7 @@ namespace hgl
         virtual bool Contains(const void *value) const{return indexOf(value)!=-1;}                  ///<判断当前数据是否是其成员
 
         template<typename T>
-        bool  ContainsValue(const T &value)const{return indexOf<T>(value)!=-1;}                     ///<判断当前数据是否是其成员
+        bool  ContainsValue(const T &value)const{return indexOfValue<T>(value)!=-1;}                ///<判断当前数据是否是其成员
 
         virtual int64 RemoveCondition(CheckElement *condition,int max_count=1);                     ///<按条件移除
         
