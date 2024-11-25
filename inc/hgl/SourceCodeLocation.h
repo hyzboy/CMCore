@@ -10,4 +10,6 @@ namespace hgl
     };
 
     #define HGL_SOURCE_CODE_LOCATION    __FILE__,__FUNCTION__,__LINE__
+
+    #define HGL_SCL_HERE    SourceCodeLocation(HGL_SOURCE_CODE_LOCATION)
 }//namespace hgl
