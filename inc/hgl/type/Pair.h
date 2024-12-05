@@ -2,7 +2,7 @@
 #define HGL_TYPE_PAIR_INCLUDE
 
 #include<hgl/platform/Platform.h>
-#include<hgl/CompOperator.h>
+#include<hgl/Comparator.h>
 
 namespace hgl
 {

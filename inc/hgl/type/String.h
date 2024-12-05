@@ -3,7 +3,7 @@
 
 #include<hgl/type/StringInstance.h>
 #include<hgl/io/InputStream.h>
-#include<hgl/CompOperator.h>
+#include<hgl/Comparator.h>
 #include<hgl/type/Smart.h>
 
 namespace hgl

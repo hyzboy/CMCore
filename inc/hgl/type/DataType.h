@@ -12,6 +12,6 @@
 #include<hgl/math/TimeConst.h>          // 时间常数
 #include<hgl/math/PhysicsConst.h>       // 物理常数
 #include<hgl/Endian.h>                  // 编码序定义
-#include<hgl/CompOperator.h>            // 比较操作符实现定义
+#include<hgl/Comparator.h>            // 比较操作符实现定义
 
 #endif//HGL_DATATYPE_INCLUDE

@@ -2,7 +2,7 @@
 #define HGL_EXTENT_2D_INCLUDE
 
 #include<hgl/type/DataType.h>
-#include<hgl/CompOperator.h>
+#include<hgl/Comparator.h>
 namespace hgl
 {
     template<typename T> union Extent2D
