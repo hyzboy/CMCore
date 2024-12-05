@@ -132,7 +132,7 @@ namespace hgl
         return (uint16)CharCodePage::NONE;
     }
 
-    struct CharSet
+    struct CharSet:public Comparator<CharSet>
     {
         uint16 codepage;
         CharSetName charset;
@@ -160,8 +160,10 @@ namespace hgl
             strcpy(charset,CHAR_SET_NAME_MAX_LENGTH,cs.charset);
         }
 
-        int _Comp(const CharSet &data)const{return (size_t)codepage-(size_t)data.codepage;} \
-        CompOperator(const CharSet &,_Comp)
+        const int compare(const CharSet &other)const override
+        {
+            return (size_t)codepage-(size_t)other.codepage;
+        }
     };//struct CharacterSet
 
     inline CharSet::CharSet(const uint16 ccp)

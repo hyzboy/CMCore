@@ -1,89 +1,36 @@
-﻿#ifndef HGL_COMP_OPERATOR_INCLUDE
-#define HGL_COMP_OPERATOR_INCLUDE
+﻿#pragma once
 
-#include<hgl/TypeFunc.h>
+#include<string.h>
+
 namespace hgl
 {
-    #define CompOperator(name,compfunc) const bool operator > (name i)const     {return compfunc(i)>0;} \
-                                        const bool operator < (name i)const     {return compfunc(i)<0;} \
-                                        const bool operator >=(name i)const     {return compfunc(i)>=0;}\
-                                        const bool operator <=(name i)const     {return compfunc(i)<=0;}\
-                                        const bool operator ==(name i)const     {return compfunc(i)==0;}\
-                                        const bool operator !=(name i)const     {return compfunc(i)!=0;}
-
-    #define CompOperatorMemcmp(name)    int _Comp(name data)const{return memcmp(this,&data,sizeof(name));}  \
-                                        CompOperator(name,_Comp)
-
-    #define CompOperatorMemcmpPointer(name)    int _Comp(const name *data)const{return memcmp(this,data,sizeof(name));}  \
-                                                CompOperator(const name *,_Comp)
-}//namespace hgl
-
-/**
-* 比较处理模板基类
-*/
-template<typename T> class Comparator                                                               ///比较处理模板基类
-{
-public:
-
     /**
-    * 比较函数，需被特例化或派生实现. 正确情况下此函数不应该会被调用
+    * 比较处理模板基类
     */
-    virtual int compare(const T &a,const T &b)const;
-    //{
-    //    return 0;   //  如 return(a-b);
-    //}
-
-    /**
-        * 交换函数
-        */
-    virtual void exchange(T &a,T &b)
+    template<typename T> class Comparator                                                               ///比较处理模板基类
     {
-        hgl::hgl_swap(a,b);
-    }
+    public:
 
-    /**
-        * 复制数据
+        /**
+        * 比较函数，需被特例化或派生实现. 正确情况下此函数不应该会被调用
         */
-    virtual void cpy(T *t,T *s)
-    {
-        memcpy(t,s,sizeof(T));
-    }
-};//class Comparator
+        virtual const int compare(const T &other)const=0;
 
-//针对原生类型的特例化版本，做适当加速
-#define COMPARATOR_ORIGIN_TYPE(type)    template<> class Comparator<type>   \
-                                        {   \
-                                        public: \
-                                            int compare(const type &a,const type &b)const{return a-b;}  \
-                                            void exchange(type &a,type &b){type t;t=a;a=b;b=t;} \
-                                            void cpy(type *t,type *s){*t=*s;}   \
-                                        };
+        const bool operator > (const T &i)const{return compare(i)>0;}
+        const bool operator < (const T &i)const{return compare(i)<0;}
+        const bool operator >=(const T &i)const{return compare(i)>=0;}
+        const bool operator <=(const T &i)const{return compare(i)<=0;}
+        const bool operator ==(const T &i)const{return compare(i)==0;}
+        const bool operator !=(const T &i)const{return compare(i)!=0;}
+    };//class Comparator
 
-    COMPARATOR_ORIGIN_TYPE(hgl::int8)
-    COMPARATOR_ORIGIN_TYPE(hgl::int16)
-    COMPARATOR_ORIGIN_TYPE(hgl::int32)
-    COMPARATOR_ORIGIN_TYPE(hgl::int64)
+    template<typename T> class ComparatorData:public Comparator<T>
+    {   
+    public:
 
-    COMPARATOR_ORIGIN_TYPE(hgl::uint8)
-    COMPARATOR_ORIGIN_TYPE(hgl::uint16)
-    COMPARATOR_ORIGIN_TYPE(hgl::uint32)
-    COMPARATOR_ORIGIN_TYPE(hgl::uint64)
-
-    COMPARATOR_ORIGIN_TYPE(float)
-    COMPARATOR_ORIGIN_TYPE(double)
-
-#if __cpp_char8_t
-    COMPARATOR_ORIGIN_TYPE(char8_t)
-#endif//
-
-    COMPARATOR_ORIGIN_TYPE(char)
-    COMPARATOR_ORIGIN_TYPE(wchar_t)
-
-#if HGL_OS != HGL_OS_Windows
-    COMPARATOR_ORIGIN_TYPE(u16char)
-#endif//HGL_OS != HGL_OS_Windows
-
-    COMPARATOR_ORIGIN_TYPE(char32_t)
-#undef COMPARATOR_ORIGIN_TYPE
-
-#endif//HGL_COMP_OPERATOR_INCLUDE
+        const int compare(const T &other)const override final
+        {
+            return memcmp(this,&other,sizeof(T));
+        }
+    };//class ComparatorData
+}//namespace hgl

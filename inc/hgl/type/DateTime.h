@@ -17,7 +17,7 @@ namespace hgl
     *
     * 当您对Hours,Minutes,Seconds中任何一个值进行加减时，其它值都会自动计算。如：11:30这个值，使用Minutes+=55。会自动计算出55分钟后的时间，值为12:25
     */
-    class Time                                                                                                          ///时间类
+    class Time:public Comparator<Time>                                                                                  ///时间类
     {
         int32 gmt_off;      ///<当前时区与UTC时间的差值
 
@@ -79,9 +79,7 @@ namespace hgl
 
         Time &operator = (const Time &);
 
-        const int Comp(const Time &)const;
-
-        CompOperator(const Time &,Comp);
+        const int compare(const Time &)const override;
 
         void Sync(const double=0);                                                                  ///<和系统时间同步
 
@@ -94,7 +92,7 @@ namespace hgl
     *
     * 当您对Year,Month,Day中任意一个值进行修改时，其它值都会自动跟着计算。如1981-4-17,如果使用Day+=400，会自动计算出400天之后的日期，结果是1982-5-21
     */
-    class Date                                                                                      ///日期类
+    class Date:public Comparator<Date>                                                              ///日期类
     {
         int32 year;
         int8 month;
@@ -141,9 +139,7 @@ namespace hgl
 
         Date &operator = (const Date &);
 
-        const int Comp(const Date &)const;
-
-        CompOperator(const Date &,Comp);
+        const int compare(const Date &)const override;
 
         void Sync(const double=0);                                                                  ///<和系统日期同步
 

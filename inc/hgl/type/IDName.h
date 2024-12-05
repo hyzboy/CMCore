@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/type/ConstStringSet.h>
 #include<typeinfo>
@@ -12,7 +12,7 @@ namespace hgl
     * 顺序ID+名称数据结构模板<br>
     * 按添加进来的名字先后顺序一个个产生连续的序号，所有数据只可读不可写
     */
-    template<typename SC,int CLASS_COUNTER> class OrderedIDName
+    template<typename SC,int CLASS_COUNTER> class OrderedIDName:public Comparator<OrderedIDName<SC,CLASS_COUNTER>>
     {
     public:
 
@@ -85,12 +85,7 @@ namespace hgl
 
     public:
 
-        const int Comp(const OrderedIDName &oin)const{return GetID()-oin.GetID();}
-
-        const int Comp(const OrderedIDName *oin)const{return GetID()-oin->GetID();}
-
-        CompOperator(const OrderedIDName &,Comp)
-        CompOperator(const OrderedIDName *,Comp)
+        const int compare(const OrderedIDName &oin)const override{return GetID()-oin.GetID();}
     };//class IDName
 
 #define DefineIDName(name,type) using name=OrderedIDName<type,__COUNTER__>; //使用__COUNTER__是为了让typeid()不同

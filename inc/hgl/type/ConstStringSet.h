@@ -6,7 +6,7 @@
 
 namespace hgl
 {
-    template<typename SC> class ConstString
+    template<typename SC> class ConstString:public Comparator<ConstString<SC>>
     {
         const SC *str;
         int length;
@@ -24,18 +24,16 @@ namespace hgl
         const SC *GetString()const{return str;}
         const int GetLength()const{return length;}
 
-        const int Comp(const ConstString &cs)const
+        const int Comp(const ConstString &cs)const override
         {
             if(length<cs.length)return(-1);
             if(length>cs.length)return( 1);
 
             return memcmp(str,cs.str,length);
         }
-
-        CompOperator(const ConstString &,Comp)
     };
 
-    template<typename SC> struct ConstStringView
+    template<typename SC> struct ConstStringView:public Comparator<ConstStringView<SC>>
     {
         DataArray<SC> *str_data;
 
@@ -58,14 +56,12 @@ namespace hgl
                 return str_data->GetData()+offset;
         }
 
-        int Comp(const ConstStringView<SC> &csv)const
+        const int compare(const ConstStringView<SC> &csv)const override
         {
             if(length!=csv.length)return(length-csv.length);
 
             return hgl::strcmp(GetString(),csv.GetString(),length);
         }
-
-        CompOperator(const ConstStringView &,Comp)
     };
 
     template<typename SC> class ConstStringSet

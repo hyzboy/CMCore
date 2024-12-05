@@ -90,7 +90,7 @@ namespace hgl
         return(*this);
     }
 
-    const int Time::Comp(const Time &t)const
+    const int Time::compare(const Time &t)const
     {
         if(hours!=t.hours)
             return hours-t.hours;
@@ -220,7 +220,7 @@ namespace hgl
         return(*this);
     }
 
-    const int Date::Comp(const Date &t)const
+    const int Date::compare(const Date &t)const
     {
         if(year!=t.year)
             return year-t.year;

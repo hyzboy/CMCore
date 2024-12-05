@@ -11,7 +11,7 @@ namespace hgl
     /**
      * 字符串类
      */
-    template<typename T> class String                                                               ///字符串基类
+    template<typename T> class String:public Comparator<String<T>>                                  ///字符串基类
     {
     protected:
 
@@ -1312,8 +1312,10 @@ namespace hgl
 
             #undef BASE_STRING_NUMBER_OPERATOR_ADD
 
-            CompOperator(const T *,Comp);
-            CompOperator(const SelfClass &,Comp);
+            const int compare(const SelfClass &str)const override
+            {
+                return Comp(str);
+            }
     };//template<typename T> class String
 
     //这种重载用于value+str的情况
