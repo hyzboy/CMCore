@@ -33,4 +33,25 @@ namespace hgl
             return memcmp(this,&other,sizeof(T));
         }
     };//class ComparatorData
+
+    template<typename T> class ItemComparator
+    {
+
+    public:
+
+        static const int compare(const T &a,const T &b);
+
+        static void cpy(T *dst,const T *src)
+        {
+            memcpy(dst,src,sizeof(T));
+        }
+
+        static void exchange(T &a,T &b)
+        {
+            T temp;
+            cpy(&temp,&a);
+            cpy(&a,&b);
+            cpy(&b,&temp);
+        }
+    };
 }//namespace hgl
