@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/ConstStringSet.h>
+#include<hgl/type/SortedSet.h>
 #include<typeinfo>
 
 namespace hgl
@@ -88,7 +89,7 @@ namespace hgl
         const int compare(const OrderedIDName &oin)const override{return GetID()-oin.GetID();}
     };//class IDName
 
-#define DefineIDName(name,type) using name=OrderedIDName<type,__COUNTER__>; //使用__COUNTER__是为了让typeid()不同
+#define DefineIDName(name,type) using name=OrderedIDName<type,__COUNTER__>; using name##Set=SortedSet<name>; //使用__COUNTER__是为了让typeid()不同
     
     DefineIDName(AnsiIDName,    char)
     DefineIDName(WideIDName,    wchar_t)
