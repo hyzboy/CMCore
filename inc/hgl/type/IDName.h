@@ -57,6 +57,8 @@ namespace hgl
                 const SC *      GetName         ()const{return csv.GetString();}                        ///<获取名称字符串
                 const int       GetNameLength   ()const{return csv.length;}                             ///<获取名称字符串长度
 
+                const SC *      ToString        ()const{return csv.GetString();}                        ///<获取名称字符串
+
     public:
 
         OrderedIDName()
