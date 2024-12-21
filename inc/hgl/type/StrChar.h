@@ -46,7 +46,7 @@ namespace hgl
      * 参见https://unicode.org/Public/emoji/12.0/emoji-data.txt
      */
     template<typename T>
-    const bool isemoji(const T &ch)
+    inline const bool isemoji(const T &ch)
     {
         if(ch==0x23)return(true);           //#
         if(ch==0x2A)return(true);           //*
@@ -62,7 +62,7 @@ namespace hgl
      * 测试当前字符是否为小写字母
      */
     template<typename T>
-    const bool islower(const T &ch)
+    inline const bool islower(const T &ch)
     {
         return(ch>='a'&&ch<='z');
     }
@@ -71,7 +71,7 @@ namespace hgl
      * 测试当前字符是否为大写字母
      */
     template<typename T>
-    const bool isupper(const T &ch)
+    inline const bool isupper(const T &ch)
     {
         return(ch>='A'&&ch<='Z');
     }
@@ -80,7 +80,7 @@ namespace hgl
      * 测试当前字符是否为字母
      */
     template<typename T>
-    const bool isalpha(const T &ch)
+    inline const bool isalpha(const T &ch)
     {
         return(islower(ch)||isupper(ch));
     }
@@ -89,7 +89,7 @@ namespace hgl
      * 测试当前字符是否为10进制数字
      */
     template<typename T>
-    const bool isdigit(const T &ch)
+    inline const bool isdigit(const T &ch)
     {
         return(ch>='0'&&ch<='9');
     }
@@ -98,7 +98,7 @@ namespace hgl
      * 测试当前字符串是否为10进制数字以及小数点、正负符号、指数字符
      */
     template<typename T>
-    const bool isfloat(const T &ch)
+    inline const bool isfloat(const T &ch)
     {
         return isdigit(ch)
         ||ch=='-'
@@ -111,7 +111,7 @@ namespace hgl
     }
 
     template<typename T>
-    const bool isinteger(const T &ch)
+    inline const bool isinteger(const T &ch)
     {
         return isdigit(ch)
         ||ch=='-'
@@ -122,7 +122,7 @@ namespace hgl
      * 测试当前字符是否为16进制数用字符(0-9,A-F)
      */
     template<typename T>
-    const bool isxdigit(const T &ch)
+    inline const bool isxdigit(const T &ch)
     {
         return((ch>='0'&&ch<='9')
         ||(ch>='a'&&ch<='f')
@@ -136,7 +136,7 @@ namespace hgl
      * @param length 字符串长度
      */
     template<typename T>
-    const bool isxdigits(const T *str,int length)
+    inline const bool isxdigits(const T *str,int length)
     {
         if(!str||length<=0)
             return(false);
@@ -157,7 +157,7 @@ namespace hgl
      * 是否为斜杠
      */
     template<typename T>
-    const bool isslash(const T &ch)
+    inline const bool isslash(const T &ch)
     {
         if(ch=='\\')return(true);
         if(ch=='/')return(true);
@@ -240,7 +240,7 @@ namespace hgl
      * 测试当前字符是否为字母或数字
      */
     template<typename T>
-    const bool isalnum(const T &ch)
+    inline const bool isalnum(const T &ch)
     {
         return(isalpha(ch)||isdigit(ch));
     }
@@ -249,7 +249,7 @@ namespace hgl
      * 测试当前字符是否为代码可用字符(仅字母，数字，下划线，常用于文件名之类)
      */
     template<typename T>
-    const bool iscodechar(const T &ch)
+    inline const bool iscodechar(const T &ch)
     {
         return(isalnum(ch)||ch=='_');
     }
@@ -258,7 +258,7 @@ namespace hgl
      * 测试当前字符是否不是代码可用字符(仅字母，数字，下划线，常用于文件名之类)
      */
     template<typename T>
-    const bool notcodechar(const T &ch)
+    inline const bool notcodechar(const T &ch)
     {
         return(!iscodechar(ch));
     }
@@ -267,7 +267,7 @@ namespace hgl
      * 测试当前字符是否为文件名可用字符(不含路径分隔符)
      */
     template<typename T>
-    const bool isfilenamechar(const T &ch)
+    inline const bool isfilenamechar(const T &ch)
     {
         return(ch=='.'||iscodechar(ch));
     }
@@ -276,7 +276,7 @@ namespace hgl
      * 测试当前字符是否不是文件名可用字符
      */
     template<typename T>
-    const bool notfilenamechar(const T &ch)
+    inline const bool notfilenamechar(const T &ch)
     {
         return(!isfilenamechar(ch));
     }
@@ -285,7 +285,7 @@ namespace hgl
      * 测试当前字符是否为BASE64编码字符
      */
     template<typename T>
-    const bool isbase64(const T &c)
+    inline const bool isbase64(const T &c)
     {
         return (c == 43 || // +
         (c >= 47 && c <= 57) || // /-9
@@ -297,7 +297,7 @@ namespace hgl
      * 如果当前字符为大写英文字符，则转换为小写
      */
     template<typename T>
-    const T tolower(const T ch)
+    inline const T tolower(const T ch)
     {
         if(ch>='A'&&ch<='Z')
             return ch+('a'-'A');
@@ -309,7 +309,7 @@ namespace hgl
      * 如果当前字符为小写英文字符，则转换为大写
      */
     template<typename T>
-    const T toupper(const T ch)
+    inline const T toupper(const T ch)
     {
         if(ch>='a'&&ch<='z')
             return ch+('A'-'a');
@@ -321,7 +321,7 @@ namespace hgl
      * 比较两个字符的大小(英文不区分大小写)
      */
     template<typename S,typename D>
-    const int chricmp(S src,D dst)
+    inline const int chricmp(S src,D dst)
     {
         return tolower(src)-tolower(dst);
     }
@@ -332,7 +332,7 @@ namespace hgl
      * @return 字符串长度
      */
     template<typename T>
-    const int strlen(const T *str)
+    inline const int strlen(const T *str)
     {
         if(str&&*str)
         {
@@ -354,7 +354,7 @@ namespace hgl
      * @return 字符串长度
      */
     template<typename T>
-    const int strlen(const T *str,uint max_len)
+    inline const int strlen(const T *str,uint max_len)
     {
         if(str&&*str)
         {
@@ -381,7 +381,7 @@ namespace hgl
      * @return 字符串长度(<0表示出错)
      */
     template<typename T>
-    const int strcpy(T *dst,int count,const T *src)
+    inline const int strcpy(T *dst,int count,const T *src)
     {
         if(!dst)return(-1);
 
@@ -426,7 +426,7 @@ namespace hgl
      * @return 字符串长度(<0表示出错)
      */
     template<typename T>
-    const int strcpy(T *dst,int dst_count,const T *src,int count)
+    inline const int strcpy(T *dst,int dst_count,const T *src,int count)
     {
         if(!dst)return(-1);
 
@@ -466,7 +466,7 @@ namespace hgl
      * @return str2在str1中所在位置的指针
      */
     template<typename T1,typename T2>
-    T1 *strstr(T1 *str1,const uint size1,const T2 *str2,const uint size2)
+    inline T1 *strstr(T1 *str1,const uint size1,const T2 *str2,const uint size2)
     {
         if(!str1||!str2)return(nullptr);
         if(!*str1||!*str2)return(nullptr);
@@ -506,7 +506,7 @@ namespace hgl
      * @return str2在str1中所在位置的指针
      */
     template<typename T1,typename T2>
-    T1 *strrstr(T1 *str1,const uint size1,const T2 *str2,const uint size2)
+    inline T1 *strrstr(T1 *str1,const uint size1,const T2 *str2,const uint size2)
     {
         if(!str1||!str2)return(nullptr);
         if(!*str1||!*str2)return(nullptr);
@@ -545,7 +545,7 @@ namespace hgl
      * @return nullptr 没有找到
      */
     template<typename T1,typename T2>
-    T1 *stristr(T1 *str1,const uint size1,T2 *str2,const uint size2)
+    inline T1 *stristr(T1 *str1,const uint size1,T2 *str2,const uint size2)
     {
         T1 *cp = (T1 *) str1;
         T1 *s1;
@@ -597,7 +597,7 @@ namespace hgl
      * @param ch 源字符
      */
     template<typename T>
-    void strcat(T *dst,int max_count,const T ch)
+    inline void strcat(T *dst,int max_count,const T ch)
     {
         if(!dst||!ch)return;
 
@@ -623,7 +623,7 @@ namespace hgl
      * @return 字符串长度(<0表示出错)
      */
     template<typename T>
-    const int strcat(T *dst,int max_count,const T *src,int count)
+    inline const int strcat(T *dst,int max_count,const T *src,int count)
     {
         if(!dst||!src||!(*src)||count<=0)return(-1);
 
@@ -657,7 +657,7 @@ namespace hgl
      * @return 查找到的位置指针
      */
     template<typename TS,typename TC>
-    TS *strchr(TS *str,TC ch)
+    inline TS *strchr(TS *str,TC ch)
     {
         if(!str||!(*str)||ch==0)return(nullptr);
 
@@ -680,7 +680,7 @@ namespace hgl
      * @return 查找到的位置指针
      */
     template<typename TS,typename TC>
-    TS *strchr(TS *str,TC ch,int n)
+    inline TS *strchr(TS *str,TC ch,int n)
     {
         if(!str||!(*str)||ch==0||n<=0)return(nullptr);
 
@@ -703,7 +703,7 @@ namespace hgl
      * @return 查找到的位置指针
      */
     template<typename TS,typename TC>
-    TS *strchr(TS *str,TC *ch,const int ch_count)
+    inline TS *strchr(TS *str,TC *ch,const int ch_count)
     {
         if(!str||!(*str)||!ch||!(*ch)||ch_count<=0)return(nullptr);
 
@@ -725,7 +725,7 @@ namespace hgl
      * @return 查找到的位置指针
      */
     template<typename TS,typename TC>
-    TS *strechr(TS *str,TC ch)
+    inline TS *strechr(TS *str,TC ch)
     {
         if(!str||!(*str)||ch==0)return(nullptr);
 
@@ -748,7 +748,7 @@ namespace hgl
      * @return 查找到的位置指针
      */
     template<typename TS,typename TC>
-    TS *strechr(TS *str,TC ch,int n)
+    inline TS *strechr(TS *str,TC ch,int n)
     {
         if(!str||!(*str)||ch==0||n<=0)return(nullptr);
 
@@ -771,7 +771,7 @@ namespace hgl
      * @return 查找到的位置指针
      */
     template<typename TS,typename TC>
-    TS *strechr(TS *str,TC *ch,const int ch_count)
+    inline TS *strechr(TS *str,TC *ch,const int ch_count)
     {
         if(!str||!(*str)||!ch||!(*ch)||ch_count<=0)return(nullptr);
 
@@ -794,7 +794,7 @@ namespace hgl
      * @return 查找到的位置指针
      */
     template<typename TS,typename TC>
-    TS *strrchr(TS *str,const int len,const TC ch)
+    inline TS *strrchr(TS *str,const int len,const TC ch)
     {
         if(!str||!(*str)||len<=0||ch==0)return(nullptr);
 
@@ -820,7 +820,7 @@ namespace hgl
      * @return 查找到的位置指针
      */
     template<typename TS,typename TC>
-    TS *strrchr(TS *str,const int len,const TC *ch,const int ch_count)
+    inline TS *strrchr(TS *str,const int len,const TC *ch,const int ch_count)
     {
         if(!str||!(*str)||len<=0||!ch||!(*ch)||ch_count<=0)return(nullptr);
 
@@ -846,7 +846,7 @@ namespace hgl
      * @return 查找到的位置指针
      */
     template<typename TS,typename TC>
-    TS *strrchr(TS *str,const int len,const int off,const TC ch)
+    inline TS *strrchr(TS *str,const int len,const int off,const TC ch)
     {
         if(!str||!(*str)||len<=0||off>=len||ch==0)return(nullptr);
 
@@ -873,7 +873,7 @@ namespace hgl
      * @return 查找到的位置指针
      */
     template<typename TS,typename TC>
-    TS *strrchr(TS *str,const int len,const int off,const TC *ch,const int ch_count)
+    inline TS *strrchr(TS *str,const int len,const int off,const TC *ch,const int ch_count)
     {
         if(!str||!(*str)||len<=0||off>=len||!ch||!(*ch)||ch_count<=0)return(nullptr);
 
@@ -899,7 +899,7 @@ namespace hgl
      * @return +1 src >  dst
      */
     template<typename S,typename D>
-    const int strcmp(S *src,D *dst)
+    inline const int strcmp(S *src,D *dst)
     {
         if(!src)
         {
@@ -929,7 +929,7 @@ namespace hgl
      * @return +1 src >  dst
      */
     template<typename S,typename D>
-    const int strcmp(S *src,int src_size,D *dst,int dst_size)
+    inline const int strcmp(S *src,int src_size,D *dst,int dst_size)
     {
         if(!src)
         {
@@ -979,7 +979,7 @@ namespace hgl
      * @return +1 src >  dst
      */
     template<typename S,typename D>
-    const int strcmp(S *src,D *dst,int count)
+    inline const int strcmp(S *src,D *dst,int count)
     {
         if(count<=0)return(0);
 
@@ -1012,7 +1012,7 @@ namespace hgl
      * @return +1 src >  dst
      */
     template<typename S,typename D>
-    const int stricmp(S *src,D *dst)
+    inline const int stricmp(S *src,D *dst)
     {
         if(!src)
         {
@@ -1049,7 +1049,7 @@ namespace hgl
      * @return +1 src >  dst
      */
     template<typename S,typename D>
-    const int stricmp(S *src,int src_size,D *dst,int dst_size)
+    inline const int stricmp(S *src,int src_size,D *dst,int dst_size)
     {
         if(!src)
         {
@@ -1094,7 +1094,7 @@ namespace hgl
      * @return +1 src >  dst
      */
     template<typename S,typename D>
-    const int stricmp(S *src,D *dst,int count)
+    inline const int stricmp(S *src,D *dst,int count)
     {
         if(!src)
         {
@@ -1128,7 +1128,7 @@ namespace hgl
      * 字符集专用比较函数,只比较字母与数字，无视各种符号，无视大小写
      */
     template<typename S,typename D>
-    const int charset_cmp(S *src,D *dst)
+    inline const int charset_cmp(S *src,D *dst)
     {
         if(!src)
         {
@@ -1165,7 +1165,7 @@ namespace hgl
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *trimleft(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
+    inline const T *trimleft(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
     {
         const T *p=src;
 
@@ -1189,7 +1189,7 @@ namespace hgl
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *trimright(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
+    inline const T *trimright(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
     {
         const T *p=src+len-1;
 
@@ -1213,7 +1213,7 @@ namespace hgl
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *trim(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
+    inline const T *trim(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
     {
         const T *sp=src;
         const T *ep=src+len-1;
@@ -1244,7 +1244,7 @@ namespace hgl
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *clipleft(const T *src,int &len,const bool (*clipfunc)(const T &)=isspace<T>)
+    inline const T *clipleft(const T *src,int &len,const bool (*clipfunc)(const T &)=isspace<T>)
     {
         const T *p=src;
 
@@ -1266,7 +1266,7 @@ namespace hgl
      * @return 新的字符串起始指针
      */
     template<typename T>
-    const T *clipright(const T *src,int &len,const bool (*clipfunc)(const T &)=isspace<T>)
+    inline const T *clipright(const T *src,int &len,const bool (*clipfunc)(const T &)=isspace<T>)
     {
         const T *p=src+len-1;
 
@@ -1288,7 +1288,7 @@ namespace hgl
      * @param new_extname 新扩展名(不带.)
      */
     template<typename T>
-    void replace_extname(T *new_filename,const T *old_filename,int max_len,const T *new_extname)
+    inline void replace_extname(T *new_filename,const T *old_filename,int max_len,const T *new_extname)
     {
         const T *p=strrchr(old_filename,'.');
 
@@ -1313,7 +1313,7 @@ namespace hgl
      * @param new_extname 新扩展名(不带.)
      */
     template<typename T>
-    void replace_extname(T *filename,const T *new_extname)
+    inline void replace_extname(T *filename,const T *new_extname)
     {
         T *p=strrchr(filename,u'.');
 
@@ -1335,7 +1335,7 @@ namespace hgl
      * @return 复制出来的字符串
      */
     template<typename T>
-    T *create_copy(const T *str,int size=-1)
+    inline T *create_copy(const T *str,int size=-1)
     {
         if(!str)return(0);
 
@@ -1361,7 +1361,7 @@ namespace hgl
      * @return 替换的次数
      */
     template<typename T>
-    const int replace(T *str,const T tch,const T sch)
+    inline const int replace(T *str,const T tch,const T sch)
     {
         if(!str)
             return(0);
@@ -1387,7 +1387,7 @@ namespace hgl
      * @param src 要处理的字符串
      */
     template<typename T>
-    void toupper(T *str)
+    inline void toupper(T *str)
     {
         if(!str)return;
 
@@ -1405,7 +1405,7 @@ namespace hgl
      * @param src 要处理的字符串
      */
     template<typename T>
-    void tolower(T *str)
+    inline void tolower(T *str)
     {
         if(!str)return;
 
@@ -1423,7 +1423,7 @@ namespace hgl
      * @param src 要处理的字符串
      */
     template<typename T>
-    void toupper(const T *src,T *dst)
+    inline void toupper(const T *src,T *dst)
     {
         if(!dst)return;
 
@@ -1452,7 +1452,7 @@ namespace hgl
      * @param src 要处理的字符串
      */
     template<typename T>
-    void tolower(const T *src,T *dst)
+    inline void tolower(const T *src,T *dst)
     {
         if(!dst)return;
 
@@ -1480,7 +1480,7 @@ namespace hgl
     * 复制一个字符串，并将字符串全部转换成小写
     */
     template<typename T>
-    const uint lower_cpy(T *target,const T *source)
+    inline const uint lower_cpy(T *target,const T *source)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1505,7 +1505,7 @@ namespace hgl
     * 复制一个字符串，并将字符串全部转换成大写
     */
     template<typename T>
-    const uint upper_cpy(T *target,const T *source)
+    inline const uint upper_cpy(T *target,const T *source)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1530,7 +1530,7 @@ namespace hgl
     * 复制一个字符串，并将字符串全部转换成小写
     */
     template<typename T>
-    const uint lower_cpy(T *target,const T *source,int source_max)
+    inline const uint lower_cpy(T *target,const T *source,int source_max)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1557,7 +1557,7 @@ namespace hgl
     * 复制一个字符串，并将字符串全部转换成大写
     */
     template<typename T>
-    const uint upper_cpy(T *target,const T *source,int source_max)
+    inline const uint upper_cpy(T *target,const T *source,int source_max)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1583,7 +1583,7 @@ namespace hgl
     * 复制一个字符串，将字符串全部转换成小写，同时清空字符串中的空格
     */
     template<typename T>
-    const uint lower_clip_cpy(T *target,const T *source)
+    inline const uint lower_clip_cpy(T *target,const T *source)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1613,7 +1613,7 @@ namespace hgl
     * 复制一个字符串，并将字符串全部转换成大写，同时清空字符串中的空格
     */
     template<typename T>
-    const uint upper_clip_cpy(T *target,const T *source)
+    inline const uint upper_clip_cpy(T *target,const T *source)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1642,7 +1642,7 @@ namespace hgl
     * 复制一个字符串，将字符串全部转换成小写，同时清空字符串中的空格
     */
     template<typename T>
-    const uint lower_clip_cpy(T *target,const T *source,int source_max)
+    inline const uint lower_clip_cpy(T *target,const T *source,int source_max)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1673,7 +1673,7 @@ namespace hgl
     * 复制一个字符串，并将字符串全部转换成大写，同时清空字符串中的空格
     */
     template<typename T>
-    const uint upper_clip_cpy(T *target,const T *source,int source_max)
+    inline const uint upper_clip_cpy(T *target,const T *source,int source_max)
     {
         if(!target||!source)return 0;
         uint count=0;
@@ -1706,7 +1706,7 @@ namespace hgl
      * @return 出现次数
      */
     template<typename T>
-    const int stat_char(T *str,T ch)
+    inline const int stat_char(T *str,T ch)
     {
         if(!str)return(0);
 
@@ -1727,7 +1727,7 @@ namespace hgl
      * 统计一个字符串的行数
      */
     template<typename T>
-    const int stat_line(T *str)
+    inline const int stat_line(T *str)
     {
         if(!str)return(0);
 
@@ -1738,7 +1738,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    const bool stoi(S *str,R &result)
+    inline const bool stoi(S *str,R &result)
     {
         if(!str)
         {
@@ -1773,7 +1773,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    const bool stoi(S *str,int size,R &result)
+    inline const bool stoi(S *str,int size,R &result)
     {
         if(!str||size<=0)
         {
@@ -1813,7 +1813,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    const bool stou(S *str,R &result)
+    inline const bool stou(S *str,R &result)
     {
         if(!str)
         {
@@ -1835,7 +1835,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    const bool stou(S *str,int size,R &result)
+    inline const bool stou(S *str,int size,R &result)
     {
         if(!str||size<=0)
         {
@@ -1858,7 +1858,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    const bool xtou(S *str,R &result)
+    inline const bool xtou(S *str,R &result)
     {
         if(!str)
         {
@@ -1888,7 +1888,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    const bool xtou(S *str,int size,R &result)
+    inline const bool xtou(S *str,int size,R &result)
     {
         if(!str||size<=0)
         {
@@ -1919,7 +1919,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    const bool stof(S *str,R &result)
+    inline const bool stof(S *str,R &result)
     {
         if(!str)
         {
@@ -1976,7 +1976,7 @@ namespace hgl
     }
 
     template<typename R,typename S>
-    const bool stof(S *str,int size,R &result)
+    inline const bool stof(S *str,int size,R &result)
     {
         if(!str||size<=0)
         {
@@ -2043,7 +2043,7 @@ namespace hgl
      * 转换带指数的字符串到数值变量(如"1.0123e-10")
      */
     template<typename R,typename S>
-    const bool etof(S *str,R &result)
+    inline const bool etof(S *str,R &result)
     {
         double temp;
 
@@ -2083,7 +2083,7 @@ namespace hgl
      * @return 转换后的值
      */
     template<typename T>
-    const bool stob(T *str,bool &value)
+    inline const bool stob(T *str,bool &value)
     {
         if(!str)
         {
@@ -2114,7 +2114,7 @@ namespace hgl
      * @return 转换后的字符串长度
      */
     template<typename T,typename I>
-    const int itos_rl(T *str,int size,const I num)
+    inline const int itos_rl(T *str,int size,const I num)
     {
         if(!str||size<=0)return(-1);
 
@@ -2158,7 +2158,7 @@ namespace hgl
      * @return 转换后的字符串
      */
     template<typename T,typename I>
-    T *itos(T *str,const int size,const I num)
+    inline T *itos(T *str,const int size,const I num)
     {
         itos_rl(str,size,num);
         return str;
@@ -2172,7 +2172,7 @@ namespace hgl
      * @return 转换后的字符串
      */
     template<typename T,typename U>
-    T *utos(T *str,int size,U value)
+    inline T *utos(T *str,int size,U value)
     {
         if(!str||size<=0)return(nullptr);
 
@@ -2208,7 +2208,7 @@ namespace hgl
     * @return 转换后的字符串
     */
     template<typename T,typename U>
-    T *utos(T *str,int size,U value,const uint base,bool upper=true)
+    inline T *utos(T *str,int size,U value,const uint base,bool upper=true)
     {
         if(!str||size<=0)return(nullptr);
 
@@ -2249,10 +2249,10 @@ namespace hgl
         template<typename T,typename U> static T *conv(T *str,int size,U value,bool upper);
     };
 
-    template<> struct htos_bits<1>{template<typename T,typename U> static T *conv(T *str,int size,U value,bool upper){return utos(str,size,*(uint8  *)&value,16,upper);}};
-    template<> struct htos_bits<2>{template<typename T,typename U> static T *conv(T *str,int size,U value,bool upper){return utos(str,size,*(uint16 *)&value,16,upper);}};
-    template<> struct htos_bits<4>{template<typename T,typename U> static T *conv(T *str,int size,U value,bool upper){return utos(str,size,*(uint32 *)&value,16,upper);}};
-    template<> struct htos_bits<8>{template<typename T,typename U> static T *conv(T *str,int size,U value,bool upper){return utos(str,size,*(uint64 *)&value,16,upper);}};
+    template<> struct htos_bits<1>{template<typename T,typename U> static inline T *conv(T *str,int size,U value,bool upper){return utos(str,size,*(uint8  *)&value,16,upper);}};
+    template<> struct htos_bits<2>{template<typename T,typename U> static inline T *conv(T *str,int size,U value,bool upper){return utos(str,size,*(uint16 *)&value,16,upper);}};
+    template<> struct htos_bits<4>{template<typename T,typename U> static inline T *conv(T *str,int size,U value,bool upper){return utos(str,size,*(uint32 *)&value,16,upper);}};
+    template<> struct htos_bits<8>{template<typename T,typename U> static inline T *conv(T *str,int size,U value,bool upper){return utos(str,size,*(uint64 *)&value,16,upper);}};
 
     /**
      * 转换一个无符号整数到字符串(以16进制表示)
@@ -2263,7 +2263,7 @@ namespace hgl
      * @return 转换后的字符串
      */
     template<typename T,typename U>
-    T *htos(T *str,int size,U value,bool upper=true)
+    inline T *htos(T *str,int size,U value,bool upper=true)
     {
         return htos_bits<sizeof(U)>::template conv<T,U>(str,size,value,upper);
     }
@@ -2275,7 +2275,7 @@ namespace hgl
      * @param value 要转换的数值
      * @return 转换后的字符串
      */
-    template<typename T,typename U> T *htos_upper(T *str,int size,U value){return htos<T,U>(str,size,value,true);}
+    template<typename T,typename U> inline T *htos_upper(T *str,int size,U value){return htos<T,U>(str,size,value,true);}
 
     /**
      * 转换一个无符号整数到字符串(以小写16进制表示)
@@ -2284,7 +2284,7 @@ namespace hgl
      * @param value 要转换的数值
      * @return 转换后的字符串
      */
-    template<typename T,typename U> T *htos_lower(T *str,int size,U value){return htos<T,U>(str,size,value,false);}
+    template<typename T,typename U> inline T *htos_lower(T *str,int size,U value){return htos<T,U>(str,size,value,false);}
 
     /**
      * 转换一个浮点数到字符串
@@ -2294,7 +2294,7 @@ namespace hgl
      * @param value 要转换的值
      */
     template<typename T,typename F>
-    T *ftos(T *str,int size,int fsize,F value)
+    inline T *ftos(T *str,int size,int fsize,F value)
     {
         const long integer=(long)value;     //整数部分
 
@@ -2342,7 +2342,7 @@ namespace hgl
     }
 
     template<typename T,typename F>
-    T *ftos(T *str,int size,F value)
+    inline T *ftos(T *str,int size,F value)
     {
         return ftos(str,size,4,value);
     }
@@ -2358,7 +2358,7 @@ namespace hgl
      * @return nullptr 错误
      */
     template<typename T>
-    const T *getbetween(const T *str,int str_length,const T start_char,const T end_char,int *between_length)
+    inline const T *getbetween(const T *str,int str_length,const T start_char,const T end_char,int *between_length)
     {
         if(!str||!*str||str_length<=0)
             return(nullptr);
@@ -2407,7 +2407,7 @@ namespace hgl
      * @return nullptr 错误
      */
     template<typename T>
-    const T *getbetween(const T *str,int str_length,const T edge_char,int *between_length)
+    inline const T *getbetween(const T *str,int str_length,const T edge_char,int *between_length)
     {
         return getbetween(str,str_length,edge_char,edge_char,between_length);
     }
@@ -2422,7 +2422,7 @@ namespace hgl
      * @return nullptr 错误
      */
     template<typename T>
-    const T *getbetween(const T *str,const T start_char,const T end_char,int *between_length)
+    inline const T *getbetween(const T *str,const T start_char,const T end_char,int *between_length)
     {
         return getbetween(str,hgl::strlen(str),start_char,end_char,between_length);
     }
@@ -2436,7 +2436,7 @@ namespace hgl
      * @return nullptr 错误
      */
     template<typename T>
-    const T *getbetween(const T *str,const T edge_char,int *between_length)
+    inline const T *getbetween(const T *str,const T edge_char,int *between_length)
     {
         return getbetween(str,hgl::strlen(str),edge_char,edge_char,between_length);
     }
@@ -2449,7 +2449,7 @@ namespace hgl
      * @return 是否转换成功
      */
     template<typename T,typename V>
-    const bool int_to_size(T *str,int str_max_length,V value)
+    inline const bool int_to_size(T *str,int str_max_length,V value)
     {
         const T name[]={'K','M','G','T','P','E','Z','Y','B',0};
 
@@ -2484,7 +2484,7 @@ namespace hgl
     }
 
     template<typename T>
-    const int find_str_in_array(int count,const T **str_array,const T *str,int str_len=0)
+    inline const int find_str_in_array(int count,const T **str_array,const T *str,int str_len=0)
     {
         if(str_len<=0)
             str_len=hgl::strlen(str);
@@ -2548,7 +2548,7 @@ namespace hgl
      * @return 解晰出来的数据数量
      */
     template<typename C,typename N>
-    int parse_number_array(ParseNumberArray<C,N> *pna,const C *str,N *result,int max_count,const C end_char=0,const C **end_pointer=nullptr)
+    inline int parse_number_array(ParseNumberArray<C,N> *pna,const C *str,N *result,int max_count,const C end_char=0,const C **end_pointer=nullptr)
     {
         if(!str||!result||max_count<=0)return(-1);
 
@@ -2662,7 +2662,7 @@ namespace hgl
      * @return -1 出错
      */
     template<typename T,typename I,typename SET>
-    const int parse_number_array(ParseNumberArray<T,I> *pna,const T *str,const int str_len,SET &result_list)
+    inline const int parse_number_array(ParseNumberArray<T,I> *pna,const T *str,const int str_len,SET &result_list)
     {
         if(!str||str_len<=0)return(-1);
 
@@ -2758,7 +2758,7 @@ namespace hgl
      * @return -1 出错
      */
     template<typename T,typename S>
-    const int split_string(const T *str,const int str_len,const T &sc,S &result_list)
+    inline const int split_string(const T *str,const int str_len,const T &sc,S &result_list)
     {
         if(!str||!(*str))return(-1);
         if(str_len<=0)return(-1);
@@ -2803,7 +2803,7 @@ namespace hgl
      * @param str 要查找的字节串
      * @return 返回查找出的序号,-1表示失败
      */
-    template<typename T> const int string_serial_from_list(const T **list,const T *str)
+    template<typename T> inline const int string_serial_from_list(const T **list,const T *str)
     {
         if(!str||!list)return(-1);
 
@@ -2824,9 +2824,17 @@ namespace hgl
     }
 
     /**
+    * 判断一个字符串是否在当前字符串列表中
+    */
+    template<typename T> inline bool contians_in_list(const T **list,const T *str)
+    {
+        return string_serial_from_list(list,str)!=-1;
+    }
+
+    /**
      * 检测字符串是否符合代码命名规则（仅可使用字母和数字、下划线，不能使用数字开头）
      */
-    template<typename T> const bool check_codestr(const T *str)
+    template<typename T> inline const bool check_codestr(const T *str)
     {
         if(!str)return(false);
 
@@ -2848,7 +2856,7 @@ namespace hgl
     /**
      * 检测字符串是否包含不可程序使用字符
      */
-    template<typename T> const bool check_error_char(const T *str)
+    template<typename T> inline const bool check_error_char(const T *str)
     {
         if(!str)return(false);
 
@@ -2955,13 +2963,13 @@ namespace hgl
      * @param hc 解晰出来的原始数据存入处
      */
     template<typename T,typename HC>
-    void ParseHexStr(HC &hc,const T *str)
+    inline void ParseHexStr(HC &hc,const T *str)
     {
         ParseHexStr((uint8 *)&hc,str,sizeof(HC));
     }
 
     template<typename T,typename U>
-    void Hex2String(T *str,U value,bool upper=true)
+    inline void Hex2String(T *str,U value,bool upper=true)
     {
         const uchar A=upper?'A':'a';
         const uint size=sizeof(U)*2;
@@ -2995,7 +3003,7 @@ namespace hgl
      * @param gap_char 间隔字符
      */
     template<typename T>
-    void DataToHexStr(T *str,const uint8 *src,const int size,const char *hexstr,const T gap_char=0)
+    inline void DataToHexStr(T *str,const uint8 *src,const int size,const char *hexstr,const T gap_char=0)
     {
         int i;
 
@@ -3018,8 +3026,8 @@ namespace hgl
         *str=0;
     }
 
-    template<typename T> void DataToLowerHexStr(T *str,const uint8 *src,const int size,const T gap_char=0){DataToHexStr<T>(str,src,size,LowerHexChar,gap_char);}
-    template<typename T> void DataToUpperHexStr(T *str,const uint8 *src,const int size,const T gap_char=0){DataToHexStr<T>(str,src,size,UpperHexChar,gap_char);}
+    template<typename T> inline void DataToLowerHexStr(T *str,const uint8 *src,const int size,const T gap_char=0){DataToHexStr<T>(str,src,size,LowerHexChar,gap_char);}
+    template<typename T> inline void DataToUpperHexStr(T *str,const uint8 *src,const int size,const T gap_char=0){DataToHexStr<T>(str,src,size,UpperHexChar,gap_char);}
 
     /**
      * 将一串原始数据转转成16进制数值字符串
@@ -3029,15 +3037,15 @@ namespace hgl
      * @param gap_char 间隔字符
      */
     template<typename T,typename HC>
-    void DataToHexStr(T *str,const HC &hc,const T *hexstr,const T gap_char=0)
+    inline void DataToHexStr(T *str,const HC &hc,const T *hexstr,const T gap_char=0)
     {
         return DataToHexStr(str,(const uint8 *)&hc,sizeof(hc),hexstr,gap_char);
     }
 
-    template<typename T,typename HC> void ToUpperHexStr(T *str,const HC &hc,const T gap_char=0){DataToHexStr<T,HC>(str,hc,UpperHexChar,gap_char);}
-    template<typename T,typename HC> void ToLowerHexStr(T *str,const HC &hc,const T gap_char=0){DataToHexStr<T,HC>(str,hc,LowerHexChar,gap_char);}
+    template<typename T,typename HC> inline void ToUpperHexStr(T *str,const HC &hc,const T gap_char=0){DataToHexStr<T,HC>(str,hc,UpperHexChar,gap_char);}
+    template<typename T,typename HC> inline void ToLowerHexStr(T *str,const HC &hc,const T gap_char=0){DataToHexStr<T,HC>(str,hc,LowerHexChar,gap_char);}
 
-    template<typename T> void ToUpperHexStr(T *str,const void *data,const int size,const T gap_char=0){DataToHexStr<T>(str,(const uint8 *)data,size,UpperHexChar,gap_char);}
-    template<typename T> void ToLowerHexStr(T *str,const void *data,const int size,const T gap_char=0){DataToHexStr<T>(str,(const uint8 *)data,size,LowerHexChar,gap_char);}
+    template<typename T> inline void ToUpperHexStr(T *str,const void *data,const int size,const T gap_char=0){DataToHexStr<T>(str,(const uint8 *)data,size,UpperHexChar,gap_char);}
+    template<typename T> inline void ToLowerHexStr(T *str,const void *data,const int size,const T gap_char=0){DataToHexStr<T>(str,(const uint8 *)data,size,LowerHexChar,gap_char);}
     }//namespace hgl
 #endif//HGL_STR_TEMPLATE_INCLUDE
