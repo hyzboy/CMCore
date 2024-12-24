@@ -4,21 +4,12 @@
 #include<iostream>
 #include<hgl/CodePage.h>
 #include<hgl/SourceCodeLocation.h>
+#include<hgl/log/LogLevel.h>
 
 namespace hgl
 {
     namespace logger
-    {
-        enum class LogLevel
-        {
-            Verbose,
-            Info,
-            Hint,
-            Warning,
-            Error,
-            FatalError,
-        };//enum class LogLevel
-        
+    {        
         bool InitLogger(const OSString &app_name);
         
         void Log(LogLevel level,const u16char *str,int size);

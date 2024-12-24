@@ -46,7 +46,9 @@ namespace hgl
 
         ~StringView()=default;
 
-        const char *c_str()const{return str_data;}
+        operator const T *()const{return str_data;}
+
+        const T *c_str()const{return str_data;}
         const int length()const{return str_length;}
         const int GetLength()const{return str_length;}
 
