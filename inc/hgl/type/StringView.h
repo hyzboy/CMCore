@@ -61,7 +61,8 @@ namespace hgl
     using UTF8StringView=StringView<u8char>;
     using UTF16StringView=StringView<u16char>;
     using UTF32StringView=StringView<u32char>;
-
+    
+    using OSStringView  =StringView<os_char>;
     using AnsiStringView=StringView<char>;
     using WideStringView=StringView<wchar_t>;
 }//namespace hgl
