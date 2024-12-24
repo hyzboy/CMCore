@@ -360,11 +360,11 @@ namespace hgl
         {return MergeFilename<char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_RAWSTR);}
     #endif//HGL_SUPPORT_CHAR8_T
 
-        inline UTF8String MergeFilename(const UTF8String &pathname,const UTF8String &filename)          ///<组合路径名与文件名
+        inline U8String MergeFilename(const U8String &pathname,const U8String &filename)          ///<组合路径名与文件名
         {return MergeFilename<u8char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_U8STR);}
 
     #if HGL_OS == HGL_OS_Windows
-        inline WideString MergeFilename(const WideString &pathname,const WideString &filename)          ///<组合路径名与文件名
+        inline WString MergeFilename(const WString &pathname,const WString &filename)          ///<组合路径名与文件名
         {return MergeFilename<wchar_t>(pathname,filename,L'\\',L"\\");}
     #endif//HGL_OS == HGL_OS_Windows
 

@@ -6,11 +6,11 @@
 namespace hgl
 {
     /**
-     * 加载一个原始文本块到UTF8StringList
+     * 加载一个原始文本块到U8StringList
      */
-    int LoadStringListFromText(UTF8StringList &sl,const void *data,const int size,const CharSet &cs)
+    int LoadStringListFromText(U8StringList &sl,const void *data,const int size,const CharSet &cs)
     {
-        UTF8String str;
+        U8String str;
 
         LoadStringFromText(str,data,size,cs);
 
@@ -18,11 +18,11 @@ namespace hgl
     }
 
     /**
-     * 加载一个原始文本块到UTF16StringList
+     * 加载一个原始文本块到U16StringList
      */
-    int LoadStringListFromText(UTF16StringList &sl,const void *data,const int size,const CharSet &cs)
+    int LoadStringListFromText(U16StringList &sl,const void *data,const int size,const CharSet &cs)
     {
-        UTF16String str;
+        U16String str;
 
         LoadStringFromText(str,data,size,cs);
 
@@ -30,9 +30,9 @@ namespace hgl
     }
 
     /**
-     * 加载一个原始文本文件到UTF8StringList
+     * 加载一个原始文本文件到U8StringList
      */
-    int LoadStringListFromTextFile(UTF8StringList &sl,const OSString &filename,const CharSet &cs)
+    int LoadStringListFromTextFile(U8StringList &sl,const OSString &filename,const CharSet &cs)
     {
         uchar *data;
 
@@ -45,9 +45,9 @@ namespace hgl
     }
 
     /**
-     * 加载一个原始文本文件到UTF16StringList
+     * 加载一个原始文本文件到U16StringList
      */
-    int LoadStringListFromTextFile(UTF16StringList &sl,const OSString &filename,const CharSet &cs)
+    int LoadStringListFromTextFile(U16StringList &sl,const OSString &filename,const CharSet &cs)
     {
         uchar *data;
 

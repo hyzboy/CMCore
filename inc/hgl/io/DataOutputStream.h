@@ -138,52 +138,52 @@ namespace hgl
             template<typename T> bool WriteUTF16LEChars     (const String<T> &str){return WriteUTF16LEChars (str.c_str(),str.Length());}
             template<typename T> bool WriteUTF16BEChars     (const String<T> &str){return WriteUTF16BEChars (str.c_str(),str.Length());}
 
-            template<typename T> bool WriteUTF8StringWithLength (const u8char *str,const uint length);
-            template<typename T> bool WriteUTF8StringWithLength (const UTF16String &str);
+            template<typename T> bool WriteU8StringWithLength (const u8char *str,const uint length);
+            template<typename T> bool WriteU8StringWithLength (const U16String &str);
 
-            template<uchar C,typename T> bool WriteUTF16StringWithLength(const u16char *str,const uint len);
+            template<uchar C,typename T> bool WriteU16StringWithLength(const u16char *str,const uint len);
 
         public:
 
             //32 bit length
-            bool WriteUTF8String        (const u8char *str,uint length);                                            ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
-            bool WriteUTF8String        (const u8char *str            );                                            ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
-            bool WriteUTF8String        (const UTF8String &str      );                                              ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
-            bool WriteUTF8String        (const UTF16String &str     );                                              ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
+            bool WriteU8String        (const u8char *str,uint length);                                            ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
+            bool WriteU8String        (const u8char *str            );                                            ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
+            bool WriteU8String        (const U8String &str      );                                              ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
+            bool WriteU8String        (const U16String &str     );                                              ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
 
             bool WriteUTF16LEString     (const u16char *str,uint len);                                              ///<按utf16-le格式写入字符串(前置4字节字符串长度,再写入字符阵列)
             bool WriteUTF16BEString     (const u16char *str,uint len);                                              ///<按utf16-be格式写入字符串(前置4字节字符串长度,再写入字符阵列)
 
-            bool WriteUTF16LEString     (const UTF16String &str     );                                              ///<按utf16-le格式写入字符串(前置4字节字符串长度,再写入字符阵列)
-            bool WriteUTF16BEString     (const UTF16String &str     );                                              ///<按utf16-be格式写入字符串(前置4字节字符串长度,再写入字符阵列)
+            bool WriteUTF16LEString     (const U16String &str     );                                              ///<按utf16-le格式写入字符串(前置4字节字符串长度,再写入字符阵列)
+            bool WriteUTF16BEString     (const U16String &str     );                                              ///<按utf16-be格式写入字符串(前置4字节字符串长度,再写入字符阵列)
 
             bool WriteUTF16LEString     (const u16char *str         );                                              ///<按utf16-le格式写入字符串(前置4字节字符串长度,再写入字符阵列)
             bool WriteUTF16BEString     (const u16char *str         );                                              ///<按utf16-be格式写入字符串(前置4字节字符串长度,再写入字符阵列)
 
-            bool WriteUTF16LEString     (const UTF8String &str      ){return WriteUTF16LEString(to_u16(str));}      ///<按utf16-le格式写入字符串(前置4字节字符串长度,再写入字符阵列)
-            bool WriteUTF16BEString     (const UTF8String &str      ){return WriteUTF16BEString(to_u16(str));}      ///<按utf16-be格式写入字符串(前置4字节字符串长度,再写入字符阵列)
+            bool WriteUTF16LEString     (const U8String &str      ){return WriteUTF16LEString(to_u16(str));}      ///<按utf16-le格式写入字符串(前置4字节字符串长度,再写入字符阵列)
+            bool WriteUTF16BEString     (const U8String &str      ){return WriteUTF16BEString(to_u16(str));}      ///<按utf16-be格式写入字符串(前置4字节字符串长度,再写入字符阵列)
 
-            bool WriteAnsiString        (const char *str,uint length){return WriteUTF8String((u8char *)str,length);}
-            bool WriteAnsiString        (const char *str            ){return WriteUTF8String((u8char *)str);}
-            bool WriteAnsiString        (const AnsiString &str      ){return WriteUTF8String((u8char *)str.c_str(),str.Length());}
+            bool WriteAnsiString        (const char *str,uint length){return WriteU8String((u8char *)str,length);}
+            bool WriteAnsiString        (const char *str            ){return WriteU8String((u8char *)str);}
+            bool WriteAnsiString        (const AnsiString &str      ){return WriteU8String((u8char *)str.c_str(),str.Length());}
 
             //16 bit length
             bool WriteUTF8ShortString   (const u8char *str,uint length);                                            ///<按utf8格式写入字符串(前置2字节字符串长度,再写入字符阵列)
             bool WriteUTF8ShortString   (const u8char *str            );                                            ///<按utf8格式写入字符串(前置2字节字符串长度,再写入字符阵列)
-            bool WriteUTF8ShortString   (const UTF8String &str      );                                              ///<按utf8格式写入字符串(前置2字节字符串长度,再写入字符阵列)
-            bool WriteUTF8ShortString   (const UTF16String &str     );                                              ///<按utf8格式写入字符串(前置2字节字符串长度,再写入字符阵列)
+            bool WriteUTF8ShortString   (const U8String &str      );                                              ///<按utf8格式写入字符串(前置2字节字符串长度,再写入字符阵列)
+            bool WriteUTF8ShortString   (const U16String &str     );                                              ///<按utf8格式写入字符串(前置2字节字符串长度,再写入字符阵列)
 
             bool WriteUTF16LEShortString(const u16char *str,uint len);                                              ///<按utf16-le格式写入字符串(前置2字节字符串长度,再写入字符阵列)
             bool WriteUTF16BEShortString(const u16char *str,uint len);                                              ///<按utf16-be格式写入字符串(前置2字节字符串长度,再写入字符阵列)
 
-            bool WriteUTF16LEShortString(const UTF16String &str     );                                              ///<按utf16-le格式写入字符串(前置2字节字符串长度,再写入字符阵列)
-            bool WriteUTF16BEShortString(const UTF16String &str     );                                              ///<按utf16-be格式写入字符串(前置2字节字符串长度,再写入字符阵列)
+            bool WriteUTF16LEShortString(const U16String &str     );                                              ///<按utf16-le格式写入字符串(前置2字节字符串长度,再写入字符阵列)
+            bool WriteUTF16BEShortString(const U16String &str     );                                              ///<按utf16-be格式写入字符串(前置2字节字符串长度,再写入字符阵列)
 
             bool WriteUTF16LEShortString(const u16char *str         );                                              ///<按utf16-le格式写入字符串(前置2字节字符串长度,再写入字符阵列)
             bool WriteUTF16BEShortString(const u16char *str         );                                              ///<按utf16-be格式写入字符串(前置2字节字符串长度,再写入字符阵列)
 
-            bool WriteUTF16LEShortString(const UTF8String &str      ){return WriteUTF16LEShortString(to_u16(str));} ///<按utf16-le格式写入字符串(前置2字节字符串长度,再写入字符阵列)
-            bool WriteUTF16BEShortString(const UTF8String &str      ){return WriteUTF16BEShortString(to_u16(str));} ///<按utf16-be格式写入字符串(前置2字节字符串长度,再写入字符阵列)
+            bool WriteUTF16LEShortString(const U8String &str      ){return WriteUTF16LEShortString(to_u16(str));} ///<按utf16-le格式写入字符串(前置2字节字符串长度,再写入字符阵列)
+            bool WriteUTF16BEShortString(const U8String &str      ){return WriteUTF16BEShortString(to_u16(str));} ///<按utf16-be格式写入字符串(前置2字节字符串长度,再写入字符阵列)
             
             bool WriteAnsiShortString   (const char *str,uint length){return WriteUTF8ShortString((u8char *)str,length);}
             bool WriteAnsiShortString   (const char *str            ){return WriteUTF8ShortString((u8char *)str);}
@@ -192,20 +192,20 @@ namespace hgl
             //8 bit length
             bool WriteUTF8TinyString    (const u8char *str,uint length);                                            ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
             bool WriteUTF8TinyString    (const u8char *str            );                                            ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
-            bool WriteUTF8TinyString    (const UTF8String &str      );                                              ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
-            bool WriteUTF8TinyString    (const UTF16String &str     );                                              ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
+            bool WriteUTF8TinyString    (const U8String &str      );                                              ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
+            bool WriteUTF8TinyString    (const U16String &str     );                                              ///<按utf8格式写入字符串(前置1字节字符串长度,再写入字符阵列)
 
             bool WriteUTF16LETinyString (const u16char *str,uint len);                                              ///<按utf16-le格式写入字符串(前置1字节字符串长度,再写入字符阵列)
             bool WriteUTF16BETinyString (const u16char *str,uint len);                                              ///<按utf16-be格式写入字符串(前置1字节字符串长度,再写入字符阵列)
 
-            bool WriteUTF16LETinyString (const UTF16String &str     );                                              ///<按utf16-le格式写入字符串(前置1字节字符串长度,再写入字符阵列)
-            bool WriteUTF16BETinyString (const UTF16String &str     );                                              ///<按utf16-be格式写入字符串(前置1字节字符串长度,再写入字符阵列)
+            bool WriteUTF16LETinyString (const U16String &str     );                                              ///<按utf16-le格式写入字符串(前置1字节字符串长度,再写入字符阵列)
+            bool WriteUTF16BETinyString (const U16String &str     );                                              ///<按utf16-be格式写入字符串(前置1字节字符串长度,再写入字符阵列)
 
             bool WriteUTF16LETinyString (const u16char *str         );                                              ///<按utf16-le格式写入字符串(前置1字节字符串长度,再写入字符阵列)
             bool WriteUTF16BETinyString (const u16char *str         );                                              ///<按utf16-be格式写入字符串(前置1字节字符串长度,再写入字符阵列)
 
-            bool WriteUTF16LETinyString (const UTF8String &str      ){return WriteUTF16LETinyString(to_u16(str));}  ///<按utf16-le格式写入字符串(前置1字节字符串长度,再写入字符阵列)
-            bool WriteUTF16BETinyString (const UTF8String &str      ){return WriteUTF16BETinyString(to_u16(str));}  ///<按utf16-be格式写入字符串(前置1字节字符串长度,再写入字符阵列)
+            bool WriteUTF16LETinyString (const U8String &str      ){return WriteUTF16LETinyString(to_u16(str));}  ///<按utf16-le格式写入字符串(前置1字节字符串长度,再写入字符阵列)
+            bool WriteUTF16BETinyString (const U8String &str      ){return WriteUTF16BETinyString(to_u16(str));}  ///<按utf16-be格式写入字符串(前置1字节字符串长度,再写入字符阵列)
 
             bool WriteAnsiTinyString    (const char *str,uint length){return WriteUTF8TinyString((u8char *)str,length);}
             bool WriteAnsiTinyString    (const char *str            ){return WriteUTF8TinyString((u8char *)str);}

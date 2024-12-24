@@ -79,12 +79,12 @@ namespace hgl
     //下面这些定义是为了实例化上面的函数，所以不要删掉
 
     //bool SaveToAnsiTextStream(hgl::io::TextOutputStream *tos,const ConstAnsiStringSet *css,bool output_id){return SaveToTextStream(tos,css,output_id);}
-    bool SaveToWideTextStream(hgl::io::TextOutputStream *tos,const ConstWideStringSet *css,bool output_id){return SaveToTextStream(tos,css,output_id);}
-    bool SaveToUTF8TextStream(hgl::io::TextOutputStream *tos,const ConstUTF8StringSet *css,bool output_id){return SaveToTextStream(tos,css,output_id);}
-    bool SaveToUTF16TextStream(hgl::io::TextOutputStream *tos,const ConstUTF16StringSet *css,bool output_id){return SaveToTextStream(tos,css,output_id);}
+    bool SaveToWideTextStream(hgl::io::TextOutputStream *tos,const ConstWStringSet *css,bool output_id){return SaveToTextStream(tos,css,output_id);}
+    bool SaveToUTF8TextStream(hgl::io::TextOutputStream *tos,const ConstU8StringSet *css,bool output_id){return SaveToTextStream(tos,css,output_id);}
+    bool SaveToUTF16TextStream(hgl::io::TextOutputStream *tos,const ConstU16StringSet *css,bool output_id){return SaveToTextStream(tos,css,output_id);}
 
     //bool SaveToAnsiTextFile(const OSString &filename,const ConstAnsiStringSet *css,bool output_id,bool output_bom){return SaveToTextFile(filename,css,output_id,output_bom);}
-    bool SaveToWideTextFile(const OSString &filename,const ConstWideStringSet *css,bool output_id,bool output_bom){return SaveToTextFile(filename,css,output_id,output_bom);}
-    bool SaveToUTF8TextFile(const OSString &filename,const ConstUTF8StringSet *css,bool output_id,bool output_bom){return SaveToTextFile(filename,css,output_id,output_bom);}
-    bool SaveToUTF16TextFile(const OSString &filename,const ConstUTF16StringSet *css,bool output_id,bool output_bom){return SaveToTextFile(filename,css,output_id,output_bom);}
+    bool SaveToWideTextFile(const OSString &filename,const ConstWStringSet *css,bool output_id,bool output_bom){return SaveToTextFile(filename,css,output_id,output_bom);}
+    bool SaveToUTF8TextFile(const OSString &filename,const ConstU8StringSet *css,bool output_id,bool output_bom){return SaveToTextFile(filename,css,output_id,output_bom);}
+    bool SaveToUTF16TextFile(const OSString &filename,const ConstU16StringSet *css,bool output_id,bool output_bom){return SaveToTextFile(filename,css,output_id,output_bom);}
 }//namespace hgl

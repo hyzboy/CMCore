@@ -180,9 +180,9 @@ namespace hgl
         }
     };//class ConstStringSet
 
-    using ConstWideStringSet    =ConstStringSet<wchar_t>;
-    using ConstUTF8StringSet    =ConstStringSet<u8char>;
-    using ConstUTF16StringSet   =ConstStringSet<u16char>;
+    using ConstWStringSet    =ConstStringSet<wchar_t>;
+    using ConstU8StringSet    =ConstStringSet<u8char>;
+    using ConstU16StringSet   =ConstStringSet<u16char>;
 //    using ConstUTF32StringSet   =ConstStringSet<u32char>;
     using ConstOSStringSet      =ConstStringSet<os_char>;
 

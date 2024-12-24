@@ -28,7 +28,7 @@ namespace hgl
         PlugIn *LoadPlugin  (const OSString &,const OSString &);                ///<加载一个外部插件，明确指定全路径文件名
         PlugIn *LoadPlugin  (const OSString &);                                 ///<加载一个外部插件，自行查找
         bool    UnloadPlugin(const OSString &);                                 ///<释放一个外部插件
-    };//class PlugInManage:public ObjectManage<UTF16String,PlugIn>
+    };//class PlugInManage:public ObjectManage<U16String,PlugIn>
 
     /**
      * 插件注册模板

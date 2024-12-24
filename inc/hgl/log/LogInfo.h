@@ -21,12 +21,12 @@ namespace hgl
         void Log(LogLevel level,const u16char *str,int size);
         void Log(LogLevel level,const u8char *str,int size);
 
-        inline  void Log(LogLevel ll,const UTF16String &str)
+        inline  void Log(LogLevel ll,const U16String &str)
         {
             Log(ll,str.c_str(),str.Length());
         }
 
-        inline  void Log(LogLevel ll,const UTF8String &str)
+        inline  void Log(LogLevel ll,const U8String &str)
         {
             Log(ll,str.c_str(),str.Length());
         }
@@ -38,14 +38,14 @@ namespace hgl
         }
         #endif//HGL_SUPPORT_CHAR8_T
 
-        inline  void DebugLog(LogLevel ll,const UTF16String &str,const char *filename,int line,const char *funcname)
+        inline  void DebugLog(LogLevel ll,const U16String &str,const char *filename,int line,const char *funcname)
         {
-            Log(ll,str+U16_TEXT(">>LogFrom(\"")+to_u16((u8char *)filename)+U16_TEXT("\", ")+UTF16String::numberOf(line)+U16_TEXT(" line,func:\"")+to_u16((u8char *)funcname)+U16_TEXT("\")"));
+            Log(ll,str+U16_TEXT(">>LogFrom(\"")+to_u16((u8char *)filename)+U16_TEXT("\", ")+U16String::numberOf(line)+U16_TEXT(" line,func:\"")+to_u16((u8char *)funcname)+U16_TEXT("\")"));
         }
 
-        inline  void DebugLog(LogLevel ll,const UTF8String &str,const char *filename,int line,const char *funcname)
+        inline  void DebugLog(LogLevel ll,const U8String &str,const char *filename,int line,const char *funcname)
         {
-            Log(ll,str+U8_TEXT(">>LogFrom(\"")+UTF8String((u8char *)filename)+U8_TEXT("\", ")+UTF8String::numberOf(line)+U8_TEXT(" line,func:\"")+UTF8String((u8char *)funcname)+U8_TEXT("\")"));
+            Log(ll,str+U8_TEXT(">>LogFrom(\"")+U8String((u8char *)filename)+U8_TEXT("\", ")+U8String::numberOf(line)+U8_TEXT(" line,func:\"")+U8String((u8char *)funcname)+U8_TEXT("\")"));
         }
 
         #define LOG_INFO(str)       {Log(LogLevel::Log,     str);}

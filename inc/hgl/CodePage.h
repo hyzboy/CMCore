@@ -252,44 +252,44 @@ namespace hgl
         return u8_to_u16(str,hgl::strlen<u8char>(str)+1,len);
     }
 
-    inline UTF16String to_u16(const u8char *u8_str,int length)
+    inline U16String to_u16(const u8char *u8_str,int length)
     {
         int wlen;
         u16char *ws=u8_to_u16(u8_str,length,wlen);
 
-        return UTF16String::newOf(ws,wlen);
+        return U16String::newOf(ws,wlen);
     }
 
-    inline UTF16String to_u16(const UTF8String &u8str)
+    inline U16String to_u16(const U8String &u8str)
     {
         return to_u16(u8str.c_str(),u8str.Length());
     }
 
-    inline UTF16String to_u16(const u8char *str)
+    inline U16String to_u16(const u8char *str)
     {
         int wlen;
 
         u16char *ws=u8_to_u16(str,hgl::strlen(str),wlen);
         
-        return UTF16String::newOf(ws,wlen);
+        return U16String::newOf(ws,wlen);
     }
 
-    inline UTF8String to_u8(const u16char *wide_str,int length)
+    inline U8String to_u8(const u16char *wide_str,int length)
     {
         int ulen;
 
         u8char *us=u16_to_u8(wide_str,length,ulen);
 
-        return UTF8String::newOf(us,ulen);
+        return U8String::newOf(us,ulen);
     }
 
-    inline UTF8String to_u8(const UTF16String &ws)
+    inline U8String to_u8(const U16String &ws)
     {
         return to_u8(ws.c_str(),ws.Length());
     }
 #if HGL_OS == HGL_OS_Windows
-           AnsiString ToAnsiString(const CharSet &cs,const UTF16String &str);
-    inline AnsiString ToAnsiString(const UTF16String &str)
+           AnsiString ToAnsiString(const CharSet &cs,const U16String &str);
+    inline AnsiString ToAnsiString(const U16String &str)
     {
         const CharSet cs((uint16)0);
         
@@ -298,16 +298,16 @@ namespace hgl
     
     inline OSString ToOSString(const char *str){return to_u16((u8char *)str);}
     inline OSString ToOSString(const u8char *str){return to_u16(str);}
-    inline OSString ToOSString(const UTF8String &str){return to_u16(str.c_str(), (int)(str.Length()));}
+    inline OSString ToOSString(const U8String &str){return to_u16(str.c_str(), (int)(str.Length()));}
 
-    inline UTF8String ToUTF8String(const os_char *str){return to_u8(str,strlen(str));}
-    inline UTF8String ToUTF8String(const OSString &str){return to_u8(str);}
+    inline U8String ToU8String(const os_char *str){return to_u8(str,strlen(str));}
+    inline U8String ToU8String(const OSString &str){return to_u8(str);}
 #else
     inline OSString ToOSString(const char *str){return OSString(str);}
-    inline OSString ToOSString(const UTF8String &str){return str;}
+    inline OSString ToOSString(const U8String &str){return str;}
 
-    inline UTF8String ToUTF8String(const os_char *str){return UTF8String(str);}
-    inline UTF8String ToUTF8String(const OSString &str){return str;}
+    inline U8String ToU8String(const os_char *str){return U8String(str);}
+    inline U8String ToU8String(const OSString &str){return str;}
 #endif//
 
     const BOMFileHeader *ParseBOM(const void *input);

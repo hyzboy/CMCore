@@ -17,14 +17,14 @@ namespace hgl
         return hgl::OSString(str.c_str(),(int)str.length());
     }
 
-    inline hgl::UTF8String ToUTF8String(const std::wstring &str)
+    inline hgl::U8String ToU8String(const std::wstring &str)
     {
         return hgl::to_u8(str.c_str(),(int)str.length());
     }
 
     inline std::string ToStdString(const hgl::OSString &str)
     {
-        hgl::UTF8String u8_str=hgl::to_u8(str);
+        hgl::U8String u8_str=hgl::to_u8(str);
 
         return std::string((char *)u8_str.c_str(),str.Length());
     }
@@ -51,14 +51,14 @@ namespace hgl
 
     inline std::wstring ToStdWString(const OSString &str)
     {
-        hgl::WideString w_str=hgl::to_wide<sizeof(wchar_t)>(str);
+        hgl::WString w_str=hgl::to_wide<sizeof(wchar_t)>(str);
 
         return std::wstring(w_str.c_str(),w_str.Length());
     }
     #endif//
 
-    inline hgl::UTF8String ToUTF8String(const std::string &str)
+    inline hgl::U8String ToU8String(const std::string &str)
     {
-        return hgl::UTF8String((hgl::u8char *)str.c_str(),int(str.size()));
+        return hgl::U8String((hgl::u8char *)str.c_str(),int(str.size()));
     }
 }

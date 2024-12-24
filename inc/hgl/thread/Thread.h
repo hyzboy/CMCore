@@ -37,7 +37,7 @@ namespace hgl
         friend THREAD_FUNC ThreadFunc(Thread *tc);
 
 #ifdef _DEBUG
-        UTF8String thread_addr_string;                                                              ///<线程地址用字符串，调试使用
+        U8String thread_addr_string;                                                              ///<线程地址用字符串，调试使用
 #endif//_DEBUG
 
     public:
@@ -45,7 +45,7 @@ namespace hgl
         virtual ~Thread()=default;
 
 #ifdef _DEBUG
-        const UTF8String &GetThreadAddressString()const{return thread_addr_string;}               ///<取得线程地址字符串
+        const U8String &GetThreadAddressString()const{return thread_addr_string;}               ///<取得线程地址字符串
 #endif//_DEBUG
 
         /**

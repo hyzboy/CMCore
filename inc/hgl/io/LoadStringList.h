@@ -14,7 +14,7 @@ namespace hgl
     {
         bool ReadString(io::DataInputStream *dis,T &str)
         {
-            return dis->ReadUTF8String(str);
+            return dis->ReadU8String(str);
         }
     };
 
@@ -66,13 +66,13 @@ namespace hgl
         return(result);
     }//int LoadStringList
 
-    inline int LoadUTF8StringList      (UTF8StringList &   sl,io::DataInputStream *dis){return LoadStringList<u8char,  ByteOrderMask::UTF8     >(sl,dis);}
-    inline int LoadUTF16LEStringList   (UTF16StringList &  sl,io::DataInputStream *dis){return LoadStringList<u16char, ByteOrderMask::UTF16LE  >(sl,dis);}
-    inline int LoadUTF16BEStringList   (UTF16StringList &  sl,io::DataInputStream *dis){return LoadStringList<u16char, ByteOrderMask::UTF16BE  >(sl,dis);}
+    inline int LoadU8StringList      (U8StringList &   sl,io::DataInputStream *dis){return LoadStringList<u8char,  ByteOrderMask::UTF8     >(sl,dis);}
+    inline int LoadUTF16LEStringList   (U16StringList &  sl,io::DataInputStream *dis){return LoadStringList<u16char, ByteOrderMask::UTF16LE  >(sl,dis);}
+    inline int LoadUTF16BEStringList   (U16StringList &  sl,io::DataInputStream *dis){return LoadStringList<u16char, ByteOrderMask::UTF16BE  >(sl,dis);}
 
-    int LoadStringListFromText(     UTF8StringList  &sl,const void *data,const int size,const CharSet &cs=UTF8CharSet);                ///<加载一个原始文本块到UTF8StringList
-    int LoadStringListFromText(     UTF16StringList &sl,const void *data,const int size,const CharSet &cs=UTF8CharSet);                ///<加载一个原始文本块到UTF16StringList
-    int LoadStringListFromTextFile( UTF8StringList  &sl,const OSString &filename,       const CharSet &cs=UTF8CharSet);                ///<加载一个原始文本文件到UTF8StringList
-    int LoadStringListFromTextFile( UTF16StringList &sl,const OSString &filename,       const CharSet &cs=UTF8CharSet);                ///<加载一个原始文本文件到UTF16StringList
+    int LoadStringListFromText(     U8StringList  &sl,const void *data,const int size,const CharSet &cs=UTF8CharSet);                ///<加载一个原始文本块到U8StringList
+    int LoadStringListFromText(     U16StringList &sl,const void *data,const int size,const CharSet &cs=UTF8CharSet);                ///<加载一个原始文本块到U16StringList
+    int LoadStringListFromTextFile( U8StringList  &sl,const OSString &filename,       const CharSet &cs=UTF8CharSet);                ///<加载一个原始文本文件到U8StringList
+    int LoadStringListFromTextFile( U16StringList &sl,const OSString &filename,       const CharSet &cs=UTF8CharSet);                ///<加载一个原始文本文件到U16StringList
 }//namespace hgl
 #endif//HGL_LOAD_STRING_LIST_INCLUDE

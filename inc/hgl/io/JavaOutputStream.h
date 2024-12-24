@@ -54,8 +54,8 @@ namespace hgl
                 return out?out->WriteUTF16BEChars(wstr,count):false;
             }
 
-            bool    writeUTF            (const UTF8String   &str){return out?out->WriteUTF8ShortString(str):false;}
-            bool    writeUTF            (const UTF16String  &str){return out?out->WriteUTF8ShortString(str):false;}
+            bool    writeUTF            (const U8String   &str){return out?out->WriteUTF8ShortString(str):false;}
+            bool    writeUTF            (const U16String  &str){return out?out->WriteUTF8ShortString(str):false;}
         };//class JavaOutputStream
     }//namespace io
 }//namespace hgl

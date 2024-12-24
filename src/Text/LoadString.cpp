@@ -3,9 +3,9 @@
 namespace hgl
 {
     /**
-     * 加载一个原始文本块到UTF8String
+     * 加载一个原始文本块到U8String
      */
-    int LoadStringFromText(UTF8String &full_text,const void *source_data,const int size,const CharSet &cs)
+    int LoadStringFromText(U8String &full_text,const void *source_data,const int size,const CharSet &cs)
     {
         if(!source_data||size<=0)
             return 0;
@@ -83,9 +83,9 @@ namespace hgl
     }
 
     /**
-     * 加载一个原始文本块到UTF16String
+     * 加载一个原始文本块到U16String
      */
-    int LoadStringFromText(UTF16String &full_text,const void *source_data,const int size,const CharSet &cs)
+    int LoadStringFromText(U16String &full_text,const void *source_data,const int size,const CharSet &cs)
     {
         if(!source_data||size<=0)
             return(0);
@@ -165,9 +165,9 @@ namespace hgl
     }
     
     /**
-     * 加载一个原始文本文件到UTF8String
+     * 加载一个原始文本文件到U8String
      */
-    int LoadStringFromTextFile(UTF8String &str,const OSString &filename,const CharSet &cs)
+    int LoadStringFromTextFile(U8String &str,const OSString &filename,const CharSet &cs)
     {
         uchar *data;
 
@@ -180,9 +180,9 @@ namespace hgl
     }
 
     /**
-     * 加载一个原始文本文件到UTF16String
+     * 加载一个原始文本文件到U16String
      */
-    int LoadStringFromTextFile(UTF16String &str,const OSString &filename,const CharSet &cs)
+    int LoadStringFromTextFile(U16String &str,const OSString &filename,const CharSet &cs)
     {
         uchar *data;
 

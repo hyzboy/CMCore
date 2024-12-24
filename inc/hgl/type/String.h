@@ -1325,14 +1325,14 @@ namespace hgl
         return String<T>(value)+str;
     }
     
-    using AnsiString    =String<char>;
-    using UTF8String    =String<u8char>;
-    using UTF16String   =String<u16char>;
-    using UTF32String   =String<char32_t>;
-    using OSString      =String<os_char>;
-    using WideString    =String<wchar_t>;
+    using AnsiString=String<char>;
+    using U8String  =String<u8char>;
+    using U16String =String<u16char>;
+    using U32String =String<char32_t>;
+    using OSString  =String<os_char>;
+    using WString   =String<wchar_t>;
 
-    using ShaderString  =UTF8String;
+    using ShaderString  =U8String;
 
     template<typename C> bool ToNumber(const String<C> &str,int &value){return str.ToInt(value);}
     template<typename C> bool ToNumber(const String<C> &str,uint &value){return str.ToUint(value);}
@@ -1398,12 +1398,12 @@ namespace hgl
         return PointerToHexString<os_char>(value);
     }
 
-    inline String<char> PointerToHexUTF8String(const void *value)
+    inline String<char> PointerToHexU8String(const void *value)
     {
         return PointerToHexString<char>(value);
     }
 
-    inline String<u16char> PointerToHexUTF16String(const void *value)
+    inline String<u16char> PointerToHexU16String(const void *value)
     {
         return PointerToHexString<u16char>(value);
     }

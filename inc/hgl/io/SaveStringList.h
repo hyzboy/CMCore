@@ -14,7 +14,7 @@ namespace hgl
     {
         bool WriteString(io::DataOutputStream *dos,const T &str)
         {
-            return dos->WriteUTF8String(str);
+            return dos->WriteU8String(str);
         }
     };
 
@@ -55,7 +55,7 @@ namespace hgl
         return(result);
     };
 
-    template<typename T> int SaveUTF8StringList(io::DataOutputStream *dos,const StringList<T> &sl)
+    template<typename T> int SaveU8StringList(io::DataOutputStream *dos,const StringList<T> &sl)
     {
         return WriteStringList<T,ByteOrderMask::UTF8>(dos,sl);
     }

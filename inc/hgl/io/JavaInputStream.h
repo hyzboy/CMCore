@@ -61,7 +61,7 @@ namespace hgl
                 return in?in->ReadUTF16BEChars(wstr,count):false;
             }
 
-            bool    readUTF             (UTF16String &str)
+            bool    readUTF             (U16String &str)
             {
                 return in?in->ReadUTF8ShortString(str):false;
             }

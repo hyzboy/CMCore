@@ -38,7 +38,7 @@ namespace hgl
         void SetStatus(LoaderStatus);
 
         HAC *loader_hac;
-        UTF16String loader_filename;
+        U16String loader_filename;
         void *loader_pointer;
         void *loader_data;
         int loader_size;
