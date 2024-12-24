@@ -38,7 +38,7 @@ namespace hgl
 
             for(int i=0;i<n;i++)
             {
-                if((*log)->GetLevel()>=level)
+                if((*log)->GetLevel()<=level)
                     (*log)->Write(str,size);
 
                 ++log;
@@ -73,7 +73,7 @@ namespace hgl
                                 OS_TEXT("Current program: ") + cur_program.c_str() + OS_TEXT("\n")+
                                 OS_TEXT("Current path: ") + cur_path.c_str() + OS_TEXT("\n");
 
-            WriteLog(LogLevel::Log,str.c_str(),str.Length());
+            WriteLog(LogLevel::Verbose,str.c_str(),str.Length());
 
             return(true);
         }
@@ -207,8 +207,8 @@ namespace hgl
          */
         bool InitLogger(const OSString &app_name)
         {
-            AddLogger(CreateLoggerConsole(LogLevel::Log));
-            AddLogger(CreateLoggerFile(app_name,LogLevel::Log));
+            AddLogger(CreateLoggerConsole(LogLevel::Verbose));
+            AddLogger(CreateLoggerFile(app_name,LogLevel::Verbose));
 
             return InitLog();
         }

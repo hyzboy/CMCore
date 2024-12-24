@@ -101,9 +101,6 @@ namespace hgl
 
         Logger *CreateLoggerFile(const OSString &pc,LogLevel ll)
         {
-            if(ll<LogLevel::Error)
-                return(nullptr);
-
             LogFile *lf=new LogFile(ll);
 
             if(lf->Create(pc))
