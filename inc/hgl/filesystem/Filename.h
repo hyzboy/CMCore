@@ -132,7 +132,7 @@ namespace hgl
             {
                 if(filename.GetFirstChar()==directory_separator_char)           //开头有分隔符
                 {
-                    fullname.SetString(pathname.c_str(),pathname.Length()-1);   //少取一个字符
+                    fullname.fromString(pathname.c_str(),pathname.Length()-1);   //少取一个字符
                 }
                 else
                 {

@@ -17,7 +17,7 @@ namespace hgl
 
         if(size>=3&&data[0]==0xEF&&data[1]==0xBB&&data[2]==0xBF)            //utf8
         {
-            full_text.SetString((u8char *)(data+3),size-3);
+            full_text.fromString((u8char *)(data+3),size-3);
             char_count=size-3;
         }
         else
@@ -75,7 +75,7 @@ namespace hgl
                 char_count=to_utf8(cs,&str,(char *)data,size);
 #endif//
 
-            full_text.SetString(str,char_count);
+            full_text.fromString(str,char_count);
             delete[] str;
         }
 
@@ -130,7 +130,7 @@ namespace hgl
 
         if((uchar *)str>=data&&(uchar *)str<=data+size)                      //如果str的地址在data的范围内
         {
-            full_text.SetString(str,char_count);
+            full_text.fromString(str,char_count);
         }
         else
         {
@@ -156,7 +156,7 @@ namespace hgl
 #endif//
             }
 
-            full_text.SetString(str,char_count);
+            full_text.fromString(str,char_count);
 
             delete[] str;
         }

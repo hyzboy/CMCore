@@ -1,8 +1,7 @@
-﻿#ifndef HGL_TYPE_BASE_STRING_INCLUDE
-#define HGL_TYPE_BASE_STRING_INCLUDE
+﻿#pragma once
 
+#include<hgl/type/StringView.h>
 #include<hgl/type/StringInstance.h>
-#include<hgl/io/InputStream.h>
 #include<hgl/Comparator.h>
 #include<hgl/type/Smart.h>
 
@@ -40,7 +39,7 @@ namespace hgl
          */
         String(const T *str)
         {
-            SetString(str);
+            fromString(str);
         }
 
         /**
@@ -50,7 +49,12 @@ namespace hgl
          */
         String(const T *str,int len)
         {
-            SetString(str,len);
+            fromString(str,len);
+        }
+
+        String(const StringView<T> &sv)
+        {
+            fromString(sv.c_str(),sv.length());
         }
 
         /**
@@ -63,24 +67,6 @@ namespace hgl
             si->InitFromInstance(str,len);
 
             return String<T>(si);
-        }
-
-        String(io::InputStream *is,int len=0)
-        {
-            if(len<=0)
-                len=is->Available();
-
-            if(len<=0)
-                return;
-
-            len/=sizeof(T);
-
-            T *str=new T[len+1];
-
-            len=is->Read(str,len*sizeof(T));
-
-            str[len]=0;
-            SetInstance(str,len);
         }
 
         String(const char)=delete;
@@ -273,7 +259,7 @@ namespace hgl
          * @param str 字符串内容，在len<0的情况下，需以0为结尾
          * @param len 字符串长度，如果str以0为结尾，可以为负值，将启用自动计算长度
          */
-        void SetString(const T *str,int len=-1)
+        void fromString(const T *str,int len=-1)
         {
             if(!str||!*str||!len)       //len=-1为自检测,为0不处理
             {
@@ -290,7 +276,7 @@ namespace hgl
          * @param str 字符串内容，在len<0的情况下，需以0为结尾
          * @param len 字符串长度
          */
-        void SetInstance(T *str,const uint len)
+        void fromInstance(T *str,const uint len)
         {
             if(!str||!*str)
             {
@@ -304,12 +290,12 @@ namespace hgl
 
         void Strcpy(const T *str,int len=-1)
         {
-            SetString(str,len);
+            fromString(str,len);
         }
 
         void StrcpyInstance(T *str,int len=-1)
         {
-            SetInstance(str,len);
+            fromInstance(str,len);
         }
 
         /**
@@ -464,7 +450,7 @@ namespace hgl
             }
             else
             {
-                SetString(str,len);
+                fromString(str,len);
                 return(true);
             }
         }
@@ -1241,6 +1227,16 @@ namespace hgl
             SelfClass &operator +=  (const SelfClass &str){Strcat(str);return(*this);}
             SelfClass &operator <<  (const SelfClass &str){return(operator+=(str));}
 
+            operator StringView<T> ()const
+            {
+                return StringView<T>(c_str(),Length());
+            }
+
+            operator const StringView<T> &()const
+            {
+                return StringView<T>(c_str(),Length());
+            }
+
             static SelfClass ComboString(const T *str1,int len1,const T *str2,int len2)
             {
                 if(!str1||len1<=0)
@@ -1424,4 +1420,3 @@ namespace hgl
         hgl::strcat(dst,max_count,src.c_str(),src.Length());
     }
 }//namespace hgl
-#endif//HGL_TYPE_BASE_STRING_INCLUDE
