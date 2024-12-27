@@ -22,6 +22,26 @@
         #define HGL_LIB_COMPILER_MAIOR_VER  OS_TEXT("9")
     #elif __GNUC__ == 10
         #define HGL_LIB_COMPILER_MAIOR_VER  OS_TEXT("10")
+    #elif __GNUC__ == 11
+        #define HGL_LIB_COMPILER_MAIOR_VER  OS_TEXT("11")
+    #elif __GNUC__ == 12
+        #define HGL_LIB_COMPILER_MAIOR_VER  OS_TEXT("12")
+    #elif __GNUC__ == 13
+        #define HGL_LIB_COMPILER_MAIOR_VER  OS_TEXT("13")
+    #elif __GNUC__ == 14
+        #define HGL_LIB_COMPILER_MAIOR_VER  OS_TEXT("14")
+    #elif __GNUC__ == 15
+        #define HGL_LIB_COMPILER_MAIOR_VER  OS_TEXT("15")
+    #elif __GNUC__ == 16
+        #define HGL_LIB_COMPILER_MAIOR_VER  OS_TEXT("16")
+    #elif __GNUC__ == 17
+        #define HGL_LIB_COMPILER_MAIOR_VER  OS_TEXT("17")
+    #elif __GNUC__ == 18
+        #define HGL_LIB_COMPILER_MAIOR_VER  OS_TEXT("18")
+    #elif __GNUC__ == 19
+        #define HGL_LIB_COMPILER_MAIOR_VER  OS_TEXT("19")
+    #elif __GNUC__ == 20
+        #define HGL_LIB_COMPILER_MAIOR_VER  OS_TEXT("20")
     #endif//__GNUC__
 
     #if __GNUC_MINOR__ == 0
