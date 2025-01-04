@@ -60,11 +60,11 @@ namespace hgl
         }
     };//class StringView
 
-    using U8StringView=StringView<u8char>;
-    using U16StringView=StringView<u16char>;
-    using U32StringView=StringView<u32char>;
+    using U8StringView  =StringView<u8char>;
+    using U16StringView =StringView<u16char>;
+    using U32StringView =StringView<u32char>;
     
     using OSStringView  =StringView<os_char>;
     using AnsiStringView=StringView<char>;
-    using WStringView=StringView<wchar_t>;
+    using WStringView   =StringView<wchar_t>;
 }//namespace hgl
