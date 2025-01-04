@@ -1,17 +1,13 @@
 ﻿#pragma once
 
+#include<hgl/type/KeyValue.h>
 #include<hgl/type/List.h>
 #include<hgl/type/Pair.h>
 #include<hgl/type/Pool.h>
 #include<hgl/thread/RWLock.h>
+
 namespace hgl
 {
-    template<typename K,typename V> struct KeyValue
-    {
-        K key;
-        V value;
-    };
-
     /**
     * 索引数据模板
     */
