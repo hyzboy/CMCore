@@ -29,6 +29,7 @@ namespace hgl
 
                         T *     begin           ()const{return data_array.begin();}
                         T *     end             ()const{return data_array.end();}
+                        T *     last            ()const{return data_array.last();}
 
     public:
 
