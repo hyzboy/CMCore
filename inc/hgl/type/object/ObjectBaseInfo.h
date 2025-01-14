@@ -1,28 +1,32 @@
 #pragma once
 
 #include<hgl/SourceCodeLocation.h>
+#include<typeinfo>
 
 namespace hgl
 {
-    class ObjectManager;
-
     /**
      * 对象简单信息
      */
-    struct ObjectSimpleInfo
+    struct ObjectBaseInfo
     {
         size_t hash_code;               ///<对象数据类型的hash值
-        size_t serial_number;           ///<对象序列号
+        size_t unique_id;               ///<唯一序列号
+
+        SourceCodeLocation scl;
     };
 
-    /**
-     * 对象基本信息
-     */
-    struct ObjectBaseInfo:public ObjectSimpleInfo
+    struct ObjectTotalInfo
     {
-        ObjectManager *     object_manager;     ///<对象管理器
+        size_t hash_code;
 
-        SourceCodeLocation  source_code_location;    ///<对象创建的源代码位置
+        std::type_info *info;
+
+        size_t count;
     };
+
+    void RegistryObjectHash(const size_t &hash_code,const std::type_info *);
+
+    const ObjectTotalInfo *GetObjectTotalInfo(const size_t &hash_code);
 }//namespace hgl
 

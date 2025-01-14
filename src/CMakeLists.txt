@@ -58,14 +58,10 @@ SET(SYSTEM_INFO_SOURCE  ${CORE_PLATFORM_INCLUDE_PATH}/SystemInfo.h
 SET(MATH_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/math)
 
 SET(BASE_OBJECT_HEADER_FILES    ${TYPE_INCLUDE_PATH}/object/ObjectBaseInfo.h
-                                ${TYPE_INCLUDE_PATH}/object/ObjectRelation.h
-                                ${TYPE_INCLUDE_PATH}/object/Object.h
-                                ${TYPE_INCLUDE_PATH}/object/ObjectAllocator.h
-                                ${TYPE_INCLUDE_PATH}/object/ObjectManager.h
-                                ${TYPE_INCLUDE_PATH}/object/DefaultCreateObject.h)
+                                ${TYPE_INCLUDE_PATH}/object/Object.h)
 
-SET(BASE_OBJECT_SOURCE_FILES    Object/Object.cpp
-                                Object/ObjectManager.cpp
+SET(BASE_OBJECT_SOURCE_FILES    Object/ObjectBaseInfo.cpp
+                                Object/Object.cpp
                                 Object/TickObject.cpp)
 
 SOURCE_GROUP("DataType\\Object" FILES ${BASE_OBJECT_HEADER_FILES}

@@ -1,235 +1,231 @@
 #pragma once
 #include<hgl/type/DataType.h>
 #include<hgl/type/object/ObjectBaseInfo.h>
-#include<hgl/type/object/ObjectRelation.h>
 
 namespace hgl
 {
     /**
-     * 基础对象.
+     * 基础对象
      */
     class Object
     {
-        ObjectBaseInfo object_base_info;
+        ObjectBaseInfo object_info;
 
     public:
 
-        const ObjectSimpleInfo &GetObjectSimpleInfo () const noexcept { return object_base_info; }                          ///<获取对象简单信息
-        const ObjectBaseInfo &  GetObjectBaseInfo   () const noexcept { return object_base_info; }                          ///<获取对象基本信息
+        const ObjectBaseInfo &  GetObjectBaseInfo   () const noexcept { return object_info; }                          ///<获取对象简单信息
 
-              ObjectManager *   GetObjectManager    ()       noexcept { return object_base_info.object_manager; }           ///<获取对象管理器
+        const size_t            GetTypeHash         () const noexcept { return object_info.hash_code; }                ///<获取对象数据类型的hash值
+        const size_t            GetUniqueID         () const noexcept { return object_info.unique_id; }                ///<获取对象的唯一序列号
 
-        const size_t            GetTypeHash         () const noexcept { return object_base_info.hash_code; }                ///<获取对象数据类型的hash值
-        const size_t            GetSerialNumber     () const noexcept { return object_base_info.serial_number; }            ///<获取对象的序列号
+    public:
 
-    protected:
-
-        template<typename T> friend class SafePtr;
-        template<typename T> friend struct DefaultObjectAllocator;
+//        template<typename T> friend class SafePtr;
+//        template<typename T> friend struct DefaultObjectAllocator;
 
         NO_COPY(Object)
         NO_MOVE(Object)
 
-        Object(const ObjectBaseInfo &obi) noexcept { object_base_info=obi; }
+        Object(const ObjectBaseInfo &oi) noexcept { object_info=oi; }
         virtual ~Object()=default;
-    
-        virtual void Deinitailize()=0;
+
+        //virtual bool Initailize()=0;
+        //virtual void Deinitailize()=0;
     };//class Object
 
-    template<typename T> class DefaultObjectManager;
-
-    #define HGL_OBJECT_CLASS_BODY(class_name) \
-    private:    \
-    \
-        friend struct DefaultObjectAllocator<class_name>;\
-    \
-        using Object::Object; \
-        /*class_name(const ObjectBaseInfo &obi):Object(obi)*/   \
-        /*{std::cout<<#class_name " Construct("<<GetSerialNumber()<<")"<<std::endl;}*/   \
-    \
-        virtual ~class_name()=default;  \
-        /*{std::cout<<#class_name " Destruct("<<GetSerialNumber()<<")"<<std::endl;}*/   \
-    \
-    public: \
-    \
-        static const size_t StaticTypeHash() noexcept {return hgl::GetTypeHash<class_name>();}   \
-
-
-
-    template<typename T> struct SafePtrData
+    template<typename T> inline T *New(const SourceCodeLocation &scl)
     {
-        T *ptr;
-        int count;
+        static size_t new_count=0;
 
-    private:
+        ObjectBaseInfo obi;
 
-        SafePtrData(T *p)
-        {
-            ptr=p;
-            count=0;
-        }
+        obi.hash_code=GetTypeHash<T>();
+        obi.unique_id=new_count;
+        obi.scl=scl;
 
-        ~SafePtrData()=default;
+        ++new_count;
 
-        template<typename T> friend class DefaultObjectManager;
-    };
+        T *obj=new T(obi);
 
-    /**
-     * 安全访问指针<Br>
-     * 其本质类似于的WeakPtr，但是不同的是:
-     * <ul>
-     *      <li>SafePtr不使用atom计数器，所以它不是线程安全的</li>
-     *      <li>SafePtr不会自动释放指针，它是在访问时检查指针是否有效，如果无效则返回nullptr</li>
-     * </ul>
-     */
-    template<typename T> class SafePtr
-    {
-        SafePtrData<T> *data;
+        return obj;
+    }
 
-    public:
+    #define NewObject(T,obj) T *obj=New<T>(HGL_SCL_HERE);
 
-        SafePtr()
-        {
-            data=nullptr;
-        }
+    //template<typename T> struct SafePtrData
+    //{
+    //    T *ptr;
+    //    int count;
 
-        SafePtr(SafePtrData<T> *spd)
-        {
-            data=spd;
+    //private:
 
-            if(data)
-                ++data->count;
-        }
+    //    SafePtrData(T *p)
+    //    {
+    //        ptr=p;
+    //        count=0;
+    //    }
 
-    public:
+    //    ~SafePtrData()=default;
 
-        virtual ~SafePtr()
-        {
-            Release();
-        }
+    //    template<typename T> friend class DefaultObjectManager;
+    //};
 
-                T *Get()        {return data?data->ptr:nullptr;}
-        const   T *Get() const  {return data?data->ptr:nullptr;}
+    ///**
+    // * 安全访问指针<Br>
+    // * 其本质类似于的WeakPtr，但是不同的是:
+    // * <ul>
+    // *      <li>SafePtr不使用atom计数器，所以它不是线程安全的</li>
+    // *      <li>SafePtr不会自动释放指针，它是在访问时检查指针是否有效，如果无效则返回nullptr</li>
+    // * </ul>
+    // */
+    //template<typename T> class SafePtr
+    //{
+    //    SafePtrData<T> *data;
 
-        T *operator->() { return  Get(); }
-        T &operator* () { return *Get(); }
+    //public:
 
-        const T *operator->() const { return Get(); }
+    //    SafePtr()
+    //    {
+    //        data=nullptr;
+    //    }
 
-        const bool operator==(const T *ptr) const noexcept { return Get()==ptr; }
-        const bool operator!=(const T *ptr) const noexcept { return Get()!=ptr; }
+    //    SafePtr(SafePtrData<T> *spd)
+    //    {
+    //        data=spd;
 
-        const bool operator==(const SafePtr<T> &sp) const { return Get()==sp.Get(); }
-        const bool operator!=(const SafePtr<T> &sp) const { return Get()!=sp.Get(); }
+    //        if(data)
+    //            ++data->count;
+    //    }
 
-        const bool IsValid() const noexcept                                                         ///<当前对象指针是否有效
-        {
-            return data&&data->ptr;
-        }
+    //public:
 
-        SafePtr<T> &operator=(SafePtr<T> &sp)
-        {
-            if(!sp.IsValid())
-            {
-                Release();
-                return *this;
-            }
+    //    virtual ~SafePtr()
+    //    {
+    //        Release();
+    //    }
 
-            if(data)
-            {
-                if(data->ptr==sp.data->ptr)
-                    return *this;
+    //            T *Get()        {return data?data->ptr:nullptr;}
+    //    const   T *Get() const  {return data?data->ptr:nullptr;}
 
-                Release();
-            }
+    //    T *operator->() { return  Get(); }
+    //    T &operator* () { return *Get(); }
 
-            data=sp.data;
-            ++data->count;
+    //    const T *operator->() const { return Get(); }
 
-            return *this;
-        }
+    //    const bool operator==(const T *ptr) const noexcept { return Get()==ptr; }
+    //    const bool operator!=(const T *ptr) const noexcept { return Get()!=ptr; }
 
-        template<typename OT>
-        SafePtr<T> &operator=(SafePtr<OT> &spd)
-        {
-            if(T::StaticTypeHash()!=OT::StaticTypeHash())
-            {
-                Release();
-                return *this;
-            }
+    //    const bool operator==(const SafePtr<T> &sp) const { return Get()==sp.Get(); }
+    //    const bool operator!=(const SafePtr<T> &sp) const { return Get()!=sp.Get(); }
 
-            if(data!=spd.data)
-            {
-                Release();
-                data=spd.data;
-                ++data->count;
-            }
+    //    const bool IsValid() const noexcept                                                         ///<当前对象指针是否有效
+    //    {
+    //        return data&&data->ptr;
+    //    }
 
-            return *this;
-        }
+    //    SafePtr<T> &operator=(SafePtr<T> &sp)
+    //    {
+    //        if(!sp.IsValid())
+    //        {
+    //            Release();
+    //            return *this;
+    //        }
 
-        SafePtr<T> &operator=(Object *obj)=delete;
+    //        if(data)
+    //        {
+    //            if(data->ptr==sp.data->ptr)
+    //                return *this;
 
-        /**
-         * 强制释放对象(不管所有权问题，强制释放)
-         */
-        void Destory()
-        {
-            if(!data)
-                return;
+    //            Release();
+    //        }
 
-            if(!data->ptr)
-                return;
+    //        data=sp.data;
+    //        ++data->count;
 
-            ObjectManager *om=data->ptr->GetObjectManager();
+    //        return *this;
+    //    }
 
-            if(!om)
-            {
-                //std::cerr<<"SafePtr<"<<GetTypeName<T>()<<">::Destory() error, manager is null."<<std::endl;
-                return;
-            }
-        
-            //std::cout<<"SafePtr<"<<GetTypeName<T>()<<">::Destory() serial:"<<data->ptr->GetSerialNumber()<<std::endl;
+    //    template<typename OT>
+    //    SafePtr<T> &operator=(SafePtr<OT> &spd)
+    //    {
+    //        if(T::StaticTypeHash()!=OT::StaticTypeHash())
+    //        {
+    //            Release();
+    //            return *this;
+    //        }
 
-            DefaultObjectManager<T> *dom=static_cast<DefaultObjectManager<T> *>(om);
+    //        if(data!=spd.data)
+    //        {
+    //            Release();
+    //            data=spd.data;
+    //            ++data->count;
+    //        }
 
-            dom->ReleaseObject(data);
+    //        return *this;
+    //    }
 
-            data=nullptr;
-        }
+    //    SafePtr<T> &operator=(Object *obj)=delete;
 
-        /**
-         * 释放对象(释放所有权，不代表会被释放。当所有权计数为0时会被释放)
-         * 
-         * \return 依然持有对象的数量
-         */
-        int Release()
-        {
-            if(!data)
-                return -1;
+    //    /**
+    //     * 强制释放对象(不管所有权问题，强制释放)
+    //     */
+    //    void Destory()
+    //    {
+    //        if(!data)
+    //            return;
 
-            //if(data->ptr)
-            //{
-            //    std::cout<<"SafePtr<"<<GetTypeName<T>()<<">::Release() serial:"<<data->ptr->GetSerialNumber()<<std::endl;
-            //}
+    //        if(!data->ptr)
+    //            return;
 
-            int result;
+    //        ObjectManager *om=data->ptr->GetObjectManager();
 
-            if(data->count==1)
-            {
-                Destory();
-                result=0;
-            }
-            else
-            {
-                --data->count;
+    //        if(!om)
+    //        {
+    //            //std::cerr<<"SafePtr<"<<GetTypeName<T>()<<">::Destory() error, manager is null."<<std::endl;
+    //            return;
+    //        }
+    //    
+    //        //std::cout<<"SafePtr<"<<GetTypeName<T>()<<">::Destory() serial:"<<data->ptr->GetSerialNumber()<<std::endl;
 
-                result=data->count;
-            }
+    //        DefaultObjectManager<T> *dom=static_cast<DefaultObjectManager<T> *>(om);
 
-            data=nullptr;
-            return result;
-        }
-    };//template<typename T> class SafePtr
+    //        dom->ReleaseObject(data);
+
+    //        data=nullptr;
+    //    }
+
+    //    /**
+    //     * 释放对象(释放所有权，不代表会被释放。当所有权计数为0时会被释放)
+    //     * 
+    //     * \return 依然持有对象的数量
+    //     */
+    //    int Release()
+    //    {
+    //        if(!data)
+    //            return -1;
+
+    //        //if(data->ptr)
+    //        //{
+    //        //    std::cout<<"SafePtr<"<<GetTypeName<T>()<<">::Release() serial:"<<data->ptr->GetSerialNumber()<<std::endl;
+    //        //}
+
+    //        int result;
+
+    //        if(data->count==1)
+    //        {
+    //            Destory();
+    //            result=0;
+    //        }
+    //        else
+    //        {
+    //            --data->count;
+
+    //            result=data->count;
+    //        }
+
+    //        data=nullptr;
+    //        return result;
+    //    }
+    //};//template<typename T> class SafePtr
 }//namespace hgl
 
