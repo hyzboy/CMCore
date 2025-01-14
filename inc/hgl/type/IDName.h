@@ -93,9 +93,9 @@ namespace hgl
 
 #define DefineIDName(name,type) using name=OrderedIDName<type,__COUNTER__>; using name##Set=SortedSet<name>; //使用__COUNTER__是为了让typeid()不同
     
-    DefineIDName(AnsiIDName,    char)
-    DefineIDName(WideIDName,    wchar_t)
-    DefineIDName(UTF8IDName,    u8char)
-    DefineIDName(UTF16IDName,   u16char)
-    DefineIDName(OSIDName,      os_char)
+    DefineIDName(AIDName,   char)
+    DefineIDName(WIDName,   wchar_t)
+    DefineIDName(U8IDName,  u8char)
+    DefineIDName(U16IDName, u16char)
+    DefineIDName(OSIDName,  os_char)
 }//namespace hgl
