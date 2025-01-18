@@ -1,7 +1,8 @@
-#ifndef HGL_IO_WINDOW_EVENT_INCLUDE
+﻿#ifndef HGL_IO_WINDOW_EVENT_INCLUDE
 #define HGL_IO_WINDOW_EVENT_INCLUDE
 
 #include<hgl/io/event/InputEvent.h>
+#include<hgl/graph/ViewportInfo.h>
 namespace hgl
 {
     namespace io
@@ -31,6 +32,8 @@ namespace hgl
         {
             WindowEventData *wed;
 
+            graph::ViewportInfo viewport_info;
+
         public:
 
             WindowEvent():InputEvent(InputEventSource::Window){}
@@ -55,7 +58,7 @@ namespace hgl
 
         public:
 
-            virtual void OnResize(uint,uint){}
+            virtual void OnResize(uint w,uint h){viewport_info.Set(w,h);}
             virtual void OnActive(bool){}
             virtual void OnClose (){}
         };//class WindowEvent:public InputEvent
