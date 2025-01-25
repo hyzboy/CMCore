@@ -7,18 +7,18 @@ namespace hgl
      */
     class TickObject
     {
-        bool tick;
+        bool tickable=true;
+
+    public:
+        
+        bool IsTickable()const{return tickable;}
+        
+        void SetTickable(bool t){tickable=t;}
 
     public:
 
-        const bool IsTickable()const{return tick;}
-
-        void SetTickEnable(bool t){tick=t;}
-
-    public:
-
-        TickObject();
-        virtual ~TickObject();
+        TickObject()=default;
+        virtual ~TickObject()=default;
 
         virtual void Tick(double delta_time)=0;
     };//class TickObject
