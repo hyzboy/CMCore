@@ -8,7 +8,7 @@ namespace hgl
     /**
      * 数据阵列
      */
-    template<typename T> class DataArray
+    template<typename T> class DataArray:Comparator<DataArray<T>>
     {
     protected:
 
@@ -33,6 +33,21 @@ namespace hgl
                 T *     begin           ()const{return items;}                                      ///<取得阵列起始地址指针
                 T *     end             ()const{return items+count;}                                ///<取得阵列结束地址指针
                 T *     last            ()const{return items+(count-1);}                            ///<取得阵列最后一个数据地址指针
+
+        const int       compare         (const DataArray<T> &vil)const override
+        {
+            if(count==vil.count)
+                return hgl_cmp<T>(items,vil.items,count);
+
+            int cmp_count=hgl_min(count,vil.count);
+
+            int result=hgl_cmp<T>(items,vil.items,cmp_count);
+
+            if(result)
+                return(result);
+
+            return count-vil.count;
+        }
 
     public:
 
