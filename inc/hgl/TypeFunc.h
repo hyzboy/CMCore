@@ -2,7 +2,8 @@
 #define HGL_TYPE_FUNC_INCLUDE
 
 #include<hgl/platform/Platform.h>
-#include<math.h>
+#include<cmath>
+#include<cstring>
 namespace hgl
 {
     #define HGL_OFFICAL_WEB                "www.hyzgame.com"
@@ -256,9 +257,9 @@ namespace hgl
     {
         T t;
 
-        memcpy(&t,&x,sizeof(T));
-        memcpy(&x,&y,sizeof(T));
-        memcpy(&y,&t,sizeof(T));
+        std::memcpy(&t,&x,sizeof(T));
+        std::memcpy(&x,&y,sizeof(T));
+        std::memcpy(&y,&t,sizeof(T));
     }
     
     template<typename T> T hgl_clamp(const T &cur,const T &min_value,const T &max_value)
@@ -337,7 +338,7 @@ namespace hgl
     template<typename T>
     inline void hgl_cpy(T &dst,const T &src)
     {
-        memcpy(&dst,&src,sizeof(T));
+        std::memcpy(&dst,&src,sizeof(T));
     }
 
     /**
@@ -360,7 +361,7 @@ namespace hgl
     template<typename T>
     inline void hgl_cpy(T *dst,const T *src,const size_t count)
     {
-        memcpy(dst,src,count*sizeof(T));
+        std::memcpy(dst,src,count*sizeof(T));
     }
 
     /**
@@ -369,7 +370,7 @@ namespace hgl
     template<typename T>
     inline void hgl_move(T *dst,const T *src,const size_t count)
     {
-        memmove(dst,src,count*sizeof(T));
+        std::memmove(dst,src,count*sizeof(T));
     }
 
     /**
@@ -392,7 +393,7 @@ namespace hgl
     {
         if(!data||count<=0)return;
 
-        memset(data,value,count);
+        std::memset(data,value,count);
     }
 
     template<typename T>
@@ -402,7 +403,7 @@ namespace hgl
 
         for(size_t i=0;i<count;i++)
         {
-            memcpy(data,src,sizeof(T));
+            std::memcpy(data,src,sizeof(T));
             ++data;
         }
     }
@@ -413,7 +414,7 @@ namespace hgl
     template<typename T>
     inline void hgl_zero(T &data)
     {
-        memset(&data,0,sizeof(T));
+        std::memset(&data,0,sizeof(T));
     }
 
     /**
@@ -422,7 +423,7 @@ namespace hgl
     template<typename T>
     inline void hgl_zero(T *data,const size_t count)
     {
-        memset(data,0,count*sizeof(T));
+        std::memset(data,0,count*sizeof(T));
     }
 
     /**
@@ -432,7 +433,7 @@ namespace hgl
     inline T *hgl_zero_new()
     {
         T *data=new T;
-        memset(data,0,sizeof(T));
+        std::memset(data,0,sizeof(T));
         return data;
     }
 
@@ -445,7 +446,7 @@ namespace hgl
         if(count<=0)return(nullptr);
 
         T *data=new T[count];
-        memset(data,0,count*sizeof(T));
+        std::memset(data,0,count*sizeof(T));
         return data;
     }
 
@@ -455,7 +456,7 @@ namespace hgl
         if(!src||count<=0)return(nullptr);
 
         T *data=new T[count];
-        memcpy(data,src,count*sizeof(T));
+        std::memcpy(data,src,count*sizeof(T));
         return data;
     }
 
@@ -465,20 +466,20 @@ namespace hgl
         if(!src)return(nullptr);
 
         T *data=new T;
-        memcpy(data,src,sizeof(T));
+        std::memcpy(data,src,sizeof(T));
         return data;
     }
 
     template<typename T>
     inline int hgl_cmp(const T &a,const T &b)
     {
-        return memcmp(&a,&b,sizeof(T));
+        return std::memcmp(&a,&b,sizeof(T));
     }
 
     template<typename T>
     inline int hgl_cmp(const T *a,const T *b,const size_t count)
     {
-        return memcmp(a,b,count*sizeof(T));
+        return std::memcmp(a,b,count*sizeof(T));
     }
 
     template<typename T>
