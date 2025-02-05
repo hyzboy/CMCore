@@ -24,6 +24,14 @@ namespace hgl
     inline bool IsNearlyEqual(const float a,const float b,const float err=HGL_FLOAT_ERROR){return(fabsf(a - b) <= err);}
     inline bool IsNearlyEqual(const double a,const double b,const double err=HGL_DOUBLE_ERROR){return(fabs(a - b) <= err); }
 
+    inline bool IsNearlyEqualArray(const float *a,const float *b,const int count,const float err=HGL_FLOAT_ERROR)
+    {
+        for(int i=0;i<count;i++)
+            if(fabsf(a[i]-b[i])>err)
+                return(false);
+        return(true);
+    }
+
     constexpr const double HGL_E          =2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274;        //欧拉数(自然对数的底数)
     constexpr const double HGL_LOG2E      =1.44269504088896340736;
     constexpr const double HGL_LOG10E     =0.434294481903251827651;
