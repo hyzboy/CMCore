@@ -1,13 +1,62 @@
 #include<hgl/io/LoadString.h>
 #include<hgl/filesystem/FileSystem.h>
+#include<string>
 namespace hgl
 {
+    namespace
+    {
+        template<typename CH> struct MakeString
+        {
+            virtual void set(CH *str,const int count)=0;
+        };
+
+        template<typename CH,typename STR> struct MakeStringImpl:public MakeString<CH>
+        {
+            STR *hgl_string;
+
+            MakeStringImpl(STR *s)
+            {
+                hgl_string=s;
+            }
+
+            void set(CH *str,const int count) override
+            {
+                hgl_string->fromString(str,count);
+            }
+        };
+
+        template<typename CH,typename STR> struct MakeStringSTD:public MakeString<CH>
+        {
+            STR *std_string;
+
+            MakeStringSTD(STR *s)
+            {
+                std_string=s;
+            }
+
+            void set(CH *str,const int count) override
+            {
+                std_string->assign(str,count);
+            }
+        };
+
+        using MakeAString   =MakeStringImpl<char,   AnsiString>;
+        using MakeU8String  =MakeStringImpl<u8char, U8String>;
+        using MakeU16String =MakeStringImpl<u16char,U16String>;
+        using MakeWString   =MakeStringImpl<wchar_t,WString>;
+
+        using MakeStdString     =MakeStringSTD<char,    std::string>;
+        using MakeStdU8String   =MakeStringSTD<u8char,  std::u8string>;
+        using MakeStdU16String  =MakeStringSTD<u16char, std::u16string>;
+        using MakeStdWString    =MakeStringSTD<wchar_t, std::wstring>;
+    }
+
     /**
      * 加载一个原始文本块到U8String
      */
-    int LoadStringFromText(U8String &full_text,const void *source_data,const int size,const CharSet &cs)
+    int LoadStringFromText(MakeString<u8char> *make_string,const void *source_data,const int size,const CharSet &cs)
     {
-        if(!source_data||size<=0)
+        if(!make_string||!source_data||size<=0)
             return 0;
 
         u8char *str=nullptr;
@@ -17,7 +66,7 @@ namespace hgl
 
         if(size>=3&&data[0]==0xEF&&data[1]==0xBB&&data[2]==0xBF)            //utf8
         {
-            full_text.fromString((u8char *)(data+3),size-3);
+            make_string->set((u8char *)(data+3),size-3);
             char_count=size-3;
         }
         else
@@ -75,7 +124,7 @@ namespace hgl
                 char_count=to_utf8(cs,&str,(char *)data,size);
 #endif//
 
-            full_text.fromString(str,char_count);
+            make_string->set(str,char_count);
             delete[] str;
         }
 
@@ -85,9 +134,9 @@ namespace hgl
     /**
      * 加载一个原始文本块到U16String
      */
-    int LoadStringFromText(U16String &full_text,const void *source_data,const int size,const CharSet &cs)
+    int LoadStringFromText(MakeString<u16char> *make_string,const void *source_data,const int size,const CharSet &cs)
     {
-        if(!source_data||size<=0)
+        if(!make_string||!source_data||size<=0)
             return(0);
 
         const uint8 *data=(const uint8 *)source_data;
@@ -130,7 +179,7 @@ namespace hgl
 
         if((uchar *)str>=data&&(uchar *)str<=data+size)                      //如果str的地址在data的范围内
         {
-            full_text.fromString(str,char_count);
+            make_string->set(str,char_count);
         }
         else
         {
@@ -156,41 +205,66 @@ namespace hgl
 #endif//
             }
 
-            full_text.fromString(str,char_count);
-
+            make_string->set(str,char_count);
             delete[] str;
         }
 
         return char_count;
     }
+
+    int LoadStringFromText(U8String &full_text,const void *source_data,const int size,const CharSet &cs)
+    {
+        MakeU8String make_string(&full_text);
+
+        return LoadStringFromText(&make_string,source_data,size,cs);
+    }
+
+    int LoadStringFromText(U16String &full_text,const void *source_data,const int size,const CharSet &cs)
+    {
+        MakeU16String make_string(&full_text);
+
+        return LoadStringFromText(&make_string,source_data,size,cs);
+    }
+
+    template<typename T>
+    int LoadStringFromTextFile(MakeString<T> *make_string,const OSString &filename,const CharSet &cs)
+    {
+        uchar *data;
+
+        const int size=filesystem::LoadFileToMemory(filename,(void **)&data);
+
+        if(size<=0)
+            return size;
+
+        return LoadStringFromText(make_string,data,size,cs);
+    }
     
-    /**
-     * 加载一个原始文本文件到U8String
-     */
     int LoadStringFromTextFile(U8String &str,const OSString &filename,const CharSet &cs)
     {
-        uchar *data;
+        MakeU8String make_string(&str);
 
-        const int size=filesystem::LoadFileToMemory(filename,(void **)&data);
-
-        if(size<=0)
-            return size;
-
-        return LoadStringFromText(str,data,size,cs);
+        return LoadStringFromTextFile<u8char>(&make_string,filename,cs);
     }
 
-    /**
-     * 加载一个原始文本文件到U16String
-     */
     int LoadStringFromTextFile(U16String &str,const OSString &filename,const CharSet &cs)
     {
-        uchar *data;
+        MakeU16String make_string(&str);
 
-        const int size=filesystem::LoadFileToMemory(filename,(void **)&data);
-
-        if(size<=0)
-            return size;
-
-        return LoadStringFromText(str,data,size,cs);
+        return LoadStringFromTextFile<u16char>(&make_string,filename,cs);
     }
+
+    int LoadStringFromTextFile(std::string &str,const OSString &filename,const CharSet &cs)
+    {
+        MakeStdString make_string(&str);
+
+        return LoadStringFromTextFile<u8char>((MakeU8String *)&make_string,filename,cs);
+    }
+
+    int LoadStringFromTextFile(std::wstring &str,const OSString &filename,const CharSet &cs)
+    {
+        MakeStdWString make_string(&str);
+
+        return LoadStringFromTextFile<wchar_t>(&make_string,filename,cs);
+    }
+
 }//namespace hgl
