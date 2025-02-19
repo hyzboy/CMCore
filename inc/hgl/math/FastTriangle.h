@@ -1,5 +1,4 @@
-﻿#ifndef HGL_ALGORITHM_MATH_FAST_TRIANGLE_FUNCTION_INCLUDE
-#define HGL_ALGORITHM_MATH_FAST_TRIANGLE_FUNCTION_INCLUDE
+﻿#pragma once
 
 #include<hgl/math/MathConst.h>
 #include<math.h>
@@ -73,4 +72,3 @@ namespace hgl
         return x*(1.12*x - 0.12);
     }
 }//namespace hgl
-#endif//HGL_ALGORITHM_MATH_FAST_TRIANGLE_FUNCTION_INCLUDE
