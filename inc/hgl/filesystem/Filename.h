@@ -341,13 +341,26 @@ namespace hgl
             return(true);
         }
 
+        /**
+        * 替换文件扩展名
+        * @param old_name 旧文件名
+        * @param new_extname 新扩展名
+        * @param split_char 拆分字符(默认为.)
+        * @param from_right 是否从右边开始查找(默认为true)
+        * @return 新的文件名
+        */
         template<typename T>
-        inline String<T> ReplaceExtName(const String<T> &old_name,const String<T> &new_extname,const T split_char='.')
+        inline String<T> ReplaceExtName(const String<T> &old_name,const String<T> &new_extname,const T split_char='.',const bool from_right=true)
         {
             if(old_name.Length()<=1)
                 return(String<T>::charOf(split_char)+new_extname);
 
-            const int pos=old_name.FindRightChar(split_char);
+            int pos;
+
+            if(from_right)
+                pos=old_name.FindRightChar(split_char);
+            else
+                pos=old_name.FindChar(split_char);
 
             if(pos!=-1)
                 return old_name.SubString(0,pos+1)+new_extname;
