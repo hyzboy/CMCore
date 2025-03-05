@@ -36,7 +36,7 @@ namespace hgl
             WindowEvent():InputEvent(InputEventSource::Window){}
             virtual ~WindowEvent()=default;
 
-            EventProcResult OnEvent(const EventHeader &header,const uint64 data) override
+            virtual EventProcResult OnEvent(const EventHeader &header,const uint64 data) override
             {
                 wed=(WindowEventData *)&data;
 
