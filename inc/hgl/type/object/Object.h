@@ -44,4 +44,3 @@ namespace hgl
         return obj;
     }
 }//namespace hgl
-
