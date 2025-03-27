@@ -38,6 +38,8 @@ using os_char           =wchar_t;
 #define HGL_PLUGIN_FUNC                 extern "C" __declspec(dllexport)                //插件函数定义
 
 #define HGL_DIRECTORY_SEPARATOR_RAWCHAR '\\'                                            //目录分隔符
+#define HGL_DIRECTORY_SEPARATOR_U8CHAR  U8_TEXT('\\')                                   //目录分隔符
+#define HGL_DIRECTORY_SEPARATOR_WCHAR   U16_TEXT('\\')                                  //目录分隔符
 #define HGL_DIRECTORY_SEPARATOR_RAWSTR  "\\"                                            //目录分隔符
 #define HGL_DIRECTORY_SEPARATOR         OS_TEXT('\\')                                   //目录分隔符
 #define HGL_DIRECTORY_SEPARATOR_STR     OS_TEXT("\\")                                   //目录分隔符

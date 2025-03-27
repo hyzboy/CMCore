@@ -60,7 +60,7 @@ namespace hgl
 
             virtual EnumFileConfig *CreateSubConfig(struct EnumFileConfig *up_efc,const FileInfo &fi)
             {
-                const OSString full_sub_folder_name=MergeFilename(up_efc->folder_name,fi.name);
+                const OSString full_sub_folder_name=Combine(up_efc->folder_name,fi.name);
 
                 return(new EnumFileConfig(up_efc,full_sub_folder_name));
             }

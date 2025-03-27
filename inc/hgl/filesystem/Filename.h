@@ -31,7 +31,7 @@ namespace hgl
         * 根据离散的每一级目录名称和最终名称合成完整文件名
         */
         template<typename T>
-        inline const String<T> ComboFilename(T **str_list,int *str_len,const int count,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
+        inline const String<T> Combine(T **str_list,int *str_len,const int count,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
         {
             T *fullname=nullptr;
 
@@ -73,19 +73,143 @@ namespace hgl
             return String<T>::newOf(fullname,p-fullname);
         }
 
+        template<typename T,typename ...ARGS>
+        inline const String<T> Combine(const T spear_char,const T *str1,ARGS...args)
+        {
+            const int count=sizeof...(ARGS);
+
+            if(count<=0)
+                return String<T>(str1);
+
+            int total_len=hgl::strlen(str1);
+            AutoDeleteArray<int> str_len[count+1];
+
+            str_len[0]=total_len;
+
+            {
+                int index=1;
+                for(const T *str:args)
+                {
+                    str_len[index]=hgl::strlen(str);
+                    total+=str_len[index]+1;
+                    ++index;
+                }
+            }
+
+            T *fullname=new T[total];
+            T *p=fullname;
+
+            hgl_cpy<T>(p,str1,str_len[0]);
+            p+=str_len[0];
+
+            {
+                int index=1;
+                for(const T *str:args)
+                {
+                    *p=spear_char;
+                    ++p;
+                    hgl_cpy<T>(p,str,str_len[index])
+                    p+=str_len[index];
+                }
+
+                fullename[total-1]=0;
+            }
+
+            return String<T>::newOf(fullname,total-1);
+        }
+
+        template<typename ...ARGS>
+        inline const String<char> Combine(const char *str1,ARGS...args)
+        {
+            return Combine<char>(HGL_DIRECTORY_SEPARATOR_RAWCHAR,str1,args...);
+        }
+
+    #ifdef HGL_SUPPORT_CHAR8_T
+        template<typename ...ARGS>
+        inline const String<char8_t> Combine(const char8_t *str1,ARGS...args)
+        {
+            return Combine<char8_t>(HGL_DIRECTORY_SEPARATOR_U8CHAR,str1,args...);
+        }
+    #endif//HGL_SUPPORT_CHAR8_T
+
+    #if HGL_OS == HGL_OS_Windows
+        template<typename ...ARGS>
+        inline const String<wchar_t> Combine(const wchar_t *str1,ARGS...args)
+        {
+            return Combine<wchar_t>(HGL_DIRECTORY_SEPARATOR_WCHAR,str1,args...);
+        }
+    #endif//HGL_OS == HGL_OS_Windows
+
+        template<typename T,typename ...ARGS>
+        inline const String<T> Combine(const T spear_char,const String<T> &str1,ARGS...args)
+        {
+            const int count=sizeof...(ARGS);
+
+            if(count<=0)
+                return str1;
+
+            int total_len=str1.Length()
+
+            for(const String<T> &str:args)
+                total+=str.Length()+1;
+
+            T *fullname=new T[total];
+            T *p=fullname;
+
+            hgl_cpy<T>(p,str1.c_str(),str1.Length());
+            p+=str1.Length();
+
+            {
+                int index=1;
+                for(const String<T> &str:args)
+                {
+                    *p=spear_char;
+                    ++p;
+                    hgl_cpy<T>(p,str.c_str(),str.Length())
+                    p+=str1.Length();
+                }
+
+                fullename[total-1]=0;
+            }
+
+            return String<T>::newOf(fullname,total-1);
+        }
+
+        template<typename ...ARGS>
+        inline const String<char> Combine(const String<char> &str1,ARGS...args)
+        {
+            return Combine<char>(HGL_DIRECTORY_SEPARATOR_RAWCHAR,str1,args...);
+        }
+
+    #ifdef HGL_SUPPORT_CHAR8_T
+        template<typename ...ARGS>
+        inline const String<char8_t> Combine(const String<char8_t> &str1,ARGS...args)
+        {
+            return Combine<char8_t>(HGL_DIRECTORY_SEPARATOR_U8CHAR,str1,args...);
+        }
+    #endif//HGL_SUPPORT_CHAR8_T
+
+    #if HGL_OS == HGL_OS_Windows
+        template<typename ...ARGS>
+        inline const String<wchar_t> Combine(const String<wchar_t> &str1,ARGS...args)
+        {
+            return Combine<wchar_t>(HGL_DIRECTORY_SEPARATOR_WCHAR,str1,args...);
+        }
+    #endif//HGL_OS == HGL_OS_Windows
+
         /**
         * 组合文件名.<Br>
         * 根据离散的每一级目录名称和最终名称合成完整文件名
         */
         template<typename T>
-        inline const String<T> ComboFilename(T **str_list,const int count,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
+        inline const String<T> Combine(T **str_list,const int count,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
         {
             int str_len[count];
 
             for(int i=0;i<count;i++)
                 str_len=strlen(str_list[i]);
 
-            return ComboFilename(str_list,str_len,count,spear_char);
+            return Combine(str_list,str_len,count,spear_char);
         }
 
         /**
@@ -93,7 +217,7 @@ namespace hgl
         * 根据离散的每一级目录名称和最终名称合成完整文件名
         */
         template<typename T>
-        inline const String<T> ComboFilename(const StringList<T> &sl,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
+        inline const String<T> Combine(const StringList<T> &sl,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
         {
             const int count=sl.GetCount();
 
@@ -116,7 +240,7 @@ namespace hgl
                 ++index;
             }
 
-            return ComboFilename(str_list.data(),str_len,count,spear_char);
+            return Combine(str_list.data(),str_len,count,spear_char);
         }
 
         /**
@@ -124,7 +248,7 @@ namespace hgl
         * 根据路径名和文件名
         */
         template<typename T>
-        inline String<T> MergeFilename(const String<T> &pathname,const String<T> &filename,const T directory_separator_char,const T *directory_separator_str)
+        inline String<T> Combine(const String<T> &pathname,const String<T> &filename,const T directory_separator_char,const T *directory_separator_str)
         {
             String<T> fullname;
 
@@ -369,16 +493,16 @@ namespace hgl
         }
 
     #ifdef HGL_SUPPORT_CHAR8_T
-        inline AnsiString MergeFilename(const AnsiString &pathname,const AnsiString &filename)          ///<组合路径名与文件名
-        {return MergeFilename<char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_RAWSTR);}
+        inline AnsiString Combine(const AnsiString &pathname,const AnsiString &filename)          ///<组合路径名与文件名
+        {return Combine<char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_RAWSTR);}
     #endif//HGL_SUPPORT_CHAR8_T
 
-        inline U8String MergeFilename(const U8String &pathname,const U8String &filename)          ///<组合路径名与文件名
-        {return MergeFilename<u8char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_U8STR);}
+        inline U8String Combine(const U8String &pathname,const U8String &filename)          ///<组合路径名与文件名
+        {return Combine<u8char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_U8STR);}
 
     #if HGL_OS == HGL_OS_Windows
-        inline WString MergeFilename(const WString &pathname,const WString &filename)          ///<组合路径名与文件名
-        {return MergeFilename<wchar_t>(pathname,filename,L'\\',L"\\");}
+        inline WString Combine(const WString &pathname,const WString &filename)          ///<组合路径名与文件名
+        {return Combine<wchar_t>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_STR);}
     #endif//HGL_OS == HGL_OS_Windows
 
         OSString FixFilename(const OSString &filename);                                                 ///<修正部分文件名问题

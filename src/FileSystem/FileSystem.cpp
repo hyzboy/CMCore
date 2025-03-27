@@ -397,7 +397,7 @@ namespace hgl
 
             for(const OSString *pn:paths)
             {
-                full_filename=MergeFilename(*pn,filename);
+                full_filename=Combine(*pn,filename);
 
                 exist=FileExist(full_filename);
 
@@ -431,7 +431,7 @@ namespace hgl
             {
                 for(const OSString *fn:filenames)
                 {
-                    full_filename=MergeFilename(*pn,*fn);
+                    full_filename=Combine(*pn,*fn);
 
                     exist=FileExist(full_filename);
 
