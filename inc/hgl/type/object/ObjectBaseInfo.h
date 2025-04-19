@@ -10,23 +10,27 @@ namespace hgl
      */
     struct ObjectBaseInfo
     {
-        size_t hash_code;               ///<对象数据类型的hash值
+        const std::type_info *info;            ///<对象数据类型的type_info指针
         size_t unique_id;               ///<唯一序列号
 
         SourceCodeLocation scl;
     };
 
-    struct ObjectTotalInfo
+    struct ObjectTypeInfo
     {
-        size_t hash_code;
-
-        std::type_info *info;
+        const std::type_info *info;
 
         size_t count;
     };
 
-    void RegistryObjectHash(const size_t &hash_code,const std::type_info *);
+    void RegistryObjectTypeInfo(const size_t &hash_code,const std::type_info *);
 
-    const ObjectTotalInfo *GetObjectTotalInfo(const size_t &hash_code);
+    const ObjectTypeInfo *GetObjectTypeInfoByHash(const size_t &hash_code);
+
+    template<typename T>
+    inline const ObjectTypeInfo *GetObjectTypeInfo()
+    {
+        return GetObjectTypeInfoByHash(typeid(T).hash_code());
+    }
 }//namespace hgl
 
