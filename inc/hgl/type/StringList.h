@@ -276,7 +276,7 @@ namespace hgl
         void Insert(int index,const StringClass &str)                                               ///<在指定位置插入一个字符串
         {
             if(index<Items.GetCount())
-                Items.List<StringClass *>::Insert(index,new StringClass(str));
+                Items.ArrayList<StringClass *>::Insert(index,new StringClass(str));
         }
 
         /**

@@ -19,7 +19,7 @@ namespace hgl
     {
         using GS=GradientStop<P,T>;
 
-        List<GS> stop_list;
+        ArrayList<GS> stop_list;
 
         bool dirty;
 

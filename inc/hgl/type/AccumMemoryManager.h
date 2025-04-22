@@ -21,7 +21,7 @@ namespace hgl
 
     private:
 
-        List<Block>         block_list;                     ///<数据块列表
+        ArrayList<Block>         block_list;                     ///<数据块列表
         DataArray<char>     data_array;                     ///<数据
 
     public:

@@ -18,7 +18,7 @@ namespace hgl
         using ThisClass=MapTemplate<K,V,KVData>;
 
         using KVDataPool=ObjectPool<KVData>;
-        using KVDataList=List<KVData *>;
+        using KVDataList=ArrayList<KVData *>;
 
         KVDataPool data_pool;
         KVDataList data_list;
@@ -134,8 +134,8 @@ namespace hgl
                 void    EnumAllValue(void (*enum_func)(V &));                                       ///<枚举所有数值
                 void    EnumValue(bool (*enum_func)(V &));                                          ///<枚举所有数值(返回true/false表示是否继续)
 
-                void    WithList(KVDataList &with_list,const List<K> &in_list);                     ///<统计出所有在in_list中出现的数据，产生的结果写入with_list
-                void    WithoutList(KVDataList &without_list,const List<K> &in_list);               ///<统计出所有没有出现在in_list中的数据，产生的结果写入without_list
+                void    WithList(KVDataList &with_list,const ArrayList<K> &in_list);                     ///<统计出所有在in_list中出现的数据，产生的结果写入with_list
+                void    WithoutList(KVDataList &without_list,const ArrayList<K> &in_list);               ///<统计出所有没有出现在in_list中的数据，产生的结果写入without_list
     };//class MapTemplate
 
     template<typename K,typename V> class Map:public MapTemplate<K,V,KeyValue<K,V> >

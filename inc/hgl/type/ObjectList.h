@@ -8,7 +8,7 @@ namespace hgl
     /**
      * 对象列表处理类与标准列表处理类的区别在于它对数据清除时会调用delete
      */
-    template<typename T> class ObjectListTemplate:public List<T *>                                  ///对象列表处理类
+    template<typename T> class ObjectListTemplate:public ArrayList<T *>                                  ///对象列表处理类
     {
     protected:
 
@@ -20,7 +20,7 @@ namespace hgl
 
     public: //方法
 
-        ObjectListTemplate(ObjectLifecycleManager<T> *_dlm):List<T *>(){dlm=_dlm;}
+        ObjectListTemplate(ObjectLifecycleManager<T> *_dlm):ArrayList<T *>(){dlm=_dlm;}
         virtual ~ObjectListTemplate(){Free();}
 
     public:
@@ -30,39 +30,39 @@ namespace hgl
                 */
                 bool Insert(int index,const ItemPointer &obj) override
                 {
-                    return List<T *>::Insert(index,obj);
+                    return ArrayList<T *>::Insert(index,obj);
                 }
 
         virtual void    Free() override                                                             ///<清除所有数据
         {
             Clear();
-            List<T *>::Free();
+            ArrayList<T *>::Free();
         }
 
         virtual void    Clear() override                                                            ///<清除所有数据，但不清空缓冲区
         {
             dlm->Clear(this->data_array.GetData(),this->data_array.GetCount());
 
-            List<T *>::Clear();
+            ArrayList<T *>::Clear();
         }
 
         virtual bool    Contains(const ItemPointer &flag)const override                              ///<确认数据项是否存在
         {
-            return List<T *>::Find((T *)flag)!=-1;
+            return ArrayList<T *>::Find((T *)flag)!=-1;
         }
 
-        virtual bool    Unlink(int index){return List<T *>::Delete(index);}                         ///<将指定索引处的数据与列表断开
-        virtual bool    UnlinkMove(int index){return List<T *>::DeleteShift(index);}                 ///<将指定索引处的数据与列表断开,将前移后面的数据
-        virtual bool    Unlink(int start,int number){return List<T *>::Delete(start,number);}       ///<将指定索引处的数据与列表断开
-        virtual bool    UnlinkByValue(ItemPointer &ip){return List<T *>::DeleteByValue(ip);}        ///<将一个指定数据与列表断开
-        virtual void    UnlinkByValue(ItemPointer *ip,int n){List<T *>::DeleteByValue(ip,n);}       ///<将一批指定数据与列表断开
-        virtual void    UnlinkAll(){List<T *>::Clear();}                                            ///<断开所有数据
+        virtual bool    Unlink(int index){return ArrayList<T *>::Delete(index);}                         ///<将指定索引处的数据与列表断开
+        virtual bool    UnlinkMove(int index){return ArrayList<T *>::DeleteShift(index);}                 ///<将指定索引处的数据与列表断开,将前移后面的数据
+        virtual bool    Unlink(int start,int number){return ArrayList<T *>::Delete(start,number);}       ///<将指定索引处的数据与列表断开
+        virtual bool    UnlinkByValue(ItemPointer &ip){return ArrayList<T *>::DeleteByValue(ip);}        ///<将一个指定数据与列表断开
+        virtual void    UnlinkByValue(ItemPointer *ip,int n){ArrayList<T *>::DeleteByValue(ip,n);}       ///<将一批指定数据与列表断开
+        virtual void    UnlinkAll(){ArrayList<T *>::Clear();}                                            ///<断开所有数据
 
     private:
 
         bool    _Delete(int index,int num)
         {
-            if(index<0||num<=0||index+num>=List<T *>::GetCount())
+            if(index<0||num<=0||index+num>=ArrayList<T *>::GetCount())
                 return(false);
 
             dlm->Clear(this->data_array.GetData()+index,num);
@@ -85,7 +85,7 @@ namespace hgl
             if(!_Delete(index,num))
                 return(false);
 
-            return List<T *>::Delete(index,num);
+            return ArrayList<T *>::Delete(index,num);
         }
 
         /**
@@ -101,7 +101,7 @@ namespace hgl
             if(!_Delete(index,num))
                 return(false);
 
-            return List<T *>::DeleteShift(index,num);
+            return ArrayList<T *>::DeleteShift(index,num);
         }
 
         virtual bool    DeleteByValue(ItemPointer &obj)  override                              ///<删除指定的一个数据
@@ -110,7 +110,7 @@ namespace hgl
 
             delete obj;
 
-            return List<T *>::DeleteByValue(obj);
+            return ArrayList<T *>::DeleteByValue(obj);
         }
 
         virtual int     DeleteByValue(ItemPointer *obj_list,int num) override                  ///<删除指定的一批数据
@@ -119,7 +119,7 @@ namespace hgl
 
             dlm->Clear(obj_list,num);
 
-            return List<T *>::DeleteByValue(obj_list,num);
+            return ArrayList<T *>::DeleteByValue(obj_list,num);
         }
 
         virtual T *operator[](int n)const                                                           ///<操作符重载取得指定索引处的数据

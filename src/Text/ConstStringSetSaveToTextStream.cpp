@@ -17,7 +17,7 @@ namespace hgl
             SC id_str[16];
             const SC gap_str[4]={SC(' '),SC(':'),SC(' '),0};
 
-            const List<ConstStringView<SC>> &csv_list=css->GetConstStringList();
+            const ArrayList<ConstStringView<SC>> &csv_list=css->GetConstStringList();
 
             for(auto &csv:csv_list)
             {

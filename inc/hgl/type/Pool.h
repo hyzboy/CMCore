@@ -211,6 +211,6 @@ namespace hgl
         virtual ~PoolWithDLM()=default;
     };//template<typename T,typename AT,typename IT,typename DLM> class PoolWithDLM:public PoolTemplate<T,AT,IT>
 
-    template<typename T> using Pool         =PoolWithDLM<T,   List<T>,    Queue<T>,       DataLifecycleManager<T>>;                  ///<数据池模板
-    template<typename T> using ObjectPool   =PoolWithDLM<T *, List<T *>,  ObjectQueue<T>, ObjectLifecycleManager<T>>;                ///<对象池
+    template<typename T> using Pool         =PoolWithDLM<T,   ArrayList<T>,    Queue<T>,       DataLifecycleManager<T>>;                  ///<数据池模板
+    template<typename T> using ObjectPool   =PoolWithDLM<T *, ArrayList<T *>,  ObjectQueue<T>, ObjectLifecycleManager<T>>;                ///<对象池
 }//namespace hgl

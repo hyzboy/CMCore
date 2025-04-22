@@ -77,7 +77,7 @@ namespace hgl
             }
         };
 
-        using VolumeInfoList=List<VolumeInfo>;
+        using VolumeInfoList=ArrayList<VolumeInfo>;
 
         /**
          * 枚举当前计算机所有卷

@@ -15,7 +15,7 @@ namespace hgl
     {
     protected:
 
-        List<T *> data_list[2];
+        ArrayList<T *> data_list[2];
 
         int post_index,recv_index;
         int recv_offset;

@@ -111,7 +111,7 @@ namespace hgl
 
         bool GetFileInfo(const os_char *filename,struct FileInfo &);    ///<取得文件信息
 
-        int GetFileInfoList(List<FileInfo> &, const OSString &folder_name, bool proc_folder, bool proc_file, bool sub_folder);
+        int GetFileInfoList(ArrayList<FileInfo> &, const OSString &folder_name, bool proc_folder, bool proc_file, bool sub_folder);
     }//namespace filesystem
 }//namespace hgl
 #endif//HGL_FILE_SYSTEM_INCLUDE

@@ -54,7 +54,7 @@ namespace hgl
         {
         public:
 
-            using WorkList=List<W *>;
+            using WorkList=ArrayList<W *>;
 
         private:
 
@@ -214,7 +214,7 @@ namespace hgl
         {
         protected:
 
-            using WorkList=List<W *>;
+            using WorkList=ArrayList<W *>;
 
             WorkProc<W> *work_proc;
 

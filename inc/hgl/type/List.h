@@ -7,9 +7,11 @@
 namespace hgl
 {
     /**
-    * List类用于保存数据列表。可以在列表中添加、删除、查找、访问和排序数据。
+    * ArrayList类用于保存数据列表。可以在列表中添加、删除、查找、访问和排序数据。<br>
+    * ArrayList使用真实的数组保存数据，没有独立的索引，所以仅适用于不会变动的小数据的保存与访问。<br>
+    * 如果使用大块的数据，仅需要频繁的增删排序，建议使用IndexedList.
     */
-    template<typename T> class List                                                                 ///列表处理类
+    template<typename T> class ArrayList                                                            ///阵列列表处理类
     {
     protected:
 
@@ -41,12 +43,12 @@ namespace hgl
 
     public: //方法
 
-        List()=default;                                                                             ///<本类构造函数
-        List(const T *lt,const int n){Add(lt,n);}                                                   ///<本类构造函数
-        List(const List<T> &lt){operator=(lt);}                                                     ///<本类构造函数
-        List(const std::initializer_list<T> &lt){operator=(lt);}
+        ArrayList()=default;                                                                             ///<本类构造函数
+        ArrayList(const T *lt,const int n){Add(lt,n);}                                                   ///<本类构造函数
+        ArrayList(const ArrayList<T> &lt){operator=(lt);}                                                     ///<本类构造函数
+        ArrayList(const std::initializer_list<T> &lt){operator=(lt);}
 
-        virtual ~List(){Free();}                                                                    ///<本类析构函数
+        virtual ~ArrayList(){Free();}                                                                    ///<本类析构函数
 
         /**
          * 向列表中添加一个空数据
@@ -114,7 +116,7 @@ namespace hgl
             return(ec);
         }
 
-                int  Add(const List<T> &l){return Add(l.items,l.count);}                            ///<增加一批数据
+                int  Add(const ArrayList<T> &l){return Add(l.items,l.count);}                            ///<增加一批数据
 
         virtual void Free(){data_array.Free();}                                                     ///<清除所有数据，并释放内存
         virtual void Clear(){data_array.Clear();}                                                   ///<清除所有数据，但不清空缓冲区
@@ -201,9 +203,9 @@ namespace hgl
 
         virtual bool GetFirst   (T &data)const{return data_array.ReadAt(data,0);}                   ///<取第一个数据
         virtual bool GetLast    (T &data)const{return data_array.ReadAt(data,GetCount()-1);}        ///<取最后一个数据
-    };//template <typename T> class List
+    };//template <typename T> class ArrayList
 
-    template<typename T> T *GetObjectFromList(const List<T *> &list,const int index)
+    template<typename T> T *GetObjectFromList(const ArrayList<T *> &list,const int index)
     {
         T *obj;
 
@@ -213,5 +215,5 @@ namespace hgl
         return(nullptr);
     }
 
-    using CharPointerList=hgl::List<const char *>;
+    using CharPointerList=hgl::ArrayList<const char *>;
 }//namespace hgl

@@ -72,7 +72,7 @@ namespace hgl
 
         SortedSet<ConstStringView<SC>> str_set;                ///<字符串集合
 
-        List<ConstStringView<SC>> str_list;                     ///<字符串列表
+        ArrayList<ConstStringView<SC>> str_list;                     ///<字符串列表
         Map<int,size_t> str_offset_map;                         ///<字符串映射
 
     public:
@@ -83,7 +83,7 @@ namespace hgl
 
         const DataArray<SC> &GetStringData()const{return str_data;}                                     ///<取得字符串数据
 
-        const List<ConstStringView<SC>> &GetConstStringList()const{return str_list;}                    ///<取得字符串列表
+        const ArrayList<ConstStringView<SC>> &GetConstStringList()const{return str_list;}                    ///<取得字符串列表
 
     public:
 

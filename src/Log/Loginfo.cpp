@@ -9,7 +9,7 @@ namespace hgl
 {
     namespace logger
     {
-        RWLockObject<List<Logger *>> log_list;        //记录器列表
+        RWLockObject<ArrayList<Logger *>> log_list;        //记录器列表
 
         bool AddLogger(Logger *log)
         {

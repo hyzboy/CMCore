@@ -605,7 +605,7 @@ namespace hgl
      * 统计出所有在in_list中出现的数据，产生的结果写入with_list
      */
     template<typename K,typename V,typename KVData>
-    void MapTemplate<K,V,KVData>::WithList(MapTemplate<K,V,KVData>::KVDataList &with_list,const List<K> &in_list)
+    void MapTemplate<K,V,KVData>::WithList(MapTemplate<K,V,KVData>::KVDataList &with_list,const ArrayList<K> &in_list)
     {
         with_list.Clear();
         const int count=this->GetCount();
@@ -629,7 +629,7 @@ namespace hgl
      * 统计出所有没有出现在in_list中的数据，产生的结果写入without_list
      */
     template<typename K,typename V,typename KVData>
-    void MapTemplate<K,V,KVData>::WithoutList(MapTemplate<K,V,KVData>::KVDataList &without_list,const List<K> &in_list)
+    void MapTemplate<K,V,KVData>::WithoutList(MapTemplate<K,V,KVData>::KVDataList &without_list,const ArrayList<K> &in_list)
     {
         without_list.Clear();
         const int count=this->GetCount();

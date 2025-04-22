@@ -64,7 +64,7 @@ namespace hgl
         operator S<T> &(){return proc_list;}
     };//template<typename T> class SwapColl
 
-    template<typename T> using SwapList=SwapColl<T,List>;       ///<安全交换列表
+    template<typename T> using SwapList=SwapColl<T,ArrayList>;       ///<安全交换列表
     template<typename T> using SwapSet=SwapColl<T,Set>;         ///<安全交换集合
 
     /**
@@ -150,7 +150,7 @@ namespace hgl
         operator S<T> &(){return proc_list;}
     };//template<typename T> class SemSwapColl
 
-    template<typename T> using SemSwapList=SemSwapColl<T,List>;     ///<安全信号交换列表
+    template<typename T> using SemSwapList=SemSwapColl<T,ArrayList>;     ///<安全信号交换列表
     template<typename T> using SemSwapSet=SemSwapColl<T,Set>;       ///<安全信号交换集合
 }//namespace hgl
 #endif//HGL_THREAD_SWAP_LIST_INCLUDE
