@@ -1,7 +1,7 @@
 ﻿#ifndef HGL_TYPE_LRU_CACHE_INCLUDE
 #define HGL_TYPE_LRU_CACHE_INCLUDE
 
-#include<hgl/type/List.h>
+#include<hgl/type/ArrayList.h>
 namespace hgl
 {
     template<typename F,typename T> struct LRUCacheItem

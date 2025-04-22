@@ -1,7 +1,7 @@
 ﻿#include<hgl/plugin/PlugIn.h>
 #include<hgl/log/Logger.h>
 #include<hgl/type/DateTime.h>
-#include<hgl/type/List.h>
+#include<hgl/type/ArrayList.h>
 #include<hgl/thread/RWLock.h>
 #include<hgl/filesystem/FileSystem.h>
 

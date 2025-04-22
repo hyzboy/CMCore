@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/KeyValue.h>
-#include<hgl/type/List.h>
+#include<hgl/type/ArrayList.h>
 #include<hgl/type/Pair.h>
 #include<hgl/type/Pool.h>
 #include<hgl/thread/RWLock.h>

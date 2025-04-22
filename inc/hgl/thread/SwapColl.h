@@ -3,7 +3,7 @@
 
 #include<hgl/thread/ThreadMutex.h>
 #include<hgl/thread/Semaphore.h>
-#include<hgl/type/List.h>
+#include<hgl/type/ArrayList.h>
 #include<hgl/type/Set.h>
 namespace hgl
 {

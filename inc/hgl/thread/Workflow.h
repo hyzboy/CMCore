@@ -5,7 +5,7 @@
 #include<hgl/thread/ThreadMutex.h>
 #include<hgl/thread/SwapData.h>
 #include<hgl/thread/DataPost.h>
-#include<hgl/type/List.h>
+#include<hgl/type/ArrayList.h>
 namespace hgl
 {
     /**

@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/DataType.h>
-#include<hgl/type/List.h>
+#include<hgl/type/ArrayList.h>
 #include<hgl/util/sort/Sort.h>
 
 namespace hgl
