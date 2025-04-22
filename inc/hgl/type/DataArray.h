@@ -49,6 +49,14 @@ namespace hgl
             return count-vil.count;
         }
 
+        void SetData(T *data,int64 data_count)
+        {
+            Free();
+
+            items=data;
+            alloc_count=count=data_count;            
+        }
+
     public:
 
         /**
@@ -172,6 +180,15 @@ namespace hgl
         const T &operator[](int64 n)const
         {
             return items[n];
+        }
+
+        void Append(const T &obj)
+        {
+            if(count>=alloc_count)
+                Alloc(count+1);
+
+            items[count]=obj;
+            ++count;
         }
 
         T *At(int64 n)const
