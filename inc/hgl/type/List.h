@@ -123,7 +123,7 @@ namespace hgl
         virtual bool Contains(const T &flag)const{return Find(flag)>=0;}                            ///<确认数据项是否存在
 
         virtual bool Delete(int start,int num=1){return data_array.Delete(start,num);}              ///<删除指定索引的数据
-        virtual bool DeleteMove(int start,int num=1){return data_array.DeleteMove(start,num);}      ///<删除指定索引的数据,将后面紧邻的数据前移
+        virtual bool DeleteShift(int start,int num=1){return data_array.DeleteShift(start,num);}      ///<删除指定索引的数据,将后面紧邻的数据前移
 
         /**
         * 删除列表中的指定项

@@ -331,7 +331,7 @@ namespace hgl
         data=dp->value;
 
         data_pool.Release(dp);
-        data_list.DeleteMove(index);
+        data_list.DeleteShift(index);
 
         return(true);
     }
@@ -395,7 +395,7 @@ namespace hgl
          ||index>=data_list.GetCount())return(false);
 
         data_pool.Release(GetObjectFromList(data_list,index));
-        data_list.DeleteMove(index);
+        data_list.DeleteShift(index);
 
         return(true);
     }

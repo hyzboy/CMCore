@@ -52,7 +52,7 @@ namespace hgl
         }
 
         virtual bool    Unlink(int index){return List<T *>::Delete(index);}                         ///<将指定索引处的数据与列表断开
-        virtual bool    UnlinkMove(int index){return List<T *>::DeleteMove(index);}                 ///<将指定索引处的数据与列表断开,将前移后面的数据
+        virtual bool    UnlinkMove(int index){return List<T *>::DeleteShift(index);}                 ///<将指定索引处的数据与列表断开,将前移后面的数据
         virtual bool    Unlink(int start,int number){return List<T *>::Delete(start,number);}       ///<将指定索引处的数据与列表断开
         virtual bool    UnlinkByValue(ItemPointer &ip){return List<T *>::DeleteByValue(ip);}        ///<将一个指定数据与列表断开
         virtual void    UnlinkByValue(ItemPointer *ip,int n){List<T *>::DeleteByValue(ip,n);}       ///<将一批指定数据与列表断开
@@ -96,12 +96,12 @@ namespace hgl
         * @param num 要删除的对象数量
         * @return 是否成功
         */
-        virtual bool    DeleteMove(int index,int num=1) override
+        virtual bool    DeleteShift(int index,int num=1) override
         {
             if(!_Delete(index,num))
                 return(false);
 
-            return List<T *>::DeleteMove(index,num);
+            return List<T *>::DeleteShift(index,num);
         }
 
         virtual bool    DeleteByValue(ItemPointer &obj)  override                              ///<删除指定的一个数据

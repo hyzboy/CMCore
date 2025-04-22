@@ -623,7 +623,7 @@ namespace hgl
             if(pos<0)
                 return;
 
-            transform_list.DeleteMove(pos);     //使用DeleteMove是为了保持顺序(Delete可能会拿最后一个数据移到前面，而本类需要保持顺序)
+            transform_list.DeleteShift(pos);     //使用DeleteShift是为了保持顺序(Delete可能会拿最后一个数据移到前面，而本类需要保持顺序)
 
             UpdateVersion();
         }

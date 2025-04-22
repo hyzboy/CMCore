@@ -291,7 +291,7 @@ namespace hgl
         * @param start 要删除的数据项的索引值
         * @return 是否成功
         */
-        bool DeleteMove(int64 start,int64 delete_count=1)
+        bool DeleteShift(int64 start,int64 delete_count=1)
         {
             if(!items)return(false);
             if(start>=count)return(false);

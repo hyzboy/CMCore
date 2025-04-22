@@ -116,7 +116,7 @@ namespace hgl
             }
         }
 
-        bool    DeleteAt        (const int64 pos){return data_list.DeleteMove(pos,1);}      ///<删除一个数据,使用序号
+        bool    DeleteAt        (const int64 pos){return data_list.DeleteShift(pos,1);}      ///<删除一个数据,使用序号
 
         bool    Delete          (const T &data)                                             ///<删除一个数据
         {
