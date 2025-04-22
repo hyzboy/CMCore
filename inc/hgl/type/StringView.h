@@ -11,7 +11,7 @@ namespace hgl
     template<typename T> class StringView:public Comparator<StringView<T>>
     {
         T *str_data;
-        int str_length;
+        int32 str_length;
 
     public:
 
@@ -49,8 +49,8 @@ namespace hgl
         operator const T *()const{return str_data;}
 
         const T *c_str()const{return str_data;}
-        const int length()const{return str_length;}
-        const int GetLength()const{return str_length;}
+        const int32 length()const{return str_length;}
+        const int32 GetLength()const{return str_length;}
 
         const bool IsEmpty()const{return str_data&&str_length>0;}
         
