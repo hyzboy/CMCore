@@ -278,6 +278,41 @@ namespace hgl
             return !(index<0||index>=data_index.GetCount());
         }
 
+        virtual void Exchange(int32 a,int32 b)
+        {
+            if(!IsValidIndex(a))return;
+            if(!IsValidIndex(b))return;
+
+            data_index.Exchange(a,b);
+        }
+
+        virtual bool Insert(int32 pos,const T &value)
+        {
+            if(pos<0)return(false);
+            if(pos>data_index.GetCount())return(false);
+            if(pos==data_index.GetCount())
+            {
+                return Add(value)>=0;
+            }
+
+            int32 index;
+
+            if(free_index.IsEmpty())
+            {
+                index=data_array.GetCount();
+                data_array.AddCount(1);
+                data_index.Insert(pos,index);
+            }
+            else
+            {
+                free_index.Pop(index);
+                data_index.Insert(pos,index);
+            }
+
+            hgl_cpy<T>(data_array[index],value);
+            return true;
+        }
+
         /**
         * 删除数据
         * @param start 起始删除的数据索引
