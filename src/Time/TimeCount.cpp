@@ -35,9 +35,9 @@ namespace hgl
     * 取得本地当前时间(双精度)
     * @return 当前时间(单位：秒)
     */
-    double GetLocalDoubleTime()
+    double GetLocaPreciseTime()
     {
-        return GetDoubleTime()+GetTimeZone();
+        return GetPreciseTime()+GetTimeZone();
     }
 
     uint64 GetMilliStartTime()
@@ -50,7 +50,7 @@ namespace hgl
         return program_start_time;
     }
 
-    double GetDoubleStartTime()
+    double GetPreciseStartTime()
     {
         return double(program_start_time)/HGL_MICRO_SEC_PER_SEC;
     }

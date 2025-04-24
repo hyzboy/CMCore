@@ -50,7 +50,7 @@ namespace hgl
             return ((week*HGL_HOUR_ONE_DAY+hours)*HGL_TIME_ONE_HOUR)+(minutes*HGL_TIME_ONE_MINUTE)+seconds;
         }
 
-//      int GetPastWeekSeconds()const{return int(GetDoubleTime()-GetWeekSeconds());}                                    ///<过去那些年到这周一0点过了多少秒
+//      int GetPastWeekSeconds()const{return int(GetPreciseTime()-GetWeekSeconds());}                                    ///<过去那些年到这周一0点过了多少秒
 
         void SetGMT(int go){gmt_off=go;}
         void SetHour(int);
