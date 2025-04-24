@@ -91,7 +91,7 @@ namespace hgl
 
             data_array.AddCount(n);
 
-            hgl_set(data_array.data()+ec,data,n);
+            hgl_set(data_array.data()+ec,&data,n);
 
             return(ec);
         }

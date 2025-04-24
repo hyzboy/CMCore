@@ -2,6 +2,7 @@
 
 #include<hgl/type/Stack.h>
 #include<initializer_list>
+#include<algorithm>
 
 namespace hgl
 {
@@ -34,6 +35,7 @@ namespace hgl
 
             data_array.Alloc(count);
             data_index.Alloc(count);
+            free_index.PreAlloc(count);
 
             return(true);
         }
@@ -49,9 +51,6 @@ namespace hgl
 
         public:
 
-            using iterator_category = std::forward_iterator_tag;
-            using value_type = T;
-            using difference_type = std::ptrdiff_t;
             using pointer = T*;
             using reference = T&;
 
@@ -235,9 +234,9 @@ namespace hgl
         * @param count 删除个数
         * @return 删除成功的数据个数
         */
-        virtual int32 DeleteAt(int32 start,int32 count=1)
+        virtual int32 Delete(int32 start,int32 count=1)
         {
-            if(!IsValidIndex(start)return(-1);
+            if(!IsValidIndex(start))return(-1);
             if(count<=0)return(count);
 
             if(start+count>data_index.GetCount())
@@ -245,7 +244,7 @@ namespace hgl
 
             if(count<=0)return(0);
 
-            for(int32 i=start;i<data_index.GetCount();i++)
+            for(int32 i=start;i<start+count;i++)
                 free_index.Push(data_index[i]);
 
             data_index.Delete(start,count);
@@ -282,10 +281,7 @@ namespace hgl
 
             hgl_cpy(sorted_index.GetData(),data_index.GetData(),count);
 
-            std::sort(sorted_index.GetData(),count,sizeof(int32),[](const void *a,const void *b)
-            {
-                return *(int32 *) a-*(int32 *) b;
-            });
+            std::sort(sorted_index.begin(),sorted_index.end(),std::less<int>());
 
             //查找空的位置
             {
@@ -334,7 +330,7 @@ namespace hgl
                 {
                     overflow_index.Pop(index);
 
-                    hgl_cpy<T>(data_array.At(new_location),data_array.At(data_index[index]));
+                    hgl_cpy<T>(data_array[new_location],data_array[data_index[index]]);
 
                     data_index[index]=new_location;
                 }
