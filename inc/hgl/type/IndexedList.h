@@ -40,6 +40,23 @@ namespace hgl
             return(true);
         }
 
+        const DataArray<T> &GetRawData()const{return data_array;}
+        const DataArray<I> &GetRawIndex()const{return data_index;}
+
+        T &operator[](int32 index)
+        {
+            if ( index<0||index>=data_index.GetCount() )
+                return data_array[0];
+            return data_array[data_index[index]];
+        }
+
+        const T &operator[](int32 index)const
+        {
+            if ( index<0||index>=data_index.GetCount() )
+                return data_array[0];
+            return data_array[data_index[index]];
+        }
+
     public: // 迭代器
 
         class Iterator
@@ -56,11 +73,11 @@ namespace hgl
 
         public:
 
-            Iterator(const IndexedList<T, I>* lst, int32 idx):list(lst),current_index(idx){}
+            Iterator(IndexedList<T, I>* lst, int32 idx):list(lst),current_index(idx){}
 
-            T& operator*() const
+            T& operator*()
             {
-                return list->data_array[list->data_index[current_index]];
+                return (*list)[current_index];
             }
 
             Iterator &operator++(){current_index++;return *this;}
@@ -80,20 +97,53 @@ namespace hgl
             }
         };//class Iterator
 
-        Iterator begin() const
-        {
-            return Iterator(this,0);
-        }
+        Iterator begin  (){return Iterator(this,0);}
+        Iterator end    (){return Iterator(this,data_index.GetCount());}
+        Iterator last   (){return Iterator(this,data_index.GetCount()-1);}
+        
+    public: // 只读迭代器
 
-        Iterator end() const
+        class ConstIterator
         {
-            return Iterator(this,data_index.GetCount());
-        }
+        private:
 
-        Iterator last() const
-        {
-            return Iterator(this,data_index.GetCount()-1);
-        }
+            const IndexedList<T,I> *list;
+            int32 current_index;
+
+        public:
+
+            using pointer = T*;
+            using reference = T&;
+
+        public:
+
+            ConstIterator(const IndexedList<T, I>* lst, int32 idx):list(lst),current_index(idx){}
+
+            const T& operator*()const
+            {
+                return (*list)[current_index];
+            }
+
+            ConstIterator &operator++(){current_index++;return *this;}
+            ConstIterator operator++(int){Iterator tmp=*this;++(*this);return tmp;}
+
+            ConstIterator &operator--(){current_index--;return *this;}
+            ConstIterator operator--(int){Iterator tmp=*this;--(*this);return tmp;}
+
+            bool operator==(const ConstIterator &other) const
+            {
+                return current_index==other.current_index;
+            }
+
+            bool operator!=(const ConstIterator &other) const
+            {
+                return current_index!=other.current_index;
+            }
+        };//class ConstIterator
+
+        ConstIterator begin ()const{return ConstIterator(this,0);}
+        ConstIterator end   ()const{return ConstIterator(this,data_index.GetCount());}
+        ConstIterator last  ()const{return ConstIterator(this,data_index.GetCount()-1);}
 
     public:
 
