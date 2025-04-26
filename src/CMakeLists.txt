@@ -42,6 +42,12 @@ SET(TYPE_DATA_CHAIN_SOURCE  ${TYPE_INCLUDE_PATH}/DataChain.h
 
 SOURCE_GROUP("DataType\\DataChain" FILES ${TYPE_DATA_CHAIN_SOURCE})
 
+SET(TREE_NODE_FILES ${TYPE_INCLUDE_PATH}/TreeNode.h
+                    Type/TreeNode.cpp
+                    Type/TreeNodeManager.cpp)
+
+SOURCE_GROUP("DataType\\Tree" FILES ${TREE_NODE_FILES})
+
 SET(ACTIVE_MANAGER_FILES    ${TYPE_INCLUDE_PATH}/ActiveIDManager.h
                             ${TYPE_INCLUDE_PATH}/ActiveMemoryBlockManager.h
                             ${TYPE_INCLUDE_PATH}/ActiveDataManager.h
@@ -51,6 +57,7 @@ SET(ACTIVE_MANAGER_FILES    ${TYPE_INCLUDE_PATH}/ActiveIDManager.h
 file(GLOB TYPE_TEMPLATE_HEADER ${TYPE_INCLUDE_PATH}/*.h)
 
 SOURCE_GROUP("DataType\\ActiveManager" FILES ${ACTIVE_MANAGER_FILES})
+
 
 SET(SYSTEM_INFO_SOURCE  ${CORE_PLATFORM_INCLUDE_PATH}/SystemInfo.h
                         SystemInfo.cpp)
@@ -260,6 +267,8 @@ add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
                         ${BASE_OBJECT_SOURCE_FILES}
 
                         ${BITS_ARRAY_FILES}
+
+                        ${TREE_NODE_FILES}
 
                         ${COLOR_HEADER_FILES}
                         ${COLOR_SOURCE_FILES}
