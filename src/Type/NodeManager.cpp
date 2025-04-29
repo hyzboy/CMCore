@@ -2,7 +2,7 @@
 
 namespace hgl
 {
-    void TreeBaseNodeManager::OnNodeDirectDestory(BaseNode *node)                       ///<直接销毁，这种情况只在对象被直接delete的情况下，一般不需要
+    void NodeManager::OnNodeDirectDestory(Node *node)                       ///<直接销毁，这种情况只在对象被直接delete的情况下，一般不需要
     {
         if(!node)return;
 
@@ -16,7 +16,7 @@ namespace hgl
             node_map.erase(node->GetUniqueID());
     }
 
-    void TreeBaseNodeManager::ForceClear()
+    void NodeManager::ForceClear()
     {
         if(!node_map.empty())
         {
@@ -41,11 +41,11 @@ namespace hgl
         }
     }
 
-    BaseNode *TreeBaseNodeManager::CreateNode()
+    Node *NodeManager::CreateNode()
     {
         const size_t node_id=AcquireNodeID();
 
-        BaseNode *node=OnCreateNode(node_id);
+        Node *node=OnCreateNode(node_id);
 
         if(!node)
             return(nullptr);
@@ -55,7 +55,7 @@ namespace hgl
         return(node);
     }
 
-    const bool TreeBaseNodeManager::ContainsNode(BaseNode *tn)const
+    const bool NodeManager::ContainsNode(Node *tn)const
     {
         if(!tn)return(false);
         if(tn->GetManagerID()!=GetMangaerID())return(false);
@@ -66,7 +66,7 @@ namespace hgl
         return(true);
     }
 
-    bool TreeBaseNodeManager::DestoryNode(BaseNode *node)
+    bool NodeManager::DestoryNode(Node *node)
     {
         if(!node)return(false);
 
@@ -83,7 +83,7 @@ namespace hgl
         return(true);
     }
 
-    BaseNode *TreeBaseNodeManager::GetNode(const size_t node_id)
+    Node *NodeManager::GetNode(const size_t node_id)
     {
         auto iter=node_map.find(node_id);
 

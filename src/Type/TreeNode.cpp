@@ -2,40 +2,7 @@
 
 namespace hgl
 {
-    BaseNode::BaseNode(TreeBaseNodeManager *nm,const size_t uid)
-    {
-        manager=nm;
-        unique_id=uid;
-
-        life_phase=TreeNodeLifePhase::None;
-    }
-
-    BaseNode::~BaseNode()
-    {
-        if(life_phase<TreeNodeLifePhase::WaitDestory)       //还没有进入销毁器
-            manager->OnNodeDirectDestory(this);         //直接销毁
-    }
-
-    const size_t BaseNode::GetManagerID()const
-    {
-        return manager->GetMangaerID();
-    }
-
-    void BaseNode::Destory()
-    {
-        manager->DestoryNode(this);
-    }
-
-    void BaseNode::OnDestory()
-    {
-        life_phase=TreeNodeLifePhase::Destory;        //设置为销毁状态
-        delete this;
-    }
-}//namespace hgl
-
-namespace hgl
-{
-    TreeBaseNode::TreeBaseNode(TreeBaseNodeManager *nm,const size_t uid):BaseNode(nm,uid)
+    TreeBaseNode::TreeBaseNode(NodeManager *nm,const size_t uid):Node(nm,uid)
     {
         parent_node=nullptr;
     }

@@ -42,11 +42,14 @@ SET(TYPE_DATA_CHAIN_SOURCE  ${TYPE_INCLUDE_PATH}/DataChain.h
 
 SOURCE_GROUP("DataType\\DataChain" FILES ${TYPE_DATA_CHAIN_SOURCE})
 
-SET(TREE_NODE_FILES ${TYPE_INCLUDE_PATH}/TreeNode.h
-                    Type/TreeNode.cpp
-                    Type/TreeNodeManager.cpp)
+SET(TREE_NODE_FILES ${TYPE_INCLUDE_PATH}/Node.h
+                    ${TYPE_INCLUDE_PATH}/NodeManager.h
+                    ${TYPE_INCLUDE_PATH}/TreeNode.h
+                    Type/Node.cpp
+                    Type/NodeManager.cpp
+                    Type/TreeNode.cpp)
 
-SOURCE_GROUP("DataType\\Tree" FILES ${TREE_NODE_FILES})
+SOURCE_GROUP("DataType\\Node" FILES ${TREE_NODE_FILES})
 
 SET(ACTIVE_MANAGER_FILES    ${TYPE_INCLUDE_PATH}/ActiveIDManager.h
                             ${TYPE_INCLUDE_PATH}/ActiveMemoryBlockManager.h
