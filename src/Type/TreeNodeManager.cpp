@@ -11,6 +11,9 @@ namespace hgl
 
         if(!destored_node_set.contains(node))
             destored_node_set.emplace(node);
+
+        if(node_map.contains(node->GetUniqueID()))
+            node_map.erase(node->GetUniqueID());
     }
 
     void TreeBaseNodeManager::ForceClear()
