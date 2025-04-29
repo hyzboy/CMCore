@@ -46,7 +46,7 @@ namespace hgl
 
     public:
 
-        virtual ~TreeNode()override{}
+        virtual ~TreeNode()override=default;
 
     public:
 
