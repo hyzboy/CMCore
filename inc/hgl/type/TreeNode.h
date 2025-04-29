@@ -22,13 +22,10 @@ namespace hgl
         ENUM_CLASS_RANGE(None,Destory)
     };
 
-    class TreeBaseNode
+    class BaseNode
     {
         TreeBaseNodeManager *manager;                                           ///<管理器指针
         size_t unique_id;                                                       ///<唯一ID
-
-        TreeBaseNode *parent_node;                                              ///<父节点指针
-        tsl::robin_map<size_t,TreeBaseNode *> child_map;                        ///<子节点集合
 
         TreeNodeLifePhase life_phase;                                           ///<生命周期状态
 
@@ -46,16 +43,15 @@ namespace hgl
         const bool IsRecycled   ()const{return life_phase==TreeNodeLifePhase::Recycled;}            ///<是否已经回收
         const bool IsWaitDestory()const{return life_phase==TreeNodeLifePhase::WaitDestory;}         ///<是否已经进入等待销毁状态
 
-    private:
+    public:
+
+        BaseNode(TreeBaseNodeManager *nm,const size_t uid);
+        virtual ~BaseNode();
+        
+    protected:
 
         friend class TreeBaseNodeManager;
-        template<typename T> friend class TreeNode;
         template<typename T> friend class TreeNodeManager;
-
-        TreeBaseNode(TreeBaseNodeManager *nm,const size_t uid);
-        virtual ~TreeBaseNode();
-
-    protected:
 
         virtual void MarkWaitDestory(){life_phase=TreeNodeLifePhase::WaitDestory;}                  ///<标记为等待销毁状态
 
@@ -64,6 +60,22 @@ namespace hgl
     public:
 
         virtual void Destory();                                                                     ///<销毁节点(标记为等待销毁状态)
+
+    };//class BaseNode
+
+    class TreeBaseNode:public BaseNode
+    {
+        TreeBaseNode *parent_node;                                              ///<父节点指针
+        tsl::robin_map<size_t,TreeBaseNode *> child_map;                        ///<子节点集合
+
+    private:
+
+        friend class TreeBaseNodeManager;
+        template<typename T> friend class TreeNode;
+        template<typename T> friend class TreeNodeManager;
+
+        TreeBaseNode(TreeBaseNodeManager *nm,const size_t uid);
+        virtual ~TreeBaseNode();
 
     public: //子节点相关
 
@@ -92,22 +104,22 @@ namespace hgl
 
     private:
 
-        tsl::robin_map<size_t,TreeBaseNode *> node_map;           ///<节点集合
+        tsl::robin_map<size_t,BaseNode *> node_map;           ///<节点集合
 
-        tsl::robin_set<TreeBaseNode *> wait_destory_node_set;     ///<等待销毁的节点集合
+        tsl::robin_set<BaseNode *> wait_destory_node_set;     ///<等待销毁的节点集合
 
-        tsl::robin_set<TreeBaseNode *> destored_node_set;         ///<已经销毁的节点集合
+        tsl::robin_set<BaseNode *> destored_node_set;         ///<已经销毁的节点集合
 
     protected:
 
-        friend class TreeBaseNode;
+        friend class BaseNode;
 
                 const size_t    AcquireNodeID(){return ++node_serial;}
 
-        virtual TreeBaseNode *  OnCreateNode(const size_t node_id)=0;                               ///<创建节点时调用
-        virtual void            OnDestoryNode(TreeBaseNode *node)=0;                                ///<销毁节点时调用
+        virtual BaseNode *      OnCreateNode(const size_t node_id)=0;                               ///<创建节点时调用
+        virtual void            OnDestoryNode(BaseNode *node)=0;                                    ///<销毁节点时调用
 
-                void            OnNodeDirectDestory(TreeBaseNode *node);                            ///<直接销毁，这种情况只在对象被直接delete的情况下，一般不需要
+                void            OnNodeDirectDestory(BaseNode *node);                                ///<直接销毁，这种情况只在对象被直接delete的情况下，一般不需要
 
     public:
 
@@ -125,13 +137,13 @@ namespace hgl
 
         virtual void            ForceClear();
 
-                TreeBaseNode *  CreateNode();
+                BaseNode *      CreateNode();
 
-        const   bool            ContainsNode(TreeBaseNode *tn)const;
+        const   bool            ContainsNode(BaseNode *tn)const;
 
-                bool            DestoryNode(TreeBaseNode *node);
+                bool            DestoryNode(BaseNode *node);
 
-                TreeBaseNode *  GetNode(const size_t node_id);
+                BaseNode *      GetNode(const size_t node_id);
 
         virtual void            Update(){}
     };//class TreeBaseNodeManager
@@ -179,12 +191,12 @@ namespace hgl
 
     protected:
 
-        TreeBaseNode *OnCreateNode(const size_t node_id) override
+        BaseNode *OnCreateNode(const size_t node_id) override
         {
             return(new NodeType(this,node_id));
         }
 
-        void OnDestoryNode(TreeBaseNode *node)override
+        void OnDestoryNode(BaseNode *node)override
         {
             if(!node)return;
 
