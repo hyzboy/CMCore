@@ -61,4 +61,37 @@ namespace hgl
 
         virtual void    Update(){}
     };//class NodeManager
+
+    template<typename T> class DataNodeManager:public NodeManager
+    {
+    protected: //事件
+
+        Node *OnCreateNode(const size_t node_id) override
+        {
+            return(new T(this,node_id));
+        }
+
+        void OnDestoryNode(Node *node)override
+        {
+            if(!node)return;
+
+            node->OnDestory();
+            delete node;
+        }
+
+    public:
+
+        using NodeManager::NodeManager;
+        virtual ~DataNodeManager()
+        {
+            ForceClear();
+        }
+
+        T *Create()
+        {
+            return (T *)CreateNode();
+            //走基类的CreateNode()是为了添加到管理器中
+            //基类会通过虚拟的OnCreateNode()再度回到本类来创建节点
+        }
+    };//class DataNodeManager
 }//namespace hgl

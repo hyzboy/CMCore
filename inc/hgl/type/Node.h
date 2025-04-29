@@ -60,4 +60,30 @@ namespace hgl
         virtual void Destory();                                                                     ///<销毁节点(标记为等待销毁状态)
 
     };//class Node
+
+    template<typename T> class DataNode:public Node
+    {
+        T node_data;
+
+    public:
+
+        using Node::Node;
+        virtual ~DataNode()override=default;
+
+    public:
+
+                T & get_data()      {return node_data;}
+        const   T & get_data()const {return node_data;}
+
+                T * get_ptr ()      {return &node_data;}
+        const   T * get_ptr ()const {return &node_data;}
+
+        operator T &        ()      {return node_data;}
+        operator const T &  ()const {return node_data;}
+
+        virtual void set_data(const T &data)
+        {
+            node_data=data;
+        }
+    };//class DataNode
 }//namespcae hgl

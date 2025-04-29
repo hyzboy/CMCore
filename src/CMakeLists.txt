@@ -46,8 +46,7 @@ SET(TREE_NODE_FILES ${TYPE_INCLUDE_PATH}/Node.h
                     ${TYPE_INCLUDE_PATH}/NodeManager.h
                     ${TYPE_INCLUDE_PATH}/TreeNode.h
                     Type/Node.cpp
-                    Type/NodeManager.cpp
-                    Type/TreeNode.cpp)
+                    Type/NodeManager.cpp)
 
 SOURCE_GROUP("DataType\\Node" FILES ${TREE_NODE_FILES})
 
