@@ -61,13 +61,13 @@ namespace hgl
 
     };//class Node
 
-    template<typename T> class DataNode:public Node
+    template<typename T,typename SuperNode=Node> class DataNode:public SuperNode
     {
         T node_data;
 
     public:
 
-        using Node::Node;
+        using SuperNode::SuperNode;
         virtual ~DataNode()override=default;
 
     public:
