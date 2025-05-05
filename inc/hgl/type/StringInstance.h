@@ -400,7 +400,7 @@ namespace hgl
 
             if(need_length>malloc_length)
             {
-                malloc_length=power_to_2(need_length);
+                malloc_length=power_to_2(need_length+1);
 
                 T *new_str=new T[malloc_length];
 
