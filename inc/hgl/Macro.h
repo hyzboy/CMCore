@@ -77,4 +77,6 @@ namespace hgl
                                                 name=nullptr;   \
                                             }   \
                                         }
+
+    #define SAFE_CLEAR_STD_MAP(name)    {for(auto &it:name)delete it.second;}
 }//namespace hgl
