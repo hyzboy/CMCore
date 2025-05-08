@@ -45,12 +45,12 @@ namespace hgl
 
     public:
 
-        static  const size_t    GetClassID      ()                                                      ///<获取类ID
+        static  const size_t    GetClassHC      ()                                                      ///<获取类HashCode
         {
             static SelfClass self;
-            static size_t class_id=typeid(self).hash_code();
+            static size_t class_hc=typeid(self).hash_code();
 
-            return class_id;
+            return class_hc;
         }          
 
                 const int       GetID           ()const{return csv.id;}                                 ///<获取名称ID
