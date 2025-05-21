@@ -120,7 +120,7 @@ namespace hgl
                     return count;
                 }
 
-                KVData *GetItem(int n){return GetObjectFromList(data_list,n);}                      ///<取指定序号的数据
+                KVData *GetItem(int n){return GetObjectFromMap(data_list,n);}                      ///<取指定序号的数据
                 bool    GetBySerial(int,K &,V &) const;                                             ///<取指定序号的数据
                 bool    GetKey(int,K &);                                                            ///<取指定序号的索引
                 bool    GetValue(int,V &);                                                          ///<取指定序号的数据
@@ -150,7 +150,7 @@ namespace hgl
         virtual ~Map()=default;
     };//class Map
 
-    template<typename T_ID,typename T_U> T_U *GetObjectFromList(Map<T_ID,T_U *> &list,const T_ID &id)
+    template<typename T_ID,typename T_U> T_U *GetObjectFromMap(Map<T_ID,T_U *> &list,const T_ID &id)
     {
         T_U *result;
 
@@ -177,7 +177,7 @@ namespace hgl
 
                 void    DeleteObject(int index)
                 {
-                    DeleteObject(GetObjectFromList(this->data_list,index));
+                    DeleteObject(GetObjectFromMap(this->data_list,index));
                 }
 
     public:
@@ -293,7 +293,7 @@ namespace hgl
             {
                 DeleteObject(index);
 
-                KVData *dp=GetObjectFromList(this->data_list,index);
+                KVData *dp=GetObjectFromMap(this->data_list,index);
 
                 if(dp)
                     dp->value=data;
@@ -318,7 +318,7 @@ namespace hgl
             {
                 DeleteObject(index);
 
-                KVData *dp=GetObjectFromList(this->data_list,index);
+                KVData *dp=GetObjectFromMap(this->data_list,index);
 
                 if(!dp)
                     return(false);
@@ -334,7 +334,7 @@ namespace hgl
 
         V *operator[](const K &index)const
         {
-            auto *obj=GetObjectFromList(this->data_list,this->Find(index));
+            auto *obj=GetObjectFromMap(this->data_list,this->Find(index));
 
             if(obj)
                 return obj->value;

@@ -192,7 +192,7 @@ namespace hgl
         if(index==-1)
             return(nullptr);
 
-        KVData *obj=GetObjectFromList(data_list,index);
+        KVData *obj=GetObjectFromMap(data_list,index);
 
         if(!obj)return(nullptr);
         return &(obj->value);
@@ -209,7 +209,7 @@ namespace hgl
     {
         int index=Find(flag);
 
-        KVData *obj=GetObjectFromList(data_list,index);
+        KVData *obj=GetObjectFromMap(data_list,index);
 
         if(!obj)
             return(-1);
@@ -224,7 +224,7 @@ namespace hgl
     {
         int index=Find(key);
 
-        KVData *obj=GetObjectFromList(data_list,index);
+        KVData *obj=GetObjectFromMap(data_list,index);
 
         if(!obj)
             return(false);
@@ -323,7 +323,7 @@ namespace hgl
     {
         int index=Find(flag);
 
-        KVData *dp=GetObjectFromList(data_list,index);
+        KVData *dp=GetObjectFromMap(data_list,index);
 
         if(!dp)
             return(false);
@@ -394,7 +394,7 @@ namespace hgl
         if(index<0
          ||index>=data_list.GetCount())return(false);
 
-        data_pool.Release(GetObjectFromList(data_list,index));
+        data_pool.Release(GetObjectFromMap(data_list,index));
         data_list.DeleteShift(index);
 
         return(true);
@@ -433,7 +433,7 @@ namespace hgl
 
         if(FindPos(flag,result))
         {
-            dp=GetObjectFromList(data_list,result);
+            dp=GetObjectFromMap(data_list,result);
 
             if(dp)
             {
@@ -469,7 +469,7 @@ namespace hgl
     template<typename K,typename V,typename KVData>
     bool MapTemplate<K,V,KVData>::Change(const K &flag,const V &data)
     {
-        KVData *dp=GetObjectFromList(data_list,Find(flag));
+        KVData *dp=GetObjectFromMap(data_list,Find(flag));
 
         if(!dp)
             return(false);
