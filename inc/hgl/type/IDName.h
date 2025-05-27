@@ -91,11 +91,11 @@ namespace hgl
         const int compare(const OrderedIDName &oin)const override{return GetID()-oin.GetID();}
     };//class IDName
 
-#define DefineIDName(name,type) using name=OrderedIDName<type,__COUNTER__>; using name##Set=SortedSet<name>; //使用__COUNTER__是为了让typeid()不同
+#define HGL_DEFINE_IDNAME(name,type) using name=OrderedIDName<type,__COUNTER__>; using name##Set=SortedSet<name>; //使用__COUNTER__是为了让typeid()不同
     
-    DefineIDName(AIDName,   char)
-    DefineIDName(WIDName,   wchar_t)
-    DefineIDName(U8IDName,  u8char)
-    DefineIDName(U16IDName, u16char)
-    DefineIDName(OSIDName,  os_char)
+    HGL_DEFINE_IDNAME(AIDName,   char)
+    HGL_DEFINE_IDNAME(WIDName,   wchar_t)
+    HGL_DEFINE_IDNAME(U8IDName,  u8char)
+    HGL_DEFINE_IDNAME(U16IDName, u16char)
+    HGL_DEFINE_IDNAME(OSIDName,  os_char)
 }//namespace hgl
