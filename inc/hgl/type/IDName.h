@@ -5,18 +5,24 @@
 
 namespace hgl
 {
-    template<typename SC>
-    bool RegistryIDName(const size_t hash_code,ConstStringView<SC> &csv,const SC *name_string,const int name_length);
+    template<typename T,typename SC>
+    bool RegistryIDName(ConstStringView<SC> &csv,const SC *name_string,const int name_length)
+    {
+        if(!T::id_name_set)
+            T::id_name_set=new ConstStringSet<SC>;
+
+        return(T::id_name_set->AddString(csv,name_string,name_length)>=0);
+    }
 
     /**
     * 顺序ID+名称数据结构模板<br>
     * 按添加进来的名字先后顺序一个个产生连续的序号，所有数据只可读不可写
     */
-    template<typename SC,const char *IDNAME_TAG> class OrderedIDName:public Comparator<OrderedIDName<SC,IDNAME_TAG>>
+    template<typename SC,typename MANAGER> class OrderedIDName:public Comparator<OrderedIDName<SC,MANAGER>>
     {   
     public:
 
-        using SelfClass=OrderedIDName<SC,IDNAME_TAG>;
+        using SelfClass=OrderedIDName<SC,MANAGER>;
 
     protected:
 
@@ -39,7 +45,7 @@ namespace hgl
                 return;
             }
 
-            RegistryIDName<SC>(typeid(SelfClass).hash_code(),csv,name_string,name_length);
+            RegistryIDName<MANAGER,SC>(csv,name_string,name_length);
         }
 
     public:
@@ -90,10 +96,11 @@ namespace hgl
         const int compare(const OrderedIDName &oin)const override{return GetID()-oin.GetID();}
     };//class IDName
 
-#define HGL_DEFINE_IDNAME(name,type)    constexpr const char IDNameTag_##name[]=#name;    \
-                                        using name=OrderedIDName<type,IDNameTag_##name>;   \
-                                        using name##Set=SortedSet<name>; //使用__COUNTER__是为了让typeid()不同
-    
+#define HGL_DEFINE_IDNAME(name,char_type)   struct IDName##_##name##_Manager{static ConstStringSet<char_type> *id_name_set;}; \
+                                            ConstStringSet<char_type> *IDName##_##name##_Manager::id_name_set=nullptr; \
+                                            using name=OrderedIDName<char_type,IDName##_##name##_Manager>;   \
+                                            using name##Set=SortedSet<name>;
+
     HGL_DEFINE_IDNAME(AIDName,   char)
     HGL_DEFINE_IDNAME(WIDName,   wchar_t)
     HGL_DEFINE_IDNAME(U8IDName,  u8char)

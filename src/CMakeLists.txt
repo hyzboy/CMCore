@@ -27,8 +27,7 @@ SOURCE_GROUP("DataType\\BitsArray" FILES ${BITS_ARRAY_FILES})
 SET(TYPE_IDNAME_HEADER_FILES    ${TYPE_INCLUDE_PATH}/ConstStringSet.h
                                 ${TYPE_INCLUDE_PATH}/IDName.h)
 
-SET(TYPE_IDNAME_SOURCE_FILES    Text/ConstStringSetSaveToTextStream.cpp
-                                Type/IDName.cpp)
+SET(TYPE_IDNAME_SOURCE_FILES    Text/ConstStringSetSaveToTextStream.cpp)
 
 SOURCE_GROUP("DataType\\IDName" FILES ${TYPE_IDNAME_HEADER_FILES} ${TYPE_IDNAME_SOURCE_FILES})
 
