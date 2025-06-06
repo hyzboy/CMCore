@@ -2,22 +2,21 @@
 
 #include<hgl/type/ConstStringSet.h>
 #include<hgl/type/SortedSet.h>
-#include<typeinfo>
 
 namespace hgl
 {
     template<typename SC>
-    bool RegistryIDName(const size_t hash_code,ConstStringView<SC> &csv,const SC *name_string,const int name_length);
+    bool RegistryIDName(const char *IDNameTag,ConstStringView<SC> &csv,const SC *name_string,const int name_length);
 
     /**
     * 顺序ID+名称数据结构模板<br>
     * 按添加进来的名字先后顺序一个个产生连续的序号，所有数据只可读不可写
     */
-    template<typename SC,int CLASS_COUNTER> class OrderedIDName:public Comparator<OrderedIDName<SC,CLASS_COUNTER>>
-    {
+    template<typename SC,const char *IDNAME_TAG> class OrderedIDName:public Comparator<OrderedIDName<SC,IDNAME_TAG>>
+    {   
     public:
 
-        using SelfClass=OrderedIDName<SC,CLASS_COUNTER>;
+        using SelfClass=OrderedIDName<SC,IDNAME_TAG>;
 
     protected:
 
@@ -40,7 +39,7 @@ namespace hgl
                 return;
             }
 
-            RegistryIDName<SC>(typeid(*this).hash_code(),csv,name_string,name_length);
+            RegistryIDName<SC>(IDNAME_TAG,csv,name_string,name_length);
         }
 
     public:
@@ -91,11 +90,13 @@ namespace hgl
         const int compare(const OrderedIDName &oin)const override{return GetID()-oin.GetID();}
     };//class IDName
 
-#define DefineIDName(name,type) using name=OrderedIDName<type,__COUNTER__>; using name##Set=SortedSet<name>; //使用__COUNTER__是为了让typeid()不同
+#define HGL_DEFINE_IDNAME(name,type)    constexpr const char IDNameTag_##name[]=#name;    \
+                                        using name=OrderedIDName<type,IDNameTag_##name>;   \
+                                        using name##Set=SortedSet<name>; //使用__COUNTER__是为了让typeid()不同
     
-    DefineIDName(AIDName,   char)
-    DefineIDName(WIDName,   wchar_t)
-    DefineIDName(U8IDName,  u8char)
-    DefineIDName(U16IDName, u16char)
-    DefineIDName(OSIDName,  os_char)
+    HGL_DEFINE_IDNAME(AIDName,   char)
+    HGL_DEFINE_IDNAME(WIDName,   wchar_t)
+    HGL_DEFINE_IDNAME(U8IDName,  u8char)
+    HGL_DEFINE_IDNAME(U16IDName, u16char)
+    HGL_DEFINE_IDNAME(OSIDName,  os_char)
 }//namespace hgl

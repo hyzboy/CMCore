@@ -3,22 +3,24 @@
 namespace hgl
 {
     template<typename SC>
-    bool RegistryIDName(const size_t hash_code,ConstStringView<SC> &csv,const SC *name_string,const int name_length)
+    bool RegistryIDName(const char *tag,ConstStringView<SC> &csv,const SC *name_string,const int name_length)
     {
-        static ObjectMap<size_t,ConstStringSet<SC>> css_map;
+        static ObjectMap<AnsiString,ConstStringSet<SC>> css_map;
 
         ConstStringSet<SC> *css;
 
-        if(!css_map.Get(hash_code,css))
+        const AnsiString IDNameTag=tag;
+
+        if(!css_map.Get(IDNameTag,css))
         {
             css=new ConstStringSet<SC>;
-            css_map.Add(hash_code,css);
+            css_map.Add(IDNameTag,css);
         }
 
         return(css->AddString(csv,name_string,name_length)>=0);
     }
 
-#define REGISTRY_ID_NAME(type)  bool RegistryIDName_##type(const size_t hash_code,ConstStringView<type> &csv,const type *name,const int length){return RegistryIDName(hash_code,csv,name,length);}
+#define REGISTRY_ID_NAME(type)  bool RegistryIDName_##type(const char *tag,ConstStringView<type> &csv,const type *name,const int length){return RegistryIDName(tag,csv,name,length);}
 
     REGISTRY_ID_NAME(char)
     REGISTRY_ID_NAME(wchar_t)
