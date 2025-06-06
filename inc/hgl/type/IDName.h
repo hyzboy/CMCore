@@ -6,7 +6,7 @@
 namespace hgl
 {
     template<typename SC>
-    bool RegistryIDName(const char *IDNameTag,ConstStringView<SC> &csv,const SC *name_string,const int name_length);
+    bool RegistryIDName(const size_t hash_code,ConstStringView<SC> &csv,const SC *name_string,const int name_length);
 
     /**
     * 顺序ID+名称数据结构模板<br>
@@ -39,7 +39,7 @@ namespace hgl
                 return;
             }
 
-            RegistryIDName<SC>(IDNAME_TAG,csv,name_string,name_length);
+            RegistryIDName<SC>(typeid(SelfClass).hash_code(),csv,name_string,name_length);
         }
 
     public:
