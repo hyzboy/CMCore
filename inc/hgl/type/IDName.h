@@ -8,10 +8,12 @@ namespace hgl
     template<typename T,typename SC>
     bool RegistryIDName(ConstStringView<SC> &csv,const SC *name_string,const int name_length)
     {
-        if(!T::id_name_set)
-            T::id_name_set=new ConstStringSet<SC>;
+        static ConstStringSet<SC> *id_name_set=nullptr;
 
-        return(T::id_name_set->AddString(csv,name_string,name_length)>=0);
+        if(!id_name_set)
+            id_name_set=new ConstStringSet<SC>;
+
+        return(id_name_set->AddString(csv,name_string,name_length)>=0);
     }
 
     /**
@@ -96,14 +98,13 @@ namespace hgl
         const int compare(const OrderedIDName &oin)const override{return GetID()-oin.GetID();}
     };//class IDName
 
-#define HGL_DEFINE_IDNAME(name,char_type)   struct IDName##_##name##_Manager{static ConstStringSet<char_type> *id_name_set;}; \
-                                            ConstStringSet<char_type> *IDName##_##name##_Manager::id_name_set=nullptr; \
-                                            using name=OrderedIDName<char_type,IDName##_##name##_Manager>;   \
-                                            using name##Set=SortedSet<name>;
+    #define HGL_DEFINE_IDNAME(name,char_type)   struct IDName##_##name##_Manager{}; \
+                                                using name=OrderedIDName<char_type,IDName##_##name##_Manager>;   \
+                                                using name##Set=SortedSet<name>;
 
-    HGL_DEFINE_IDNAME(AIDName,   char)
-    HGL_DEFINE_IDNAME(WIDName,   wchar_t)
-    HGL_DEFINE_IDNAME(U8IDName,  u8char)
-    HGL_DEFINE_IDNAME(U16IDName, u16char)
-    HGL_DEFINE_IDNAME(OSIDName,  os_char)
+    #define HGL_DEFINE_ANSI_IDNAME(name)    HGL_DEFINE_IDNAME(name, char)
+    #define HGL_DEFINE_WIDE_IDNAME(name)    HGL_DEFINE_IDNAME(name, wchar_t)
+    #define HGL_DEFINE_U8_IDNAME(name)      HGL_DEFINE_IDNAME(name, u8char)
+    #define HGL_DEFINE_U16_IDNAME(name)     HGL_DEFINE_IDNAME(name, u16char)
+    #define HGL_DEFINE_OS_IDNAME(name)      HGL_DEFINE_IDNAME(name, os_char)
 }//namespace hgl
