@@ -1,9 +1,9 @@
-﻿#ifndef HGL_TYPE_FUNC_INCLUDE
-#define HGL_TYPE_FUNC_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 #include<cmath>
 #include<cstring>
+
 namespace hgl
 {
     #define HGL_OFFICAL_WEB                "www.hyzgame.com"
@@ -11,6 +11,11 @@ namespace hgl
     #define HGL_OFFICAL_WEB_OS     OS_TEXT("www.hyzgame.com")
 
     #define ENUM_CLASS_RANGE(begin,end)     BEGIN_RANGE=begin,END_RANGE=end,RANGE_SIZE=(END_RANGE-BEGIN_RANGE)+1
+
+    template<typename T> constexpr const int ToInt(const T &ec){return (int)ec;}
+    template<typename T> constexpr const T FromInt(int ec){return (enum class T)ec;}
+
+    template<typename T> constexpr const size_t RangeSize(){return T::RANGE_SIZE;}
 
     template<typename T>
     inline bool RangeCheck(const T &value)
@@ -493,4 +498,3 @@ namespace hgl
         hgl_free(items);
     }
 }//namespace hgl
-#endif//HGL_TYPE_FUNC_INCLUDE
