@@ -1,8 +1,14 @@
 ﻿#pragma once
 
 #include<hgl/platform/Platform.h>
+#include<bit>
 #include<cmath>
 #include<cstring>
+#include<algorithm>
+
+#if __cplusplus >= 202302L  //C++23
+#include <memory>
+#endif//
 
 namespace hgl
 {
@@ -32,8 +38,6 @@ namespace hgl
     #define RANGE_CHECK_RETURN_ZERO(value)              if(!RangeCheck(value))return(0);
     #define RANGE_CHECK_RETURN_FALSE(value)             if(!RangeCheck(value))return(false);
     #define RANGE_CHECK_RETURN_NULLPTR(value)           if(!RangeCheck(value))return(nullptr);
-
-    #define HGL_CONVER_TO_MEM_ALIGN(x)      ((((x)+HGL_MEM_ALIGN-1)/HGL_MEM_ALIGN)*HGL_MEM_ALIGN)                   //内存对齐转换宏
 
     #ifndef NULL
     #define NULL 0
@@ -196,8 +200,7 @@ namespace hgl
     /**
      * 求数值对齐后的值
      */
-    template<typename T>
-    inline T hgl_align(const T value,const T alignment)
+    template<typename T> constexpr const inline T hgl_align(const T value,const T alignment)
     {    
         return ((value+alignment-1)/alignment)*alignment;
     }
@@ -205,19 +208,21 @@ namespace hgl
     /**
      * 求数值对齐后的值(仅支持2次幂)
      */
-    template<typename T>
-    inline T hgl_align_pow2(const T value,const T alignment)
-    {    
+    template<typename T> constexpr const inline T hgl_align_pow2(const T value,const T alignment)
+    {
+    #if defined(__cpp_lib_align) && __cpp_lib_align >= 202306L
+        return std::align_up(value,alignment);
+    #else
         const T align_size=alignment-1;
 
         return (value+align_size)&(~align_size);
+    #endif
     }
 
     /**
      * 取适合正巧大于当前数的2次幂值
      */
-    template<typename T>
-    inline T power_to_2(T value)
+    template<typename T> constexpr const inline T power_to_2(T value)
     {
         T result=1;
 
@@ -226,11 +231,16 @@ namespace hgl
 
         return(result);
     }
-    
+
+    template<typename T> constexpr const inline T power_to_2_down(T value)
+    {
+        return std::bit_floor(value);
+    }
+
     /**
      * 向上对齐
      */
-    template<typename T> inline T align_up(T val, T alignment)      // align val to the next multiple of alignment
+    template<typename T> constexpr const inline T align_up(T val, T alignment)      // align val to the next multiple of alignment
     {
         return (val + alignment - (T)1) & ~(alignment - (T)1);
     }
@@ -238,15 +248,15 @@ namespace hgl
     /**
      * 向下对齐
      */
-    template<typename T> inline T align_down(T val, T alignment)    // align val to the previous multiple of alignment
+    template<typename T> constexpr const inline T align_down(T val, T alignment)    // align val to the previous multiple of alignment
     {
         return val & ~(alignment - (T)1);
     }
-    
+
     /**
      * 求对齐数量
      */
-    template<typename T> inline T divide_rounding_up(T x, T y)
+    template<typename T> constexpr const inline T divide_rounding_up(T x, T y)
     {
         return (x + y - (T)1) / y;
     }
@@ -315,17 +325,18 @@ namespace hgl
         return(value);
     }
 
-    inline const uint GetMipLevel(const uint size)
+    inline constexpr const uint GetMipLevel(const uint size)
     {
-        return static_cast<uint>(floor(log2(size)))+1;
+        //return static_cast<uint>(floor(log2(size)))+1;
+        return std::bit_width(size);
     }
 
-    inline const uint GetMipLevel(const uint width,const uint height)
+    inline constexpr const uint GetMipLevel(const uint width,const uint height)
     {
         return GetMipLevel(hgl_max(width,height));
     }
 
-    inline const uint GetMipLevel(const uint width,const uint height,const uint depth)
+    inline constexpr const uint GetMipLevel(const uint width,const uint height,const uint depth)
     {
         return GetMipLevel(hgl_max(hgl_max(width,height),depth));
     }
