@@ -1,7 +1,7 @@
 #pragma once
 #include<hgl/type/DataType.h>
 #include<hgl/type/object/ObjectBaseInfo.h>
-#include<hgl/SourceCodeLocation.h>
+#include<source_location>
 
 #include<tsl/robin_map.h>
 
@@ -87,7 +87,7 @@ namespace hgl
 #define HGL_OBJECT_CONSTRUCT(class_name)                class_name(const ObjectBaseInfo &obi):Object(obi){}
 #define HGL_OBJECT_CONSTRUCT_SC(class_name,super_class)    class_name(const ObjectBaseInfo &obi):super_class(obi){}
 
-    template<typename T> inline T *NewObjectSCL(const SourceCodeLocation &scl)
+    template<typename T> inline T *NewObjectSCL(const std::source_location scl=std::source_location::current())
     {
         static size_t new_count=0;
 
@@ -104,5 +104,5 @@ namespace hgl
         return obj;
     }
 
-    #define NewObject(type) NewObjectSCL<type>(HGL_SCL_HERE)
+    #define NewObject(type) NewObjectSCL<type>(std::source_location::current())
 }//namespace hgl

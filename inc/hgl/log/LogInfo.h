@@ -1,9 +1,8 @@
-﻿#ifndef HGL_LOGINFO_INCLUDE
-#define HGL_LOGINFO_INCLUDE
+﻿#pragma once
 
 #include<iostream>
+#include<source_location>
 #include<hgl/CodePage.h>
-#include<hgl/SourceCodeLocation.h>
 #include<hgl/log/LogLevel.h>
 
 namespace hgl
@@ -32,14 +31,22 @@ namespace hgl
         }
         #endif//HGL_SUPPORT_CHAR8_T
 
-        inline  void DebugLog(LogLevel ll,const U16String &str,const char *filename,int line,const char *funcname)
+        inline  void DebugLog(LogLevel ll,const U16String &str,const std::source_location scl)
         {
-            Log(ll,str+U16_TEXT(">>LogFrom(\"")+to_u16((u8char *)filename)+U16_TEXT("\", ")+U16String::numberOf(line)+U16_TEXT(" line,func:\"")+to_u16((u8char *)funcname)+U16_TEXT("\")"));
+            Log(ll,str+U16_TEXT(">>LogFrom(\"")+
+                to_u16((u8char *)scl.file_name())+U16_TEXT("\", (")+
+                U16String::numberOf(scl.line())+U16_TEXT(",")+
+                U16String::numberOf(scl.column())+U16_TEXT(") ,func:\"")+
+                to_u16((u8char *)scl.function_name())+U16_TEXT("\")"));
         }
 
-        inline  void DebugLog(LogLevel ll,const U8String &str,const char *filename,int line,const char *funcname)
+        inline  void DebugLog(LogLevel ll,const U8String &str,const std::source_location scl)
         {
-            Log(ll,str+U8_TEXT(">>LogFrom(\"")+U8String((u8char *)filename)+U8_TEXT("\", ")+U8String::numberOf(line)+U8_TEXT(" line,func:\"")+U8String((u8char *)funcname)+U8_TEXT("\")"));
+            Log(ll,str+U8_TEXT(">>LogFrom(\"")+
+                U8String((u8char *)scl.file_name())+U8_TEXT("\",(")+
+                U8String::numberOf(scl.line())+U8_TEXT(",")+
+                U8String::numberOf(scl.column())+U8_TEXT(") ,func:\"")+
+                U8String((u8char *)scl.function_name())+U8_TEXT("\")"));
         }
 
         #define LOG_INFO(str)       {Log(LogLevel::Info,    str);}
@@ -47,9 +54,9 @@ namespace hgl
         #define LOG_PROBLEM(str)    {Log(LogLevel::Warning, str);}
         #define LOG_ERROR(str)      {Log(LogLevel::Error,   str);}
 
-        #define RETURN_FALSE        {DebugLog(LogLevel::Verbose,OS_TEXT("return(false)"),                                   __FILE__,__LINE__,__HGL_FUNC__);return(false);}
-        #define RETURN_ERROR(v)     {DebugLog(LogLevel::Info,   OS_TEXT("return error(")+OSString::numberOf(v)+OS_TEXT(")"),__FILE__,__LINE__,__HGL_FUNC__);return(v);}
-        #define RETURN_ERROR_NULL   {DebugLog(LogLevel::Info,   OS_TEXT("return error(nullptr)"),                           __FILE__,__LINE__,__HGL_FUNC__);return(nullptr);}
+        #define RETURN_FALSE        {DebugLog(LogLevel::Verbose,OS_TEXT("return(false)"),                                   std::source_location::current());return(false);}
+        #define RETURN_ERROR(v)     {DebugLog(LogLevel::Info,   OS_TEXT("return error(")+OSString::numberOf(v)+OS_TEXT(")"),std::source_location::current());return(v);}
+        #define RETURN_ERROR_NULL   {DebugLog(LogLevel::Info,   OS_TEXT("return error(nullptr)"),                           std::source_location::current());return(nullptr);}
 
         #define RETURN_BOOL(proc)   {if(proc)return(true);RETURN_FALSE}
 
@@ -58,4 +65,3 @@ namespace hgl
 
     using namespace logger;
 }//namespace hgl
-#endif//HGL_LOGINFO_INCLUDE

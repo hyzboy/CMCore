@@ -1,6 +1,6 @@
 #pragma once
 
-#include<hgl/SourceCodeLocation.h>
+#include<source_location>
 #include<typeinfo>
 
 namespace hgl
@@ -10,10 +10,10 @@ namespace hgl
      */
     struct ObjectBaseInfo
     {
-        const std::type_info *info;            ///<对象数据类型的type_info指针
+        const std::type_info *info;     ///<对象数据类型的type_info指针
         size_t unique_id;               ///<唯一序列号
 
-        SourceCodeLocation scl;
+        std::source_location scl;       ///<对象创建位置
     };
 
     struct ObjectTypeInfo
