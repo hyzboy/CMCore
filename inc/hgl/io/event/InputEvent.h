@@ -14,8 +14,8 @@ namespace hgl::io
     constexpr size_t EventHeaderBytes=sizeof(EventHeader);
 
     /**
-        * 事件处理结果
-        */
+     * 事件处理结果
+     */
     enum class EventProcResult
     {
         Continue,
