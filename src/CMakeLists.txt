@@ -193,7 +193,9 @@ SET(IO_TEXT_FILES   IO/TextOutputStream.cpp
 SET(INPUT_EVENT_FILES   ${IO_INCLUDE_PATH}/event/KeyboardEvent.h
                         ${IO_INCLUDE_PATH}/event/MouseEvent.h
                         ${IO_INCLUDE_PATH}/event/JoystickEvent.h
-                        ${IO_INCLUDE_PATH}/event/InputEvent.h)
+                        ${IO_INCLUDE_PATH}/event/InputEvent.h
+                        ${IO_INCLUDE_PATH}/event/InputMapping.h
+)
 
 SOURCE_GROUP("IO\\Event"   FILES ${INPUT_EVENT_FILES})
 

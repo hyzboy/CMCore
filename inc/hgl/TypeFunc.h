@@ -43,8 +43,8 @@ namespace hgl
     #define NULL 0
     #endif//
 
-    constexpr u16char U16_FULL_WIDTH_SPACE=U16_TEXT('　');      //全角空格
-    constexpr u32char U32_FULL_WIDTH_SPACE=U32_TEXT('　');      //全角空格
+    constexpr const u16char U16_FULL_WIDTH_SPACE=U16_TEXT('　');      //全角空格
+    constexpr const u32char U32_FULL_WIDTH_SPACE=U32_TEXT('　');      //全角空格
 
     template<typename T>
     inline void hgl_call_construct(T *obj)      //呼叫构造函数
