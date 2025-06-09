@@ -3,7 +3,7 @@
 #include<hgl/TypeFunc.h>
 namespace hgl::io
 {
-    enum class InputEventSource
+    enum class InputEventSource:uint8
     {
         Root=0,
 

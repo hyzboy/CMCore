@@ -167,15 +167,18 @@ namespace hgl
 
             EventProcResult OnEvent(const EventHeader &header,const uint64 data) override
             {
+                if(header.type==InputEventSource::Keyboard)
+                {
+                    switch(KeyboardEventID(header.id))
+                    {
+                        case KeyboardEventID::Pressed:  if(OnPressed    (KeyboardButton(((KeyboardEventData *)&data)->key)))return EventProcResult::Break;break;
+                        case KeyboardEventID::Released: if(OnReleased   (KeyboardButton(((KeyboardEventData *)&data)->key)))return EventProcResult::Break;break;
+                        case KeyboardEventID::Char:     if(OnChar       (               ((KeyboardEventData *)&data)->ch ) )return EventProcResult::Break;break;
+                    }
+                }
+
                 if(InputEvent::OnEvent(header,data)==EventProcResult::Break)
                     return EventProcResult::Break;
-
-                switch(KeyboardEventID(header.id))
-                {
-                    case KeyboardEventID::Pressed:  if(OnPressed    (KeyboardButton(((KeyboardEventData *)&data)->key)))return EventProcResult::Break;break;
-                    case KeyboardEventID::Released: if(OnReleased   (KeyboardButton(((KeyboardEventData *)&data)->key)))return EventProcResult::Break;break;
-                    case KeyboardEventID::Char:     if(OnChar       (               ((KeyboardEventData *)&data)->ch ) )return EventProcResult::Break;break;
-                }
 
                 return EventProcResult::Continue;
             }

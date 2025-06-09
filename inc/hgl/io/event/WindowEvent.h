@@ -33,18 +33,21 @@ namespace hgl
 
         public:
 
-            WindowEvent():InputEvent(InputEventSource::Window){}
+            WindowEvent():InputEvent(InputEventSource::Window){wed=nullptr;}
             virtual ~WindowEvent()=default;
 
             virtual EventProcResult OnEvent(const EventHeader &header,const uint64 data) override
             {
-                wed=(WindowEventData *)&data;
-
-                switch(WindowEventID(header.id))
+                if(header.type==InputEventSource::Window)
                 {
-                    case WindowEventID::Active:OnActive  (wed->active)           ;break;
-                    case WindowEventID::Resize:OnResize  (wed->width,wed->height);break;
-                    case WindowEventID::Close: OnClose   ()                      ;break;
+                    wed=(WindowEventData *)&data;
+
+                    switch(WindowEventID(header.id))
+                    {
+                        case WindowEventID::Active:OnActive  (wed->active)           ;break;
+                        case WindowEventID::Resize:OnResize  (wed->width,wed->height);break;
+                        case WindowEventID::Close: OnClose   ()                      ;break;
+                    }
                 }
 
                 if(InputEvent::OnEvent(header,data)==EventProcResult::Break)

@@ -64,29 +64,32 @@ namespace hgl
             
             EventProcResult OnEvent(const EventHeader &header,const uint64 data) override
             {
-                if(InputEvent::OnEvent(header,data)==EventProcResult::Break)
-                    return EventProcResult::Break;
-
-                med=(MouseEventData *)&data;
-
-                if(MouseEventID(header.id)==MouseEventID::Wheel)
-                {                    
-                    if(OnWheel      (med->x,med->y)             )return EventProcResult::Break;
-                }
-                else
+                if(header.type==InputEventSource::Mouse)
                 {
-                    x=med->x;y=med->y;
+                    med=(MouseEventData *)&data;
 
-                    switch(MouseEventID(header.id))
+                    if(MouseEventID(header.id)==MouseEventID::Wheel)
+                    {                    
+                        if(OnWheel      (med->x,med->y)             )return EventProcResult::Break;
+                    }
+                    else
                     {
-                        case MouseEventID::Move:        if(OnMove       (med->x,med->y)                         )return EventProcResult::Break;break;
-                        case MouseEventID::Pressed:     pressed_statues[med->button]=true;                                
-                                                        if(OnPressed    (med->x,med->y,MouseButton(med->button)))return EventProcResult::Break;break;
-                        case MouseEventID::Released:    pressed_statues[med->button]=false;
-                                                        if(OnReleased   (med->x,med->y,MouseButton(med->button)))return EventProcResult::Break;break;
-                        case MouseEventID::DblClicked:  if(OnDblClicked (med->x,med->y,MouseButton(med->button)))return EventProcResult::Break;break;
+                        x=med->x;y=med->y;
+
+                        switch(MouseEventID(header.id))
+                        {
+                            case MouseEventID::Move:        if(OnMove       (med->x,med->y)                         )return EventProcResult::Break;break;
+                            case MouseEventID::Pressed:     pressed_statues[med->button]=true;                                
+                                                            if(OnPressed    (med->x,med->y,MouseButton(med->button)))return EventProcResult::Break;break;
+                            case MouseEventID::Released:    pressed_statues[med->button]=false;
+                                                            if(OnReleased   (med->x,med->y,MouseButton(med->button)))return EventProcResult::Break;break;
+                            case MouseEventID::DblClicked:  if(OnDblClicked (med->x,med->y,MouseButton(med->button)))return EventProcResult::Break;break;
+                        }
                     }
                 }
+
+                if(InputEvent::OnEvent(header,data)==EventProcResult::Break)
+                    return EventProcResult::Break;
 
                 return EventProcResult::Continue;
             }

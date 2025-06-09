@@ -6,7 +6,7 @@ namespace hgl::io
 {
     struct EventHeader
     {
-        uint8 type;      ///<输入源类型
+        InputEventSource type;      ///<输入源类型
         uint8 index;     ///<输入源索引(比如同一设备有多个)
         uint16 id;       ///<事件id
     };
@@ -28,7 +28,11 @@ namespace hgl::io
 
         InputEventSource source_type;
 
-        SortedSet<InputEvent *> sub_event_proc[size_t(InputEventSource::RANGE_SIZE)];
+        InputEvent *parent_input_event;
+
+        SortedSet<InputEvent *> sub_event_proc;
+
+        void SetParent(InputEvent *ie){parent_input_event=ie;}
 
     public:
 
@@ -36,20 +40,12 @@ namespace hgl::io
 
         virtual EventProcResult OnEvent(const EventHeader &header,const uint64 data)
         {
-            if(!RangeCheck((InputEventSource)header.type))
+            if(!RangeCheck(header.type))
                 return(EventProcResult::Break);
 
-            if(sub_event_proc[header.type].GetCount()>0)
+            if(!sub_event_proc.IsEmpty())
             {
-                for(InputEvent *ie:sub_event_proc[header.type])
-                    if(ie->OnEvent(header,data)==EventProcResult::Break)
-                        return EventProcResult::Break;
-            }
-
-            if(sub_event_proc[size_t(InputEventSource::Root)].GetCount()>0
-                &&InputEventSource(header.type)!=InputEventSource::Root)
-            {
-                for(InputEvent *ie:sub_event_proc[size_t(InputEventSource::Root)])
+                for(InputEvent *ie:sub_event_proc)
                     if(ie->OnEvent(header,data)==EventProcResult::Break)
                         return EventProcResult::Break;
             }
@@ -62,14 +58,20 @@ namespace hgl::io
         InputEvent()
         {
             source_type=InputEventSource::Root;
+            parent_input_event=nullptr;
         }
 
         InputEvent(InputEventSource ies)
         {
             source_type=ies;
+            parent_input_event=nullptr;
         }
 
-        virtual ~InputEvent()=default;
+        virtual ~InputEvent()
+        {
+            if(parent_input_event)
+                parent_input_event->Unjoin(this);
+        }
 
         virtual bool Join(InputEvent *ie)
         {
@@ -81,7 +83,9 @@ namespace hgl::io
             if(!RangeCheck(ies))
                 return(false);
 
-            return(sub_event_proc[size_t(ies)].Add(ie)!=-1);
+            ie->SetParent(this);
+
+            return(sub_event_proc.Add(ie)!=-1);
         }
 
         bool Unjoin(InputEvent *ie)
@@ -93,7 +97,11 @@ namespace hgl::io
             if(!RangeCheck(ies))
                 return(false);
 
-            return sub_event_proc[size_t(ies)].Delete(ie);
+            ie->SetParent(nullptr);
+
+            return sub_event_proc.Delete(ie);
         }
+
+        virtual bool Update(){return true;}
     };//class InputEvent
 }//namespace hgl::io
