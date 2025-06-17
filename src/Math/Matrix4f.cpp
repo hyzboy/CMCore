@@ -81,7 +81,7 @@ namespace hgl
         float f = 1.0f / tanf( deg2rad( 0.5f * field_of_view ) );
 
         return Matrix4f(
-          f / aspect_ratio,
+          -f / aspect_ratio,
           0.0f,
           0.0f,
           0.0f,

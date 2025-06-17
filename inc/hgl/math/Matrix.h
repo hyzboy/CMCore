@@ -110,7 +110,7 @@ namespace hgl
      * @param target 目标位置
      * @param up 向上向量
      */
-    Matrix4f lookat(const Vector3f &eye,const Vector3f &target,const Vector3f &up);
+    Matrix4f lookat(const Vector3f &eye,const Vector3f &target,const Vector3f &up=AxisVector::Z);
 
     inline Matrix4f translate(const Vector3f &v)
     {
