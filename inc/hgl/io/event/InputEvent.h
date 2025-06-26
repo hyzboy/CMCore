@@ -2,13 +2,14 @@
 
 #include<hgl/type/SortedSet.h>
 #include<hgl/io/event/InputEventSource.h>
+
 namespace hgl::io
 {
     struct EventHeader
     {
-        InputEventSource type;      ///<输入源类型
-        uint8 index;     ///<输入源索引(比如同一设备有多个)
-        uint16 id;       ///<事件id
+        InputEventSource    type;       ///<输入源类型
+        uint8               index;      ///<输入源索引(比如同一设备有多个)
+        uint16              id;         ///<事件id
     };
 
     constexpr size_t EventHeaderBytes=sizeof(EventHeader);
@@ -26,11 +27,13 @@ namespace hgl::io
     {
     protected:
 
-        InputEventSource source_type;
+        InputEventSource        source_type;
 
-        InputEvent *parent_input_event;
+        InputEvent *            parent_input_event;
 
-        SortedSet<InputEvent *> sub_event_proc;
+        SortedSet<InputEvent *> event_dispatch_subscribers;
+
+    protected:
 
         void SetParent(InputEvent *ie){parent_input_event=ie;}
 
@@ -43,9 +46,9 @@ namespace hgl::io
             if(!RangeCheck(header.type))
                 return(EventProcResult::Break);
 
-            if(!sub_event_proc.IsEmpty())
+            if(!event_dispatch_subscribers.IsEmpty())
             {
-                for(InputEvent *ie:sub_event_proc)
+                for(InputEvent *ie:event_dispatch_subscribers)
                     if(ie->OnEvent(header,data)==EventProcResult::Break)
                         return EventProcResult::Break;
             }
@@ -70,10 +73,10 @@ namespace hgl::io
         virtual ~InputEvent()
         {
             if(parent_input_event)
-                parent_input_event->Unjoin(this);
+                parent_input_event->UnregistryEventDispatch(this);
         }
 
-        virtual bool Join(InputEvent *ie)
+        virtual bool RegistryEventDispatch(InputEvent *ie)
         {
             if(!ie)
                 return(false);
@@ -85,10 +88,10 @@ namespace hgl::io
 
             ie->SetParent(this);
 
-            return(sub_event_proc.Add(ie)!=-1);
+            return(event_dispatch_subscribers.Add(ie)!=-1);
         }
 
-        bool Unjoin(InputEvent *ie)
+        bool UnregistryEventDispatch(InputEvent *ie)
         {
             if(!ie)return(false);
 
@@ -99,7 +102,7 @@ namespace hgl::io
 
             ie->SetParent(nullptr);
 
-            return sub_event_proc.Delete(ie);
+            return event_dispatch_subscribers.Delete(ie);
         }
 
         virtual bool Update(){return true;}
