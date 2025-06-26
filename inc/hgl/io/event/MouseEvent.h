@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/io/event/InputEvent.h>
+#include<hgl/io/event/EventDispatch.h>
 #include<hgl/math/Vector.h>
 namespace hgl::io
 {

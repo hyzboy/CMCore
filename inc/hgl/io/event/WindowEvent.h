@@ -1,7 +1,7 @@
 ﻿#ifndef HGL_IO_WINDOW_EVENT_INCLUDE
 #define HGL_IO_WINDOW_EVENT_INCLUDE
 
-#include<hgl/io/event/InputEvent.h>
+#include<hgl/io/event/EventDispatch.h>
 namespace hgl
 {
     namespace io
