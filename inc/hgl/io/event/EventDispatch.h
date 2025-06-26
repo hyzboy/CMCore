@@ -23,19 +23,19 @@ namespace hgl::io
         Break,
     };
 
-    class InputEvent
+    class EventDispatch
     {
     protected:
 
-        InputEventSource        source_type;
+        InputEventSource            source_type;
 
-        InputEvent *            parent_input_event;
+        EventDispatch *             parent_input_event;
 
-        SortedSet<InputEvent *> event_dispatch_subscribers;
+        SortedSet<EventDispatch *>  event_dispatch_subscribers;
 
     protected:
 
-        void SetParent(InputEvent *ie){parent_input_event=ie;}
+        void SetParent(EventDispatch *ie){parent_input_event=ie;}
 
     public:
 
@@ -48,7 +48,7 @@ namespace hgl::io
 
             if(!event_dispatch_subscribers.IsEmpty())
             {
-                for(InputEvent *ie:event_dispatch_subscribers)
+                for(EventDispatch *ie:event_dispatch_subscribers)
                     if(ie->OnEvent(header,data)==EventProcResult::Break)
                         return EventProcResult::Break;
             }
@@ -58,25 +58,25 @@ namespace hgl::io
 
     public:
 
-        InputEvent()
+        EventDispatch()
         {
             source_type=InputEventSource::Root;
             parent_input_event=nullptr;
         }
 
-        InputEvent(InputEventSource ies)
+        EventDispatch(InputEventSource ies)
         {
             source_type=ies;
             parent_input_event=nullptr;
         }
 
-        virtual ~InputEvent()
+        virtual ~EventDispatch()
         {
             if(parent_input_event)
                 parent_input_event->UnregistryEventDispatch(this);
         }
 
-        virtual bool RegistryEventDispatch(InputEvent *ie)
+        virtual bool RegistryEventDispatch(EventDispatch *ie)
         {
             if(!ie)
                 return(false);
@@ -91,7 +91,7 @@ namespace hgl::io
             return(event_dispatch_subscribers.Add(ie)!=-1);
         }
 
-        bool UnregistryEventDispatch(InputEvent *ie)
+        bool UnregistryEventDispatch(EventDispatch *ie)
         {
             if(!ie)return(false);
 
@@ -106,5 +106,5 @@ namespace hgl::io
         }
 
         virtual bool Update(){return true;}
-    };//class InputEvent
+    };//class EventDispatch
 }//namespace hgl::io

@@ -158,11 +158,11 @@ namespace hgl
             os_char ch;
         };
 
-        class KeyboardEvent:public InputEvent
+        class KeyboardEvent:public EventDispatch
         {
         public:
 
-            KeyboardEvent():InputEvent(InputEventSource::Keyboard){}
+            KeyboardEvent():EventDispatch(InputEventSource::Keyboard){}
             virtual ~KeyboardEvent()=default;
 
             EventProcResult OnEvent(const EventHeader &header,const uint64 data) override
@@ -177,7 +177,7 @@ namespace hgl
                     }
                 }
 
-                if(InputEvent::OnEvent(header,data)==EventProcResult::Break)
+                if(EventDispatch::OnEvent(header,data)==EventProcResult::Break)
                     return EventProcResult::Break;
 
                 return EventProcResult::Continue;

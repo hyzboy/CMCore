@@ -42,7 +42,7 @@ namespace hgl::io
 
     constexpr size_t MouseEventDataBytes=sizeof(MouseEventData);
         
-    class MouseEvent:public InputEvent
+    class MouseEvent:public EventDispatch
     {
         MouseEventData *med;
 
@@ -52,7 +52,7 @@ namespace hgl::io
 
     public:
 
-        MouseEvent():InputEvent(InputEventSource::Mouse)
+        MouseEvent():EventDispatch(InputEventSource::Mouse)
         {
             med=nullptr;
             position.x=0;
@@ -88,7 +88,7 @@ namespace hgl::io
                 }
             }
 
-            if(InputEvent::OnEvent(header,data)==EventProcResult::Break)
+            if(EventDispatch::OnEvent(header,data)==EventProcResult::Break)
                 return EventProcResult::Break;
 
             return EventProcResult::Continue;

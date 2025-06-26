@@ -27,13 +27,13 @@ namespace hgl
 
         constexpr size_t WindowEventDataBytes=sizeof(WindowEventData);
 
-        class WindowEvent:public InputEvent
+        class WindowEvent:public EventDispatch
         {
             WindowEventData *wed;
 
         public:
 
-            WindowEvent():InputEvent(InputEventSource::Window){wed=nullptr;}
+            WindowEvent():EventDispatch(InputEventSource::Window){wed=nullptr;}
             virtual ~WindowEvent()=default;
 
             virtual EventProcResult OnEvent(const EventHeader &header,const uint64 data) override
@@ -50,7 +50,7 @@ namespace hgl
                     }
                 }
 
-                if(InputEvent::OnEvent(header,data)==EventProcResult::Break)
+                if(EventDispatch::OnEvent(header,data)==EventProcResult::Break)
                     return EventProcResult::Break;
 
                 return EventProcResult::Continue;
@@ -61,7 +61,7 @@ namespace hgl
             virtual void OnResize(uint w,uint h){}
             virtual void OnActive(bool){}
             virtual void OnClose (){}
-        };//class WindowEvent:public InputEvent
+        };//class WindowEvent:public EventDispatch
     }//namespace io
 }//namespace hgl
 #endif//HGL_IO_WINDOW_EVENT_INCLUDE
