@@ -20,8 +20,8 @@ namespace hgl
         PlugInManage(const OSString &n);
         virtual ~PlugInManage()=default;
 
-        bool    RegistryPlugin(PlugIn *);                                       ///<注册一个内置插件
-        uint    UnregistryPlugin(const OSString &);                             ///<释放一个内置插件
+        bool    RegisterPlugin(PlugIn *);                                       ///<注册一个内置插件
+        uint    UnregisterPlugin(const OSString &);                             ///<释放一个内置插件
 
         bool    AddFindPath (const OSString &path);                             ///<添加一个插件查找目录
 
@@ -33,24 +33,24 @@ namespace hgl
     /**
      * 插件注册模板
      */
-    template<typename T> class RegistryPlugInProxy
+    template<typename T> class RegisterPlugInProxy
     {
         T *plugin;
 
     public:
 
-        RegistryPlugInProxy()
+        RegisterPlugInProxy()
         {
             plugin=new T;
         }
 
-        virtual ~RegistryPlugInProxy()
+        virtual ~RegisterPlugInProxy()
         {
             delete plugin;
         }
 
         T *get(){return plugin;}
-    };//template<typename T> class RegistryPlugInProxy
+    };//template<typename T> class RegisterPlugInProxy
 
     /*
         如Log插件中的Console,File插件，是直接在代码中的，属于内部插件。
@@ -58,11 +58,11 @@ namespace hgl
     */
 
 #ifndef __MAKE_PLUGIN__     //内部插件
-    #define REGISTRY_PLUG_IN(name,classname)    static RegistryPlugInProxy<name,classname> plugin_proxy_##classname;   \
-                                                extern "C" void registry_plugin_##classname;
+    #define REGISTER_PLUG_IN(name,classname)    static RegisterPlugInProxy<name,classname> plugin_proxy_##classname;   \
+                                                extern "C" void register_plugin_##classname;
 #else                       //外部插件
-    #define REGISTRY_PLUG_IN(name,classname)    static RegistryPlugInProxy<name,classname> plugin_proxy_##classname     \
-    extern "C" void registry_plugin_##name(void)
+    #define REGISTER_PLUG_IN(name,classname)    static RegisterPlugInProxy<name,classname> plugin_proxy_##classname     \
+    extern "C" void register_plugin_##name(void)
     {
         
     }

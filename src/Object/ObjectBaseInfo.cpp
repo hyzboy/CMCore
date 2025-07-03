@@ -1,4 +1,4 @@
-#include<hgl/type/object/ObjectBaseInfo.h>
+﻿#include<hgl/type/object/ObjectBaseInfo.h>
 #include<tsl/robin_map.h>
 #include<typeinfo>
 
@@ -9,7 +9,7 @@ namespace hgl
         tsl::robin_map<size_t,ObjectTypeInfo *> type_info_map;
     }//namespace
 
-    void RegistryObjectTypeInfo(const size_t &hash_code,const std::type_info *info)
+    void RegisterObjectTypeInfo(const size_t &hash_code,const std::type_info *info)
     {
         if(!info)
             return;

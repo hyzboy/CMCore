@@ -73,10 +73,10 @@ namespace hgl::io
         virtual ~EventDispatch()
         {
             if(parent_input_event)
-                parent_input_event->UnregistryEventDispatch(this);
+                parent_input_event->UnregisterEventDispatch(this);
         }
 
-        virtual bool RegistryEventDispatch(EventDispatch *ie)
+        virtual bool RegisterEventDispatch(EventDispatch *ie)
         {
             if(!ie)
                 return(false);
@@ -91,7 +91,7 @@ namespace hgl::io
             return(event_dispatch_subscribers.Add(ie)!=-1);
         }
 
-        bool UnregistryEventDispatch(EventDispatch *ie)
+        bool UnregisterEventDispatch(EventDispatch *ie)
         {
             if(!ie)return(false);
 

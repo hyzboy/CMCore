@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include<hgl/type/DataType.h>
 #include<hgl/type/object/ObjectBaseInfo.h>
 #include<source_location>
@@ -18,7 +18,7 @@ namespace hgl
 
         tsl::robin_map<size_t,void *> inherit_class_map;        ///<继承类的hash值与this指针的映射表
 
-        bool RegistryInheritClass(const size_t &hash_code,void *class_this)noexcept
+        bool RegisterInheritClass(const size_t &hash_code,void *class_this)noexcept
         {
             if(inherit_class_map.find(hash_code)!=inherit_class_map.end())
                 return(false);
@@ -28,9 +28,9 @@ namespace hgl
             return(true);
         }
 
-        template<typename T> bool RegistryInheritClass(T *class_this)noexcept
+        template<typename T> bool RegisterInheritClass(T *class_this)noexcept
         {
-            return RegistryInheritClass(hgl::GetTypeHash<T>(),class_this);
+            return RegisterInheritClass(hgl::GetTypeHash<T>(),class_this);
         }
 
     public:

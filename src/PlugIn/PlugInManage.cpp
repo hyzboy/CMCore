@@ -28,7 +28,7 @@ namespace hgl
         }
     }
 
-    bool PlugInManage::RegistryPlugin(PlugIn *pi)
+    bool PlugInManage::RegisterPlugin(PlugIn *pi)
     {
         if(!pi)return(false);
 
@@ -40,7 +40,7 @@ namespace hgl
         return this->Add(pi_name,pi);
     }
 
-    uint PlugInManage::UnregistryPlugin(const OSString &pi_name)
+    uint PlugInManage::UnregisterPlugin(const OSString &pi_name)
     {
         PlugIn *pi=this->Find(pi_name);
 

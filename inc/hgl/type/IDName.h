@@ -6,7 +6,7 @@
 namespace hgl
 {
     template<typename T,typename SC>
-    bool RegistryIDName(ConstStringView<SC> &csv,const SC *name_string,const int name_length)
+    bool RegisterIDName(ConstStringView<SC> &csv,const SC *name_string,const int name_length)
     {
         static ConstStringSet<SC> *id_name_set=nullptr;
 
@@ -47,7 +47,7 @@ namespace hgl
                 return;
             }
 
-            RegistryIDName<MANAGER,SC>(csv,name_string,name_length);
+            RegisterIDName<MANAGER,SC>(csv,name_string,name_length);
         }
 
     public:
