@@ -147,29 +147,29 @@ namespace hgl
         return glm::scale(Matrix4f(1.0f),Vector3f(s,s,s));
     }
 
-    inline Matrix4f rotate(float angle,const Vector3f &axis)
+    inline Matrix4f rotate(float rad,const Vector3f &axis)
     {
-        return glm::rotate(Matrix4f(1.0f),angle,axis);
+        return glm::rotate(Matrix4f(1.0f),rad,axis);
     }
 
-    inline Matrix4f rotate(float angle,float x,float y,float z)
+    inline Matrix4f rotate(float rad,float x,float y,float z)
     {
-        return glm::rotate(Matrix4f(1.0f),angle,Vector3f(x,y,z));
+        return glm::rotate(Matrix4f(1.0f),rad,Vector3f(x,y,z));
     }
     
-    inline Matrix4f rotate(float angle,float x,float y)
+    inline Matrix4f rotate(float rad,float x,float y)
     {
-        return rotate(angle,x,y,1.0f);
+        return rotate(rad,x,y,1.0f);
     }
 
-    inline Matrix4f rotate(float angle,const Vector4f &axis)
+    inline Matrix4f rotate(float rad,const Vector4f &axis)
     {
-        return rotate(angle,Vector3f(axis.x,axis.y,axis.z));
+        return rotate(rad,Vector3f(axis.x,axis.y,axis.z));
     }
 
-    inline Vector3f rotate(const Vector3f &v3f,float angle,const Vector3f &axis)
+    inline Vector3f rotate(const Vector3f &v3f,float rad,const Vector3f &axis)
     {
-        Vector4f result = rotate(angle, axis)*Vector4f(v3f, 1.0f);
+        Vector4f result = rotate(rad, axis)*Vector4f(v3f, 1.0f);
 
         return Vector3f(result.x,result.y,result.z);
     }
