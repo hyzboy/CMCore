@@ -215,7 +215,7 @@ namespace hgl
 
         void MakeNewestData(Matrix4f &mat) override
         {
-            mat=rotate(angle,axis);
+            mat=AxisRotate(angle,axis);
         }
 
     public:

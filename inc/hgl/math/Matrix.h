@@ -147,29 +147,33 @@ namespace hgl
         return glm::scale(Matrix4f(1.0f),Vector3f(s,s,s));
     }
 
-    inline Matrix4f rotate(float rad,const Vector3f &axis)
+    inline Matrix4f AxisXRotate(float rad){return glm::rotate(Matrix4f(1.0f),rad,AxisVector::X);}
+    inline Matrix4f AxisYRotate(float rad){return glm::rotate(Matrix4f(1.0f),rad,AxisVector::Y);}
+    inline Matrix4f AxisZRotate(float rad){return glm::rotate(Matrix4f(1.0f),rad,AxisVector::Z);}
+
+    inline Matrix4f AxisRotate(float rad,const Vector3f &axis)
     {
         return glm::rotate(Matrix4f(1.0f),rad,axis);
     }
 
-    inline Matrix4f rotate(float rad,float x,float y,float z)
+    inline Matrix4f AxisRotate(float rad,float x,float y,float z)
     {
         return glm::rotate(Matrix4f(1.0f),rad,Vector3f(x,y,z));
     }
     
-    inline Matrix4f rotate(float rad,float x,float y)
+    inline Matrix4f AxisRotate(float rad,float x,float y)
     {
-        return rotate(rad,x,y,1.0f);
+        return AxisRotate(rad,x,y,1.0f);
     }
 
-    inline Matrix4f rotate(float rad,const Vector4f &axis)
+    inline Matrix4f AxisRotate(float rad,const Vector4f &axis)
     {
-        return rotate(rad,Vector3f(axis.x,axis.y,axis.z));
+        return AxisRotate(rad,Vector3f(axis.x,axis.y,axis.z));
     }
 
-    inline Vector3f rotate(const Vector3f &v3f,float rad,const Vector3f &axis)
+    inline Vector3f AxisRotate(const Vector3f &v3f,float rad,const Vector3f &axis)
     {
-        Vector4f result = rotate(rad, axis)*Vector4f(v3f, 1.0f);
+        Vector4f result = AxisRotate(rad, axis)*Vector4f(v3f, 1.0f);
 
         return Vector3f(result.x,result.y,result.z);
     }
