@@ -778,7 +778,7 @@ namespace hgl
         {
             if(is_identity)
             {
-                if(IsNearlyZero(angle)==0)
+                if(IsNearlyZero(angle))
                     return;
             }
 
@@ -793,7 +793,7 @@ namespace hgl
         {
             if(is_identity)
             {
-                if(IsNearlyZero(angle)==0)
+                if(IsNearlyZero(angle))
                     return;
             }
 
@@ -808,7 +808,7 @@ namespace hgl
         {
             if(is_identity)
             {
-                if(IsNearlyZero(angle)==0)
+                if(IsNearlyZero(angle))
                     return;
             }
 
