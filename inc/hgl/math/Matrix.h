@@ -51,16 +51,6 @@ namespace hgl
         return glm::all(glm::epsilonEqual(q1,q2,err));
     }
 
-    inline Matrix4f inverse(const Matrix4f &m)
-    {
-        return glm::inverse(m);
-    }
-
-    inline Matrix4f transpose(const Matrix4f &m)
-    {
-        return glm::transpose(m);
-    }
-
     /**
      * 生成一个正角视图矩阵
      * @param left 左
@@ -70,7 +60,7 @@ namespace hgl
      * @param znear 近平面z值
      * @param zfar 远平台z值
      */
-    Matrix4f ortho( float left,
+    Matrix4f OrthoMatrix( float left,
                     float right,
                     float bottom,
                     float top,
@@ -84,14 +74,14 @@ namespace hgl
      * @param znear 近平面z值
      * @param zfar 远平台z值
      */
-    Matrix4f ortho(float width,float height,float znear,float zfar);
+    Matrix4f OrthoMatrix(float width,float height,float znear,float zfar);
 
     /**
      * 生成一个正角视图矩阵
      * @param width 宽
      * @param height 高
      */
-    Matrix4f ortho(float width,float height);
+    Matrix4f OrthoMatrix(float width,float height);
 
     /**
      * 生成一个透视矩阵
@@ -100,7 +90,7 @@ namespace hgl
      * @param znear 近截面
      * @param zfar 远截面
      */
-    Matrix4f perspective(   float field_of_view,
+    Matrix4f PerspectiveMatrix(   float field_of_view,
                             float aspect_ratio,                                
                             float znear,
                             float zfar);
@@ -110,39 +100,39 @@ namespace hgl
      * @param target 目标位置
      * @param up 向上向量
      */
-    Matrix4f lookat(const Vector3f &eye,const Vector3f &target,const Vector3f &up=AxisVector::Z);
+    Matrix4f LookAtMatrix(const Vector3f &eye,const Vector3f &target,const Vector3f &up=AxisVector::Z);
 
-    inline Matrix4f translate(const Vector3f &v)
+    inline Matrix4f TranslateMatrix(const Vector3f &v)
     {
         return glm::translate(Matrix4f(1.0f),v);
     }
 
-    inline Matrix4f translate(float x,float y,float z)
+    inline Matrix4f TranslateMatrix(float x,float y,float z)
     {
         return glm::translate(Matrix4f(1.0f),Vector3f(x,y,z));
     }
 
-    inline Matrix4f translate(float x,float y)
+    inline Matrix4f TranslateMatrix(float x,float y)
     {
-        return translate(x,y,1.0f);
+        return glm::translate(Matrix4f(1.0f),Vector3f(x,y,1.0f));
     }
 
-    inline Matrix4f scale(const Vector3f &v)
+    inline Matrix4f ScaleMatrix(const Vector3f &v)
     {
         return glm::scale(Matrix4f(1.0f),v);
     }
 
-    inline Matrix4f scale(float x,float y,float z)
+    inline Matrix4f ScaleMatrix(float x,float y,float z)
     {
         return glm::scale(Matrix4f(1.0f),Vector3f(x,y,z));
     }
 
-    inline Matrix4f scale(float x,float y)
+    inline Matrix4f ScaleMatrix(float x,float y)
     {
-        return scale(x,y,1.0f);
+        return glm::scale(Matrix4f(1.0f),Vector3f(x,y,1.0f));
     }
 
-    inline Matrix4f scale(float s)
+    inline Matrix4f ScaleMatrix(float s)
     {
         return glm::scale(Matrix4f(1.0f),Vector3f(s,s,s));
     }

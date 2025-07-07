@@ -101,7 +101,7 @@ namespace hgl
 
         void MakeNewestData(Matrix4f &mat) override
         {
-            mat=translate(offset);
+            mat=TranslateMatrix(offset);
         }
 
     public:
@@ -342,7 +342,7 @@ namespace hgl
 
         void MakeNewestData(Matrix4f &mat) override
         {
-            mat=scale(scale3f);
+            mat=ScaleMatrix(scale3f);
         }
 
     public:
@@ -395,7 +395,7 @@ namespace hgl
 
         void MakeNewestData(Matrix4f &mat) override
         {
-            mat=lookat(eye,center,up);
+            mat=LookAtMatrix(eye,center,up);
         }
 
     public:
@@ -695,7 +695,7 @@ namespace hgl
         const Matrix4f GetMatrix()const     //不能执行UpdateMatrix时的获取
         {
             if(matrix_dirty)
-                return translate(translation_vector)*ToMatrix(rotation_quat)*scale(scale_vector);
+                return TranslateMatrix(translation_vector)*ToMatrix(rotation_quat)*ScaleMatrix(scale_vector);
             else
                 return matrix;
         }

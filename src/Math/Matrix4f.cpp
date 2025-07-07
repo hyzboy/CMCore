@@ -14,7 +14,7 @@
 
 namespace hgl
 {
-    Matrix4f ortho( float left,
+    Matrix4f OrthoMatrix( float left,
                     float right,
                     float bottom,
                     float top,
@@ -51,9 +51,9 @@ namespace hgl
      * @param znear 近平面z值
      * @param zfar 远平台z值
      */
-    Matrix4f ortho(float width,float height,float znear,float zfar)
+    Matrix4f OrthoMatrix(float width,float height,float znear,float zfar)
     {        
-        return ortho(0.0f,width,height,0.0f,znear,zfar);
+        return OrthoMatrix(0.0f,width,height,0.0f,znear,zfar);
     }
 
     /**
@@ -61,9 +61,9 @@ namespace hgl
      * @param width 宽
      * @param height 高
      */
-    Matrix4f ortho(float width,float height)
+    Matrix4f OrthoMatrix(float width,float height)
     {    
-        return ortho(width,height,0.0f,1.0f);
+        return OrthoMatrix(width,height,0.0f,1.0f);
     }
 
     /**
@@ -73,7 +73,7 @@ namespace hgl
      * @param znear 近截面
      * @param zfar 远截面
      */
-    Matrix4f perspective(   float field_of_view,
+    Matrix4f PerspectiveMatrix(   float field_of_view,
                             float aspect_ratio,
                             float znear,
                             float zfar)
@@ -105,7 +105,7 @@ namespace hgl
         //经查证，此代码等于glm::perspectiveRH_ZO之后将[1][1]乘-1，在SaschaWillems的范例中，如果反转Y轴，则[1][1]确实要乘-1。
     }
 
-    Matrix4f lookat(const Vector3f &eye,const Vector3f &target,const Vector3f &up)
+    Matrix4f LookAtMatrix(const Vector3f &eye,const Vector3f &target,const Vector3f &up)
     {
         Vector3f forward=normalize(target-eye);
         Vector3f right  =normalize(cross(forward,up));
