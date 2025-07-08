@@ -52,7 +52,7 @@ namespace hgl
         }
         else
         {
-            matrix=translate(translation_vector)*ToMatrix(rotation_quat)*scale(scale_vector);
+            matrix=TranslateMatrix(translation_vector)*ToMatrix(rotation_quat)*ScaleMatrix(scale_vector);
             inverse_matrix=inverse(matrix);
             transpose_inverse_matrix=transpose(inverse_matrix);
 
