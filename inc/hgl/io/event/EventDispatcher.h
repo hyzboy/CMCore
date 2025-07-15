@@ -30,19 +30,19 @@ namespace hgl::io
         Break,
     };
 
-    class EventDispatch
+    class EventDispatcher
     {
     protected:
 
-        InputEventSource            source_type;
+        InputEventSource                source_type;
 
-        EventDispatch *             parent_input_event;
+        EventDispatcher *               parent_input_event;
 
-        SortedSet<EventDispatch *>  event_dispatch_subscribers;
+        SortedSet<EventDispatcher *>    event_subscribers;
 
     protected:
 
-        void SetParent(EventDispatch *ie){parent_input_event=ie;}
+        void SetParent(EventDispatcher *ie){parent_input_event=ie;}
 
     public:
 
@@ -53,9 +53,9 @@ namespace hgl::io
             if(!RangeCheck(header.type))
                 return(EventProcResult::Break);
 
-            if(!event_dispatch_subscribers.IsEmpty())
+            if(!event_subscribers.IsEmpty())
             {
-                for(EventDispatch *ie:event_dispatch_subscribers)
+                for(EventDispatcher *ie:event_subscribers)
                     if(ie->OnEvent(header,data)==EventProcResult::Break)
                         return EventProcResult::Break;
             }
@@ -65,25 +65,25 @@ namespace hgl::io
 
     public:
 
-        EventDispatch()
+        EventDispatcher()
         {
             source_type=InputEventSource::Root;
             parent_input_event=nullptr;
         }
 
-        EventDispatch(InputEventSource ies)
+        EventDispatcher(InputEventSource ies)
         {
             source_type=ies;
             parent_input_event=nullptr;
         }
 
-        virtual ~EventDispatch()
+        virtual ~EventDispatcher()
         {
             if(parent_input_event)
-                parent_input_event->UnregisterEventDispatch(this);
+                parent_input_event->UnsubscribeEventDispatcher(this);
         }
 
-        virtual bool RegisterEventDispatch(EventDispatch *ie)
+        virtual bool SubscribeEventDispatcher(EventDispatcher *ie)
         {
             if(!ie)
                 return(false);
@@ -95,10 +95,10 @@ namespace hgl::io
 
             ie->SetParent(this);
 
-            return(event_dispatch_subscribers.Add(ie)!=-1);
+            return(event_subscribers.Add(ie)!=-1);
         }
 
-        bool UnregisterEventDispatch(EventDispatch *ie)
+        bool UnsubscribeEventDispatcher(EventDispatcher *ie)
         {
             if(!ie)return(false);
 
@@ -109,9 +109,9 @@ namespace hgl::io
 
             ie->SetParent(nullptr);
 
-            return event_dispatch_subscribers.Delete(ie);
+            return event_subscribers.Delete(ie);
         }
 
         virtual bool Update(){return true;}
-    };//class EventDispatch
+    };//class EventDispatcher
 }//namespace hgl::io

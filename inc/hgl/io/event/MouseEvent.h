@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/io/event/EventDispatch.h>
+#include<hgl/io/event/EventDispatcher.h>
 #include<hgl/math/Vector.h>
 namespace hgl::io
 {
@@ -42,7 +42,7 @@ namespace hgl::io
 
     constexpr size_t MouseEventDataBytes=sizeof(MouseEventData);
         
-    class MouseEvent:public EventDispatch
+    class MouseEvent:public EventDispatcher
     {
         MouseEventData *med;
 
@@ -52,7 +52,7 @@ namespace hgl::io
 
     public:
 
-        MouseEvent():EventDispatch(InputEventSource::Mouse)
+        MouseEvent():EventDispatcher(InputEventSource::Mouse)
         {
             med=nullptr;
             position.x=0;
@@ -88,7 +88,7 @@ namespace hgl::io
                 }
             }
 
-            if(EventDispatch::OnEvent(header,data)==EventProcResult::Break)
+            if(EventDispatcher::OnEvent(header,data)==EventProcResult::Break)
                 return EventProcResult::Break;
 
             return EventProcResult::Continue;

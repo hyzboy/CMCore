@@ -1,7 +1,7 @@
 ﻿#ifndef HGL_IO_WINDOW_EVENT_INCLUDE
 #define HGL_IO_WINDOW_EVENT_INCLUDE
 
-#include<hgl/io/event/EventDispatch.h>
+#include<hgl/io/event/EventDispatcher.h>
 namespace hgl
 {
     namespace io
@@ -27,13 +27,13 @@ namespace hgl
 
         constexpr size_t WindowEventDataBytes=sizeof(WindowEventData);
 
-        class WindowEvent:public EventDispatch
+        class WindowEvent:public EventDispatcher
         {
             WindowEventData *wed;
 
         public:
 
-            WindowEvent():EventDispatch(InputEventSource::Window){wed=nullptr;}
+            WindowEvent():EventDispatcher(InputEventSource::Window){wed=nullptr;}
             virtual ~WindowEvent()=default;
 
             virtual EventProcResult OnEvent(const EventHeader &header,const uint64 data) override
@@ -50,7 +50,7 @@ namespace hgl
                     }
                 }
 
-                if(EventDispatch::OnEvent(header,data)==EventProcResult::Break)
+                if(EventDispatcher::OnEvent(header,data)==EventProcResult::Break)
                     return EventProcResult::Break;
 
                 return EventProcResult::Continue;
@@ -61,7 +61,7 @@ namespace hgl
             virtual void OnResize(uint w,uint h){}
             virtual void OnActive(bool){}
             virtual void OnClose (){}
-        };//class WindowEvent:public EventDispatch
+        };//class WindowEvent:public EventDispatcher
     }//namespace io
 }//namespace hgl
 #endif//HGL_IO_WINDOW_EVENT_INCLUDE
