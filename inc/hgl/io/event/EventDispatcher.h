@@ -30,6 +30,9 @@ namespace hgl::io
         Break,
     };
 
+    /**
+    * 事件分发器
+    */
     class EventDispatcher
     {
     protected:
@@ -38,7 +41,7 @@ namespace hgl::io
 
         EventDispatcher *               parent_input_event;
 
-        SortedSet<EventDispatcher *>    event_subscribers;
+        SortedSet<EventDispatcher *>    child_dispatchers;
 
     protected:
 
@@ -53,9 +56,9 @@ namespace hgl::io
             if(!RangeCheck(header.type))
                 return(EventProcResult::Break);
 
-            if(!event_subscribers.IsEmpty())
+            if(!child_dispatchers.IsEmpty())
             {
-                for(EventDispatcher *ie:event_subscribers)
+                for(EventDispatcher *ie:child_dispatchers)
                     if(ie->OnEvent(header,data)==EventProcResult::Break)
                         return EventProcResult::Break;
             }
@@ -80,37 +83,11 @@ namespace hgl::io
         virtual ~EventDispatcher()
         {
             if(parent_input_event)
-                parent_input_event->UnsubscribeEventDispatcher(this);
+                parent_input_event->RemoveChildDispatcher(this);
         }
 
-        virtual bool SubscribeEventDispatcher(EventDispatcher *ie)
-        {
-            if(!ie)
-                return(false);
-
-            const InputEventSource ies=ie->GetInputEventSource();
-
-            if(!RangeCheck(ies))
-                return(false);
-
-            ie->SetParent(this);
-
-            return(event_subscribers.Add(ie)!=-1);
-        }
-
-        bool UnsubscribeEventDispatcher(EventDispatcher *ie)
-        {
-            if(!ie)return(false);
-
-            const InputEventSource ies=ie->GetInputEventSource();
-
-            if(!RangeCheck(ies))
-                return(false);
-
-            ie->SetParent(nullptr);
-
-            return event_subscribers.Delete(ie);
-        }
+        virtual bool AddChildDispatcher(EventDispatcher *ie);
+        virtual bool RemoveChildDispatcher(EventDispatcher *ie);
 
         virtual bool Update(){return true;}
     };//class EventDispatcher
