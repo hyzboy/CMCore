@@ -66,7 +66,7 @@ namespace hgl
                                                     {    \
                                                         FREE_OBJECT_ARRAY(name,num);    \
                                                 \
-                                                        name=null;  \
+                                                        name=nullptr;  \
                                                     }\
                                                 }
 

@@ -4,27 +4,27 @@
 
 namespace hgl
 {
-    Map<OSString,OSString> ExpendString;
+    Map<OSString,OSString> ExpandString;
 
-    void SetExpendString(const OSString &flag,const OSString &str)
+    void SetExpandString(const OSString &flag,const OSString &str)
     {
         OSString flag_string=flag;
 
         flag_string.LowerCase();
 
-        ExpendString.Add(flag_string,str);
+        ExpandString.Add(flag_string,str);
     }
 
-    void ClearExpendString(const OSString &flag)
+    void ClearExpandString(const OSString &flag)
     {
         OSString flag_string=flag;
 
         flag_string.LowerCase();
 
-        ExpendString.DeleteByKey(flag_string);
+        ExpandString.DeleteByKey(flag_string);
     }
 
-    bool GetExpendString(const OSString &flag,OSString &str)
+    bool GetExpandString(const OSString &flag,OSString &str)
     {
         struct
         {
@@ -72,7 +72,7 @@ namespace hgl
 
         flag_string.LowerCase();
 
-        return ExpendString.Get(flag_string,str);
+        return ExpandString.Get(flag_string,str);
     }
 
     /**
@@ -80,7 +80,7 @@ namespace hgl
     * @param source 原始字符串
     * @param target 转换后的字符串
     */
-    bool ConvertExpendString(const OSString &source,OSString &target)
+    bool ConvertExpandString(const OSString &source,OSString &target)
     {
         target=source;
 
@@ -101,7 +101,7 @@ namespace hgl
             OSString flag(start+2,end-start-2);
             OSString flag_string;
 
-            if(!GetExpendString(flag,flag_string))
+            if(!GetExpandString(flag,flag_string))
             {
                 LOG_ERROR(OS_TEXT("无法识别的标识串：")+flag);
 
