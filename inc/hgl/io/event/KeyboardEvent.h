@@ -1,7 +1,7 @@
 ﻿#ifndef HGL_IO_KEYBOARD_EVENT_INCLUDE
 #define HGL_IO_KEYBOARD_EVENT_INCLUDE
 
-#include<hgl/io/event/EventDispatch.h>
+#include<hgl/io/event/EventDispatcher.h>
 namespace hgl
 {
     namespace io
@@ -158,11 +158,11 @@ namespace hgl
             os_char ch;
         };
 
-        class KeyboardEvent:public EventDispatch
+        class KeyboardEvent:public EventDispatcher
         {
         public:
 
-            KeyboardEvent():EventDispatch(InputEventSource::Keyboard){}
+            KeyboardEvent():EventDispatcher(InputEventSource::Keyboard){}
             virtual ~KeyboardEvent()=default;
 
             EventProcResult OnEvent(const EventHeader &header,const uint64 data) override
@@ -177,7 +177,7 @@ namespace hgl
                     }
                 }
 
-                if(EventDispatch::OnEvent(header,data)==EventProcResult::Break)
+                if(EventDispatcher::OnEvent(header,data)==EventProcResult::Break)
                     return EventProcResult::Break;
 
                 return EventProcResult::Continue;

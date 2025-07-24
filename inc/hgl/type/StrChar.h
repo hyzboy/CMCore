@@ -1,5 +1,4 @@
-﻿#ifndef HGL_STR_TEMPLATE_INCLUDE
-#define HGL_STR_TEMPLATE_INCLUDE
+﻿#pragma once
 
 #include<hgl/TypeFunc.h>
 namespace hgl
@@ -2729,7 +2728,6 @@ namespace hgl
             if(pna->ToNumber(sp,result))
             {
                 ++count;
-
                 result_list.Add(result);
 
                 ++p;
@@ -3004,7 +3002,7 @@ namespace hgl
     }
 
     /**
-     * 将一串原始数据转转成16进制数值字符串
+     * 将一串原始数据转换成16进制数值字符串
      * @param str 16进制数值字符串存入处
      * @param src 原始的数据
      * @param size 原始数据字节长度
@@ -3056,5 +3054,4 @@ namespace hgl
 
     template<typename T> inline void ToUpperHexStr(T *str,const void *data,const int size,const T gap_char=0){DataToHexStr<T>(str,(const uint8 *)data,size,UpperHexChar,gap_char);}
     template<typename T> inline void ToLowerHexStr(T *str,const void *data,const int size,const T gap_char=0){DataToHexStr<T>(str,(const uint8 *)data,size,LowerHexChar,gap_char);}
-    }//namespace hgl
-#endif//HGL_STR_TEMPLATE_INCLUDE
+}//namespace hgl

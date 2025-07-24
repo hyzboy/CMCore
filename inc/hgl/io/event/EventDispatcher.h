@@ -3,6 +3,13 @@
 #include<hgl/type/SortedSet.h>
 #include<hgl/io/event/InputEventSource.h>
 
+/*
+* 现阶段事件分发流程：
+*
+* 操作系统事件    ->      Window  ->   RenderFramework    -> WorkManager
+* 
+*/
+
 namespace hgl::io
 {
     struct EventHeader
@@ -23,19 +30,22 @@ namespace hgl::io
         Break,
     };
 
-    class EventDispatch
+    /**
+    * 事件分发器
+    */
+    class EventDispatcher
     {
     protected:
 
-        InputEventSource            source_type;
+        InputEventSource                source_type;
 
-        EventDispatch *             parent_input_event;
+        EventDispatcher *               parent_input_event;
 
-        SortedSet<EventDispatch *>  event_dispatch_subscribers;
+        SortedSet<EventDispatcher *>    child_dispatchers;
 
     protected:
 
-        void SetParent(EventDispatch *ie){parent_input_event=ie;}
+        void SetParent(EventDispatcher *ie){parent_input_event=ie;}
 
     public:
 
@@ -46,9 +56,9 @@ namespace hgl::io
             if(!RangeCheck(header.type))
                 return(EventProcResult::Break);
 
-            if(!event_dispatch_subscribers.IsEmpty())
+            if(!child_dispatchers.IsEmpty())
             {
-                for(EventDispatch *ie:event_dispatch_subscribers)
+                for(EventDispatcher *ie:child_dispatchers)
                     if(ie->OnEvent(header,data)==EventProcResult::Break)
                         return EventProcResult::Break;
             }
@@ -58,53 +68,27 @@ namespace hgl::io
 
     public:
 
-        EventDispatch()
+        EventDispatcher()
         {
             source_type=InputEventSource::Root;
             parent_input_event=nullptr;
         }
 
-        EventDispatch(InputEventSource ies)
+        EventDispatcher(InputEventSource ies)
         {
             source_type=ies;
             parent_input_event=nullptr;
         }
 
-        virtual ~EventDispatch()
+        virtual ~EventDispatcher()
         {
             if(parent_input_event)
-                parent_input_event->UnregisterEventDispatch(this);
+                parent_input_event->RemoveChildDispatcher(this);
         }
 
-        virtual bool RegisterEventDispatch(EventDispatch *ie)
-        {
-            if(!ie)
-                return(false);
-
-            const InputEventSource ies=ie->GetInputEventSource();
-
-            if(!RangeCheck(ies))
-                return(false);
-
-            ie->SetParent(this);
-
-            return(event_dispatch_subscribers.Add(ie)!=-1);
-        }
-
-        bool UnregisterEventDispatch(EventDispatch *ie)
-        {
-            if(!ie)return(false);
-
-            const InputEventSource ies=ie->GetInputEventSource();
-
-            if(!RangeCheck(ies))
-                return(false);
-
-            ie->SetParent(nullptr);
-
-            return event_dispatch_subscribers.Delete(ie);
-        }
+        virtual bool AddChildDispatcher(EventDispatcher *ie);
+        virtual bool RemoveChildDispatcher(EventDispatcher *ie);
 
         virtual bool Update(){return true;}
-    };//class EventDispatch
+    };//class EventDispatcher
 }//namespace hgl::io

@@ -193,8 +193,10 @@ SET(IO_TEXT_FILES   IO/TextOutputStream.cpp
 SET(INPUT_EVENT_FILES   ${IO_INCLUDE_PATH}/event/KeyboardEvent.h
                         ${IO_INCLUDE_PATH}/event/MouseEvent.h
                         ${IO_INCLUDE_PATH}/event/JoystickEvent.h
-                        ${IO_INCLUDE_PATH}/event/EventDispatch.h
+                        ${IO_INCLUDE_PATH}/event/EventDispatcher.h
                         ${IO_INCLUDE_PATH}/event/InputMapping.h
+                        IO/Event/MouseEvent.cpp
+                        IO/Event/EventDispatcher.cpp
 )
 
 SOURCE_GROUP("IO\\Event"   FILES ${INPUT_EVENT_FILES})
@@ -247,10 +249,10 @@ SOURCE_GROUP("Thread" FILES ${BASE_THREAD_HEADER_FILES}
                             ${BASE_THREAD_SOURCE_FILES})
 
 FILE(GLOB BASE_EVENT_HEADER_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/event/*.*)
-FILE(GLOB BASE_EVENT_SOURCE_FILES Event/*.*)
+#FILE(GLOB BASE_EVENT_SOURCE_FILES Event/*.*)
 
-SOURCE_GROUP("Event" FILES  ${BASE_EVENT_HEADER_FILES}
-                            ${BASE_EVENT_SOURCE_FILES})
+SOURCE_GROUP("Event" FILES  ${BASE_EVENT_HEADER_FILES})
+                            #${BASE_EVENT_SOURCE_FILES})
 
 file(GLOB BASE_PLUG_IN_HEADER ${CMCORE_ROOT_INCLUDE_PATH}/hgl/plugin/*.h)
 file(GLOB BASE_PLUG_IN_SOURCE PlugIn/*.cpp)
