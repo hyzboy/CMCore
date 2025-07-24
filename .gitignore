@@ -1,0 +1,34 @@
+# Build directories
+build/
+Build/
+cmake-build-*/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Testing/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+
+# Visual Studio directories
+.vs/
+out/
+
+# IDE directories
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Generated files
+*.user
+*.suo
+*.sdf
+*.opensdf
