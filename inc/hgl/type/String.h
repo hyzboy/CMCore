@@ -725,7 +725,7 @@ namespace hgl
                 return bs.Length();
             }
 
-            if(bs.Length<=0)
+            if(bs.Length()<=0)
                 return 1;
 
             return data->CaseComp(bs.data->c_str(),num);
@@ -891,14 +891,14 @@ namespace hgl
 
     public:
 
-        SelfClass TrimLeft  ()const{return StrConv(trimleft);}                                      ///<删除字符串前端的空格、换行等不可视字符串
-        SelfClass TrimRight ()const{return StrConv(trimright);}                                     ///<删除字符串后端的空格、换行等不可视字符串
-        SelfClass Trim      ()const{return StrConv(trim);}                                          ///<删除字符串两端的空格、换行等不可视字符串
+        SelfClass TrimLeft  ()const{return StrConv(trimleft);}                                      ///<删除字符串前端的空格、换行等不可见字符
+        SelfClass TrimRight ()const{return StrConv(trimright);}                                     ///<删除字符串后端的空格、换行等不可见字符
+        SelfClass Trim      ()const{return StrConv(trim);}                                          ///<删除字符串两端的空格、换行等不可见字符
 
         bool TrimLeft   (int n){return Delete(0,n);}                                                ///<删除字符串前端的指定个字符
         bool TrimRight  (int n){return Unlink()?data->TrimRight(n):false;}                          ///<删除字符串后端的指定个字符
 
-        bool ClipLeft   (int n){return Unlink()?data->ClipLeft(n):false;}                           ///<截取字符串前端的指定个字符,等同TrimRight(lengths-n))
+        bool ClipLeft   (int n){return Unlink()?data->ClipLeft(n):false;}                           ///<截取字符串前端的指定个字符,等同TrimRight(length-n))
         bool ClipRight  (int n){return Delete(0,Length()-n);}                                       ///<截取字符串后端的指定个字符,等同TrimLeft(length-n)
         bool Clip       (uint pos,int num)                                                          ///<从指定位置删除指定个字符
         {
@@ -932,7 +932,7 @@ namespace hgl
          * @param sc 新的字符串
          * @param start 起始字符索引
          * @param n 字符数量
-         * @return 成否成功
+         * @return 是否成功
          */
         bool SubString(SelfClass &sc,int start,int n) const                                         ///<取字符串指定段的字符
         {
@@ -1075,7 +1075,7 @@ namespace hgl
             return(-1);
         }
 
-        int FindExcludeChar(const T &ch)const{return FindExcludeChar(ch);}
+        int FindExcludeChar(const T &ch)const{return FindExcludeChar(0,ch);}
 
         /**
          * 返回当前字符串中排除指定字符外的第一个字符的索引
@@ -1141,7 +1141,7 @@ namespace hgl
             T *tp=sub.c_str();
             T *p;
             int len=data->GetLength();
-            int sub_len=sub.Length;
+            int sub_len=sub.Length();
             int count=0;
 
             while((p=strstr(sp,tp)))

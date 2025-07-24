@@ -43,7 +43,7 @@ namespace hgl
         RingBuffer(int);                                                                            ///<本类构造函数
         virtual ~RingBuffer();                                                                      ///<本类析构函数
 
-        const int GetBufferSize()const{return buffer_size;}                                         ///<除取缓冲区长度
+        const int GetBufferSize()const{return buffer_size;}                                         ///<获取缓冲区长度
 
         void Clear();                                                                               ///<清除整个缓冲区
         void SafeClear();                                                                           ///<安全清除整个缓冲区

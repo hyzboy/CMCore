@@ -211,17 +211,17 @@ namespace hgl
         }
 
         /**
-         * 确认字符串确在,英文区分大小写
+         * 确认字符串存在,英文区分大小写
          */
-        bool Exist(const StringClass &str) const                                                    ///<确认字符串确在,英文区分大小写
+        bool Exist(const StringClass &str) const                                                    ///<确认字符串存在,英文区分大小写
         {
             return Find(str)!=-1;
         }
 
         /**
-         * 确认字符串确在,英文无视大小写
+         * 确认字符串存在,英文无视大小写
          */
-        bool CaseExist(const StringClass &str) const                                                ///<确认字符串确在,英文无视大小写
+        bool CaseExist(const StringClass &str) const                                                ///<确认字符串存在,英文无视大小写
         {
             return CaseFind(str)!=-1;
         }
