@@ -33,7 +33,7 @@ namespace hgl
                     return ArrayList<T *>::Insert(index,obj);
                 }
 
-        virtual void    Free() override                                                             ///<清除所有数据
+        virtual void    Free() override                                                             ///<清除所有数据并释放缓冲区
         {
             Clear();
             ArrayList<T *>::Free();

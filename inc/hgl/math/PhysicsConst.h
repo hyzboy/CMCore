@@ -95,7 +95,7 @@ namespace hgl
     }
     
     /**
-     * 摄氏度到开氏度
+     * 摄氏度到开尔文度
      */
     template<typename T>
     inline T Celsius2Kelvin(const T &c)
@@ -104,7 +104,7 @@ namespace hgl
     }
 
     /**
-     * 开氏度到摄氏度
+     * 开尔文度到摄氏度
      */
     template<typename T>
     inline T Kelvin2Celsius(const T &k)

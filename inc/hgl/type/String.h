@@ -507,9 +507,9 @@ namespace hgl
         /**
          * 和一个字符串进行比较
          * @param bs 比较字符串
-         * @return <0 自身小
-         * @return 0 等同
-         * @return >0 自身大
+         * @return <0 此字符串小于参数字符串
+         * @return 0 相等
+         * @return >0 此字符串大于参数字符串
          */
         int Comp(const SelfClass &bs)const
         {
@@ -525,9 +525,9 @@ namespace hgl
         /**
          * 和一个字符串进行比较
          * @param str 比较字符串
-         * @return <0 自身小
-         * @return 0 等同
-         * @return >0 自身大
+         * @return <0 此字符串小于参数字符串
+         * @return 0 相等
+         * @return >0 此字符串大于参数字符串
          */
         int Comp(const T *str)const
         {
@@ -546,9 +546,9 @@ namespace hgl
          * 和一个字符串进行比较
          * @param pos 起始位置
          * @param bs 比较字符串
-         * @return <0 自身小
-         * @return 0 等同
-         * @return >0 自身大
+         * @return <0 此字符串小于参数字符串
+         * @return 0 相等
+         * @return >0 此字符串大于参数字符串
          */
         int Comp(const uint pos,const SelfClass &bs)const
         {
@@ -566,9 +566,9 @@ namespace hgl
          * @param pos 起始位置
          * @param bs 比较字符串
          * @param num 比较长度
-         * @return <0 自身小
-         * @return 0 等同
-         * @return >0 自身大
+         * @return <0 此字符串小于参数字符串
+         * @return 0 相等
+         * @return >0 此字符串大于参数字符串
          */
         int Comp(const uint pos,const SelfClass &bs,const int num)const
         {
@@ -585,9 +585,9 @@ namespace hgl
          * 和一个字符串进行比较
          * @param pos 起始位置
          * @param str 比较字符串
-         * @return <0 自身小
-         * @return 0 等同
-         * @return >0 自身大
+         * @return <0 此字符串小于参数字符串
+         * @return 0 相等
+         * @return >0 此字符串大于参数字符串
          */
         int Comp(const uint pos,const T *str)const
         {
@@ -607,9 +607,9 @@ namespace hgl
          * @param pos 起始位置
          * @param str 比较字符串
          * @param num 比较长度
-         * @return <0 自身小
-         * @return 0 等同
-         * @return >0 自身大
+         * @return <0 此字符串小于参数字符串
+         * @return 0 相等
+         * @return >0 此字符串大于参数字符串
          */
         int Comp(const uint pos,const T *str,const int num)const
         {
@@ -625,11 +625,11 @@ namespace hgl
         }
 
         /**
-         * 和那一个字符串进行比较,英文不区分大小写
+         * 和另一个字符串进行比较,英文不区分大小写
          * @param bs 比较字符串
-         * @return <0 自身小
-         * @return 0 等同
-         * @return >0 自身大
+         * @return <0 此字符串小于参数字符串
+         * @return 0 相等
+         * @return >0 此字符串大于参数字符串
          */
         int CaseComp(const SelfClass &bs)const
         {
@@ -645,11 +645,11 @@ namespace hgl
         }
 
         /**
-         * 和那一个字符串进行比较,英文不区分大小写
+         * 和另一个字符串进行比较,英文不区分大小写
          * @param str 比较字符串
-         * @return <0 自身小
-         * @return 0 等同
-         * @return >0 自身大
+         * @return <0 此字符串小于参数字符串
+         * @return 0 相等
+         * @return >0 此字符串大于参数字符串
          */
         int CaseComp(const T *str)const
         {
@@ -665,12 +665,12 @@ namespace hgl
         }
 
         /**
-         * 和那一个字符串比较指字长度的字符
+         * 和另一个字符串比较指定长度的字符
          * @param bs 比较字符串
-         * @param num 比较字数
-         * @return <0 自身小
-         * @return 0 等同
-         * @return >0 自身大
+         * @param num 比较字符数
+         * @return <0 此字符串小于参数字符串
+         * @return 0 相等
+         * @return >0 此字符串大于参数字符串
          */
         int Comp(const SelfClass &bs,const int num)const
         {
@@ -688,12 +688,12 @@ namespace hgl
         }
 
         /**
-         * 和那一个字符串比较指字长度的字符
+         * 和另一个字符串比较指定长度的字符
          * @param str 比较字符串
-         * @param num 比较字数
-         * @return <0 自身小
-         * @return 0 等同
-         * @return >0 自身大
+         * @param num 比较字符数
+         * @return <0 此字符串小于参数字符串
+         * @return 0 相等
+         * @return >0 此字符串大于参数字符串
          */
         int Comp(const T *str,const int num)const
         {
@@ -709,12 +709,12 @@ namespace hgl
         }
 
         /**
-         * 和那一个字符串比较指字长度的字符,英文不区分大小写
+         * 和另一个字符串比较指定长度的字符,英文不区分大小写
          * @param bs 比较字符串
-         * @param num 比较字数
-         * @return <0 自身小
-         * @return 0 等同
-         * @return >0 自身大
+         * @param num 比较字符数
+         * @return <0 此字符串小于参数字符串
+         * @return 0 相等
+         * @return >0 此字符串大于参数字符串
          */
         int CaseComp(const SelfClass &bs,const int num)const
         {
@@ -725,19 +725,19 @@ namespace hgl
                 return bs.Length();
             }
 
-            if(bs.Length<=0)
+            if(bs.Length()<=0)
                 return 1;
 
             return data->CaseComp(bs.data->c_str(),num);
         }
 
         /**
-         * 和那一个字符串比较指字长度的字符,英文不区分大小写
+         * 和另一个字符串比较指定长度的字符,英文不区分大小写
          * @param str 比较字符串
-         * @param num 比较字数
-         * @return <0 自身小
-         * @return 0 等同
-         * @return >0 自身大
+         * @param num 比较字符数
+         * @return <0 此字符串小于参数字符串
+         * @return 0 相等
+         * @return >0 此字符串大于参数字符串
          */
         int CaseComp(const T *str,const int num)const
         {
@@ -753,12 +753,12 @@ namespace hgl
         }
 
         /**
-         * 和那一个字符串比较指字长度的字符,英文不区分大小写
+         * 和另一个字符串比较指定长度的字符,英文不区分大小写
          * @param str 比较字符串
-         * @param num 比较字数
-         * @return <0 自身小
-         * @return 0 等同
-         * @return >0 自身大
+         * @param num 比较字符数
+         * @return <0 此字符串小于参数字符串
+         * @return 0 相等
+         * @return >0 此字符串大于参数字符串
          */
         int CaseComp(const uint pos,const T *str,const int num)const
         {
@@ -932,7 +932,7 @@ namespace hgl
          * @param sc 新的字符串
          * @param start 起始字符索引
          * @param n 字符数量
-         * @return 成否成功
+         * @return 是否成功
          */
         bool SubString(SelfClass &sc,int start,int n) const                                         ///<取字符串指定段的字符
         {

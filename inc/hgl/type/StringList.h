@@ -192,11 +192,11 @@ namespace hgl
         }
 
         /**
-        * 查找字符串,英文无视大小写
-        * @param str 要指找的字符串
+        * 查找字符串,英文不区分大小写
+        * @param str 要查找的字符串
         * @return 查找到的字符串的索引,未找到返回-1
         */
-        int  CaseFind(const StringClass &str) const                                                 ///<查找字符串,英文无视大小写,未找到返回-1
+        int  CaseFind(const StringClass &str) const                                                 ///<查找字符串,英文不区分大小写,未找到返回-1
         {
             const int count=Items.GetCount();
             StringClass** sl = Items.GetData();
@@ -211,17 +211,17 @@ namespace hgl
         }
 
         /**
-         * 确认字符串确在,英文区分大小写
+         * 确认字符串存在,英文区分大小写
          */
-        bool Exist(const StringClass &str) const                                                    ///<确认字符串确在,英文区分大小写
+        bool Exist(const StringClass &str) const                                                    ///<确认字符串存在,英文区分大小写
         {
             return Find(str)!=-1;
         }
 
         /**
-         * 确认字符串确在,英文无视大小写
+         * 确认字符串存在,英文不区分大小写
          */
-        bool CaseExist(const StringClass &str) const                                                ///<确认字符串确在,英文无视大小写
+        bool CaseExist(const StringClass &str) const                                                ///<确认字符串存在,英文不区分大小写
         {
             return CaseFind(str)!=-1;
         }
@@ -248,12 +248,12 @@ namespace hgl
         }
 
         /**
-        * 查找字符串,英文无视大小写，并指定最大比较长度
-        * @param str 要指找的字符串
+        * 查找字符串,英文不区分大小写，并指定最大比较长度
+        * @param str 要查找的字符串
         * @param cn 限定的要查找字符串的最大长度
         * @return 查找到的字符串的索引,未找到返回-1
         */
-        int  CaseFind(const StringClass &str,const int cn) const                                    ///<查找字符串,英文无视大小写,未找到返回-1
+        int  CaseFind(const StringClass &str,const int cn) const                                    ///<查找字符串,英文不区分大小写,未找到返回-1
         {
             const int count=Items.GetCount();
 
