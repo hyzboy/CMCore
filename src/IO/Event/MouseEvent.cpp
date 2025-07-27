@@ -8,23 +8,23 @@ namespace hgl::io
         {
             med=(MouseEventData *)&data;
 
+            position.x=med->x;
+            position.y=med->y;
+
             if(MouseEventID(header.id)==MouseEventID::Wheel)
             {                    
-                if(OnWheel      (med->x,med->y)             )return EventProcResult::Break;
+                if(OnWheel      (position)             )return EventProcResult::Break;
             }
             else
             {
-                position.x=med->x;
-                position.y=med->y;
-
                 switch(MouseEventID(header.id))
                 {
-                    case MouseEventID::Move:        if(OnMove       (med->x,med->y)                         )return EventProcResult::Break;break;
+                    case MouseEventID::Move:        if(OnMove       (position)                         )return EventProcResult::Break;break;
                     case MouseEventID::Pressed:     pressed_statues[med->button]=true;                                
-                                                    if(OnPressed    (med->x,med->y,MouseButton(med->button)))return EventProcResult::Break;break;
+                                                    if(OnPressed    (position,MouseButton(med->button)))return EventProcResult::Break;break;
                     case MouseEventID::Released:    pressed_statues[med->button]=false;
-                                                    if(OnReleased   (med->x,med->y,MouseButton(med->button)))return EventProcResult::Break;break;
-                    case MouseEventID::DblClicked:  if(OnDblClicked (med->x,med->y,MouseButton(med->button)))return EventProcResult::Break;break;
+                                                    if(OnReleased   (position,MouseButton(med->button)))return EventProcResult::Break;break;
+                    case MouseEventID::DblClicked:  if(OnDblClicked (position,MouseButton(med->button)))return EventProcResult::Break;break;
                 }
             }
         }

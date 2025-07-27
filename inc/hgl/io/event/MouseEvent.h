@@ -57,12 +57,12 @@ namespace hgl::io
 
         virtual EventProcResult OnEvent     (const EventHeader &header,const uint64 data) override;
 
-        virtual bool            OnMove      (int,int){return false;}
-        virtual bool            OnWheel     (int,int){return false;}
+        virtual bool            OnMove      (const Vector2i &){return false;}
+        virtual bool            OnWheel     (const Vector2i &){return false;}
 
-        virtual bool            OnPressed   (int,int,MouseButton){return false;}
-        virtual bool            OnReleased  (int,int,MouseButton){return false;}
-        virtual bool            OnDblClicked(int,int,MouseButton){return false;}
+        virtual bool            OnPressed   (const Vector2i &,MouseButton){return false;}
+        virtual bool            OnReleased  (const Vector2i &,MouseButton){return false;}
+        virtual bool            OnDblClicked(const Vector2i &,MouseButton){return false;}
 
         /**
          * 某按键是否按下
