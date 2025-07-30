@@ -13,18 +13,19 @@ namespace hgl::io
 
             if(MouseEventID(header.id)==MouseEventID::Wheel)
             {                    
-                if(OnWheel      (position)             )return EventProcResult::Break;
+                if(OnWheel(position)==EventProcResult::Break)
+                    return EventProcResult::Break;
             }
             else
             {
                 switch(MouseEventID(header.id))
                 {
-                    case MouseEventID::Move:        if(OnMove       (position)                         )return EventProcResult::Break;break;
+                    case MouseEventID::Move:        if(OnMove       (position)                         ==EventProcResult::Break)return EventProcResult::Break;break;
                     case MouseEventID::Pressed:     pressed_statues[med->button]=true;                                
-                                                    if(OnPressed    (position,MouseButton(med->button)))return EventProcResult::Break;break;
+                                                    if(OnPressed    (position,MouseButton(med->button))==EventProcResult::Break)return EventProcResult::Break;break;
                     case MouseEventID::Released:    pressed_statues[med->button]=false;
-                                                    if(OnReleased   (position,MouseButton(med->button)))return EventProcResult::Break;break;
-                    case MouseEventID::DblClicked:  if(OnDblClicked (position,MouseButton(med->button)))return EventProcResult::Break;break;
+                                                    if(OnReleased   (position,MouseButton(med->button))==EventProcResult::Break)return EventProcResult::Break;break;
+                    case MouseEventID::DblClicked:  if(OnDblClicked (position,MouseButton(med->button))==EventProcResult::Break)return EventProcResult::Break;break;
                 }
             }
         }

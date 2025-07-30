@@ -169,11 +169,13 @@ namespace hgl
             {
                 if(header.type==InputEventSource::Keyboard)
                 {
+                    KeyboardEventData *ked=(KeyboardEventData *)&data;
+
                     switch(KeyboardEventID(header.id))
                     {
-                        case KeyboardEventID::Pressed:  if(OnPressed    (KeyboardButton(((KeyboardEventData *)&data)->key)))return EventProcResult::Break;break;
-                        case KeyboardEventID::Released: if(OnReleased   (KeyboardButton(((KeyboardEventData *)&data)->key)))return EventProcResult::Break;break;
-                        case KeyboardEventID::Char:     if(OnChar       (               ((KeyboardEventData *)&data)->ch ) )return EventProcResult::Break;break;
+                        case KeyboardEventID::Pressed:  if(OnPressed    (KeyboardButton(ked->key))==EventProcResult::Break)return EventProcResult::Break;break;
+                        case KeyboardEventID::Released: if(OnReleased   (KeyboardButton(ked->key))==EventProcResult::Break)return EventProcResult::Break;break;
+                        case KeyboardEventID::Char:     if(OnChar       (               ked->ch ) ==EventProcResult::Break)return EventProcResult::Break;break;
                     }
                 }
 
@@ -183,9 +185,9 @@ namespace hgl
                 return EventProcResult::Continue;
             }
 
-            virtual bool OnPressed(const KeyboardButton &kb){return(false);}
-            virtual bool OnReleased(const KeyboardButton &kb){return(false);}
-            virtual bool OnChar(const wchar_t &){return(false);}
+            virtual EventProcResult OnPressed   (const KeyboardButton &kb){return(EventProcResult::Continue);}
+            virtual EventProcResult OnReleased  (const KeyboardButton &kb){return(EventProcResult::Continue);}
+            virtual EventProcResult OnChar      (const wchar_t &         ){return(EventProcResult::Continue);}
         };//class KeyboardEvent
 
         class KeyboardStateEvent:public KeyboardEvent
@@ -207,24 +209,24 @@ namespace hgl
 
             virtual ~KeyboardStateEvent()=default;
 
-            virtual bool OnPressed(const KeyboardButton &kb) override
+            virtual EventProcResult OnPressed(const KeyboardButton &kb) override
             {
-                if(!RangeCheck(kb))return(false);
+                if(!RangeCheck(kb))return(EventProcResult::Continue);
 
                 press_states[(size_t)kb]=true;
                 pressed_time[(size_t)kb]=cur_time;
 
-                return(true);
+                return(EventProcResult::Break);
             }
 
-            virtual bool OnReleased(const KeyboardButton &kb) override
+            virtual EventProcResult OnReleased(const KeyboardButton &kb) override
             {
-                if(!RangeCheck(kb))return(false);
+                if(!RangeCheck(kb))return(EventProcResult::Continue);
 
                 press_states[(size_t)kb]=false;                
                 pressed_time[(size_t)kb]=0;
 
-                return(true);
+                return(EventProcResult::Break);
             }
 
         public:
