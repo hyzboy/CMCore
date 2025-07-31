@@ -1,7 +1,7 @@
-﻿#ifndef HGL_FILE_SYSTEM_INCLUDE
-#define HGL_FILE_SYSTEM_INCLUDE
+﻿#pragma once
 
 #include<hgl/filesystem/Filename.h>
+
 namespace hgl
 {
     namespace io
@@ -48,7 +48,7 @@ namespace hgl
         bool GetCurrentProgramPath(OSString &);                                                         ///<取得当前程序所在路径
         bool GetLocalAppdataPath(OSString &);                                                           ///<取得当前用户应用程序数据存放路径
 
-        bool GetOSLibararyPath(OSString &);                                                             ///<取得操作系统共用动态库路径
+        bool GetOSLibraryPath(OSString &);                                                             ///<取得操作系统共用动态库路径
         
         /**
          * @param filename 要查找的文件名称
@@ -95,7 +95,7 @@ namespace hgl
                     bool is_file:1;                 ///<是文件
                     bool is_directory:1;            ///<是目录
 
-                    bool is_hiddle:1;               ///<是否隐藏文件
+                    bool is_hidden:1;               ///<是否隐藏文件
 
 #if HGL_OS != HGL_OS_Windows
                     bool is_link:1;                 ///<是否是链接
@@ -114,4 +114,3 @@ namespace hgl
         int GetFileInfoList(ArrayList<FileInfo> &, const OSString &folder_name, bool proc_folder, bool proc_file, bool sub_folder);
     }//namespace filesystem
 }//namespace hgl
-#endif//HGL_FILE_SYSTEM_INCLUDE
