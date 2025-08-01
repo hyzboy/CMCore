@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include<hgl/type/TypeInfo.h>
 #include<hgl/math/Matrix.h>
 #include<hgl/type/ObjectList.h>
@@ -633,7 +633,7 @@ namespace hgl
             bool has_update=false;
 
             for(TransformBase *tb:transform_list)
-                if(tb->Update())
+                if(tb->UpdateNewestData())
                     has_update=true;
 
             if(has_update)
