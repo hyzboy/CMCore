@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 namespace hgl
 {
@@ -55,13 +55,14 @@ namespace hgl
             return cur_data;
         }
 
-        void UpdateNewestData()
+        bool UpdateNewestData()
         {
             if(IsNewestVersion())
-                return;
+                return(false);
 
             MakeNewestData(cur_data);
             cur_version=version;
+            return(true);
         }
 
         const uint32    GetNewestVersion()const { return version; }                         ///<取得最新的版本号(注意数据可能不是最新的)
