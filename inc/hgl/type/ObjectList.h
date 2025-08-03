@@ -62,7 +62,7 @@ namespace hgl
 
         bool    _Delete(int index,int num)
         {
-            if(index<0||num<=0||index+num>=ArrayList<T *>::GetCount())
+            if(index<0||num<=0||index+num>ArrayList<T *>::GetCount())
                 return(false);
 
             dlm->Clear(this->data_array.GetData()+index,num);
