@@ -538,6 +538,7 @@ namespace hgl
         void Clear()
         {
             transform_list.Clear();
+            UpdateVersion();
         }
 
         void AddTransform(TransformBase *tb)
