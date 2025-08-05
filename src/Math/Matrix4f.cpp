@@ -73,10 +73,10 @@ namespace hgl
      * @param znear 近截面
      * @param zfar 远截面
      */
-    Matrix4f PerspectiveMatrix(   float field_of_view,
-                            float aspect_ratio,
-                            float znear,
-                            float zfar)
+    Matrix4f PerspectiveMatrix( float field_of_view,
+                                float aspect_ratio,
+                                float znear,
+                                float zfar)
     { 
         float f = 1.0f / tanf( deg2rad( 0.5f * field_of_view ) );
 
@@ -98,11 +98,9 @@ namespace hgl
       
           0.0f,
           0.0f,
-          -(znear * zfar) / (zfar-znear),
+          (znear * zfar) / (znear-zfar),
           0.0f
         );
-
-        //经查证，此代码等于glm::perspectiveRH_ZO之后将[1][1]乘-1，在SaschaWillems的范例中，如果反转Y轴，则[1][1]确实要乘-1。
     }
 
     Matrix4f LookAtMatrix(const Vector3f &eye,const Vector3f &target,const Vector3f &up)
@@ -133,6 +131,59 @@ namespace hgl
         );
 
         //经查证，此代码完全等于glm::lookAtRH，无任何差别
+    }
+
+    Vector2f ProjectToScreen(
+        const Vector3f& world_pos,
+        const Matrix4f& view,
+        const Matrix4f& projection,
+        float viewport_width,
+        float viewport_height)
+    {
+        // 1. 世界坐标 -> 裁剪空间
+        Vector4f clip = projection * view * Vector4f(world_pos.x,world_pos.y,world_pos.z, 1.0f);       //需要转换到OPENGL坐标系
+
+        // 2. 齐次除法，得到 NDC（注意Z为0~1）
+        if (clip.w == 0.0f)
+            return Vector2f(0, 0);
+
+        Vector3f ndc;
+
+        ndc.x = clip.x / clip.w;
+        ndc.y = clip.y / clip.w;
+        ndc.z = clip.z / clip.w; // 0~1
+
+        // 3. NDC -> 屏幕空间
+        float screen_x = (ndc.x + 1.0f) * 0.5f * viewport_width;
+        float screen_y = (ndc.y + 1.0f) * 0.5f * viewport_height; // Y轴向下为正
+
+        return Vector2f(screen_x, screen_y);
+    }
+
+    Vector3f UnProjectToWorld(
+        const Vector2f &win_pos,
+        const Matrix4f &view,
+        const Matrix4f &projection,
+        const float viewport_width,
+        const float viewport_height)
+    {
+        // 1. 归一化到 NDC（[-1, 1]）
+        float ndc_x = (2.0f * win_pos.x) / viewport_width - 1.0f;
+        float ndc_y = (2.0f * win_pos.y) / viewport_height - 1.0f;
+        // 这里假设在近平面（z=0），如需支持深度可加参数
+        float ndc_z = 0.0f;
+
+        Vector4f ndc_pos(ndc_x, ndc_y, ndc_z, 1.0f);
+
+        // 2. 逆变换到世界空间
+        Matrix4f inv_proj_view = inverse(projection * view);
+        Vector4f world_pos = inv_proj_view * ndc_pos;
+
+        // 3. 齐次除法
+        if (world_pos.w == 0.0f)
+            return Vector3f(0, 0, 0);
+
+        return Vector3f(world_pos.x / world_pos.w, world_pos.y / world_pos.w, world_pos.z / world_pos.w);
     }
 
     // 函数用于从 glm::mat4 中提取平移、旋转和缩放
