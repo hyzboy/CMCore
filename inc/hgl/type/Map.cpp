@@ -479,7 +479,7 @@ namespace hgl
     }
 
     /**
-    * 清除所有数据
+    * 清除所有数据，并释放内存
     */
     template<typename K,typename V,typename KVData>
     void MapTemplate<K,V,KVData>::Free()

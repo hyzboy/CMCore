@@ -135,6 +135,9 @@ namespace hgl
         */
         int64 Delete(const T *dp,const int64 count)
         {
+            if(IsEmpty()||!dp||count<=0)
+                return 0;
+
             int64 total=0;
             int64 pos;
 
@@ -155,6 +158,9 @@ namespace hgl
 
         int64 Delete(const DataArray<T> &da)
         {
+            if(da.IsEmpty())
+                return 0;
+
             return Delete(da.GetData(),da.GetCount());
         }
 
