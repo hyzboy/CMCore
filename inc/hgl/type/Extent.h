@@ -1,8 +1,7 @@
-﻿#ifndef HGL_EXTENT_2D_INCLUDE
-#define HGL_EXTENT_2D_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/DataType.h>
-#include<hgl/Comparator.h>
+
 namespace hgl
 {
     template<typename T> union Extent2D
@@ -33,8 +32,6 @@ namespace hgl
             w=e.w;
             h=e.h;
         }
-
-        CompOperatorMemcmp(const Extent2D<T> &);
     };//template<typename T> union Extent2D
 
     typedef Extent2D<int8>      Extent2i8,Extent2b;
@@ -52,4 +49,3 @@ namespace hgl
     typedef Extent2D<float>     Extent2f;
     typedef Extent2D<double>    Extent2d;
 }//namespace hgl
-#endif//HGL_EXTENT_2D_INCLUDE
