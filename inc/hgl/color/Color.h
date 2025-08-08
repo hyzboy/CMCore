@@ -266,8 +266,11 @@ namespace hgl
         ENUM_CLASS_RANGE(AliceBlue,YellowGreen)
     };//enum COLOR_ENUM
 
-    bool GetRGB(const enum class COLOR &ce,Vector3u8 &);
-    bool GetBGR(const enum class COLOR &ce,Vector3u8 &);
+    using Color3u8=Vector3u8;         ///<RGB三原色类(无符号8位整型)
+    using Color4u8=Vector4u8;         ///<RGBA四原色类(无符号8位整型)
+
+    bool GetRGB(const enum class COLOR &ce,Color3u8 &);
+    bool GetBGR(const enum class COLOR &ce,Color4u8 &);
 
     const uint32 GetRGBA(const enum class COLOR &ce,const uint8 &alpha);
     const uint32 GetABGR(const enum class COLOR &ce,const uint8 &alpha);

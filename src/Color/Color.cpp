@@ -306,7 +306,7 @@ namespace hgl
 
     #undef DEF_COLOR
 
-    bool GetRGB(const enum class COLOR &ce,Vector3u8 &color)
+    bool GetRGB(const enum class COLOR &ce,Color3u8 &color)
     {
         RANGE_CHECK_RETURN_FALSE(ce);
     
@@ -319,7 +319,7 @@ namespace hgl
         return(true);
     }
 
-    bool GetBGR(const enum class COLOR &ce,Vector3u8 &color)
+    bool GetBGR(const enum class COLOR &ce,Color3u8 &color)
     {
         RANGE_CHECK_RETURN_FALSE(ce);
     
