@@ -37,6 +37,13 @@ namespace hgl
         ObjectMap<K,ActiveItem> active_items;               ///<活跃的数据
         Map<K,V> idle_items;                                ///<引用计数为0的
 
+        /**
+         * Helper function to check if a position is valid (>= 0)
+         * @param pos Position value to check
+         * @return true if position is valid (>= 0)
+         */
+        inline bool Found(int pos) const { return pos >= 0; }
+
     public:
 
         virtual ~RefObjectPool()=default;
@@ -130,8 +137,9 @@ namespace hgl
                 return(true);
             }
 
+            // GetValueAndSerial returns the index position if found (>=0), or -1 if not found
             pos=idle_items.GetValueAndSerial(key,value);
-            if(pos>0)                   //在闲置列表中找
+            if(Found(pos))                   //在闲置列表中找 - Fixed: was pos>0, now pos>=0 to handle index 0
             {
                 active_items.Add(key,new ActiveItem(value));
                 idle_items.DeleteAt(pos);
@@ -157,9 +165,10 @@ namespace hgl
             int pos;
             ActiveItem *ai;
 
+            // GetValueAndSerial returns the index position if found (>=0), or -1 if not found  
             pos=active_items.GetValueAndSerial(key,ai);
 
-            if(pos>0)
+            if(Found(pos))  //Fixed: was pos>0, now pos>=0 to handle index 0
             {
                 --ai->ref_count;
 
