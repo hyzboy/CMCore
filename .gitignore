@@ -1,0 +1,22 @@
+# Build directories
+build/
+*.cmake
+!CMakeLists.txt
+!path_config.cmake
+
+# Compiled objects
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+/tmp/
+.DS_Store
