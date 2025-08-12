@@ -4,6 +4,8 @@
 #include<hgl/color/Lum.h>
 namespace hgl
 {
+    class Color3ub;  // Forward declaration
+
     /**
     * r,g,b三原色类
     */
@@ -29,6 +31,7 @@ namespace hgl
         Color3f(float l){r=l,g=l,b=l;Clamp();}                                                      ///<本类构造函数
         Color3f(float vr,float vg,float vb){r=vr,g=vg,b=vb;Clamp();}                                ///<本类构造函数
         Color3f(const Color3f &v){r=v.r;g=v.g;b=v.b;Clamp();}                                       ///<本类构造函数
+        Color3f(const Color3ub &v);                                                                 ///<从Color3ub构造
 
         void Zero(){r=0,g=0,b=0;}                                                                   ///<全清为0
         void One() {r=1,g=1,b=1;}                                                                   ///<全清为1
@@ -57,9 +60,12 @@ namespace hgl
         float ToGrey(){return RGB2Lum(r,g,b);}
         void Grey();                                                                                ///<将当前色彩变成灰色
 
+        Color3ub ToColor3ub() const;                                                                ///<转换为Color3ub
+
         //操作符重载
         const Color3f &operator = (const float *v){r=*v++;g=*v++;b=*v;return *this;}
         const Color3f &operator = (const Color3f &v){r=v.r;g=v.g;b=v.b;return *this;}
+        const Color3f &operator = (const Color3ub &v);
 
         bool operator == (const Color3f &)const;
         bool operator != (const Color3f &)const;

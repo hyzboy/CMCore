@@ -4,6 +4,8 @@
 #include<hgl/color/Color3f.h>
 namespace hgl
 {
+    class Color4ub;  // Forward declaration
+
     #define HGL_FLOAT_TO_U32(c1,c2,c3,c4)   uint32( \
                                                     (uint8(c1 * 255) << 24  )   |   \
                                                     (uint8(c2 * 255) << 16  )   |   \
@@ -40,6 +42,7 @@ namespace hgl
         Color4f(float v){r=v,g=v,b=v,a=1;Clamp();}                                                  ///<本类构造函数
         Color4f(float vr,float vg,float vb,float va){r=vr,g=vg,b=vb;a=va;Clamp();}                  ///<本类构造函数
         Color4f(const Color3f &v,float va=1){Set(v,va);}                                            ///<本类构造函数
+        Color4f(const Color4ub &v);                                                                 ///<从Color4ub构造
 
         void Zero(){r=0,g=0,b=0,a=0;}                                                               ///<全清为0
         void One() {r=1,g=1,b=1,a=1;}                                                               ///<全清为1
@@ -67,10 +70,13 @@ namespace hgl
         float ToGrey(){return RGB2Lum(r,g,b);}
         void Grey();                                                                                ///<将当前色彩变成灰色
 
+        Color4ub ToColor4ub() const;                                                                ///<转换为Color4ub
+
         //操作符重载
         const Color4f &operator = (const float *v){r=*v++;g=*v++;b=*v++;a=*v;return *this;}
         const Color4f &operator = (const Color3f &v){r=v.r;g=v.g;b=v.b;a=1;;return *this;}
         const Color4f &operator = (const Color4f &v){r=v.r;g=v.g;b=v.b;a=v.a;;return *this;}
+        const Color4f &operator = (const Color4ub &v);
 
         bool operator == (const Color4f &)const;
         bool operator != (const Color4f &)const;

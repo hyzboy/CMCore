@@ -1,7 +1,18 @@
 ﻿#include<hgl/color/Color3f.h>
+#include<hgl/color/Color3ub.h>
 #include<hgl/color/Color.h>
 namespace hgl
 {
+    //--------------------------------------------------------------------------------------------------
+    Color3f::Color3f(const Color3ub &v)
+    {
+        r = float(v.r) / 255.0f;
+        g = float(v.g) / 255.0f;
+        b = float(v.b) / 255.0f;
+        Clamp();
+    }
+
+    //--------------------------------------------------------------------------------------------------
     void Color3f::Clamp()
     {
         if(r<0)r=0;if(r>1)r=1;
@@ -38,6 +49,22 @@ namespace hgl
         g=lum;
         b=lum;
     }
+    //--------------------------------------------------------------------------------------------------
+    Color3ub Color3f::ToColor3ub() const
+    {
+        return Color3ub(uint8(r * 255.0f), uint8(g * 255.0f), uint8(b * 255.0f));
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    const Color3f &Color3f::operator = (const Color3ub &v)
+    {
+        r = float(v.r) / 255.0f;
+        g = float(v.g) / 255.0f;
+        b = float(v.b) / 255.0f;
+        Clamp();
+        return *this;
+    }
+
     //--------------------------------------------------------------------------------------------------
     bool Color3f::operator == (const Color3f &v) const
     {
