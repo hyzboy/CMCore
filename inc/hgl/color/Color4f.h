@@ -1,5 +1,4 @@
-﻿#ifndef HGL_COLOR_4_FLOAT_INCLUDE
-#define HGL_COLOR_4_FLOAT_INCLUDE
+﻿#pragma once
 
 #include<hgl/color/Color3f.h>
 namespace hgl
@@ -64,6 +63,8 @@ namespace hgl
         uint32 ToARGB8()const{ return HGL_FLOAT_TO_ARGB8(r, g, b, a); }                             ///<输出一个argb8格式的颜色数据
         uint32 ToABGR8()const{ return HGL_FLOAT_TO_ABGR8(r, g, b, a); }                             ///<输出一个abgr8格式的颜色数据
 
+        uint32 ToShaderRGBA8()const{return ToRGBA8();}                                              ///<输出一个shader rgba8格式的颜色数据
+
         float ToGrey(){return RGB2Lum(r,g,b);}
         void Grey();                                                                                ///<将当前色彩变成灰色
 
@@ -102,4 +103,3 @@ namespace hgl
 
     #define DEF_RGBA_U8_TO_COLOR4F(r,g,b,a)     Color4f(float(r)/255.0f,float(g)/255.0f,float(b)/255.0f,float(a)/255.0f)
 }//namespace hgl
-#endif//HGL_COLOR_4_FLOAT_INCLUDE

@@ -1,5 +1,4 @@
-﻿#ifndef HGL_COLOR_3_FLOAT_INCLUDE
-#define HGL_COLOR_3_FLOAT_INCLUDE
+﻿#pragma once
 
 #include<hgl/color/Lum.h>
 namespace hgl
@@ -93,4 +92,3 @@ namespace hgl
 
     #define DEF_RGB_U8_TO_COLOR3F(r,g,b)        Color3f(float(r)/255.0f,float(g)/255.0f,float(b)/255.0f)
 }//namespace hgl
-#endif//HGL_COLOR_3_FLOAT_INCLUDE

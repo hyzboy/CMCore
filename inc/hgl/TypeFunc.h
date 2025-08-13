@@ -43,6 +43,28 @@ namespace hgl
     #define NULL 0
     #endif//
 
+    /**
+    * r/g/b/a四个分量的颜色打包成一个32位整数，glsl中可用unpackUnorm4x8函数进行还原
+    */
+    inline constexpr uint32 PackRGBA8(const uint8_t r,const uint8_t &g,const uint8_t &b,const uint8_t &a)
+    {
+        return  static_cast<uint32>(r)      |
+            (static_cast<uint32>(g)<< 8) |
+            (static_cast<uint32>(b)<<16) |
+            (static_cast<uint32>(a)<<24);
+    }
+
+    /**
+    * r/g/b/a四个分量的颜色打包成一个32位整数，glsl中可用unpackUnorm4x8函数进行还原
+    */
+    inline constexpr uint32 PackRGBA8(const float r,const float &g,const float &b,const float &a)
+    {
+        return  static_cast<uint32>(r*255.0f)      |
+            (static_cast<uint32>(g*255.0f)<< 8) |
+            (static_cast<uint32>(b*255.0f)<<16) |
+            (static_cast<uint32>(a*255.0f)<<24);
+    }
+
     constexpr const u16char U16_FULL_WIDTH_SPACE=U16_TEXT('　');      //全角空格
     constexpr const u32char U32_FULL_WIDTH_SPACE=U32_TEXT('　');      //全角空格
 
