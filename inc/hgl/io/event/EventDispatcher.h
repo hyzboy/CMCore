@@ -41,7 +41,9 @@ namespace hgl::io
 
         EventDispatcher *               parent_input_event;
 
-        SortedSet<EventDispatcher *>    child_dispatchers;
+        SortedSet<EventDispatcher *>    child_dispatchers;                      ///<子事件分发器列表
+
+        EventDispatcher *               exclusive_dispatcher;                   ///<独占事件分发器,如果有则只处理这个分发器的事件
 
     protected:
 
@@ -49,22 +51,13 @@ namespace hgl::io
 
     public:
 
-        const InputEventSource GetInputEventSource()const{return source_type;}
+        const   InputEventSource GetInputEventSource()const{return source_type;}
 
-        virtual EventProcResult OnEvent(const EventHeader &header,const uint64 data)
-        {
-            if(!RangeCheck(header.type))
-                return(EventProcResult::Break);
+        virtual EventDispatcher *GetEventDispatcher(){return this;}
 
-            if(!child_dispatchers.IsEmpty())
-            {
-                for(EventDispatcher *ie:child_dispatchers)
-                    if(ie->OnEvent(header,data)==EventProcResult::Break)
-                        return EventProcResult::Break;
-            }
+                EventDispatcher *GetParent()const{return parent_input_event;}
 
-            return(EventProcResult::Continue);
-        }
+        virtual EventProcResult OnEvent(const EventHeader &header,const uint64 data);
 
     public:
 
@@ -72,12 +65,14 @@ namespace hgl::io
         {
             source_type=InputEventSource::Root;
             parent_input_event=nullptr;
+            exclusive_dispatcher=nullptr;
         }
 
         EventDispatcher(InputEventSource ies)
         {
             source_type=ies;
             parent_input_event=nullptr;
+            exclusive_dispatcher=nullptr;
         }
 
         virtual ~EventDispatcher()
@@ -88,6 +83,9 @@ namespace hgl::io
 
         virtual bool AddChildDispatcher(EventDispatcher *ie);
         virtual bool RemoveChildDispatcher(EventDispatcher *ie);
+
+        virtual bool SetExclusiveDispatcher(EventDispatcher *ie);
+        virtual bool RemoveExclusiveDispatcher(EventDispatcher *ie);
 
         virtual bool Update(){return true;}
     };//class EventDispatcher
