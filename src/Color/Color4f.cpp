@@ -1,7 +1,19 @@
 ﻿#include<hgl/color/Color4f.h>
+#include<hgl/color/Color4ub.h>
 #include<hgl/color/Color.h>
 namespace hgl
 {
+    //--------------------------------------------------------------------------------------------------
+    Color4f::Color4f(const Color4ub &v)
+    {
+        r = float(v.r) / 255.0f;
+        g = float(v.g) / 255.0f;
+        b = float(v.b) / 255.0f;
+        a = float(v.a) / 255.0f;
+        Clamp();
+    }
+
+    //--------------------------------------------------------------------------------------------------
     void Color4f::Clamp()
     {
         if(r<0)r=0;if(r>1)r=1;
@@ -39,6 +51,23 @@ namespace hgl
         g=lum;
         b=lum;
     }
+    //--------------------------------------------------------------------------------------------------
+    Color4ub Color4f::ToColor4ub() const
+    {
+        return Color4ub(uint8(r * 255.0f), uint8(g * 255.0f), uint8(b * 255.0f), uint8(a * 255.0f));
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    const Color4f &Color4f::operator = (const Color4ub &v)
+    {
+        r = float(v.r) / 255.0f;
+        g = float(v.g) / 255.0f;
+        b = float(v.b) / 255.0f;
+        a = float(v.a) / 255.0f;
+        Clamp();
+        return *this;
+    }
+
     //--------------------------------------------------------------------------------------------------
     bool Color4f::operator == (const Color4f &v) const
     {

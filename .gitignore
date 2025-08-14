@@ -1,0 +1,37 @@
+# Build directories
+build/
+Build/
+*/build/
+*/Build/
+
+# CMake files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# IDE files
+.vscode/
+.vs/
+*.suo
+*.user
+*.sln.docstates
+
+# Object files
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Temporary files
+*~
+*.tmp
+*.temp
