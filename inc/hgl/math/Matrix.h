@@ -232,6 +232,16 @@ namespace hgl
               *glm::scale(Identity4f,scale_xyz);
     }
 
+    /**
+    * 获取相对矩阵
+    * @param self_matrix        自身矩阵
+    * @param reference_matrix   参照矩阵
+    */
+    inline Matrix4f RelativeMatrix(const Matrix4f &self_matrix,const Matrix4f &reference_matrix)
+    {
+        return inverse(reference_matrix)*self_matrix;
+    }
+
     inline Vector3f TransformPosition(const Matrix4f &m,const Vector3f &v)
     {
         return Vector3f(m*Vector4f(v,1.0f));
