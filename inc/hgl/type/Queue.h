@@ -95,8 +95,11 @@ namespace hgl
 
         virtual bool Peek   (T &data)                                                               ///<尝试访问一个数据
         {
-            if(data_array[read_index].GetCount()>=read_offset)
+            // Check if read buffer is exhausted (read_offset has reached or exceeded count)
+            // Fixed: was inverted condition that incorrectly treated non-exhausted buffers as exhausted
+            if(read_offset >= data_array[read_index].GetCount())
             {
+                // Read buffer exhausted, try to read from write buffer
                 if(data_array[write_index].GetCount()<=0)
                    return(false);
 
@@ -105,6 +108,7 @@ namespace hgl
             }
             else
             {
+                // Read buffer still has data, read from current offset
                 data_array[read_index].ReadAt(data,read_offset);
             }
 

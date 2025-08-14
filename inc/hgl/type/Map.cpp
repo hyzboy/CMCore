@@ -44,84 +44,44 @@ namespace hgl
     template<typename K,typename V,typename KVData>
     bool MapTemplate<K,V,KVData>::FindPos(const K &flag,int &pos)const
     {
-        int left=0,right=data_list.GetCount()-1;
-        int mid;
-
-        KVData **data_array=data_list.GetData();
-
-        while(left<=right)
+        const int count = data_list.GetCount();
+        
+        // Handle empty list
+        if(count == 0)
         {
-            if(data_array[left ]->key>flag)
-            {
-                pos=left;
-                return(false);
-            }
-            else
-            if(data_array[left ]->key==flag)
-            {
-                pos=left;
-                return(true);
-            }
+            pos = 0;
+            return false;
+        }
 
-            if(data_array[right]->key<flag)
+        KVData **data_array = data_list.GetData();
+        int left = 0;
+        int right = count - 1;
+
+        // Standard binary search with proper bounds checking
+        while(left <= right)
+        {
+            int mid = left + (right - left) / 2;  // Avoid overflow
+            
+            if(data_array[mid]->key == flag)
             {
-                pos=right+1;
-                return(false);
+                // Found exact match
+                pos = mid;
+                return true;
             }
-            else
-            if(data_array[right]->key==flag)
+            else if(data_array[mid]->key < flag)
             {
-                pos=right;
-                return(true);
-            }
-
-            mid=(right+left)>>1;
-
-            if(data_array[mid]->key==flag)
-            {
-                pos=mid;
-                return(true);
-            }
-
-            if(data_array[mid]->key>flag)
-            {
-                if(data_array[mid-1]->key<flag)
-                {
-                    pos=mid;
-                    return(false);
-                }
-                else
-                if(data_array[mid-1]->key==flag)
-                {
-                    pos=mid-1;
-                    return(true);
-                }
-
-                ++left;
-                right=mid-1;
+                left = mid + 1;
             }
             else
             {
-                if(data_array[mid+1]->key>flag)
-                {
-                    pos=mid+1;
-                    return(false);
-                }
-                else
-                if(data_array[mid+1]->key==flag)
-                {
-                    pos=mid+1;
-                    return(true);
-                }
-
-                --right;
-                left=mid+1;
+                right = mid - 1;
             }
         }
 
-//      LOG_PROBLEM(OS_TEXT("Map::FindPos,no result."));
-        pos=-1;
-        return(false);
+        // Not found: pos should be the insertion point (left is now the lower_bound)
+        // This ensures pos is always in valid range [0, count]
+        pos = left;
+        return false;
     }
 
     template<typename K,typename V,typename KVData>
@@ -177,7 +137,24 @@ namespace hgl
     template<typename K,typename V,typename KVData>
     void MapTemplate<K,V,KVData>::Add(KVData *obj)
     {
-        data_list.Insert(FindPos(obj->key),obj);
+        if(!obj) return;
+        
+        int pos;
+        
+        // Check if key already exists to prevent duplicate keys
+        if(FindPos(obj->key, pos))
+        {
+            // Key already exists - safely release the passed object back to pool
+            // This prevents data structure corruption and unifies semantics with Add(const K&, const V&)
+            data_pool.Release(obj);
+            return;
+        }
+        
+        // Safe to insert at pos - key doesn't exist
+        if(!data_pool.AppendToActive(obj))
+            return;
+            
+        data_list.Insert(pos, obj);
     }
 
     /**
