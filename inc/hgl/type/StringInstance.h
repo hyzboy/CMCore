@@ -1,8 +1,9 @@
-﻿#ifndef HGL_TYPE_STRING_INSTANCE_INCLUDE
-#define HGL_TYPE_STRING_INSTANCE_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/DataType.h>
+#include<hgl/type/SortedSet.h>
 #include<string.h>
+
 namespace hgl
 {
     /**
@@ -556,6 +557,20 @@ namespace hgl
             length=end_pos;
             return(true);
         }
+
+    public:
+
+        int UniqueCharCount()const
+        {
+            if(!buffer||length<=0)
+                return 0;
+
+            SortedSet<T> unique_chars;
+
+            for(int i=0;i<length;i++)
+                unique_chars.Add(buffer[i]);
+
+            return unique_chars.GetCount();
+        }
     };//class StringInstance
 }//namespace hgl
-#endif//HGL_TYPE_STRING_INSTANCE_INCLUDE
