@@ -32,6 +32,7 @@ SET(TYPE_IDNAME_SOURCE_FILES    Text/ConstStringSetSaveToTextStream.cpp)
 SOURCE_GROUP("DataType\\IDName" FILES ${TYPE_IDNAME_HEADER_FILES} ${TYPE_IDNAME_SOURCE_FILES})
 
 SET(TYPE_COLLECTION_SOURCE  ${TYPE_INCLUDE_PATH}/Collection.h
+                            ${TYPE_INCLUDE_PATH}/ElementCollection.h
                             Type/Collection.cpp)
                             
 SOURCE_GROUP("DataType\\Collection" FILES ${TYPE_COLLECTION_SOURCE})
