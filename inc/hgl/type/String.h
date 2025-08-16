@@ -1187,131 +1187,144 @@ namespace hgl
             return replace(data->c_str(),tch,sch);
         }
 
-        public: //操作符重载
+    public: //操作符重载
 
-            operator const InstClass &()
-            {
-                return data;
-            }
+        operator const InstClass &()
+        {
+            return data;
+        }
 
-            const T &operator [](int index)
-            {
-                if(data.valid())
-                    if(index>=0&&index<data->GetLength())
-                        return *(data->c_str()+index);
+        const T &operator [](int index)
+        {
+            if(data.valid())
+                if(index>=0&&index<data->GetLength())
+                    return *(data->c_str()+index);
 
-                    const static T zero_char=0;
+                const static T zero_char=0;
 
-                return zero_char;   //this is error
-            }
+            return zero_char;   //this is error
+        }
 
-            operator        T *()       {return c_str();}
-            operator const  T *()const  {return c_str();}
+        operator        T *()       {return c_str();}
+        operator const  T *()const  {return c_str();}
 
-            SelfClass &operator =   (const T *str        )
-            {
-                if(str!=c_str())
-                    Set(str);
+        SelfClass &operator =   (const T *str        )
+        {
+            if(str!=c_str())
+                Set(str);
                 
-                return(*this);
-            }
+            return(*this);
+        }
 
-            SelfClass &operator =   (const SelfClass &str)
-            {
-                if(str.c_str()!=c_str())
-                    Set(str);
+        SelfClass &operator =   (const SelfClass &str)
+        {
+            if(str.c_str()!=c_str())
+                Set(str);
                     
+            return(*this);
+        }
+
+        SelfClass &operator +=  (const SelfClass &str){Strcat(str);return(*this);}
+        SelfClass &operator <<  (const SelfClass &str){return(operator+=(str));}
+
+        operator StringView<T> ()const
+        {
+            return StringView<T>(c_str(),Length());
+        }
+
+        operator const StringView<T> &()const
+        {
+            return StringView<T>(c_str(),Length());
+        }
+
+        static SelfClass ComboString(const T *str1,int len1,const T *str2,int len2)
+        {
+            if(!str1||len1<=0)
+            {
+                if(!str2||len2<=0)
+                    return(SelfClass());
+
+                return SelfClass(str2,len2);
+            }
+            else
+            {
+                if(!str2||len2<=0)
+                    return(SelfClass(str1,len1));
+            }
+
+            const int new_len=len1+len2;
+
+            T *ms=new T[new_len+1];
+
+            memcpy(ms,      str1,len1*sizeof(T));
+            memcpy(ms+len1, str2,len2*sizeof(T));
+
+            ms[new_len]=0;
+
+            return String::newOf(ms,new_len);
+        }
+
+        SelfClass  operator +   (const SelfClass &str) const
+        {
+            if(str.Length()<=0)     //如果对方为空
                 return(*this);
-            }
 
-            SelfClass &operator +=  (const SelfClass &str){Strcat(str);return(*this);}
-            SelfClass &operator <<  (const SelfClass &str){return(operator+=(str));}
+            if(!data.valid())       //如果我方为空
+                return(str);
 
-            operator StringView<T> ()const
-            {
-                return StringView<T>(c_str(),Length());
-            }
+            return ComboString(data->c_str(),data->GetLength(),str.c_str(),str.Length());
+        }
 
-            operator const StringView<T> &()const
-            {
-                return StringView<T>(c_str(),Length());
-            }
+        SelfClass   operator +  (const T ch) const
+        {
+            if(!data.valid())
+                return(SelfClass::charOf(ch));
 
-            static SelfClass ComboString(const T *str1,int len1,const T *str2,int len2)
-            {
-                if(!str1||len1<=0)
-                {
-                    if(!str2||len2<=0)
-                        return(SelfClass());
+            return ComboString(data->c_str(),data->GetLength(),&ch,1);
+        }
 
-                    return SelfClass(str2,len2);
-                }
-                else
-                {
-                    if(!str2||len2<=0)
-                        return(SelfClass(str1,len1));
-                }
+        SelfClass   operator +  (const T *str) const
+        {
+            if(!data.valid())
+                return(SelfClass(str));
 
-                const int new_len=len1+len2;
+            return ComboString(data->c_str(),data->GetLength(),str,strlen(str));
+        }
 
-                T *ms=new T[new_len+1];
+        #define BASE_STRING_NUMBER_OPERATOR_ADD(type,func)  SelfClass   operator +  (const type &num) const \
+        {   \
+            SharedPtr<T> vstr=func(new T[8*sizeof(type)],8*sizeof(type),num);   \
+            \
+            return operator+(vstr->data);   \
+        }
 
-                memcpy(ms,      str1,len1*sizeof(T));
-                memcpy(ms+len1, str2,len2*sizeof(T));
+        BASE_STRING_NUMBER_OPERATOR_ADD(int,    itos);
+        BASE_STRING_NUMBER_OPERATOR_ADD(uint,   utos);
+        BASE_STRING_NUMBER_OPERATOR_ADD(int64,  itos);
+        BASE_STRING_NUMBER_OPERATOR_ADD(uint64, utos);
 
-                ms[new_len]=0;
+        BASE_STRING_NUMBER_OPERATOR_ADD(float,  ftos);
+        BASE_STRING_NUMBER_OPERATOR_ADD(double, dtos);
 
-                return String::newOf(ms,new_len);
-            }
+        #undef BASE_STRING_NUMBER_OPERATOR_ADD
 
-            SelfClass  operator +   (const SelfClass &str) const
-            {
-                if(str.Length()<=0)     //如果对方为空
-                    return(*this);
+        const int compare(const SelfClass &str)const override
+        {
+            return Comp(str);
+        }
 
-                if(!data.valid())       //如果我方为空
-                    return(str);
+    public:
 
-                return ComboString(data->c_str(),data->GetLength(),str.c_str(),str.Length());
-            }
+        /**
+        * 统计不重复字符的个数
+        */
+        int UniqueCharCount()const
+        {
+            if(!data.valid())
+                return 0;
 
-            SelfClass   operator +  (const T ch) const
-            {
-                if(!data.valid())
-                    return(SelfClass::charOf(ch));
-
-                return ComboString(data->c_str(),data->GetLength(),&ch,1);
-            }
-
-            SelfClass   operator +  (const T *str) const
-            {
-                if(!data.valid())
-                    return(SelfClass(str));
-
-                return ComboString(data->c_str(),data->GetLength(),str,strlen(str));
-            }
-
-            #define BASE_STRING_NUMBER_OPERATOR_ADD(type,func)  SelfClass   operator +  (const type &num) const \
-            {   \
-                SharedPtr<T> vstr=func(new T[8*sizeof(type)],8*sizeof(type),num);   \
-                \
-                return operator+(vstr->data);   \
-            }
-
-            BASE_STRING_NUMBER_OPERATOR_ADD(int,    itos);
-            BASE_STRING_NUMBER_OPERATOR_ADD(uint,   utos);
-            BASE_STRING_NUMBER_OPERATOR_ADD(int64,  itos);
-            BASE_STRING_NUMBER_OPERATOR_ADD(uint64, utos);
-
-            BASE_STRING_NUMBER_OPERATOR_ADD(float,  ftos);
-            BASE_STRING_NUMBER_OPERATOR_ADD(double, dtos);
-
-            #undef BASE_STRING_NUMBER_OPERATOR_ADD
-
-            const int compare(const SelfClass &str)const override
-            {
-                return Comp(str);
-            }
+            return data->UniqueCharCount();
+        }
     };//template<typename T> class String
 
     //这种重载用于value+str的情况
