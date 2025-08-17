@@ -14,6 +14,9 @@ namespace hgl
         int left=0,right=data_list.GetCount()-1;                //使用left,right而不使用min,max是为了让代码能够更好的阅读。
         int mid;
 
+        if(right<0)
+            return(-1);
+
         KVData **data_array=data_list.GetData();
 
         while(left<=right)
@@ -88,6 +91,8 @@ namespace hgl
     int MapTemplate<K,V,KVData>::FindByValue(const V &data)const
     {
         const int count=data_list.GetCount();
+
+        if(count<=0)return(-1);
 
         KVData **data_array=data_list.GetData();
 
@@ -166,7 +171,7 @@ namespace hgl
     {
         int index=Find(key);
 
-        if(index==-1)
+        if(index<0)
             return(nullptr);
 
         KVData *obj=GetObjectFromMap(data_list,index);
@@ -186,6 +191,9 @@ namespace hgl
     {
         int index=Find(flag);
 
+        if(index<0)
+            return(-1);
+
         KVData *obj=GetObjectFromMap(data_list,index);
 
         if(!obj)
@@ -201,12 +209,15 @@ namespace hgl
     {
         int index=Find(key);
 
+        if(index<0)
+            return(false);
+
         KVData *obj=GetObjectFromMap(data_list,index);
 
         if(!obj)
             return(false);
 
-        return (value==obj->value);
+        return(value==obj->value);
     }
 
     /**
