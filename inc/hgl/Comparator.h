@@ -5,11 +5,15 @@
 namespace hgl
 {
     /**
-    * 比较处理模板基类
+    * 比较处理模板基类<br>
+    * 注：从此类派生的，不可以使用memset(this,0,sizeof())，因为这会破坏Comparator<>纯虚函数表
     */
     template<typename T> class Comparator                                                               ///比较处理模板基类
     {
     public:
+
+        Comparator()=default;
+        virtual ~Comparator()=default;
 
         /**
         * 比较函数，需被特例化或派生实现. 正确情况下此函数不应该会被调用
@@ -28,6 +32,9 @@ namespace hgl
     {   
     public:
 
+        ComparatorData()=default;
+        virtual ~ComparatorData()=default;
+
         const int compare(const T &other)const override final
         {
             return memcmp(this,&other,sizeof(T));
@@ -36,8 +43,10 @@ namespace hgl
 
     template<typename T> class ItemComparator
     {
-
     public:
+
+        ItemComparator()=default;
+        virtual ~ItemComparator()=default;
 
         static const int compare(const T &a,const T &b);
 
