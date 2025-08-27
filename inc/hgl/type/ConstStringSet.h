@@ -87,6 +87,8 @@ namespace hgl
 
     public:
 
+        const bool IsEmpty()const{return str_data.IsEmpty();}                                           ///<字符串集合是否为空
+
         const bool Contains(const SC *str,int length)const                          ///<判断字符串是否为合集成员
         {
             if(!str||!*str||length<=0)return(-1);
@@ -141,6 +143,14 @@ namespace hgl
         ConstStringSet(){}
 
         virtual ~ConstStringSet()=default;
+
+        void Clear()
+        {
+            str_data.Clear();
+            str_set.Clear();
+            str_list.Clear();
+            str_offset_map.Clear();
+        }
 
         int AddString(ConstStringView<SC> &csv,const SC *str,int length)            ///<添加一个字符串
         {
