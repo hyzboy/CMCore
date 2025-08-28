@@ -73,6 +73,12 @@ namespace hgl
 
         public:
 
+            Iterator()
+            {
+                list=nullptr;
+                current_index=-1;
+            }
+
             Iterator(IndexedList<T, I>* lst, int32 idx):list(lst),current_index(idx){}
 
             T& operator*()
@@ -82,6 +88,9 @@ namespace hgl
 
             Iterator &operator++(){current_index++;return *this;}
             Iterator operator++(int){Iterator tmp=*this;++(*this);return tmp;}
+
+            Iterator &operator+=(int32 v) { current_index+=v;return *this; }
+            Iterator &operator-=(int32 v) { current_index-=v;return *this; }
 
             Iterator &operator--(){current_index--;return *this;}
             Iterator operator--(int){Iterator tmp=*this;--(*this);return tmp;}
