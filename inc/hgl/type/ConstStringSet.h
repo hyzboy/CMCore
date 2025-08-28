@@ -138,6 +138,14 @@ namespace hgl
             return str_list.At(id);
         }
 
+        const ConstStringView<SC> *operator[](const int id)const                  ///<根据ID取得字符串视图
+        {
+            return str_list.At(id);
+        }
+
+        const ConstStringView<SC> *begin()const{return str_list.begin();}
+        const ConstStringView<SC> *end()const{return str_list.end();}
+
     public:
 
         ConstStringSet(){}
