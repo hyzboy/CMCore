@@ -1,5 +1,7 @@
 ﻿#include<hgl/color/Color.h>
 #include<hgl/color/YCbCr.h>
+#include<hgl/color/Color3ub.h>
+#include<hgl/color/Color4ub.h>
 
 namespace hgl
 {
@@ -306,7 +308,7 @@ namespace hgl
 
     #undef DEF_COLOR
 
-    bool GetRGB(const enum class COLOR &ce,Color3u8 &color)
+    bool GetRGB(const enum class COLOR &ce,Color3ub &color)
     {
         RANGE_CHECK_RETURN_FALSE(ce);
     
@@ -319,7 +321,7 @@ namespace hgl
         return(true);
     }
 
-    bool GetBGR(const enum class COLOR &ce,Color3u8 &color)
+    bool GetBGR(const enum class COLOR &ce,Color3ub &color)
     {
         RANGE_CHECK_RETURN_FALSE(ce);
     
@@ -358,6 +360,23 @@ namespace hgl
         const COLOR_DEF &c=prv_color[size_t(ce)];
 
         return Color4f(c.r,c.g,c.b,alpha);
+    }
+
+    const Color4ub GetColor4ub(const enum class COLOR &ce,const float &alpha)
+    {
+        const COLOR_DEF &c=prv_color[size_t(ce)];
+
+        uint8 a;
+
+        if(alpha>=1.0)
+            a=255;
+        else
+        if(alpha<=0.0)
+            a=0;
+        else
+            a=uint8(alpha*255.0f);
+
+        return Color4ub(c.red,c.green,c.blue,a);
     }
 
     const Color3f GetYCbCrColor3f(const enum class COLOR &ce)
