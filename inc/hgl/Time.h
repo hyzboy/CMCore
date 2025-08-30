@@ -1,5 +1,4 @@
-﻿#ifndef HGL_TIME_INCLUDE
-#define HGL_TIME_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/DataType.h>
 
@@ -21,5 +20,3 @@ namespace hgl   //时间
 
     void WaitTime(const PreciseTime &);                                                             ///<等待一定时间(单位：秒)
 }//namespace hgl
-
-#endif//HGL_TIME_INCLUDE

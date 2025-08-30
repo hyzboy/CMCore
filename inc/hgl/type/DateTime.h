@@ -143,6 +143,8 @@ namespace hgl
 
         void Sync(const double=0);                                                                  ///<和系统日期同步
 
+        int DayOfYear()const;
+
         bool SaveToStream(io::DataOutputStream *) const;
         bool LoadFromStream(io::DataInputStream *);
     };//class Date
@@ -151,6 +153,8 @@ namespace hgl
      * 根据当前时间，转换出Date/Time两个结构
      */
     void ToDateTime(Date &,Time &,const double cur_time=0);
+
+    int DayOfYear(int year,int month,int day);                                                      ///<计算某年某月某日是该年的第几天
 
     /**
      * 根据日期和时间，转换出以秒为单位的时间值

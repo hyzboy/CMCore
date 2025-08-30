@@ -198,6 +198,25 @@ namespace hgl
 //--------------------------------------------------------------------------------------------------
 namespace hgl
 {
+    // Helper: day of year
+    int DayOfYear(int year,int month,int day)
+    {
+        static const int mdays[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+        int doy = 0;
+        for(int m=1;m<month && m<=12;++m)
+        {
+            doy += mdays[m-1];
+            if(m==2)
+            {
+                // February: add leap day if leap year
+                bool leap = (year%4==0 && (year%100!=0 || year%400==0));
+                if(leap) doy += 1;
+            }
+        }
+        doy += day;
+        return doy;
+    }
+
     Date::Date(const double t)
     {
         Sync(t);
@@ -336,6 +355,11 @@ namespace hgl
 
         day=d;
         SetMonth(m);
+    }
+
+    int Date::DayOfYear()const
+    {
+        return hgl::DayOfYear(year,month,day);
     }
 }//namespace hgl
 
