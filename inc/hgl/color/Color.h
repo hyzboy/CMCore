@@ -264,7 +264,12 @@ namespace hgl
         Yellow,               ///<黄色
         YellowGreen,          ///<黄绿色
 
-        ENUM_CLASS_RANGE(AliceBlue,YellowGreen)
+        GrassGreen,           ///<草地绿
+        BloodRed,             ///<血红色
+        Amber,                ///<琥珀色
+        Burgundy,             ///<勃艮第红
+
+        ENUM_CLASS_RANGE(AliceBlue,Burgundy)
     };//enum COLOR_ENUM
 
     bool GetRGB(const enum class COLOR &ce,Color3ub &);

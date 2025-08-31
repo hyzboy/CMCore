@@ -304,6 +304,12 @@ namespace hgl
 
         DEF_COLOR(Yellow,                 255,255,  0,"黄色")
         DEF_COLOR(YellowGreen,            154,205, 50,"黄绿色")
+
+        // New entries
+        DEF_COLOR(GrassGreen,             93, 187, 99,"草地绿")          // #5DBB63
+        DEF_COLOR(BloodRed,              138,  3,  3,"血红色")           // #8A0303
+        DEF_COLOR(Amber,                 255,191,  0,"琥珀色")           // #FFBF00
+        DEF_COLOR(Burgundy,              128,  0, 32,"勃艮第红")         // #800020
     };
 
     #undef DEF_COLOR
