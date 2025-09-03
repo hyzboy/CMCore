@@ -11,7 +11,7 @@ namespace hgl
     {
     public:
 
-        using VEC2=glm::vec<2,T,glm::defaultp>;
+        using V2=glm::vec<2,T,glm::defaultp>;
 
         T Left;                                                                                     ///<矩形左边所在的坐标
         T Top;                                                                                      ///<矩形上边所在的坐标
@@ -37,11 +37,11 @@ namespace hgl
         T GetCenterX()const{return Left+(Width/2);}
         T GetCenterY()const{return Top+(Height/2);}
 
-        const VEC2 GetLeftTop    ()const{return VEC2(Left,        Top);}
-        const VEC2 GetLeftBottom ()const{return VEC2(Left,        Top+Height);}
-        const VEC2 GetRightTop   ()const{return VEC2(Left+Width,  Top);}
-        const VEC2 GetRightBottom()const{return VEC2(Left+Width,  Top+Height);}
-        const VEC2 GetSize       ()const{return VEC2(Width,       Height);}
+        const V2 GetLeftTop    ()const{return V2(Left,        Top);}
+        const V2 GetLeftBottom ()const{return V2(Left,        Top+Height);}
+        const V2 GetRightTop   ()const{return V2(Left+Width,  Top);}
+        const V2 GetRightBottom()const{return V2(Left+Width,  Top+Height);}
+        const V2 GetSize       ()const{return V2(Width,       Height);}
 
     public:
 
