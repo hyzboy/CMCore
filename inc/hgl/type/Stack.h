@@ -43,7 +43,7 @@ namespace hgl
         StackTemplate(DataLifecycleManager<T> *_dlm){dlm=_dlm;}
         virtual ~StackTemplate()=default;
 
-        virtual bool Push(T *data,int count)                                                        ///<压入多个数据
+        virtual bool Push(const T *data,int count)                                                  ///<压入多个数据
                 {
                     if(!data||count<=0)return(false);
 
@@ -56,7 +56,7 @@ namespace hgl
                     return(true);
                 }
 
-        virtual bool Push(T &data){return Push(&data,1)==1;}                                        ///<压入一个数据
+        virtual bool Push(const T &data){return Push(&data,1)==1;}                                  ///<压入一个数据
 
         virtual bool Peek(T &data)                                                                  ///<尝试访问一个数据
                 {
