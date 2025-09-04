@@ -44,7 +44,19 @@ namespace hgl
         bool Get        (int *id,const int count=1);                            ///<激活指定量的ID数据(优先从Idle中取,没有不会创建新的。激活后会被放入Active列表)
         bool GetOrCreate(int *id,const int count=1);                            ///<激活指定量的ID数据(优从从Idle中取,如果不够则创建新的。激活后会被放入Active列表)
 
-        int Release         (int *id,int count=1);                              ///<释放指定量的ID数据(会从Active列表中取出，放入Idle列表中)
+        int GetIdle()                                                           ///<从闲置ID列表中获取一个ID，并将其从闲置列表中删除(注：不会创建新的ID)
+        {
+            int id;
+
+            if(!Get(&id))
+                return(-1);
+
+            return id;
+        }
+
+        int Release     (const int *id,int count=1);                            ///<释放指定量的ID数据(会从Active列表中取出，放入Idle列表中)
         int ReleaseAllActive();                                                 ///<释放所有活跃ID(会从Active列表中取出，放入Idle列表中)
+
+        bool IsActive(const int id)const{return active_list.Contains(id);}  ///<确认指定ID是否处于活跃状态
     };//class ActiveIDManager
 }//namespace hgl
