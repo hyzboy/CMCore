@@ -97,9 +97,9 @@ namespace hgl
     /**
     * 释放指定量的ID数据(会从Active列表中取出，放入Idle列表中)
     */
-    int ActiveIDManager::Release(int *id,int count)
+    int ActiveIDManager::Release(const int *id,int count)
     {
-        if(!id||count<=0)return(false);
+        if(!id||count<=0)return(-1);
 
         int result=0;
 
