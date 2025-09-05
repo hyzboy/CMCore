@@ -9,6 +9,6 @@ namespace hgl
         Hint,
         Warning,
         Error,
-        FatalError,
+        Fatal,
     };//enum class LogLevel
 }//namespace hgl
