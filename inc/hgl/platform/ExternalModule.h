@@ -2,6 +2,7 @@
 #define HGL_EXTERNAL_MODULE_INCLUDE
 
 #include<hgl/type/DataType.h>
+#include<hgl/log/ObjectLogger.h>
 #include<hgl/platform/FuncLoad.h>
 #include OS_EXTERNAL_H
 namespace hgl
@@ -14,6 +15,10 @@ namespace hgl
     */
     class ExternalModule                                                                            ///外部模块调用类
     {
+        OBJECT_LOGGER
+
+    private:
+
         ExternalModulePointer fp;
 
     public: //方法

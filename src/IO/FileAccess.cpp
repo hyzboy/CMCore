@@ -31,7 +31,7 @@ namespace hgl
 
             if(fn.IsEmpty())
             {
-                LOG_ERROR(OS_TEXT("Error,filename is NULL"));
+                LogError(OS_TEXT("Error,filename is NULL"));
                 return(false);
             }
 
@@ -39,9 +39,13 @@ namespace hgl
 
             if(fp==-1)
             {
-                LOG_ERROR(OS_TEXT("open file error,filename: ")+fn);
+                LogError(OS_TEXT("open file error,filename: ")+fn);
                 return(false);
             }
+
+            Log.SetLoggerInstanceName(U8String::numberOf(fp));
+
+            LogVerbose(OS_TEXT("open file success,filename: ")+fn+OS_TEXT(", OpenMode:")+OSString::numberOf((int)fom));
 
             filename=fn;
             mode=fom;

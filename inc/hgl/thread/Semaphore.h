@@ -2,6 +2,7 @@
 #define HGL_SEMAPHORE_INCLUDE
 
 #include<hgl/platform/Platform.h>
+#include<hgl/log/ObjectLogger.h>
 
 namespace hgl
 {
@@ -11,6 +12,10 @@ namespace hgl
     */
     class Semaphore                                                                                 ///信号
     {
+        OBJECT_LOGGER
+
+    private:
+
         semaphore_ptr ptr;
 
     public:

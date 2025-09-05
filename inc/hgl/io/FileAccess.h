@@ -1,6 +1,7 @@
 ﻿#ifndef HGL_IO_FILE_ACCESS_INCLUDE
 #define HGL_IO_FILE_ACCESS_INCLUDE
 
+#include<hgl/log/ObjectLogger.h>
 #include<hgl/type/String.h>
 #include<hgl/io/SeekAccess.h>
 #include<sys/stat.h>
@@ -28,6 +29,8 @@ namespace hgl
         */
         class FileAccess                                                                            ///文件访问实例管理类
         {
+            OBJECT_LOGGER;
+
         protected:
 
             OSString filename;

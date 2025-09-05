@@ -5,7 +5,7 @@
 #include<hgl/type/SortedSet.h>
 #include<hgl/type/String.h>
 #include<hgl/thread/ThreadMutex.h>
-#include<hgl/log/LogInfo.h>
+#include<hgl/log/ObjectLogger.h>
 
 namespace hgl
 {
@@ -25,6 +25,8 @@ namespace hgl
     */
     class Thread                                                                                    ///线程类
     {
+        OBJECT_LOGGER
+
         friend void WaitThread(Thread **,int,double);
 
     private:

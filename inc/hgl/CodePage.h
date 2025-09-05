@@ -300,6 +300,8 @@ namespace hgl
     inline OSString ToOSString(const u8char *str){return to_u16(str);}
     inline OSString ToOSString(const U8String &str){return to_u16(str.c_str(), (int)(str.Length()));}
 
+    #define ToU16String ToOSString
+
     inline U8String ToU8String(const os_char *str){return to_u8(str,strlen(str));}
     inline U8String ToU8String(const OSString &str){return to_u8(str);}
 #else

@@ -13,7 +13,7 @@ namespace hgl
     {
         if(value<=0)
         {
-            LOG_ERROR(OS_TEXT("LRUCache缓冲区大小被设置<=0"));
+            LogError(OS_TEXT("LRUCache缓冲区大小被设置<=0"));
 
             value=3;
         }
@@ -36,7 +36,7 @@ namespace hgl
     {
         if(value<=0)
         {
-            LOG_ERROR(OS_TEXT("LRUCache缓冲区大小被设置<=0，此次设置无效！"));
+            LogError(OS_TEXT("LRUCache缓冲区大小被设置<=0，此次设置无效！"));
         }
         else
             alloc_count=value;
@@ -71,7 +71,7 @@ namespace hgl
             #ifdef _DEBUG
             if(count!=1)
             {
-                LOG_ERROR(OS_TEXT("LRUCache出错，end_item=nullptr,count!=1"));
+                LogError(OS_TEXT("LRUCache出错，end_item=nullptr,count!=1"));
             }
             #endif//
             start_item=nullptr;         //如果end_item为空，start_item也应该为空
@@ -111,7 +111,7 @@ namespace hgl
             #ifdef _DEBUG               //理由上end_item为NULL时应该是没有数据
             if(count!=1)
             {
-                LOG_ERROR(OS_TEXT("LRUCache出错，end_item=nullptr,count!=1"));
+                LogError(OS_TEXT("LRUCache出错，end_item=nullptr,count!=1"));
             }
             else
             #endif//_DEBUG
@@ -239,7 +239,7 @@ namespace hgl
 
         if(n!=count)
         {
-            LOG_ERROR(OS_TEXT("LRUCache Count=")+OSString(count)+OS_TEXT(",Clear=")+OSString(n));
+            LogError(OS_TEXT("LRUCache Count=")+OSString(count)+OS_TEXT(",Clear=")+OSString(n));
         }
 
         count=0;

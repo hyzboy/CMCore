@@ -236,7 +236,7 @@ namespace hgl
 #else
             virtual ~WorkThread()
             {
-                LOG_INFO(U8_TEXT("WorkThread Destruct [")+thread_addr_string+U8_TEXT("]"));
+                LogInfo(U8_TEXT("WorkThread Destruct [")+thread_addr_string+U8_TEXT("]"));
             }
 
 #endif//_DEBUG
@@ -261,7 +261,7 @@ namespace hgl
 
                 #ifdef _DEBUG
                 {
-                    LOG_INFO(U8_TEXT("WorkThread Finish [")+thread_addr_string+U8_TEXT("]"));
+                    LogInfo(U8_TEXT("WorkThread Finish [")+thread_addr_string+U8_TEXT("]"));
                 }
                 #endif//_DEBUG
             }

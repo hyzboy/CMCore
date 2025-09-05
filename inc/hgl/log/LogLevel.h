@@ -2,9 +2,9 @@
 
 namespace hgl
 {
-    enum class LogLevel
+    enum class LogLevel:int
     {
-        Verbose,
+        Verbose=0,
         Info,
         Hint,
         Warning,

@@ -40,7 +40,7 @@ namespace hgl
             }
         }
 
-//      LOG_PROBLEM(OS_TEXT("Map::Find,no result."));
+//      LogWarning(OS_TEXT("Map::Find,no result."));
         return(-1);
     }
 

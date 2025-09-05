@@ -204,7 +204,7 @@ namespace hgl
                     {
                         if(next->start>=ud->start)  //这个块在中间，那就是出错了
                         {
-                            //                            LOG_ERROR(OS_TEXT("DataChain::Release, block cross."));
+                            //                            LogError(OS_TEXT("DataChain::Release, block cross."));
                             return(false);
                         }
                     }

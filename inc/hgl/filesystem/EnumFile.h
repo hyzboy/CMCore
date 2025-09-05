@@ -1,4 +1,5 @@
 ﻿#include<hgl/filesystem/FileSystem.h>
+#include<hgl/log/ObjectLogger.h>
 
 namespace hgl
 {
@@ -52,6 +53,8 @@ namespace hgl
          */
         class EnumFile
         {
+            OBJECT_LOGGER
+
         protected:
 
             virtual void ProcFolderBegin(struct EnumFileConfig *parent_efc,struct EnumFileConfig *cur_efc,FileInfo &fi){}
