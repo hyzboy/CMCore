@@ -176,8 +176,23 @@ namespace hgl
             return(true);
         }
 
-        bool    GetFirst        (T &data){return hgl_cpy(data,*begin());}                   ///<取得最前面一个数据
-        bool    GetLast         (T &data){return hgl_cpy(data,*last());}                    ///<取得最后面一个数据
+        bool    GetFirst        (T &data)const                                              ///<取得第一个数据
+        {
+            if(!begin())
+                return(false);
+            
+            hgl_cpy<T>(data,*begin());
+            return(true);
+        }
+        
+        bool    GetLast         (T &data)const                                              ///<取得最后面一个数据
+        {
+            if(!last())
+                return(false);
+
+            hgl_cpy<T>(data,*last());
+            return(true);
+        }
 
         void    operator       =(const SortedSet<T> &set){data_list=set.data_list;}        ///<等号操作符重载
     };//template<typename T> class SortedSet
