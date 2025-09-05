@@ -56,7 +56,7 @@ namespace hgl
             return result;
         }
 
-        int WriteDataArray(T *da,const int *idp,const int count)const
+        int WriteDataArray(const T *da,const int *idp,const int count)
         {
             int result=0;
 
@@ -70,6 +70,11 @@ namespace hgl
             }
 
             return result;
+        }
+
+        T *At(const int id)
+        {
+            return data_array.At(id);
         }
 
         bool GetData(T &d,const int id)const
@@ -126,9 +131,21 @@ namespace hgl
             data_array.AddCount(count);
         }
 
-        void    CreateIdle      (const int count=1)         {CreateIdle(nullptr,count);}
-        bool    Get             (int *id,const int count=1) {return aim.Get(id,count);}
-        int     Release         (int *id,const int count=1) {return aim.Release(id,count);}
-        int     ReleaseAllActive()                          {return aim.ReleaseAllActive();}
+        void    CreateIdle      (const int count=1)                 {CreateIdle(nullptr,count);}
+        bool    Get             (      int *id,const int count=1)   {return aim.Get(id,count);}
+        int     Release         (const int *id,const int count=1)   {return aim.Release(id,count);}
+        int     ReleaseAllActive()                                  {return aim.ReleaseAllActive();}
+
+        T *     GetIdle()
+        {
+            int id;
+
+            if(!aim.Get(&id))
+                return(nullptr);
+
+            return data_array.At(id);
+        }
+
+        bool    IsActive        (const int id)const                 {return aim.IsActive(id);}
     };//template<typename T> class ActiveDataManager
 }//namespace hgl

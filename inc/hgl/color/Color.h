@@ -275,8 +275,8 @@ namespace hgl
     bool GetRGB(const enum class COLOR &ce,Color3ub &);
     bool GetBGR(const enum class COLOR &ce,Color3ub &);
 
-    const uint32 GetRGBA(const enum class COLOR &ce,const uint8 &alpha);
-    const uint32 GetABGR(const enum class COLOR &ce,const uint8 &alpha);
+    const uint32 GetRGBA(const enum class COLOR &ce,const uint8 &alpha=255);
+    const uint32 GetABGR(const enum class COLOR &ce,const uint8 &alpha=255);
 
     const Color3f GetColor3f(const enum class COLOR &ce);
     const Color4f GetColor4f(const enum class COLOR &ce,const float &alpha=1.0f);
