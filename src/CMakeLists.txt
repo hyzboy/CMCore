@@ -210,6 +210,12 @@ SOURCE_GROUP("IO\\File"         FILES ${IO_FILE_FILES})
 SOURCE_GROUP("IO\\Jave"         FILES ${IO_JAVA_FILES})
 SOURCE_GROUP("IO\\Text"         FILES ${IO_TEXT_FILES})
 
+SET(IO_PIPE_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/proc/Pipe.h
+                    ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io/PipeStream.h
+                    IO/PipeStream.cpp)
+
+SOURCE_GROUP("IO\\Pipe" FILES ${IO_PIPE_FILES})
+
 SET(IO_SOURCE_FILES   ${IO_BASE_FILES}
                       ${IO_DATA_FILES}
                       ${IO_DATA_ARRAY_FILES}
@@ -217,7 +223,8 @@ SET(IO_SOURCE_FILES   ${IO_BASE_FILES}
                       ${IO_FILE_FILES}
                       ${IO_JAVA_FILES}
                       ${IO_TEXT_FILES}
-                      ${INPUT_EVENT_FILES})
+                      ${INPUT_EVENT_FILES}
+                      ${IO_PIPE_FILES})
 
 SET(FILESYSTEM_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/filesystem)
 

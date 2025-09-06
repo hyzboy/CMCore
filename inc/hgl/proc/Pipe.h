@@ -20,5 +20,13 @@ namespace hgl
     using pipe_pair=pipe_ptr[2];
 
     bool CreatePipe(pipe_pair &);       ///<创建一对通信管道
+    void ClosePipe(pipe_pair &);        ///<关闭一对通信管道
+    void ClosePipe(pipe_ptr);          ///<关闭单个管道句柄
+
+    // 平台无关的管道读写接口，具体实现放在平台相关的 Pipe.cpp 文件中
+    int64 ReadPipe(pipe_ptr, void *buf, int64 size);
+    int64 WritePipe(pipe_ptr, const void *buf, int64 size);
+    int64 SkipPipe(pipe_ptr, int64 size);
+
 }//namespace hgl
 #endif//HGL_MULTI_PROC_PIPE_INCLUDE
