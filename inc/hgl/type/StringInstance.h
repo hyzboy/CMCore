@@ -3,6 +3,7 @@
 #include<hgl/type/DataType.h>
 #include<hgl/type/SortedSet.h>
 #include<string.h>
+#include<utility>
 
 namespace hgl
 {
@@ -26,7 +27,7 @@ namespace hgl
         {
             malloc_length=0;
             length=0;
-            buffer=0;
+            buffer=nullptr;
         }
 
         virtual void InitPrivate(const T *str,const int len)
@@ -38,6 +39,20 @@ namespace hgl
             buffer=new T[malloc_length];
             memcpy(buffer,str,length*sizeof(T));
             buffer[length]=0;
+        }
+
+        void EnsureCapacity(int need_length)   ///< 确保容量(包含结尾0)
+        {
+            if(need_length<=malloc_length)
+                return;
+
+            malloc_length=power_to_2(need_length);
+            T *new_buf=new T[malloc_length];
+            if(buffer&&length>0)
+                memcpy(new_buf,buffer,length*sizeof(T));
+            delete[] buffer;
+            buffer=new_buf;
+            buffer[length]=0;        // 保持结束符
         }
 
     public:
@@ -52,31 +67,33 @@ namespace hgl
          */
         void InitFromString(const T *str,const int len)
         {
-            if(!str||!len)
+            if(!str)
             {
                 InitPrivate();
                 return;
             }
+
+            int real_len=len;
 
             if(len<0)
             {
-                length=hgl::strlen(str);
+                real_len=hgl::strlen(str);
             }
             else
             {
-                length=hgl::strlen(str,len);
+                real_len=hgl::strlen(str,len);
 
-                while(length&&!str[length-1])               //清除后面的0
-                    length--;
+                while(real_len&&!str[real_len-1])               //清除后面的0
+                    real_len--;
             }
 
-            if(length<=0)
+            if(real_len<=0)
             {
                 InitPrivate();
                 return;
             }
 
-            InitPrivate(str,length);
+            InitPrivate(str,real_len);
         }
 
         /**
@@ -90,52 +107,91 @@ namespace hgl
                 return;
             }
 
-            {
-                length=hgl::strlen(str,len);
+            int real_len=hgl::strlen(str,len);
 
-                while(length&&!str[length-1])               //清除后面的0
-                    length--;
-            }
+            while(real_len&&!str[real_len-1])               //清除后面的0
+                real_len--;
 
-            if(length<=0)
+            if(real_len<=0)
             {
                 InitPrivate();
                 delete[] str;
-
                 return;
             }
 
-            if(str[length]==0)                            //如果最后不是0，则需要重新分配内存创建带0结尾的字串
-            {
-                malloc_length=len;
-                buffer=str;
-                return;
-            }
-            else
+            // 注释: “如果最后不是0，则需要重新分配内存创建带0结尾的字串”
+            // 原代码逻辑与注释相反，这里改正
+            if(str[real_len]!=0)            // 最后不是0，需要重新分配
             {            
-                InitPrivate(str,length);
-
+                InitPrivate(str,real_len);
                 delete[] str;
+            }
+            else                            // 已经包含结束符，直接接管
+            {
+                length=real_len;
+                malloc_length=len;          // len 是原始可用长度
+                buffer=str;
             }
         }
 
         StringInstance(const SelfClass &bs)
         {
-            if(bs.Length<=0)
+            if(bs.length<=0)
             {
                 InitPrivate();
                 return;
             }
 
             length=bs.length;
-
-            if(length<=0)
-                return;
-
-            malloc_length=bs.malloc_length;
-
+            malloc_length=bs.malloc_length;    // 复用相同的容量策略
             buffer=new T[malloc_length];
             memcpy(buffer,bs.buffer,length*sizeof(T));
+            buffer[length]=0;                  // 保证以0结尾
+        }
+
+        StringInstance(SelfClass &&other) noexcept
+        {
+            length=other.length;
+            malloc_length=other.malloc_length;
+            buffer=other.buffer;
+            other.buffer=nullptr;
+            other.length=0;
+            other.malloc_length=0;
+        }
+
+        SelfClass &operator=(const SelfClass &bs)
+        {
+            if(this==&bs)
+                return *this;
+
+            delete[] buffer;
+            if(bs.length<=0)
+            {
+                InitPrivate();
+                return *this;
+            }
+
+            length=bs.length;
+            malloc_length=bs.malloc_length;
+            buffer=new T[malloc_length];
+            memcpy(buffer,bs.buffer,length*sizeof(T));
+            buffer[length]=0;
+            return *this;
+        }
+
+        SelfClass &operator=(SelfClass &&other) noexcept
+        {
+            if(this==&other)
+                return *this;
+
+            delete[] buffer;
+            length=other.length;
+            malloc_length=other.malloc_length;
+            buffer=other.buffer;
+            other.buffer=nullptr;
+            other.length=0;
+            other.malloc_length=0;
+            return *this;
         }
 
         virtual ~StringInstance()
@@ -145,7 +201,7 @@ namespace hgl
 
         const bool isEmpty()const                                                                   ///<是否为空
         {
-            return !buffer;
+            return !buffer||length<=0;
         }
 
         SelfClass *CreateCopy()                                                                     ///<创建一份自身的拷贝
@@ -188,11 +244,18 @@ namespace hgl
             T *result=buffer;
 
             buffer=nullptr;
+            length=0;
+            malloc_length=0;
 
             return result;
         }
 
-        T * c_str()                                                                                 ///<取得字符串C指针
+        T * c_str()                                                                                ///<取得字符串C指针(可写)
+        {
+            return buffer;
+        }
+
+        const T * c_str() const                                                                    ///<取得字符串C指针(只读)
         {
             return buffer;
         }
@@ -229,7 +292,7 @@ namespace hgl
 
         const T GetLastChar()const
         {
-            return buffer?*(buffer+length-1):0;
+            return buffer&&length>0?*(buffer+length-1):0;
         }
 
         /**
@@ -260,7 +323,7 @@ namespace hgl
             if(!sc)
                 return length;
 
-            if(pos<0||length<pos)
+            if(length< (int)pos)
                 return -1;
 
             return hgl::strcmp(buffer+pos,length-pos,sc->buffer,sc->length);
@@ -291,7 +354,7 @@ namespace hgl
             if(!str)
                 return length;
 
-            if(length<pos)
+            if(length< (int)pos)
                 return -1;
 
             return hgl::strcmp(buffer+pos,length-pos,str,hgl::strlen(str));
@@ -387,7 +450,7 @@ namespace hgl
 
         bool Insert(const int pos,const T *istr,int len)                                                  ///<插入一个字符串
         {
-            if(!istr||!*istr)
+            if(!istr||!(*istr))
                 return(false);
 
             if(len==-1)
@@ -397,37 +460,15 @@ namespace hgl
 
             if(pos<0||pos>length||len<=0)return(false);
 
-            const int need_length=length+len+1;
+            const int need_length=length+len+1;   // 包含结束符
+            EnsureCapacity(need_length);
 
-            if(need_length>malloc_length)
-            {
-                malloc_length=power_to_2(need_length+1);
+            if(pos<length)
+                hgl_move(buffer+pos+len,buffer+pos,length-pos+1);   // +1 包含原来的结束符
 
-                T *new_str=new T[malloc_length];
-
-                if(pos)
-                    hgl_cpy(new_str,buffer,pos);
-
-                hgl_cpy(new_str+pos,istr,len);
-
-                if(pos<length)
-                    hgl_cpy(new_str+pos+len,buffer+pos,length-pos);
-
-                new_str[need_length-1]=0;
-
-                length+=len;
-
-                delete[] buffer;
-
-                buffer=new_str;
-            }
-            else
-            {
-                hgl_move(buffer+pos+len,buffer+pos,length-pos+1);
-                hgl_cpy(buffer+pos,istr,len);
-                length+=len;
-            }
-
+            hgl_cpy(buffer+pos,istr,len);
+            length+=len;
+            buffer[length]=0;
             return(true);
         }
 
@@ -442,22 +483,19 @@ namespace hgl
 
         bool Delete(uint pos,int num)                                                                ///<删除指定字符
         {
-            if(pos<0||pos>=length||num<0)return(false);
+            if(pos>= (uint)length||num<0)return(false);
 
             if(num==0)return(true);
 
-            if(pos+num>length)  //超出长度
+            if(pos+num> (uint)length)  //超出长度
             {
                 buffer[pos]=0;
-
                 length=pos;
             }
             else
             {
                 hgl_typemove(buffer+pos,buffer+pos+num,length-pos-num);
-
                 length-=num;
-
                 buffer[length]=0;
             }
 
@@ -481,8 +519,7 @@ namespace hgl
 
         bool Clip(uint pos,int num)
         {
-            if(pos<0||pos>length
-             ||num<0||pos+num>length)
+            if(pos> (uint)length || num<0 || pos+num> (uint)length)
                 return(false);
 
             hgl_typemove(buffer,buffer+pos,num);
@@ -493,7 +530,7 @@ namespace hgl
 
         bool SubString(const int start,int n=-1)
         {
-            if(start<0||n==0)return(false);
+            if(start<0||start>=length||n==0)return(false);
             if(n>0&&start+n>length)return(false);
 
             if(n<0)
@@ -501,60 +538,54 @@ namespace hgl
 
             hgl_typemove(buffer,buffer+start,n);
             buffer[n]=0;
-
+            length=n;
             return(true);
         }
 
         bool Resize(int num)
         {
-            if(num<=0)
+            if(num<0)
                 return(false);
+
+            if(num==length)
+                return true;
+
+            if(num==0)
+            {
+                delete[] buffer;
+                buffer=nullptr;
+                length=0;
+                malloc_length=0;
+                return true;
+            }
 
             if(num<length)
             {
-                buffer[num]=0;
-                length=num;
-            }
-            else
-            {
-                if(length>=malloc_length)
-                {
-                    malloc_length=power_to_2(length+1);
-                    T *new_str=new T[malloc_length];
-                    hgl_typecpy(new_str,buffer,length);
-                    delete[] buffer;
-                    buffer=new_str;
-                }
-
-                hgl_set(buffer+length,' ',num-length);
                 length=num;
                 buffer[length]=0;
+                return(true);
             }
 
+            EnsureCapacity(num+1);   // +1 为结尾0
+
+            hgl_set(buffer+length,' ',num-length);   // 使用空格填充
+            length=num;
+            buffer[length]=0;
             return(true);
         }
 
         bool Write(uint pos,const SelfClass &str)
         {
-            if(pos<0||pos>length)
+            if(pos> (uint)length)
                 return(false);
 
             int end_pos=pos+str.length;
 
-            if(end_pos>malloc_length)
-            {
-                malloc_length=power_to_2(end_pos+1);
-
-                T *new_str=new T[malloc_length];
-
-                hgl_typecpy(new_str,buffer,length);
-                delete[] buffer;
-                buffer=new_str;
-            }
+            EnsureCapacity(end_pos+1);
 
             hgl_typecpy(buffer+pos,str.buffer,str.length);
             buffer[end_pos]=0;
-            length=end_pos;
+            length=end_pos>length?end_pos:length;
             return(true);
         }
 

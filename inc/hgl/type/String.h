@@ -210,11 +210,24 @@ namespace hgl
         }
 
         /**
-         * 取得一个C风格的字符串指针,失败返回NULL
+         * 取得一个C风格的字符串指针(只读),失败返回NULL
          */
         T *c_str()const
         {
-            //          if(!this)return(nullptr);
+            return(data.valid()?data->c_str():nullptr);
+        }
+
+        /** 获取一个可写的 C 风格指针 (需要调用者在写前确保 Unlink) */
+        T *c_str()
+        {
+            return(data.valid()?data->c_str():nullptr);
+        }
+
+        /**
+         * 取得可写指针(内部使用). 调用者需确保已Unlink()
+         */
+        T *data_ptr()
+        {
             return(data.valid()?data->c_str():nullptr);
         }
 
@@ -255,7 +268,13 @@ namespace hgl
          */
         void fromString(const T *str,int len=-1)
         {
-            if(!str||!*str||!len)       //len=-1为自检测,为0不处理
+            if(!str)
+            {
+                Clear();
+                return;
+            }
+
+            if(len==0) // 明确空字符串
             {
                 Clear();
                 return;
@@ -263,6 +282,8 @@ namespace hgl
 
             data=new InstClass();
             data->InitFromString(str,len);
+            if(data->GetLength()==0)
+                data.unref();
         }
 
         /**
@@ -272,7 +293,7 @@ namespace hgl
          */
         void fromInstance(T *str,const uint len)
         {
-            if(!str||!*str)
+            if(!str)
             {
                 Clear();
                 return;
@@ -280,6 +301,8 @@ namespace hgl
 
             data=new InstClass();            
             data->InitFromInstance(str,len);
+            if(data->GetLength()==0)
+                data.unref();
         }
 
         void Strcpy(const T *str,int len=-1)
@@ -290,6 +313,12 @@ namespace hgl
         void StrcpyInstance(T *str,int len=-1)
         {
             fromInstance(str,len);
+        }
+
+        // 新增用于 operator= 的直接设置
+        void Set(const T *str,int len=-1)
+        {
+            fromString(str,len);
         }
 
         /**
@@ -345,7 +374,7 @@ namespace hgl
         {
             if(count<=0)return(false);
 
-            if((&bs)==nullptr)
+            if((&bs)==nullptr||!bs.data.valid())
                 return(false);
 
             data=bs.data->CreateCopy(start,count);
@@ -433,6 +462,7 @@ namespace hgl
          */
         bool Insert(const uint pos,const T *str,int len=-1)
         {
+            if(!str)return false;
             if(len==0)return(false);
 
             if(data.valid()&&Unlink())
@@ -461,7 +491,7 @@ namespace hgl
 
         bool Strcat(const T *str,int len)
         {
-            if(!str||!*str||len==0)return(false);
+            if(!str||len==0)return(false);
 
             return Insert(Length(),str,len);
         }
@@ -482,7 +512,7 @@ namespace hgl
          */
         bool Delete(const uint pos,int num)
         {
-            if(pos<0||num<=0)return(false);
+            if(num<=0)return(false);
 
             if(data.valid()&&Unlink())
                 return data->Delete(pos,num);
@@ -536,14 +566,6 @@ namespace hgl
             return data->Comp(str);
         }
 
-        /**
-         * 和一个字符串进行比较
-         * @param pos 起始位置
-         * @param bs 比较字符串
-         * @return <0 此字符串小于参数字符串
-         * @return 0 相等
-         * @return >0 此字符串大于参数字符串
-         */
         int Comp(const uint pos,const SelfClass &bs)const
         {
             if(!data.valid())
@@ -555,15 +577,6 @@ namespace hgl
             return data->Comp(pos,bs.data.get());
         }
 
-        /**
-         * 和一个字符串进行比较
-         * @param pos 起始位置
-         * @param bs 比较字符串
-         * @param num 比较长度
-         * @return <0 此字符串小于参数字符串
-         * @return 0 相等
-         * @return >0 此字符串大于参数字符串
-         */
         int Comp(const uint pos,const SelfClass &bs,const int num)const
         {
             if(!data.valid())
@@ -575,14 +588,6 @@ namespace hgl
             return data->Comp(pos,bs.data.get(),num);
         }
 
-        /**
-         * 和一个字符串进行比较
-         * @param pos 起始位置
-         * @param str 比较字符串
-         * @return <0 此字符串小于参数字符串
-         * @return 0 相等
-         * @return >0 此字符串大于参数字符串
-         */
         int Comp(const uint pos,const T *str)const
         {
             if(!data.valid())
@@ -596,15 +601,6 @@ namespace hgl
             return data->Comp(pos,str);
         }
 
-        /**
-         * 和一个字符串进行比较
-         * @param pos 起始位置
-         * @param str 比较字符串
-         * @param num 比较长度
-         * @return <0 此字符串小于参数字符串
-         * @return 0 相等
-         * @return >0 此字符串大于参数字符串
-         */
         int Comp(const uint pos,const T *str,const int num)const
         {
             if(!data.valid())
@@ -618,13 +614,6 @@ namespace hgl
             return data->Comp(pos,str,num);
         }
 
-        /**
-         * 和另一个字符串进行比较,英文不区分大小写
-         * @param bs 比较字符串
-         * @return <0 此字符串小于参数字符串
-         * @return 0 相等
-         * @return >0 此字符串大于参数字符串
-         */
         int CaseComp(const SelfClass &bs)const
         {
             if(!data.valid())
@@ -638,13 +627,6 @@ namespace hgl
             return data->CaseComp(bs.data->c_str(),len);
         }
 
-        /**
-         * 和另一个字符串进行比较,英文不区分大小写
-         * @param str 比较字符串
-         * @return <0 此字符串小于参数字符串
-         * @return 0 相等
-         * @return >0 此字符串大于参数字符串
-         */
         int CaseComp(const T *str)const
         {
             if(!data.valid())
@@ -658,14 +640,6 @@ namespace hgl
             return data->CaseComp(str);
         }
 
-        /**
-         * 和另一个字符串比较指定长度的字符
-         * @param bs 比较字符串
-         * @param num 比较字符数
-         * @return <0 此字符串小于参数字符串
-         * @return 0 相等
-         * @return >0 此字符串大于参数字符串
-         */
         int Comp(const SelfClass &bs,const int num)const
         {
             if(!data.valid())
@@ -681,14 +655,6 @@ namespace hgl
             return data->Comp(bs.data->c_str(),num);
         }
 
-        /**
-         * 和另一个字符串比较指定长度的字符
-         * @param str 比较字符串
-         * @param num 比较字符数
-         * @return <0 此字符串小于参数字符串
-         * @return 0 相等
-         * @return >0 此字符串大于参数字符串
-         */
         int Comp(const T *str,const int num)const
         {
             if(!data.valid())
@@ -702,14 +668,6 @@ namespace hgl
             return data->Comp(str,num);
         }
 
-        /**
-         * 和另一个字符串比较指定长度的字符,英文不区分大小写
-         * @param bs 比较字符串
-         * @param num 比较字符数
-         * @return <0 此字符串小于参数字符串
-         * @return 0 相等
-         * @return >0 此字符串大于参数字符串
-         */
         int CaseComp(const SelfClass &bs,const int num)const
         {
             if(!data.valid())
@@ -725,14 +683,6 @@ namespace hgl
             return data->CaseComp(bs.data->c_str(),num);
         }
 
-        /**
-         * 和另一个字符串比较指定长度的字符,英文不区分大小写
-         * @param str 比较字符串
-         * @param num 比较字符数
-         * @return <0 此字符串小于参数字符串
-         * @return 0 相等
-         * @return >0 此字符串大于参数字符串
-         */
         int CaseComp(const T *str,const int num)const
         {
             if(!data.valid())
@@ -746,14 +696,6 @@ namespace hgl
             return data->CaseComp(str,num);
         }
 
-        /**
-         * 和另一个字符串比较指定长度的字符,英文不区分大小写
-         * @param str 比较字符串
-         * @param num 比较字符数
-         * @return <0 此字符串小于参数字符串
-         * @return 0 相等
-         * @return >0 此字符串大于参数字符串
-         */
         int CaseComp(const uint pos,const T *str,const int num)const
         {
             if(!data.valid())
@@ -792,10 +734,6 @@ namespace hgl
             return data.valid()?etof(data->c_str(),result):false;
         }
 
-        /**
-         * 将当前字符串全部转为小写
-         * @return 转换后的当前字符串
-         */
         SelfClass &LowerCase()                                                                          ///<将本类中的字母全部转为小写
         {
             if(data.valid()&&Unlink())
@@ -804,10 +742,6 @@ namespace hgl
             return(*this);
         }
 
-        /**
-         * 将当前字符串全部转为小写
-         * @return 转换后的字符串
-         */
         SelfClass ToLowerCase()const                                                                ///<将本类中的字母全部转为小写
         {
             if(!data.valid())
@@ -816,10 +750,6 @@ namespace hgl
             return SelfClass(data->c_str()).LowerCase();
         }
 
-        /**
-         * 将当前字符串全部转为大写
-         * @return 转换后的当前字符串
-         */
         SelfClass &UpperCase()                                                                      ///<将本类中的字母全部转为大写
         {
             if(data.valid()&&Unlink())
@@ -828,10 +758,6 @@ namespace hgl
             return(*this);
         }
 
-        /**
-         * 将当前字符串全部转换为大写
-         * @return 转换后的字符串
-         */
         SelfClass ToUpperCase()const                                                                ///<将本类中的字母全部转为大写
         {
             if(!data.valid())
@@ -844,7 +770,7 @@ namespace hgl
          * 填充当前字符串的部分内容为指定字符
          * @param ch 要填充的字符
          * @param start 填充的起始位置
-         * @param len 填充的个数
+         * @param len 填充的个数(-1 表示直到末尾)
          * @return 是否成功
          */
         bool FillChar(const T ch,int start=0,int len=-1)
@@ -852,8 +778,13 @@ namespace hgl
             if(!data.valid())
                 return(false);
 
-            if(start<0||data->GetLength()<start+len)
+            if(start<0||start>data->GetLength())
                 return(false);
+
+            if(len<0)
+                len=data->GetLength()-start;
+
+            if(len<=0) return false;
 
             if(Unlink())
             {
@@ -902,12 +833,6 @@ namespace hgl
             return data->Clip(pos,num);
         }
 
-        /**
-         * 从字符串中取指定子串为新的内容
-         * @param start 起始字符索引
-         * @param n 字符数量,-1表示全部
-         * @return 截取后的字符串
-         */
         SelfClass SubString(int start,int n=-1) const                                               ///<取字符串指定段的字符
         {
             if(n==0)
@@ -921,13 +846,6 @@ namespace hgl
             return SelfClass(data->c_str()+start,n);
         }
 
-        /**
-         * 从字符串中取指定子串为新的内容
-         * @param sc 新的字符串
-         * @param start 起始字符索引
-         * @param n 字符数量
-         * @return 是否成功
-         */
         bool SubString(SelfClass &sc,int start,int n) const                                         ///<取字符串指定段的字符
         {
             if(Length()<start+n)
@@ -969,11 +887,6 @@ namespace hgl
 
         int FindChar(const T ch)const{return FindChar(0,ch);}                                       ///<返回当前字符串中指定字符开始的索引(从左至右)
 
-        /**
-         * 在当前字符串中查找字符
-         * @param pos 起始查找位置
-         * @param ch 要查找的字符,可以是多个，找到任意一个就算
-         */
         int FindChars(uint pos,const String<T> &ch)const                                          ///<返回当前字符串中指定字符(多个任选一)的索引(从左至右)
         {
             if(!data.valid())
@@ -1015,11 +928,6 @@ namespace hgl
             return(-1);
         }
 
-        /**
-         * 返回当前字符串中指定字符开始的索引(从右至左)
-         * @param off 从右至左跳过不查的字符个数
-         * @param ch 要查找的字符
-         */
         int FindRightChar(const int off,const T ch)const
         {
             if(!data.valid())
@@ -1033,11 +941,6 @@ namespace hgl
             return(-1);
         }
 
-        /**
-         * 返回当前字符串中指定字符(多个任选一)开始的索引(从右至左)
-         * @param off 从右至左跳过不查的字符个数
-         * @param ch 要查找的字符
-         */
         int FindRightChar(const int off,const String<T> &ch)const
         {
             if(!data.valid())
@@ -1051,11 +954,6 @@ namespace hgl
             return(-1);
         }
 
-        /**
-         * 返回当前字符串中排除指定字符外的第一个字符的索引
-         * @param pos 起始查找位置
-         * @param ch 要排除的字符
-         */
         int FindExcludeChar(const uint pos,const T &ch)const
         {
             if(!data.valid())
@@ -1071,11 +969,6 @@ namespace hgl
 
         int FindExcludeChar(const T &ch)const{return FindExcludeChar(0,ch);}
 
-        /**
-         * 返回当前字符串中排除指定字符外的第一个字符的索引
-         * @param pos 起始查找位置
-         * @param ch 要排除的字符
-         */
         int FindExcludeChar(const uint pos,const String<T> &ch)const
         {
             if(!data.valid())
@@ -1089,15 +982,8 @@ namespace hgl
             return(-1);
         }
 
-        int FindExcludeChar(const String &ch)const{return FindExcludeChar(0,ch);}
+        int FindExcludeChar(const String &ch)const{return FindExcludeChar(0,ch);} // 保持原接口
 
-        /**
-         * 在整个字符串内，查找指定字符串
-         * @param str 要查找的字符串
-         * @param start 从第几个字符开始查找，默认0
-         * @return 指定子串所在的偏移
-         * @return -1 出错
-         */
         int FindString(const SelfClass &str,int start=0)const                                       ///<返回当前字符串中指定子串开始的索引
         {
             if(!data.valid())
@@ -1117,12 +1003,6 @@ namespace hgl
             return(-1);
         }
 
-        /**
-         * 在整个字符串内，清除指定字符串
-         * @param sub 要清除的字符串
-         * @return 总计清除的个数
-         * @return -1 出错
-         */
         int ClearString(const SelfClass &sub)                                                       ///<清除当前字符串中指定子串
         {
             if(!Unlink())
@@ -1149,12 +1029,6 @@ namespace hgl
             return(count);
         }
 
-        /**
-         * 在指定位置写入字符串
-         * @param pos 开始写入的位置
-         * @param str 要写入的字符串
-         * @return 是否成功
-         */
         bool WriteString(uint pos,const SelfClass &str)
         {
             if(!Unlink())
@@ -1166,13 +1040,6 @@ namespace hgl
             return data->Write(pos,str);
         }
 
-        /**
-         * 替换当前字符串中指定字符到另一个字符
-         * @param sch 要替换的字符
-         * @param tch 替换后的字符
-         * @return 总计替换个数
-         * @return <0 出错
-         */
         int Replace(const T tch,const T sch)                                                        ///<替换字符
         {
             if(!Unlink())
@@ -1188,18 +1055,27 @@ namespace hgl
             return data;
         }
 
-        const T &operator [](int index)
+        const T &operator [](int index) const
         {
+            static const T zero_char=0;
             if(data.valid())
                 if(index>=0&&index<data->GetLength())
                     return *(data->c_str()+index);
-
-                const static T zero_char=0;
-
-            return zero_char;   //this is error
+            return zero_char;
         }
 
-        operator        T *()       {return c_str();}
+        T &operator [](int index)
+        {
+            static T zero_char= *(new T(0)); // fallback
+            if(!data.valid())
+                return zero_char;
+            if(index<0) return zero_char;
+            if(index>=data->GetLength()) return zero_char;
+            Unlink();
+            return *(data->c_str()+index);
+        }
+
+        operator        T *()       {return (T*)c_str();}
         operator const  T *()const  {return c_str();}
 
         SelfClass &operator =   (const T *str        )
@@ -1331,14 +1207,11 @@ namespace hgl
 
     using ShaderString  =U8String;
 
-    template<typename C> bool ToNumber(const String<C> &str,int &value){return str.ToInt(value);}
-    template<typename C> bool ToNumber(const String<C> &str,uint &value){return str.ToUint(value);}
-    template<typename C> bool ToNumber(const String<C> &str,float &value){return str.ToFloat(value);}
-    template<typename C> bool ToNumber(const String<C> &str,double &value){return str.ToFloat(value);}
+    template<typename C> bool ToNumber(const String<C> &str,int &value){return str.ToInt(value);}    
+    template<typename C> bool ToNumber(const String<C> &str,uint &value){return str.ToUint(value);}  
+    template<typename C> bool ToNumber(const String<C> &str,float &value){return str.ToFloat(value);} 
+    template<typename C> bool ToNumber(const String<C> &str,double &value){return str.ToFloat(value);} 
 
-    /**
-     * 以累加的方式为一个字符串计算出一个hash码
-     */
     template<typename T,int HASH_MAX> uint StringFastHash(const String<T> &str)
     {
         const T *p=str.c_str();
@@ -1352,12 +1225,6 @@ namespace hgl
         return(result%HASH_MAX);
     }
 
-    /**
-     * 将一串原始数据，转换成一个16进制数值组成的字符串
-     * @param value 要转换的原始数据
-     * @return 转换好的字符串
-     * @see HexToString
-     */
     template<typename T,typename I> String<T> ToHexString(const I &value)
     {
         T str[(sizeof(I)<<1)+1];
@@ -1367,12 +1234,6 @@ namespace hgl
         return String<T>(str);
     }
 
-    /**
-     * 将一个数值转换为一个用16进制表示的字符串<br>
-     * 同ToHexString区别在于，HexToString按数值大小处理
-     * @param value 要转换的数值
-     * @see ToHexString
-     */
     template<typename T,typename I> String<T> HexToString(const I &value)
     {
         T str[(sizeof(I)<<1)+1];
@@ -1382,9 +1243,6 @@ namespace hgl
         return String<T>(str);
     }
 
-    /**
-     * 将一个指针转换成一个16进制字符串
-     */
     template<typename T> String<T> PointerToHexString(const void *ptr)
     {
         return HexToString<T,HGL_POINTER_UINT>(reinterpret_cast<const HGL_POINTER_UINT>(ptr));
