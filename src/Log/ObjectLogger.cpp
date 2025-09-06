@@ -28,7 +28,7 @@ namespace hgl::logger
         };
     }//namespace
 
-    static ObjectLogger GlobalLogger(nullptr);///<全局日志对象
+    ObjectLogger GlobalLogger(nullptr);///<全局日志对象
 
     void ObjectLogger::LogString(const std::source_location &sl,const LogLevel level,const u8char *str,const size_t size)
     {
@@ -40,6 +40,14 @@ namespace hgl::logger
         Log(level,str,size);     //临时版本
     }
 
+#ifdef HGL_SUPPORT_CHAR8_T
+    void ObjectLogger::LogString(const std::source_location &sl,const LogLevel level,const char *str,const size_t size)
+    {
+        Log(level,(u8char *)str,size);     //临时版本
+    }
+
+#endif//HGL_SUPPORT_CHAR8_T
+
     void ObjectLogger::LogPrintf(const std::source_location &sl,const LogLevel level,const u8char *fmt, va_list args)
     {
         if(!fmt||!*fmt)return;
@@ -50,14 +58,18 @@ namespace hgl::logger
 
         if(len>0)
         {
-            std::string front=std::string(LogLevelName[size_t(level)].data())
-                             +std::string("[")+std::string(object_type_info->name())+std::string("]");
+            std::string front;
+
+            if(object_type_info)
+                front=std::string(LogLevelName[size_t(level)].data())+std::string("[")+std::string(object_type_info->name())+std::string("] ");
+            else
+                front=std::string(LogLevelName[size_t(level)].data())+std::string(" ");
 
             std::string buf(len+1,'\0');
             std::vsnprintf(buf.data(),buf.size(),(const char *)fmt,args);
 
+            front+=buf;
             LogString(sl,level,front.data(),front.size());
-            LogString(sl,level,buf.data(),buf.size());
         }
     }
 
@@ -81,8 +93,12 @@ namespace hgl::logger
             std::wstring buf(len+1,u'\0');
             std::vswprintf(buf.data(),buf.size(),fmt,args);
 
-            std::string front=std::string(LogLevelName[size_t(level)].data())
-                             +std::string("[")+std::string(object_type_info->name())+std::string("]");
+            std::string front;
+
+            if(object_type_info)
+                front=std::string(LogLevelName[size_t(level)].data())+std::string("[")+std::string(object_type_info->name())+std::string("] ");
+            else
+                front=std::string(LogLevelName[size_t(level)].data())+std::string(" ");
 
             LogString(sl,level,front.data(),front.size());
             LogString(sl,level,buf.data(),buf.size());
