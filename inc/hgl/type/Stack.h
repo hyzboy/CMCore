@@ -10,9 +10,7 @@ namespace hgl
     template<typename T> class StackTemplate                                                        ///堆栈顺序数据访问类
     {
     protected:
-        
-        DataLifecycleManager<T> *dlm;
-
+        // 已弃用的生命周期指针模式改为编译期traits，保留兼容构造函数但不再使用
         DataArray<T> data_array;
 
     public: //属性
@@ -40,7 +38,7 @@ namespace hgl
 
     public: //方法
 
-        StackTemplate(DataLifecycleManager<T> *_dlm){dlm=_dlm;}
+        StackTemplate(DataLifecycleManager<T> * /*unused*/ =nullptr){}   // 兼容旧接口
         virtual ~StackTemplate()=default;
 
         virtual bool Push(const T *data,int count)                                                  ///<压入多个数据
@@ -91,8 +89,7 @@ namespace hgl
 
         virtual void Clear  ()                                                                      ///<清除所有数据
         {
-            dlm->Clear(data_array.GetData(),data_array.GetCount());
-
+            LifecycleTraits<T>::destroy(data_array.GetData(),data_array.GetCount());
             data_array.Clear();
         }
 
@@ -114,46 +111,44 @@ namespace hgl
 
     template<typename T> class Stack:public StackTemplate<T>
     {
-    protected:
-
-        DataLifecycleManager<T> DefaultDLM;
-
     public:
 
-        Stack():StackTemplate<T>(&DefaultDLM){};
+        Stack():StackTemplate<T>(nullptr){};
         virtual ~Stack()=default;
     };//template<typename T> class Stack:public StackTemplate<T>
 
     template<typename T> class ObjectStack:public StackTemplate<T *>                                ///堆栈对象
     {
-        ObjectLifecycleManager<T> DefaultOLM;
-
     public:
-        
-        ObjectStack():StackTemplate<T *>(&DefaultOLM){}
+        ObjectStack():StackTemplate<T *>(nullptr){}
         virtual ~ObjectStack() override {Free();}
 
         virtual bool Push(T *obj)
         {
             if(!obj)return(false);
-
-            return Stack<T *>::Push(obj);
+            return StackTemplate<T *>::Push(obj,1);
         }
 
         T *Pop()
         {
-            T *obj;
-
-            if(!Stack<T *>::Pop(obj))
+            T *obj=nullptr;
+            if(!StackTemplate<T *>::Pop(obj))
                 return(nullptr);
-
             return obj;
+        }
+
+        virtual void Clear() override
+        {
+            // 拥有指针：删除
+            T **ptr=this->data_array.GetData();
+            int n=this->data_array.GetCount();
+            LifecycleTraitsOwningPtr<T>::destroy(ptr,n);
+            this->data_array.Clear();
         }
 
         void Free()
         {
-            ObjectStack<T>::Clear();
-
+            Clear();
             this->data_array.Free();
         }
     };//template<typename T> class ObjectStack

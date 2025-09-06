@@ -2,6 +2,7 @@
 
 #include<hgl/type/DataArray.h>
 #include<hgl/type/LifecycleManager.h>
+#include<type_traits>
 namespace hgl
 {
     /**
@@ -10,8 +11,6 @@ namespace hgl
     template<typename T> class QueueTemplate                                                        ///队列顺序数据访问类
     {
     protected:
-
-        DataLifecycleManager<T> *dlm;
 
         DataArray<T> data_array[2];
 
@@ -38,121 +37,128 @@ namespace hgl
             read_offset=0;
         }
 
+    public: //兼容 PoolTemplate 期望的 Active 接口的一个简易 GetArray()
+        // 这里返回当前 write 缓冲区引用，仅用于需要遍历/销毁时的近似处理。
+        DataArray<T> &GetArray(){ return data_array[write_index]; }
+        const DataArray<T> &GetArray() const { return data_array[write_index]; }
+
     public: //属性
 
-                const   int     GetAllocCount   ()const{return  data_array[0].GetAllocCount()+
-                                                                data_array[1].GetAllocCount();}     ///<取得已分配的数据数量
+        const int GetAllocCount() const
+        {
+            return data_array[0].GetAllocCount()+data_array[1].GetAllocCount();
+        }
 
-                const   int     GetCount        ()const{return  data_array[0].GetCount()+
-                                                                data_array[1].GetCount()-read_offset;}///<取得列表内数据数量
+        const int GetCount() const
+        {
+            return data_array[0].GetCount()+data_array[1].GetCount()-read_offset;
+        }
 
-        virtual         bool    PreAlloc        (int count)                                         ///<预分配数据空间
-                        {
-                            if(!data_array[0].Alloc(count))return(false);
-                            if(!data_array[1].Alloc(count))return(false);
+        virtual bool PreAlloc(int count)                                          ///<预分配数据空间
+        {
+            if(!data_array[0].Alloc(count))return(false);
+            if(!data_array[1].Alloc(count))return(false);
+            return true;
+        }
 
-                            return(true);   
-                        }
+        const bool IsEmpty() const{return GetCount()==0;}                         ///<确认列表是否为空
 
-                const   bool    IsEmpty         ()const{return GetCount()==0;}                      ///<确认列表是否为空
-
-                const   bool    Contains         (const T &data)const
-                        {
-                            if(data_array[read_index].Find(data,read_offset)!=-1)
-                                return(true);
-
-                            return data_array[write_index].Find(data)!=-1;
-                        }
+        const bool Contains(const T &data)const
+        {
+            if(data_array[read_index].Find(data,read_offset)!=-1)
+                return true;
+            return data_array[write_index].Find(data)!=-1;
+        }
 
     public: //方法
 
-        QueueTemplate(DataLifecycleManager<T> *_dlm)
+        QueueTemplate()
         {
-            dlm=_dlm;
-
             write_index=0;
             read_index=1;
             read_offset=0;
         }
+        QueueTemplate(DataLifecycleManager<T>* /*unused*/){
+            write_index=0;read_index=1;read_offset=0;
+        }
 
         virtual ~QueueTemplate()=default;
 
-        virtual bool Push   (T *data,int count)                                                     ///<压入一批数据
+        virtual bool Push(T *data,int count)                                      ///<压入一批数据
         {
-            if(!data||count<=0)return(false);
+            if(!data||count<=0)return false;
 
             int offset=data_array[write_index].GetCount();
 
             if(!data_array[write_index].AddCount(count))
-                return(false);
+                return false;
 
             data_array[write_index].WriteAt(data,offset,count);
 
-            return(true);
+            return true;
         }
 
-        virtual bool Push   (T &data){return Push(&data,1);}                                        ///<压入一个数据
+        virtual bool Push(T &data){return Push(&data,1);}                         ///<压入一个数据
 
-        virtual bool Peek   (T &data)                                                               ///<尝试访问一个数据
+        virtual bool Peek(T &data)                                                ///<尝试访问一个数据
         {
-            // Check if read buffer is exhausted (read_offset has reached or exceeded count)
-            // Fixed: was inverted condition that incorrectly treated non-exhausted buffers as exhausted
             if(read_offset >= data_array[read_index].GetCount())
             {
-                // Read buffer exhausted, try to read from write buffer
                 if(data_array[write_index].GetCount()<=0)
-                   return(false);
-
+                   return false;
                 data_array[write_index].ReadAt(data,0);
-
             }
             else
             {
-                // Read buffer still has data, read from current offset
                 data_array[read_index].ReadAt(data,read_offset);
             }
-
-            return(true);
+            return true;
         }
 
-        virtual bool Pop    (T &data)                                                               ///<弹出一个数据
+        virtual bool Pop(T &data)                                                 ///<弹出一个数据
         {
             if(data_array[read_index].GetCount()<=read_offset)
             {
                 if(data_array[write_index].GetCount()<=0)
-                   return(false);
-
+                   return false;
                 data_array[read_index].Clear();
-
                 SwapIndex();
             }
 
             data_array[read_index].ReadAt(data,read_offset);
-
             ++read_offset;
-
-            return(true);
+            return true;
         }
 
     public:
 
-        virtual void Clear  ()                                                                      ///<清除所有数据
+        virtual void Clear()                                                      ///<清除所有数据
         {
             if(data_array[read_index].GetCount()>read_offset)       //还有没读完的，需要清掉
-                dlm->Clear( data_array[read_index].GetData()+read_offset,
-                            data_array[read_index].GetCount()-read_offset);
+            {
+                if constexpr(std::is_pointer_v<T>)
+                    LifecycleTraitsOwningPtr<typename std::remove_pointer<T>::type>::destroy( data_array[read_index].GetData()+read_offset,
+                                                                                               data_array[read_index].GetCount()-read_offset);
+                else
+                    LifecycleTraits<T>::destroy( data_array[read_index].GetData()+read_offset,
+                                                 data_array[read_index].GetCount()-read_offset);
+            }
 
-            dlm->Clear( data_array[write_index].GetData(),
-                        data_array[write_index].GetCount());
+            if constexpr(std::is_pointer_v<T>)
+                LifecycleTraitsOwningPtr<typename std::remove_pointer<T>::type>::destroy( data_array[write_index].GetData(),
+                                                                                           data_array[write_index].GetCount());
+            else
+                LifecycleTraits<T>::destroy( data_array[write_index].GetData(),
+                                             data_array[write_index].GetCount());
 
             data_array[0].Clear();
             data_array[1].Clear();
+            read_offset=0;
         }
 
-        virtual void Free   ()                                                                      ///<清除所有数据并释放内存
+        virtual void Free()                                                       ///<清除所有数据并释放内存
         {
             Clear();
-
             data_array[0].Free();
             data_array[1].Free();
         }
@@ -160,53 +166,40 @@ namespace hgl
 
     template<typename T> class Queue:public QueueTemplate<T>
     {
-    protected:
-
-        DataLifecycleManager<T> DefaultDLM;
-
     public:
-
-        Queue():QueueTemplate<T>(&DefaultDLM){};
+        Queue():QueueTemplate<T>(){};
         virtual ~Queue()=default;
     };//template<typename T> class Queue:public QueueTemplate<T>
 
-    template<typename T> class ObjectQueue:public QueueTemplate<T *>                                ///对象队列
+    template<typename T> class ObjectQueue:public QueueTemplate<T *>             ///对象队列
     {
-        ObjectLifecycleManager<T> DefaultOLM;
-
     public:
-
-        ObjectQueue():QueueTemplate<T *>(&DefaultOLM){}
+        ObjectQueue():QueueTemplate<T *>(){}
         virtual ~ObjectQueue() override { Free(); }
 
         virtual bool Push(T *obj)
         {
-            if(!obj)return(false);
-
+            if(!obj)return false;
             return QueueTemplate<T *>::Push(obj);
         }
 
         virtual bool Push(T **obj_list,int count)
         {
-            if(!obj_list)return(false);
-
+            if(!obj_list)return false;
             return QueueTemplate<T *>::Push(obj_list,count);
         }
 
         T *PopObject()
         {
             T *obj;
-
             if(!QueueTemplate<T *>::Pop(obj))
-                return(nullptr);
-
+                return nullptr;
             return obj;
         }
 
         void Free()
         {
             QueueTemplate<T *>::Clear();
-
             this->data_array[0].Free();
             this->data_array[1].Free();
         }

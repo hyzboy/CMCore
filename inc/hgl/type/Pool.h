@@ -3,214 +3,190 @@
 #include<hgl/type/ArrayList.h>
 #include<hgl/type/Queue.h>
 #include<hgl/type/LifecycleManager.h>
+#include<type_traits>
 namespace hgl
 {
-    /**
-    * 数据池模板用于管于两个队列，一个在用的，一个空闲的。<br>
-    * 默认情部下空闲队列使用Queue模板管理(先入先出，总是使用最早扔进去的数据。可手动换成Stack运行性能更好，但逻辑性能更差。)，
-    * 活动队列使用List模板管理(无序)。
-    */
-    template<typename T,typename AT,typename IT> class PoolTemplate            ///数据池模板
+    // 检测 Active 容器是否提供 GetArray() （例如 ArrayList）
+    template<typename C>
+    class has_get_array
+    {
+        template<typename X> static auto test(int)->decltype(std::declval<X>().GetArray(), std::true_type());
+        template<typename>   static auto test(...)->std::false_type;
+    public:
+        static constexpr bool value=decltype(test<C>(0))::value;
+    };
+
+    template<typename T,typename AT,typename IT> class PoolTemplate
     {
     protected:
-
         AT Active;
         IT Idle;
-
         int max_active_count;
-        int history_max;                                                                            ///<历史最大数量
+        int history_max;
 
         void UpdateHistoryMax()
         {
-            if(Active.GetCount()+Idle.GetCount()>history_max)
-                history_max=Active.GetCount()+Idle.GetCount();
+            int cur=Active.GetCount()+Idle.GetCount();
+            if(cur>history_max) history_max=cur;
         }
 
-    protected:
+        // 仅在 Active 支持 GetArray() 时批量访问
+        template<typename C>
+        static auto active_data_ptr(C &c,int) -> decltype(c.GetArray().GetData()) { return c.GetArray().GetData(); }
+        template<typename C>
+        static T *active_data_ptr(C &,...) { return nullptr; }
 
-        DataLifecycleManager<T> *dlm;                                                               ///<数据生命周期回调函数
-
-    public: //属性
-
-        int GetActiveCount()    const{return Active.GetCount();}                                    ///<取得活动数据数量
-        int GetIdleCount()      const{return Idle.GetCount();}                                      ///<取得非活动数据数量
-        int GetHistoryMaxCount()const{return history_max;}                                          ///<取得历史性最大数据数量
-
-        DataArray<T> & GetActiveArray(){return Active.GetArray();}                                  ///<取得所有活跃数据
-
-        bool IsActive   (const T &data)const{return Active.Contains(data);}                         ///<是否为活跃的
-        bool IsIdle     (const T &data)const{return Idle.Contains(data);}                           ///<是否为非活跃的
-
-        bool IsFull()const                                                                          ///<活跃队列是否已满
-        {
-            if(max_active_count>0&&Active.GetCount()>=max_active_count)
-                return(true);
-
-            return(false);
-        }
+        template<typename C>
+        static auto active_data_count(C &c,int) -> decltype(c.GetArray().GetCount()) { return c.GetArray().GetCount(); }
+        template<typename C>
+        static int active_data_count(C &,...) { return 0; }
 
     public:
+        int GetActiveCount()    const { return Active.GetCount(); }
+        int GetIdleCount()      const { return Idle.GetCount(); }
+        int GetHistoryMaxCount()const { return history_max; }
 
-        PoolTemplate(DataLifecycleManager<T> *_dlc)
+        DataArray<T> &      GetActiveArray()       { return Active.GetArray(); }
+        const DataArray<T> &GetActiveArray() const { return Active.GetArray(); }
+
+        bool IsActive(const T &v) const { return Active.Contains(v); }
+        bool IsIdle  (const T &v) const { return Idle.Contains(v); }
+        bool IsFull() const { return max_active_count>0 && Active.GetCount()>=max_active_count; }
+
+        PoolTemplate():max_active_count(0),history_max(0){}
+        virtual ~PoolTemplate(){ Clear(); }
+
+        void PreAlloc(int count,bool set_to_max=false)
         {
-            max_active_count=0;
-            history_max=0;
-            dlm=_dlc;
+            Active.PreAlloc(count);
+            Idle.PreAlloc(count);
+            if(set_to_max) max_active_count=count;
         }
 
-        virtual ~PoolTemplate()
+        void SetMaxActiveCount(int mc){ max_active_count=mc; }
+
+        bool Create(T &value)
         {
-            Clear();        //有一些数据需要特别的Clear处理，所以不能依赖Active/InActive模板本身的自晰构
+            if(IsFull()) return false;
+            bool ok;
+            if constexpr(std::is_pointer_v<T>)
+                ok=LifecycleTraitsOwningPtr<typename std::remove_pointer<T>::type>::create(&value);
+            else
+                ok=LifecycleTraits<T>::create(&value);
+            if(!ok) return false;
+            Active.Add(value); UpdateHistoryMax(); return true;
         }
 
-        virtual void    PreAlloc(int count,bool set_to_max=false)                                   ///<预分配空间
-                        {
-                            Active.PreAlloc(count);
-                            Idle.PreAlloc(count);
+        bool GetOrCreate(T &value)
+        {
+            if(!Idle.Pop(value))
+            {
+                if(IsFull()) return false;
+                bool ok;
+                if constexpr(std::is_pointer_v<T>)
+                    ok=LifecycleTraitsOwningPtr<typename std::remove_pointer<T>::type>::create(&value);
+                else
+                    ok=LifecycleTraits<T>::create(&value);
+                if(!ok) return false;
+            }
+            else if constexpr(!std::is_pointer_v<T>)
+            {
+                LifecycleTraits<T>::on_active(&value);
+            }
+            Active.Add(value); UpdateHistoryMax(); return true;
+        }
 
-                            if(set_to_max)
-                                max_active_count=count;
-                        }
+        bool Get(T &value)
+        {
+            if(!Idle.Pop(value)) return false;
+            if constexpr(!std::is_pointer_v<T>) LifecycleTraits<T>::on_active(&value);
+            Active.Add(value); return true;
+        }
 
-        virtual void    SetMaxActiveCount(int mc){max_active_count=mc;}                             ///<设定最大活跃数量限制
+        bool AppendToActive(T value)
+        { if(IsFull()) return false; Active.Add(value); UpdateHistoryMax(); return true; }
 
-        virtual bool    Create(T &value)                                                            ///<创建一个数据,并放置在活跃队列中
-                        {
-                            if(!dlm)return(false);
+        bool AppendToIdle(T value)
+        { return Idle.Push(value); }
 
-                            if(IsFull())
-                                return(false);
+        bool Release(T value)
+        {
+            // 仅支持 Active 有 Find/Delete (ArrayList)。若不是此类容器，忽略操作
+            if constexpr(has_get_array<AT>::value)
+            {
+                int idx=Active.Find(value);
+                if(idx<0) return false;
+                Active.Delete(idx);
+                if(!Idle.Push(value)) return false;
+                if constexpr(!std::is_pointer_v<T>) LifecycleTraits<T>::on_idle(&value);
+                return true;
+            }
+            else
+                return false;
+        }
 
-                            if(!dlm->Create(&value))
-                                return(false);
+        int Release(T *arr,int count)
+        { if(!arr||count<=0) return 0; int r=0; for(int i=0;i<count;i++) if(Release(arr[i])) ++r; return r; }
 
-                            Active.Add(value);
-                            UpdateHistoryMax();
-                            return(true);
-                        }
+        void ReleaseActive()
+        {
+            if constexpr(has_get_array<AT>::value)
+            {
+                T *ptr=active_data_ptr(Active,0);
+                int cnt=active_data_count(Active,0);
+                if(ptr && cnt>0)
+                {
+                    if constexpr(!std::is_pointer_v<T>) LifecycleTraits<T>::on_idle(ptr,cnt);
+                    Idle.Push(ptr,cnt);
+                }
+                Active.Clear();
+            }
+            else
+            {
+                // 逐个转移 (Active 视为队列)
+                T v; // 假定 Active 提供 Pop
+                while(Active.Pop(v))
+                {
+                    if constexpr(!std::is_pointer_v<T>) LifecycleTraits<T>::on_idle(&v,1);
+                    Idle.Push(v);
+                }
+            }
+        }
 
-        virtual bool    GetOrCreate(T &value)                                                       ///<获取一个数据(如果没有空余，创建新的)
-                        {
-                            if(!Idle.Pop(value))
-                            {
-                                if(IsFull())
-                                    return(false);
+        void ClearActive()
+        {
+            if constexpr(has_get_array<AT>::value)
+            {
+                T *ptr=active_data_ptr(Active,0);
+                int cnt=active_data_count(Active,0);
+                if(ptr && cnt>0)
+                {
+                    if constexpr(std::is_pointer_v<T>)
+                        LifecycleTraitsOwningPtr<typename std::remove_pointer<T>::type>::destroy(ptr,cnt);
+                    else
+                        LifecycleTraits<T>::destroy(ptr,cnt);
+                }
+                Active.Clear();
+            }
+            else
+            {
+                T v; while(Active.Pop(v))
+                {
+                    if constexpr(std::is_pointer_v<T>)
+                        LifecycleTraitsOwningPtr<typename std::remove_pointer<T>::type>::destroy(&v,1);
+                    else
+                        LifecycleTraits<T>::destroy(&v,1);
+                }
+            }
+        }
 
-                                if(!dlm->Create(&value))
-                                    return(false);
-                            }
-                            else
-                            {
-                                dlm->OnActive(&value);
-                            }
+        void ClearIdle()
+        { Idle.Clear(); }
 
-                            Active.Add(value);
-                            UpdateHistoryMax();
-                            return(true);
-                        }
+        void Clear()
+        { ClearActive(); ClearIdle(); }
+    };
 
-        virtual bool    Get(T &value)                                                               ///<获取一个数据(如果没有空余，返回失败)
-                        {
-                            if(!Idle.Pop(value))
-                                return(false);
-
-                            dlm->OnActive(&value);
-
-                            Active.Add(value);
-                            return(true);
-                        }
-
-        virtual bool    AppendToActive(T value)                                                     ///<添加一个外部创建的数据入活跃队列
-                        {
-                            if(IsFull())
-                                return(false);
-
-                            Active.Add(value);
-
-                            UpdateHistoryMax();
-                            return(true);
-                        }
-
-        virtual bool    AppendToIdle(T value)                                                       ///<添加一个外部创建的数据入非活跃队列
-                        {
-                            if(!Idle.Push(value))
-                                return(false);
-
-                            return(true);
-                        }
-
-        virtual bool    Release(T value)                                                            ///<释放一个数据
-                        {
-                            int index=Active.Find(value);
-
-                            if(index>=0)
-                            {
-                                Active.Delete(index);
-
-                                if(!Idle.Push(value))
-                                    return(false);
-
-                                dlm->OnIdle(&value);
-
-                                return(true);
-                            }
-
-                            return(false);
-                        }
-
-        virtual int     Release(T *vl,int count)                                                    ///<释放一批数据
-                        {
-                            if(!vl||count<=0)
-                                return(0);
-
-                            int result=0;
-
-                            for(int i=0;i<count;i++)
-                            {
-                                if(Release(vl[i]))
-                                    ++result;
-                            }
-
-                            return(result);
-                        }
-
-        virtual void    ReleaseActive()                                                             ///<释放所有活跃数据
-                        {
-                            dlm->OnIdle(Active.GetData(),Active.GetCount());
-
-                            Idle.Push(Active.GetData(),Active.GetCount());
-                            Active.Clear();
-                        }
-
-        virtual void    ClearActive()
-                        {
-                            dlm->Clear(Active.GetData(),Active.GetCount());
-
-                            Active.Clear();
-                        }
-
-        virtual void    ClearIdle()                                                                 ///<清除所有非活跃数据
-                        {
-                            Idle.Clear();
-                        }
-
-        virtual void    Clear()                                                                     ///<清除所有数据
-                        {
-                            ClearActive();
-                            ClearIdle();
-                        }
-    };//template<typename T,typename AT,typename IT> class PoolTemplate
-
-    template<typename T,typename AT,typename IT,typename DLM> class PoolWithDLM:public PoolTemplate<T,AT,IT>
-    {
-        DLM DefaultLifecycleManager;
-
-    public:
-
-        PoolWithDLM():PoolTemplate<T,AT,IT>(&DefaultLifecycleManager){}
-        virtual ~PoolWithDLM()=default;
-    };//template<typename T,typename AT,typename IT,typename DLM> class PoolWithDLM:public PoolTemplate<T,AT,IT>
-
-    template<typename T> using Pool         =PoolWithDLM<T,   ArrayList<T>,    Queue<T>,       DataLifecycleManager<T>>;                  ///<数据池模板
-    template<typename T> using ObjectPool   =PoolWithDLM<T *, ArrayList<T *>,  ObjectQueue<T>, ObjectLifecycleManager<T>>;                ///<对象池
+    template<typename T> using Pool       = PoolTemplate<T,   ArrayList<T>,   Queue<T>>;
+    template<typename T> using ObjectPool = PoolTemplate<T *, ArrayList<T *>, Queue<T *>>;
 }//namespace hgl
