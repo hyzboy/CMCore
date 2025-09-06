@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include<hgl/type/StringView.h>
 #include<hgl/type/StringInstance.h>
 #include<hgl/Comparator.h>
 #include<hgl/type/Smart.h>
@@ -50,11 +49,6 @@ namespace hgl
         String(const T *str,int len)
         {
             fromString(str,len);
-        }
-
-        String(const StringView<T> &sv)
-        {
-            fromString(sv.c_str(),sv.length());
         }
 
         /**
@@ -1226,16 +1220,6 @@ namespace hgl
 
         SelfClass &operator +=  (const SelfClass &str){Strcat(str);return(*this);}
         SelfClass &operator <<  (const SelfClass &str){return(operator+=(str));}
-
-        operator StringView<T> ()const
-        {
-            return StringView<T>(c_str(),Length());
-        }
-
-        operator const StringView<T> &()const
-        {
-            return StringView<T>(c_str(),Length());
-        }
 
         static SelfClass ComboString(const T *str1,int len1,const T *str2,int len2)
         {
