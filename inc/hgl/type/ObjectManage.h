@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/Map.h>
-#include<hgl/type/LifecycleManager.h>
+#include<hgl/type/LifecycleTraits.h>
 namespace hgl
 {
     template<typename K,typename V> struct RefKeyValue:public KeyValue<K,V *>

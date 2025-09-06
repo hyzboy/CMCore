@@ -5,7 +5,7 @@
 #include<hgl/type/Pair.h>
 #include<hgl/type/Pool.h>
 #include<hgl/thread/RWLock.h>
-#include<hgl/type/LifecycleManager.h>
+#include<hgl/type/LifecycleTraits.h>
 
 namespace hgl
 {

@@ -2,7 +2,7 @@
 
 #include<hgl/type/ArrayList.h>
 #include<hgl/type/Queue.h>
-#include<hgl/type/LifecycleManager.h>
+#include<hgl/type/LifecycleTraits.h>
 #include<type_traits>
 namespace hgl
 {

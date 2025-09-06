@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/ArrayList.h>
-#include<hgl/type/LifecycleManager.h>
+#include<hgl/type/LifecycleTraits.h>
 
 namespace hgl
 {
