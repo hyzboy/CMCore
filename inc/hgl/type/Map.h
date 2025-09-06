@@ -5,6 +5,7 @@
 #include<hgl/type/Pair.h>
 #include<hgl/type/Pool.h>
 #include<hgl/thread/RWLock.h>
+#include<hgl/type/LifecycleManager.h>
 
 namespace hgl
 {
@@ -163,197 +164,94 @@ namespace hgl
     template<typename K,typename V,typename KVData> class ObjectMapTemplate:public MapTemplate<K,V *,KVData>
     {
     protected:
-
         typedef MapTemplate<K,V *,KVData> SuperClass;
 
-        ObjectLifecycleManager<V> *olm;
+        void DeleteObject(KVData *ds)
+        {
+            if(!ds)return;
+            V *&p=ds->value;
+            if(p){ LifecycleTraitsOwningPtr<V>::destroy(&p,1); }
+        }
 
-                void    DeleteObject(KVData *ds)
-                {
-                    if(!ds)return;
-
-                    olm->Clear(&(ds->value));
-                }
-
-                void    DeleteObject(int index)
-                {
-                    DeleteObject(GetObjectFromMap(this->data_list,index));
-                }
+        void DeleteObject(int index)
+        {
+            DeleteObject(GetObjectFromMap(this->data_list,index));
+        }
 
     public:
+        ObjectMapTemplate()=default;
+        virtual ~ObjectMapTemplate(){ Clear(); }
 
-        ObjectMapTemplate(ObjectLifecycleManager<V> *_olm)
-        {
-            olm=_olm;
-        }
+        bool UnlinkByKey(const K &flag){ return UnlinkBySerial(SuperClass::Find(flag)); }
+        bool UnlinkByValue(V *tp){ return UnlinkBySerial(this->FindByValue(tp)); }
 
-        virtual ~ObjectMapTemplate()
-        {
-            Clear();
-        }
-
-        /**
-        * 断开一个数据
-        * @param flag 要断开的数据标识
-        * @return 是否断开成功
-        */
-        bool UnlinkByKey(const K &flag)
-        {
-            return UnlinkBySerial(SuperClass::Find(flag));
-        }
-
-        /**
-        * 断开一个数据
-        * @param tp 要断开的数据
-        * @return 是否断开成功
-        */
-        bool UnlinkByValue(V *tp)
-        {
-            return UnlinkBySerial(this->FindByValue(tp));
-        }
-
-        /**
-        * 断开一个数据关联
-        * @param index 要断开的数据的序列号
-        * @return 是否断开成功
-        */
         bool UnlinkBySerial(int index)
         {
-            if(index<0||index>=this->data_list.GetCount())return(false);
-
+            if(index<0||index>=this->data_list.GetCount())return false;
             SuperClass::DeleteAt(index);
-
-            return(true);
+            return true;
         }
 
-        /**
-        * 断开所有数据关联
-        */
-        void UnlinkAll()
-        {
-            SuperClass::Free();
-        }
+        void UnlinkAll(){ SuperClass::Free(); }
 
-        /**
-        * 删除一个数据
-        * @param flag 要删除的数据标识
-        * @return 是否删除成功
-        */
-        bool DeleteByKey(const K &flag)
-        {
-            return DeleteAt(SuperClass::Find(flag));
-        }
+        bool DeleteByKey(const K &flag){ return DeleteAt(SuperClass::Find(flag)); }
+        bool DeleteByValue(V *tp){ return DeleteAt(this->FindByValue(tp)); }
 
-        /**
-        * 删除一个数据
-        * @param tp 要删除的数据
-        * @return 是否删除成功
-        */
-        bool DeleteByValue(V *tp)
-        {
-            return DeleteAt(this->FindByValue(tp));
-        }
-
-        /**
-        * 删除一个数据
-        * @param index 要删除的数据的序列号
-        * @return 是否删除成功
-        */
         bool DeleteAt(int index)
         {
-            if(index<0||index>=this->data_list.GetCount())return(false);
-
+            if(index<0||index>=this->data_list.GetCount())return false;
             DeleteObject(index);
             SuperClass::DeleteAt(index);
-
-            return(true);
+            return true;
         }
 
-        /**
-        * 清除所有数据
-        */
         void DeleteAll()
         {
-            for(auto &it:this->data_list)
-                DeleteObject(it);
-
+            for(auto &it:this->data_list) DeleteObject(it);
             SuperClass::Free();
         }
 
-        /**
-        * 更新数据,如果数据不存在就添加一个新的
-        * @param flag 数据标识
-        * @param data 新的数据内容
-        */
         void Update(const K &flag,V *data)
         {
             int index=this->Find(flag);
-
             if(index!=-1)
             {
                 DeleteObject(index);
-
                 KVData *dp=GetObjectFromMap(this->data_list,index);
-
-                if(dp)
-                    dp->value=data;
+                if(dp) dp->value=data;
             }
             else
-            {
                 this->Add(flag,data);
-            }
         }
 
-        /**
-        * 更改数据,这个更改和Set不同,它要求指定标识的数据必须存在，则否就会更改失败
-        * @param flag 数据标识
-        * @param data 新的数据内容
-        * @param return 是否更改成功
-        */
         bool Change(const K &flag,V *data)
         {
             int index=this->Find(flag);
-
             if(index!=-1)
             {
                 DeleteObject(index);
-
                 KVData *dp=GetObjectFromMap(this->data_list,index);
-
-                if(!dp)
-                    return(false);
-
-                dp->value=data;
-                return(true);
+                if(!dp) return false;
+                dp->value=data; return true;
             }
-            else
-                return(false);
+            return false;
         }
 
-        void Clear(){DeleteAll();}
+        void Clear(){ DeleteAll(); }
 
         V *operator[](const K &index)const
         {
             auto *obj=GetObjectFromMap(this->data_list,this->Find(index));
-
-            if(obj)
-                return obj->value;
-            else
-                return nullptr;
-        };
-    };//class ObjectMapTemplate
+            if(obj) return obj->value; else return nullptr;
+        }
+    };//ObjectMapTemplate
 
     template<typename K,typename V> class ObjectMap:public ObjectMapTemplate<K,V,KeyValue<K,V *>>
     {
-    protected:
-
-        ObjectLifecycleManager<V> DefaultOLM;
-
     public:
-
-        ObjectMap():ObjectMapTemplate<K,V,KeyValue<K,V *>>(&DefaultOLM){};
+        ObjectMap()=default;
         virtual ~ObjectMap()=default;
-    };//template<typename K,typename V> class ObjectMap:public ObjectMapTemplate<K,V,KeyValue<K,V *>>
+    };
 }//namespace hgl
 
 #include<hgl/type/Map.cpp>

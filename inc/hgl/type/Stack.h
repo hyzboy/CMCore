@@ -10,7 +10,6 @@ namespace hgl
     template<typename T> class StackTemplate                                                        ///堆栈顺序数据访问类
     {
     protected:
-        // 已弃用的生命周期指针模式改为编译期traits，保留兼容构造函数但不再使用
         DataArray<T> data_array;
 
     public: //属性
@@ -38,8 +37,7 @@ namespace hgl
 
     public: //方法
 
-        StackTemplate(DataLifecycleManager<T> * /*unused*/ =nullptr){}   // 兼容旧接口
-        virtual ~StackTemplate()=default;
+        StackTemplate()=default; virtual ~StackTemplate()=default;
 
         virtual bool Push(const T *data,int count)                                                  ///<压入多个数据
                 {
@@ -113,15 +111,13 @@ namespace hgl
     {
     public:
 
-        Stack():StackTemplate<T>(nullptr){};
-        virtual ~Stack()=default;
+        Stack()=default; virtual ~Stack()=default;
     };//template<typename T> class Stack:public StackTemplate<T>
 
     template<typename T> class ObjectStack:public StackTemplate<T *>                                ///堆栈对象
     {
     public:
-        ObjectStack():StackTemplate<T *>(nullptr){}
-        virtual ~ObjectStack() override {Free();}
+        ObjectStack()=default; virtual ~ObjectStack() override {Free();}
 
         virtual bool Push(T *obj)
         {

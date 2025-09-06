@@ -37,8 +37,7 @@ namespace hgl
             read_offset=0;
         }
 
-    public: //兼容 PoolTemplate 期望的 Active 接口的一个简易 GetArray()
-        // 这里返回当前 write 缓冲区引用，仅用于需要遍历/销毁时的近似处理。
+    public: //兼容 Active 接口的简易 GetArray()
         DataArray<T> &GetArray(){ return data_array[write_index]; }
         const DataArray<T> &GetArray() const { return data_array[write_index]; }
 
@@ -77,9 +76,6 @@ namespace hgl
             write_index=0;
             read_index=1;
             read_offset=0;
-        }
-        QueueTemplate(DataLifecycleManager<T>* /*unused*/){
-            write_index=0;read_index=1;read_offset=0;
         }
 
         virtual ~QueueTemplate()=default;
