@@ -2,75 +2,70 @@
 
 #include<hgl/TypeFunc.h>
 #include<hgl/thread/Atomic.h>
-#include <atomic>        // added for std::atomic used by ArrayRefCount
+#include <atomic>        // added for std::atomic used by ArrayRefCount and RefCount
 #include <memory>        // for std::unique_ptr
 #include <vector>        // for AutoDeleteObjectArray
 #include <algorithm>     // for std::fill, std::for_each
 
 namespace hgl
 {
+    /**
+     * 基础引用计数控制块（非数组），提供strong/weak计数。
+     * NOTE: 已统一使用std::atomic确保与数组版本一致；不再允许weak升级“复活”已销毁对象。
+     */
     struct RefCount
     {
-        atom_int count;
-        atom_int weak;
+        std::atomic<int> count{1};   // strong 引用数
+        std::atomic<int> weak{0};    // weak 引用数
 
     public:
 
-        RefCount()
-        {
-            count=1;
-            weak=0;
-        }
-
+        RefCount()=default;
         virtual ~RefCount()=default;
 
-        virtual void Delete()=0;
+        virtual void Delete()=0;     // 仅在 strong 计数从1->0 时调用一次；实现需将 data 置空防止复活
 
         int inc_ref()
         {
-            return ++count;
+            // 强引用复制：调用者应保证对象未过期；这里不再做额外检查以保持开销最小
+            return count.fetch_add(1,std::memory_order_acq_rel)+1;
         }
 
         virtual int unref()
         {
-            count--;
-
-            if(count<=0)
+            int old=count.fetch_sub(1,std::memory_order_acq_rel);
+            if(old==1)                      // 变为0
             {
-                Delete();
-
-                if(weak<=0)
-                    delete this;
-
+                Delete();                   // 销毁对象本体，并将data置空
+                if(weak.load(std::memory_order_acquire)==0)
+                    delete this;            // 无weak，释放控制块
                 return 0;
             }
-
-            return count;
+            return old-1;
         }
 
         int inc_ref_weak()
         {
-            return ++weak;
+            return weak.fetch_add(1,std::memory_order_acq_rel)+1;
         }
 
         int unref_weak()
         {
-            weak--;
-
-            if(weak<=0)
+            int old=weak.fetch_sub(1,std::memory_order_acq_rel);
+            if(old==1) // 变为0
             {
-                if(count<=0)
+                if(count.load(std::memory_order_acquire)==0)
                 {
-                    delete this;
+                    delete this;            // strong也为0 -> 释放控制块
                     return 0;
                 }
+                return 0;                   // strong仍存活，控制块继续存在
             }
-
-            return weak;
+            return old-1;
         }
     };//struct RefCount
 
-    // New control block using std::atomic specifically for array shared/weak pointers
+    // New control block using std::atomic specifically for array shared/weak pointers (保持，与RefCount实现方式统一)
     struct ArrayRefCount
     {
         std::atomic<int> count{1};
@@ -90,7 +85,6 @@ namespace hgl
             int old=count.fetch_sub(1,std::memory_order_acq_rel);
             if(old==1)
             {
-                // last strong reference
                 Delete();
                 if(weak.load(std::memory_order_acquire)==0)
                     delete this;
@@ -109,7 +103,6 @@ namespace hgl
             int old=weak.fetch_sub(1,std::memory_order_acq_rel);
             if(old==1)
             {
-                // last weak reference; if no strong owners, delete control block
                 if(count.load(std::memory_order_acquire)==0)
                 {
                     delete this;
@@ -132,15 +125,27 @@ namespace hgl
             data=ptr;
         }
 
-        ~SmartData()
+        // 控制块析构时对象早已释放（或为空），不要再调用 Delete 以免二次 delete
+        ~SmartData() override = default;
+
+        void Delete() override
         {
-            Delete();
+            SAFE_CLEAR(data);   // 将data置空防止“复活”
         }
 
-        void Delete()
+        // 尝试从 weak 升级：只有在 strong count>0 且 data 非空时才成功
+        bool lock()
         {
-            SAFE_CLEAR(data);
+            for(;;)
+            {
+                int cur=count.load(std::memory_order_acquire);
+                if(cur<=0||!data) return false;                // 已过期
+                if(count.compare_exchange_weak(cur,cur+1,std::memory_order_acq_rel))
+                    return true;                               // 成功+1
+            }
         }
+
+        bool expired() const { return data==nullptr; }
     };//struct template<typename T> struct SmartData
 
     template<typename T> struct SmartArrayData:public ArrayRefCount
@@ -154,18 +159,28 @@ namespace hgl
             data=ptr;
         }
 
-        ~SmartArrayData()
-        {
-            Delete();
-        }
+        ~SmartArrayData() override = default;      // 不再在析构里重复 Delete
 
-        void Delete()
+        void Delete() override
         {
-            SAFE_CLEAR_ARRAY(data);
+            SAFE_CLEAR_ARRAY(data);                // 将data置空
         }
 
         const T &operator *() const {return data;}
         const bool operator!() const{return !data;}
+
+        bool lock()
+        {
+            for(;;)
+            {
+                int cur=count.load(std::memory_order_acquire);
+                if(cur<=0||!data) return false;
+                if(count.compare_exchange_weak(cur,cur+1,std::memory_order_acq_rel))
+                    return true;
+            }
+        }
+
+        bool expired() const { return data==nullptr; }
     };//struct template<typename T> struct SmartArrayData
 
     template<typename SD,typename T> class _Smart
@@ -258,19 +273,48 @@ namespace hgl
             }
         }
 
+        // 从 weak 尝试升级；成功则返回 true。
+        bool try_lock_from_weak(const SelfClass &weak_sc)
+        {
+            if(sd==weak_sc.sd)
+            {
+                // 已经指向同一个；若对象已过期，置为空
+                if(sd && sd->expired())
+                {
+                    unref(); // 强引用释放
+                    return false;
+                }
+                return sd!=nullptr;
+            }
+
+            unref();
+
+            if(!weak_sc.sd) { sd=nullptr; return false; }
+
+            if(weak_sc.sd->lock())
+            {
+                sd=weak_sc.sd; // 已经加过 strong count
+                return true;
+            }
+
+            sd=nullptr;
+            return false;
+        }
+
                 T *     get         ()const{return sd?sd->data:0;}
           const T *     const_get   ()const{return sd?sd->data:0;}
-        virtual bool    valid       ()const{return sd;}
-                int     use_count   ()const{return sd?sd->count:-1;}
-                bool    only        ()const{return sd?sd->count==1:true;}
+        virtual bool    valid       ()const{return sd && sd->data;}        // 统一语义：对象存在
+                bool    expired     ()const{return !(sd && sd->data);}      // 便于 WeakPtr 使用
+                int     use_count   ()const{return sd?sd->count.load(std::memory_order_acquire):-1;}
+                bool    only        ()const{return sd?sd->count.load(std::memory_order_acquire)==1:true;}
 
     public:
 
         const   T &     operator *  ()const{return *(sd->data);}
-        const   bool    operator !  ()const{return sd?!(sd->data):true;}
+        const   bool    operator !  ()const{return !(sd && sd->data);} // 与valid一致
 
-                        operator T *()const{return(sd?sd->data:0);}
-                T *     operator -> ()const{return(sd?sd->data:0);}
+                        operator T *()const{return(sd?sd->data:0);}    // 保持兼容（可能考虑移除）
+                T *     operator -> ()const{return(sd?sd->data:0);}    
 
                 bool    operator == (const SelfClass & rp)const{return(get()==rp.get());   }
                 bool    operator == (const T *         rp)const{return(get()==rp);         }
@@ -305,7 +349,7 @@ namespace hgl
 
         SharedPtr(const WeakPtr<T> &wp):SuperClass()
         {
-            operator=(wp);
+            operator=(wp);      // 使用 lock 语义
         }
 
         ~SharedPtr()
@@ -335,14 +379,14 @@ namespace hgl
             return(*this);
         }
 
+        // 从 WeakPtr 升级，如失败则结果为空 SharedPtr
         SelfClass &operator =(const WeakPtr<T> &wp)
         {
-            SuperClass::inc_ref(wp);
-
-            return(*this);
+            SuperClass::try_lock_from_weak(wp);
+            return *this;
         }
 
-        bool valid()const override{return this->sd?(this->sd->data?true:false):false;}
+        bool valid()const override{return SuperClass::valid();}
     };//template <typename T> class SharedPtr
 
     template<typename T> class WeakArray;
@@ -400,9 +444,10 @@ namespace hgl
             return(*this);
         }
 
+        // 从 WeakArray 升级
         SelfClass &operator =(const WeakPtr<T> &wp)
         {
-            SuperClass::inc_ref(wp);
+            SuperClass::try_lock_from_weak(wp);
 
             return(*this);
         }
@@ -458,6 +503,18 @@ namespace hgl
 
             return(*this);
         }
+
+        bool expired() const { return !SuperClass::valid(); }
+
+        // 获取一个 SharedPtr（若对象已销毁则返回空）
+        SharedPtr<T> lock() const
+        {
+            SharedPtr<T> r;
+            if(!this->sd) return r;
+            if(this->sd->lock())
+                r.SuperClass::sd=this->sd;   // 已增加strong计数
+            return r;
+        }
     };//template<typename T> class WeakPtr
 
     template<typename T> class WeakArray:public _Smart<SmartArrayData<T>,T>
@@ -509,6 +566,17 @@ namespace hgl
             SuperClass::inc_ref_weak(wap);
 
             return(*this);
+        }
+
+        bool expired() const { return !SuperClass::valid(); }
+
+        SharedArray<T> lock() const
+        {
+            SharedArray<T> r;
+            if(!this->sd) return r;
+            if(this->sd->lock())
+                r.SuperClass::sd=this->sd;
+            return r;
         }
     };//template<typename T> class WeakArray
 
