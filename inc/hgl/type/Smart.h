@@ -2,7 +2,6 @@
 
 #include<hgl/TypeFunc.h>
 #include<hgl/thread/Atomic.h>
-#include <atomic>        // added for std::atomic used by ArrayRefCount and RefCount
 #include <memory>        // for std::unique_ptr
 #include <vector>        // for AutoDeleteObjectArray
 #include <algorithm>     // for std::fill, std::for_each
@@ -11,12 +10,12 @@ namespace hgl
 {
     /**
      * 基础引用计数控制块（非数组），提供strong/weak计数。
-     * NOTE: 已统一使用std::atomic确保与数组版本一致；不再允许weak升级“复活”已销毁对象。
+     * 使用统一别名 atom_int。
      */
     struct RefCount
     {
-        std::atomic<int> count{1};   // strong 引用数
-        std::atomic<int> weak{0};    // weak 引用数
+        atom_int count{1};   // strong 引用数
+        atom_int weak{0};    // weak 引用数
 
     public:
 
@@ -27,18 +26,17 @@ namespace hgl
 
         int inc_ref()
         {
-            // 强引用复制：调用者应保证对象未过期；这里不再做额外检查以保持开销最小
             return count.fetch_add(1,std::memory_order_acq_rel)+1;
         }
 
         virtual int unref()
         {
             int old=count.fetch_sub(1,std::memory_order_acq_rel);
-            if(old==1)                      // 变为0
+            if(old==1)
             {
-                Delete();                   // 销毁对象本体，并将data置空
+                Delete();
                 if(weak.load(std::memory_order_acquire)==0)
-                    delete this;            // 无weak，释放控制块
+                    delete this;
                 return 0;
             }
             return old-1;
@@ -52,24 +50,24 @@ namespace hgl
         int unref_weak()
         {
             int old=weak.fetch_sub(1,std::memory_order_acq_rel);
-            if(old==1) // 变为0
+            if(old==1)
             {
                 if(count.load(std::memory_order_acquire)==0)
                 {
-                    delete this;            // strong也为0 -> 释放控制块
+                    delete this;
                     return 0;
                 }
-                return 0;                   // strong仍存活，控制块继续存在
+                return 0;
             }
             return old-1;
         }
     };//struct RefCount
 
-    // New control block using std::atomic specifically for array shared/weak pointers (保持，与RefCount实现方式统一)
+    // 数组版本引用计数控制块
     struct ArrayRefCount
     {
-        std::atomic<int> count{1};
-        std::atomic<int> weak{0};
+        atom_int count{1};
+        atom_int weak{0};
 
         ArrayRefCount()=default;
         virtual ~ArrayRefCount()=default;
@@ -125,23 +123,21 @@ namespace hgl
             data=ptr;
         }
 
-        // 控制块析构时对象早已释放（或为空），不要再调用 Delete 以免二次 delete
         ~SmartData() override = default;
 
         void Delete() override
         {
-            SAFE_CLEAR(data);   // 将data置空防止“复活”
+            SAFE_CLEAR(data);
         }
 
-        // 尝试从 weak 升级：只有在 strong count>0 且 data 非空时才成功
         bool lock()
         {
             for(;;)
             {
                 int cur=count.load(std::memory_order_acquire);
-                if(cur<=0||!data) return false;                // 已过期
+                if(cur<=0||!data) return false;
                 if(count.compare_exchange_weak(cur,cur+1,std::memory_order_acq_rel))
-                    return true;                               // 成功+1
+                    return true;
             }
         }
 
@@ -159,11 +155,11 @@ namespace hgl
             data=ptr;
         }
 
-        ~SmartArrayData() override = default;      // 不再在析构里重复 Delete
+        ~SmartArrayData() override = default;
 
         void Delete() override
         {
-            SAFE_CLEAR_ARRAY(data);                // 将data置空
+            SAFE_CLEAR_ARRAY(data);
         }
 
         const T &operator *() const {return data;}
@@ -273,15 +269,13 @@ namespace hgl
             }
         }
 
-        // 从 weak 尝试升级；成功则返回 true。
         bool try_lock_from_weak(const SelfClass &weak_sc)
         {
             if(sd==weak_sc.sd)
             {
-                // 已经指向同一个；若对象已过期，置为空
                 if(sd && sd->expired())
                 {
-                    unref(); // 强引用释放
+                    unref();
                     return false;
                 }
                 return sd!=nullptr;
@@ -293,7 +287,7 @@ namespace hgl
 
             if(weak_sc.sd->lock())
             {
-                sd=weak_sc.sd; // 已经加过 strong count
+                sd=weak_sc.sd;
                 return true;
             }
 
@@ -303,17 +297,17 @@ namespace hgl
 
                 T *     get         ()const{return sd?sd->data:0;}
           const T *     const_get   ()const{return sd?sd->data:0;}
-        virtual bool    valid       ()const{return sd && sd->data;}        // 统一语义：对象存在
-                bool    expired     ()const{return !(sd && sd->data);}      // 便于 WeakPtr 使用
+        virtual bool    valid       ()const{return sd && sd->data;}
+                bool    expired     ()const{return !(sd && sd->data);}      
                 int     use_count   ()const{return sd?sd->count.load(std::memory_order_acquire):-1;}
                 bool    only        ()const{return sd?sd->count.load(std::memory_order_acquire)==1:true;}
 
     public:
 
-        const   T &     operator *  ()const{return *(sd->data);}
-        const   bool    operator !  ()const{return !(sd && sd->data);} // 与valid一致
+        const   T &     operator *  ()const{return *(sd->data);}        
+        const   bool    operator !  ()const{return !(sd && sd->data);} 
 
-                        operator T *()const{return(sd?sd->data:0);}    // 保持兼容（可能考虑移除）
+                        operator T *()const{return(sd?sd->data:0);}    
                 T *     operator -> ()const{return(sd?sd->data:0);}    
 
                 bool    operator == (const SelfClass & rp)const{return(get()==rp.get());   }
@@ -325,11 +319,7 @@ namespace hgl
 
     template<typename T> class WeakPtr;
 
-    /**
-    * 共享指针数据类<br>
-    * 用于自动释放超出作用域的指针
-    */
-    template<typename T> class SharedPtr:public _Smart<SmartData<T>,T>                              ///共享指针数据类
+    template<typename T> class SharedPtr:public _Smart<SmartData<T>,T>                              
     {
         friend class WeakPtr<T>;
 
@@ -349,7 +339,7 @@ namespace hgl
 
         SharedPtr(const WeakPtr<T> &wp):SuperClass()
         {
-            operator=(wp);      // 使用 lock 语义
+            operator=(wp);      
         }
 
         ~SharedPtr()
@@ -379,7 +369,6 @@ namespace hgl
             return(*this);
         }
 
-        // 从 WeakPtr 升级，如失败则结果为空 SharedPtr
         SelfClass &operator =(const WeakPtr<T> &wp)
         {
             SuperClass::try_lock_from_weak(wp);
@@ -391,10 +380,7 @@ namespace hgl
 
     template<typename T> class WeakArray;
 
-    /**
-    * 共享阵列数据类，它在SharedPtr的基础上增加了[]操作符访问，以及在删除时使用delete[]
-    */
-    template<typename T> class SharedArray:public _Smart<SmartArrayData<T>,T>                       ///共享阵列数据类
+    template<typename T> class SharedArray:public _Smart<SmartArrayData<T>,T>                       
     {
         friend class WeakArray<T>;
 
@@ -444,7 +430,6 @@ namespace hgl
             return(*this);
         }
 
-        // 从 WeakArray 升级
         SelfClass &operator =(const WeakPtr<T> &wp)
         {
             SuperClass::try_lock_from_weak(wp);
@@ -506,13 +491,12 @@ namespace hgl
 
         bool expired() const { return !SuperClass::valid(); }
 
-        // 获取一个 SharedPtr（若对象已销毁则返回空）
         SharedPtr<T> lock() const
         {
             SharedPtr<T> r;
             if(!this->sd) return r;
             if(this->sd->lock())
-                r.SuperClass::sd=this->sd;   // 已增加strong计数
+                r.SuperClass::sd=this->sd;   
             return r;
         }
     };//template<typename T> class WeakPtr
@@ -631,10 +615,9 @@ namespace hgl
         }
     };//template<typename T> class AutoDelete
 
-    // Refactored AutoDeleteArray to use std::unique_ptr<T[]>
     template<typename T> class AutoDeleteArray
     {
-        std::unique_ptr<T[]> obj;   // managed array
+        std::unique_ptr<T[]> obj;   
         size_t size = 0;
 
     public:
@@ -655,10 +638,8 @@ namespace hgl
             size = count;
         }
 
-        // non-copyable
         AutoDeleteArray(const AutoDeleteArray &) = delete;
         AutoDeleteArray &operator=(const AutoDeleteArray &) = delete;
-        // movable
         AutoDeleteArray(AutoDeleteArray &&other) noexcept
         {
             obj = std::move(other.obj);
@@ -725,10 +706,9 @@ namespace hgl
         size_t length() const { return size; }
     };//template<typename T> class AutoDeleteArray
     
-    // Refactored AutoDeleteObjectArray to use std::vector<T*> with RAII cleanup
     template<typename T> class AutoDeleteObjectArray
     {
-        std::vector<T*> items;   // each element owned and deleted in destructor
+        std::vector<T*> items;   
 
     public:
         AutoDeleteObjectArray()=default;
@@ -743,15 +723,12 @@ namespace hgl
         {
             if(o && c>0)
             {
-                items.assign(o,o+c); // copy pointers, take ownership
-                // caller should not delete *o elements afterwards
+                items.assign(o,o+c); 
             }
         }
 
-        // non-copyable (ownership unique)
         AutoDeleteObjectArray(const AutoDeleteObjectArray&) = delete;
         AutoDeleteObjectArray &operator=(const AutoDeleteObjectArray&) = delete;
-        // movable
         AutoDeleteObjectArray(AutoDeleteObjectArray &&other) noexcept
         {
             items.swap(other.items);
