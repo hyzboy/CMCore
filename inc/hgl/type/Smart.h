@@ -1,8 +1,12 @@
-﻿#ifndef HGL_SMART_INCLUDE
-#define HGL_SMART_INCLUDE
+﻿#pragma once
 
 #include<hgl/TypeFunc.h>
 #include<hgl/thread/Atomic.h>
+#include <atomic>        // added for std::atomic used by ArrayRefCount
+#include <memory>        // for std::unique_ptr
+#include <vector>        // for AutoDeleteObjectArray
+#include <algorithm>     // for std::fill, std::for_each
+
 namespace hgl
 {
     struct RefCount
@@ -66,6 +70,57 @@ namespace hgl
         }
     };//struct RefCount
 
+    // New control block using std::atomic specifically for array shared/weak pointers
+    struct ArrayRefCount
+    {
+        std::atomic<int> count{1};
+        std::atomic<int> weak{0};
+
+        ArrayRefCount()=default;
+        virtual ~ArrayRefCount()=default;
+        virtual void Delete()=0;
+
+        int inc_ref()
+        {
+            return count.fetch_add(1,std::memory_order_acq_rel)+1;
+        }
+
+        virtual int unref()
+        {
+            int old=count.fetch_sub(1,std::memory_order_acq_rel);
+            if(old==1)
+            {
+                // last strong reference
+                Delete();
+                if(weak.load(std::memory_order_acquire)==0)
+                    delete this;
+                return 0;
+            }
+            return old-1;
+        }
+
+        int inc_ref_weak()
+        {
+            return weak.fetch_add(1,std::memory_order_acq_rel)+1;
+        }
+
+        int unref_weak()
+        {
+            int old=weak.fetch_sub(1,std::memory_order_acq_rel);
+            if(old==1)
+            {
+                // last weak reference; if no strong owners, delete control block
+                if(count.load(std::memory_order_acquire)==0)
+                {
+                    delete this;
+                    return 0;
+                }
+                return 0; // weak count now zero, but strong still exist
+            }
+            return old-1;
+        }
+    };//struct ArrayRefCount
+
     template<typename T> struct SmartData:public RefCount
     {
         T *data;
@@ -88,7 +143,7 @@ namespace hgl
         }
     };//struct template<typename T> struct SmartData
 
-    template<typename T> struct SmartArrayData:public RefCount
+    template<typename T> struct SmartArrayData:public ArrayRefCount
     {
         T *data;
 
@@ -508,78 +563,86 @@ namespace hgl
         }
     };//template<typename T> class AutoDelete
 
+    // Refactored AutoDeleteArray to use std::unique_ptr<T[]>
     template<typename T> class AutoDeleteArray
     {
-        T *obj;
-        size_t size;
+        std::unique_ptr<T[]> obj;   // managed array
+        size_t size = 0;
 
     public:
+        AutoDeleteArray()=default;
 
-        AutoDeleteArray()
+        explicit AutoDeleteArray(const size_t count)
         {
-            obj=nullptr;
-            size=0;
-        }
-
-        AutoDeleteArray(const size_t count)
-        {
-            obj=new T[count];
-            size=count;
+            if(count>0)
+            {
+                obj = std::unique_ptr<T[]>(new T[count]);
+                size = count;
+            }
         }
 
         AutoDeleteArray(T *o,const size_t count)
         {
-            obj=o;
-            size=count;
+            obj.reset(o);
+            size = count;
         }
 
-        ~AutoDeleteArray()
+        // non-copyable
+        AutoDeleteArray(const AutoDeleteArray &) = delete;
+        AutoDeleteArray &operator=(const AutoDeleteArray &) = delete;
+        // movable
+        AutoDeleteArray(AutoDeleteArray &&other) noexcept
         {
-            if(obj)
-                delete[] obj;
+            obj = std::move(other.obj);
+            size = other.size;
+            other.size = 0;
         }
+        AutoDeleteArray &operator=(AutoDeleteArray &&other) noexcept
+        {
+            if(this!=&other)
+            {
+                obj = std::move(other.obj);
+                size = other.size;
+                other.size = 0;
+            }
+            return *this;
+        }
+
+        ~AutoDeleteArray()=default;
 
         void set(T *o,const size_t count)
         {
-            if(obj)
-                delete[] obj;
-
-            obj=o;
-            size=count;
+            obj.reset(o);
+            size = count;
         }
 
         T *alloc(const size_t count)
         {
-            if(!obj)
-                delete[] obj;
-
-            if(count<=0)
+            if(count==0)
             {
-                obj=nullptr;
+                obj.reset();
                 size=0;
+                return nullptr;
             }
-            else
-            {
-                obj=new T[count];
-                size=count;
-            }
-
-            return obj;
+            obj.reset(new T[count]);
+            size=count;
+            return obj.get();
         }
 
-        T *operator -> (){return obj;}
+        T *operator -> (){return obj.get();}
 
-        T *data(){return obj;}
-        operator T *(){return obj;}
-        operator const T *()const{return obj;}
+        T *data(){return obj.get();}
+        operator T *(){return obj.get();}
+        operator const T *()const{return obj.get();}
         const bool operator !()const{return !obj;}
 
-        T *begin(){return obj;}
-        T *end(){return obj+size;}
+        T *begin(){return obj.get();}
+        T *end(){return obj.get()?obj.get()+size:nullptr;}
 
         void zero()
         {
-            memset(obj,0,size*sizeof(T));
+            if(obj)
+                std::fill(begin(), end(), T());
         }
 
                 T &operator[](int index){return obj[index];}
@@ -587,74 +650,81 @@ namespace hgl
 
         void Discard()
         {
-            obj=nullptr;
+            obj.reset();
             size=0;
         }
+
+        size_t length() const { return size; }
     };//template<typename T> class AutoDeleteArray
     
+    // Refactored AutoDeleteObjectArray to use std::vector<T*> with RAII cleanup
     template<typename T> class AutoDeleteObjectArray
     {
-        using TP=T *;
-
-        TP *items;
-        uint count;
+        std::vector<T*> items;   // each element owned and deleted in destructor
 
     public:
-
-        AutoDeleteObjectArray()
-        {
-            items=nullptr;
-            count=0;
-        }
-
-        AutoDeleteObjectArray(const uint c)
+        AutoDeleteObjectArray()=default;
+        explicit AutoDeleteObjectArray(uint c)
         {
             if(c>0)
             {
-                count=c;
-                items=new TP[count];
-                hgl_zero<TP>(items,count);
+                items.resize(c,nullptr);
             }
-            else
+        }
+        AutoDeleteObjectArray(T **o,uint c)
+        {
+            if(o && c>0)
             {
-                items=nullptr;
-                count=0;
+                items.assign(o,o+c); // copy pointers, take ownership
+                // caller should not delete *o elements afterwards
             }
         }
 
-        AutoDeleteObjectArray(TP *o,const uint c)
+        // non-copyable (ownership unique)
+        AutoDeleteObjectArray(const AutoDeleteObjectArray&) = delete;
+        AutoDeleteObjectArray &operator=(const AutoDeleteObjectArray&) = delete;
+        // movable
+        AutoDeleteObjectArray(AutoDeleteObjectArray &&other) noexcept
         {
-            items=o;
-            count=c;
+            items.swap(other.items);
+        }
+        AutoDeleteObjectArray &operator=(AutoDeleteObjectArray &&other) noexcept
+        {
+            if(this!=&other)
+                items.swap(other.items);
+            return *this;
         }
 
         ~AutoDeleteObjectArray()
         {
-            SAFE_CLEAR_OBJECT_ARRAY_OBJECT(items,count);
+            for(auto &p:items){ delete p; p=nullptr; }
         }
 
-        TP *operator -> (){return items;}
+        T **operator -> (){return items.data();}
 
-        TP *data(){return items;}
-        operator TP *(){return items;}
-        operator const TP *()const{return items;}
-        const bool operator !()const{return !items;}
+        T **data(){return items.data();}
+        operator T **(){return items.data();}
+        operator const T * const *()const{return items.data();}
+        const bool operator !()const{return items.empty();}
 
-                TP &operator[](int index){return items[index];}
-        const   TP &operator[](int index)const{return items[index];}
+                T *&operator[](int index){return items[index];}
+        const   T *operator[](int index)const{return items[index];}
 
         void Discard()
         {
-            items=nullptr;
-            count=0;
+            for(auto &p:items){ delete p; p=nullptr; }
+            items.clear();
         }
 
         void DiscardObject()
         {
-            hgl_zero<TP>(items,count);
-            delete[] items;
             Discard();
         }
+
+        uint count() const { return static_cast<uint>(items.size()); }
+        void resize(uint c){ items.resize(c,nullptr); }
+        T **begin(){ return items.data(); }
+        T **end(){ return items.data()+items.size(); }
     };//template<typename T> class AutoDeleteObjectArray
 
     template<typename T> class AutoFree
@@ -709,4 +779,3 @@ namespace hgl
         }
     };//class AutoFree
 }//namespace hgl
-#endif//HGL_SMART_INCLUDE
