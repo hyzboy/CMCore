@@ -214,17 +214,23 @@ SET(IO_PIPE_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/proc/Pipe.h
                     ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io/PipeStream.h
                     IO/PipeStream.cpp)
 
-SOURCE_GROUP("IO\\Pipe" FILES ${IO_PIPE_FILES})
+SET(IO_FIFO_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/proc/Fifo.h
+                    ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io/FifoStream.h
+                    IO/FifoStream.cpp)
 
-SET(IO_SOURCE_FILES   ${IO_BASE_FILES}
-                      ${IO_DATA_FILES}
-                      ${IO_DATA_ARRAY_FILES}
-                      ${IO_MEMORY_STREAM_FILES}
-                      ${IO_FILE_FILES}
-                      ${IO_JAVA_FILES}
-                      ${IO_TEXT_FILES}
-                      ${INPUT_EVENT_FILES}
-                      ${IO_PIPE_FILES})
+SOURCE_GROUP("IO\\Pipe" FILES ${IO_PIPE_FILES})
+SOURCE_GROUP("IO\\Fifo" FILES ${IO_FIFO_FILES})
+
+SET(IO_SOURCE_FILES ${IO_BASE_FILES}
+                    ${IO_DATA_FILES}
+                    ${IO_DATA_ARRAY_FILES}
+                    ${IO_MEMORY_STREAM_FILES}
+                    ${IO_FILE_FILES}
+                    ${IO_JAVA_FILES}
+                    ${IO_TEXT_FILES}
+                    ${INPUT_EVENT_FILES}
+                    ${IO_PIPE_FILES}
+                    ${IO_FIFO_FILES})
 
 SET(FILESYSTEM_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/filesystem)
 
