@@ -1,5 +1,4 @@
 ﻿#include <hgl/filesystem/FileSystem.h>
-#include <hgl/log/LogInfo.h>
 #include <hgl/io/FileAccess.h>
 
 #include <sys/types.h>

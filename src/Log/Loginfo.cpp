@@ -1,5 +1,6 @@
 ﻿#include<hgl/plugin/PlugIn.h>
 #include<hgl/log/Logger.h>
+#include<hgl/log/LogMessage.h>
 #include<hgl/type/DateTime.h>
 #include<hgl/type/ArrayList.h>
 #include<hgl/thread/RWLock.h>
@@ -156,43 +157,46 @@ namespace hgl
 
     namespace logger
     {
-        static LogInterface *li=nullptr;
+        static LogInterface *log_interface=nullptr;
 
         PlugIn *InitLog()
         {
             PlugIn *pi=new LogPlugIn;
 
-            li=new LogInterface;
+            log_interface=new LogInterface;
 
-            if(pi->GetInterface(3,li))
-                if(li->Init())
+            if(pi->GetInterface(3,log_interface))
+                if(log_interface->Init())
                     return(pi);
 
-            delete li;
-            li=nullptr;
+            delete log_interface;
+            log_interface=nullptr;
 
             return(nullptr);
         }
 
         void CloseLog()
         {
-            if(!li)return;
+            if(!log_interface)return;
 
-            li->Close();
-            delete li;
-            li=nullptr;
+            log_interface->Close();
+            delete log_interface;
+            log_interface=nullptr;
         }
 
-        void Log(LogLevel level,const u16char *str,int size)
+        void LogOutput(const LogMessage &msg)
         {
-            if(li)
-                li->WriteUTF16(level,str,size==-1?hgl::strlen(str):size);
-        }
+            if(!msg.message||msg.message_length<=0)
+                return;
 
-        void Log(LogLevel level,const u8char *str,int size)
-        {
-            if(li)
-                li->WriteUTF8(level,str,size==-1?hgl::strlen(str):size);
+            if(!log_interface)
+                return;
+
+            #if HGL_OS == HGL_OS_Windows
+                log_interface->WriteUTF16(msg.level,msg.message,msg.message_length);
+            #else
+                log_interface->WriteUTF8(msg.level,msg.message,msg.message_length);
+            #endif//
         }
     }//namespace logger
 
@@ -200,7 +204,7 @@ namespace hgl
     {
         Logger *CreateLoggerConsole (LogLevel);
         Logger *CreateLoggerFile    (const OSString &,LogLevel);
-
+    
         /**
          * 独立的日志系统初始化<br>
          * 供不整体使用SDK的应用程序使用

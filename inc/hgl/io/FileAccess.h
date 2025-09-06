@@ -1,7 +1,7 @@
 ﻿#ifndef HGL_IO_FILE_ACCESS_INCLUDE
 #define HGL_IO_FILE_ACCESS_INCLUDE
 
-#include<hgl/log/ObjectLogger.h>
+#include<hgl/log/Log.h>
 #include<hgl/type/String.h>
 #include<hgl/io/SeekAccess.h>
 #include<sys/stat.h>

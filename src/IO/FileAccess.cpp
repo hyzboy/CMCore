@@ -1,6 +1,5 @@
 ﻿#include<hgl/platform/Platform.h>
 #include<hgl/io/FileAccess.h>
-#include<hgl/log/LogInfo.h>
 
 #if HGL_OS != HGL_OS_Windows
 #include<unistd.h>
@@ -43,7 +42,7 @@ namespace hgl
                 return(false);
             }
 
-            Log.SetLoggerInstanceName(U8String::numberOf(fp));
+            Log.SetLoggerInstanceName(OSString::numberOf(fp));
 
             LogVerbose(OS_TEXT("open file success,filename: ")+fn+OS_TEXT(", OpenMode:")+OSString::numberOf((int)fom));
 

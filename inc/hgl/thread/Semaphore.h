@@ -2,7 +2,7 @@
 #define HGL_SEMAPHORE_INCLUDE
 
 #include<hgl/platform/Platform.h>
-#include<hgl/log/ObjectLogger.h>
+#include<hgl/log/Log.h>
 
 namespace hgl
 {

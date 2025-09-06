@@ -1,5 +1,5 @@
 ﻿#include<hgl/filesystem/FileSystem.h>
-#include<hgl/log/ObjectLogger.h>
+#include<hgl/log/Log.h>
 
 namespace hgl
 {

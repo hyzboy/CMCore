@@ -1,5 +1,4 @@
 ﻿#include<hgl/platform/ExternalModule.h>
-#include<hgl/log/LogInfo.h>
 
 namespace hgl
 {

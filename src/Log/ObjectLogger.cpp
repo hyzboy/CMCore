@@ -1,10 +1,13 @@
-#include<hgl/log/ObjectLogger.h>
+#include<hgl/log/Log.h>
+#include<hgl/log/LogMessage.h>
+#include<hgl/CodePage.h>
+#include<hgl/type/StdString.h>
 #include<cstdarg>
-
-#include<hgl/log/LogInfo.h>
 
 namespace hgl::logger
 {
+    void LogOutput(const LogMessage &msg);
+
     namespace
     {
         constexpr const std::string_view LogLevelName[]=
@@ -29,24 +32,30 @@ namespace hgl::logger
     }//namespace
 
     ObjectLogger GlobalLogger(nullptr);///<全局日志对象
+}//namespace hgl::logger
 
-    void ObjectLogger::LogString(const std::source_location &sl,const LogLevel level,const u8char *str,const size_t size)
+namespace hgl::logger
+{
+    ObjectLogger::ObjectLogger(const std::type_info *info):object_type_info(info)
     {
-        Log(level,(u8char *)str,size);     //临时版本
+        object_type_name=info?ToOSString(info->name()):OSString(OS_TEXT("?"));
+
+        object_instance_name.Clear();
     }
 
-    void ObjectLogger::LogString(const std::source_location &sl,const LogLevel level,const u16char *str,const size_t size)
+    void ObjectLogger::LogString(const std::source_location &sl,const LogLevel level,const os_char *str,const int size)
     {
-        Log(level,str,size);     //临时版本
-    }
+        LogMessage msg;
 
-#ifdef HGL_SUPPORT_CHAR8_T
-    void ObjectLogger::LogString(const std::source_location &sl,const LogLevel level,const char *str,const size_t size)
-    {
-        Log(level,(u8char *)str,size);     //临时版本
-    }
+        msg.object_type_info    =object_type_info;
+        msg.object_instance_name=object_instance_name;
+        msg.source_location     =sl;
+        msg.level               =level;
+        msg.message             =str;
+        msg.message_length      =size;
 
-#endif//HGL_SUPPORT_CHAR8_T
+        LogOutput(msg);
+    }
 
     void ObjectLogger::LogPrintf(const std::source_location &sl,const LogLevel level,const u8char *fmt, va_list args)
     {
@@ -58,18 +67,22 @@ namespace hgl::logger
 
         if(len>0)
         {
-            std::string front;
+            log_buffer_u8.Alloc(len+1);
 
-            if(object_type_info)
-                front=std::string(LogLevelName[size_t(level)].data())+std::string("[")+std::string(object_type_info->name())+std::string("] ");
-            else
-                front=std::string(LogLevelName[size_t(level)].data())+std::string(" ");
+            std::vsnprintf((char *)log_buffer_u8.data(),len+1,(const char *)fmt,args);
 
-            std::string buf(len+1,'\0');
-            std::vsnprintf(buf.data(),buf.size(),(const char *)fmt,args);
+        #if HGL_OS == HGL_OS_Windows
 
-            front+=buf;
-            LogString(sl,level,front.data(),front.size());
+            int u16len=get_utf16_length(UTF8CharSet,(const char *)log_buffer_u8.data(),len)+1;
+
+            log_buffer_u16.Alloc(u16len);
+
+            u16len=u8_to_u16(log_buffer_u16.data(),u16len,log_buffer_u8.data(),len);
+
+            LogString(sl,level,log_buffer_u16.data(),u16len);
+        #else
+            LogString(sl,level,log_buffer_u8.data(),len);
+        #endif//HGL_OS == HGL_OS_Windows
         }
     }
 
@@ -90,18 +103,21 @@ namespace hgl::logger
 
         if(len>0)
         {
-            std::wstring buf(len+1,u'\0');
-            std::vswprintf(buf.data(),buf.size(),fmt,args);
+            log_buffer_u16.Alloc(len+1);
+            std::vswprintf(log_buffer_u16.data(),len+1,fmt,args);
 
-            std::string front;
+        #if HGL_OS == HGL_OS_Windows
+            LogString(sl,level,log_buffer_u16.data(),len);
+        #else
 
-            if(object_type_info)
-                front=std::string(LogLevelName[size_t(level)].data())+std::string("[")+std::string(object_type_info->name())+std::string("] ");
-            else
-                front=std::string(LogLevelName[size_t(level)].data())+std::string(" ");
+            int u8len=get_utf8_length(UTF16LECharSet,log_buffer_u16.data(),len)+1;
 
-            LogString(sl,level,front.data(),front.size());
-            LogString(sl,level,buf.data(),buf.size());
+            log_buffer_u8.Alloc(u8len);
+
+            u8len=u16_to_u8(log_buffer_u8.data(),u8len,log_buffer_u16.data(),len);
+
+            LogString(sl,level,log_buffer_u8.data(),u8len);
+        #endif
         }
     }
 }//namespace hgl::logger

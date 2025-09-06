@@ -2,6 +2,7 @@
 
 #include<hgl/type/String.h>
 #include<hgl/log/LogLevel.h>
+#include<hgl/CodePage.h>
 #include<typeinfo>
 #include<string>
 #include<source_location>
@@ -16,20 +17,21 @@ namespace hgl::logger
     {
         const std::type_info *object_type_info;     ///<对象数据类型的type_info指针
 
-        U8String object_instance_name;
+        OSString object_type_name;
+        OSString object_instance_name;
+
+        DataArray<u8char> log_buffer_u8;
+        DataArray<u16char> log_buffer_u16;
 
     public:
 
-        ObjectLogger(const std::type_info *info):object_type_info(info)
-        {
-            object_instance_name.Clear();
-        }
+        ObjectLogger(const std::type_info *);
 
         virtual ~ObjectLogger()=default;
 
-        const std::string &GetLoggerTypeName()const
+        const OSString &GetLoggerTypeName()const
         {
-            return object_type_info->name();
+            return object_type_name;
         }
 
         const size_t GetLoggerTypeHash()const
@@ -37,20 +39,19 @@ namespace hgl::logger
             return object_type_info->hash_code();
         }
 
-        void SetLoggerInstanceName(const U8String &name)
+        void SetLoggerInstanceName(const OSString &name)
         {
             object_instance_name=name;
         }
 
-        const U8String &GetLoggerInstanceName()const
+        const OSString &GetLoggerInstanceName()const
         {
             return object_instance_name;
         }
 
 public:
 
-        void LogString(const std::source_location &,const LogLevel,const u8char *,const size_t);
-        void LogString(const std::source_location &,const LogLevel,const u16char *,const size_t);
+        void LogString(const std::source_location &,const LogLevel,const os_char *,const int);
 
         // va_list based helpers used by variadic wrappers
         void LogPrintf(const std::source_location &,const LogLevel,const u8char *,va_list);
