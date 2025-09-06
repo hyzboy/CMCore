@@ -186,7 +186,10 @@ namespace hgl
             }
         }
 
-        bool expired() const { return data==nullptr; }
+        bool valid() const
+        {
+            return data!=nullptr;
+        }
     };//struct template<typename T> struct SmartData
 
     /**
@@ -226,34 +229,23 @@ namespace hgl
             }
         }
 
-        bool expired() const { return data==nullptr; }
+        bool valid() const
+        {
+            return data!=nullptr;
+        }
     };//struct template<typename T> struct SmartArrayData
 
     /**
      * _Smart<SD,T>
      * ------------------------------------------------------------
-     * 所有 SharedPtr / WeakPtr / SharedArray / WeakArray 的公共基础：
-     *  - SD: SmartData<T> 或 SmartArrayData<T>
-     *  - 提供引用操作与基础访问接口。
-     *  - 不直接暴露内存语义（由派生类组合出“强 / 弱”行为）。
-     *
-     * 成员说明：
-     *  - sd: 指向控制块。为 nullptr 表示空智能指针。
-     *  - valid(): sd 存在且底层 data 非空。
-     *  - expired(): 与 valid 互补。
-     *  - try_lock_from_weak(): 用于 SharedPtr/SharedArray 从 WeakPtr/WeakArray 升级。
-     *
-     * 注意：
-     *  - operator T* 与 operator-> 为兼容保留，存在被误用风险（如逃逸后被提前释放）。
-     *    建议新代码使用 get()。
+     * 所有 SharedPtr / WeakPtr / SharedArray / WeakArray 的公共基础。
+     * 已移除 expired()，统一使用 !valid() 来判断是否已失效。
      */
     template<typename SD,typename T> class _Smart
     {
     protected:
 
-        using SelfClass=_Smart<SD,T>;
-
-        SD *sd;                   // 控制块指针
+        using SelfClass=_Smart<SD,T>; SD *sd;
 
     public:
 
@@ -274,7 +266,7 @@ namespace hgl
         _Smart(const SelfClass &st)
         {
             sd=0;
-            set(st);              // 复制时建立新的控制块（语义：深复制底层裸指针）
+            set(st.get());              // 复制时建立新的控制块（语义：深复制底层裸指针）
         }
 
         virtual ~_Smart()=default;
@@ -347,11 +339,8 @@ namespace hgl
         {
             if(sd==weak_sc.sd)
             {
-                if(sd && sd->expired())
-                {
-                    unref();
-                    return false;
-                }
+                if(sd && !sd->data)  // 已失效
+                { unref(); return false; }
                 return sd!=nullptr;
             }
 
@@ -372,8 +361,7 @@ namespace hgl
         // 基础访问接口 -------------------------------------------------
                 T *     get         ()const{return sd?sd->data:0;}          ///< 返回裸指针（可能为空）
           const T *     const_get   ()const{return sd?sd->data:0;}          ///< const 版 get
-        virtual bool    valid       ()const{return sd && sd->data;}         ///< 是否指向一个尚未析构的对象
-                bool    expired     ()const{return !(sd && sd->data);}       ///< 是否已过期/空
+        virtual bool    valid       ()const{return sd && sd->valid();}         ///< 是否指向一个尚未析构的对象
                 int     use_count   ()const{return sd?sd->count.load(std::memory_order_acquire):-1;}  ///< 强引用计数（空指针返回 -1）
                 bool    only        ()const{return sd?sd->count.load(std::memory_order_acquire)==1:true;} ///< 是否唯一拥有者
 
@@ -381,7 +369,7 @@ namespace hgl
 
         // 运算符（兼容性） -------------------------------------------------
         const   T &     operator *  ()const{return *(sd->data);}             ///< 解引用（调用方需保证 valid==true）
-        const   bool    operator !  ()const{return !(sd && sd->data);}       ///< 与 !valid 语义一致
+        const   bool    operator !  ()const{return !(sd && sd->valid());}       ///< 与 !valid 语义一致
 
                         operator T *()const{return(sd?sd->data:0);}          ///< 隐式转换成裸指针（不建议新代码使用）
                 T *     operator -> ()const{return(sd?sd->data:0);}          ///< 访问成员
@@ -527,8 +515,6 @@ namespace hgl
             return *this;
         }
 
-        bool expired() const { return !SuperClass::valid(); }
-
         /** 尝试获取强引用 */
         SharedPtr<T> lock() const
         {
@@ -576,8 +562,6 @@ namespace hgl
             SuperClass::inc_ref_weak(wap);
             return *this;
         }
-
-        bool expired() const { return !SuperClass::valid(); }
 
         SharedArray<T> lock() const
         {
