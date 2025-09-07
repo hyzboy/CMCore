@@ -460,16 +460,17 @@ namespace hgl
          * @param str 要插入的字符串
          * @param len 要插入的字符个数,如果为-1则自动检测字符串长度
          */
-        bool Insert(const uint pos,const T *str,int len=-1)
+        bool Insert(int pos,const T *str,int len=-1)
         {
             if(!str)return false;
+            int curlen = Length();
+            if(pos < 0 || pos > curlen) return false;
             if(len==0)return(false);
-
             if(data.valid()&&Unlink())
             {
                 if(len<0)
                     len=strlen(str);
-
+                if(len<=0) return false;
                 return data->Insert(pos,str,len);
             }
             else
@@ -484,24 +485,11 @@ namespace hgl
          * @param pos 要插入的位置
          * @param str 要插入的字符串
          */
-        bool Insert(const uint pos,const SelfClass &str)
+        bool Insert(int pos,const SelfClass &str)
         {
+            int curlen = Length();
+            if(pos < 0 || pos > curlen) return false;
             return Insert(pos,str.c_str(),str.Length());
-        }
-
-        bool Strcat(const T *str,int len)
-        {
-            if(!str||len==0)return(false);
-
-            return Insert(Length(),str,len);
-        }
-
-        /**
-         * 追加一个字符串到当前字符串后面
-         */
-        bool Strcat(const SelfClass &bs)
-        {
-            return Insert(Length(),bs);
         }
 
         /**
@@ -510,13 +498,12 @@ namespace hgl
          * @param num 要删除的字符个数
          * @return 是否成功
          */
-        bool Delete(const uint pos,int num)
+        bool Delete(int pos,int num)
         {
-            if(num<=0)return(false);
-
+            int curlen = Length();
+            if(num<=0||pos<0||pos>=curlen) return(false);
             if(data.valid()&&Unlink())
                 return data->Delete(pos,num);
-
             return(false);
         }
 
@@ -825,56 +812,57 @@ namespace hgl
 
         bool ClipLeft   (int n){return Unlink()?data->ClipLeft(n):false;}                           ///<截取字符串前端的指定个字符,等同TrimRight(length-n))
         bool ClipRight  (int n){return Delete(0,Length()-n);}                                       ///<截取字符串后端的指定个字符,等同TrimLeft(length-n)
-        bool Clip       (uint pos,int num)                                                          ///<从指定位置删除指定个字符
+        bool Clip       (int pos,int num)                                                          ///<从指定位置删除指定个字符
         {
+            int curlen = Length();
+            if(pos<0||pos>=curlen||num<=0||pos+num>curlen)
+                return(false);
             if(!Unlink())
                 return(false);
-
             return data->Clip(pos,num);
         }
 
         SelfClass SubString(int start,int n=-1) const                                               ///<取字符串指定段的字符
         {
-            if(n==0)
-                return SelfClass();
-
             int len=Length();
-
-            if(start>=len)
+            if(start<0||start>=len)
                 return SelfClass();
-
+            if(n<0)
+                n=len-start;
+            if(n==0||start+n>len)
+                return SelfClass();
             return SelfClass(data->c_str()+start,n);
         }
 
         bool SubString(SelfClass &sc,int start,int n) const                                         ///<取字符串指定段的字符
         {
-            if(Length()<start+n)
+            int len=Length();
+            if(start<0||n<=0||start+n>len)
                 return(false);
-
             sc.Set(data->c_str()+start,n);
             return(true);
         }
 
         bool Resize(int n)
         {
+            if(n<0)
+                return(false);
             if(!data.valid())
                 return(false);
-
             if(n==0)
             {
                 Clear();
                 return(true);
             }
-
             return data->Resize(n);
         }
 
         int StatChar(const T ch)const{return data.valid()?StatChar(data->c_str(),ch):-1;}           ///<统计字符串中某个字符的个数
         int StatLine()const{return data.valid()?StatLine(data->c_str()):-1;}                        ///<统计字符串行数
 
-        int FindChar(uint pos,const T ch)const                                                       ///<返回当前字符串中指定字符开始的索引(从左至右)
+        int FindChar(int pos,const T ch)const                                                       ///<返回当前字符串中指定字符开始的索引(从左至右)
         {
-            if(!data.valid())
+            if(!data.valid() || pos < 0)
                 return(-1);
 
             const T *result=hgl::strchr(data->c_str()+pos,ch);
@@ -887,9 +875,9 @@ namespace hgl
 
         int FindChar(const T ch)const{return FindChar(0,ch);}                                       ///<返回当前字符串中指定字符开始的索引(从左至右)
 
-        int FindChars(uint pos,const String<T> &ch)const                                          ///<返回当前字符串中指定字符(多个任选一)的索引(从左至右)
+        int FindChars(int pos,const String<T> &ch)const                                          ///<返回当前字符串中指定字符(多个任选一)的索引(从左至右)
         {
-            if(!data.valid())
+            if(!data.valid() || pos < 0)
                 return(-1);
 
             const T *result=hgl::strchr(data->c_str()+pos,ch.c_str(),ch.Length());
@@ -954,9 +942,9 @@ namespace hgl
             return(-1);
         }
 
-        int FindExcludeChar(const uint pos,const T &ch)const
+        int FindExcludeChar(int pos,const T &ch)const
         {
-            if(!data.valid())
+            if(!data.valid() || pos < 0)
                 return(-1);
 
             const T *result=hgl::strechr(data->c_str()+pos,ch);
@@ -967,11 +955,9 @@ namespace hgl
             return(-1);
         }
 
-        int FindExcludeChar(const T &ch)const{return FindExcludeChar(0,ch);}
-
-        int FindExcludeChar(const uint pos,const String<T> &ch)const
+        int FindExcludeChar(int pos,const String<T> &ch)const
         {
-            if(!data.valid())
+            if(!data.valid() || pos < 0)
                 return(-1);
 
             const T *result=hgl::strechr(data->c_str()+pos,ch.c_str(),ch.Length());
@@ -1029,15 +1015,15 @@ namespace hgl
             return(count);
         }
 
-        bool WriteString(uint pos,const SelfClass &str)
+        bool WriteString(int pos,const SelfClass &str)
         {
+            if(pos < 0)
+                return false;
             if(!Unlink())
                 return(false);
-
             if(str.Length()<=0)
                 return(false);
-
-            return data->Write(pos,str);
+            return data->Write(pos, str);
         }
 
         int Replace(const T tch,const T sch)                                                        ///<替换字符
@@ -1184,6 +1170,22 @@ namespace hgl
                 return 0;
 
             return data->UniqueCharCount();
+        }
+
+        // 追加 C 风格字符串
+        bool Strcat(const T *str, int len = -1)
+        {
+            if (!str) return false;
+            if (len == 0) return false;
+            if (len < 0) len = hgl::strlen(str);
+            if (len <= 0) return false;
+            return Insert(Length(), str, len);
+        }
+
+        // 追加另一个 String 对象
+        bool Strcat(const SelfClass &bs)
+        {
+            return Insert(Length(), bs.c_str(), bs.Length());
         }
     };//template<typename T> class String
 
