@@ -322,12 +322,11 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        int Comp(const uint pos,const SelfClass *sc)const
+        int Comp(const int pos, const SelfClass *sc) const
         {
-            if(pos> (uint)length) return 0; // 参数非法视为相等
-            SelfClass tmp; 
-            if(!sc) return (length-pos)>0?1:0; 
-            return Comp(sc->CreateCopy()?sc:sc); // fallback reuse
+            if(pos < 0 || pos > length) return 0;
+            if(!sc) return (length-pos)>0 ? 1 : 0;
+            return Comp(sc->CreateCopy() ? sc : sc);
         }
 
         /**
@@ -355,16 +354,16 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        int Comp(const uint pos,const T *str)const
+        int Comp(const int pos, const T *str) const
         {
-            if(pos> (uint)length) return 0; 
-            const int remain=length-pos; 
-            const bool a_empty=(remain<=0); 
-            const bool b_empty=(!str||!*str); 
-            if(a_empty&&b_empty) return 0; 
-            if(a_empty) return -1; 
-            if(b_empty) return 1; 
-            return Normalize(hgl::strcmp(buffer+pos,remain,str,hgl::strlen(str))); 
+            if(pos < 0 || pos > length) return 0;
+            const int remain = length - pos;
+            const bool a_empty = (remain <= 0);
+            const bool b_empty = (!str || !*str);
+            if(a_empty && b_empty) return 0;
+            if(a_empty) return -1;
+            if(b_empty) return 1;
+            return Normalize(hgl::strcmp(buffer + pos, remain, str, hgl::strlen(str)));
         }
 
         /**
@@ -379,7 +378,7 @@ namespace hgl
         {
             const bool a_empty=isEmpty(); 
             const bool b_empty=(!str||num==0); 
-            if(num==0) return 0; 
+            if(num<=0) return 0; 
             if(a_empty&&b_empty) return 0; 
             if(a_empty) return -1; 
             if(b_empty) return 1; 
@@ -397,18 +396,18 @@ namespace hgl
          */
         int Comp(const int pos,const T *str,const uint num)const
         {
-            if(pos<0||pos>length||num==0) return 0; 
+            if(pos < 0 || pos > length || num <= 0) return 0;
             const int remain=length-pos; 
             const bool a_empty=(remain<=0); 
             const bool b_empty=(!str); 
             if(a_empty&&b_empty) return 0; 
             if(a_empty) return -1; 
             if(b_empty) return 1; 
-            return Normalize(hgl::strcmp(buffer+pos,str,num)); 
+            return Normalize(hgl::strcmp(buffer+pos,remain,str,hgl::strlen(str))); 
         }
 
         /**
-         * 和那一个字符串进行比较,英文不区分大小写
+         * 和一个字符串进行比较,英文不区分大小写
          * @param str 比较字符串
          * @return <0 我方小
          * @return 0 等同
@@ -433,7 +432,7 @@ namespace hgl
          */
         int CaseComp(const SelfClass &sc,const uint num)const
         { 
-            if(num==0) return 0; 
+            if(num<=0) return 0; 
             const bool a_empty=isEmpty(); 
             const bool b_empty=sc.isEmpty(); 
             if(a_empty&&b_empty) return 0; 
@@ -451,7 +450,7 @@ namespace hgl
          */
         int CaseComp(const T *str,const uint num)const
         { 
-            if(num==0) return 0; 
+            if(num<=0) return 0; 
             const bool a_empty=isEmpty(); 
             const bool b_empty=(!str); 
             if(a_empty&&b_empty) return 0; 
@@ -470,7 +469,7 @@ namespace hgl
          */
         int CaseComp(const int pos,const T *str,const uint num)const
         { 
-            if(num==0) return 0; 
+            if(num<=0) return 0; 
             if(pos<0||pos>length) return 0; 
             const int remain=length-pos; 
             const bool a_empty=(remain<=0); 
@@ -505,22 +504,22 @@ namespace hgl
             return(true);
         }
 
-        bool Insert(uint pos,const T &ch         ){return Insert(pos,    &ch,        1               );}
-        bool Insert(uint pos,const T *str        ){return Insert(pos,    str,        hgl::strlen(str));}
-        bool Insert(uint pos,const SelfClass &str){return Insert(pos,    str.c_str(),str.GetLength() );}
+        bool Insert(int pos,const T &ch         ){return Insert(pos,    &ch,        1               );}
+        bool Insert(int pos,const T *str        ){return Insert(pos,    str,        hgl::strlen(str));}
+        bool Insert(int pos,const SelfClass &str){return Insert(pos,    str.c_str(),str.GetLength() );}
 
         bool Append(const T &ch                 ){return Insert(length, &ch,        1               );}
         bool Append(const T *str,const int len  ){return Insert(length, str,        len             );}
         bool Append(const T *str                ){return Insert(length, str,        hgl::strlen(str));}
         bool Append(const SelfClass &str        ){return Insert(length, str.c_str(),str.GetLength() );}
 
-        bool Delete(uint pos,int num)                                                                ///<删除指定字符
+        bool Delete(int pos, int num)
         {
-            if(pos>= (uint)length||num<0)return(false);
+            if(pos < 0 || pos >= length || num < 0) return false;
 
-            if(num==0)return(true);
+            if(num == 0) return true;
 
-            if(pos+num> (uint)length)  //超出长度
+            if(pos + num > length)  //超出长度
             {
                 buffer[pos]=0;
                 length=pos;
@@ -535,25 +534,9 @@ namespace hgl
             return(true);
         }
 
-        bool ClipLeft(int num)
+        bool Clip(int pos, int num)
         {
-            if(num<0||num>length)
-                return(false);
-
-            buffer[num]=0;
-            length=num;
-            return(true);
-        }
-
-        bool TrimRight(int num)
-        {
-            return ClipLeft(length-num);
-        }
-
-        bool Clip(uint pos,int num)
-        {
-            if(pos> (uint)length || num<0 || pos+num> (uint)length)
-                return(false);
+            if(pos < 0 || pos > length || num < 0 || pos + num > length) return false;
 
             hgl_typemove(buffer,buffer+pos,num);
             buffer[num]=0;
@@ -607,10 +590,9 @@ namespace hgl
             return(true);
         }
 
-        bool Write(uint pos,const SelfClass &str)
+        bool Write(int pos, const SelfClass &str)
         {
-            if(pos> (uint)length)
-                return(false);
+            if(pos < 0 || pos > length) return false;
 
             int end_pos=pos+str.length;
 
