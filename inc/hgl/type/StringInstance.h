@@ -18,8 +18,6 @@ namespace hgl
     protected:
         base_type str;                        ///< 底层真实存储
 
-        static int Normalize(int v){return v<0?-1:(v>0?1:0);}        
-
         static T *WritablePtr(base_type &s){return s.empty()?nullptr:const_cast<T*>(s.data());}
         static const T *ReadablePtr(const base_type &s){return s.empty()?nullptr:s.data();}
 
@@ -101,74 +99,6 @@ namespace hgl
         { if(n<0||n>=GetLength()) return false; ch=str[(size_type)n]; return true; }
         bool SetChar(int n,const T &ch)
         { if(n<0||n>=GetLength()) return false; str[(size_type)n]=ch; return true; }
-
-    // 比较：依赖外部 hgl::strcmp/stricmp ----------------------
-        int Comp(const StringInstance *sc)const
-        {
-            const bool a_empty=isEmpty();
-            const bool b_empty=(!sc||sc->isEmpty());
-            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
-            return Normalize(hgl::strcmp(c_str(),GetLength(),sc->c_str(),sc->GetLength()));
-        }
-        int Comp(int pos,const StringInstance *sc)const
-        {
-            if(pos<0||pos>GetLength()) return 0; if(!sc) return (GetLength()-pos)>0?1:0;
-            return Normalize(hgl::strcmp(c_str()+pos,GetLength()-pos,sc->c_str(),sc->GetLength()));
-        }
-        int Comp(int pos,const StringInstance *sc,int num)const
-        {
-            if(pos<0||pos>GetLength()||num<=0) return 0; if(!sc||sc->isEmpty()) return (GetLength()-pos)>0?1:0;
-            return Normalize(hgl::strcmp(c_str()+pos, sc->c_str(), num));
-        }
-        int Comp(const T *s)const
-        {
-            const bool a_empty=isEmpty(); const bool b_empty=(!s||!*s);
-            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
-            return Normalize(hgl::strcmp(c_str(),GetLength(),s,hgl::strlen(s)));
-        }
-        int Comp(int pos,const T *s)const
-        {
-            if(pos<0||pos>GetLength()) return 0; int remain=GetLength()-pos; const bool a_empty=(remain<=0); const bool b_empty=(!s||!*s);
-            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
-            return Normalize(hgl::strcmp(c_str()+pos,remain,s,hgl::strlen(s)));
-        }
-        int Comp(const T *s,int num)const
-        {
-            if(num<=0) return 0; const bool a_empty=isEmpty(); const bool b_empty=(!s||num==0);
-            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
-            return Normalize(hgl::strcmp(c_str(),s,num));
-        }
-        int Comp(int pos,const T *s,int num)const
-        {
-            if(pos<0||pos>GetLength()||num<=0) return 0; int remain=GetLength()-pos; const bool a_empty=(remain<=0); const bool b_empty=(!s);
-            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
-            return Normalize(hgl::strcmp(c_str()+pos,s,num));
-        }
-
-        int CaseComp(const T *s)const
-        {
-            const bool a_empty=isEmpty(); const bool b_empty=(!s||!*s);
-            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
-            return Normalize(hgl::stricmp(c_str(),GetLength(),s,hgl::strlen(s)));
-        }
-        int CaseComp(const StringInstance &sc,int num)const
-        {
-            if(num<=0) return 0; const bool a_empty=isEmpty(); const bool b_empty=sc.isEmpty();
-            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
-            return Normalize(hgl::stricmp(c_str(),GetLength(),sc.c_str(),num));
-        }
-        int CaseComp(const T *s,int num)const
-        {
-            if(num<=0) return 0; const bool a_empty=isEmpty(); const bool b_empty=(!s);
-            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
-            return Normalize(hgl::stricmp(c_str(),GetLength(),s,num));
-        }
-        int CaseComp(int pos,const T *s,int num)const
-        {
-            if(num<=0||pos<0||pos>GetLength()) return 0; int remain=GetLength()-pos; const bool a_empty=(remain<=0); const bool b_empty=(!s);
-            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
-            return Normalize(hgl::stricmp(c_str()+pos,remain,s,num));
-        }
 
     // 修改操作 -------------------------------------------------
         bool Insert(int pos,const T *istr,int len)
