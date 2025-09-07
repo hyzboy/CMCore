@@ -40,6 +40,7 @@ namespace hgl
         SelfClass &operator=(std::initializer_list<T> il){ if(!il.size()){ Clear(); return *this; } buffer.assign(il.begin(),il.end()); return *this; }
         SelfClass &operator=(const T *str){ if(str!=c_str()) fromString(str); return *this; }
 
+        // 静态工厂/转换函数 (集中放置) ---------------------------------------
         // 工厂 ---------------------------------------------------------------
         static SelfClass charOf(const T &ch){ T tmp[2]; tmp[0]=ch; tmp[1]=0; return SelfClass(tmp); }
 
@@ -52,6 +53,9 @@ namespace hgl
         static SelfClass floatOf(double value,uint frac){ T tmp[8*sizeof(double)]; ftos(tmp,sizeof(tmp)/sizeof(T),frac,value); return SelfClass(tmp); }
         template<typename N1,typename N2>
         static SelfClass percentOf(const N1 num,const N2 den,uint frac){ return floatOf(double(num)/double(den)*100.0,frac); }
+
+        // 拼接组合为静态函数，便于集中管理
+        static SelfClass ComboString(const T *s1,int l1,const T *s2,int l2){ if(!s1||l1<=0){ if(!s2||l2<=0) return SelfClass(); return SelfClass(s2,l2);} if(!s2||l2<=0) return SelfClass(s1,l1); SelfClass r; r.buffer.reserve(l1+l2); r.buffer.append(s1,l1); r.buffer.append(s2,l2); return r; }
 
         // 基础信息 -----------------------------------------------------------
         const int Length()const { return int(buffer.size()); }
@@ -165,7 +169,6 @@ namespace hgl
         operator const T *()const{ return c_str(); }
         SelfClass &operator+=(const SelfClass &str){ Insert(Length(),str.c_str(),str.Length()); return *this; }
         SelfClass &operator<<(const SelfClass &str){ return operator+=(str); }
-        static SelfClass ComboString(const T *s1,int l1,const T *s2,int l2){ if(!s1||l1<=0){ if(!s2||l2<=0) return SelfClass(); return SelfClass(s2,l2);} if(!s2||l2<=0) return SelfClass(s1,l1); SelfClass r; r.buffer.reserve(l1+l2); r.buffer.append(s1,l1); r.buffer.append(s2,l2); return r; }
         SelfClass operator+(const SelfClass &str) const{ if(str.IsEmpty()) return *this; if(IsEmpty()) return str; return ComboString(c_str(),Length(),str.c_str(),str.Length()); }
         SelfClass operator+(const T ch) const{ if(IsEmpty()) return SelfClass::charOf(ch); return ComboString(c_str(),Length(),&ch,1); }
         SelfClass operator+(const T *str) const{ if(IsEmpty()) return SelfClass(str); return ComboString(c_str(),Length(),str,hgl::strlen(str)); }
