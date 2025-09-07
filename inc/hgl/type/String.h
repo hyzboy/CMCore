@@ -201,6 +201,8 @@ namespace hgl
         }
         bool Strcat(const T *str,int len=-1){ if(!str) return false; if(len==0) return false; if(len<0) len=hgl::strlen(str); if(len<=0) return false; return Insert(Length(),str,len); }
         bool Strcat(const SelfClass &bs){ return Insert(Length(),bs.c_str(),bs.Length()); }
+
+        const std::basic_string<T> &ToStdString()const { return buffer; }
     };//class String
 
     using AnsiString=String<char>;
