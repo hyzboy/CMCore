@@ -1,6 +1,7 @@
 #pragma once
 
 #include<hgl/type/String.h>
+#include<hgl/type/DataArray.h>
 #include<hgl/log/LogLevel.h>
 #include<hgl/Charset.h>
 #include<typeinfo>
