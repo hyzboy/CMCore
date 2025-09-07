@@ -2,7 +2,7 @@
 #define HGL_LOAD_STRING_INCLUDE
 
 #include<hgl/type/String.h>
-#include<hgl/CodePage.h>
+#include<hgl/Charset.h>
 #include<string>
 
 namespace hgl

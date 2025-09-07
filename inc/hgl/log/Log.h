@@ -2,7 +2,7 @@
 
 #include<hgl/type/String.h>
 #include<hgl/log/LogLevel.h>
-#include<hgl/CodePage.h>
+#include<hgl/Charset.h>
 #include<typeinfo>
 #include<string>
 #include<source_location>

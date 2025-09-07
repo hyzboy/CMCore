@@ -2,7 +2,7 @@
 
 #include<string>
 #include<hgl/type/String.h>
-#include<hgl/CodePage.h>
+#include<hgl/Charset.h>
 
 namespace hgl
 {

@@ -2,7 +2,7 @@
 
 #include<iostream>
 #include<source_location>
-#include<hgl/CodePage.h>
+#include<hgl/Charset.h>
 #include<hgl/log/LogLevel.h>
 
 namespace hgl::logger

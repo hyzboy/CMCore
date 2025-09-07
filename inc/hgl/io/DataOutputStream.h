@@ -3,7 +3,7 @@
 
 #include<hgl/io/OutputStream.h>
 #include<hgl/type/String.h>
-#include<hgl/CodePage.h>
+#include<hgl/Charset.h>
 #include<hgl/math/Vector.h>
 namespace hgl
 {
