@@ -28,7 +28,7 @@ namespace hgl
         explicit String(const std::basic_string<T> &s){ buffer=s; }
         String(size_t count,T ch){ if(count>0) buffer.assign(count,ch); }
         String(std::initializer_list<T> il){ if(il.size()) buffer.assign(il.begin(),il.end()); }
-        String(const char)=delete;
+        String(T)=delete;
         String(int)=delete; String(unsigned int)=delete; String(int64)=delete; String(uint64)=delete; String(float)=delete; String(double)=delete;
         virtual ~String()=default;
 
@@ -93,7 +93,18 @@ namespace hgl
         { if(!str||pos<0||pos>Length()) return false; if(len==0) return false; if(len<0) len=hgl::strlen(str); if(len<=0) return false; buffer.insert(buffer.begin()+pos,str,str+len); return true; }
         bool Insert(int pos,const SelfClass &s){ return Insert(pos,s.c_str(),s.Length()); }
         bool Delete(int pos,int num){ if(num<=0||pos<0||pos>=Length()) return false; if(pos+num>Length()) num=Length()-pos; buffer.erase(buffer.begin()+pos,buffer.begin()+pos+num); return true; }
-        bool Resize(int n){ if(n<0) return false; buffer.resize(size_t(n)); return true; }
+        
+        // 预分配内存：预先保留至少 n 个字符的容量，避免多次扩展
+        bool PreAlloc(int n){ if(n<=0) return false; buffer.reserve(size_t(n)); return true; }
+        
+        // 分配指定长度并返回可写指针；会直接把当前长度设为 n
+        T *Resize(int n,bool fill_zero=false){ if(n<=0){ Clear(); return nullptr; } buffer.resize(size_t(n));
+
+        if(fill_zero)
+            hgl_zero(buffer.data(),size_t(n)*sizeof(T));
+
+        return buffer.data(); }
+
         void Clear(){ buffer.clear(); }
         bool FillChar(const T ch,int start=0,int len=-1){ if(start<0||start>Length()) return false; if(len<0) len=Length()-start; if(len<=0) return false; for(int i=0;i<len;i++) buffer[size_t(start+i)]=ch; return true; }
 
