@@ -5,589 +5,281 @@
 #include<string.h>
 #include<utility>
 #include <memory>
+#include <string>
+#include <unordered_set>
+#include <algorithm>
 
 namespace hgl
 {
     /**
-     * 字符串实例类
+     * 字符串实例类 (基于 std::basic_string 封装)
+     * 目标：保持原 String<T> 对此类的接口/语义 (除去无法零拷贝接管外部 new[] 内存) 基本兼容。
      */
-    template<typename T> class StringInstance                                                       ///字符串实例类
+    template<typename T> class StringInstance
     {
+    public:
+        using SelfClass = StringInstance<T>;
+        using value_type = T;
     protected:
-        typedef StringInstance<T> SelfClass;
-        int length;
-        int malloc_length;
-        std::unique_ptr<T[]> buffer;
+        std::basic_string<T> str;   // 底层存储
 
-    protected:
+        static int Normalize(int v){return v<0?-1:(v>0?1:0);}        
 
-        virtual void InitPrivate()
+        // 标准库字符串无法真正“接管”外部已分配缓冲区，只能复制。
+        // 为空时返回 nullptr 以兼容旧代码 (旧实现 buffer 为 nullptr 时返回 nullptr)。
+        static T *WritablePtr(std::basic_string<T> &s)
         {
-            malloc_length=0;
-            length=0;
-            buffer.reset();
+            return s.empty()?nullptr:const_cast<T*>(s.data());
         }
-        virtual void InitPrivate(const T *str,const int len)
+        static const T *ReadablePtr(const std::basic_string<T> &s)
         {
-            length=len;
-            malloc_length=power_to_2(length+1);
-            buffer=std::make_unique<T[]>(malloc_length);
-            memcpy(buffer.get(),str,length*sizeof(T));
-            buffer[length]=0;
+            return s.empty()?nullptr:s.data();
         }
-        void EnsureCapacity(int need_length)
-        {
-            if(need_length<=malloc_length)
-                return;
-            malloc_length=power_to_2(need_length);
-            std::unique_ptr<T[]> new_buf=std::make_unique<T[]>(malloc_length);
-            if(buffer&&length>0)
-                memcpy(new_buf.get(),buffer.get(),length*sizeof(T));
-            buffer=std::move(new_buf);
-            buffer[length]=0;
-        }
-
-        static int Normalize(int v){return v<0?-1:(v>0?1:0);}         
 
     public:
+        StringInstance()=default;
+        ~StringInstance()=default;
+        StringInstance(const SelfClass &)=default;
+        StringInstance(SelfClass &&) noexcept =default;
+        SelfClass &operator=(const SelfClass &)=default;
+        SelfClass &operator=(SelfClass &&) noexcept =default;
 
-        StringInstance()
+        // -------- 初始化 --------
+        void InitFromString(const T *src,int len)
         {
-            InitPrivate();
-        }
-
-        /**
-         * 初始化字符串实例(基于一个字符串)
-         */
-        void InitFromString(const T *str,const int len)
-        {
-            if(!str)
-            {
-                InitPrivate();
-                return;
-            }
-
-            int real_len=len;
-
+            if(!src){ str.clear(); return; }
             if(len<0)
-            {
-                real_len=hgl::strlen(str);
-            }
+                str.assign(src);
             else
-            {
-                real_len=hgl::strlen(str,len);
-
-                while(real_len&&!str[real_len-1])               //清除后面的0
-                    real_len--;
-            }
-
-            if(real_len<=0)
-            {
-                InitPrivate();
-                return;
-            }
-
-            InitPrivate(str,real_len);
+                str.assign(src, src + hgl::strlen(src,len));
+            // 去掉尾部多余的 0 (与旧实现行为一致)
+            while(!str.empty() && str.back()==T(0)) str.pop_back();
         }
 
-        /**
-         * 初始化字符串实例(基于一块已经分配好的内存)
-         */
-        void InitFromInstance(T *str,const int len)
+        void InitFromInstance(T *src,int len)
         {
-            if(!str)
-            {
-                InitPrivate();
-                return;
-            }
-
-            int real_len=hgl::strlen(str,len);
-
-            while(real_len&&!str[real_len-1])               //清除后面的0
-                real_len--;
-
-            if(real_len<=0)
-            {
-                InitPrivate();
-                delete[] str;
-                return;
-            }
-
-            // 如果没有空间放终止符或末尾不是0，则需要重新分配
-            const bool need_copy = (real_len>=len) || (str[real_len]!=0);
-            if(need_copy)
-            {
-                InitPrivate(str,real_len);
-                delete[] str;
-            }
-            else                            // 已经包含结束符，直接接管
-            {
-                length=real_len;
-                malloc_length=len;          // len 是原始可用长度
-                buffer.reset(str); // 只接管由 new[] 分配的指针
-            }
+            if(!src){ str.clear(); return; }
+            int real_len=hgl::strlen(src,len);
+            while(real_len>0 && src[real_len-1]==T(0)) --real_len;
+            if(real_len<=0){ delete[] src; str.clear(); return; }
+            str.assign(src,src+real_len);   // 复制并释放
+            delete[] src;
         }
 
-        StringInstance(const SelfClass &bs)
-        {
-            if(bs.length<=0)
-            {
-                InitPrivate();
-                return;
-            }
-            length=bs.length;
-            malloc_length=bs.malloc_length;
-            buffer=std::make_unique<T[]>(malloc_length);
-            memcpy(buffer.get(),bs.buffer.get(),length*sizeof(T));
-            buffer[length]=0;
-        }
-        StringInstance(SelfClass &&other) noexcept
-        {
-            length=other.length;
-            malloc_length=other.malloc_length;
-            buffer=std::move(other.buffer);
-            other.length=0;
-            other.malloc_length=0;
-        }
-        SelfClass &operator=(const SelfClass &bs)
-        {
-            if(this==&bs)
-                return *this;
-            buffer.reset();
-            if(bs.length<=0)
-            {
-                InitPrivate();
-                return *this;
-            }
-            length=bs.length;
-            malloc_length=bs.malloc_length;
-            buffer=std::make_unique<T[]>(malloc_length);
-            memcpy(buffer.get(),bs.buffer.get(),length*sizeof(T));
-            buffer[length]=0;
-            return *this;
-        }
-        SelfClass &operator=(SelfClass &&other) noexcept
-        {
-            if(this==&other)
-                return *this;
-            buffer=std::move(other.buffer);
-            length=other.length;
-            malloc_length=other.malloc_length;
-            other.length=0;
-            other.malloc_length=0;
-            return *this;
-        }
-        virtual ~StringInstance() = default;
+        // -------- 基础信息 --------
+        const bool isEmpty()const { return str.empty(); }
+        const int  GetLength()const { return (int)str.size(); }
 
-        const bool isEmpty()const                                                                   ///<是否为空
+        T *c_str(){ return WritablePtr(str); }                  // 兼容旧接口 (可写)
+        const T *c_str()const{ return ReadablePtr(str); }       // 兼容旧接口 (只读)
+
+        T *Discard()                                            // 复制出动态数组并清空自身
         {
-            return !buffer||length<=0;
+            if(str.empty()) return nullptr;
+            T *buf=new T[str.size()+1];
+            memcpy(buf,str.data(),str.size()*sizeof(T));
+            buf[str.size()]=0;
+            str.clear();
+            return buf;
         }
 
-        SelfClass *CreateCopy()                                                                     ///<创建一份自身的拷贝
+        // -------- 拷贝辅助 --------
+        SelfClass *CreateCopy() const
         {
-            if(!buffer)return(0);
-
+            return new SelfClass(*this);
+        }
+        SelfClass *CreateCopy(int start) const
+        {
+            if(start<0||start>=GetLength()) return nullptr;
             SelfClass *sc=new SelfClass();
-
-            sc->InitFromString(buffer.get(),length);
-
+            sc->str.assign(str.begin()+start,str.end());
+            return sc;
+        }
+        SelfClass *CreateCopy(int start,int count) const
+        {
+            if(start<0||count<=0||start>=GetLength()) return nullptr;
+            int real = std::min<int>(count,GetLength()-start);
+            SelfClass *sc=new SelfClass();
+            sc->str.assign(str.begin()+start,str.begin()+start+real);
             return sc;
         }
 
-        SelfClass *CreateCopy(const int start)
+        // -------- 读写单字符 --------
+        bool GetChar(int n,T &ch)const
         {
-            if(!buffer)return(nullptr);
-            if(start<0||start>=length)return(nullptr);
-            
-            SelfClass *sc=new SelfClass();
-
-            sc->InitFromString(buffer.get()+start,length-start);
-
-            return sc;
+            if(n<0||n>=GetLength()) return false; ch=str[(size_t)n]; return true;
         }
-
-        SelfClass *CreateCopy(const int start,const int count)
+        bool SetChar(int n,const T &ch)
         {
-            if(!buffer)return(nullptr);
-            if(start<0||count<=0)return(nullptr);
-
-            SelfClass *sc=new SelfClass();
-
-            sc->InitFromString(buffer.get()+start,start+count>=length?length-start:count);
-
-            return sc;
+            if(n<0||n>=GetLength()) return false; str[(size_t)n]=ch; return true;
         }
+        T GetFirstChar()const { return str.empty()?T(0):str.front(); }
+        T GetLastChar ()const { return str.empty()?T(0):str.back(); }
 
-        T *Discard()
-        {
-            T *result=buffer.release();
-            length=0;
-            malloc_length=0;
-            return result;
-        }
-        T * c_str()                                                                                ///<取得字符串C指针(可写)
-        {
-            return buffer.get();
-        }
-        const T * c_str() const                                                                    ///<取得字符串C指针(只读)
-        {
-            return buffer.get();
-        }
-
-        const int GetLength()const                                                                 ///<取得字符串长度
-        {
-            return length;
-        }
-
-        bool GetChar(const int n,T &ch)const
-        {
-            if(n<0||n>=length)
-                return(false);
-
-            ch=buffer[n];
-
-            return(true);
-        }
-
-        bool SetChar(const int n,const T &ch)
-        {
-            if(n<0||n>=length)
-                return(false);
-
-            buffer[n]=ch;
-
-            return(true);
-        }
-
-        const T GetFirstChar()const
-        {
-            return buffer ? *(buffer.get()) : 0;
-        }
-
-        const T GetLastChar()const
-        {
-            return buffer && length > 0 ? *(buffer.get() + length - 1) : 0;
-        }
-
-        /**
-         * 和一个字符串进行比较
-         * @param sc 比较字符串
-         * @return <0 我方小
-         * @return 0 等同
-         * @return >0 我方大
-         */
+        // -------- 比较 (保持旧签名) --------
         int Comp(const SelfClass *sc)const
         {
             const bool a_empty=isEmpty();
             const bool b_empty=(!sc||sc->isEmpty());
-            if(a_empty&&b_empty) return 0; 
-            if(a_empty) return -1; 
-            if(b_empty) return 1; 
-            return Normalize(hgl::strcmp(buffer.get(),length,sc->buffer.get(),sc->length));
-        }
-
-        /**
-         * 和一个字符串进行比较
-         * @param pos 起始位置
-         * @param sc 比较字符串
-         * @return <0 我方小
-         * @return 0 等同
-         * @return >0 我方大
-         */
-        int Comp(const int pos, const SelfClass *sc) const
-        {
-            if(pos < 0 || pos > length) return 0;
-            if(!sc) return (length-pos)>0 ? 1 : 0;
-            return Comp(sc->CreateCopy() ? sc : sc);
-        }
-
-        /**
-         * 和一个字符串进行比较
-         * @param str 比较字符串
-         * @return <0 我方小
-         * @return 0 等同
-         * @return >0 我方大
-         */
-        int Comp(const T *str)const
-        {
-            const bool a_empty=isEmpty(); 
-            const bool b_empty=(!str||!*str); 
-            if(a_empty&&b_empty) return 0; 
-            if(a_empty) return -1; 
-            if(b_empty) return 1; 
-            return Normalize(hgl::strcmp(buffer.get(),length,str,hgl::strlen(str))); 
-        }
-
-        /**
-         * 和一个字符串进行比较
-         * @param pos 起始位置
-         * @param str 比较字符串
-         * @return <0 我方小
-         * @return 0 等同
-         * @return >0 我方大
-         */
-        int Comp(const int pos, const T *str) const
-        {
-            if(pos < 0 || pos > length) return 0;
-            const int remain = length - pos;
-            const bool a_empty = (remain <= 0);
-            const bool b_empty = (!str || !*str);
-            if(a_empty && b_empty) return 0;
+            if(a_empty&&b_empty) return 0;
             if(a_empty) return -1;
             if(b_empty) return 1;
-            return Normalize(hgl::strcmp(buffer.get() + pos, remain, str, hgl::strlen(str)));
+            return Normalize(hgl::strcmp(c_str(),GetLength(),sc->c_str(),sc->GetLength()));
         }
-
-        /**
-         * 和一个字符串比较指字长度的字符
-         * @param str 比较字符串
-         * @param num 比较字数
-         * @return <0 我方小
-         * @return 0 等同
-         * @return >0 我方大
-         */
-        int Comp(const T *str,int num)const
+        int Comp(int pos,const SelfClass *sc)const
         {
-            const bool a_empty=isEmpty(); 
-            const bool b_empty=(!str||num==0); 
-            if(num<=0) return 0; 
-            if(a_empty&&b_empty) return 0; 
-            if(a_empty) return -1; 
-            if(b_empty) return 1; 
-            return Normalize(hgl::strcmp(buffer.get(),str,num)); 
+            if(pos<0||pos>GetLength()) return 0;
+            if(!sc) return (GetLength()-pos)>0?1:0;
+            return Normalize(hgl::strcmp(c_str()+pos,GetLength()-pos,sc->c_str(),sc->GetLength()));
         }
-
-        /**
-         * 和一个字符串比较指字长度的字符
-         * @param pos 起始偏移位置
-         * @param str 比较字符串
-         * @param num 比较字数
-         * @return <0 我方小
-         * @return 0 等同
-         * @return >0 我方大
-         */
-        int Comp(const int pos,const T *str,int num)const
+        int Comp(int pos,const SelfClass *sc,int num)const
         {
-            if(pos < 0 || pos > length || num <= 0) return 0;
-            const int remain=length-pos; 
-            const bool a_empty=(remain<=0); 
-            const bool b_empty=(!str); 
-            if(a_empty&&b_empty) return 0; 
-            if(a_empty) return -1; 
-            if(b_empty) return 1; 
-            return Normalize(hgl::strcmp(buffer.get()+pos,str,num)); 
+            if(pos<0||pos>GetLength()||num<=0) return 0;
+            if(!sc||sc->isEmpty()) return (GetLength()-pos)>0?1:0;
+            return Normalize(hgl::strcmp(c_str()+pos, sc->c_str(), num));
         }
-
-        /**
-         * 和一个字符串进行比较,英文不区分大小写
-         * @param str 比较字符串
-         * @return <0 我方小
-         * @return 0 等同
-         * @return >0 我方大
-         */
-        int CaseComp(const T *str)const
+        int Comp(const T *s)const
         {
-            const bool a_empty=isEmpty(); 
-            const bool b_empty=(!str||!*str); 
-            if(a_empty&&b_empty) return 0; 
-            if(a_empty) return -1; 
-            if(b_empty) return 1; 
-            return Normalize(hgl::stricmp(buffer.get(),length,str,hgl::strlen(str))); 
+            const bool a_empty=isEmpty();
+            const bool b_empty=(!s||!*s);
+            if(a_empty&&b_empty) return 0;
+            if(a_empty) return -1;
+            if(b_empty) return 1;
+            return Normalize(hgl::strcmp(c_str(),GetLength(),s,hgl::strlen(s)));
+        }
+        int Comp(int pos,const T *s)const
+        {
+            if(pos<0||pos>GetLength()) return 0;
+            const int remain=GetLength()-pos;
+            const bool a_empty=(remain<=0);
+            const bool b_empty=(!s||!*s);
+            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
+            return Normalize(hgl::strcmp(c_str()+pos,remain,s,hgl::strlen(s)));
+        }
+        int Comp(const T *s,int num)const
+        {
+            if(num<=0) return 0;
+            const bool a_empty=isEmpty(); const bool b_empty=(!s||num==0);
+            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
+            return Normalize(hgl::strcmp(c_str(),s,num));
+        }
+        int Comp(int pos,const T *s,int num)const
+        {
+            if(pos<0||pos>GetLength()||num<=0) return 0;
+            const int remain=GetLength()-pos; const bool a_empty=(remain<=0); const bool b_empty=(!s);
+            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
+            return Normalize(hgl::strcmp(c_str()+pos,s,num));
         }
 
-        /**
-         * 和一个字符串进行比较指字长度的字符,英文不区分大小写
-         * @param sc 比较字符串
-         * @return <0 我方小
-         * @return 0 等同
-         * @return >0 我方大
-         */
+        int CaseComp(const T *s)const
+        {
+            const bool a_empty=isEmpty(); const bool b_empty=(!s||!*s);
+            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
+            return Normalize(hgl::stricmp(c_str(),GetLength(),s,hgl::strlen(s)));
+        }
         int CaseComp(const SelfClass &sc,int num)const
-        { 
-            if(num<=0) return 0; 
-            const bool a_empty=isEmpty(); 
-            const bool b_empty=sc.isEmpty(); 
-            if(a_empty&&b_empty) return 0; 
-            if(a_empty) return -1; 
-            if(b_empty) return 1; 
-            return Normalize(hgl::stricmp(buffer.get(),length,sc.buffer.get(),num)); 
-        }
-
-        /**
-         * 和那一个字符串进行比较指字长度的字符,英文不区分大小写
-         * @param str 比较字符串
-         * @return <0 我方小
-         * @return 0 等同
-         * @return >0 我方大
-         */
-        int CaseComp(const T *str,int num)const
-        { 
-            if(num<=0) return 0; 
-            const bool a_empty=isEmpty(); 
-            const bool b_empty=(!str); 
-            if(a_empty&&b_empty) return 0; 
-            if(a_empty) return -1; 
-            if(b_empty) return 1; 
-            return Normalize(hgl::stricmp(buffer.get(),length,str,num)); 
-        }
-
-        /**
-         * 和那一个字符串进行比较指字长度的字符,英文不区分大小写
-         * @param pos 起始偏移位置
-         * @param str 比较字符串
-         * @return <0 我方小
-         * @return 0 等同
-         * @return >0 我方大
-         */
-        int CaseComp(const int pos,const T *str,int num)const
-        { 
-            if(num<=0) return 0; 
-            if(pos<0||pos>length) return 0; 
-            const int remain=length-pos; 
-            const bool a_empty=(remain<=0); 
-            const bool b_empty=(!str); 
-            if(a_empty&&b_empty) return 0; 
-            if(a_empty) return -1; 
-            if(b_empty) return 1; 
-            return Normalize(hgl::stricmp(buffer.get()+pos,remain,str,num)); 
-        }
-
-        bool Insert(int pos,const T *istr,int len)                                                  ///<插入一个字符串
         {
-            if(!istr||!(*istr))
-                return(false);
-
-            if(len==-1)
-                len=hgl::strlen(istr);
-            else
-                len=hgl::strlen(istr,len);
-
-            if(pos<0||pos>length||len<=0)return(false);
-
-            const int need_length=length+len+1;   // 包含结束符
-            EnsureCapacity(need_length);
-
-            if(pos<length)
-                hgl_move(buffer.get()+pos+len,buffer.get()+pos,length-pos+1);   // +1 包含原来的结束符
-
-            hgl_cpy(buffer.get()+pos,istr,len);
-            length+=len;
-            buffer[length]=0;
-            return(true);
+            if(num<=0) return 0; const bool a_empty=isEmpty(); const bool b_empty=sc.isEmpty();
+            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
+            return Normalize(hgl::stricmp(c_str(),GetLength(),sc.c_str(),num));
+        }
+        int CaseComp(const T *s,int num)const
+        {
+            if(num<=0) return 0; const bool a_empty=isEmpty(); const bool b_empty=(!s);
+            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
+            return Normalize(hgl::stricmp(c_str(),GetLength(),s,num));
+        }
+        int CaseComp(int pos,const T *s,int num)const
+        {
+            if(num<=0||pos<0||pos>GetLength()) return 0;
+            const int remain=GetLength()-pos; const bool a_empty=(remain<=0); const bool b_empty=(!s);
+            if(a_empty&&b_empty) return 0; if(a_empty) return -1; if(b_empty) return 1;
+            return Normalize(hgl::stricmp(c_str()+pos,remain,s,num));
         }
 
-        bool Insert(int pos,const T &ch         ){return Insert(pos,    &ch,        1               );}
-        bool Insert(int pos,const T *str        ){return Insert(pos,    str,        hgl::strlen(str));}
-        bool Insert(int pos,const SelfClass &str){return Insert(pos,    str.c_str(),str.GetLength() );}
-
-        bool Append(const T &ch                 ){return Insert(length, &ch,        1               );}
-        bool Append(const T *str,const int len  ){return Insert(length, str,        len             );}
-        bool Append(const T *str                ){return Insert(length, str,        hgl::strlen(str));}
-        bool Append(const SelfClass &str        ){return Insert(length, str.c_str(),str.GetLength() );}
-
-        bool Delete(int pos, int num)
+        // -------- 修改操作 --------
+        bool Insert(int pos,const T *istr,int len)
         {
-            if(pos < 0 || pos >= length || num < 0) return false;
+            if(!istr||pos<0||pos>GetLength()) return false;
+            if(len==-1) len=hgl::strlen(istr); else len=hgl::strlen(istr,len);
+            if(len<=0) return false;
+            str.insert((size_t)pos, istr, (size_t)len);
+            return true;
+        }
+        bool Insert(int pos,const T &ch){ return Insert(pos,&ch,1); }
+        bool Insert(int pos,const T *s){ return Insert(pos,s,hgl::strlen(s)); }
+        bool Insert(int pos,const SelfClass &s){ return Insert(pos,s.c_str(),s.GetLength()); }
 
-            if(num == 0) return true;
+        bool Append(const T &ch){ return Insert(GetLength(),&ch,1); }
+        bool Append(const T *s,int len){ return Insert(GetLength(),s,len); }
+        bool Append(const T *s){ return Insert(GetLength(),s,hgl::strlen(s)); }
+        bool Append(const SelfClass &s){ return Insert(GetLength(),s.c_str(),s.GetLength()); }
 
-            if(pos + num > length)  //超出长度
-            {
-                buffer[pos]=0;
-                length=pos;
-            }
-            else
-            {
-                hgl_typemove(buffer.get()+pos,buffer.get()+pos+num,length-pos-num);
-                length-=num;
-                buffer[length]=0;
-            }
-
-            return(true);
+        bool Delete(int pos,int num)
+        {
+            if(pos<0||num<0||pos>=GetLength()) return false;
+            if(num==0) return true;
+            if(pos+num>GetLength()) num=GetLength()-pos;
+            str.erase((size_t)pos,(size_t)num);
+            return true;
         }
 
-        bool Clip(int pos, int num)
+        // Clip: 保留 [pos, pos+num) 段
+        bool Clip(int pos,int num)
         {
-            if(pos < 0 || pos > length || num < 0 || pos + num > length) return false;
-            hgl_typemove(buffer.get(),buffer.get()+pos,num);
-            buffer[num]=0;
-            length=num;
-            return(true);
+            if(pos<0||num<0||pos+num>GetLength()) return false;
+            str.assign(str.begin()+pos,str.begin()+pos+num);
+            return true;
         }
 
-        bool SubString(const int start,int n=-1)
+        // SubString: 把本串裁成从 start 开始长度 n(或到末尾)
+        bool SubString(int start,int n=-1)
         {
-            if(start<0||start>=length||n==0)return(false);
-            if(n>0&&start+n>length)return(false);
-
-            if(n<0)
-                n=length-start;
-
-            hgl_typemove(buffer.get(),buffer.get()+start,n);
-            buffer[n]=0;
-            length=n;
-            return(true);
+            if(start<0||start>=GetLength()||n==0) return false;
+            int real_len=(n<0)?(GetLength()-start):n;
+            if(real_len<0||start+real_len>GetLength()) return false;
+            str.assign(str.begin()+start,str.begin()+start+real_len);
+            return true;
         }
 
         bool Resize(int num)
         {
-            if(num<0)
-                return(false);
-
-            if(num==length)
-                return true;
-
-            if(num==0)
-            {
-                buffer.reset();
-                length=0;
-                malloc_length=0;
-                return true;
-            }
-
-            if(num<length)
-            {
-                length=num;
-                buffer[length]=0;
-                return(true);
-            }
-
-            EnsureCapacity(num+1);   // +1 为结尾0
-
-            hgl_set(buffer.get()+length,' ',num-length);   // 使用空格填充
-            length=num;
-            buffer[length]=0;
-            return(true);
+            if(num<0) return false;
+            if(num==0){ str.clear(); return true; }
+            str.resize((size_t)num, T(' '));
+            return true;
         }
 
-        bool Write(int pos, const SelfClass &str)
+        // TrimRight: 删除末尾 n 个字符
+        bool TrimRight(int n)
         {
-            if(pos < 0 || pos > length) return false;
-
-            int end_pos=pos+str.length;
-
-            EnsureCapacity(end_pos+1);
-
-            hgl_typecpy(buffer.get()+pos,str.buffer.get(),str.length);
-            buffer[end_pos]=0;
-            length=end_pos>length?end_pos:length;
-            return(true);
+            if(n<0) return false; if(n==0) return true;
+            if(n>=GetLength()){ str.clear(); return true; }
+            str.erase(str.size()-n);
+            return true;
+        }
+        // ClipLeft: 保留前 n 个字符 (等同长度裁剪)
+        bool ClipLeft(int n)
+        {
+            if(n<0) return false; if(n>=GetLength()) return true; str.resize((size_t)n); return true;
         }
 
-    public:
+        bool Write(int pos,const SelfClass &other)
+        {
+            if(pos<0||pos>GetLength()) return false;
+            const int end_pos=pos+other.GetLength();
+            if(end_pos>GetLength()) str.resize((size_t)end_pos);
+            std::copy(other.str.begin(),other.str.end(),str.begin()+pos);
+            return true;
+        }
 
         int UniqueCharCount()const
         {
-            if(!buffer||length<=0)
-                return 0;
-
-            SortedSet<T> unique_chars;
-
-            for(int i=0;i<length;i++)
-                unique_chars.Add(buffer[i]);
-
-            return unique_chars.GetCount();
+            if(str.empty()) return 0;
+            std::unordered_set<T> s(str.begin(),str.end());
+            return (int)s.size();
         }
     };//class StringInstance
 }//namespace hgl
+
+// End of file
