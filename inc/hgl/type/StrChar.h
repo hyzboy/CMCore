@@ -465,7 +465,7 @@ namespace hgl
      * @return str2在str1中所在位置的指针
      */
     template<typename T1,typename T2>
-    inline T1 *strstr(T1 *str1,const uint size1,const T2 *str2,const uint size2)
+    inline T1 *strstr(T1 *str1,const int size1,const T2 *str2,const int size2)
     {
         if(!str1||!str2)return(nullptr);
         if(!*str1||!*str2)return(nullptr);
@@ -475,7 +475,7 @@ namespace hgl
         T1 *cp = str1;
         T1 *end= str1+size1-size2;
         T1 *s1, *s2;
-        uint s;
+        int s;
 
         while (*cp&&cp<=end)
         {
@@ -505,7 +505,7 @@ namespace hgl
      * @return str2在str1中所在位置的指针
      */
     template<typename T1,typename T2>
-    inline T1 *strrstr(T1 *str1,const uint size1,const T2 *str2,const uint size2)
+    inline T1 *strrstr(T1 *str1,const int size1,const T2 *str2,const int size2)
     {
         if(!str1||!str2)return(nullptr);
         if(!*str1||!*str2)return(nullptr);
@@ -514,7 +514,7 @@ namespace hgl
 
         T1 *cp = str1+size1-size2;
         T1 *s1, *s2;
-        uint s;
+        int s;
 
         while (*cp&&cp>str1)
         {
@@ -534,6 +534,7 @@ namespace hgl
         return(nullptr);
     }
 
+
     /**
      * 在字符串str1内查找另一个字符串str2,忽略大小写
      * @param str1 完整的字符串
@@ -544,21 +545,28 @@ namespace hgl
      * @return nullptr 没有找到
      */
     template<typename T1,typename T2>
-    inline T1 *stristr(T1 *str1,const uint size1,T2 *str2,const uint size2)
+    inline T1 *stristr(T1 *str1,const int size1,T2 *str2,const int size2)
     {
+        if(!str1||!str2)return(nullptr);
+        if(!*str1||!*str2)return(nullptr);
+        if(size1<=0)return(nullptr);
+        if(size2<=0)return(nullptr);
+
         T1 *cp = (T1 *) str1;
         T1 *s1;
         T2 *s2;
+        int remain = size1;
 
         if ( !*str2)
             return (T1 *)str1;
 
-        while (*cp)
+        while (*cp && remain > 0)
         {
             s1 = cp;
             s2 = (T2 *) str2;
+            int s = size2;
 
-            while ( *s1 && *s2 )
+            while ( *s1 && *s2 && s > 0 )
             {
                 if(*s1!=*s2)
                 {
@@ -577,13 +585,13 @@ namespace hgl
                             break;
                 }
 
-                s1++, s2++;
+                s1++, s2++; --s;
             }
 
-            if (!*s2)
+            if (!*s2 || s == 0)
                 return(cp);
 
-            ++cp;
+            ++cp; --remain;
         }
 
         return(nullptr);
