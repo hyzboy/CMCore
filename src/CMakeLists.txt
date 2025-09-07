@@ -333,4 +333,6 @@ add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
 
                         ${BASE_LOG_HEADER}
                         ${BASE_LOG_SOURCE}
+
+                        ${ICU_LIBRARIES}
                         )
