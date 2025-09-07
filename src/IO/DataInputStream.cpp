@@ -73,7 +73,7 @@ namespace hgl
             return(true);
         }
 
-        bool DataInputStream::ReadU8String        (char *u8str,uint max_len){return hgl::io::ReadU8String<uint32>(u8str,max_len,this);}
+        bool DataInputStream::ReadU8String          (char *u8str,uint max_len){return hgl::io::ReadU8String<uint32>(u8str,max_len,this);}
         bool DataInputStream::ReadUTF8ShortString   (char *u8str,uint max_len){return hgl::io::ReadU8String<uint16>(u8str,max_len,this);}
         bool DataInputStream::ReadUTF8TinyString    (char *u8str,uint max_len){return hgl::io::ReadU8String<uint8 >(u8str,max_len,this);}
 
@@ -104,11 +104,13 @@ namespace hgl
             if(count<str_len)
                 dis->Skip(str_len-count);
 
-            u8str.Set(utf8_str,count,true);
+            // copy then free the buffer read from stream
+            u8str.fromString(utf8_str, count);
+            delete[] utf8_str;
             return(true);
         }
 
-        bool DataInputStream::ReadU8String        (U8String &u8str,uint max_len){return hgl::io::ReadU8String<uint32>(u8str,max_len,this);}
+        bool DataInputStream::ReadU8String          (U8String &u8str,uint max_len){return hgl::io::ReadU8String<uint32>(u8str,max_len,this);}
         bool DataInputStream::ReadUTF8ShortString   (U8String &u8str,uint max_len){return hgl::io::ReadU8String<uint16>(u8str,max_len,this);}
         bool DataInputStream::ReadUTF8TinyString    (U8String &u8str,uint max_len){return hgl::io::ReadU8String<uint8 >(u8str,max_len,this);}
 
@@ -143,13 +145,15 @@ namespace hgl
 
             u16char *wide_str=u8_to_u16(utf8_str,count,wide_count);
 
-            u16str.Set(wide_str,wide_count,true);
+            // copy then free the intermediate buffers
+            u16str.fromString(wide_str, wide_count);
 
+            delete[] wide_str;
             delete[] utf8_str;
             return(true);
         }
 
-        bool DataInputStream::ReadU8String        (U16String &u16str,uint max_len){return hgl::io::ReadU8String<uint32>(u16str,max_len,this);}
+        bool DataInputStream::ReadU8String          (U16String &u16str,uint max_len){return hgl::io::ReadU8String<uint32>(u16str,max_len,this);}
         bool DataInputStream::ReadUTF8ShortString   (U16String &u16str,uint max_len){return hgl::io::ReadU8String<uint16>(u16str,max_len,this);}
         bool DataInputStream::ReadUTF8TinyString    (U16String &u16str,uint max_len){return hgl::io::ReadU8String<uint8 >(u16str,max_len,this);}
 
@@ -232,7 +236,9 @@ namespace hgl
 
             UTF16CharConvert<E>::convert(utf16_str,count);
 
-            str.Set(utf16_str,count,true);
+            // copy then free the buffer read from stream
+            str.fromString(utf16_str, count);
+            delete[] utf16_str;
 
             return(true);
         }

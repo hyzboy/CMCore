@@ -21,7 +21,7 @@ namespace hgl
 
         // 构造/析构 ---------------------------------------------------------
         String()=default;
-        String(const SelfClass &rhs){ Set(rhs); }
+        String(const SelfClass &rhs){ buffer = rhs.buffer; }
         explicit String(SelfClass &&rhs) noexcept{ buffer=std::move(rhs.buffer); }
         String(const T *str){ fromString(str); }
         String(const T *str,int len){ fromString(str,len); }
@@ -35,7 +35,7 @@ namespace hgl
         // 赋值 --------------------------------------------------------------
         SelfClass &operator=(SelfClass &&rhs) noexcept
         { if(this!=&rhs){ buffer=std::move(rhs.buffer);} return *this; }
-        SelfClass &operator=(const SelfClass &rhs){ if(this!=&rhs) Set(rhs); return *this; }
+        SelfClass &operator=(const SelfClass &rhs){ if(this!=&rhs) buffer=rhs.buffer; return *this; }
         SelfClass &operator=(const std::basic_string<T> &s){ buffer=s; return *this; }
         SelfClass &operator=(std::initializer_list<T> il){ if(!il.size()){ Clear(); return *this; } buffer.assign(il.begin(),il.end()); return *this; }
         SelfClass &operator=(const T *str){ if(str!=c_str()) fromString(str); return *this; }
@@ -71,20 +71,7 @@ namespace hgl
             if(len<0) buffer.assign(str); else buffer.assign(str,str+hgl::strlen(str,len));
             while(!buffer.empty() && buffer.back()==T(0)) buffer.pop_back();
         }
-        void fromInstance(T *str,const uint len)   // 兼容旧API(保留指针版本)
-        {
-            if(!str){ Clear(); return; }
-            int real_len=hgl::strlen(str,len); while(real_len>0 && str[real_len-1]==T(0)) --real_len; buffer.assign(str,str+real_len); delete[] str; }
-        void Strcpy(const T *str,int len=-1){ fromString(str,len); }
 
-        void Set(const T *str,int len=-1){ fromString(str,len); }
-
-        void Set(const SelfClass &rhs)
-        { if(this==&rhs) return; buffer=rhs.buffer; }
-
-        bool Set(const SelfClass &rhs,int start,int count)
-        { if(count<=0||start<0||start>=rhs.Length()) return false; int real=count; if(start+real>rhs.Length()) real=rhs.Length()-start; if(real<=0) return false; buffer=rhs.buffer.substr(size_t(start),size_t(real)); return true; }
-        bool Copy(const SelfClass &rhs){ if(rhs.IsEmpty()) return false; return Set(rhs,0,rhs.Length()); }
         bool Unlink(){ return true; }
         T *Discard(){ if(Length()==0) return nullptr; T *out=new T[Length()+1]; memcpy(out,c_str(),Length()*sizeof(T)); out[Length()]=0; Clear(); return out; }
 
@@ -148,7 +135,7 @@ namespace hgl
         bool ClipRight(int n){ if(n<0||n>Length()) return false; return Delete(0,Length()-n); }
         bool Clip(int pos,int num){ return Delete(pos,num); }
         SelfClass SubString(int start,int n=-1) const{ if(start<0||start>=Length()) return SelfClass(); if(n<0) n=Length()-start; if(n<=0||start+n>Length()) return SelfClass(); return SelfClass(c_str()+start,n); }
-        bool SubString(SelfClass &sc,int start,int n) const{ if(start<0||n<=0||start+n>Length()) return false; sc.Set(c_str()+start,n); return true; }
+        bool SubString(SelfClass &sc,int start,int n) const{ if(start<0||n<=0||start+n>Length()) return false; sc.fromString(c_str()+start,n); return true; }
 
         int StatChar(const T ch)const { return ::StatChar(c_str(),ch); }
         int StatLine()const { return ::StatLine(c_str()); }
