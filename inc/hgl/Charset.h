@@ -110,7 +110,10 @@ namespace hgl
     int utf8_to(const CharSet &charset,u8char **dst,const u8char *src,const int src_size=-1);
 
 #if HGL_OS == HGL_OS_Windows
-           AnsiString ToAnsiString(const CharSet &cs,const U16String &str);
+
+    int get_ansi_length(const CharSet &cs,const u16char *src,const int src_size);
+
+    AnsiString ToAnsiString(const CharSet &cs,const U16String &str);
 #endif//
     
     bool BOM2CharSet(CharSet *cs,const BOMFileHeader *bom);

@@ -34,15 +34,9 @@ namespace hgl
         template<typename T>
         inline const String<T> Combine(T **str_list,int *str_len,const int count,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
         {
-            T *fullname=nullptr;
+            String<T> fullname;
 
-            {
-                const int total=sum(str_len,count)+count;
-
-                fullname=new T[total];
-            }
-
-            T *p=fullname;
+            T *p=fullname.Resize(sum(str_len,count)+count);
             const T *tmp;
             int len;
             bool first=true;
@@ -69,9 +63,9 @@ namespace hgl
                 p+=len;
             }
 
-            *p=0;
+            fullname.Resize(p-fullname-1);
 
-            return String<T>::newOf(fullname,p-fullname);
+            return fullname;
         }
 
         template<typename T>
@@ -93,8 +87,9 @@ namespace hgl
                 }
             }
 
-            T *fullname=new T[total];
-            T *p=fullname;
+            String<T> fullname;
+
+            T *p=fullname.Resize(total-1);
 
             {
                 int index=0;
@@ -105,11 +100,9 @@ namespace hgl
                     *p=spear_char;
                     ++p;
                 }
-
-                fullname[total-1]=0;
             }
 
-            return String<T>::newOf(fullname,total-1);
+            return fullname;
         }
 
         inline const String<char> Combine(const std::initializer_list<const char *> &args)
@@ -142,8 +135,9 @@ namespace hgl
             for(const String<T> &str:args)
                 total+=str.Length()+1;
 
-            T *fullname=new T[total];
-            T *p=fullname;
+            String<T> fullname;
+
+            T *p=fullname.Resize(total-1);
 
             {
                 for(const String<T> &str:args)
@@ -153,11 +147,9 @@ namespace hgl
                     *p=spear_char;
                     ++p;
                 }
-
-                fullname[total-1]=0;
             }
 
-            return String<T>::newOf(fullname,total-1);
+            return fullname;
         }
 
         inline const String<char> Combine(const std::initializer_list<const String<char>> &args)

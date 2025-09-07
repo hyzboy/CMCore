@@ -15,9 +15,10 @@ namespace hgl
         OSString FixFilename(const OSString &filename)
         {
             int old_len=filename.Length();
-            int new_len;
 
-            os_char *new_string=new os_char[old_len+1];
+            OSString new_filename;
+
+            os_char *new_string=new_filename.Resize(old_len+1);
 
             os_char *sp=filename.c_str();
             os_char *tp=new_string;
@@ -67,15 +68,9 @@ namespace hgl
 
             *tp=0;
 
-            new_len=tp-new_string;
+            new_filename.Resize(tp-new_string);
 
-            if(!fix)
-            {
-                delete[] new_string;
-                return filename;
-            }
-
-            return OSString::newOf(new_string,new_len);
+            return new_filename;
         }
 
         /**

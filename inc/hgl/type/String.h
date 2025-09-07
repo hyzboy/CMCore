@@ -22,7 +22,7 @@ namespace hgl
         // 构造/析构 ---------------------------------------------------------
         String()=default;
         String(const SelfClass &rhs){ Set(rhs); }
-        String(SelfClass &&rhs) noexcept{ buffer=std::move(rhs.buffer); }
+        explicit String(SelfClass &&rhs) noexcept{ buffer=std::move(rhs.buffer); }
         String(const T *str){ fromString(str); }
         String(const T *str,int len){ fromString(str,len); }
         explicit String(const std::basic_string<T> &s){ buffer=s; }
@@ -41,7 +41,6 @@ namespace hgl
         SelfClass &operator=(const T *str){ if(str!=c_str()) fromString(str); return *this; }
 
         // 工厂 ---------------------------------------------------------------
-        static SelfClass newOf(T *str,const uint len){ if(!str||len==0) return {}; int real=hgl::strlen(str,len); while(real>0 && str[real-1]==T(0)) --real; SelfClass s(str,real); delete[] str; return s; }
         static SelfClass charOf(const T &ch){ T tmp[2]; tmp[0]=ch; tmp[1]=0; return SelfClass(tmp); }
 
         // 显式数字转换 ------------------------------------------------------
@@ -76,7 +75,7 @@ namespace hgl
             if(!str){ Clear(); return; }
             int real_len=hgl::strlen(str,len); while(real_len>0 && str[real_len-1]==T(0)) --real_len; buffer.assign(str,str+real_len); delete[] str; }
         void Strcpy(const T *str,int len=-1){ fromString(str,len); }
-        void StrcpyInstance(T *str,int len=-1){ fromInstance(str,len); }
+
         void Set(const T *str,int len=-1){ fromString(str,len); }
 
         void Set(const SelfClass &rhs)
@@ -98,12 +97,7 @@ namespace hgl
         bool PreAlloc(int n){ if(n<=0) return false; buffer.reserve(size_t(n)); return true; }
         
         // 分配指定长度并返回可写指针；会直接把当前长度设为 n
-        T *Resize(int n,bool fill_zero=false){ if(n<=0){ Clear(); return nullptr; } buffer.resize(size_t(n));
-
-        if(fill_zero)
-            hgl_zero(buffer.data(),size_t(n)*sizeof(T));
-
-        return buffer.data(); }
+        T *Resize(int n){ if(n<=0){ Clear(); return nullptr; } buffer.resize(size_t(n)); return buffer.data(); }
 
         void Clear(){ buffer.clear(); }
         bool FillChar(const T ch,int start=0,int len=-1){ if(start<0||start>Length()) return false; if(len<0) len=Length()-start; if(len<=0) return false; for(int i=0;i<len;i++) buffer[size_t(start+i)]=ch; return true; }

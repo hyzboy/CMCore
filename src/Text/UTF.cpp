@@ -2,6 +2,73 @@
 
 namespace hgl
 {
+    int get_u16_to_u8_length(const u16char *src,int src_size)
+    {
+        if(src_size<=0||!src||!*src)
+            return 0;
+
+        const u16char *sp=src;
+        int dst_size=0;
+
+        while(*sp && (sp-src)<src_size)
+        {
+            if(*sp<=0x7F)                       // U-00000000 - U-0000007F: 0xxxxxxx
+                dst_size+=1;          
+            else if(*sp<=0x7FF)                 // U-00000080 - U-000007FF: 110xxxxx 10xxxxxx
+                dst_size+=2;          
+            else                                // U-00000800 - U-0000FFFF: 1110xxxx 10xxxxxx 10xxxxxx
+                dst_size+=3;          
+
+            ++sp;
+        }
+        return dst_size;
+    }
+
+    int get_u8_to_u16_length(const u8char *src,int src_size)
+    {
+        if(src_size<=0||!src||!*src)
+            return 0;
+
+        const uint8 *sp=(const uint8 *)src;
+        int dst_size=0;
+
+        while(*sp && (sp-(const uint8 *)src)<src_size)
+        {
+            if(*sp<0x80)                        // U-00000000 - U-0000007F: 0xxxxxxx
+            {
+                sp+=1;
+                dst_size+=1;
+            }
+            else if((*sp>=0xC0)&&(*sp<0xE0))    // U-00000080 - U-000007FF: 110xxxxx 10xxxxxx
+            {
+                sp+=2;
+                dst_size+=1;
+            }
+            else if((*sp>=0xE0)&&(*sp<0xF0))    // U-00000800 - U-0000FFFF: 1110xxxx 10xxxxxx 10xxxxxx
+            {
+                sp+=3;
+                dst_size+=1;
+            }
+            else if((*sp>=0xF0)&&(*sp<0xF8))    // U-00010000 - U-001FFFFF: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+            {
+                sp+=4;    //不解析
+            }
+            else if((*sp>=0xF8)&&(*sp<0xFC))    // U-00200000 - U-03FFFFFF: 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+            {
+                sp+=5;    //不解析
+            }
+            else if((*sp>=0xFC))                // U-04000000 - U-7FFFFFFF: 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+            {
+                sp+=6;    //不解析
+            }
+            else
+            {
+                break;     // invalid leading byte
+            }
+        }
+        return dst_size;
+    }
+
     int    u16_to_u8(u8char *dst,int dst_size,const u16char *src,const int src_size)
     {
         if(src_size<=0||!src||!*src)

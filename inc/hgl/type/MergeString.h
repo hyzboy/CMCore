@@ -26,8 +26,9 @@ namespace hgl
 
         total_chars+=line*end_line.Length();
 
-        T *str=new T[total_chars+1];
-        T *tp=str;
+        String<T> fullname;
+
+        T *tp=fullname.Resize(total_chars);
 
         sp=sl.GetDataList();
         for(int i=0;i<line;i++)
@@ -40,8 +41,7 @@ namespace hgl
             ++sp;
         }
 
-        str[total_chars]=0;
-        return String<T>::newOf(str,total_chars);
+        return fullname;
     }
 }//namespace hgl
 #endif//HGL_MERGE_STRING_INCLUDE
