@@ -14,16 +14,14 @@ namespace hgl
         using SelfClass = String<T>;
         using InstClass = StringInstance<T>;
 
-        InstClass *data = nullptr;
-        std::basic_string<T> buffer;
+        InstClass *data = nullptr;          // 旧实例指针（逐步移除）
+        std::basic_string<T> buffer;        // 新实现权威数据
 
         void free_data(){ if(data){ delete data; data=nullptr; } }
         void sync_from_inst()
         {
             if(!data) return;
-            T *p=data->c_str();
-            int len=data->GetLength();
-            if(p && len>0) buffer.assign(p,p+len); else buffer.clear();
+            if(!data->str.empty()) buffer=data->str; else buffer.clear();
             free_data();
         }
         bool using_buffer() const { return !buffer.empty() || !data; }
@@ -44,7 +42,6 @@ namespace hgl
         explicit String(InstClass *ic){ data=ic; }
         String(const InstClass &si){ data=new InstClass(si); }
         String(const char)=delete;
-        // 禁用数字直接构造
         String(int)=delete; String(unsigned int)=delete; String(int64)=delete; String(uint64)=delete; String(float)=delete; String(double)=delete;
         virtual ~String(){ free_data(); }
 
@@ -71,13 +68,13 @@ namespace hgl
         static SelfClass percentOf(const N1 num,const N2 den,uint frac){ return floatOf(double(num)/double(den)*100.0,frac); }
 
         // 基础信息 -----------------------------------------------------------
-        const int Length()const { return using_buffer()? int(buffer.size()) : (data?data->GetLength():0); }
+        const int Length()const { return using_buffer()? int(buffer.size()) : (data? int(data->str.size()):0); }
         const bool IsEmpty()const { return Length()==0; }
-        const T GetFirstChar()const { return Length()>0?(using_buffer()?buffer.front():data->GetFirstChar()):T(0); }
-        const T GetLastChar()const { return Length()>0?(using_buffer()?buffer.back():data->GetLastChar()):T(0); }
+        const T GetFirstChar()const { return Length()>0?(using_buffer()?buffer.front():data->str.front()):T(0); }
+        const T GetLastChar()const { return Length()>0?(using_buffer()?buffer.back():data->str.back()):T(0); }
 
-        T *c_str() const { return using_buffer()?buffer_c_str(): (data?data->c_str():nullptr); }
-        T *c_str(){ return using_buffer()?buffer_c_str(): (data?data->c_str():nullptr); }
+        T *c_str() const { return using_buffer()?buffer_c_str(): (data? (data->str.empty()?nullptr:const_cast<T*>(data->str.data())):nullptr); }
+        T *c_str(){ return using_buffer()?buffer_c_str(): (data? (data->str.empty()?nullptr:const_cast<T*>(data->str.data())):nullptr); }
         T *data_ptr(){ return c_str(); }
 
         // 载入/设置 ----------------------------------------------------------
@@ -98,12 +95,12 @@ namespace hgl
         void Set(const T *str,int len=-1){ fromString(str,len); }
 
         void Set(const SelfClass &rhs)
-        { if(this==&rhs) return; if(rhs.using_buffer()){ buffer=rhs.buffer; free_data(); } else if(rhs.data){ T *p=rhs.data->c_str(); int l=rhs.data->GetLength(); buffer.assign(p,p+l); free_data(); } }
-        void Set(const InstClass &si){ sync_from_inst(); T *p=si.c_str(); int l=si.GetLength(); buffer.assign(p? p:nullptr, p? p+l:0); }
+        { if(this==&rhs) return; if(rhs.using_buffer()){ buffer=rhs.buffer; free_data(); } else if(rhs.data){ buffer=rhs.data->str; free_data(); } }
+        void Set(const InstClass &si){ sync_from_inst(); buffer=si.str; }
         void Set(InstClass *si_ptr){ if(si_ptr){ free_data(); data=si_ptr; sync_from_inst(); } else Clear(); }
 
         bool Set(const SelfClass &rhs,int start,int count)
-        { if(count<=0||start<0||start>=rhs.Length()) return false; int real=count; if(start+real>rhs.Length()) real=rhs.Length()-start; if(real<=0) return false; if(rhs.using_buffer()) buffer=rhs.buffer.substr(size_t(start),size_t(real)); else { T *p=rhs.data->c_str(); buffer.assign(p+start,p+start+real);} free_data(); return true; }
+        { if(count<=0||start<0||start>=rhs.Length()) return false; int real=count; if(start+real>rhs.Length()) real=rhs.Length()-start; if(real<=0) return false; if(rhs.using_buffer()) buffer=rhs.buffer.substr(size_t(start),size_t(real)); else { buffer.assign(rhs.data->str.begin()+start,rhs.data->str.begin()+start+real);} free_data(); return true; }
         bool Copy(const SelfClass &rhs){ if(rhs.IsEmpty()) return false; return Set(rhs,0,rhs.Length()); }
         bool Unlink(){ return true; }
         T *Discard(){ if(Length()==0) return nullptr; T *out=new T[Length()+1]; memcpy(out,c_str(),Length()*sizeof(T)); out[Length()]=0; Clear(); return out; }
@@ -188,7 +185,7 @@ namespace hgl
         int Replace(const T tch,const T sch){ if(IsEmpty()) return 0; if(!using_buffer()) sync_from_inst(); int cnt=0; for(auto &c:buffer) if(c==tch){ c=sch; ++cnt; } return cnt; }
 
         // 运算符 -------------------------------------------------------------
-        operator const InstClass &(){ static InstClass empty; if(data) return *data; if(empty.GetLength()==0 && !buffer.empty()) empty.InitFromString(buffer.data(),(int)buffer.size()); return empty; }
+        operator const InstClass &(){ static InstClass empty; if(data) return *data; if(empty.str.empty() && !buffer.empty()) empty.InitFromString(buffer.data(),(int)buffer.size()); return empty; }
         const T &operator[](int index) const { static const T zero_char=0; if(index>=0 && index<Length()) return c_str()[index]; return zero_char; }
         T &operator[](int index){ static T zero_char=* (new T(0)); if(index<0||index>=Length()) return zero_char; if(!using_buffer()) sync_from_inst(); return buffer[index]; }
         operator T *(){ return c_str(); }

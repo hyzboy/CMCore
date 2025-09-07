@@ -6,7 +6,9 @@
 
 namespace hgl
 {
-    /** 极简版字符串实例: 仅供过渡期 String<T> 内部使用 */
+    template<typename T> class String; // forward declaration for friendship
+
+    /** 极简版字符串实例: 仅供过渡期 String<T> 内部使用，仅保留初始化与原始存储 */
     template<typename T> class StringInstance
     {
     public:
@@ -16,8 +18,7 @@ namespace hgl
 
     protected:
         base_type str;                                    ///< 实际存储
-        static T *WritablePtr(base_type &s){ return s.empty()?nullptr:const_cast<T*>(s.data()); }
-        static const T *ReadablePtr(const base_type &s){ return s.empty()?nullptr:s.data(); }
+        friend class String<T>;                           ///< 允许 String<T> 直接访问
 
     public:
         StringInstance()=default;
@@ -47,14 +48,14 @@ namespace hgl
             delete[] src;
         }
 
-        // 基础信息 ------------------------------------------------
-        int  GetLength()const { return (int)str.size(); }
-        T   *c_str(){ return WritablePtr(str); }
-        const T *c_str()const{ return ReadablePtr(str); }
-        T GetFirstChar()const { return str.empty()?T(0):str.front(); }
-        T GetLastChar ()const { return str.empty()?T(0):str.back(); }
+        // 只读接口(保留以兼容旧代码的隐式转换调用)
+        int  GetLength() const { return (int)str.size(); }
+        T   *c_str() { return str.empty()?nullptr:const_cast<T*>(str.data()); }
+        const T *c_str() const { return str.empty()?nullptr:str.data(); }
+        T GetFirstChar() const { return str.empty()?T(0):str.front(); }
+        T GetLastChar() const { return str.empty()?T(0):str.back(); }
 
-        // 禁用所有修改接口（全部迁移到新 String<T>）
+        // 修改接口删除
         bool Insert(int,const T *,int)=delete;
         bool Delete(int,int)=delete;
         bool Clip(int,int)=delete;
@@ -62,7 +63,7 @@ namespace hgl
         bool TrimRight(int)=delete;
         bool ClipLeft(int)=delete;
         bool Write(int,const StringInstance &)=delete;
-        T *Discard()=delete;                 ///< 迁移后不再支持
+        T *Discard()=delete;
         StringInstance *CreateCopy() const =delete;
         StringInstance *CreateCopy(int) const =delete;
         StringInstance *CreateCopy(int,int) const =delete;
