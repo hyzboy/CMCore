@@ -55,6 +55,8 @@ namespace hgl
             buffer[length]=0;        // 保持结束符
         }
 
+        static int Normalize(int v){return v<0?-1:(v>0?1:0);}         
+
     public:
 
         StringInstance()
@@ -119,10 +121,10 @@ namespace hgl
                 return;
             }
 
-            // 注释: “如果最后不是0，则需要重新分配内存创建带0结尾的字串”
-            // 原代码逻辑与注释相反，这里改正
-            if(str[real_len]!=0)            // 最后不是0，需要重新分配
-            {            
+            // 如果没有空间放终止符或末尾不是0，则需要重新分配
+            const bool need_copy = (real_len>=len) || (str[real_len]!=0);
+            if(need_copy)
+            {
                 InitPrivate(str,real_len);
                 delete[] str;
             }
@@ -302,12 +304,14 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int Comp(const SelfClass *sc)const
+        int Comp(const SelfClass *sc)const
         {
-            if(!sc)
-                return length;
-
-            return hgl::strcmp(buffer,length,sc->buffer,sc->length);
+            const bool a_empty=isEmpty();
+            const bool b_empty=(!sc||sc->isEmpty());
+            if(a_empty&&b_empty) return 0; 
+            if(a_empty) return -1; 
+            if(b_empty) return 1; 
+            return Normalize(hgl::strcmp(buffer,length,sc->buffer,sc->length));
         }
 
         /**
@@ -318,15 +322,12 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int Comp(const uint pos,const SelfClass *sc)const
+        int Comp(const uint pos,const SelfClass *sc)const
         {
-            if(!sc)
-                return length;
-
-            if(length< (int)pos)
-                return -1;
-
-            return hgl::strcmp(buffer+pos,length-pos,sc->buffer,sc->length);
+            if(pos> (uint)length) return 0; // 参数非法视为相等
+            SelfClass tmp; 
+            if(!sc) return (length-pos)>0?1:0; 
+            return Comp(sc->CreateCopy()?sc:sc); // fallback reuse
         }
 
         /**
@@ -336,9 +337,14 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int Comp(const T *str)const
+        int Comp(const T *str)const
         {
-            return hgl::strcmp(buffer,length,str,hgl::strlen(str));
+            const bool a_empty=isEmpty(); 
+            const bool b_empty=(!str||!*str); 
+            if(a_empty&&b_empty) return 0; 
+            if(a_empty) return -1; 
+            if(b_empty) return 1; 
+            return Normalize(hgl::strcmp(buffer,length,str,hgl::strlen(str))); 
         }
 
         /**
@@ -349,15 +355,16 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int Comp(const uint pos,const T *str)const
+        int Comp(const uint pos,const T *str)const
         {
-            if(!str)
-                return length;
-
-            if(length< (int)pos)
-                return -1;
-
-            return hgl::strcmp(buffer+pos,length-pos,str,hgl::strlen(str));
+            if(pos> (uint)length) return 0; 
+            const int remain=length-pos; 
+            const bool a_empty=(remain<=0); 
+            const bool b_empty=(!str||!*str); 
+            if(a_empty&&b_empty) return 0; 
+            if(a_empty) return -1; 
+            if(b_empty) return 1; 
+            return Normalize(hgl::strcmp(buffer+pos,remain,str,hgl::strlen(str))); 
         }
 
         /**
@@ -368,12 +375,15 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int Comp(const T *str,const uint num)const
+        int Comp(const T *str,const uint num)const
         {
-            if(!str)
-                return length-num;
-
-            return hgl::strcmp(buffer,str,num);
+            const bool a_empty=isEmpty(); 
+            const bool b_empty=(!str||num==0); 
+            if(num==0) return 0; 
+            if(a_empty&&b_empty) return 0; 
+            if(a_empty) return -1; 
+            if(b_empty) return 1; 
+            return Normalize(hgl::strcmp(buffer,str,num)); 
         }
 
         /**
@@ -385,15 +395,16 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int Comp(const int pos,const T *str,const uint num)const
+        int Comp(const int pos,const T *str,const uint num)const
         {
-            if(!str)
-                return(length-pos);
-
-            if(length<pos)
-                return(-1);
-
-            return hgl::strcmp(buffer+pos,str,num);
+            if(pos<0||pos>length||num==0) return 0; 
+            const int remain=length-pos; 
+            const bool a_empty=(remain<=0); 
+            const bool b_empty=(!str); 
+            if(a_empty&&b_empty) return 0; 
+            if(a_empty) return -1; 
+            if(b_empty) return 1; 
+            return Normalize(hgl::strcmp(buffer+pos,str,num)); 
         }
 
         /**
@@ -403,9 +414,14 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int CaseComp(const T *str)const
+        int CaseComp(const T *str)const
         {
-            return hgl::stricmp(buffer,length,str,hgl::strlen(str));
+            const bool a_empty=isEmpty(); 
+            const bool b_empty=(!str||!*str); 
+            if(a_empty&&b_empty) return 0; 
+            if(a_empty) return -1; 
+            if(b_empty) return 1; 
+            return Normalize(hgl::stricmp(buffer,length,str,hgl::strlen(str))); 
         }
 
         /**
@@ -415,9 +431,15 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int CaseComp(const SelfClass &sc,const uint num)const
-        {
-            return hgl::stricmp(buffer,length,sc.buffer,num);
+        int CaseComp(const SelfClass &sc,const uint num)const
+        { 
+            if(num==0) return 0; 
+            const bool a_empty=isEmpty(); 
+            const bool b_empty=sc.isEmpty(); 
+            if(a_empty&&b_empty) return 0; 
+            if(a_empty) return -1; 
+            if(b_empty) return 1; 
+            return Normalize(hgl::stricmp(buffer,length,sc.buffer,num)); 
         }
 
         /**
@@ -427,9 +449,15 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int CaseComp(const T *str,const uint num)const
-        {
-            return hgl::stricmp(buffer,length,str,num);
+        int CaseComp(const T *str,const uint num)const
+        { 
+            if(num==0) return 0; 
+            const bool a_empty=isEmpty(); 
+            const bool b_empty=(!str); 
+            if(a_empty&&b_empty) return 0; 
+            if(a_empty) return -1; 
+            if(b_empty) return 1; 
+            return Normalize(hgl::stricmp(buffer,length,str,num)); 
         }
 
         /**
@@ -440,12 +468,17 @@ namespace hgl
          * @return 0 等同
          * @return >0 我方大
          */
-        const int CaseComp(const int pos,const T *str,const uint num)const
-        {
-            if(pos<0)
-                return -1;
-            
-            return hgl::stricmp(buffer+pos,length-pos,str,num);
+        int CaseComp(const int pos,const T *str,const uint num)const
+        { 
+            if(num==0) return 0; 
+            if(pos<0||pos>length) return 0; 
+            const int remain=length-pos; 
+            const bool a_empty=(remain<=0); 
+            const bool b_empty=(!str); 
+            if(a_empty&&b_empty) return 0; 
+            if(a_empty) return -1; 
+            if(b_empty) return 1; 
+            return Normalize(hgl::stricmp(buffer+pos,remain,str,num)); 
         }
 
         bool Insert(const int pos,const T *istr,int len)                                                  ///<插入一个字符串
