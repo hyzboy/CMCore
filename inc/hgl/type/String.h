@@ -1,6 +1,7 @@
 ﻿#pragma once
 
-#include <hgl/type/StringInstance.h>   // 过渡期还保留（仅为兼容外部还在引用 StringInstance 的构造），后续可删除
+#include <hgl/type/DataType.h>
+#include <hgl/type/StrChar.h>
 #include <hgl/Comparator.h>
 #include <string>
 #include <initializer_list>
@@ -12,11 +13,9 @@ namespace hgl
     {
     protected:
         using SelfClass = String<T>;
-        using InstClass = StringInstance<T>;          // 过渡占位，后续整体移除
 
         std::basic_string<T> buffer;                  // 唯一权威存储
 
-        // 兼容旧接口：现在无内部实例，全部为空实现
         void free_data(){}
         void sync_from_inst(){}
         bool using_buffer() const { return true; }
@@ -34,9 +33,6 @@ namespace hgl
         explicit String(const std::basic_string<T> &s){ buffer=s; }
         String(size_t count,T ch){ if(count>0) buffer.assign(count,ch); }
         String(std::initializer_list<T> il){ if(il.size()) buffer.assign(il.begin(),il.end()); }
-        // 兼容旧 StringInstance 构造（阶段过渡，内部直接拷贝后释放）
-        explicit String(InstClass *ic){ if(ic){ buffer=ic->str; delete ic; } }
-        String(const InstClass &si){ buffer=si.str; }
         String(const char)=delete;
         String(int)=delete; String(unsigned int)=delete; String(int64)=delete; String(uint64)=delete; String(float)=delete; String(double)=delete;
         virtual ~String()=default;
@@ -80,7 +76,7 @@ namespace hgl
             if(len<0) buffer.assign(str); else buffer.assign(str,str+hgl::strlen(str,len));
             while(!buffer.empty() && buffer.back()==T(0)) buffer.pop_back();
         }
-        void fromInstance(T *str,const uint len)   // 兼容旧API
+        void fromInstance(T *str,const uint len)   // 兼容旧API(保留指针版本)
         {
             if(!str){ Clear(); return; }
             int real_len=hgl::strlen(str,len); while(real_len>0 && str[real_len-1]==T(0)) --real_len; buffer.assign(str,str+real_len); delete[] str; }
@@ -90,8 +86,6 @@ namespace hgl
 
         void Set(const SelfClass &rhs)
         { if(this==&rhs) return; buffer=rhs.buffer; }
-        void Set(const InstClass &si){ buffer=si.str; }
-        void Set(InstClass *si_ptr){ if(si_ptr){ buffer=si_ptr->str; delete si_ptr; } else Clear(); }
 
         bool Set(const SelfClass &rhs,int start,int count)
         { if(count<=0||start<0||start>=rhs.Length()) return false; int real=count; if(start+real>rhs.Length()) real=rhs.Length()-start; if(real<=0) return false; buffer=rhs.buffer.substr(size_t(start),size_t(real)); return true; }
@@ -179,7 +173,6 @@ namespace hgl
         int Replace(const T tch,const T sch){ if(IsEmpty()) return 0; int cnt=0; for(auto &c:buffer) if(c==tch){ c=sch; ++cnt; } return cnt; }
 
         // 运算符 -------------------------------------------------------------
-        operator const InstClass &(){ static InstClass temp; temp.str=buffer; return temp; }   // 仅为兼容，后续可删除
         const T &operator[](int index) const { static const T zero_char=0; if(index>=0 && index<Length()) return c_str()[index]; return zero_char; }
         T &operator[](int index){ static T zero_char=* (new T(0)); if(index<0||index>=Length()) return zero_char; return buffer[index]; }
         operator T *(){ return c_str(); }
