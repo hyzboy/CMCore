@@ -94,12 +94,6 @@ namespace hgl
             return sc;
         }
 
-    // 单字符存取 ----------------------------------------------
-        bool GetChar(int n,T &ch)const
-        { if(n<0||n>=GetLength()) return false; ch=str[(size_type)n]; return true; }
-        bool SetChar(int n,const T &ch)
-        { if(n<0||n>=GetLength()) return false; str[(size_type)n]=ch; return true; }
-
     // 修改操作 -------------------------------------------------
         bool Insert(int pos,const T *istr,int len)
         {
