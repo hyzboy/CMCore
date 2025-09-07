@@ -1,5 +1,4 @@
-﻿#ifndef HGL_CODE_PAGE_INCLUDE
-#define HGL_CODE_PAGE_INCLUDE
+﻿#pragma once
 
 #include<hgl/utf.h>
 namespace hgl
@@ -116,4 +115,3 @@ namespace hgl
     
     bool BOM2CharSet(CharSet *cs,const BOMFileHeader *bom);
 }//namespace hgl
-#endif//HGL_CODE_PAGE_INCLUDE
