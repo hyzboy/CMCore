@@ -115,7 +115,6 @@ SOURCE_GROUP("Datatype\\Color\\Source Files" FILES ${COLOR_SOURCE_FILES})
 ##Text--------------------------------------------------------
 SET(STRING_HEADER_FILES ${TYPE_INCLUDE_PATH}/String.h
                         ${TYPE_INCLUDE_PATH}/StringView.h
-                        ${TYPE_INCLUDE_PATH}/StringInstance.h
                         ${TYPE_INCLUDE_PATH}/StringList.h
                         ${TYPE_INCLUDE_PATH}/SplitString.h
                         ${TYPE_INCLUDE_PATH}/MergeString.h
