@@ -1,7 +1,7 @@
 #pragma once
 
-#include<hgl/platform/Platform.h>
 #include<hgl/type/String.h>
+
 namespace hgl
 {
     int             u16_to_u8(u8char *,int,const u16char *,const int=-1);                           ///<转换u16char *到utf8格式的u8char *
@@ -75,5 +75,10 @@ namespace hgl
     inline U8String ToU8String(const OSString &str){return str;}
 #endif//
 
-    const BOMFileHeader *ParseBOM(const void *input);
+    namespace endian
+    {
+        struct BOMFileHeader;
+    }
+
+    const endian::BOMFileHeader *ParseBOM(const void *input);
 }//namespace hgl
