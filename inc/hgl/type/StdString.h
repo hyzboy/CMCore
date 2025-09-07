@@ -51,7 +51,7 @@ namespace hgl
 
     inline std::wstring ToStdWString(const OSString &str)
     {
-        hgl::WString w_str=hgl::to_wide<sizeof(wchar_t)>(str);
+        hgl::WideString w_str=hgl::to_wide<sizeof(wchar_t)>(str);
 
         return std::wstring(w_str.c_str(),w_str.Length());
     }

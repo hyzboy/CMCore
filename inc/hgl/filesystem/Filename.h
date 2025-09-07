@@ -483,7 +483,7 @@ namespace hgl
         {return MergeFilename<u8char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_U8STR);}
 
     #if HGL_OS == HGL_OS_Windows
-        inline WString MergeFilename(const WString &pathname,const WString &filename)          ///<组合路径名与文件名
+        inline WideString MergeFilename(const WideString &pathname,const WideString &filename)          ///<组合路径名与文件名
         {return MergeFilename<wchar_t>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_STR);}
     #endif//HGL_OS == HGL_OS_Windows
 

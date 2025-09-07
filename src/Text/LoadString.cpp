@@ -43,7 +43,7 @@ namespace hgl
         using MakeAString   =MakeStringImpl<char,   AnsiString>;
         using MakeU8String  =MakeStringImpl<u8char, U8String>;
         using MakeU16String =MakeStringImpl<u16char,U16String>;
-        using MakeWString   =MakeStringImpl<wchar_t,WString>;
+        using MakeWString   =MakeStringImpl<wchar_t,WideString>;
 
         using MakeStdString     =MakeStringSTD<char,    std::string>;
         using MakeStdU8String   =MakeStringSTD<u8char,  std::u8string>;

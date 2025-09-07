@@ -16,11 +16,6 @@ namespace hgl
 
         std::basic_string<T> buffer;                  // 唯一权威存储
 
-        void free_data(){}
-        void sync_from_inst(){}
-        bool using_buffer() const { return true; }
-        T *buffer_c_str() const { return buffer.empty()?nullptr:const_cast<T*>(buffer.data()); }
-
     public:
         using CharType=T;
 
@@ -208,7 +203,7 @@ namespace hgl
     using U16String =String<u16char>;
     using U32String =String<char32_t>;
     using OSString  =String<os_char>;
-    using WString   =String<wchar_t>;
+    using WideString=String<wchar_t>;
     using ShaderString=U8String;
 
     // 全局 const T* + String<T>
