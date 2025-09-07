@@ -59,6 +59,7 @@ namespace hgl
         const T GetFirstChar()const { return buffer.empty()?T(0):buffer.front(); }
         const T GetLastChar()const { return buffer.empty()?T(0):buffer.back(); }
 
+        // 访问/指针 ----------------------------------------------------------
         T *c_str() const { return buffer.empty()?nullptr:const_cast<T*>(buffer.data()); }
         T *c_str(){ return buffer.empty()?nullptr:const_cast<T*>(buffer.data()); }
         T *data_ptr(){ return c_str(); }
@@ -87,22 +88,20 @@ namespace hgl
         bool Unlink(){ return true; }
         T *Discard(){ if(Length()==0) return nullptr; T *out=new T[Length()+1]; memcpy(out,c_str(),Length()*sizeof(T)); out[Length()]=0; Clear(); return out; }
 
-        // 修改 ---------------------------------------------------------------
-        bool Insert(int pos,const T *str,int len=-1)
-        { if(!str||pos<0||pos>Length()) return false; if(len==0) return false; if(len<0) len=hgl::strlen(str); if(len<=0) return false; buffer.insert(buffer.begin()+pos,str,str+len); return true; }
-        bool Insert(int pos,const SelfClass &s){ return Insert(pos,s.c_str(),s.Length()); }
-        bool Delete(int pos,int num){ if(num<=0||pos<0||pos>=Length()) return false; if(pos+num>Length()) num=Length()-pos; buffer.erase(buffer.begin()+pos,buffer.begin()+pos+num); return true; }
-        
-        // 预分配内存：预先保留至少 n 个字符的容量，避免多次扩展
+        // 预分配/分配 --------------------------------------------------------
         bool PreAlloc(int n){ if(n<=0) return false; buffer.reserve(size_t(n)); return true; }
-        
-        // 分配指定长度并返回可写指针；会直接把当前长度设为 n
         T *Resize(int n){ if(n<=0){ Clear(); return nullptr; } buffer.resize(size_t(n)); return buffer.data(); }
 
         void Clear(){ buffer.clear(); }
         bool FillChar(const T ch,int start=0,int len=-1){ if(start<0||start>Length()) return false; if(len<0) len=Length()-start; if(len<=0) return false; for(int i=0;i<len;i++) buffer[size_t(start+i)]=ch; return true; }
 
-        // 单字符 -------------------------------------------------------------
+        // 修改/插入/删除 ----------------------------------------------------
+        bool Insert(int pos,const T *str,int len=-1)
+        { if(!str||pos<0||pos>Length()) return false; if(len==0) return false; if(len<0) len=hgl::strlen(str); if(len<=0) return false; buffer.insert(buffer.begin()+pos,str,str+len); return true; }
+        bool Insert(int pos,const SelfClass &s){ return Insert(pos,s.c_str(),s.Length()); }
+        bool Delete(int pos,int num){ if(num<=0||pos<0||pos>=Length()) return false; if(pos+num>Length()) num=Length()-pos; buffer.erase(buffer.begin()+pos,buffer.begin()+pos+num); return true; }
+
+        // 单字符操作 ---------------------------------------------------------
         bool GetChar(int n,T &ch)const { if(n<0||n>=Length()) return false; ch=c_str()[n]; return true; }
         bool SetChar(int n,const T ch){ if(n<0||n>=Length()) return false; buffer[size_t(n)]=ch; return true; }
 
@@ -154,7 +153,7 @@ namespace hgl
         int StatChar(const T ch)const { return ::StatChar(c_str(),ch); }
         int StatLine()const { return ::StatLine(c_str()); }
 
-        // 查找 --------------------------------------------------------------
+        // 查找/替换 ----------------------------------------------------------
         int FindChar(int pos,const T ch)const{ if(pos<0||pos>=Length()) return -1; const T *r=hgl::strchr(c_str()+pos,ch); return r? int(r-(c_str()+pos)):-1; }
         int FindChar(const T ch)const { return FindChar(0,ch); }
         int FindChars(int pos,const SelfClass &ch)const{ if(pos<0||pos>=Length()) return -1; const T *r=hgl::strchr(c_str()+pos,ch.c_str(),ch.Length()); return r? int(r-(c_str()+pos)):-1; }
@@ -172,7 +171,7 @@ namespace hgl
         bool WriteString(int pos,const SelfClass &str){ if(pos<0||pos>Length()) return false; if(pos+str.Length()>Length()) buffer.resize(pos+str.Length()); memcpy(buffer.data()+pos,str.c_str(),str.Length()*sizeof(T)); return true; }
         int Replace(const T tch,const T sch){ if(IsEmpty()) return 0; int cnt=0; for(auto &c:buffer) if(c==tch){ c=sch; ++cnt; } return cnt; }
 
-        // 运算符 -------------------------------------------------------------
+        // 运算符/工具 --------------------------------------------------------
         const T &operator[](int index) const { static const T zero_char=0; if(index>=0 && index<Length()) return c_str()[index]; return zero_char; }
         T &operator[](int index){ static T zero_char=* (new T(0)); if(index<0||index>=Length()) return zero_char; return buffer[index]; }
         operator T *(){ return c_str(); }
