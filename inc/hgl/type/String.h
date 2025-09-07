@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <hgl/type/StringInstance.h>
+#include <hgl/type/StringInstance.h>   // 过渡期还保留（仅为兼容外部还在引用 StringInstance 的构造），后续可删除
 #include <hgl/Comparator.h>
 #include <string>
 #include <initializer_list>
@@ -12,19 +12,14 @@ namespace hgl
     {
     protected:
         using SelfClass = String<T>;
-        using InstClass = StringInstance<T>;
+        using InstClass = StringInstance<T>;          // 过渡占位，后续整体移除
 
-        InstClass *data = nullptr;          // 旧实例指针（逐步移除）
-        std::basic_string<T> buffer;        // 新实现权威数据
+        std::basic_string<T> buffer;                  // 唯一权威存储
 
-        void free_data(){ if(data){ delete data; data=nullptr; } }
-        void sync_from_inst()
-        {
-            if(!data) return;
-            if(!data->str.empty()) buffer=data->str; else buffer.clear();
-            free_data();
-        }
-        bool using_buffer() const { return !buffer.empty() || !data; }
+        // 兼容旧接口：现在无内部实例，全部为空实现
+        void free_data(){}
+        void sync_from_inst(){}
+        bool using_buffer() const { return true; }
         T *buffer_c_str() const { return buffer.empty()?nullptr:const_cast<T*>(buffer.data()); }
 
     public:
@@ -33,29 +28,30 @@ namespace hgl
         // 构造/析构 ---------------------------------------------------------
         String()=default;
         String(const SelfClass &rhs){ Set(rhs); }
-        String(SelfClass &&rhs) noexcept{ data=rhs.data; rhs.data=nullptr; buffer=std::move(rhs.buffer); }
+        String(SelfClass &&rhs) noexcept{ buffer=std::move(rhs.buffer); }
         String(const T *str){ fromString(str); }
         String(const T *str,int len){ fromString(str,len); }
         explicit String(const std::basic_string<T> &s){ buffer=s; }
         String(size_t count,T ch){ if(count>0) buffer.assign(count,ch); }
         String(std::initializer_list<T> il){ if(il.size()) buffer.assign(il.begin(),il.end()); }
-        explicit String(InstClass *ic){ data=ic; }
-        String(const InstClass &si){ data=new InstClass(si); }
+        // 兼容旧 StringInstance 构造（阶段过渡，内部直接拷贝后释放）
+        explicit String(InstClass *ic){ if(ic){ buffer=ic->str; delete ic; } }
+        String(const InstClass &si){ buffer=si.str; }
         String(const char)=delete;
         String(int)=delete; String(unsigned int)=delete; String(int64)=delete; String(uint64)=delete; String(float)=delete; String(double)=delete;
-        virtual ~String(){ free_data(); }
+        virtual ~String()=default;
 
         // 赋值 --------------------------------------------------------------
         SelfClass &operator=(SelfClass &&rhs) noexcept
-        { if(this!=&rhs){ free_data(); buffer.clear(); data=rhs.data; rhs.data=nullptr; buffer=std::move(rhs.buffer);} return *this; }
+        { if(this!=&rhs){ buffer=std::move(rhs.buffer);} return *this; }
         SelfClass &operator=(const SelfClass &rhs){ if(this!=&rhs) Set(rhs); return *this; }
-        SelfClass &operator=(const std::basic_string<T> &s){ buffer=s; free_data(); return *this; }
-        SelfClass &operator=(std::initializer_list<T> il){ if(!il.size()){ Clear(); return *this; } buffer.assign(il.begin(),il.end()); free_data(); return *this; }
+        SelfClass &operator=(const std::basic_string<T> &s){ buffer=s; return *this; }
+        SelfClass &operator=(std::initializer_list<T> il){ if(!il.size()){ Clear(); return *this; } buffer.assign(il.begin(),il.end()); return *this; }
         SelfClass &operator=(const T *str){ if(str!=c_str()) fromString(str); return *this; }
 
         // 工厂 ---------------------------------------------------------------
-        static SelfClass newOf(T *str,const uint len){ InstClass *si=new InstClass(); si->InitFromInstance(str,len); return SelfClass(si); }
-        static SelfClass charOf(const T &ch){ T *str=new T[2]; str[0]=ch; str[1]=0; return newOf(str,1); }
+        static SelfClass newOf(T *str,const uint len){ if(!str||len==0) return {}; int real=hgl::strlen(str,len); while(real>0 && str[real-1]==T(0)) --real; SelfClass s(str,real); delete[] str; return s; }
+        static SelfClass charOf(const T &ch){ T tmp[2]; tmp[0]=ch; tmp[1]=0; return SelfClass(tmp); }
 
         // 显式数字转换 ------------------------------------------------------
         static SelfClass numberOf(int value){ T tmp[8*sizeof(int)]; itos(tmp,sizeof(tmp)/sizeof(T),value); return SelfClass(tmp); }
@@ -68,55 +64,53 @@ namespace hgl
         static SelfClass percentOf(const N1 num,const N2 den,uint frac){ return floatOf(double(num)/double(den)*100.0,frac); }
 
         // 基础信息 -----------------------------------------------------------
-        const int Length()const { return using_buffer()? int(buffer.size()) : (data? int(data->str.size()):0); }
-        const bool IsEmpty()const { return Length()==0; }
-        const T GetFirstChar()const { return Length()>0?(using_buffer()?buffer.front():data->str.front()):T(0); }
-        const T GetLastChar()const { return Length()>0?(using_buffer()?buffer.back():data->str.back()):T(0); }
+        const int Length()const { return int(buffer.size()); }
+        const bool IsEmpty()const { return buffer.empty(); }
+        const T GetFirstChar()const { return buffer.empty()?T(0):buffer.front(); }
+        const T GetLastChar()const { return buffer.empty()?T(0):buffer.back(); }
 
-        T *c_str() const { return using_buffer()?buffer_c_str(): (data? (data->str.empty()?nullptr:const_cast<T*>(data->str.data())):nullptr); }
-        T *c_str(){ return using_buffer()?buffer_c_str(): (data? (data->str.empty()?nullptr:const_cast<T*>(data->str.data())):nullptr); }
+        T *c_str() const { return buffer.empty()?nullptr:const_cast<T*>(buffer.data()); }
+        T *c_str(){ return buffer.empty()?nullptr:const_cast<T*>(buffer.data()); }
         T *data_ptr(){ return c_str(); }
 
         // 载入/设置 ----------------------------------------------------------
         void fromString(const T *str,int len=-1)
         {
             if(!str || len==0){ Clear(); return; }
-            free_data();
             if(len<0) buffer.assign(str); else buffer.assign(str,str+hgl::strlen(str,len));
             while(!buffer.empty() && buffer.back()==T(0)) buffer.pop_back();
         }
-        void fromInstance(T *str,const uint len)
+        void fromInstance(T *str,const uint len)   // 兼容旧API
         {
             if(!str){ Clear(); return; }
-            int real_len=hgl::strlen(str,len); while(real_len>0 && str[real_len-1]==T(0)) --real_len; buffer.assign(str,str+real_len); delete[] str; free_data();
-        }
+            int real_len=hgl::strlen(str,len); while(real_len>0 && str[real_len-1]==T(0)) --real_len; buffer.assign(str,str+real_len); delete[] str; }
         void Strcpy(const T *str,int len=-1){ fromString(str,len); }
         void StrcpyInstance(T *str,int len=-1){ fromInstance(str,len); }
         void Set(const T *str,int len=-1){ fromString(str,len); }
 
         void Set(const SelfClass &rhs)
-        { if(this==&rhs) return; if(rhs.using_buffer()){ buffer=rhs.buffer; free_data(); } else if(rhs.data){ buffer=rhs.data->str; free_data(); } }
-        void Set(const InstClass &si){ sync_from_inst(); buffer=si.str; }
-        void Set(InstClass *si_ptr){ if(si_ptr){ free_data(); data=si_ptr; sync_from_inst(); } else Clear(); }
+        { if(this==&rhs) return; buffer=rhs.buffer; }
+        void Set(const InstClass &si){ buffer=si.str; }
+        void Set(InstClass *si_ptr){ if(si_ptr){ buffer=si_ptr->str; delete si_ptr; } else Clear(); }
 
         bool Set(const SelfClass &rhs,int start,int count)
-        { if(count<=0||start<0||start>=rhs.Length()) return false; int real=count; if(start+real>rhs.Length()) real=rhs.Length()-start; if(real<=0) return false; if(rhs.using_buffer()) buffer=rhs.buffer.substr(size_t(start),size_t(real)); else { buffer.assign(rhs.data->str.begin()+start,rhs.data->str.begin()+start+real);} free_data(); return true; }
+        { if(count<=0||start<0||start>=rhs.Length()) return false; int real=count; if(start+real>rhs.Length()) real=rhs.Length()-start; if(real<=0) return false; buffer=rhs.buffer.substr(size_t(start),size_t(real)); return true; }
         bool Copy(const SelfClass &rhs){ if(rhs.IsEmpty()) return false; return Set(rhs,0,rhs.Length()); }
         bool Unlink(){ return true; }
         T *Discard(){ if(Length()==0) return nullptr; T *out=new T[Length()+1]; memcpy(out,c_str(),Length()*sizeof(T)); out[Length()]=0; Clear(); return out; }
 
         // 修改 ---------------------------------------------------------------
         bool Insert(int pos,const T *str,int len=-1)
-        { if(!str||pos<0||pos>Length()) return false; if(len==0) return false; if(!using_buffer()) sync_from_inst(); if(len<0) len=hgl::strlen(str); if(len<=0) return false; buffer.insert(buffer.begin()+pos,str,str+len); return true; }
+        { if(!str||pos<0||pos>Length()) return false; if(len==0) return false; if(len<0) len=hgl::strlen(str); if(len<=0) return false; buffer.insert(buffer.begin()+pos,str,str+len); return true; }
         bool Insert(int pos,const SelfClass &s){ return Insert(pos,s.c_str(),s.Length()); }
-        bool Delete(int pos,int num){ if(num<=0||pos<0||pos>=Length()) return false; if(!using_buffer()) sync_from_inst(); if(pos+num>Length()) num=Length()-pos; buffer.erase(buffer.begin()+pos,buffer.begin()+pos+num); return true; }
-        bool Resize(int n){ if(n<0) return false; if(!using_buffer()) sync_from_inst(); buffer.resize(size_t(n)); if(n==0) free_data(); return true; }
-        void Clear(){ buffer.clear(); free_data(); }
-        bool FillChar(const T ch,int start=0,int len=-1){ if(start<0||start>Length()) return false; if(!using_buffer()) sync_from_inst(); if(len<0) len=Length()-start; if(len<=0) return false; for(int i=0;i<len;i++) buffer[size_t(start+i)]=ch; return true; }
+        bool Delete(int pos,int num){ if(num<=0||pos<0||pos>=Length()) return false; if(pos+num>Length()) num=Length()-pos; buffer.erase(buffer.begin()+pos,buffer.begin()+pos+num); return true; }
+        bool Resize(int n){ if(n<0) return false; buffer.resize(size_t(n)); return true; }
+        void Clear(){ buffer.clear(); }
+        bool FillChar(const T ch,int start=0,int len=-1){ if(start<0||start>Length()) return false; if(len<0) len=Length()-start; if(len<=0) return false; for(int i=0;i<len;i++) buffer[size_t(start+i)]=ch; return true; }
 
         // 单字符 -------------------------------------------------------------
         bool GetChar(int n,T &ch)const { if(n<0||n>=Length()) return false; ch=c_str()[n]; return true; }
-        bool SetChar(int n,const T ch){ if(n<0||n>=Length()) return false; if(!using_buffer()) sync_from_inst(); buffer[size_t(n)]=ch; return true; }
+        bool SetChar(int n,const T ch){ if(n<0||n>=Length()) return false; buffer[size_t(n)]=ch; return true; }
 
         // 比较 ---------------------------------------------------------------
         int Comp(const SelfClass &rhs)const{ if(Length()==0) return rhs.Length(); if(rhs.Length()==0) return Length(); return hgl::strcmp(c_str(),Length(),rhs.c_str(),rhs.Length()); }
@@ -140,9 +134,9 @@ namespace hgl
         template<typename F> bool ToFloat(F &result)const { return etof(c_str(),result); }
 
         // 大小写 -------------------------------------------------------------
-        SelfClass &LowerCase(){ if(Length()>0){ if(!using_buffer()) sync_from_inst(); tolower(buffer.data()); } return *this; }
+        SelfClass &LowerCase(){ if(Length()>0){ tolower(buffer.data()); } return *this; }
         SelfClass ToLowerCase()const { if(Length()==0) return SelfClass(); SelfClass tmp(*this); return tmp.LowerCase(); }
-        SelfClass &UpperCase(){ if(Length()>0){ if(!using_buffer()) sync_from_inst(); toupper(buffer.data()); } return *this; }
+        SelfClass &UpperCase(){ if(Length()>0){ toupper(buffer.data()); } return *this; }
         SelfClass ToUpperCase()const { if(Length()==0) return SelfClass(); SelfClass tmp(*this); return tmp.UpperCase(); }
 
     protected:
@@ -156,8 +150,8 @@ namespace hgl
         SelfClass TrimRight() const { return StrConv(trimright); }
         SelfClass Trim() const { return StrConv(trim); }
         bool TrimLeft(int n){ return Delete(0,n); }
-        bool TrimRight(int n){ if(n<=0||n>Length()) return false; if(!using_buffer()) sync_from_inst(); buffer.erase(buffer.end()-n,buffer.end()); return true; }
-        bool ClipLeft(int n){ if(n<0) return false; if(n>=Length()){ Clear(); return true; } if(!using_buffer()) sync_from_inst(); buffer.resize(size_t(n)); return true; }
+        bool TrimRight(int n){ if(n<=0||n>Length()) return false; buffer.erase(buffer.end()-n,buffer.end()); return true; }
+        bool ClipLeft(int n){ if(n<0) return false; if(n>=Length()){ Clear(); return true; } buffer.resize(size_t(n)); return true; }
         bool ClipRight(int n){ if(n<0||n>Length()) return false; return Delete(0,Length()-n); }
         bool Clip(int pos,int num){ return Delete(pos,num); }
         SelfClass SubString(int start,int n=-1) const{ if(start<0||start>=Length()) return SelfClass(); if(n<0) n=Length()-start; if(n<=0||start+n>Length()) return SelfClass(); return SelfClass(c_str()+start,n); }
@@ -180,14 +174,14 @@ namespace hgl
         int FindExcludeChar(const SelfClass &ch)const { return FindExcludeChar(0,ch); }
         int FindString(const SelfClass &str,int start=0)const{ if(str.Length()<=0||start<0||start>Length()-str.Length()) return -1; const T *r=strstr(c_str()+start,Length()-start,str.c_str(),str.Length()); return r? int(r-c_str()):-1; }
 
-        int ClearString(const SelfClass &sub){ if(sub.IsEmpty()||IsEmpty()) return 0; if(!using_buffer()) sync_from_inst(); int count=0; size_t pos=0; while((pos=buffer.find(sub.c_str(),pos,sub.Length()))!=std::basic_string<T>::npos){ buffer.erase(pos,sub.Length()); ++count; } return count; }
-        bool WriteString(int pos,const SelfClass &str){ if(pos<0||pos>Length()) return false; if(!using_buffer()) sync_from_inst(); if(pos+str.Length()>Length()) buffer.resize(pos+str.Length()); memcpy(buffer.data()+pos,str.c_str(),str.Length()*sizeof(T)); return true; }
-        int Replace(const T tch,const T sch){ if(IsEmpty()) return 0; if(!using_buffer()) sync_from_inst(); int cnt=0; for(auto &c:buffer) if(c==tch){ c=sch; ++cnt; } return cnt; }
+        int ClearString(const SelfClass &sub){ if(sub.IsEmpty()||IsEmpty()) return 0; int count=0; size_t pos=0; while((pos=buffer.find(sub.c_str(),pos,sub.Length()))!=std::basic_string<T>::npos){ buffer.erase(pos,sub.Length()); ++count; } return count; }
+        bool WriteString(int pos,const SelfClass &str){ if(pos<0||pos>Length()) return false; if(pos+str.Length()>Length()) buffer.resize(pos+str.Length()); memcpy(buffer.data()+pos,str.c_str(),str.Length()*sizeof(T)); return true; }
+        int Replace(const T tch,const T sch){ if(IsEmpty()) return 0; int cnt=0; for(auto &c:buffer) if(c==tch){ c=sch; ++cnt; } return cnt; }
 
         // 运算符 -------------------------------------------------------------
-        operator const InstClass &(){ static InstClass empty; if(data) return *data; if(empty.str.empty() && !buffer.empty()) empty.InitFromString(buffer.data(),(int)buffer.size()); return empty; }
+        operator const InstClass &(){ static InstClass temp; temp.str=buffer; return temp; }   // 仅为兼容，后续可删除
         const T &operator[](int index) const { static const T zero_char=0; if(index>=0 && index<Length()) return c_str()[index]; return zero_char; }
-        T &operator[](int index){ static T zero_char=* (new T(0)); if(index<0||index>=Length()) return zero_char; if(!using_buffer()) sync_from_inst(); return buffer[index]; }
+        T &operator[](int index){ static T zero_char=* (new T(0)); if(index<0||index>=Length()) return zero_char; return buffer[index]; }
         operator T *(){ return c_str(); }
         operator const T *()const{ return c_str(); }
         SelfClass &operator+=(const SelfClass &str){ Insert(Length(),str.c_str(),str.Length()); return *this; }
@@ -208,7 +202,6 @@ namespace hgl
         int UniqueCharCount()const
         {
             if(IsEmpty()) return 0;
-            if(!using_buffer()) const_cast<SelfClass*>(this)->sync_from_inst();
             std::unordered_set<T> uniq; uniq.reserve(buffer.size());
             for(const auto &ch:buffer) uniq.insert(ch);
             return int(uniq.size());
