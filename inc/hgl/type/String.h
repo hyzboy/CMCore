@@ -327,7 +327,16 @@ namespace hgl
         const int compare(const SelfClass &str)const override{ return Comp(str); }
 
         int UniqueCharCount()const
-        { if(IsEmpty()) return 0; if(!using_buffer()) return data->UniqueCharCount(); std::unordered_set<T> s(buffer.begin(),buffer.end()); return (int)s.size(); }
+        { 
+            if(IsEmpty()) return 0; 
+            if(!using_buffer())
+            {
+                // const_cast 以调用同步逻辑（保持接口 const）；同步后 buffer 持有数据
+                const_cast<SelfClass*>(this)->sync_from_inst();
+            }
+            std::unordered_set<T> s(buffer.begin(),buffer.end()); 
+            return (int)s.size(); 
+        }
         bool Strcat(const T *str,int len=-1)
         { if(!str) return false; if(len==0) return false; if(len<0) len=hgl::strlen(str); if(len<=0) return false; return Insert(Length(),str,len); }
         bool Strcat(const SelfClass &bs){ return Insert(Length(),bs.c_str(),bs.Length()); }

@@ -3,12 +3,11 @@
 #include<hgl/type/DataType.h>
 #include<string.h>
 #include<string>
-#include<unordered_set>
 #include<algorithm>
 
 namespace hgl
 {
-    /** 精简版字符串实例类：仅做 std::basic_string 轻量包装，保留旧 String 所需接口 */
+    /** 精简版字符串实例类：仅做 std::basic_string 轻量包装，保留旧 String 所需接口 (正在被移除) */
     template<typename T> class StringInstance
     {
     public:
@@ -208,10 +207,6 @@ namespace hgl
         {
             if(pos<0||pos>GetLength()) return false; int end_pos=pos+other.GetLength(); if(end_pos>GetLength()) str.resize((size_type)end_pos);
             std::copy(other.str.begin(),other.str.end(),str.begin()+pos); return true;
-        }
-        int UniqueCharCount()const
-        {
-            if(str.empty()) return 0; std::unordered_set<T> s(str.begin(),str.end()); return (int)s.size();
         }
     };//class StringInstance
 }//namespace hgl
