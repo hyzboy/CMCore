@@ -134,10 +134,10 @@ namespace hgl
             }
 
             ConstIterator &operator++(){current_index++;return *this;}
-            ConstIterator operator++(int){Iterator tmp=*this;++(*this);return tmp;}
+            ConstIterator operator++(int){ConstIterator tmp=*this;++(*this);return tmp;}
 
             ConstIterator &operator--(){current_index--;return *this;}
-            ConstIterator operator--(int){Iterator tmp=*this;--(*this);return tmp;}
+            ConstIterator operator--(int){ConstIterator tmp=*this;--(*this);return tmp;}
 
             bool operator==(const ConstIterator &other) const
             {
@@ -170,7 +170,9 @@ namespace hgl
         {
             if(free_index.IsEmpty())
             {
+                int32 index=data_array.GetCount();
                 data_array.AddCount(1);
+                data_index.Append(index);
                 return data_array.last();
             }
             else
