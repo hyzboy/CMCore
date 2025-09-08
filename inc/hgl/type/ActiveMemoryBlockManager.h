@@ -26,7 +26,7 @@ namespace hgl
         virtual ~ActiveMemoryBlockManager();
 
         bool SetUnitSize(const uint us);
-        void Alloc(int c);
+        void Reserve(int c);
 
         int GetActiveCount  ()const{return aim.GetActiveCount();}
         int GetIdleCount    ()const{return aim.GetIdleCount();}

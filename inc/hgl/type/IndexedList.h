@@ -29,13 +29,13 @@ namespace hgl
 
         const bool      IsEmpty         ()const{return data_index.IsEmpty();}
 
-        bool PreAlloc(int32 count)
+        bool Reserve(int32 count)
         {
             if(count<=0)return(false);
 
-            data_array.Alloc(count);
-            data_index.Alloc(count);
-            free_index.PreAlloc(count);
+            data_array.Reserve(count);
+            data_index.Reserve(count);
+            free_index.Reserve(count);
 
             return(true);
         }
@@ -171,7 +171,7 @@ namespace hgl
             if(free_index.IsEmpty())
             {
                 int32 index=data_array.GetCount();
-                data_array.AddCount(1);
+                data_array.Expand(1);
                 data_index.Append(index);
                 return data_array.last();
             }
@@ -199,7 +199,7 @@ namespace hgl
             {
                 index=data_array.GetCount();
 
-                data_array.AddCount(1);
+                data_array.Expand(1);
                 data_index.Append(index);
             }
             else
@@ -233,8 +233,8 @@ namespace hgl
 
                 int32 index=data_array.GetCount();
 
-                data_array.AddCount(n);
-                data_index.AddCount(n);
+                data_array.Expand(n);
+                data_index.Expand(n);
 
                 for(int32 i=0;i<mc;i++)
                 {
@@ -256,8 +256,8 @@ namespace hgl
             {
                 int32 index=data_array.GetCount();
 
-                data_array.AddCount(n);
-                data_index.AddCount(n);
+                data_array.Expand(n);
+                data_index.Expand(n);
 
                 for(int32 i=0;i<n;i++)
                     data_index[index+i]=index+i;
@@ -303,7 +303,7 @@ namespace hgl
             if(free_index.IsEmpty())
             {
                 index=data_array.GetCount();
-                data_array.AddCount(1);
+                data_array.Expand(1);
                 data_index.Insert(pos,index);
             }
             else
@@ -364,8 +364,8 @@ namespace hgl
             Stack<int32> overflow_index;
             Stack<int32> space_location;
 
-            overflow_index.PreAlloc(count);
-            space_location.PreAlloc(count);
+            overflow_index.Reserve(count);
+            space_location.Reserve(count);
 
             hgl_cpy(sorted_index.GetData(),data_index.GetData(),count);
 

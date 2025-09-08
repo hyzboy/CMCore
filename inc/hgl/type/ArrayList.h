@@ -21,8 +21,8 @@ namespace hgl
 
                 const   int     GetAllocCount   ()const{return data_array.GetAllocCount();}         ///<取得已分配容量
                 const   int     GetCount        ()const{return data_array.GetCount();}              ///<取得列表内数据数量
-        virtual         bool    SetCount        (int count){return data_array.SetCount(count);}     ///<设置列表内数据数量
-        virtual         bool    PreAlloc        (int count){return data_array.Alloc(count);}        ///<预分配指定数量的数据空间
+        virtual         bool    Resize          (int count){return data_array.Resize(count);}       ///<设置列表内数据数量
+        virtual         bool    Reserve         (int count){return data_array.Reserve(count);}      ///<预分配指定数量的数据空间
 
                 const   bool    IsEmpty         ()const{return data_array.IsEmpty();}               ///<确认列表是否为空
 
@@ -56,7 +56,7 @@ namespace hgl
          */
         virtual T *  Add()
         {
-            data_array.AddCount(1);
+            data_array.Expand(1);
             return data_array.last();
         }
 
@@ -69,7 +69,7 @@ namespace hgl
         {
             const int index=GetCount();
 
-            data_array.AddCount(1);
+            data_array.Expand(1);
 
             data_array.WriteAt(data,index);
             
@@ -89,7 +89,7 @@ namespace hgl
 
             const int ec=data_array.GetCount();
 
-            data_array.AddCount(n);
+            data_array.Expand(n);
 
             hgl_set(data_array.data()+ec,&data,n);
 
@@ -109,7 +109,7 @@ namespace hgl
 
             const int ec=data_array.GetCount();
 
-            data_array.AddCount(n);
+            data_array.Expand(n);
 
             data_array.WriteAt(data,ec,n);
 

@@ -23,7 +23,7 @@ namespace hgl
     public:
 
         int     GetCount()const noexcept{return count;}
-        void    SetCount(int);
+        void    Resize(int);
 
         int     GetByteSize()const noexcept{return byte_size;}
 

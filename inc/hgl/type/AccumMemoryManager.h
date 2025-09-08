@@ -41,7 +41,7 @@ namespace hgl
             b->offset   =data_array.GetTotalBytes();
             b->size     =size;
 
-            data_array.AddCount(size);
+            data_array.Expand(size);
 
             return b;
         }

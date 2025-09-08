@@ -17,10 +17,10 @@ namespace hgl
         return(true);
     }
 
-    void ActiveIDManager::Alloc(int c)
+    void ActiveIDManager::Reserve(int c)
     {
-        active_list.PreAlloc(c);
-        idle_list.PreAlloc(c);
+        active_list.Reserve(c);
+        idle_list.Reserve(c);
     }
 
     int ActiveIDManager::CreateActive(int *id,const int count)
@@ -42,7 +42,7 @@ namespace hgl
 
         const int new_count=idle_list.GetCount()+count;
 
-        idle_list.PreAlloc(new_count);
+        idle_list.Reserve(new_count);
 
         int *end=idle_list.end();
 
@@ -51,7 +51,7 @@ namespace hgl
         if(idp)
             hgl_cpy(idp,end,count);
 
-        idle_list.SetCount(new_count);
+        idle_list.Resize(new_count);
 
         return(count);
     }

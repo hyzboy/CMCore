@@ -41,8 +41,8 @@ namespace hgl
         SortedSet()=default;
         virtual ~SortedSet()=default;
 
-        void    SetCount        (int64 count){data_list.SetCount(count);}                       ///<指定数据数量，一般用于批量加载前的处理
-        void    PreAlloc        (int64 count){data_list.Alloc(count);}                          ///<预分配指定数量的数据空间
+        void    Resize          (int64 count){data_list.Resize(count);}                         ///<指定数据数量，一般用于批量加载前的处理
+        void    Reserve         (int64 count){data_list.Reserve(count);}                        ///<预分配指定数量的数据空间
 
         /**
          * 查找数据是否存在
@@ -66,7 +66,7 @@ namespace hgl
         {
             if(data_list.GetCount()<=0)
             {
-                data_list.SetCount(1);
+                data_list.Resize(1);
 
                 data_list.WriteAt(data,0);
 
@@ -95,7 +95,7 @@ namespace hgl
             if(count==1)
                 return Add(*dl);
 
-            data_list.Alloc(data_list.GetCount()+count);
+            data_list.Reserve(data_list.GetCount()+count);
 
             {
                 int64 pos;

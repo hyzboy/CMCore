@@ -4,7 +4,7 @@ namespace hgl
 {
     void ActiveMemoryBlockManager::ReallocDataBlock()
     {
-        data_mb->Alloc(aim.GetHistoryMaxId()*unit_size);
+        data_mb->Reserve(aim.GetHistoryMaxId()*unit_size);
     }
 
     ActiveMemoryBlockManager::ActiveMemoryBlockManager(const uint us,AbstractMemoryAllocator *ma)
@@ -28,10 +28,10 @@ namespace hgl
         return(true);
     }
 
-    void ActiveMemoryBlockManager::Alloc(int c)
+    void ActiveMemoryBlockManager::Reserve(int c)
     {
-        aim.Alloc(c);
-        data_mb->Alloc(c*unit_size);
+        aim.Reserve(c);
+        data_mb->Reserve(c*unit_size);
     }
 
     bool ActiveMemoryBlockManager::WriteData(void *d,const int id)

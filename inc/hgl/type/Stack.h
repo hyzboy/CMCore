@@ -16,8 +16,8 @@ namespace hgl
 
                 const   int     GetAllocCount   ()const{return data_array.GetAllocCount();}         ///<取得已分配容量
                 const   int     GetCount        ()const{return data_array.GetCount();}              ///<取得列表内数据数量
-        virtual         bool    SetCount        (int count){return data_array.SetCount(count);}     ///<设置列表内数据数量
-        virtual         bool    PreAlloc        (int count){return data_array.Alloc(count);}        ///<预分配指定数量的数据空间
+        virtual         bool    Resize          (int count){return data_array.Resize(count);}       ///<设置列表内数据数量
+        virtual         bool    Reserve         (int count){return data_array.Reserve(count);}      ///<预分配指定数量的数据空间
 
                 const   bool    IsEmpty         ()const{return data_array.IsEmpty();}               ///<确认列表是否为空
 
@@ -45,7 +45,7 @@ namespace hgl
 
                     int offset=data_array.GetCount();
 
-                    data_array.AddCount(count);
+                    data_array.Expand(count);
 
                     data_array.WriteAt(data,offset,count);
 
@@ -68,7 +68,7 @@ namespace hgl
                     if(!data_array.ReadAt(data,data_array.GetCount()-1))
                         return(false);
 
-                    data_array.AddCount(-1);
+                    data_array.Expand(-1);
                     return(true);
                 }
 
@@ -79,7 +79,7 @@ namespace hgl
                     if(!data_array.ReadAt(data,data_array.GetCount()-count,count))
                         return(false);
 
-                    data_array.AddCount(-count);
+                    data_array.Expand(-count);
                     return(true);
                 }
 
@@ -99,7 +99,7 @@ namespace hgl
 
         virtual void operator =(const DataArray<T> &da)                                             ///<复制一个堆栈
                 {
-                    data_array.SetCount(da.GetCount());
+                    data_array.Resize(da.GetCount());
 
                     data_array.WriteAt(da.GetData(),0,da.GetCount());
                 }

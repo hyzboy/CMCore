@@ -53,10 +53,10 @@ namespace hgl
             return data_array[0].GetCount()+data_array[1].GetCount()-read_offset;
         }
 
-        virtual bool PreAlloc(int count)                                          ///<预分配数据空间
+        virtual bool Reserve(int count)                                          ///<预分配数据空间
         {
-            if(!data_array[0].Alloc(count))return(false);
-            if(!data_array[1].Alloc(count))return(false);
+            if(!data_array[0].Reserve(count))return(false);
+            if(!data_array[1].Reserve(count))return(false);
             return true;
         }
 
@@ -86,7 +86,7 @@ namespace hgl
 
             int offset=data_array[write_index].GetCount();
 
-            if(!data_array[write_index].AddCount(count))
+            if(!data_array[write_index].Expand(count))
                 return false;
 
             data_array[write_index].WriteAt(data,offset,count);

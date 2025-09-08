@@ -25,7 +25,7 @@ namespace hgl
         ActiveIDManager(){id_count=0;}
         ~ActiveIDManager()=default;
 
-        void Alloc(int c);
+        void Reserve(int c);
 
         int GetActiveCount  ()const{return active_list.GetCount();}
         int GetIdleCount    ()const{return idle_list.GetCount();}

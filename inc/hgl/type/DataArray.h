@@ -62,7 +62,7 @@ namespace hgl
         /**
          * 分配指定空间出来，供未来使用
          */
-        bool Alloc(int64 size)
+        bool Reserve(int64 size)
         {
             if(size<=alloc_count)
                 return(true);
@@ -82,9 +82,9 @@ namespace hgl
          * @param size 阵列长度
          * @return 设置成功后的阵列长度
          */
-        int64 SetCount(int64 size)                                                                  ///<设置阵列长度(注：非字节数)
+        int64 Resize(int64 size)                                                                  ///<设置阵列长度(注：非字节数)
         {
-            Alloc(size);
+            Reserve(size);
 
             count=size;
             return count;
@@ -95,9 +95,9 @@ namespace hgl
          * @param size 增加的长度
          * @return 增加后的阵列长度
          */
-        int64 AddCount(int64 size)
+        int64 Expand(int64 size)
         {
-            return SetCount(count+size);
+            return Resize(count+size);
         }
 
     public:
@@ -185,7 +185,7 @@ namespace hgl
         void Append(const T &obj)
         {
             if(count>=alloc_count)
-                Alloc(count+1);
+                Reserve(count+1);
 
             items[count]=obj;
             ++count;
@@ -239,14 +239,14 @@ namespace hgl
                 return;
             }
 
-            SetCount(da.GetCount());
+            Resize(da.GetCount());
 
             hgl_cpy<T>(items,da.items,count);
         }
 
         void operator = (const std::initializer_list<T> &l)
         {
-            SetCount((int64)l.size());
+            Resize((int64)l.size());
 
             hgl_cpy<T>(items,l.begin(),count);
         }
@@ -629,8 +629,8 @@ namespace hgl
         }
 
         /**
-            * 统计出不在without_list中的数据，产生的结果写入result_list
-            */
+        * 统计出不在without_list中的数据，产生的结果写入result_list
+        */
         void WithoutList(DataArray<T> &result_list,const DataArray<T> &without_list)
         {
             result_list.Clear();
@@ -639,7 +639,7 @@ namespace hgl
             if(count<=0)return;
 
             result_list.Clear();
-            result_list.PreAlloc(count);
+            result_list.Reserve(count);
 
             int64 result=0;
 
@@ -655,7 +655,7 @@ namespace hgl
                 }
             }
 
-            result_list.SetCount(result);
+            result_list.Resize(result);
         }
 
         //int64     Intersection    (SortedSet<T> &result,const SortedSet<T> &sets);          ///<取得与指定合集的交集

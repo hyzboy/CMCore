@@ -19,10 +19,10 @@ namespace hgl
         ActiveDataManager(){}
         virtual ~ActiveDataManager()=default;
 
-        void Alloc(int c)
+        void Reserve(int c)
         {
-            aim.Alloc(c);
-            data_array.Alloc(c);
+            aim.Reserve(c);
+            data_array.Reserve(c);
         }
 
         int GetActiveCount  ()const{return aim.GetActiveCount();}
@@ -121,14 +121,14 @@ namespace hgl
         {
             aim.CreateActive(id,count);
 
-            data_array.AddCount(count);
+            data_array.Expand(count);
         }
 
         void CreateIdle(int *idp=nullptr,const int count=1)
         {
             aim.CreateIdle(idp,count);
 
-            data_array.AddCount(count);
+            data_array.Expand(count);
         }
 
         void    CreateIdle      (const int count=1)                 {CreateIdle(nullptr,count);}

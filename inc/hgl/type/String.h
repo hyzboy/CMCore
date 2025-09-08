@@ -188,7 +188,7 @@ namespace hgl
          * @param n CN: 期望容量 EN: Expected capacity
          * @return CN: 成功返回 true，失败返回 false EN: Returns true if successful, false otherwise
          */
-        bool PreAlloc(int n) { if (n <= 0) return false; buffer.reserve(size_t(n)); return true; }
+        bool Reserve(int n) { if (n <= 0) return false; buffer.reserve(size_t(n)); return true; }
 
         /**
          * @brief CN: 调整字符串大小并返回底层内存指针 EN: Resize string and return underlying pointer

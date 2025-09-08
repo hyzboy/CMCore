@@ -17,7 +17,7 @@ namespace hgl
         node_pool.Init(mc);
         ud_pool.Init(mc);
 
-        ud_set.PreAlloc(mc);
+        ud_set.Reserve(mc);
 
         start=node_pool.Acquire();
         end=start;

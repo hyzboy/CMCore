@@ -117,7 +117,7 @@ namespace hgl
         pos=0;
     }
 
-    void BitsArray::SetCount(int newcount)
+    void BitsArray::Resize(int newcount)
     {
         if(newcount==count)return;
         if(newcount<=0)

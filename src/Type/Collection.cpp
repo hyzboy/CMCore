@@ -24,7 +24,7 @@ namespace hgl
     /**
      * 预分配空间
      */
-    bool Collection::Alloc(const uint64 count)
+    bool Collection::Reserve(const uint64 count)
     {
         if(!memory_block)
             return(false);
@@ -36,7 +36,7 @@ namespace hgl
 
         total_bytes=count*unit_bytes;
 
-        if(!memory_block->Alloc(total_bytes))
+        if(!memory_block->Reserve(total_bytes))
             return(false);
 
         return(true);
@@ -53,7 +53,7 @@ namespace hgl
 
         const uint64 write_offset=total_bytes;
 
-        if(!memory_block->Alloc(total_bytes+unit_bytes))
+        if(!memory_block->Reserve(total_bytes+unit_bytes))
             return(false);
 
         if(!memory_block->Write(total_bytes,element,unit_bytes))
@@ -76,7 +76,7 @@ namespace hgl
 
         if(!source_bytes)return(true);
 
-        if(!memory_block->Alloc(total_bytes+source_bytes))
+        if(!memory_block->Reserve(total_bytes+source_bytes))
             return(false);
 
         if(!memory_block->Write(total_bytes,c.GetMemoryBlock(),0,source_bytes))
@@ -133,7 +133,7 @@ namespace hgl
         if(data_count==0)
             return Add(element);
 
-        if(!memory_block->Alloc((data_count+1)*unit_bytes))
+        if(!memory_block->Reserve((data_count+1)*unit_bytes))
             return(false);
 
         memory_block->Move( unit_bytes*(offset+1),
@@ -185,7 +185,7 @@ namespace hgl
 
         if(start+range>data_count)
         {
-            if(!memory_block->Alloc((start+range)*unit_bytes))
+            if(!memory_block->Reserve((start+range)*unit_bytes))
                 return(nullptr);
 
             data_count=start+range;

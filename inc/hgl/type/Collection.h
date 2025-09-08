@@ -103,7 +103,7 @@ namespace hgl
         Collection(const uint32 ub=1,MemoryBlock *mb=new MemoryBlock);
         virtual ~Collection();
 
-        bool Alloc(const uint64 count);                                                     ///<预分配空间
+        bool Reserve(const uint64 count);                                                     ///<预分配空间
 
     public:
 

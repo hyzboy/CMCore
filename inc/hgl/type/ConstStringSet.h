@@ -180,7 +180,7 @@ namespace hgl
             csv.offset  =str_data.GetCount();
 
             {
-                str_data.AddCount(length+1);
+                str_data.Expand(length+1);
             
                 SC *save_str=str_data.GetData()+csv.offset;
 

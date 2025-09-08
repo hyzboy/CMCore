@@ -26,10 +26,10 @@ namespace hgl
         memory_allocator->Free();
     }
 
-    bool MemoryBlock::Alloc(const uint64 size,const uint64 uint_size)
+    bool MemoryBlock::Reserve(const uint64 size,const uint64 uint_size)
     {
         memory_allocator->SetAllocUnitSize(uint_size);
-        return memory_allocator->Alloc(size);
+        return memory_allocator->Reserve(size);
     }
 
     bool MemoryBlock::Write(const uint64 target,const void *source,const uint64 size)

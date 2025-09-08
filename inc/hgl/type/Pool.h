@@ -56,10 +56,10 @@ namespace hgl
         PoolTemplate():max_active_count(0),history_max(0){}
         virtual ~PoolTemplate(){ Clear(); }
 
-        void PreAlloc(int count,bool set_to_max=false)
+        void Reserve(int count,bool set_to_max=false)
         {
-            Active.PreAlloc(count);
-            Idle.PreAlloc(count);
+            Active.Reserve(count);
+            Idle.Reserve(count);
             if(set_to_max) max_active_count=count;
         }
 

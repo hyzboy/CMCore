@@ -30,7 +30,7 @@ namespace hgl
 
         virtual         void    Clear   ();
         virtual         void    Free    ();
-        virtual         bool    Alloc   (const uint64 size,const uint64 uint_size=0);
+        virtual         bool    Reserve (const uint64 size,const uint64 uint_size=0);
         virtual         bool    Write   (const uint64 target,const void *source,const uint64 size);
         virtual         bool    Write   (const uint64 target,MemoryBlock *source,const uint64 offset,const uint64 size);
         virtual         bool    Exchange(const uint64 target,const uint64 source,const uint64 size);

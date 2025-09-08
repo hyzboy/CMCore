@@ -51,7 +51,7 @@ namespace hgl
         AbstractMemoryAllocator();
         virtual ~AbstractMemoryAllocator()=default;
 
-                bool Alloc  (const uint64);                     ///<分配指定长度的空间
+                bool Reserve(const uint64);                     ///<分配指定长度的空间
         virtual void Free   ()=0;                               ///<释放数据空间
         virtual void Clear  (){data_size=0;}
         virtual bool Write  (const void *source,const uint64 offset,const uint64 size)=0;
