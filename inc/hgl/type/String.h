@@ -713,7 +713,8 @@ namespace hgl
         /** @brief 追加另一个 String 对象 */
         bool Strcat(const SelfClass &bs)          { return Insert(Length(), bs.c_str(), bs.Length()); }
 
-        /** @brief 返回底层 std::basic_string 的常量引用 */
+        /** @brief 返回底层 std::basic_string 的引用 */
+              std::basic_string<T> &ToStdString()       { return buffer; }
         const std::basic_string<T> &ToStdString() const { return buffer; }
     };//class String
 
