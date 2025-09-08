@@ -12,7 +12,7 @@ namespace hgl
         */
         class FileInputStream:public InputStream                                                    ///文件输入流类
         {
-        protected:
+        private:
 
             SharedPtr<FileAccess> file;                                                             ///<文件访问指针
 

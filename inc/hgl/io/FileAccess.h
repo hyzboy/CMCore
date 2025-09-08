@@ -31,7 +31,7 @@ namespace hgl
         {
             OBJECT_LOGGER;
 
-        protected:
+        private:
 
             OSString filename;
 

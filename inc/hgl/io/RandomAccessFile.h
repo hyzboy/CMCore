@@ -22,7 +22,7 @@ namespace hgl
 
             RandomAccessFile();
             RandomAccessFile(SharedPtr<FileAccess> &);
-            ~RandomAccessFile();
+            virtual ~RandomAccessFile();
 
             virtual bool    Open(const OSString &);                                                 ///<打开文件
             virtual void    Close();                                                                ///<关闭文件

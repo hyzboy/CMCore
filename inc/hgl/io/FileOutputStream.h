@@ -12,7 +12,7 @@ namespace hgl
         */
         class FileOutputStream:public OutputStream                                                  ///文件输出流类
         {
-        protected:
+        private:
 
             SharedPtr<FileAccess> file;                                                             ///<文件访问指针
 
@@ -41,8 +41,8 @@ namespace hgl
             virtual int64   Tell()const;                                                            ///<取当前位置
             virtual int64   GetSize()const;                                                         ///<取得文件长度
             virtual bool    Restart();                                                              ///<复位访问指针
-            virtual int64   Seek(int64,SeekOrigin=SeekOrigin::Begin);                                         ///<移动访问指针
-            virtual int64   Available()const{return -1;}                                            ///<可不受影响写入的字节数
+            virtual int64   Seek(int64,SeekOrigin=SeekOrigin::Begin);                               ///<移动访问指针
+            virtual int64   Available()const{return -1;}                                            ///<可不受影响写入的字节数(此值无法估算，所以一般情况下返回-1)
 
             virtual int64   Write(int64,const void *,int64);                                        ///<在指定位置写入指定长度的数据
         };//class FileOutputStream
