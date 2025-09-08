@@ -7,6 +7,8 @@
 #include <initializer_list>
 #include <unordered_set>
 
+#include <format>
+
 /**
  * @file String.h
  * @brief 通用字符串模板类声明
@@ -706,4 +708,30 @@ namespace hgl
 
     template<typename T2> inline void strcpy(T2 *dst, int max_count, const String<T2> &src) { hgl::strcpy(dst, max_count, src.c_str(), src.Length()); }
     template<typename T2> inline void strcat(T2 *dst, int max_count, const String<T2> &src) { hgl::strcat(dst, max_count, src.c_str(), src.Length()); }
+
+    template<typename T> inline
+    int Sprintf(String<T> &str, const T *format, ...)
+    {
+        if (!format || *format == 0) { str.Clear(); return 0; }
+        va_list args;
+        va_start(args, format);
+        int len = hgl::vsprintf<T>(nullptr, 0, format, args);
+        if (len <= 0) { str.Clear(); va_end(args); return 0; }
+        str.Resize(len);
+        len = hgl::vsprintf<T>(str.c_str(), len + 1, format, args);
+        va_end(args);
+        return len;
+    }
+
+    //C++ 20 format
+    template<typename T>
+    int StrFormat(String<char> &str,const T *format,...)
+    {
+        va_list args;
+        va_start(args, format);
+        str=std::vformat(format,std::make_format_args(args));
+        va_end(args);
+
+        return str.Length();
+    }
 }//namespace hgl
