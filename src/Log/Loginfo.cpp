@@ -1,10 +1,13 @@
 ﻿#include<hgl/plugin/PlugIn.h>
+#include<hgl/log/Log.h>
 #include<hgl/log/Logger.h>
 #include<hgl/log/LogMessage.h>
 #include<hgl/type/DateTime.h>
 #include<hgl/type/ArrayList.h>
 #include<hgl/thread/RWLock.h>
 #include<hgl/filesystem/FileSystem.h>
+
+DEFINE_LOGGER_MODULE(LogInfo)
 
 namespace hgl
 {
@@ -26,8 +29,7 @@ namespace hgl
             return(true);
         }
 
-        template<typename T>
-        void WriteLog(LogLevel level,const T *str,int size)
+        void WriteLog(const LogMessage *msg)
         {
             OnlyReadLock orl(log_list);
 
@@ -39,8 +41,8 @@ namespace hgl
 
             for(int i=0;i<n;i++)
             {
-                if((*log)->GetLevel()<=level)
-                    (*log)->Write(str,size);
+                if((*log)->GetLevel()<=msg->level)
+                    (*log)->Write(msg);
 
                 ++log;
             }
@@ -73,8 +75,16 @@ namespace hgl
                                 OSString::numberOf(t.GetSecond())+OS_TEXT("\n")+
                                 OS_TEXT("Current program: ") + cur_program.c_str() + OS_TEXT("\n")+
                                 OS_TEXT("Current path: ") + cur_path.c_str() + OS_TEXT("\n");
+            LogMessage msg;
 
-            WriteLog(LogLevel::Verbose,str.c_str(),str.Length());
+            msg.object_type_info    =nullptr;
+            msg.object_instance_name=OS_TEXT("LogInfo");
+            msg.source_location     =std::source_location::current();
+            msg.level               =LogLevel::Verbose;
+            msg.message             =str.c_str();
+            msg.message_length      =str.Length();
+
+            WriteLog(&msg);
 
             return(true);
         }
@@ -113,8 +123,7 @@ namespace hgl
             bool (*Init)();                                                                             ///<初始化日志输出
             void (*Close)();                                                                            ///<关闭所有日志输出
 
-            void (*WriteUTF16)(LogLevel,const u16char *,int);                                           ///<输出一行日志
-            void (*WriteUTF8)(LogLevel,const u8char *,int);                                             ///<输出一行日志
+            void (*Write)(const LogMessage *);                                                          ///<输出一行日志
         };//struct LogInterface
 
         static LogInterface LogInterface3=
@@ -124,8 +133,7 @@ namespace hgl
             PutLogHeader,
             CloseAllLog,
 
-            WriteLog<u16char>,
-            WriteLog<u8char>
+            WriteLog
         };
 
         /**
@@ -165,7 +173,7 @@ namespace hgl
 
             log_interface=new LogInterface;
 
-            if(pi->GetInterface(3,log_interface))
+            if(pi->GetInterface(4,log_interface))
                 if(log_interface->Init())
                     return(pi);
 
@@ -192,11 +200,7 @@ namespace hgl
             if(!log_interface)
                 return;
 
-            #if HGL_OS == HGL_OS_Windows
-                log_interface->WriteUTF16(msg.level,msg.message,msg.message_length);
-            #else
-                log_interface->WriteUTF8(msg.level,msg.message,msg.message_length);
-            #endif//
+            log_interface->Write(&msg);
         }
     }//namespace logger
 

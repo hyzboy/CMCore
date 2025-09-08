@@ -1,6 +1,6 @@
 #include<hgl/log/Logger.h>
+#include<hgl/log/LogMessage.h>
 #include<hgl/filesystem/FileSystem.h>
-#include<hgl/thread/ThreadMutex.h>
 #include<hgl/io/FileOutputStream.h>
 #include<hgl/io/DataOutputStream.h>
 #include<hgl/io/TextOutputStream.h>
@@ -13,8 +13,6 @@ namespace hgl
     {
         class LogFile:public Logger
         {
-            ThreadMutex lock;
-
             io::FileOutputStream fos;
             io::TextOutputStream *tos;
 
@@ -78,24 +76,14 @@ namespace hgl
                 fos.Close();
             }
 
-            void Write(const u16char *str,int size)
+            void Write(const LogMessage *msg)
             {
-                if(tos&&str&&*str&&size>0)
-                {
-//                    lock.Lock();
-                    tos->WriteLine(str,size);
-//                    lock.Unlock();
-                }
-            }
+                if (!msg||!msg->message||msg->message_length<=0)return;
 
-            void Write(const u8char *str,int size)
-            {
-                if(tos&&str&&*str&&size>0)
-                {
-//                    lock.Lock();
-                    tos->WriteLine(str,size);
-//                    lock.Unlock();
-                }
+                if(!tos)
+                    return;
+
+                tos->WriteLine(msg->message,msg->message_length);
             }
         };//class LogFile
 

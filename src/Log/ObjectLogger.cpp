@@ -31,16 +31,30 @@ namespace hgl::logger
         };
     }//namespace
 
-    ObjectLogger GlobalLogger(nullptr);///<全局日志对象
+    ObjectLogger GlobalLogger;///<全局日志对象
 }//namespace hgl::logger
 
 namespace hgl::logger
 {
+    ObjectLogger::ObjectLogger()
+    {
+        object_type_info=nullptr;
+        object_type_name=OSString(OS_TEXT("Global"));
+        object_instance_name.Clear();
+    }
+
     ObjectLogger::ObjectLogger(const std::type_info *info):object_type_info(info)
     {
         object_type_name=info?ToOSString(info->name()):OSString(OS_TEXT("?"));
 
         object_instance_name.Clear();
+    }
+
+    ObjectLogger::ObjectLogger(const os_char *name)
+    {
+        object_type_info=nullptr;
+
+        object_instance_name=name;
     }
 
     void ObjectLogger::LogString(const std::source_location &sl,const LogLevel level,const os_char *str,const int size)

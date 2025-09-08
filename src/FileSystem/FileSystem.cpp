@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include <string.h>
 
+DEFINE_LOGGER_MODULE(FileSystem)
+
 namespace hgl
 {
     namespace filesystem
@@ -293,7 +295,7 @@ namespace hgl
 
             if(offset+length>file_length)
             {
-                GLogWarning(OS_TEXT("读取文件<")+filename+OS_TEXT("><")+OSString::numberOf(offset)+OS_TEXT(",")+OSString::numberOf(length)+OS_TEXT(">超出了范围，文件长度为<")+OSString::numberOf(file_length));
+                MLogWarning(FileSystem,OS_TEXT("读取文件<")+filename+OS_TEXT("><")+OSString::numberOf(offset)+OS_TEXT(",")+OSString::numberOf(length)+OS_TEXT(">超出了范围，文件长度为<")+OSString::numberOf(file_length));
                 return(nullptr);
             }
 
@@ -306,7 +308,7 @@ namespace hgl
 
             if(fs.Read(offset,fb,length)==length)
             {
-                GLogInfo(OS_TEXT("加载文件<")+filename+OS_TEXT("><")+OSString::numberOf(offset)+OS_TEXT(",")+OSString::numberOf(length)+OS_TEXT(">到缓冲区成功."));
+                MLogInfo(FileSystem,OS_TEXT("加载文件<")+filename+OS_TEXT("><")+OSString::numberOf(offset)+OS_TEXT(",")+OSString::numberOf(length)+OS_TEXT(">到缓冲区成功."));
 
                 return(buf);
             }

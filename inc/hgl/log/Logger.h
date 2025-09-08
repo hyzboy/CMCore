@@ -5,6 +5,8 @@
 
 namespace hgl::logger
 {
+    struct LogMessage;
+
     /**
     * 日志输出基类
     */
@@ -25,10 +27,8 @@ namespace hgl::logger
 
         virtual void Close()=0;                                                                 ///<关闭日志
 
-        virtual void Write(const u16char *,int)=0;                                              ///<输出一行u16char日志
-        virtual void Write(const u8char *,int)=0;                                               ///<输出一行u8char日志
+        virtual void Write(const LogMessage *)=0;                                               ///<输出一行日志
     };//class Logger
 
     bool InitLogger(const OSString &app_name);
-
 }//namespace hgl::logger
