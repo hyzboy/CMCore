@@ -2798,55 +2798,6 @@ namespace hgl
     template<typename T,typename I,typename SET> inline const int parse_hex_array     (const T *str,const int len,SET &result_list){ParseHexArray<T,I>   pna;return parse_number_array<T,I,SET>(&pna,str,len,result_list);}
 
     /**
-     * 按指定分隔符拆分字符串为多个字符串
-     * @param str 要拆分的字符串
-     * @param str_len 字符串长度
-     * @param sc 分隔字符
-     * @param result_list 拆分后的字符串保存的列表
-     * @return 拆分出来的字符串数量
-     * @return -1 出错
-     */
-    template<typename T,typename S>
-    inline const int split_string(const T *str,const int str_len,const T &sc,S &result_list)
-    {
-        if(!str||!(*str))return(-1);
-        if(str_len<=0)return(-1);
-        if(sc==0)return(-1);
-
-        const T *p,*sp;
-        int len=str_len;
-        int count=0;
-
-        sp=str;
-        p=sp;
-
-        while(*p&&len)
-        {
-            --len;
-
-            if(*p!=sc)
-            {
-                ++p;
-                continue;
-            }
-
-            result_list.Add(I(sp,p-sp));
-
-            ++p;
-            sp=p;
-            ++count;
-        }
-
-        if(p>sp)
-        {
-            result_list.Add(I(sp,p-sp));
-            ++count;
-        }
-
-        return(count);
-    }
-
-    /**
      * 检测字符串是否符合代码命名规则（仅可使用字母和数字、下划线，不能使用数字开头）
      */
     template<typename T> inline const bool check_codestr(const T *str)
