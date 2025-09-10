@@ -495,7 +495,7 @@ namespace hgl
     * @return -1 出错
     */
     template<typename T,typename S,typename SL>
-    inline const int SplitString(const T *str,const int str_len,const T &sc,SL &result_list)
+    inline int splite_string_to_stringlist(const T *str,const int str_len,const T &sc,SL &result_list)
     {
         if(!str||!(*str))return(-1);
         if(str_len<=0)return(-1);
@@ -535,9 +535,9 @@ namespace hgl
     }
 
     template<typename T>
-    inline const int SplitString(const T *str,const int str_len,const T &sc,StringList<T> &result_list)
+    inline int splite_string_to_stringlist(const T *str,const int str_len,const T &sc,StringList<T> &result_list)
     {
-        return SplitString<T,String<T>,StringList<T>>(str,str_len,sc,result_list);
+        return splite_string_to_stringlist<T,String<T>,StringList<T>>(str,str_len,sc,result_list);
     }
 }//namespace hgl
 #endif//HGL_SPLIT_STRING_INCLUDE
