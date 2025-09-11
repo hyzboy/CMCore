@@ -2,6 +2,7 @@
 
 #include<hgl/TypeFunc.h>
 #include <type_traits>
+#include <cmath>
 namespace hgl
 {
     //  32  空格
@@ -82,7 +83,7 @@ namespace hgl
     template<typename T>
     inline const bool isalpha(const T &ch)
     {
-        return(islower(ch)||isupper(ch));
+        return(hgl::islower(ch)||hgl::isupper(ch));
     }
 
     /**
@@ -100,7 +101,7 @@ namespace hgl
     template<typename T>
     inline const bool isfloat(const T &ch)
     {
-        return isdigit(ch)
+        return hgl::isdigit(ch)
         ||ch=='-'
         ||ch=='+'
         ||ch=='.'
@@ -113,7 +114,7 @@ namespace hgl
     template<typename T>
     inline const bool isinteger(const T &ch)
     {
-        return isdigit(ch)
+        return hgl::isdigit(ch)
         ||ch=='-'
         ||ch=='+';
     }
@@ -143,7 +144,7 @@ namespace hgl
 
         while(*str&&length)
         {
-            if(!isxdigit(*str))
+            if(!hgl::isxdigit(*str))
                 return(false);
 
             ++str;
@@ -242,7 +243,7 @@ namespace hgl
     template<typename T>
     inline const bool isalnum(const T &ch)
     {
-        return(isalpha(ch)||isdigit(ch));
+        return(hgl::isalpha(ch)||hgl::isdigit(ch));
     }
 
     /**
@@ -251,7 +252,7 @@ namespace hgl
     template<typename T>
     inline const bool iscodechar(const T &ch)
     {
-        return(isalnum(ch)||ch=='_');
+        return(hgl::isalnum(ch)||ch=='_');
     }
 
     /**
@@ -260,7 +261,7 @@ namespace hgl
     template<typename T>
     inline const bool notcodechar(const T &ch)
     {
-        return(!iscodechar(ch));
+        return(!hgl::iscodechar(ch));
     }
 
     /**
@@ -269,7 +270,7 @@ namespace hgl
     template<typename T>
     inline const bool isfilenamechar(const T &ch)
     {
-        return(ch=='.'||iscodechar(ch));
+        return(ch=='.'||hgl::iscodechar(ch));
     }
 
     /**
@@ -278,7 +279,7 @@ namespace hgl
     template<typename T>
     inline const bool notfilenamechar(const T &ch)
     {
-        return(!isfilenamechar(ch));
+        return(!hgl::isfilenamechar(ch));
     }
 
     /**
@@ -323,7 +324,7 @@ namespace hgl
     template<typename S,typename D>
     inline const int chricmp(S src,D dst)
     {
-        return tolower(src)-tolower(dst);
+        return hgl::tolower(src)-hgl::tolower(dst);
     }
 
     /**
@@ -717,7 +718,7 @@ namespace hgl
 
         while(*str)
         {
-            if(strchr(ch,*str,ch_count))
+            if(hgl::strchr(ch,*str,ch_count))
                 return(str);
 
             ++str;
@@ -785,7 +786,7 @@ namespace hgl
 
         while(*str)
         {
-            if(!strchr(ch,*str,ch_count))
+            if(!hgl::strchr(ch,*str,ch_count))
                 return(str);
 
             ++str;
@@ -836,7 +837,7 @@ namespace hgl
 
         while(ep>=str)
         {
-            if(strchr(ch,*ep,ch_count))
+            if(hgl::strchr(ch,*ep,ch_count))
                 return ep;
 
             --ep;
@@ -889,7 +890,7 @@ namespace hgl
 
         while(ep>=str)
         {
-            if(strchr(ch,*ep,ch_count))
+            if(hgl::strchr(ch,*ep,ch_count))
                 return ep;
 
             --ep;
@@ -1028,7 +1029,7 @@ namespace hgl
 
         while(*src&&*dst)
         {
-            gap=chricmp(*src,*dst);
+            gap=hgl::chricmp(*src,*dst);
 
             if(gap)
                 return gap;
@@ -1073,7 +1074,7 @@ namespace hgl
 
         while(src_size&&dst_size)
         {
-            gap=chricmp(*src,*dst);
+            gap=hgl::chricmp(*src,*dst);
 
             if(gap)
                 return gap;
@@ -1110,7 +1111,7 @@ namespace hgl
 
         while((count)&&(*src)&&(*dst))
         {
-            gap=chricmp(*src,*dst);
+            gap=hgl::chricmp(*src,*dst);
 
             if(gap)
                 return gap;
@@ -1144,10 +1145,10 @@ namespace hgl
 
         while(*src&&*dst)
         {
-            if(!isalnum(*src)){++src;continue;}
-            if(!isalnum(*dst)){++dst;continue;}
+            if(!hgl::isalnum(*src)){++src;continue;}
+            if(!hgl::isalnum(*dst)){++dst;continue;}
 
-            gap=chricmp(*src,*dst);
+            gap=hgl::chricmp(*src,*dst);
 
             if(gap)
                 return gap;
@@ -1243,7 +1244,7 @@ namespace hgl
 
         return sp;
     }
-    
+
     /**
      * 截取字符串前端的字符串
      * @param src 源字符串指针
@@ -1354,16 +1355,16 @@ namespace hgl
     template<typename T>
     inline void replace_extname(T *filename,const T *new_extname)
     {
-        T *p=strrchr(filename,T('.'));
+        T *p=hgl::strrchr(filename,T('.'));
 
         if(p)
         {
-            strcpy(p+1,new_extname);
+            hgl::strcpy(p+1,new_extname);
         }
         else
         {
-            strcat(filename,T('.'));
-            strcat(filename,new_extname);
+            hgl::strcat(filename,T('.'));
+            hgl::strcat(filename,new_extname);
         }
     }
 
@@ -1380,7 +1381,7 @@ namespace hgl
 
         T *copy;
 
-        if(size==-1)size=strlen(str);
+        if(size==-1)size=hgl::strlen(str);
 
         if(size==0)return(nullptr);
 
@@ -1619,7 +1620,7 @@ namespace hgl
     }
 
     /**
-    * 复制一个字符串，将字符串全部转换成小写，同时清空字符串中的空格
+    * 复制一个字符串，并将字符串全部转换成小写，同时清空字符串中的空格
     */
     template<typename T>
     inline const uint lower_clip_cpy(T *target,const T *source)
@@ -1776,8 +1777,8 @@ namespace hgl
 
         T *p=str+len-1;
 
-        if(*p=='\n')return(stat_char(str,'\n'));
-        else return(stat_char(str,'\n')+1);
+        if(*p=='\n')return(hgl::stat_char(str,'\n'));
+        else return(hgl::stat_char(str,'\n')+1);
     }
 
     template<typename R,typename S>
@@ -1836,7 +1837,7 @@ namespace hgl
         if(*str=='-')
         {
             zf=false;
-            ++str; // fixed: advance past '-' instead of decrementing
+            ++str;
             --size;
         }
 
@@ -1911,7 +1912,7 @@ namespace hgl
 
         result=0;
 
-        while(*str&&isxdigit(*str))
+        while(*str&&hgl::isxdigit(*str))
         {
             result*=16;
 
@@ -2059,7 +2060,7 @@ namespace hgl
     {
         double temp;
 
-        if(!stof(str,temp))
+        if(!hgl::stof(str,temp))
             return(false);
 
         while(*str!='e'&&*str!='E')
@@ -2077,9 +2078,9 @@ namespace hgl
         {
             double power;
 
-            if(stof(str+1,power))
+            if(hgl::stof(str+1,power))
             {
-                result=R(temp*pow(10,power));
+                result=R(temp*std::pow(10,power));
 
                 return(true);
             }
@@ -2325,7 +2326,7 @@ namespace hgl
 
         itos(p,size,integer);
 
-        int len=strlen(str);
+        int len=hgl::strlen(str);
 
         if(len>=size)
             return(str);
@@ -2521,7 +2522,7 @@ namespace hgl
             if(*list[index]==0)
                 return(-1);
 
-            if(stricmp(list[index],str)==0)
+            if(hgl::stricmp(list[index],str)==0)
                 return index;
 
             ++index;
@@ -2548,11 +2549,11 @@ namespace hgl
 
         for(int i=0;i<count;i++)
         {
-            len=strlen(str_array[i]);
+            len=hgl::strlen(str_array[i]);
 
             if(len!=str_len)continue;
 
-            if(stricmp(str_array[i],str,len)==0)return(i);
+            if(hgl::stricmp(str_array[i],str,len)==0)return(i);
         }
 
         return(-1);
@@ -2935,9 +2936,9 @@ namespace hgl
     {
         for(int i=0;i<size;i++)
         {
-            *dst =parse_number_char<16,T>(*src)<<4;
+            *dst = hgl::parse_number_char<16,T>(*src)<<4;
             ++src;
-            *dst|=parse_number_char<16,T>(*src);
+            *dst |= hgl::parse_number_char<16,T>(*src);
             ++src;
             ++dst;
         }
@@ -2946,12 +2947,12 @@ namespace hgl
     /**
      * 将一个16进制数值字符串转换成原始数据
      * @param str 16进制数值字符串
-     * @param hc 解晰出来的原始数据存入处
+     * @param hc 解晰出来的原始数据存放处
      */
     template<typename T,typename HC>
     inline void ParseHexStr(HC &hc,const T *str)
     {
-        ParseHexStr((uint8 *)&hc,str,sizeof(HC));
+        hgl::ParseHexStr((uint8 *)&hc,str,sizeof(HC));
     }
 
     template<typename T,typename U>
@@ -3012,8 +3013,8 @@ namespace hgl
         *str=0;
     }
 
-    template<typename T> inline void DataToLowerHexStr(T *str,const uint8 *src,const int size,const T gap_char=0){DataToHexStr<T>(str,src,size,LowerHexChar,gap_char);} 
-    template<typename T> inline void DataToUpperHexStr(T *str,const uint8 *src,const int size,const T gap_char=0){DataToHexStr<T>(str,src,size,UpperHexChar,gap_char);} 
+    template<typename T> inline void DataToLowerHexStr(T *str,const uint8 *src,const int size,const T gap_char=0){hgl::DataToHexStr<T>(str,src,size,LowerHexChar,gap_char);} 
+    template<typename T> inline void DataToUpperHexStr(T *str,const uint8 *src,const int size,const T gap_char=0){hgl::DataToHexStr<T>(str,src,size,UpperHexChar,gap_char);} 
 
     /**
      * 将一串原始数据转转成16进制数值字符串
@@ -3025,12 +3026,13 @@ namespace hgl
     template<typename T,typename HC>
     inline void DataToHexStr(T *str,const HC &hc,const T *hexstr,const T gap_char=0)
     {
-        return DataToHexStr(str,(const uint8 *)&hc,sizeof(hc),hexstr,gap_char);
+        return hgl::DataToHexStr(str,(const uint8 *)&hc,sizeof(hc),hexstr,gap_char);
     }
 
-    template<typename T,typename HC> inline void ToUpperHexStr(T *str,const HC &hc,const T gap_char=0){DataToHexStr<T,HC>(str,hc,UpperHexChar,gap_char);} 
-    template<typename T,typename HC> inline void ToLowerHexStr(T *str,const HC &hc,const T gap_char=0){DataToHexStr<T,HC>(str,hc,LowerHexChar,gap_char);} 
+    template<typename T,typename HC> inline void ToUpperHexStr(T *str,const HC &hc,const T gap_char=0){hgl::DataToHexStr<T,HC>(str,hc,UpperHexChar,gap_char);} 
+    template<typename T,typename HC> inline void ToLowerHexStr(T *str,const HC &hc,const T gap_char=0){hgl::DataToHexStr<T,HC>(str,hc,LowerHexChar,gap_char);} 
 
-    template<typename T> inline void ToUpperHexStr(T *str,const void *data,const int size,const T gap_char=0){DataToHexStr<T>(str,(const uint8 *)data,size,UpperHexChar,gap_char);} 
-    template<typename T> inline void ToLowerHexStr(T *str,const void *data,const int size,const T gap_char=0){DataToHexStr<T>(str,(const uint8 *)data,size,LowerHexChar,gap_char);} 
-}//namespace hgl
+    template<typename T> inline void ToUpperHexStr(T *str,const void *data,const int size,const T gap_char=0){hgl::DataToHexStr<T>(str,(const uint8 *)data,size,UpperHexChar,gap_char);} 
+    template<typename T> inline void ToLowerHexStr(T *str,const void *data,const int size,const T gap_char=0){hgl::DataToHexStr<T>(str,(const uint8 *)data,size,LowerHexChar,gap_char);} 
+
+} // namespace hgl
