@@ -1168,7 +1168,7 @@ namespace hgl
      * @return 新的字符串起始指针
      */
     template<typename T>
-    inline const T *trimleft(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
+    inline const T *trimleft(const T *src,int &len,const bool (*trimfunc)(const T &)=hgl::isspace<T>)
     {
         const T *p=src;
 
@@ -1192,7 +1192,7 @@ namespace hgl
      * @return 新的字符串起始指针
      */
     template<typename T>
-    inline const T *trimright(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
+    inline const T *trimright(const T *src,int &len,const bool (*trimfunc)(const T &)=hgl::isspace<T>)
     {
         if(!src || len<=0)
             return nullptr;
@@ -1219,7 +1219,7 @@ namespace hgl
      * @return 新的字符串起始指针
      */
     template<typename T>
-    inline const T *trim(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
+    inline const T *trim(const T *src,int &len,const bool (*trimfunc)(const T &)=hgl::isspace<T>)
     {
         if(!src||len<=0)
             return nullptr;
@@ -1253,7 +1253,7 @@ namespace hgl
      * @return 新的字符串起始指针
      */
     template<typename T>
-    inline const T *clipleft(const T *src,int &len,const bool (*clipfunc)(const T &)=isspace<T>)
+    inline const T *clipleft(const T *src,int &len,const bool (*clipfunc)(const T &)=hgl::isspace<T>)
     {
         // corrected boundary checks
         if(!src || len<=0) return(nullptr);
@@ -1279,7 +1279,7 @@ namespace hgl
      * @return 新的字符串起始指针
      */
     template<typename T>
-    inline const T *clipright(const T *src,int &len,const bool (*clipfunc)(const T &)=isspace<T>)
+    inline const T *clipright(const T *src,int &len,const bool (*clipfunc)(const T &)=hgl::isspace<T>)
     {
         // corrected boundary checks
         if(!src || len<=0) return(nullptr);
@@ -2270,10 +2270,10 @@ namespace hgl
         template<typename T,typename U> static T *conv(T *str,int size,U value,bool upper);
     };
 
-    template<> struct htos_bits<1>{template<typename T,typename U> static inline T *conv(T *str,int size,U value,bool upper){return utos(str,size,*(uint8  *)&value,16,upper);}};
-    template<> struct htos_bits<2>{template<typename T,typename U> static inline T *conv(T *str,int size,U value,bool upper){return utos(str,size,*(uint16 *)&value,16,upper);}};
-    template<> struct htos_bits<4>{template<typename T,typename U> static inline T *conv(T *str,int size,U value,bool upper){return utos(str,size,*(uint32 *)&value,16,upper);}};
-    template<> struct htos_bits<8>{template<typename T,typename U> static inline T *conv(T *str,int size,U value,bool upper){return utos(str,size,*(uint64 *)&value,16,upper);}};
+    template<> struct htos_bits<1>{template<typename T,typename U> static inline T *conv(T *str,int size,U value,bool upper){return hgl::utos(str,size,*(uint8  *)&value,16,upper);}};
+    template<> struct htos_bits<2>{template<typename T,typename U> static inline T *conv(T *str,int size,U value,bool upper){return hgl::utos(str,size,*(uint16 *)&value,16,upper);}};
+    template<> struct htos_bits<4>{template<typename T,typename U> static inline T *conv(T *str,int size,U value,bool upper){return hgl::utos(str,size,*(uint32 *)&value,16,upper);}};
+    template<> struct htos_bits<8>{template<typename T,typename U> static inline T *conv(T *str,int size,U value,bool upper){return hgl::utos(str,size,*(uint64 *)&value,16,upper);}};
 
     /**
      * 转换一个无符号整数到字符串(以16进制表示)
@@ -2296,7 +2296,7 @@ namespace hgl
      * @param value 要转换的数值
      * @return 转换后的字符串
      */
-    template<typename T,typename U> inline T *htos_upper(T *str,int size,U value){return htos<T,U>(str,size,value,true);} 
+    template<typename T,typename U> inline T *htos_upper(T *str,int size,U value){return hgl::htos<T,U>(str,size,value,true);} 
 
     /**
      * 转换一个无符号整数到字符串(以小写16进制表示)
@@ -2305,7 +2305,7 @@ namespace hgl
      * @param value 要转换的数值
      * @return 转换后的字符串
      */
-    template<typename T,typename U> inline T *htos_lower(T *str,int size,U value){return htos<T,U>(str,size,value,false);} 
+    template<typename T,typename U> inline T *htos_lower(T *str,int size,U value){return hgl::htos<T,U>(str,size,value,false);} 
 
     /**
      * 转换一个浮点数到字符串
@@ -2324,7 +2324,7 @@ namespace hgl
         if(integer==0&&value<0)             //如果为-0.xx这种，integer会为0所以不增加-号
             *p++='-';
 
-        itos(p,size,integer);
+        hgl::itos(p,size,integer);
 
         int len=hgl::strlen(str);
 
@@ -2490,9 +2490,9 @@ namespace hgl
 
         const float f=new_value;
 
-        ftos(str,str_max_length,2,f);
+        hgl::ftos(str,str_max_length,2,f);
 
-        T *p=str+strlen(str);
+        T *p=str+hgl::strlen(str);
 
         *p++=' ';
         if(pos)
@@ -2564,7 +2564,7 @@ namespace hgl
     */
     template<typename T> inline bool string_in_list(const T **list,const T *str)
     {
-        return find_str_in_array(list,str)!=-1;
+        return hgl::find_str_in_array(list,str)!=-1;
     }
 
     /**
@@ -2679,7 +2679,7 @@ namespace hgl
      * \param end_pointer   字符串结束指针
      * \return              解晰出来的数据数量
      */
-    template<typename T,typename I> inline const int parse_float_array(const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseFloatArray<T,I> pna;return parse_number_array<T,I>(&pna,str,result,max_count,end_char,end_pointer);} 
+    template<typename T,typename I> inline const int parse_float_array(const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseFloatArray<T,I> pna;return hgl::parse_number_array<T,I>(&pna,str,result,max_count,end_char,end_pointer);} 
 
     /**
      * 解析一个由多个有符号整数组成的字符串，结果扔进指定数组中。任何非当前进制的字符串都将被视为分隔符。
@@ -2691,7 +2691,7 @@ namespace hgl
      * \param end_pointer   字符串结束指针
      * \return              解晰出来的数据数量
      */
-    template<typename T,typename I> inline const int parse_int_array  (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseIntArray<T,I>   pna;return parse_number_array<T,I>(&pna,str,result,max_count,end_char,end_pointer);} 
+    template<typename T,typename I> inline const int parse_int_array  (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseIntArray<T,I>   pna;return hgl::parse_number_array<T,I>(&pna,str,result,max_count,end_char,end_pointer);} 
 
     /**
      * 解析一个由多个无符号整数组成的字符串，结果扔进指定数组中。任何非当前进制的字符串都将被视为分隔符。
@@ -2703,7 +2703,7 @@ namespace hgl
      * \param end_pointer   字符串结束指针
      * \return              解晰出来的数据数量
      */
-    template<typename T,typename I> inline const int parse_uint_array (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseUIntArray<T,I>  pna;return parse_number_array<T,I>(&pna,str,result,max_count,end_char,end_pointer);} 
+    template<typename T,typename I> inline const int parse_uint_array (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseUIntArray<T,I>  pna;return hgl::parse_number_array<T,I>(&pna,str,result,max_count,end_char,end_pointer);} 
 
     /**
      * 解析一个由多个16进制整数组成的字符串，结果扔进指定数组中。任何非当前进制的字符串都将被视为分隔符。
@@ -2715,7 +2715,7 @@ namespace hgl
      * \param end_pointer   字符串结束指针
      * \return              解晰出来的数据数量
      */
-    template<typename T,typename I> inline const int parse_hex_array  (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseHexArray<T,I>   pna;return parse_number_array<T,I>(&pna,str,result,max_count,end_char,end_pointer);} 
+    template<typename T,typename I> inline const int parse_hex_array  (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseHexArray<T,I>   pna;return hgl::parse_number_array<T,I>(&pna,str,result,max_count,end_char,end_pointer);} 
 
     /**
      * 解析数值阵列字符串到数组,如"1,2,3"或"1 2 3"
@@ -2779,7 +2779,7 @@ namespace hgl
      * \param result_list   存放解晰结果的列表
      * \return              解晰出来的数据数量
      */
-    template<typename T,typename I,typename SET> inline const int parse_float_array   (const T *str,const int len,SET &result_list){ParseFloatArray<T,I> pna;return parse_number_array<T,I,SET>(&pna,str,len,result_list);} 
+    template<typename T,typename I,typename SET> inline const int parse_float_array   (const T *str,const int len,SET &result_list){ParseFloatArray<T,I> pna;return hgl::parse_number_array<T,I,SET>(&pna,str,len,result_list);} 
 
     /**
      * 解析一个由多个有符号整数组成的字符串，结果扔进指定列表中。任何非当前进制的字符串都将被视为分隔符。
@@ -2789,7 +2789,7 @@ namespace hgl
      * @param result_list   存放解晰结果的列表
      * \return              解晰出来的数据数量
      */
-    template<typename T,typename I,typename SET> inline const int parse_int_array      (const T *str,const int len,SET &result_list){ParseIntArray<T,I>   pna;return parse_number_array<T,I,SET>(&pna,str,len,result_list);} 
+    template<typename T,typename I,typename SET> inline const int parse_int_array      (const T *str,const int len,SET &result_list){ParseIntArray<T,I>   pna;return hgl::parse_number_array<T,I,SET>(&pna,str,len,result_list);} 
 
     /**
      * 解析一个由多个无符号整数组成的字符串，结果扔进指定列表中。任何非当前进制的字符串都将被视为分隔符。
@@ -2799,7 +2799,7 @@ namespace hgl
      * \param result_list   存放解晰结果的列表
      * \return              解晰出来的数据数量
      */
-    template<typename T,typename I,typename SET> inline const int parse_uint_array     (const T *str,const int len,SET &result_list){ParseUIntArray<T,I>  pna;return parse_number_array<T,I,SET>(&pna,str,len,result_list);} 
+    template<typename T,typename I,typename SET> inline const int parse_uint_array     (const T *str,const int len,SET &result_list){ParseUIntArray<T,I>  pna;return hgl::parse_number_array<T,I,SET>(&pna,str,len,result_list);} 
 
     /**
      * 解析一个由多个16进制整数组成的字符串，结果扔进指定列表中。任何非当前进制的字符串都将被视为分隔符。
@@ -2809,7 +2809,7 @@ namespace hgl
      * \param result_list   存放解晰结果的列表
      * \return              解晰出来的数据数量
      */
-    template<typename T,typename I,typename SET> inline const int parse_hex_array      (const T *str,const int len,SET &result_list){ParseHexArray<T,I>   pna;return parse_number_array<T,I,SET>(&pna,str,len,result_list);} 
+    template<typename T,typename I,typename SET> inline const int parse_hex_array      (const T *str,const int len,SET &result_list){ParseHexArray<T,I>   pna;return hgl::parse_number_array<T,I,SET>(&pna,str,len,result_list);} 
 
     /**
      * 检测字符串是否符合代码命名规则（仅可使用字母和数字、下划线，不能使用数字开头）
@@ -2818,7 +2818,7 @@ namespace hgl
     {
         if(!str)return(false);
 
-        if((!isalpha(*str))&&(*str!='_'))       //不是字母或下划线
+        if((!hgl::isalpha(*str))&&(*str!='_'))       //不是字母或下划线
             return(false);
 
         ++str;
@@ -2827,7 +2827,7 @@ namespace hgl
             return(false);
 
         while(*str)
-            if(!iscodechar(*str++))
+            if(!hgl::iscodechar(*str++))
                 return(false);
 
             return(true);
@@ -2865,7 +2865,7 @@ namespace hgl
 
             while(*str)
             {
-                if(isspace(*str))
+                if(hgl::isspace(*str))
                     return(false);
 
                 sp=err_chr;
