@@ -2181,7 +2181,7 @@ namespace hgl
     template<typename T,typename I>
     inline T *itos(T *str,const int size,const I num)
     {
-        itos_rl(str,size,num);
+        hgl::itos_rl(str,size,num);
         return str;
     }
 
@@ -2338,7 +2338,7 @@ namespace hgl
         if(value<0)
             value=-value;
 
-        const float min_value=pow(0.1,fsize);
+        const float min_value=std::pow(0.1,fsize);
 
         if(value<min_value)
         {
@@ -2365,7 +2365,7 @@ namespace hgl
     template<typename T,typename F>
     inline T *ftos(T *str,int size,F value)
     {
-        return ftos(str,size,4,value);
+        return hgl::ftos(str,size,4,value);
     }
 
     /**
@@ -2430,7 +2430,7 @@ namespace hgl
     template<typename T>
     inline const T *getbetween(const T *str,int str_length,const T edge_char,int *between_length)
     {
-        return getbetween(str,str_length,edge_char,edge_char,between_length);
+        return hgl::getbetween(str,str_length,edge_char,edge_char,between_length);
     }
     
     /**
@@ -2445,7 +2445,7 @@ namespace hgl
     template<typename T>
     inline const T *getbetween(const T *str,const T start_char,const T end_char,int *between_length)
     {
-        return getbetween(str,hgl::strlen(str),start_char,end_char,between_length);
+        return hgl::getbetween(str,hgl::strlen(str),start_char,end_char,between_length);
     }
     
     /**
@@ -2459,7 +2459,7 @@ namespace hgl
     template<typename T>
     inline const T *getbetween(const T *str,const T edge_char,int *between_length)
     {
-        return getbetween(str,hgl::strlen(str),edge_char,edge_char,between_length);
+        return hgl::getbetween(str,hgl::strlen(str),edge_char,edge_char,between_length);
     }
 
     /**
