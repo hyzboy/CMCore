@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/TypeFunc.h>
+#include <type_traits>
 namespace hgl
 {
     //  32  空格
@@ -2134,31 +2135,39 @@ namespace hgl
 
         I value=num;
 
+        using UnsignedI = typename std::make_unsigned<I>::type;
+        UnsignedI uvalue;
+
         if(value<0)
         {
             *p++='-';
             --size;
 
-            value=-value;
+            // Safely convert negative value to unsigned to avoid UB when value is the minimum representable
+            uvalue = static_cast<UnsignedI>(-(value + 1)) + 1;
+        }
+        else
+        {
+            uvalue = static_cast<UnsignedI>(value);
         }
 
         bp=buf;
 
         while(true)
         {
-            *bp++=(value%10)+'0';
+            *bp++ = static_cast<T>(static_cast<int>(uvalue % 10) + '0');
 
-            if ((value = value / 10) == 0)
+            if ((uvalue = uvalue / 10) == 0)
                 break;
         }
 
-        while(bp--!=buf&&size--)
+        while(bp--!=buf && size--)
             *p++=*bp;
 
         if(size)
             *p=0;
 
-        return(p-str);
+        return (p - str);
     }
 
     /**
@@ -2240,7 +2249,7 @@ namespace hgl
             else
                 *bp++=m-10+A;
 
-            value/=base;                
+            value/=base;            
 
             if(!value)
                 break;
@@ -2899,13 +2908,20 @@ namespace hgl
         if(ch>='0'&&ch<='9')
             return ch-'0';
 
-        if(ch>='a'&&ch<=('z'+NUM-11))
-            return 10+ch-'a';
+        if(NUM>10)
+        {
+            // Correct upper bounds: 'a' + (NUM-11) and 'A' + (NUM-11)
+            T lower_max = static_cast<T>(static_cast<int>('a') + int(NUM - 11));
+            T upper_max = static_cast<T>(static_cast<int>('A') + int(NUM - 11));
 
-        if(ch>='A'&&ch<=('Z'+NUM-11))
-            return 10+ch-'A';
+            if(ch>='a' && ch<=lower_max)
+                return 10 + (ch - 'a');
 
-        return(0);
+            if(ch>='A' && ch<=upper_max)
+                return 10 + (ch - 'A');
+        }
+
+        return 0;
     }
 
     /**
