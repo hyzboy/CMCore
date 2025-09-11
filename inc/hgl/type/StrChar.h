@@ -386,23 +386,18 @@ namespace hgl
 
         if(!src||!(*src)||count<=0)
         {
-            //没什么好复制的
-            *dst=0;
+            if(count>0)
+                *dst=0;
             return(0);
         }
 
         if(dst==src)
             return(-1);
 
-        if(!src||!(*src))
-        {
-            *dst=0;
-            return(-2);
-        }
-
         T *start=dst;
 
-        while(*src&&count)
+        // 保留一个位置给终止符
+        while(*src && count>1)
         {
             *dst=*src;
             ++dst;
@@ -413,7 +408,7 @@ namespace hgl
         if(count>0)
             *dst=0;
 
-        return(dst-start);
+        return int(dst-start);
     }
 
     /**
@@ -441,7 +436,8 @@ namespace hgl
 
         T *start=dst;
 
-        while(*src&&dst_count&&count)
+        // 至少保留1个结尾0
+        while(*src&&dst_count>1&&count)
         {
             *dst=*src;
             ++dst;
@@ -450,7 +446,7 @@ namespace hgl
             --count;
         }
 
-        if(dst_count)
+        if(dst_count>0)
             *dst=0;
 
         return(dst-start);
@@ -608,13 +604,15 @@ namespace hgl
     {
         if(!dst||!ch)return;
 
-        while(*dst&&max_count)
+        // 移动到结尾，max_count 为总容量，逐步减少
+        while(*dst && max_count>0)
         {
-            ++dst;          //找到结束
+            ++dst;
             --max_count;
         }
 
-        if(max_count>=0)
+        // 需要至少两个位置：一个字符+终止符
+        if(max_count>1)
         {
             *dst++=ch;
             *dst=0;
@@ -636,25 +634,27 @@ namespace hgl
 
         T *start=dst;
 
-        while(*dst&&max_count)
-        {
-            ++dst;          //找到结束
-            --max_count;
-        }
+        // 前移到末尾
+    while(*dst && max_count>0)
+    {
+        ++dst;
+        --max_count;
+    }
 
-        while(*src&&max_count&&count)
-        {
-            *dst=*src;
-            ++dst;
-            ++src;
-            --count;
-            --max_count;
-        }
+    // 复制，保留终止符
+    while(*src && max_count>1 && count>0)
+    {
+        *dst=*src;
+        ++dst;
+        ++src;
+        --count;
+        --max_count;
+    }
 
-        if(max_count>=0)
-            *dst=0;
+    if(max_count>0)
+        *dst=0;
 
-        return(dst-start);
+    return int(dst-start);
     }
 
     /**
@@ -1192,12 +1192,15 @@ namespace hgl
     template<typename T>
     inline const T *trimright(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
     {
+        if(!src || len<=0)
+            return nullptr;
+
         const T *p=src+len-1;
 
-        while(trimfunc(*p)&&len)
+        while(len>0 && trimfunc(*p))
         {
-            p--;
-            len--;
+            --p;
+            --len;
         }
 
         if(len<=0)
@@ -1216,6 +1219,9 @@ namespace hgl
     template<typename T>
     inline const T *trim(const T *src,int &len,const bool (*trimfunc)(const T &)=isspace<T>)
     {
+        if(!src||len<=0)
+            return nullptr;
+
         const T *sp=src;
         const T *ep=src+len-1;
 
@@ -1225,7 +1231,7 @@ namespace hgl
             --len;
         }
 
-        while(trimfunc(*ep)&&len)
+        while(len>0 && trimfunc(*ep))
         {
             --ep;
             --len;
@@ -1299,19 +1305,43 @@ namespace hgl
     template<typename T>
     inline void replace_extname(T *new_filename,const T *old_filename,int max_len,const T *new_extname,const T &separative_char=T('.'))
     {
+        if(!new_filename||!old_filename||max_len<=0) return;
+
         const int old_len=hgl::strlen(old_filename);
-        const T *p=hgl::strrchr(old_filename,old_len,separative_char);
+        const T *p=hgl::strrchr((T*)old_filename,old_len,separative_char);
 
         if(p)
         {
-            strcpy(new_filename,max_len,old_filename,p-old_filename+1);
-            strcpy(new_filename+(p-old_filename+1),max_len,new_extname);
+            int prefix_len = int(p - old_filename + 1);
+            int written = hgl::strcpy(new_filename, max_len, old_filename, prefix_len);
+            int remain = max_len - written;
+            if(remain>0 && new_extname)
+            {
+                hgl::strcpy(new_filename+written, remain, new_extname);
+            }
         }
         else
         {
-            strcpy(new_filename,max_len,old_filename,old_len);
-            new_filename[old_len]='.';
-            strcpy(new_filename+old_len+1,max_len-old_len,new_extname);
+            int written = hgl::strcpy(new_filename, max_len, old_filename, old_len);
+            int remain = max_len - written;
+            if(remain>1)
+            {
+                new_filename[written]=T('.');
+                ++written;
+                --remain;
+                if(new_extname && remain>0)
+                {
+                    hgl::strcpy(new_filename+written, remain, new_extname);
+                }
+                else
+                {
+                    if(remain>0) new_filename[written]=0;
+                }
+            }
+            else if(remain>0)
+            {
+                new_filename[written]=0;
+            }
         }
     }
 
@@ -1323,7 +1353,7 @@ namespace hgl
     template<typename T>
     inline void replace_extname(T *filename,const T *new_extname)
     {
-        T *p=strrchr(filename,u'.');
+        T *p=strrchr(filename,T('.'));
 
         if(p)
         {
@@ -1331,7 +1361,7 @@ namespace hgl
         }
         else
         {
-            strcat(filename,u'.');
+            strcat(filename,T('.'));
             strcat(filename,new_extname);
         }
     }
@@ -1345,18 +1375,18 @@ namespace hgl
     template<typename T>
     inline T *create_copy(const T *str,int size=-1)
     {
-        if(!str)return(0);
+        if(!str)return(nullptr);
 
         T *copy;
 
         if(size==-1)size=strlen(str);
 
-        if(size==0)return(0);
+        if(size==0)return(nullptr);
 
         ++size;
 
         copy=new T[size];
-        strcpy(copy,str,size);
+        hgl::strcpy(copy,size,str);
 
         return(copy);
     }
@@ -1740,7 +1770,10 @@ namespace hgl
     {
         if(!str)return(0);
 
-        T *p=str+strlen(str)-1;
+        int len = hgl::strlen(str);
+        if(len<=0) return 0;
+
+        T *p=str+len-1;
 
         if(*p=='\n')return(stat_char(str,'\n'));
         else return(stat_char(str,'\n')+1);
@@ -1890,38 +1923,7 @@ namespace hgl
                     if(*str>='A'&&*str<='F')
                         result+=(*str-'A')+10;
 
-                    ++str;
-        }
-
-        return(true);
-    }
-
-    template<typename R,typename S>
-    inline const bool xtou(S *str,int size,R &result)
-    {
-        if(!str||size<=0)
-        {
-            result=0;
-            return(false);
-        }
-
-        result=0;
-
-        while(*str&&isxdigit(*str))
-        {
-            result*=16;
-
-            if(*str>='0'&&*str<='9')
-                result+=(*str-'0');
-            else
-                if(*str>='a'&&*str<='f')
-                    result+=(*str-'a')+10;
-                else
-                    if(*str>='A'&&*str<='F')
-                        result+=(*str-'A')+10;
-
-                    ++str;
-                --size;
+            ++str;
         }
 
         return(true);
@@ -2267,7 +2269,7 @@ namespace hgl
      * 转换一个无符号整数到字符串(以16进制表示)
      * @param str 转换后的字符串存放处
      * @param size 存放处可容纳的字符数
-     * @param value 要转换的数值
+     * @param value 要转换的值
      * @param upper 大小写
      * @return 转换后的字符串
      */
@@ -2524,7 +2526,7 @@ namespace hgl
      * @param count 字符串列表中的字符串数量
      * @param str_array 对应的字符串列表
      * @param str 要查找的字节串
-     * @param str_len 要查找的字节串长度(0表示不限定长度)
+     * @param str_len要查找的字节串长度(0表示不限定长度)
      * @return 返回查找出的序号,-1表示失败
      */
     template<typename T>
@@ -2774,7 +2776,7 @@ namespace hgl
      * 
      * \param str           要解晰的原始字符串
      * \param len           字符串长度
-     * \param result_list   存放解晰结果的列表
+     * @param result_list   存放解晰结果的列表
      * \return              解晰出来的数据数量
      */
     template<typename T,typename I,typename SET> inline const int parse_int_array      (const T *str,const int len,SET &result_list){ParseIntArray<T,I>   pna;return parse_number_array<T,I,SET>(&pna,str,len,result_list);} 
