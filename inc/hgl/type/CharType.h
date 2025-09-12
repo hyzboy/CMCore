@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 /**
  * CN:  在这里我们自行实现了C标准库的一些字符和字符串处理函数，
@@ -340,5 +340,78 @@ namespace hgl
     inline const int chricmp(S src,D dst)
     {
         return hgl::tolower(src)-hgl::tolower(dst);
+    }
+
+    /**
+    * 检测字符串是否符合代码命名规则（仅可使用字母和数字、下划线，不能使用数字开头）
+    */
+    template<typename T> inline const bool check_codestr(const T *str)
+    {
+        if(!str)return(false);
+
+        if((!hgl::isalpha(*str))&&(*str!='_'))       //不是字母或下划线
+            return(false);
+
+        ++str;
+
+        if(!(*str))                             //不能仅一个字符
+            return(false);
+
+        while(*str)
+            if(!hgl::iscodechar(*str++))
+                return(false);
+
+        return(true);
+    }
+
+    /**
+    * 检测字符串是否包含不可程序使用字符
+    */
+    template<typename T> inline const bool check_error_char(const T *str)
+    {
+        if(!str)return(false);
+
+        //const char err_chr[]=u8R"( <>,/\|?%$#@`':"*&!)";
+        constexpr char err_chr[] = { ' ',
+            '<',
+            '>',
+            ',',
+            '/',
+            '\\',
+            '|',
+            '?',
+            '%',
+            '$',
+            '#',
+            '@',
+            '`',
+            '\'',
+            ':',
+            '"',
+            '*',
+            '&',
+            '!',
+            0};
+        const char *sp;
+
+        while(*str)
+        {
+            if(hgl::isspace(*str))
+                return(false);
+
+            sp=err_chr;
+
+            while(*sp)
+            {
+                if(*str==*sp)
+                    return(false);
+
+                ++sp;
+            }
+
+            ++str;
+        }
+
+        return(true);
     }
 }//namespace hgl
