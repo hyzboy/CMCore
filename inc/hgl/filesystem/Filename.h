@@ -1,4 +1,4 @@
-#ifndef HGL_FILESYSTEM_FILENAME_INCLUDE
+﻿#ifndef HGL_FILESYSTEM_FILENAME_INCLUDE
 #define HGL_FILESYSTEM_FILENAME_INCLUDE
 
 #include<hgl/type/StringList.h>
@@ -47,7 +47,7 @@ namespace hgl
 
                 if(len<=0)continue;
                 
-                tmp=trim<T>(str_list[i],len,isslash<T>);
+                tmp=trim<T>(str_list[i],len,hgl::isslash<T>);
 
                 if(!first)
                 {

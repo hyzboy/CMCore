@@ -12,7 +12,7 @@ namespace hgl
     * @return 新的字符串起始指针
     */
     template<typename T>
-    inline const T *trimleft(const T *src,int &len,const bool (*trimfunc)(const T &)=hgl::isspace<T>)
+    inline const T *trimleft(const T *src,int &len,bool (*trimfunc)(const T &)=hgl::isspace<T>)
     {
         const T *p=src;
 
@@ -36,7 +36,7 @@ namespace hgl
     * @return 新的字符串起始指针
     */
     template<typename T>
-    inline const T *trimright(const T *src,int &len,const bool (*trimfunc)(const T &)=hgl::isspace<T>)
+    inline const T *trimright(const T *src,int &len,bool (*trimfunc)(const T &)=hgl::isspace<T>)
     {
         if(!src || len<=0)
             return nullptr;
@@ -63,7 +63,7 @@ namespace hgl
     * @return 新的字符串起始指针
     */
     template<typename T>
-    inline const T *trim(const T *src,int &len,const bool (*trimfunc)(const T &)=hgl::isspace<T>)
+    inline const T *trim(const T *src,int &len,bool (*trimfunc)(const T &)=hgl::isspace<T>)
     {
         if(!src||len<=0)
             return nullptr;
@@ -97,7 +97,7 @@ namespace hgl
     * @return 新的字符串起始指针
     */
     template<typename T>
-    inline const T *clipleft(const T *src,int &len,const bool (*clipfunc)(const T &)=hgl::isspace<T>)
+    inline const T *clipleft(const T *src,int &len,bool (*clipfunc)(const T &)=hgl::isspace<T>)
     {
         // corrected boundary checks
         if(!src || len<=0) return(nullptr);
@@ -123,7 +123,7 @@ namespace hgl
     * @return 新的字符串起始指针
     */
     template<typename T>
-    inline const T *clipright(const T *src,int &len,const bool (*clipfunc)(const T &)=hgl::isspace<T>)
+    inline const T *clipright(const T *src,int &len,bool (*clipfunc)(const T &)=hgl::isspace<T>)
     {
         // corrected boundary checks
         if(!src || len<=0) return(nullptr);
