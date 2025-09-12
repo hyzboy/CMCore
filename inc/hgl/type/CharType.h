@@ -4,7 +4,7 @@
  * CN:  在这个文件里我们实现了一些字符与字符串处理的函数
  *      这些函数的实现并不是为了追求性能，或炫技，而是为了统一不同编译器、标准库对一些边界、非法值的处理方式。
  *
- *      EN:  This file implements some character and string handling functions.
+ * EN:  This file implements some character and string handling functions.
  *      The purpose is not to pursue performance or show off skills,
  *      but to unify the handling of certain edge cases and illegal values
  *      across different compilers and standard libraries.
@@ -54,45 +54,15 @@ namespace hgl
     //  126 ~
 
     /**
-     * 测试字符是否是emoji表情<br>
-     * 参见https://unicode.org/Public/emoji/12.0/emoji-data.txt
+     * @brief
+     * CN: 测试当前字符是否为小写字母（ASCII范围）
+     * EN: Test whether the current character is a lowercase ASCII letter.
      *
-     * NOTE: emoji handling is temporarily disabled here. See TODO below.
-     */
-#if 0 // TODO: Revisit emoji detection and replace with proper Unicode property checks or a lookup table.
-    template<typename T>
-    inline constexpr bool is_emoji(T ch) noexcept
-    {
-        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "isemoji requires integral/character type");
-        // Generic/smaller-width types (char, u16char, etc.) should only handle
-        // the common single-unit emoji/punctuation characters to avoid
-        // comparing against very large Unicode code points they cannot represent.
-        if(ch==0x23) return true;           //#
-        if(ch==0x2A) return true;           //*
-        if(ch>=0x30 && ch<=0x39) return true; //0-9
-        if(ch==0xA9) return true;           //©
-        if(ch==0xAE) return true;           //®
-
-        return false;
-    }
-
-    // u32char specialization: supports full range checks
-    template<>
-    inline constexpr bool is_emoji(u32char ch) noexcept
-    {
-        if(ch==0x23) return true;           //#
-        if(ch==0x2A) return true;           //*
-        if(ch>=0x30 && ch<=0x39) return true; //0-9
-        if(ch==0xA9) return true;           //©
-        if(ch==0xAE) return true;           //®
-        if(ch>=0x203C && ch<=0x1FFFD) return true;
-
-        return false;
-    }
-#endif
-
-    /**
-     * 测试当前字符是否为小写字母
+     * @tparam T 字符类型 / character type
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 如果为小写字母返回 true，否则返回 false。
+     * EN: Returns true if it is a lowercase letter, otherwise false.
      */
     template<typename T>
     inline constexpr bool is_lower_alpha(T ch) noexcept
@@ -102,7 +72,15 @@ namespace hgl
     }
 
     /**
-     * 测试当前字符是否为大写字母
+     * @brief
+     * CN: 测试当前字符是否为大写字母（ASCII范围）
+     * EN: Test whether the current character is an uppercase ASCII letter.
+     *
+     * @tparam T 字符类型 / character type
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 如果为大写字母返回 true，否则返回 false。
+     * EN: Returns true if it is an uppercase letter, otherwise false.
      */
     template<typename T>
     inline constexpr bool is_upper_alpha(T ch) noexcept
@@ -112,7 +90,15 @@ namespace hgl
     }
 
     /**
-     * 测试当前字符是否为字母
+     * @brief
+     * CN: 测试当前字符是否为字母（ASCII 小写或大写）
+     * EN: Test whether the current character is an ASCII letter (lowercase or uppercase).
+     *
+     * @tparam T 字符类型 / character type
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 如果为字母返回 true，否则返回 false。
+     * EN: Returns true if it is a letter, otherwise false.
      */
     template<typename T>
     inline constexpr bool is_alpha(T ch) noexcept
@@ -122,7 +108,15 @@ namespace hgl
     }
 
     /**
-     * 测试当前字符是否为10进制数字
+     * @brief
+     * CN: 测试当前字符是否为十进制数字（'0'..'9'）
+     * EN: Test whether the current character is a decimal digit ('0'..'9').
+     *
+     * @tparam T 字符类型 / character type
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 如果为数字返回 true，否则返回 false。
+     * EN: Returns true if it is a digit, otherwise false.
      */
     template<typename T>
     inline constexpr bool is_digit(T ch) noexcept
@@ -132,7 +126,15 @@ namespace hgl
     }
 
     /**
-     * 测试当前字符串是否为10进制数字以及小数点、正负符号、指数字符
+     * @brief
+     * CN: 判断字符是否可以出现在表示浮点数的文本中。
+     * EN: Determine whether the character can appear in text representing a floating-point number.
+     *
+     * @tparam T 字符类型 / character type
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 若字符是数字、正负号、小数点、科学计数标识（E/e）或浮点后缀（f/F）则返回 true，否则 false。
+     * EN: Returns true if the character is a digit, sign, decimal point, exponent marker (E/e), or float suffix (f/F).
      */
     template<typename T>
     inline constexpr bool is_float_char(T ch) noexcept
@@ -148,6 +150,17 @@ namespace hgl
         || ch == 'F';
     }
 
+    /**
+     * @brief
+     * CN: 判断字符是否可以出现在表示整数的文本中（数字或符号）
+     * EN: Determine whether the character can appear in text representing an integer (digit or sign).
+     *
+     * @tparam T 字符类型 / character type
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 如果为数字或正负号返回 true，否则 false。
+     * EN: Returns true if it is a digit or a sign character, otherwise false.
+     */
     template<typename T>
     inline constexpr bool is_integer_char(T ch) noexcept
     {
@@ -158,7 +171,15 @@ namespace hgl
     }
 
     /**
-     * 测试当前字符是否为16进制数用字符(0-9,A-F)
+     * @brief
+     * CN: 测试当前字符是否为十六进制数字字符（0-9, a-f, A-F）
+     * EN: Test whether the current character is a hexadecimal digit (0-9, a-f, A-F).
+     *
+     * @tparam T 字符类型 / character type
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 若字符为合法的十六进制字符则返回 true，否则 false。
+     * EN: Returns true if the character is a valid hexadecimal digit, otherwise false.
      */
     template<typename T>
     inline constexpr bool is_hex_digit(T ch) noexcept
@@ -173,9 +194,16 @@ namespace hgl
     }
 
     /**
-     * 测试当前字符串是否为16进制数用字符
-     * @param str 字符串
-     * @param length 字符串长度
+     * @brief
+     * CN: 检查宽字符指针所指的字符串在指定长度内是否全部为十六进制字符。
+     * EN: Check whether a string pointed by a character pointer consists entirely of hexadecimal digits within the given length.
+     *
+     * @tparam T 字符类型 / character type
+     * @param str 要测试的字符串指针（不能为空） / pointer to the string to test (must not be null)
+     * @param length 最大检查长度 / maximum length to check
+     * @return
+     * CN: 若 str 不为空且在 length 范围内全部为十六进制字符，返回 true；否则返回 false。
+     * EN: Returns true if str is non-null and all characters within length are hexadecimal digits; otherwise false.
      */
     template<typename T>
     inline constexpr bool is_hex_digit(const T *str,int length) noexcept
@@ -197,7 +225,15 @@ namespace hgl
     }
 
     /**
-     * 是否为斜杠
+     * @brief
+     * CN: 测试字符是否为路径或 URL 中可以使用的斜杠字符（'/' 或 '\\'）。
+     * EN: Test whether the character is a slash used in paths or URLs ('/' or '\\').
+     *
+     * @tparam T 字符类型 / character type
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 如果字符为正斜杠或反斜杠返回 true，否则 false。
+     * EN: Returns true if the character is '/' or '\\', otherwise false.
      */
     template<typename T>
     inline constexpr bool is_slash(const T &ch)
@@ -206,7 +242,17 @@ namespace hgl
         return (ch == '\\') || (ch == '/');
     }
 
-    // Provide a safe primary template for is_space. Do not treat NUL (0) as whitespace.
+    /**
+     * @brief
+     * CN: 提供一个对 NUL (0) 不视为空白的通用 is_space 实现（ASCII 控制字符集合）。
+     * EN: Provide a generic is_space implementation that does not treat NUL (0) as whitespace (ASCII control characters).
+     *
+     * @tparam T 字符类型 / character type
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 如果字符为普通空白控制字符（' ', '\f', '\n', '\r', '\t', '\v'）或音响/退格（注意：实现中包含 '\a' 和 '\b'），返回 true；否则 false。
+     * EN: Returns true if the character is one of the whitespace/control characters listed (note '\a' and '\b' are included in this implementation), otherwise false.
+     */
     template<typename T>
     inline constexpr bool is_space(T ch) noexcept
     {
@@ -225,7 +271,14 @@ namespace hgl
     }
 
     /**
-     * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
+     * @brief
+     * CN: u32char 专用的 is_space 特化，包含全角空格判定并保持与基本模板一致的控制字符集。
+     * EN: u32char specialization of is_space; includes fullwidth space checks and the same control characters.
+     *
+     * @param ch 要测试的 32 位字符 / 32-bit character to test
+     * @return
+     * CN: 若字符为常见空白或全角空格，返回 true，否则 false。
+     * EN: Returns true for common whitespace or fullwidth space, otherwise false.
      */
     template<>
     inline constexpr bool is_space(u32char ch) noexcept
@@ -244,7 +297,14 @@ namespace hgl
     }
 
     /**
-     * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
+     * @brief
+     * CN: u16char 专用的 is_space 特化（在 BMP 范围内），使用项目中定义的 U16_TEXT 与全角空格宏。
+     * EN: u16char specialization of is_space (within BMP), using project's U16_TEXT and fullwidth space macros.
+     *
+     * @param ch 要测试的 16 位字符 / 16-bit character to test
+     * @return
+     * CN: 若字符为常见空白或全角空格，返回 true，否则 false。
+     * EN: Returns true for common whitespace or fullwidth space, otherwise false.
      */
     template<>
     inline constexpr bool is_space(u16char ch) noexcept
@@ -263,7 +323,14 @@ namespace hgl
     }
 
     /**
-     * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
+     * @brief
+     * CN: char 专用的 is_space 特化（ASCII 单字节）
+     * EN: char specialization of is_space (single-byte ASCII).
+     *
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 若字符为常见空白或控制字符返回 true，否则 false。
+     * EN: Returns true if the character is a common whitespace/control character, otherwise false.
      */
     template<>
     inline constexpr bool is_space(char ch) noexcept
@@ -281,6 +348,16 @@ namespace hgl
     }
 
     #ifdef HGL_SUPPORT_CHAR8_T
+    /**
+     * @brief
+     * CN: char8_t 专用的 is_space 特化（UTF-8 字面量类型）
+     * EN: char8_t specialization of is_space (UTF-8 literal type).
+     *
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 若字符为常见空白或控制字符返回 true，否则 false。
+     * EN: Returns true if the character is a common whitespace/control character, otherwise false.
+     */
     template<>
     inline constexpr bool is_space(char8_t ch) noexcept
     {
@@ -298,7 +375,15 @@ namespace hgl
     #endif//char8_t
 
     /**
-     * 测试当前字符是否为字母或数字
+     * @brief
+     * CN: 测试字符是否为字母或数字（字母包含大小写）
+     * EN: Test whether the character is alphabetic or numeric (letters include both cases).
+     *
+     * @tparam T 字符类型 / character type
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 若为字母或数字返回 true，否则 false。
+     * EN: Returns true if it is a letter or digit, otherwise false.
      */
     template<typename T>
     inline constexpr bool is_alpha_numeric(T ch) noexcept
@@ -308,7 +393,15 @@ namespace hgl
     }
 
     /**
-     * 测试当前字符是否为代码可用字符(仅字母，数字，下划线，常用于文件名之类)
+     * @brief
+     * CN: 测试字符是否符合常见的标识符字符（字母、数字或下划线）
+     * EN: Test whether the character is a common identifier character (letter, digit or underscore).
+     *
+     * @tparam T 字符类型 / character type
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 若为标识符字符返回 true，否则 false。
+     * EN: Returns true if it is an identifier character, otherwise false.
      */
     template<typename T>
     inline constexpr bool is_identifier_char(T ch) noexcept
@@ -318,7 +411,15 @@ namespace hgl
     }
 
     /**
-     * 测试当前字符是否不是代码可用字符(仅字母，数字，下划线，常用于文件名之类)
+     * @brief
+     * CN: 测试字符是否不是标识符字符
+     * EN: Test whether the character is not an identifier character.
+     *
+     * @tparam T 字符类型 / character type
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 如果不是标识符字符返回 true，否则 false。
+     * EN: Returns true if it is not an identifier character, otherwise false.
      */
     template<typename T>
     inline constexpr bool is_not_identifier_char(T ch) noexcept
@@ -328,7 +429,15 @@ namespace hgl
     }
 
     /**
-     * 测试当前字符是否为文件名可用字符(不含路径分隔符)
+     * @brief
+     * CN: 测试字符是否为文件名允许的字符（点或标识符字符），不含路径分隔符。
+     * EN: Test whether the character is allowed in a filename (dot or identifier character), excluding path separators.
+     *
+     * @tparam T 字符类型 / character type
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 若为文件名允许字符返回 true，否则 false。
+     * EN: Returns true if it is allowed in a filename, otherwise false.
      */
     template<typename T>
     inline constexpr bool is_filename_char(T ch) noexcept
@@ -338,7 +447,15 @@ namespace hgl
     }
 
     /**
-     * 测试当前字符是否不是文件名可用字符
+     * @brief
+     * CN: 测试字符是否不是文件名允许字符
+     * EN: Test whether the character is not allowed in a filename.
+     *
+     * @tparam T 字符类型 / character type
+     * @param ch 要测试的字符 / character to test
+     * @return
+     * CN: 如果不是文件名允许字符返回 true，否则 false。
+     * EN: Returns true if it is not allowed in a filename, otherwise false.
      */
     template<typename T>
     inline constexpr bool is_not_filename_char(T ch) noexcept
@@ -348,7 +465,15 @@ namespace hgl
     }
 
     /**
-     * 测试当前字符是否为BASE64编码字符
+     * @brief
+     * CN: 测试字符是否为 Base64 编码字符（包含填充字符 '='）
+     * EN: Test whether the character is a Base64 character (including padding '=').
+     *
+     * @tparam T 字符类型 / character type
+     * @param c 要测试的字符 / character to test
+     * @return
+     * CN: 若字符属于 Base64 集合则返回 true，否则 false。
+     * EN: Returns true if the character belongs to the Base64 set, otherwise false.
      */
     template<typename T>
     inline constexpr bool is_base64_char(T c) noexcept
@@ -364,7 +489,15 @@ namespace hgl
     }
 
     /**
-     * 如果当前字符为大写英文字符，则转换为小写
+     * @brief
+     * CN: 若当前字符为大写英文字符，则转换为小写（仅影响 ASCII 范围）
+     * EN: Convert the character to lowercase if it is an ASCII uppercase letter.
+     *
+     * @tparam T 字符类型 / character type
+     * @param ch 要转换的字符 / character to convert
+     * @return
+     * CN: 返回转换后的字符（非大写字符保持不变）。
+     * EN: Returns the converted character (unchanged if not uppercase ASCII).
      */
     template<typename T>
     inline constexpr T to_lower_char(T ch) noexcept
@@ -377,7 +510,15 @@ namespace hgl
     }
 
     /**
-     * 如果当前字符为小写英文字符，则转换为大写
+     * @brief
+     * CN: 若当前字符为小写英文字符，则转换为大写（仅影响 ASCII 范围）
+     * EN: Convert the character to uppercase if it is an ASCII lowercase letter.
+     *
+     * @tparam T 字符类型 / character type
+     * @param ch 要转换的字符 / character to convert
+     * @return
+     * CN: 返回转换后的字符（非小写字符保持不变）。
+     * EN: Returns the converted character (unchanged if not lowercase ASCII).
      */
     template<typename T>
     inline constexpr T to_upper_char(T ch) noexcept
@@ -393,7 +534,16 @@ namespace hgl
     // These provide basic Unicode case support: ASCII, fullwidth Latin letters and common Latin-1 uppercase ranges.
     // Full Unicode case folding is complex and would require a dedicated library (ICU) or a complete mapping table.
 
-    // u32char overload
+    /**
+     * @brief
+     * CN: u32char 版本的 to_lower_char，支持 ASCII、全角拉丁字符以及部分 Latin-1 扩展范围的简单映射。
+     * EN: u32char overload of to_lower_char. Supports ASCII, fullwidth Latin letters and simple Latin-1 ranges.
+     *
+     * @param ch 要转换的 32 位字符 / 32-bit character to convert
+     * @return
+     * CN: 返回转换后的字符（若无映射则返回原字符）。
+     * EN: Returns the converted character; if no mapping exists, returns the original char.
+     */
     inline constexpr u32char to_lower_char(u32char ch) noexcept
     {
         // ASCII
@@ -411,6 +561,16 @@ namespace hgl
         return ch;
     }
 
+    /**
+     * @brief
+     * CN: u32char 版本的 to_upper_char，支持 ASCII、全角拉丁字符以及部分 Latin-1 扩展范围的简单映射。
+     * EN: u32char overload of to_upper_char. Supports ASCII, fullwidth Latin letters and simple Latin-1 ranges.
+     *
+     * @param ch 要转换的 32 位字符 / 32-bit character to convert
+     * @return
+     * CN: 返回转换后的字符（若无映射则返回原字符）。
+     * EN: Returns the converted character; if no mapping exists, returns the original char.
+     */
     inline constexpr u32char to_upper_char(u32char ch) noexcept
     {
         // ASCII
@@ -428,7 +588,16 @@ namespace hgl
         return ch;
     }
 
-    // u16char overload (maps within BMP)
+    /**
+     * @brief
+     * CN: u16char 版本的 to_lower_char，内部提升到 u32char 后复用实现（限 BMP）。
+     * EN: u16char overload of to_lower_char; promotes to u32char and reuses the u32char implementation.
+     *
+     * @param ch 要转换的 16 位字符 / 16-bit character to convert
+     * @return
+     * CN: 返回转换后的 16 位字符。
+     * EN: Returns the converted 16-bit character.
+     */
     inline constexpr u16char to_lower_char(u16char ch) noexcept
     {
         // Promote to 32-bit to reuse above logic safely
@@ -437,6 +606,16 @@ namespace hgl
         return static_cast<u16char>(r);
     }
 
+    /**
+     * @brief
+     * CN: u16char 版本的 to_upper_char，内部提升到 u32char 后复用实现（限 BMP）。
+     * EN: u16char overload of to_upper_char; promotes to u32char and reuses the u32char implementation.
+     *
+     * @param ch 要转换的 16 位字符 / 16-bit character to convert
+     * @return
+     * CN: 返回转换后的 16 位字符。
+     * EN: Returns the converted 16-bit character.
+     */
     inline constexpr u16char to_upper_char(u16char ch) noexcept
     {
         const u32char c = static_cast<u32char>(ch);
@@ -445,7 +624,17 @@ namespace hgl
     }
 
     /**
-     * 比较两个字符的大小(英文不区分大小写)
+     * @brief
+     * CN: 比较两个字符在不区分大小写时的先后关系（使用 to_lower_char 做对比）。
+     * EN: Compare two characters case-insensitively using to_lower_char conversion.
+     *
+     * @tparam S 源字符类型 / source character type
+     * @tparam D 目标字符类型 / destination character type
+     * @param src 源字符 / source character
+     * @param dst 目标字符 / destination character
+     * @return
+     * CN: 返回 (lower(src) - lower(dst)) 的整型差值（注意对宽字符可能存在截断到 int 的风险）。
+     * EN: Returns the integer difference of lower(src) - lower(dst) (note possible truncation to int for wide types).
      */
     template<typename S,typename D>
     inline constexpr int compare_char_icase(S src,D dst) noexcept
@@ -456,8 +645,16 @@ namespace hgl
     }
 
     /**
-    * 检测字符串是否符合代码命名规则（仅可使用字母和数字、下划线，不能使用数字开头）
-    */
+     * @brief
+     * CN: 检测字符串是否符合代码命名规则（只能使用字母、数字、下划线，且首字符不能为数字）。
+     * EN: Check whether a string is a valid identifier (letters, digits, underscore; cannot start with a digit).
+     *
+     * @tparam T 字符类型 / character type
+     * @param str 指向以 NUL 结尾的字符串 / pointer to NUL-terminated string
+     * @return
+     * CN: 若 str 为合法标识符返回 true；若 str 为空或包含非法字符返回 false。
+     * EN: Returns true if str is a valid identifier; false if str is null or contains invalid characters.
+     */
     template<typename T> inline constexpr bool is_valid_identifier(const T *str) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_valid_identifier requires integral/character type");
@@ -478,8 +675,16 @@ namespace hgl
     }
 
     /**
-    * 检测字符串是否包含不可程序使用字符
-    */
+     * @brief
+     * CN: 检测字符串是否包含不可用于程序标识或文件名的字符（空白字符单独使用 is_space 检测）。
+     * EN: Detect whether a string contains characters invalid for identifiers or filenames (whitespace handled by is_space).
+     *
+     * @tparam T 字符类型 / character type
+     * @param str 指向以 NUL 结尾的字符串 / pointer to NUL-terminated string
+     * @return
+     * CN: 若包含无效字符或空白返回 true；否则返回 false。若 str 为 nullptr 返回 false。
+     * EN: Returns true if the string contains invalid characters or whitespace; false otherwise. If str is nullptr returns false.
+     */
     template<typename T> inline constexpr bool contains_invalid_chars(const T *str) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "contains_invalid_chars requires integral/character type");
@@ -533,22 +738,34 @@ namespace hgl
     }
 
     // u16char specialization
+    /**
+     * @brief
+     * CN: u16char 专用的 contains_invalid_chars 实现，使用将狭义的 ASCII 无效字符与宽字符比较。
+     * EN: u16char specialization for contains_invalid_chars. Compares ASCII invalid characters cast to u16char.
+     *
+     * @param str 指向以 NUL 结尾的 u16 字符串 / pointer to NUL-terminated u16 string
+     * @return
+     * CN: 若发现无效字符或空白返回 true；若 str 为 nullptr 或未发现无效字符返回 false。
+     * EN: Returns true if an invalid char or whitespace is found; false if str is nullptr or none found.
+     */
     template<>
     inline constexpr bool contains_invalid_chars(const u16char *str) noexcept
     {
         if(!str) return false;
-
-        constexpr const char inv[] = "<>,/\\|?%$#@`':\"*&!";
 
         while(*str)
         {
             if(hgl::is_space(*str))
                 return true;
 
-            for(const char *p=inv; *p; ++p)
+            switch(*str)
             {
-                if(static_cast<u16char>(*p) == *str)
+                case u'<': case u'>': case u',': case u'/': case u'\\': case u'|':
+                case u'?': case u'%': case u'$': case u'#': case u'@': case u'`':
+                case u'\'': case u':': case u'"': case u'*': case u'&': case u'!':
                     return true;
+                default:
+                    break;
             }
 
             ++str;
@@ -558,22 +775,34 @@ namespace hgl
     }
 
     // u32char specialization
+    /**
+     * @brief
+     * CN: u32char 专用的 contains_invalid_chars 实现，使用宽字符字面量比较以避免字节转化问题。
+     * EN: u32char specialization for contains_invalid_chars. Uses wide character literals for comparison.
+     *
+     * @param str 指向以 NUL 结尾的 u32 字符串 / pointer to NUL-terminated u32 string
+     * @return
+     * CN: 若发现无效字符或空白返回 true；否则 false。
+     * EN: Returns true if an invalid char or whitespace is found; otherwise false.
+     */
     template<>
     inline constexpr bool contains_invalid_chars(const u32char *str) noexcept
     {
         if(!str) return false;
-
-        constexpr const char inv[] = "<>,/\\|?%$#@`':\"*&!";
 
         while(*str)
         {
             if(hgl::is_space(*str))
                 return true;
 
-            for(const char *p=inv; *p; ++p)
+            switch(*str)
             {
-                if(static_cast<u32char>(*p) == *str)
+                case U'<': case U'>': case U',': case U'/': case U'\\': case U'|':
+                case U'?': case U'%': case U'$': case U'#': case U'@': case U'`':
+                case U'\'': case U':': case U'"': case U'*': case U'&': case U'!':
                     return true;
+                default:
+                    break;
             }
 
             ++str;
