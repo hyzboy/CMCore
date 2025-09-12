@@ -85,7 +85,7 @@ namespace hgl
 
         void SetTransformMatrix(const Matrix4f &mat)
         {
-            if (transform_matrix==mat)
+            if (IsNearlyEqual(transform_matrix, mat))
                 return;
 
             transform_matrix=mat;
@@ -226,7 +226,7 @@ namespace hgl
 
         TransformRotateAxis():TransformBase()
         {
-            axis=ZeroVector3f;
+            axis=AxisVector::Z; // default to unit Z axis to avoid using zero vector
             angle=0;
             UpdateVersion();
         }
@@ -764,7 +764,7 @@ namespace hgl
         {
             if(is_identity)
             {
-                if(q==IdentityQuatf)
+                if(IsNearlyEqual(q, IdentityQuatf))
                     return;
             }
 
