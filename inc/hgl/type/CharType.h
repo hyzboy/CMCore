@@ -67,7 +67,7 @@ namespace hgl
      */
 #if 0 // TODO: Revisit emoji detection and replace with proper Unicode property checks or a lookup table.
     template<typename T>
-    inline constexpr bool isemoji(T ch) noexcept
+    inline constexpr bool is_emoji(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "isemoji requires integral/character type");
         // Generic/smaller-width types (char, u16char, etc.) should only handle
@@ -84,7 +84,7 @@ namespace hgl
 
     // u32char specialization: supports full range checks
     template<>
-    inline constexpr bool isemoji(u32char ch) noexcept
+    inline constexpr bool is_emoji(u32char ch) noexcept
     {
         if(ch==0x23) return true;           //#
         if(ch==0x2A) return true;           //*
@@ -395,6 +395,61 @@ namespace hgl
             return ch;
     }
 
+    // Unicode-aware overloads for UTF-16/UTF-32 character types.
+    // These provide basic Unicode case support: ASCII, fullwidth Latin letters and common Latin-1 uppercase ranges.
+    // Full Unicode case folding is complex and would require a dedicated library (ICU) or a complete mapping table.
+
+    // u32char overload
+    inline constexpr u32char to_lower_char(u32char ch) noexcept
+    {
+        // ASCII
+        if (ch >= U'A' && ch <= U'Z')
+            return ch + (U'a' - U'A');
+
+        // Fullwidth Latin uppercase (FF21-FF3A) -> fullwidth lowercase (FF41-FF5A)
+        if (ch >= 0xFF21u && ch <= 0xFF3Au)
+            return ch + 0x20u;
+
+        // Latin-1 Supplement uppercase ranges that map by +0x20 (simple cases)
+        if ((ch >= 0x00C0u && ch <= 0x00D6u) || (ch >= 0x00D8u && ch <= 0x00DEu))
+            return ch + 0x20u;
+
+        return ch;
+    }
+
+    inline constexpr u32char to_upper_char(u32char ch) noexcept
+    {
+        // ASCII
+        if (ch >= U'a' && ch <= U'z')
+            return ch - (U'a' - U'A');
+
+        // Fullwidth Latin lowercase (FF41-FF5A) -> fullwidth uppercase (FF21-FF3A)
+        if (ch >= 0xFF41u && ch <= 0xFF5Au)
+            return ch - 0x20u;
+
+        // Latin-1 Supplement lowercase ranges that map by -0x20 (simple cases)
+        if ((ch >= 0x00E0u && ch <= 0x00F6u) || (ch >= 0x00F8u && ch <= 0x00FEu))
+            return ch - 0x20u;
+
+        return ch;
+    }
+
+    // u16char overload (maps within BMP)
+    inline constexpr u16char to_lower_char(u16char ch) noexcept
+    {
+        // Promote to 32-bit to reuse above logic safely
+        const u32char c = static_cast<u32char>(ch);
+        const u32char r = to_lower_char(c);
+        return static_cast<u16char>(r);
+    }
+
+    inline constexpr u16char to_upper_char(u16char ch) noexcept
+    {
+        const u32char c = static_cast<u32char>(ch);
+        const u32char r = to_upper_char(c);
+        return static_cast<u16char>(r);
+    }
+
     /**
      * 比较两个字符的大小(英文不区分大小写)
      */
@@ -465,14 +520,14 @@ namespace hgl
         while(*str)
         {
             if(hgl::is_space(*str))
-                return(false);
+                return(true);
 
             sp=err_chr;
 
             while(*sp)
             {
                 if(*str == *sp)
-                    return(false);
+                    return(true);
 
                 ++sp;
             }
@@ -480,6 +535,6 @@ namespace hgl
             ++str;
         }
 
-        return(true);
+        return(false);
     }
 }//namespace hgl
