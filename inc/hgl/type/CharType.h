@@ -6,7 +6,7 @@
  *
  *      比如你在一些字符串处理函数中传入非法长度或是nullptr，不同实现的标准库都有正确的错误处理，但错误的处理方式确不一定完全一样。
  *
- * EN:  Here we have implemented some character and string handling functions from the C standard library ourselves.
+ *      EN:  Here we have implemented some character and string handling functions from the C standard library ourselves.
  *      This is not done for performance or to show off skills,
  *      but because the standard libraries provided by different compilers handle certain edge cases and illegal values inconsistently.
  *
@@ -62,7 +62,10 @@ namespace hgl
     /**
      * 测试字符是否是emoji表情<br>
      * 参见https://unicode.org/Public/emoji/12.0/emoji-data.txt
+     *
+     * NOTE: emoji handling is temporarily disabled here. See TODO below.
      */
+#if 0 // TODO: Revisit emoji detection and replace with proper Unicode property checks or a lookup table.
     template<typename T>
     inline constexpr bool isemoji(T ch) noexcept
     {
@@ -92,6 +95,7 @@ namespace hgl
 
         return false;
     }
+#endif
 
     /**
      * 测试当前字符是否为小写字母
@@ -138,6 +142,7 @@ namespace hgl
     template<typename T>
     inline constexpr bool isfloat(T ch) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "isfloat requires integral/character type");
         return hgl::isdigit(ch)
         || ch == '-' 
         || ch == '+' 
@@ -151,6 +156,7 @@ namespace hgl
     template<typename T>
     inline constexpr bool isinteger(T ch) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "isinteger requires integral/character type");
         return hgl::isdigit(ch)
         || ch == '-' 
         || ch == '+';
@@ -167,8 +173,7 @@ namespace hgl
         return (
             (ch >= '0' && ch <= '9') ||
             (ch >= 'a' && ch <= 'f') ||
-            (ch >= 'A' && ch <= 'F') ||
-            ch == 'x' || ch == 'X' // allow '0x' style prefix characters if desired
+            (ch >= 'A' && ch <= 'F')
         );
     }
 
@@ -200,7 +205,7 @@ namespace hgl
      * 是否为斜杠
      */
     template<typename T>
-    inline constexpr bool isslash(T ch) noexcept
+    inline constexpr bool isslash(const T &ch)
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "isslash requires integral/character type");
         return (ch == '\\') || (ch == '/');
@@ -281,6 +286,7 @@ namespace hgl
     template<typename T>
     inline constexpr bool isalnum(T ch) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "isalnum requires integral/character type");
         return(hgl::isalpha(ch)||hgl::isdigit(ch));
     }
 
@@ -290,6 +296,7 @@ namespace hgl
     template<typename T>
     inline constexpr bool iscodechar(T ch) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "iscodechar requires integral/character type");
         return(hgl::isalnum(ch)||ch=='_');
     }
 
@@ -308,6 +315,7 @@ namespace hgl
     template<typename T>
     inline constexpr bool isfilenamechar(T ch) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "isfilenamechar requires integral/character type");
         return(ch=='.'||hgl::iscodechar(ch));
     }
 
@@ -378,15 +386,15 @@ namespace hgl
     */
     template<typename T> inline constexpr bool check_codestr(const T *str) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "check_codestr requires integral/character type");
+
         if(!str)return(false);
 
         if((!hgl::isalpha(*str))&&(*str!='_'))       //不是字母或下划线
             return(false);
 
+        // allow single-character identifiers; validate remaining characters if any
         ++str;
-
-        if(!(*str))                             //不能仅一个字符
-            return(false);
 
         while(*str)
             if(!hgl::iscodechar(*str++))
@@ -400,30 +408,34 @@ namespace hgl
     */
     template<typename T> inline constexpr bool check_error_char(const T *str) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "check_error_char requires integral/character type");
+
         if(!str)return(false);
 
-        // list of characters considered invalid for identifiers/filenames
-        constexpr char err_chr[] = { ' ',
-            '<',
-            '>',
-            ',',
-            '/',
-            '\\',
-            '|',
-            '?',
-            '%',
-            '$',
-            '#',
-            '@',
-            '`',
-            '\'',
-            ':',
-            '"',
-            '*',
-            '&',
-            '!',
-            0};
-        const char *sp;
+        // list of characters considered invalid for identifiers/filenames (space handled by isspace())
+        constexpr T err_chr[] = {
+            static_cast<T>('<'),
+            static_cast<T>('>'),
+            static_cast<T>(','),
+            static_cast<T>('/'),
+            static_cast<T>('\\'),
+            static_cast<T>('|'),
+            static_cast<T>('?'),
+            static_cast<T>('%'),
+            static_cast<T>('$'),
+            static_cast<T>('#'),
+            static_cast<T>('@'),
+            static_cast<T>('`'),
+            static_cast<T>('\''),
+            static_cast<T>(':'),
+            static_cast<T>('"'),
+            static_cast<T>('*'),
+            static_cast<T>('&'),
+            static_cast<T>('!'),
+            static_cast<T>(0)
+        };
+
+        const T *sp;
 
         while(*str)
         {
@@ -434,7 +446,7 @@ namespace hgl
 
             while(*sp)
             {
-                if(*str == static_cast<T>(*sp))
+                if(*str == *sp)
                     return(false);
 
                 ++sp;
