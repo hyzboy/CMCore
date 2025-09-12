@@ -137,7 +137,7 @@ namespace hgl
 
         result=0;
 
-        while(*str&&hgl::isxdigit(*str))
+        while(*str&&hgl::is_hex_digit(*str))
         {
             result*=16;
 

@@ -179,7 +179,7 @@ namespace hgl
     {
         if(!str||size<=0)return(-1);
 
-        SplitStringToStringListByCondition<T,bool> split(&sl,isspace,true);
+        SplitStringToStringListByCondition<T,bool> split(&sl,is_space,true);
 
         return split.Split(str,size);
     }//int SplitToStringListBySpace
@@ -202,7 +202,7 @@ namespace hgl
     {
         if(!str||size<=0)return(-1);
 
-        SplitStringToStringListByCondition<T,bool> split(&sl,iscodechar,false);
+        SplitStringToStringListByCondition<T,bool> split(&sl,is_identifier_char,false);
 
         return split.Split(str,size);
     }//int SplitToStringListByCodes
@@ -220,7 +220,7 @@ namespace hgl
     {
         if(!str||size<=0)return(-1);
 
-        SplitStringToStringListByCondition<T,bool> split(&sl,isdigit,false);
+        SplitStringToStringListByCondition<T,bool> split(&sl,is_digit,false);
 
         return split.Split(str,size);
     }//int SplitToStringListByDigit
@@ -238,7 +238,7 @@ namespace hgl
     {
         if(!str||size<=0)return(-1);
 
-        SplitStringToStringListByCondition<T,bool> split(&sl,isxdigit,false);
+        SplitStringToStringListByCondition<T,bool> split(&sl,is_hex_digit,false);
 
         return split.Split(str,size);
     }//int SplitToStringListByXDigit
@@ -256,7 +256,7 @@ namespace hgl
     {
         if(!str||size<=0)return(-1);
 
-        SplitStringToStringListByCondition<T,bool> split(&sl,isfloat,false);
+        SplitStringToStringListByCondition<T,bool> split(&sl,is_float_char,false);
 
         return split.Split(str,size);
     }//int SplitToStringListByFloat

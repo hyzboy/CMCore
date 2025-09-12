@@ -9,7 +9,7 @@ namespace hgl
     * @param src 要处理的字符串
     */
     template<typename T>
-    inline void toupper(T *str)
+    inline void to_upper_char(T *str)
     {
         if(!str)return;
 
@@ -27,7 +27,7 @@ namespace hgl
     * @param src 要处理的字符串
     */
     template<typename T>
-    inline void tolower(T *str)
+    inline void to_lower_char(T *str)
     {
         if(!str)return;
 
@@ -45,7 +45,7 @@ namespace hgl
     * @param src 要处理的字符串
     */
     template<typename T>
-    inline void toupper(const T *src,T *dst)
+    inline void to_upper_char(const T *src,T *dst)
     {
         if(!dst)return;
 
@@ -74,7 +74,7 @@ namespace hgl
     * @param src 要处理的字符串
     */
     template<typename T>
-    inline void tolower(const T *src,T *dst)
+    inline void to_lower_char(const T *src,T *dst)
     {
         if(!dst)return;
 

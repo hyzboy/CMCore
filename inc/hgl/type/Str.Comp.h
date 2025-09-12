@@ -135,7 +135,7 @@ namespace hgl
 
         while(*src&&*dst)
         {
-            gap=hgl::chricmp(*src,*dst);
+            gap=hgl::compare_char_icase(*src,*dst);
 
             if(gap)
                 return gap;
@@ -180,7 +180,7 @@ namespace hgl
 
         while(src_size&&dst_size)
         {
-            gap=hgl::chricmp(*src,*dst);
+            gap=hgl::compare_char_icase(*src,*dst);
 
             if(gap)
                 return gap;
@@ -217,7 +217,7 @@ namespace hgl
 
         while((count)&&(*src)&&(*dst))
         {
-            gap=hgl::chricmp(*src,*dst);
+            gap=hgl::compare_char_icase(*src,*dst);
 
             if(gap)
                 return gap;
@@ -251,10 +251,10 @@ namespace hgl
 
         while(*src&&*dst)
         {
-            if(!hgl::isalnum(*src)){++src;continue;}
-            if(!hgl::isalnum(*dst)){++dst;continue;}
+            if(!hgl::is_alpha_numeric(*src)){++src;continue;}
+            if(!hgl::is_alpha_numeric(*dst)){++dst;continue;}
 
-            gap=hgl::chricmp(*src,*dst);
+            gap=hgl::compare_char_icase(*src,*dst);
 
             if(gap)
                 return gap;

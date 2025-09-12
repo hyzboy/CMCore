@@ -19,25 +19,25 @@ namespace hgl
 
     template<typename C,typename N> struct ParseIntArray:public ParseNumberArray<C,N>
     {
-        virtual bool IsChar(const C ch) override{return hgl::isinteger(ch);} 
+        virtual bool IsChar(const C ch) override{return hgl::is_integer_char(ch);} 
         virtual bool ToNumber(const C *str,N &result) override{return hgl::stoi(str,result);} 
     };
 
     template<typename C,typename N> struct ParseUIntArray:public ParseNumberArray<C,N>
     {
-        virtual bool IsChar(const C ch) override{return hgl::isdigit(ch);} 
+        virtual bool IsChar(const C ch) override{return hgl::is_digit(ch);} 
         virtual bool ToNumber(const C *str,N &result) override{return hgl::stou(str,result);} 
     };
 
     template<typename C,typename N> struct ParseFloatArray:public ParseNumberArray<C,N>
     {
-        virtual bool IsChar(const C ch) override{return hgl::isfloat(ch);} 
+        virtual bool IsChar(const C ch) override{return hgl::is_float_char(ch);} 
         virtual bool ToNumber(const C *str,N &result) override{return hgl::etof(str,result);} 
     };
 
     template<typename C,typename N> struct ParseHexArray:public ParseNumberArray<C,N>
     {
-        virtual bool IsChar(const C ch) override{return hgl::isxdigit(ch);} 
+        virtual bool IsChar(const C ch) override{return hgl::is_hex_digit(ch);} 
         virtual bool ToNumber(const C *str,N &result) override{return hgl::xtou(str,result);} 
     };
 

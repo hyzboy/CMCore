@@ -369,11 +369,11 @@ namespace hgl
         template<typename F>    bool ToFloat(F &result)     const { return etof(c_str(), result); }
 
         /** @brief 将字符串转换为小写（就地修改） */
-        SelfClass &LowerCase    ()      { if (Length()  > 0) { tolower(buffer.data()); } return *this; }
+        SelfClass &LowerCase    ()      { if (Length()  > 0) { to_lower_char(buffer.data()); } return *this; }
         /** @brief 返回小写拷贝 */
         SelfClass  ToLowerCase  () const{ if (Length() == 0) return SelfClass(); SelfClass tmp(*this); return tmp.LowerCase(); }
         /** @brief 将字符串转换为大写（就地修改） */
-        SelfClass &UpperCase    ()      { if (Length()  > 0) { toupper(buffer.data()); } return *this; }
+        SelfClass &UpperCase    ()      { if (Length()  > 0) { to_upper_char(buffer.data()); } return *this; }
         /** @brief 返回大写拷贝 */
         SelfClass  ToUpperCase  () const{ if (Length() == 0) return SelfClass(); SelfClass tmp(*this); return tmp.UpperCase(); }
 
@@ -391,7 +391,7 @@ namespace hgl
         {
             if (Length() == 0) return SelfClass();
             int new_len = Length();
-            const T *new_str = conv(c_str(), new_len, isspace<T>);
+            const T *new_str = conv(c_str(), new_len, is_space<T>);
             if (new_len <= 0) return SelfClass();
             return SelfClass(new_str, new_len);
         }

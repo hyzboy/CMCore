@@ -8,11 +8,11 @@ namespace hgl
     * 截去字符串前端所有的指定字符
     * @param src 源字符串指针
     * @param len 源字符串长度(同样用于返回结果字符串长度)
-    * @param trimfunc 截取字符判断函数(默认isspace<T>)
+    * @param trimfunc 截取字符判断函数(默认is_space<T>)
     * @return 新的字符串起始指针
     */
     template<typename T>
-    inline const T *trimleft(const T *src,int &len,bool (*trimfunc)(const T &)=hgl::isspace<T>)
+    inline const T *trimleft(const T *src,int &len,bool (*trimfunc)(const T &)=hgl::is_space<T>)
     {
         const T *p=src;
 
@@ -32,11 +32,11 @@ namespace hgl
     * 截去字符串尾端所有的指定字符
     * @param src 源字符串指针
     * @param len 源字符串长度(同样用于返回结果字符串长度)
-    * @param trimfunc 截取字符判断函数(默认isspace<T>)
+    * @param trimfunc 截取字符判断函数(默认is_space<T>)
     * @return 新的字符串起始指针
     */
     template<typename T>
-    inline const T *trimright(const T *src,int &len,bool (*trimfunc)(const T &)=hgl::isspace<T>)
+    inline const T *trimright(const T *src,int &len,bool (*trimfunc)(const T &)=hgl::is_space<T>)
     {
         if(!src || len<=0)
             return nullptr;
@@ -59,11 +59,11 @@ namespace hgl
     * 截去字符串前端和尾端的所有指定字符
     * @param src 源字符串指针
     * @param len 源字符串长度(同样用于返回结果字符串长度)
-    * @param trimfunc 截取字符判断函数(默认isspace<T>)
+    * @param trimfunc 截取字符判断函数(默认is_space<T>)
     * @return 新的字符串起始指针
     */
     template<typename T>
-    inline const T *trim(const T *src,int &len,bool (*trimfunc)(const T &)=hgl::isspace<T>)
+    inline const T *trim(const T *src,int &len,bool (*trimfunc)(const T &)=hgl::is_space<T>)
     {
         if(!src||len<=0)
             return nullptr;
@@ -93,11 +93,11 @@ namespace hgl
     * 截取字符串前端的字符串
     * @param src 源字符串指针
     * @param len 源字符串长度(同样用于返回结果字符串长度)
-    * @param clipfunc 不可用字符判断函数(默认isspace<T>)
+    * @param clipfunc 不可用字符判断函数(默认is_space<T>)
     * @return 新的字符串起始指针
     */
     template<typename T>
-    inline const T *clipleft(const T *src,int &len,bool (*clipfunc)(const T &)=hgl::isspace<T>)
+    inline const T *clipleft(const T *src,int &len,bool (*clipfunc)(const T &)=hgl::is_space<T>)
     {
         // corrected boundary checks
         if(!src || len<=0) return(nullptr);
@@ -119,11 +119,11 @@ namespace hgl
     * 截去字符串尾端的字符串
     * @param src 源字符串指针
     * @param len 源字符串长度(同样用于返回结果字符串长度)
-    * @param clipfunc 不可用字符判断函数(默认isspace<T>)
+    * @param clipfunc 不可用字符判断函数(默认is_space<T>)
     * @return 新的字符串起始指针
     */
     template<typename T>
-    inline const T *clipright(const T *src,int &len,bool (*clipfunc)(const T &)=hgl::isspace<T>)
+    inline const T *clipright(const T *src,int &len,bool (*clipfunc)(const T &)=hgl::is_space<T>)
     {
         // corrected boundary checks
         if(!src || len<=0) return(nullptr);

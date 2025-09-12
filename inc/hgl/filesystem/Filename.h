@@ -47,7 +47,7 @@ namespace hgl
 
                 if(len<=0)continue;
                 
-                tmp=trim<T>(str_list[i],len,hgl::isslash<T>);
+                tmp=trim<T>(str_list[i],len,hgl::is_slash<T>);
 
                 if(!first)
                 {
