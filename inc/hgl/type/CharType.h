@@ -64,14 +64,30 @@ namespace hgl
     template<typename T>
     inline bool isemoji(T ch)
     {
-        if(ch==0x23)return(true);           //#
-        if(ch==0x2A)return(true);           //*
-        if(ch>=0x30&&ch<=0x39)return(true); //0-9
-        if(ch==0xA9)return(true);           //©
-        if(ch==0xAE)return(true);           //®
-        if(ch>=0x203C&&ch<=0x1FFFD)return(true);
+        // Generic/smaller-width types (char, u16char, etc.) should only handle
+        // the common single-unit emoji/punctuation characters to avoid
+        // comparing against very large Unicode code points they cannot represent.
+        if(ch==0x23) return true;           //#
+        if(ch==0x2A) return true;           //*
+        if(ch>=0x30 && ch<=0x39) return true; //0-9
+        if(ch==0xA9) return true;           //©
+        if(ch==0xAE) return true;           //®
 
-        return(false);
+        return false;
+    }
+
+    // u32char specialization: supports full range checks
+    template<>
+    inline bool isemoji(u32char ch)
+    {
+        if(ch==0x23) return true;           //#
+        if(ch==0x2A) return true;           //*
+        if(ch>=0x30 && ch<=0x39) return true; //0-9
+        if(ch==0xA9) return true;           //©
+        if(ch==0xAE) return true;           //®
+        if(ch>=0x203C && ch<=0x1FFFD) return true;
+
+        return false;
     }
 
     /**
@@ -117,21 +133,21 @@ namespace hgl
     inline bool isfloat(T ch)
     {
         return hgl::isdigit(ch)
-        ||ch=='-'
-        ||ch=='+'
-        ||ch=='.'
-        ||ch=='E'
-        ||ch=='e'
-        ||ch=='f'
-        ||ch=='F';
+        || ch == '-' 
+        || ch == '+' 
+        || ch == '.' 
+        || ch == 'E' 
+        || ch == 'e' 
+        || ch == 'f' 
+        || ch == 'F';
     }
 
     template<typename T>
     inline bool isinteger(T ch)
     {
         return hgl::isdigit(ch)
-        ||ch=='-'
-        ||ch=='+';
+        || ch == '-' 
+        || ch == '+';
     }
 
     /**
@@ -140,10 +156,13 @@ namespace hgl
     template<typename T>
     inline bool isxdigit(T ch)
     {
-        return((ch>='0'&&ch<='9')
-        ||(ch>='a'&&ch<='f')
-        ||(ch>='A'&&ch<='F')
-        ||ch=='x'||ch=='X');
+        // use character literals for readability
+        return (
+            (ch >= '0' && ch <= '9') ||
+            (ch >= 'a' && ch <= 'f') ||
+            (ch >= 'A' && ch <= 'F') ||
+            ch == 'x' || ch == 'X' // allow '0x' style prefix characters if desired
+        );
     }
 
     /**
@@ -175,10 +194,7 @@ namespace hgl
     template<typename T>
     inline bool isslash(T ch)
     {
-        if(ch=='\\')return(true);
-        if(ch=='/')return(true);
-
-        return(false);
+        return (ch == '\\') || (ch == '/');
     }
 
     template<typename T> inline bool isspace(T);
@@ -303,10 +319,13 @@ namespace hgl
     template<typename T>
     inline bool isbase64(T c)
     {
-        return (c == 43 || // +
-        (c >= 47 && c <= 57) || // /-9
-        (c >= 65 && c <= 90) || // A-Z
-        (c >= 97 && c <= 122)); // a-z
+        // use character literals for clarity and include padding '='
+        return (
+            c == '+' || c == '/' || c == '=' ||
+            (c >= '0' && c <= '9') ||
+            (c >= 'A' && c <= 'Z') ||
+            (c >= 'a' && c <= 'z')
+        );
     }
 
     /**
@@ -339,7 +358,7 @@ namespace hgl
     template<typename S,typename D>
     inline int chricmp(S src,D dst)
     {
-        return hgl::tolower(src)-hgl::tolower(dst);
+        return static_cast<int>(hgl::tolower(src)) - static_cast<int>(hgl::tolower(dst));
     }
 
     /**
@@ -371,7 +390,7 @@ namespace hgl
     {
         if(!str)return(false);
 
-        //const char err_chr[]=u8R"( <>,/\|?%$#@`':"*&!)";
+        // list of characters considered invalid for identifiers/filenames
         constexpr char err_chr[] = { ' ',
             '<',
             '>',
@@ -403,7 +422,7 @@ namespace hgl
 
             while(*sp)
             {
-                if(*str==*sp)
+                if(*str == static_cast<T>(*sp))
                     return(false);
 
                 ++sp;
