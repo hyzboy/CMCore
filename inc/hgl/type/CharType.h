@@ -13,6 +13,7 @@
 #include <hgl/TypeFunc.h>
 #include <type_traits>
 #include <cstdint>
+#include <cstddef>
 
 namespace hgl
 {
@@ -206,13 +207,13 @@ namespace hgl
      * EN: Returns true if str is non-null and all characters within length are hexadecimal digits; otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_hex_digit(const T *str,int length) noexcept
+    inline constexpr bool is_hex_digit(const T *str, std::size_t length) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_hex_digit requires integral/character type");
-        if(!str||length<=0)
+        if(!str || length==0)
             return(false);
 
-        while(*str&&length)
+        while(*str && length)
         {
             if(!hgl::is_hex_digit(*str))
                 return(false);
@@ -641,7 +642,14 @@ namespace hgl
     {
         static_assert(std::is_integral<typename std::remove_cv<S>::type>::value && std::is_integral<typename std::remove_cv<D>::type>::value,
             "compare_char_icase requires integral/character types");
-        return static_cast<int>(hgl::to_lower_char(src)) - static_cast<int>(hgl::to_lower_char(dst));
+
+        // Promote to 32-bit Unicode-aware characters for comparison to avoid truncation
+        const u32char ls = hgl::to_lower_char(static_cast<u32char>(src));
+        const u32char ld = hgl::to_lower_char(static_cast<u32char>(dst));
+
+        if (ls < ld) return -1;
+        if (ls > ld) return  1;
+        return 0;
     }
 
     /**
