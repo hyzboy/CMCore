@@ -17,6 +17,8 @@
  */
 
 #include <hgl/TypeFunc.h>
+#include <type_traits>
+#include <cstdint>
 
 namespace hgl
 {
@@ -62,8 +64,9 @@ namespace hgl
      * 参见https://unicode.org/Public/emoji/12.0/emoji-data.txt
      */
     template<typename T>
-    inline bool isemoji(T ch)
+    inline constexpr bool isemoji(T ch) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "isemoji requires integral/character type");
         // Generic/smaller-width types (char, u16char, etc.) should only handle
         // the common single-unit emoji/punctuation characters to avoid
         // comparing against very large Unicode code points they cannot represent.
@@ -78,7 +81,7 @@ namespace hgl
 
     // u32char specialization: supports full range checks
     template<>
-    inline bool isemoji(u32char ch)
+    inline constexpr bool isemoji(u32char ch) noexcept
     {
         if(ch==0x23) return true;           //#
         if(ch==0x2A) return true;           //*
@@ -94,8 +97,9 @@ namespace hgl
      * 测试当前字符是否为小写字母
      */
     template<typename T>
-    inline bool islower(T ch)
+    inline constexpr bool islower(T ch) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "islower requires integral/character type");
         return(ch>='a'&&ch<='z');
     }
 
@@ -103,8 +107,9 @@ namespace hgl
      * 测试当前字符是否为大写字母
      */
     template<typename T>
-    inline bool isupper(T ch)
+    inline constexpr bool isupper(T ch) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "isupper requires integral/character type");
         return(ch>='A'&&ch<='Z');
     }
 
@@ -112,7 +117,7 @@ namespace hgl
      * 测试当前字符是否为字母
      */
     template<typename T>
-    inline bool isalpha(T ch)
+    inline constexpr bool isalpha(T ch) noexcept
     {
         return(hgl::islower(ch)||hgl::isupper(ch));
     }
@@ -121,8 +126,9 @@ namespace hgl
      * 测试当前字符是否为10进制数字
      */
     template<typename T>
-    inline bool isdigit(T ch)
+    inline constexpr bool isdigit(T ch) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "isdigit requires integral/character type");
         return(ch>='0'&&ch<='9');
     }
 
@@ -130,7 +136,7 @@ namespace hgl
      * 测试当前字符串是否为10进制数字以及小数点、正负符号、指数字符
      */
     template<typename T>
-    inline bool isfloat(T ch)
+    inline constexpr bool isfloat(T ch) noexcept
     {
         return hgl::isdigit(ch)
         || ch == '-' 
@@ -143,7 +149,7 @@ namespace hgl
     }
 
     template<typename T>
-    inline bool isinteger(T ch)
+    inline constexpr bool isinteger(T ch) noexcept
     {
         return hgl::isdigit(ch)
         || ch == '-' 
@@ -154,8 +160,9 @@ namespace hgl
      * 测试当前字符是否为16进制数用字符(0-9,A-F)
      */
     template<typename T>
-    inline bool isxdigit(T ch)
+    inline constexpr bool isxdigit(T ch) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "isxdigit requires integral/character type");
         // use character literals for readability
         return (
             (ch >= '0' && ch <= '9') ||
@@ -171,8 +178,9 @@ namespace hgl
      * @param length 字符串长度
      */
     template<typename T>
-    inline bool isxdigits(const T *str,int length)
+    inline constexpr bool isxdigits(const T *str,int length) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "isxdigits requires integral/character type");
         if(!str||length<=0)
             return(false);
 
@@ -192,18 +200,19 @@ namespace hgl
      * 是否为斜杠
      */
     template<typename T>
-    inline bool isslash(T ch)
+    inline constexpr bool isslash(T ch) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "isslash requires integral/character type");
         return (ch == '\\') || (ch == '/');
     }
 
-    template<typename T> inline bool isspace(T);
+    template<typename T> inline constexpr bool isspace(T);
 
     /**
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
     template<>
-    inline bool isspace(u32char ch)
+    inline constexpr bool isspace(u32char ch) noexcept
     {
         return(ch==0
         ||ch==U' '              //半角空格
@@ -221,7 +230,7 @@ namespace hgl
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
     template<>
-    inline bool isspace(u16char ch)
+    inline constexpr bool isspace(u16char ch) noexcept
     {
         return(ch==0
         ||ch==U16_TEXT(' ')    //半角空格
@@ -239,10 +248,9 @@ namespace hgl
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
     template<>
-    inline bool isspace(char ch)
+    inline constexpr bool isspace(char ch) noexcept
     {
-        return(ch==0
-        ||ch==' '              //半角空格
+        return(ch==' '              //半角空格
         ||ch=='\a'
         ||ch=='\b'
         ||ch=='\f'
@@ -254,10 +262,9 @@ namespace hgl
 
     #ifdef HGL_SUPPORT_CHAR8_T
     template<>
-    inline bool isspace(char8_t ch)
+    inline constexpr bool isspace(char8_t ch) noexcept
     {
-        return(ch==0
-        ||ch==u8' '              //半角空格
+        return(ch==u8' '              //半角空格
         ||ch==u8'\a'
         ||ch==u8'\b'
         ||ch==u8'\f'
@@ -272,7 +279,7 @@ namespace hgl
      * 测试当前字符是否为字母或数字
      */
     template<typename T>
-    inline bool isalnum(T ch)
+    inline constexpr bool isalnum(T ch) noexcept
     {
         return(hgl::isalpha(ch)||hgl::isdigit(ch));
     }
@@ -281,7 +288,7 @@ namespace hgl
      * 测试当前字符是否为代码可用字符(仅字母，数字，下划线，常用于文件名之类)
      */
     template<typename T>
-    inline bool iscodechar(T ch)
+    inline constexpr bool iscodechar(T ch) noexcept
     {
         return(hgl::isalnum(ch)||ch=='_');
     }
@@ -290,7 +297,7 @@ namespace hgl
      * 测试当前字符是否不是代码可用字符(仅字母，数字，下划线，常用于文件名之类)
      */
     template<typename T>
-    inline bool notcodechar(T ch)
+    inline constexpr bool notcodechar(T ch) noexcept
     {
         return(!hgl::iscodechar(ch));
     }
@@ -299,7 +306,7 @@ namespace hgl
      * 测试当前字符是否为文件名可用字符(不含路径分隔符)
      */
     template<typename T>
-    inline bool isfilenamechar(T ch)
+    inline constexpr bool isfilenamechar(T ch) noexcept
     {
         return(ch=='.'||hgl::iscodechar(ch));
     }
@@ -308,7 +315,7 @@ namespace hgl
      * 测试当前字符是否不是文件名可用字符
      */
     template<typename T>
-    inline bool notfilenamechar(T ch)
+    inline constexpr bool notfilenamechar(T ch) noexcept
     {
         return(!hgl::isfilenamechar(ch));
     }
@@ -317,8 +324,9 @@ namespace hgl
      * 测试当前字符是否为BASE64编码字符
      */
     template<typename T>
-    inline bool isbase64(T c)
+    inline constexpr bool isbase64(T c) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "isbase64 requires integral/character type");
         // use character literals for clarity and include padding '='
         return (
             c == '+' || c == '/' || c == '=' ||
@@ -332,8 +340,9 @@ namespace hgl
      * 如果当前字符为大写英文字符，则转换为小写
      */
     template<typename T>
-    inline T tolower(T ch)
+    inline constexpr T tolower(T ch) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "tolower requires integral/character type");
         if(ch>='A'&&ch<='Z')
             return ch+('a'-'A');
         else
@@ -344,8 +353,9 @@ namespace hgl
      * 如果当前字符为小写英文字符，则转换为大写
      */
     template<typename T>
-    inline T toupper(T ch)
+    inline constexpr T toupper(T ch) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "toupper requires integral/character type");
         if(ch>='a'&&ch<='z')
             return ch+('A'-'a');
         else
@@ -356,15 +366,17 @@ namespace hgl
      * 比较两个字符的大小(英文不区分大小写)
      */
     template<typename S,typename D>
-    inline int chricmp(S src,D dst)
+    inline constexpr int chricmp(S src,D dst) noexcept
     {
+        static_assert(std::is_integral<typename std::remove_cv<S>::type>::value && std::is_integral<typename std::remove_cv<D>::type>::value,
+            "chricmp requires integral/character types");
         return static_cast<int>(hgl::tolower(src)) - static_cast<int>(hgl::tolower(dst));
     }
 
     /**
     * 检测字符串是否符合代码命名规则（仅可使用字母和数字、下划线，不能使用数字开头）
     */
-    template<typename T> inline bool check_codestr(const T *str)
+    template<typename T> inline constexpr bool check_codestr(const T *str) noexcept
     {
         if(!str)return(false);
 
@@ -386,7 +398,7 @@ namespace hgl
     /**
     * 检测字符串是否包含不可程序使用字符
     */
-    template<typename T> inline bool check_error_char(const T *str)
+    template<typename T> inline constexpr bool check_error_char(const T *str) noexcept
     {
         if(!str)return(false);
 
