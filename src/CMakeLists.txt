@@ -115,7 +115,20 @@ SOURCE_GROUP("Datatype\\Color\\Source Files" FILES ${COLOR_SOURCE_FILES})
 ##Char & String--------------------------------------------------------
 
 SET(STR_CHAR_FILES  ${TYPE_INCLUDE_PATH}/StrChar.h
-                    ${TYPE_INCLUDE_PATH}/CharType.h)
+                    ${TYPE_INCLUDE_PATH}/CharType.h
+                    ${TYPE_INCLUDE_PATH}/Str.Length.h
+                    ${TYPE_INCLUDE_PATH}/Str.Copy.h
+                    ${TYPE_INCLUDE_PATH}/Str.Stat.h
+                    ${TYPE_INCLUDE_PATH}/Str.Search.h
+                    ${TYPE_INCLUDE_PATH}/Str.Comp.h
+                    ${TYPE_INCLUDE_PATH}/Str.TrimClip.h
+                    ${TYPE_INCLUDE_PATH}/Str.Case.h
+                    ${TYPE_INCLUDE_PATH}/Str.Number.h
+                    ${TYPE_INCLUDE_PATH}/Str.NumberArray.h
+                    ${TYPE_INCLUDE_PATH}/Str.StringArray.h
+                    ${TYPE_INCLUDE_PATH}/Str.Between.h
+                    ${TYPE_INCLUDE_PATH}/Str.Hex.h
+)
 
 SOURCE_GROUP("Text\\StrChar" FILES ${STR_CHAR_FILES})
 

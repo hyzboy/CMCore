@@ -1,5 +1,6 @@
 ﻿#pragma once
-
+#include <hgl/type/Str.Length.h>
+#include <hgl/type/Str.Case.h>
 namespace hgl
 {
     /**

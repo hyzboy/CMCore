@@ -1,5 +1,8 @@
 ﻿#pragma once
-
+#include <hgl/type/CharType.h>
+#include <hgl/type/Str.Length.h>
+#include <cstdint>
+#include <cstring>
 namespace hgl
 {
 

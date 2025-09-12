@@ -17,6 +17,19 @@
  */
 
 #include <hgl/type/CharType.h>
+
+// Split headers
+#include <hgl/type/Str.Length.h>
+#include <hgl/type/Str.Number.h>
+#include <hgl/type/Str.Hex.h>
+#include <hgl/type/Str.Case.h>
+#include <hgl/type/Str.Copy.h>
+#include <hgl/type/Str.Comp.h>
+#include <hgl/type/Str.Search.h>
+#include <hgl/type/Str.Stat.h>
+#include <hgl/type/Str.StringArray.h>
+#include <hgl/type/Str.TrimClip.h>
+#include <hgl/type/Str.Between.h>
 #include <type_traits>
 #include <cmath>
 

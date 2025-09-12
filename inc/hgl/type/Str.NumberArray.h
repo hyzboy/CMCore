@@ -1,5 +1,8 @@
 ﻿#pragma once
-
+#include <hgl/type/Str.Number.h>
+#include <hgl/type/Str.Length.h>
+#include <hgl/type/Str.Search.h>
+#include <hgl/type/Str.Copy.h>
 namespace hgl
 {
 

@@ -1,5 +1,5 @@
 ﻿#pragma once
-
+#include <hgl/type/CharType.h>
 namespace hgl
 {
     /**
