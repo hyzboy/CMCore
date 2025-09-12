@@ -62,7 +62,7 @@ namespace hgl
      * 参见https://unicode.org/Public/emoji/12.0/emoji-data.txt
      */
     template<typename T>
-    inline const bool isemoji(const T &ch)
+    inline bool isemoji(T ch)
     {
         if(ch==0x23)return(true);           //#
         if(ch==0x2A)return(true);           //*
@@ -78,7 +78,7 @@ namespace hgl
      * 测试当前字符是否为小写字母
      */
     template<typename T>
-    inline const bool islower(const T &ch)
+    inline bool islower(T ch)
     {
         return(ch>='a'&&ch<='z');
     }
@@ -87,7 +87,7 @@ namespace hgl
      * 测试当前字符是否为大写字母
      */
     template<typename T>
-    inline const bool isupper(const T &ch)
+    inline bool isupper(T ch)
     {
         return(ch>='A'&&ch<='Z');
     }
@@ -96,7 +96,7 @@ namespace hgl
      * 测试当前字符是否为字母
      */
     template<typename T>
-    inline const bool isalpha(const T &ch)
+    inline bool isalpha(T ch)
     {
         return(hgl::islower(ch)||hgl::isupper(ch));
     }
@@ -105,7 +105,7 @@ namespace hgl
      * 测试当前字符是否为10进制数字
      */
     template<typename T>
-    inline const bool isdigit(const T &ch)
+    inline bool isdigit(T ch)
     {
         return(ch>='0'&&ch<='9');
     }
@@ -114,7 +114,7 @@ namespace hgl
      * 测试当前字符串是否为10进制数字以及小数点、正负符号、指数字符
      */
     template<typename T>
-    inline const bool isfloat(const T &ch)
+    inline bool isfloat(T ch)
     {
         return hgl::isdigit(ch)
         ||ch=='-'
@@ -127,7 +127,7 @@ namespace hgl
     }
 
     template<typename T>
-    inline const bool isinteger(const T &ch)
+    inline bool isinteger(T ch)
     {
         return hgl::isdigit(ch)
         ||ch=='-'
@@ -138,7 +138,7 @@ namespace hgl
      * 测试当前字符是否为16进制数用字符(0-9,A-F)
      */
     template<typename T>
-    inline const bool isxdigit(const T &ch)
+    inline bool isxdigit(T ch)
     {
         return((ch>='0'&&ch<='9')
         ||(ch>='a'&&ch<='f')
@@ -152,7 +152,7 @@ namespace hgl
      * @param length 字符串长度
      */
     template<typename T>
-    inline const bool isxdigits(const T *str,int length)
+    inline bool isxdigits(const T *str,int length)
     {
         if(!str||length<=0)
             return(false);
@@ -173,7 +173,7 @@ namespace hgl
      * 是否为斜杠
      */
     template<typename T>
-    inline const bool isslash(const T &ch)
+    inline bool isslash(T ch)
     {
         if(ch=='\\')return(true);
         if(ch=='/')return(true);
@@ -181,13 +181,13 @@ namespace hgl
         return(false);
     }
 
-    template<typename T> inline const bool isspace(const T &);
+    template<typename T> inline bool isspace(T);
 
     /**
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
     template<>
-    inline const bool isspace(const u32char &ch)
+    inline bool isspace(u32char ch)
     {
         return(ch==0
         ||ch==U' '              //半角空格
@@ -205,7 +205,7 @@ namespace hgl
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
     template<>
-    inline const bool isspace(const u16char &ch)
+    inline bool isspace(u16char ch)
     {
         return(ch==0
         ||ch==U16_TEXT(' ')    //半角空格
@@ -223,7 +223,7 @@ namespace hgl
      * 是否为不显示可打印字符(' ','\t','\r','\f','\v','\n')
      */
     template<>
-    inline const bool isspace(const char &ch)
+    inline bool isspace(char ch)
     {
         return(ch==0
         ||ch==' '              //半角空格
@@ -238,7 +238,7 @@ namespace hgl
 
     #ifdef HGL_SUPPORT_CHAR8_T
     template<>
-    inline const bool isspace(const char8_t &ch)
+    inline bool isspace(char8_t ch)
     {
         return(ch==0
         ||ch==u8' '              //半角空格
@@ -256,7 +256,7 @@ namespace hgl
      * 测试当前字符是否为字母或数字
      */
     template<typename T>
-    inline const bool isalnum(const T &ch)
+    inline bool isalnum(T ch)
     {
         return(hgl::isalpha(ch)||hgl::isdigit(ch));
     }
@@ -265,7 +265,7 @@ namespace hgl
      * 测试当前字符是否为代码可用字符(仅字母，数字，下划线，常用于文件名之类)
      */
     template<typename T>
-    inline const bool iscodechar(const T &ch)
+    inline bool iscodechar(T ch)
     {
         return(hgl::isalnum(ch)||ch=='_');
     }
@@ -274,7 +274,7 @@ namespace hgl
      * 测试当前字符是否不是代码可用字符(仅字母，数字，下划线，常用于文件名之类)
      */
     template<typename T>
-    inline const bool notcodechar(const T &ch)
+    inline bool notcodechar(T ch)
     {
         return(!hgl::iscodechar(ch));
     }
@@ -283,7 +283,7 @@ namespace hgl
      * 测试当前字符是否为文件名可用字符(不含路径分隔符)
      */
     template<typename T>
-    inline const bool isfilenamechar(const T &ch)
+    inline bool isfilenamechar(T ch)
     {
         return(ch=='.'||hgl::iscodechar(ch));
     }
@@ -292,7 +292,7 @@ namespace hgl
      * 测试当前字符是否不是文件名可用字符
      */
     template<typename T>
-    inline const bool notfilenamechar(const T &ch)
+    inline bool notfilenamechar(T ch)
     {
         return(!hgl::isfilenamechar(ch));
     }
@@ -301,7 +301,7 @@ namespace hgl
      * 测试当前字符是否为BASE64编码字符
      */
     template<typename T>
-    inline const bool isbase64(const T &c)
+    inline bool isbase64(T c)
     {
         return (c == 43 || // +
         (c >= 47 && c <= 57) || // /-9
@@ -313,7 +313,7 @@ namespace hgl
      * 如果当前字符为大写英文字符，则转换为小写
      */
     template<typename T>
-    inline const T tolower(const T ch)
+    inline T tolower(T ch)
     {
         if(ch>='A'&&ch<='Z')
             return ch+('a'-'A');
@@ -325,7 +325,7 @@ namespace hgl
      * 如果当前字符为小写英文字符，则转换为大写
      */
     template<typename T>
-    inline const T toupper(const T ch)
+    inline T toupper(T ch)
     {
         if(ch>='a'&&ch<='z')
             return ch+('A'-'a');
@@ -337,7 +337,7 @@ namespace hgl
      * 比较两个字符的大小(英文不区分大小写)
      */
     template<typename S,typename D>
-    inline const int chricmp(S src,D dst)
+    inline int chricmp(S src,D dst)
     {
         return hgl::tolower(src)-hgl::tolower(dst);
     }
@@ -345,7 +345,7 @@ namespace hgl
     /**
     * 检测字符串是否符合代码命名规则（仅可使用字母和数字、下划线，不能使用数字开头）
     */
-    template<typename T> inline const bool check_codestr(const T *str)
+    template<typename T> inline bool check_codestr(const T *str)
     {
         if(!str)return(false);
 
@@ -367,7 +367,7 @@ namespace hgl
     /**
     * 检测字符串是否包含不可程序使用字符
     */
-    template<typename T> inline const bool check_error_char(const T *str)
+    template<typename T> inline bool check_error_char(const T *str)
     {
         if(!str)return(false);
 
