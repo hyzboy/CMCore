@@ -112,6 +112,13 @@ FILE(GLOB COLOR_SOURCE_FILES Color/*.cpp)
 SOURCE_GROUP("Datatype\\Color\\Header Files" FILES ${COLOR_HEADER_FILES})
 SOURCE_GROUP("Datatype\\Color\\Source Files" FILES ${COLOR_SOURCE_FILES})
 
+##Char & String--------------------------------------------------------
+
+SET(STR_CHAR_FILES  ${TYPE_INCLUDE_PATH}/StrChar.h
+                    ${TYPE_INCLUDE_PATH}/CharType.h)
+
+SOURCE_GROUP("Text\\StrChar" FILES ${STR_CHAR_FILES})
+
 ##Text--------------------------------------------------------
 SET(STRING_HEADER_FILES ${TYPE_INCLUDE_PATH}/String.h
                         ${TYPE_INCLUDE_PATH}/StringView.h
@@ -295,6 +302,7 @@ add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
                         ${COLOR_HEADER_FILES}
                         ${COLOR_SOURCE_FILES}
 
+                        ${STR_CHAR_FILES}
                         ${STRING_HEADER_FILES}
                         ${TEXT_HEADER_FILES}
                         ${TEXT_SOURCE_FILES}
