@@ -720,21 +720,21 @@ namespace hgl
         // new conversions and checks to interoperate with std::string_view
         operator std::basic_string_view<T>() const { if (buffer.empty()) return std::basic_string_view<T>(); return std::basic_string_view<T>(buffer.data(), buffer.size()); }
 
-        // declarations for starts_with/ends_with/contains to be defined after StringView is available
-        bool starts_with(const T ch) const;
-        bool starts_with(const T *s) const;
-        bool starts_with(const SelfClass &s) const;
-        bool starts_with(const StringView<T> &sv) const;
+        // PascalCase methods (match StringView naming)
+        bool StartsWith(const T ch) const;
+        bool StartsWith(const T *s) const;
+        bool StartsWith(const SelfClass &s) const;
+        bool StartsWith(const StringView<T> &sv) const;
 
-        bool ends_with(const T ch) const;
-        bool ends_with(const T *s) const;
-        bool ends_with(const SelfClass &s) const;
-        bool ends_with(const StringView<T> &sv) const;
+        bool EndsWith(const T ch) const;
+        bool EndsWith(const T *s) const;
+        bool EndsWith(const SelfClass &s) const;
+        bool EndsWith(const StringView<T> &sv) const;
 
-        bool contains(const T ch) const;
-        bool contains(const T *s) const;
-        bool contains(const SelfClass &s) const;
-        bool contains(const StringView<T> &sv) const;
+        bool Contains(const T ch) const;
+        bool Contains(const T *s) const;
+        bool Contains(const SelfClass &s) const;
+        bool Contains(const StringView<T> &sv) const;
 
     };//class String
 
@@ -847,14 +847,14 @@ namespace hgl
 namespace hgl
 {
     template<typename T>
-    bool String<T>::starts_with(const T ch) const
+    bool String<T>::StartsWith(const T ch) const
     {
         if (IsEmpty()) return false;
         return GetFirstChar() == ch;
     }
 
     template<typename T>
-    bool String<T>::starts_with(const T *s) const
+    bool String<T>::StartsWith(const T *s) const
     {
         if (!s || *s == 0) return false;
         int l = hgl::strlen(s);
@@ -863,7 +863,7 @@ namespace hgl
     }
 
     template<typename T>
-    bool String<T>::starts_with(const SelfClass &s) const
+    bool String<T>::StartsWith(const SelfClass &s) const
     {
         if (s.IsEmpty()) return false;
         if (s.Length() > Length()) return false;
@@ -871,7 +871,7 @@ namespace hgl
     }
 
     template<typename T>
-    bool String<T>::starts_with(const StringView<T> &sv) const
+    bool String<T>::StartsWith(const StringView<T> &sv) const
     {
         if (sv.IsEmpty()) return false;
         if (sv.Length() > Length()) return false;
@@ -879,14 +879,14 @@ namespace hgl
     }
 
     template<typename T>
-    bool String<T>::ends_with(const T ch) const
+    bool String<T>::EndsWith(const T ch) const
     {
         if (IsEmpty()) return false;
         return GetLastChar() == ch;
     }
 
     template<typename T>
-    bool String<T>::ends_with(const T *s) const
+    bool String<T>::EndsWith(const T *s) const
     {
         if (!s || *s == 0) return false;
         int l = hgl::strlen(s);
@@ -895,7 +895,7 @@ namespace hgl
     }
 
     template<typename T>
-    bool String<T>::ends_with(const SelfClass &s) const
+    bool String<T>::EndsWith(const SelfClass &s) const
     {
         if (s.IsEmpty()) return false;
         if (s.Length() > Length()) return false;
@@ -903,7 +903,7 @@ namespace hgl
     }
 
     template<typename T>
-    bool String<T>::ends_with(const StringView<T> &sv) const
+    bool String<T>::EndsWith(const StringView<T> &sv) const
     {
         if (sv.IsEmpty()) return false;
         if (sv.Length() > Length()) return false;
@@ -911,25 +911,25 @@ namespace hgl
     }
 
     template<typename T>
-    bool String<T>::contains(const T ch) const
+    bool String<T>::Contains(const T ch) const
     {
         return FindChar(0, ch) >= 0;
     }
 
     template<typename T>
-    bool String<T>::contains(const T *s) const
+    bool String<T>::Contains(const T *s) const
     {
         return FindString(SelfClass(s), 0) >= 0;
     }
 
     template<typename T>
-    bool String<T>::contains(const SelfClass &s) const
+    bool String<T>::Contains(const SelfClass &s) const
     {
         return FindString(s, 0) >= 0;
     }
 
     template<typename T>
-    bool String<T>::contains(const StringView<T> &sv) const
+    bool String<T>::Contains(const StringView<T> &sv) const
     {
         if (sv.IsEmpty()) return false;
         return FindString(SelfClass(sv.c_str(), sv.Length()), 0) >= 0;
@@ -939,7 +939,7 @@ namespace hgl
     template<typename T>
     inline String<T> operator+(const String<T> &a, const StringView<T> &b)
     {
-        if (a.IsEmpty()) return b.ToString();
+        if (a.IsEmpty()) return String<T>(b.c_str(), b.Length());
         if (b.IsEmpty()) return a;
         return String<T>::ComboString(a.c_str(), a.Length(), b.c_str(), b.Length());
     }
@@ -948,7 +948,7 @@ namespace hgl
     inline String<T> operator+(const StringView<T> &a, const String<T> &b)
     {
         if (a.IsEmpty()) return b;
-        if (b.IsEmpty()) return a.ToString();
+        if (b.IsEmpty()) return String<T>(a.c_str(), a.Length());
         return String<T>::ComboString(a.c_str(), a.Length(), b.c_str(), b.Length());
     }
 
