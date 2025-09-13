@@ -18,7 +18,7 @@
 *       |           + directory separator
 *       |           |        + filename separator
 *       v           v        v
-*       C:\directory\filename.ext
+*       C:\\directory\\filename.ext
 *          ----v---- ---v---  -v-
 *            path      name   ext
 */
@@ -36,34 +36,107 @@ namespace hgl
         {
             String<T> fullname;
 
-            T *p=fullname.Resize(sum(str_len,count)+count);
+            // compute conservative total: sum of provided lengths + separators between non-empty segments
+            int segs = 0;
+            int total_len = 0;
+            for(int i=0;i<count;i++)
+            {
+                if(str_len[i] > 0)
+                {
+                    total_len += str_len[i];
+                    ++segs;
+                }
+            }
+
+            int separators = segs > 0 ? (segs - 1) : 0;
+            T *p = fullname.Resize(total_len + separators);
+
             const T *tmp;
             int len;
-            bool first=true;
+            bool first = true;
 
             for(int i=0;i<count;i++)
             {
-                len=str_len[i];
+                len = str_len[i];
 
-                if(len<=0)continue;
-                
-                tmp=trim<T>(str_list[i],len,hgl::is_slash<T>);
+                if(len<=0) continue;
+
+                tmp = trim<T>(str_list[i],len,hgl::is_slash<T>);
 
                 if(!first)
                 {
-                    *p=spear_char;
+                    *p = spear_char;
                     ++p;
                 }
                 else
                 {
-                    first=false;
+                    first = false;
                 }
 
                 hgl_cpy<T>(p,tmp,len);
-                p+=len;
+                p += len;
             }
 
-            fullname.Resize(p-fullname-1);
+            // Resize to actual written length
+            int written = (int)(p - fullname);
+            if(written > 0)
+                fullname.Resize(written);
+            else
+                fullname.Resize(0);
+
+            return fullname;
+        }
+
+        // Overload accepting arrays of const pointers to avoid const conversion warnings
+        template<typename T>
+        inline const String<T> Combine(const T * const *str_list,const int *str_len,const int count,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
+        {
+            String<T> fullname;
+
+            int segs = 0;
+            int total_len = 0;
+            for(int i=0;i<count;i++)
+            {
+                if(str_len[i] > 0)
+                {
+                    total_len += str_len[i];
+                    ++segs;
+                }
+            }
+
+            int separators = segs > 0 ? (segs - 1) : 0;
+            T *p = fullname.Resize(total_len + separators);
+            const T *tmp;
+            int len;
+            bool first = true;
+
+            for(int i=0;i<count;i++)
+            {
+                len = str_len[i];
+
+                if(len<=0) continue;
+
+                tmp = trim<T>(str_list[i],len,hgl::is_slash<T>);
+
+                if(!first)
+                {
+                    *p = spear_char;
+                    ++p;
+                }
+                else
+                {
+                    first = false;
+                }
+
+                hgl_cpy<T>(p,tmp,len);
+                p += len;
+            }
+
+            int written = (int)(p - fullname);
+            if(written > 0)
+                fullname.Resize(written);
+            else
+                fullname.Resize(0);
 
             return fullname;
         }
@@ -74,33 +147,46 @@ namespace hgl
             if(args.size()<=0)
                 return String<T>();
 
-            int total=0;
+            // collect non-empty args to avoid trailing separators
+            AutoDeleteArray<const T *> ptrs(args.size());
             AutoDeleteArray<int> str_len(args.size());
 
+            int index = 0;
+            for(const T *str:args)
             {
-                int index=0;
-                for(const T *str:args)
-                {
-                    str_len[index]=hgl::strlen(str);
-                    total+=str_len[index]+1;
-                    ++index;
-                }
+                int l = hgl::strlen(str);
+                if(l<=0) continue;
+                ptrs[index] = str;
+                str_len[index] = l;
+                ++index;
             }
 
+            if(index==0) return String<T>();
+
+            int total_len = 0;
+            for(int i=0;i<index;i++) total_len += str_len[i];
+            int separators = index > 0 ? (index - 1) : 0;
+
             String<T> fullname;
+            T *p = fullname.Resize(total_len + separators);
 
-            T *p=fullname.Resize(total-1);
-
+            for(int i=0;i<index;i++)
             {
-                int index=0;
-                for(const T *str:args)
+                hgl_cpy<T>(p, ptrs[i], str_len[i]);
+                p += str_len[i];
+
+                if(i < index-1)
                 {
-                    hgl_cpy<T>(p,str,str_len[index]);
-                    p+=(int)str_len[index];
-                    *p=spear_char;
+                    *p = spear_char;
                     ++p;
                 }
             }
+
+            int written = (int)(p - fullname);
+            if(written > 0)
+                fullname.Resize(written);
+            else
+                fullname.Resize(0);
 
             return fullname;
         }
@@ -130,24 +216,45 @@ namespace hgl
             if(args.size()<=0)
                 return String<T>();
 
-            int total=0;
+            // collect non-empty args
+            AutoDeleteArray<const T *> ptrs(args.size());
+            AutoDeleteArray<int> str_len(args.size());
 
+            int index = 0;
             for(const String<T> &str:args)
-                total+=str.Length()+1;
+            {
+                if(str.IsEmpty()) continue;
+                ptrs[index] = str.c_str();
+                str_len[index] = str.Length();
+                ++index;
+            }
+
+            if(index==0) return String<T>();
+
+            int total_len = 0;
+            for(int i=0;i<index;i++) total_len += str_len[i];
+            int separators = index > 0 ? (index - 1) : 0;
 
             String<T> fullname;
+            T *p = fullname.Resize(total_len + separators);
 
-            T *p=fullname.Resize(total-1);
-
+            for(int i=0;i<index;i++)
             {
-                for(const String<T> &str:args)
+                hgl_cpy<T>(p, ptrs[i], str_len[i]);
+                p += str_len[i];
+
+                if(i < index-1)
                 {
-                    hgl_cpy<T>(p,str.c_str(),str.Length());
-                    p+=str.Length();
-                    *p=spear_char;
+                    *p = spear_char;
                     ++p;
                 }
             }
+
+            int written = (int)(p - fullname);
+            if(written > 0)
+                fullname.Resize(written);
+            else
+                fullname.Resize(0);
 
             return fullname;
         }
@@ -178,12 +285,15 @@ namespace hgl
         template<typename T>
         inline const String<T> Combine(T **str_list,const int count,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
         {
-            int str_len[count];
+            if(count<=0)
+                return String<T>();
+
+            AutoDeleteArray<int> str_len(count);
 
             for(int i=0;i<count;i++)
-                str_len=strlen(str_list[i]);
+                str_len[i]=hgl::strlen(str_list[i]);
 
-            return Combine(str_list,str_len,count,spear_char);
+            return Combine(str_list,str_len.data(),count,spear_char);
         }
 
         /**
@@ -198,12 +308,12 @@ namespace hgl
             if(count<=0)
                 return String<T>();
 
-            AutoDeleteArray<T *> str_list(count);
+            AutoDeleteArray<const T *> str_list(count);
             AutoDeleteArray<int> str_len(count);
 
             int index=0;
 
-            for(String<T> *str:sl)
+            for(const String<T> *str:sl)
             {
                 if(str->IsEmpty())
                     continue;
@@ -214,7 +324,8 @@ namespace hgl
                 ++index;
             }
 
-            return Combine(str_list.data(),str_len,count,spear_char);
+            // pass actual filled count (index) instead of original count
+            return Combine(str_list.data(),str_len.data(),index,spear_char);
         }
 
         /**
@@ -382,10 +493,10 @@ namespace hgl
 
             const T gap_char[]={'\\','/',0};
 
-            T *p=nullptr;
+            const T *p=nullptr;
 
-            T *s=fullname.c_str();
-            T *e=fullname.c_str()+fullname.Length()-1;
+            const T *s=fullname.c_str();
+            const T *e=fullname.c_str()+fullname.Length()-1;
 
             while(e>s)
             {
@@ -404,7 +515,7 @@ namespace hgl
                 {
                     if(*e==gap_char[0]||*e==gap_char[1])
                     {
-                        return String<T>(e+1,p-e);
+                        return String<T>(e+1, (int)(p - e));
                     }
 
                     --e;
