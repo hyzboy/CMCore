@@ -33,7 +33,12 @@ namespace hgl
         while((*src) && (*dst))
         {
             if(!char_eq(*src,*dst))
-                return (int)static_cast<int64_t>(*src) - (int)static_cast<int64_t>(*dst);
+            {
+                using CT = std::common_type_t<S,D>;
+                const CT a = static_cast<CT>(*src);
+                const CT b = static_cast<CT>(*dst);
+                return static_cast<int>(static_cast<int64_t>(a) - static_cast<int64_t>(b));
+            }
 
             ++src;
             ++dst;
@@ -81,7 +86,12 @@ namespace hgl
         while(src_size>0 && dst_size>0)
         {
             if(!hgl::char_eq(*src,*dst))
-                return (int)static_cast<int64_t>(static_cast<std::common_type_t<S,D>>(*src)) - (int)static_cast<int64_t>(static_cast<std::common_type_t<S,D>>(*dst));
+            {
+                using CT = std::common_type_t<S,D>;
+                const CT a = static_cast<CT>(*src);
+                const CT b = static_cast<CT>(*dst);
+                return static_cast<int>(static_cast<int64_t>(a) - static_cast<int64_t>(b));
+            }
 
             ++src; ++dst; --src_size; --dst_size;
         }
@@ -121,7 +131,12 @@ namespace hgl
         while(count>0 && (*src) && (*dst))
         {
             if(!hgl::char_eq(*src,*dst))
-                return (int)static_cast<int64_t>(static_cast<std::common_type_t<S,D>>(*src)) - (int)static_cast<int64_t>(static_cast<std::common_type_t<S,D>>(*dst));
+            {
+                using CT = std::common_type_t<S,D>;
+                const CT a = static_cast<CT>(*src);
+                const CT b = static_cast<CT>(*dst);
+                return static_cast<int>(static_cast<int64_t>(a) - static_cast<int64_t>(b));
+            }
 
             ++src; ++dst; --count;
         }
@@ -136,7 +151,7 @@ namespace hgl
     /**
      * @brief
      * CN: 比较两个字符串的大小，英文字符不区分大小写（case-insensitive for ASCII letters）。
-     * EN: Compare two strings case-insensitively for ASCII letters.
+     * EN: Compare two strings case-insensitively for ASCII letters。
      *
      * @tparam S  源字符串类型 / source string character type
      * @tparam D  目标字符串类型 / destination string character type
@@ -172,7 +187,7 @@ namespace hgl
     /**
      * @brief
      * CN: 比较两个具有指定长度的字符串，英文字符不区分大小写。
-     * EN: Compare two strings with specified lengths, case-insensitive for ASCII letters.
+     * EN: Compare two strings with specified lengths, case-insensitive for ASCII letters。
      *
      * @tparam S  源字符串类型 / source string character type
      * @tparam D  目标字符串类型 / destination string character type
@@ -219,7 +234,7 @@ namespace hgl
     /**
      * @brief
      * CN: 比较两个字符串的大小（不区分大小写），并限制最大比较长度。
-     * EN: Case-insensitive compare for two strings with a maximum comparison length.
+     * EN: Case-insensitive compare for two strings with a maximum comparison length。
      *
      * @tparam S  源字符串类型 / source string character type
      * @tparam D  目标字符串类型 / destination string character type
