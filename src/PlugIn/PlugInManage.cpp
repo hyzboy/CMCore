@@ -15,7 +15,7 @@ namespace hgl
         {
             AddFindPath(pn);
 
-            pn=MergeFilename(pn,OS_TEXT("Plug-ins"));
+            pn=JoinPathWithFilename(pn,OS_TEXT("Plug-ins"));
             AddFindPath(pn);
         }
 
@@ -23,7 +23,7 @@ namespace hgl
         {
             AddFindPath(pn);
 
-            pn=MergeFilename(pn,OS_TEXT("Plug-ins"));
+            pn=JoinPathWithFilename(pn,OS_TEXT("Plug-ins"));
             AddFindPath(pn);
         }
     }
@@ -105,7 +105,7 @@ namespace hgl
 
         for(std::size_t i=0;i<fp_count;i++)
         {
-            pi_fullfilename=MergeFilename(findpath[i],pi_filename);
+            pi_fullfilename=JoinPathWithFilename(findpath[i],pi_filename);
 
             if(!FileExist(pi_fullfilename))continue;
 

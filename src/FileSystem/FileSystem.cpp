@@ -14,7 +14,7 @@ namespace hgl
         /**
          * 修正部分文件名问题(目前仅处理错误斜杠和重复斜杠问题)
          */
-        OSString FixFilename(const OSString &filename)
+        OSString NormalizeFilename(const OSString &filename)
         {
             int old_len=filename.Length();
 
@@ -401,7 +401,7 @@ namespace hgl
 
             for(const OSString *pn:paths)
             {
-                full_filename=MergeFilename(*pn,filename);
+                full_filename=JoinPathWithFilename(*pn,filename);
 
                 exist=FileExist(full_filename);
 
@@ -435,7 +435,7 @@ namespace hgl
             {
                 for(const OSString *fn:filenames)
                 {
-                    full_filename=MergeFilename(*pn,*fn);
+                    full_filename=JoinPathWithFilename(*pn,*fn);
 
                     exist=FileExist(full_filename);
 
