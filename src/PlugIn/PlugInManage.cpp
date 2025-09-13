@@ -95,7 +95,7 @@ namespace hgl
 
         if(pi)return(pi);
 
-        const uint fp_count=findpath.GetCount();
+        const std::size_t fp_count=findpath.GetCount();
 
         if(fp_count<=0)return(nullptr);
 
@@ -103,7 +103,7 @@ namespace hgl
         OSString pi_fullfilename;
         ExternalPlugIn *epi=new ExternalPlugIn;
 
-        for(uint i=0;i<fp_count;i++)
+        for(std::size_t i=0;i<fp_count;i++)
         {
             pi_fullfilename=MergeFilename(findpath[i],pi_filename);
 
