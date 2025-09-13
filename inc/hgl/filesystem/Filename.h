@@ -26,6 +26,8 @@ namespace hgl::filesystem
 
         int non_empty_segments = 0;
         int total_len = 0;
+        int preserve_leading = 0;
+        bool preserve_leading_recorded = false;
 
         for(int i=0;i<count;i++)
         {
@@ -37,8 +39,9 @@ namespace hgl::filesystem
                 continue;
             }
 
-            const T *start = trim<T>(parts[i], orig_len, hgl::is_slash<T>);
-            const T *endp = start + orig_len;
+            const T *orig = parts[i];
+            const T *start = trim<T>(orig, orig_len, hgl::is_slash<T>);
+            const T *endp = orig + orig_len; // use original buffer end
 
             while(endp>start && hgl::is_slash<T>(*(endp-1))) --endp;
 
@@ -50,6 +53,15 @@ namespace hgl::filesystem
                 lens[i]=new_len;
                 total_len += new_len;
                 ++non_empty_segments;
+
+                if(!preserve_leading_recorded)
+                {
+                    // count leading separators in the original segment to preserve absolute/UNC semantics
+                    int lead = 0;
+                    while(lead < orig_len && hgl::is_slash<T>(orig[lead])) ++lead;
+                    preserve_leading = lead;
+                    preserve_leading_recorded = true;
+                }
             }
             else
             {
@@ -59,9 +71,21 @@ namespace hgl::filesystem
         }
 
         int separator_count = non_empty_segments > 0 ? (non_empty_segments - 1) : 0;
-        T *write_ptr = fullname.Resize(total_len + separator_count);
+        int total_reserved = total_len + separator_count + preserve_leading;
+        T *write_ptr = fullname.Resize(total_reserved);
 
         bool first = true;
+
+        // write preserved leading separators if any
+        if(preserve_leading>0)
+        {
+            for(int k=0;k<preserve_leading;k++)
+            {
+                *write_ptr = separator_char;
+                ++write_ptr;
+            }
+            first = false; // leading separators already written
+        }
 
         for(int i=0;i<count;i++)
         {
@@ -105,6 +129,8 @@ namespace hgl::filesystem
 
         int non_empty_segments = 0;
         int total_len = 0;
+        int preserve_leading = 0;
+        bool preserve_leading_recorded = false;
 
         for(int i=0;i<count;i++)
         {
@@ -116,8 +142,9 @@ namespace hgl::filesystem
                 continue;
             }
 
-            const T *start = trim<T>(parts[i], orig_len, hgl::is_slash<T>);
-            const T *endp = start + orig_len;
+            const T *orig = parts[i];
+            const T *start = trim<T>(orig, orig_len, hgl::is_slash<T>);
+            const T *endp = orig + orig_len; // use original buffer end
 
             while(endp>start && hgl::is_slash<T>(*(endp-1))) --endp;
 
@@ -129,6 +156,14 @@ namespace hgl::filesystem
                 lens[i]=new_len;
                 total_len += new_len;
                 ++non_empty_segments;
+
+                if(!preserve_leading_recorded)
+                {
+                    int lead = 0;
+                    while(lead < orig_len && hgl::is_slash<T>(orig[lead])) ++lead;
+                    preserve_leading = lead;
+                    preserve_leading_recorded = true;
+                }
             }
             else
             {
@@ -138,9 +173,20 @@ namespace hgl::filesystem
         }
 
         int separator_count = non_empty_segments > 0 ? (non_empty_segments - 1) : 0;
-        T *write_ptr = fullname.Resize(total_len + separator_count);
+        int total_reserved = total_len + separator_count + preserve_leading;
+        T *write_ptr = fullname.Resize(total_reserved);
 
         bool first = true;
+
+        if(preserve_leading>0)
+        {
+            for(int k=0;k<preserve_leading;k++)
+            {
+                *write_ptr = separator_char;
+                ++write_ptr;
+            }
+            first = false;
+        }
 
         for(int i=0;i<count;i++)
         {
@@ -180,19 +226,32 @@ namespace hgl::filesystem
         AutoDeleteArray<int> lens(static_cast<int>(args.size()));
 
         int index = 0;
+        int preserve_leading = 0;
+        bool preserve_leading_recorded = false;
+
         for(const T *s:args)
         {
             int l = hgl::strlen(s);
             if(l<=0) continue;
 
-            const T *start = trim<T>(s, l, hgl::is_slash<T>);
-            const T *endp = start + l;
+            const T *orig = s;
+            const T *start = trim<T>(orig, l, hgl::is_slash<T>);
+            const T *endp = orig + l;
             while(endp>start && hgl::is_slash<T>(*(endp-1))) --endp;
             int new_len = (int)(endp - start);
             if(new_len<=0) continue;
 
             ptrs[index]=start;
             lens[index]=new_len;
+
+            if(!preserve_leading_recorded)
+            {
+                int lead = 0;
+                while(lead < l && hgl::is_slash<T>(orig[lead])) ++lead;
+                preserve_leading = lead;
+                preserve_leading_recorded = true;
+            }
+
             ++index;
         }
 
@@ -203,7 +262,15 @@ namespace hgl::filesystem
         int separator_count = index > 0 ? (index - 1) : 0;
 
         String<T> fullname;
-        T *write_ptr = fullname.Resize(total_len + separator_count);
+        T *write_ptr = fullname.Resize(total_len + separator_count + preserve_leading);
+
+        // write leading preserved separators
+        bool first = true;
+        if(preserve_leading>0)
+        {
+            for(int k=0;k<preserve_leading;k++) { *write_ptr = separator_char; ++write_ptr; }
+            first = false;
+        }
 
         for(int i=0;i<index;i++)
         {
@@ -255,20 +322,32 @@ namespace hgl::filesystem
         AutoDeleteArray<int> lens(static_cast<int>(args.size()));
 
         int index = 0;
+        int preserve_leading = 0;
+        bool preserve_leading_recorded = false;
+
         for(const String<T> &s:args)
         {
             if(s.IsEmpty()) continue;
-            const T *c = s.c_str();
+            const T *orig = s.c_str();
             int l = s.Length();
 
-            const T *start = trim<T>(c, l, hgl::is_slash<T>);
-            const T *endp = start + l;
+            const T *start = trim<T>(orig, l, hgl::is_slash<T>);
+            const T *endp = orig + l;
             while(endp>start && hgl::is_slash<T>(*(endp-1))) --endp;
             int new_len = (int)(endp - start);
             if(new_len<=0) continue;
 
             ptrs[index]=start;
             lens[index]=new_len;
+
+            if(!preserve_leading_recorded)
+            {
+                int lead = 0;
+                while(lead < l && hgl::is_slash<T>(orig[lead])) ++lead;
+                preserve_leading = lead;
+                preserve_leading_recorded = true;
+            }
+
             ++index;
         }
 
@@ -279,7 +358,14 @@ namespace hgl::filesystem
         int separator_count = index > 0 ? (index - 1) : 0;
 
         String<T> fullname;
-        T *write_ptr = fullname.Resize(total_len + separator_count);
+        T *write_ptr = fullname.Resize(total_len + separator_count + preserve_leading);
+
+        bool first = true;
+        if(preserve_leading>0)
+        {
+            for(int k=0;k<preserve_leading;k++) { *write_ptr = separator_char; ++write_ptr; }
+            first = false;
+        }
 
         for(int i=0;i<index;i++)
         {
@@ -392,7 +478,7 @@ namespace hgl::filesystem
     template<typename T>
     inline String<T> GetFilename(const String<T> &fullname)
     {
-        if(fullname.Length()==0)
+        if(fullname.IsEmpty())
             return(String<T>());
 
         const T sep_chars[] = { '/','\\',0 };
@@ -405,7 +491,7 @@ namespace hgl::filesystem
     template<typename T>
     inline String<T> GetStem(const String<T> &filename,const T split_char='.')
     {
-        if(filename.Length()==0)
+        if(filename.IsEmpty())
             return(String<T>());
 
         const T sep_chars[] = { '/','\\',0 };
@@ -457,7 +543,7 @@ namespace hgl::filesystem
     template<typename T>
     inline String<T> GetParentPath(const String<T> &filename,bool include_separator=true)
     {
-        if(filename.Length()==0) return(String<T>());
+        if(filename.IsEmpty()) return(String<T>());
 
         const T sep_chars[] = { '/','\\',':',0 };
         const int pos = filename.FindRightChars(sep_chars);
@@ -469,7 +555,7 @@ namespace hgl::filesystem
     template<typename T>
     inline String<T> GetLastPathComponent(const String<T> &fullname)
     {
-        if(fullname.Length()==0) return(String<T>());
+        if(fullname.IsEmpty()) return(String<T>());
 
         const T sep_chars[] = {'\\','/',0};
         const T *start = fullname.c_str();
@@ -499,7 +585,7 @@ namespace hgl::filesystem
     template<typename T>
     inline bool SplitPath(String<T> &out_path,String<T> &out_filename,const String<T> &fullname)
     {
-        if(fullname.Length()==0) return false;
+        if(fullname.IsEmpty()) return false;
 
         const T sep_chars[] = { '/','\\' };
         const int pos = fullname.FindRightChars(sep_chars);
@@ -513,7 +599,7 @@ namespace hgl::filesystem
     template<typename T>
     inline String<T> ReplaceExtension(const String<T> &old_name,const String<T> &new_extname,const T split_char='.',const bool from_right=true)
     {
-        if(old_name.Length()<=0) return(String<T>::charOf(split_char)+new_extname);
+        if(old_name.IsEmpty()) return(String<T>::charOf(split_char)+new_extname);
 
         int pos = from_right ? old_name.FindRightChar(split_char) : old_name.FindChar(split_char);
         if(pos!=-1) return old_name.SubString(0,pos+1)+new_extname;
