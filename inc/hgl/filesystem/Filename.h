@@ -26,8 +26,9 @@ namespace hgl::filesystem
 
         int non_empty_segments = 0;
         int total_len = 0;
-        int preserve_leading = 0;
-        bool preserve_leading_recorded = false;
+        int leading_count = 0;
+        const T *leading_src = nullptr;
+        bool leading_recorded = false;
 
         for(int i=0;i<count;i++)
         {
@@ -54,13 +55,16 @@ namespace hgl::filesystem
                 total_len += new_len;
                 ++non_empty_segments;
 
-                if(!preserve_leading_recorded)
+                if(!leading_recorded)
                 {
-                    // count leading separators in the original segment to preserve absolute/UNC semantics
                     int lead = 0;
                     while(lead < orig_len && hgl::is_slash<T>(orig[lead])) ++lead;
-                    preserve_leading = lead;
-                    preserve_leading_recorded = true;
+                    if(lead>0)
+                    {
+                        leading_count = lead;
+                        leading_src = orig;
+                    }
+                    leading_recorded = true;
                 }
             }
             else
@@ -71,15 +75,15 @@ namespace hgl::filesystem
         }
 
         int separator_count = non_empty_segments > 0 ? (non_empty_segments - 1) : 0;
-        int total_reserved = total_len + separator_count + preserve_leading;
+        int total_reserved = total_len + separator_count + leading_count;
         T *write_ptr = fullname.Resize(total_reserved);
 
         bool first = true;
 
-        // write preserved leading separators if any
-        if(preserve_leading>0)
+        // write preserved leading separators if any (normalized to separator_char)
+        if(leading_count>0)
         {
-            for(int k=0;k<preserve_leading;k++)
+            for(int k=0;k<leading_count;k++)
             {
                 *write_ptr = separator_char;
                 ++write_ptr;
@@ -129,8 +133,9 @@ namespace hgl::filesystem
 
         int non_empty_segments = 0;
         int total_len = 0;
-        int preserve_leading = 0;
-        bool preserve_leading_recorded = false;
+        int leading_count = 0;
+        const T *leading_src = nullptr;
+        bool leading_recorded = false;
 
         for(int i=0;i<count;i++)
         {
@@ -157,12 +162,16 @@ namespace hgl::filesystem
                 total_len += new_len;
                 ++non_empty_segments;
 
-                if(!preserve_leading_recorded)
+                if(!leading_recorded)
                 {
                     int lead = 0;
                     while(lead < orig_len && hgl::is_slash<T>(orig[lead])) ++lead;
-                    preserve_leading = lead;
-                    preserve_leading_recorded = true;
+                    if(lead>0)
+                    {
+                        leading_count = lead;
+                        leading_src = orig;
+                    }
+                    leading_recorded = true;
                 }
             }
             else
@@ -173,14 +182,14 @@ namespace hgl::filesystem
         }
 
         int separator_count = non_empty_segments > 0 ? (non_empty_segments - 1) : 0;
-        int total_reserved = total_len + separator_count + preserve_leading;
+        int total_reserved = total_len + separator_count + leading_count;
         T *write_ptr = fullname.Resize(total_reserved);
 
         bool first = true;
 
-        if(preserve_leading>0)
+        if(leading_count>0)
         {
-            for(int k=0;k<preserve_leading;k++)
+            for(int k=0;k<leading_count;k++)
             {
                 *write_ptr = separator_char;
                 ++write_ptr;
@@ -226,8 +235,9 @@ namespace hgl::filesystem
         AutoDeleteArray<int> lens(static_cast<int>(args.size()));
 
         int index = 0;
-        int preserve_leading = 0;
-        bool preserve_leading_recorded = false;
+        int leading_count = 0;
+        const T *leading_src = nullptr;
+        bool leading_recorded = false;
 
         for(const T *s:args)
         {
@@ -244,12 +254,16 @@ namespace hgl::filesystem
             ptrs[index]=start;
             lens[index]=new_len;
 
-            if(!preserve_leading_recorded)
+            if(!leading_recorded)
             {
                 int lead = 0;
                 while(lead < l && hgl::is_slash<T>(orig[lead])) ++lead;
-                preserve_leading = lead;
-                preserve_leading_recorded = true;
+                if(lead>0)
+                {
+                    leading_count = lead;
+                    leading_src = orig;
+                }
+                leading_recorded = true;
             }
 
             ++index;
@@ -262,13 +276,13 @@ namespace hgl::filesystem
         int separator_count = index > 0 ? (index - 1) : 0;
 
         String<T> fullname;
-        T *write_ptr = fullname.Resize(total_len + separator_count + preserve_leading);
+        T *write_ptr = fullname.Resize(total_len + separator_count + leading_count);
 
-        // write leading preserved separators
+        // write leading preserved separators (normalized)
         bool first = true;
-        if(preserve_leading>0)
+        if(leading_count>0)
         {
-            for(int k=0;k<preserve_leading;k++) { *write_ptr = separator_char; ++write_ptr; }
+            for(int k=0;k<leading_count;k++) { *write_ptr = separator_char; ++write_ptr; }
             first = false;
         }
 
@@ -322,8 +336,9 @@ namespace hgl::filesystem
         AutoDeleteArray<int> lens(static_cast<int>(args.size()));
 
         int index = 0;
-        int preserve_leading = 0;
-        bool preserve_leading_recorded = false;
+        int leading_count = 0;
+        const T *leading_src = nullptr;
+        bool leading_recorded = false;
 
         for(const String<T> &s:args)
         {
@@ -340,12 +355,16 @@ namespace hgl::filesystem
             ptrs[index]=start;
             lens[index]=new_len;
 
-            if(!preserve_leading_recorded)
+            if(!leading_recorded)
             {
                 int lead = 0;
                 while(lead < l && hgl::is_slash<T>(orig[lead])) ++lead;
-                preserve_leading = lead;
-                preserve_leading_recorded = true;
+                if(lead>0)
+                {
+                    leading_count = lead;
+                    leading_src = orig;
+                }
+                leading_recorded = true;
             }
 
             ++index;
@@ -358,12 +377,12 @@ namespace hgl::filesystem
         int separator_count = index > 0 ? (index - 1) : 0;
 
         String<T> fullname;
-        T *write_ptr = fullname.Resize(total_len + separator_count + preserve_leading);
+        T *write_ptr = fullname.Resize(total_len + separator_count + leading_count);
 
         bool first = true;
-        if(preserve_leading>0)
+        if(leading_count>0)
         {
-            for(int k=0;k<preserve_leading;k++) { *write_ptr = separator_char; ++write_ptr; }
+            for(int k=0;k<leading_count;k++) { *write_ptr = separator_char; ++write_ptr; }
             first = false;
         }
 
