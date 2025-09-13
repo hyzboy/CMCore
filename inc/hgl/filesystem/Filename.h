@@ -36,32 +36,58 @@ namespace hgl
         {
             String<T> fullname;
 
-            // compute conservative total: sum of provided lengths + separators between non-empty segments
+            if(count<=0)
+                return fullname;
+
+            // collect trimmed pointers and lengths
+            AutoDeleteArray<const T *> ptrs(count);
+            AutoDeleteArray<int> lens(count);
+
             int segs = 0;
             int total_len = 0;
+
             for(int i=0;i<count;i++)
             {
-                if(str_len[i] > 0)
+                int orig_len = str_len[i];
+                if(orig_len<=0)
                 {
-                    total_len += str_len[i];
+                    ptrs[i]=nullptr;
+                    lens[i]=0;
+                    continue;
+                }
+
+                const T *start = trim<T>(str_list[i], orig_len, hgl::is_slash<T>);
+                const T *endp = start + orig_len;
+
+                // trim trailing slashes
+                while(endp>start && hgl::is_slash<T>(*(endp-1))) --endp;
+
+                int new_len = (int)(endp - start);
+
+                if(new_len>0)
+                {
+                    ptrs[i]=start;
+                    lens[i]=new_len;
+                    total_len += new_len;
                     ++segs;
+                }
+                else
+                {
+                    ptrs[i]=nullptr;
+                    lens[i]=0;
                 }
             }
 
             int separators = segs > 0 ? (segs - 1) : 0;
             T *p = fullname.Resize(total_len + separators);
 
-            const T *tmp;
-            int len;
             bool first = true;
 
             for(int i=0;i<count;i++)
             {
-                len = str_len[i];
+                int len = lens[i];
 
                 if(len<=0) continue;
-
-                tmp = trim<T>(str_list[i],len,hgl::is_slash<T>);
 
                 if(!first)
                 {
@@ -73,7 +99,7 @@ namespace hgl
                     first = false;
                 }
 
-                hgl_cpy<T>(p,tmp,len);
+                hgl_cpy<T>(p, ptrs[i], len);
                 p += len;
             }
 
@@ -93,30 +119,56 @@ namespace hgl
         {
             String<T> fullname;
 
+            if(count<=0)
+                return fullname;
+
+            AutoDeleteArray<const T *> ptrs(count);
+            AutoDeleteArray<int> lens(count);
+
             int segs = 0;
             int total_len = 0;
+
             for(int i=0;i<count;i++)
             {
-                if(str_len[i] > 0)
+                int orig_len = str_len[i];
+                if(orig_len<=0)
                 {
-                    total_len += str_len[i];
+                    ptrs[i]=nullptr;
+                    lens[i]=0;
+                    continue;
+                }
+
+                const T *start = trim<T>(str_list[i], orig_len, hgl::is_slash<T>);
+                const T *endp = start + orig_len;
+
+                while(endp>start && hgl::is_slash<T>(*(endp-1))) --endp;
+
+                int new_len = (int)(endp - start);
+
+                if(new_len>0)
+                {
+                    ptrs[i]=start;
+                    lens[i]=new_len;
+                    total_len += new_len;
                     ++segs;
+                }
+                else
+                {
+                    ptrs[i]=nullptr;
+                    lens[i]=0;
                 }
             }
 
             int separators = segs > 0 ? (segs - 1) : 0;
             T *p = fullname.Resize(total_len + separators);
-            const T *tmp;
-            int len;
+
             bool first = true;
 
             for(int i=0;i<count;i++)
             {
-                len = str_len[i];
+                int len = lens[i];
 
                 if(len<=0) continue;
-
-                tmp = trim<T>(str_list[i],len,hgl::is_slash<T>);
 
                 if(!first)
                 {
@@ -128,7 +180,7 @@ namespace hgl
                     first = false;
                 }
 
-                hgl_cpy<T>(p,tmp,len);
+                hgl_cpy<T>(p, ptrs[i], len);
                 p += len;
             }
 
@@ -147,7 +199,7 @@ namespace hgl
             if(args.size()<=0)
                 return String<T>();
 
-            // collect non-empty args to avoid trailing separators
+            // collect non-empty args to avoid trailing separators and trim them
             AutoDeleteArray<const T *> ptrs(static_cast<int>(args.size()));
             AutoDeleteArray<int> str_len(static_cast<int>(args.size()));
 
@@ -156,8 +208,15 @@ namespace hgl
             {
                 int l = hgl::strlen(str);
                 if(l<=0) continue;
-                ptrs[index] = str;
-                str_len[index] = l;
+
+                const T *start = trim<T>(str, l, hgl::is_slash<T>);
+                const T *endp = start + l;
+                while(endp>start && hgl::is_slash<T>(*(endp-1))) --endp;
+                int new_len = (int)(endp - start);
+                if(new_len<=0) continue;
+
+                ptrs[index] = start;
+                str_len[index] = new_len;
                 ++index;
             }
 
@@ -216,7 +275,7 @@ namespace hgl
             if(args.size()<=0)
                 return String<T>();
 
-            // collect non-empty args
+            // collect non-empty args and trim
             AutoDeleteArray<const T *> ptrs(static_cast<int>(args.size()));
             AutoDeleteArray<int> str_len(static_cast<int>(args.size()));
 
@@ -224,8 +283,17 @@ namespace hgl
             for(const String<T> &str:args)
             {
                 if(str.IsEmpty()) continue;
-                ptrs[index] = str.c_str();
-                str_len[index] = str.Length();
+                const T *c = str.c_str();
+                int l = str.Length();
+
+                const T *start = trim<T>(c, l, hgl::is_slash<T>);
+                const T *endp = start + l;
+                while(endp>start && hgl::is_slash<T>(*(endp-1))) --endp;
+                int new_len = (int)(endp - start);
+                if(new_len<=0) continue;
+
+                ptrs[index] = start;
+                str_len[index] = new_len;
                 ++index;
             }
 
@@ -427,7 +495,10 @@ namespace hgl
             if(end==-1)
                 end=fullname.Length();
 
-            int pos=fullname.FindRightChar(fullname.Length()-end,T('.'));
+            if(end<=0)
+                return String<T>();
+
+            int pos=fullname.FindRightChar(end-1,T('.'));
 
             if(pos==-1)
                 return String<T>();
@@ -449,7 +520,10 @@ namespace hgl
             if(end==-1)
                 end=fullname.Length();
 
-            int pos=fullname.FindRightChar(fullname.Length()-end,T('.'));
+            if(end<=0)
+                return String<T>(fullname);
+
+            int pos=fullname.FindRightChar(end-1,T('.'));
 
             if(pos==-1)
                 return String<T>(fullname); // no dot -> return original name
@@ -579,15 +653,15 @@ namespace hgl
 
     #ifdef HGL_SUPPORT_CHAR8_T
         inline AnsiString MergeFilename(const AnsiString &pathname,const AnsiString &filename)          ///<组合路径名与文件名
-        {return MergeFilename<char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_RAWSTR);}
+        {return MergeFilename<char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_RAWSTR);}    
     #endif//HGL_SUPPORT_CHAR8_T
 
         inline U8String MergeFilename(const U8String &pathname,const U8String &filename)          ///<组合路径名与文件名
-        {return MergeFilename<u8char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_U8STR);}
+        {return MergeFilename<u8char>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_U8STR);}    
 
     #if HGL_OS == HGL_OS_Windows
         inline WideString MergeFilename(const WideString &pathname,const WideString &filename)          ///<组合路径名与文件名
-        {return MergeFilename<wchar_t>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_STR);}
+        {return MergeFilename<wchar_t>(pathname,filename,HGL_DIRECTORY_SEPARATOR,HGL_DIRECTORY_SEPARATOR_STR);}    
     #endif//HGL_OS == HGL_OS_Windows
 
         OSString FixFilename(const OSString &filename);                                                 ///<修正部分文件名问题
