@@ -22,7 +22,7 @@ namespace hgl
 
             os_char *new_string=new_filename.Resize(old_len+1);
 
-            os_char *sp=filename.c_str();
+            const os_char *sp=filename.c_str();
             os_char *tp=new_string;
             os_char last_char=0;
             bool fix=false;
@@ -186,8 +186,7 @@ namespace hgl
         {
             io::FileAccess fs;
 
-            if(!fs.CreateTrunc(filename))
-                return(-1);
+            if(!fs.CreateTrunc(filename))return(-1);
 
             int64 total=0;
             int64 result;
@@ -216,12 +215,12 @@ namespace hgl
         bool MakePath(const OSString &dirname)
         {
             constexpr os_char directory_separator=HGL_DIRECTORY_SEPARATOR;
-            os_char *p;
+            const os_char *p;
 
             os_char str[HGL_MAX_PATH];
-            os_char *sp;
-
-            FileInfo fi;
+            const os_char *sp;
+            os_char last_char=0;
+            bool fix=false;
 
             strcpy(str,HGL_MAX_PATH,dirname.c_str());
 
@@ -232,10 +231,16 @@ namespace hgl
                 p=hgl::strchr(sp,directory_separator);
 
                 if(p)
-                    *p=0;
+                {
+                    // need mutable pointer to set to 0
+                    os_char *mp = const_cast<os_char*>(p);
+                    *mp=0;
+                }
 
                 if(*sp==0)
                     return(true);
+
+                FileInfo fi;
 
                 if(!GetFileInfo(str,fi))    //没有找到
                 {
@@ -245,18 +250,21 @@ namespace hgl
                 else
                 {
                     if(!fi.is_directory)        //不是目录
-#if HGL_OS != HGL_OS_Windows
+    #if HGL_OS != HGL_OS_Windows
                         if(!fi.is_link)         //还不是链接
-#endif//HGL_OS != HGL_OS_Windows
+    #endif//HGL_OS != HGL_OS_Windows
                             return(false);
                 }
 
                 if(p)
-                    *p++=directory_separator;
+                {
+                    os_char *mp = const_cast<os_char*>(p);
+                    *mp++=directory_separator;
+                }
                 else
                     return(true);
 
-                while(*p==directory_separator)  //跳过那种连续的分隔符,比如C:\\Windows
+                while(*p==directory_separator)  //跳过那种连续的分隔符,比如C:\Windows
                     ++p;
 
                 sp=p;
@@ -365,10 +373,10 @@ namespace hgl
             if (file_state.st_mode&S_IWRITE)
                 fi.can_write = true;
 
-#if HGL_OS != HGL_OS_Windows
+    #if HGL_OS != HGL_OS_Windows
             if(file_state.st_mode&S_IFLNK)
                 fi.is_link=true;
-#endif//HGL_OS != HGL_OS_Windows
+    #endif//HGL_OS != HGL_OS_Windows
 
             fi.size=file_state.st_size;
 
