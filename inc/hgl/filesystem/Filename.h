@@ -392,7 +392,7 @@ namespace hgl::filesystem
     template<typename T>
     inline String<T> GetFilename(const String<T> &fullname)
     {
-        if(fullname.Length()<=1)
+        if(fullname.Length()==0)
             return(String<T>());
 
         const T sep_chars[] = { '/','\\',0 };
@@ -405,7 +405,7 @@ namespace hgl::filesystem
     template<typename T>
     inline String<T> GetStem(const String<T> &filename,const T split_char='.')
     {
-        if(filename.Length()<=1)
+        if(filename.Length()==0)
             return(String<T>());
 
         const T sep_chars[] = { '/','\\',0 };
@@ -457,7 +457,7 @@ namespace hgl::filesystem
     template<typename T>
     inline String<T> GetParentPath(const String<T> &filename,bool include_separator=true)
     {
-        if(filename.Length()<=1) return(String<T>());
+        if(filename.Length()==0) return(String<T>());
 
         const T sep_chars[] = { '/','\\',':',0 };
         const int pos = filename.FindRightChars(sep_chars);
@@ -469,7 +469,7 @@ namespace hgl::filesystem
     template<typename T>
     inline String<T> GetLastPathComponent(const String<T> &fullname)
     {
-        if(fullname.Length()<=1) return(String<T>());
+        if(fullname.Length()==0) return(String<T>());
 
         const T sep_chars[] = {'\\','/',0};
         const T *start = fullname.c_str();
@@ -499,7 +499,7 @@ namespace hgl::filesystem
     template<typename T>
     inline bool SplitPath(String<T> &out_path,String<T> &out_filename,const String<T> &fullname)
     {
-        if(fullname.Length()<=1) return false;
+        if(fullname.Length()==0) return false;
 
         const T sep_chars[] = { '/','\\' };
         const int pos = fullname.FindRightChars(sep_chars);
@@ -513,7 +513,7 @@ namespace hgl::filesystem
     template<typename T>
     inline String<T> ReplaceExtension(const String<T> &old_name,const String<T> &new_extname,const T split_char='.',const bool from_right=true)
     {
-        if(old_name.Length()<=1) return(String<T>::charOf(split_char)+new_extname);
+        if(old_name.Length()<=0) return(String<T>::charOf(split_char)+new_extname);
 
         int pos = from_right ? old_name.FindRightChar(split_char) : old_name.FindChar(split_char);
         if(pos!=-1) return old_name.SubString(0,pos+1)+new_extname;
