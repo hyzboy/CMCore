@@ -246,6 +246,37 @@ namespace hgl
             return SelfClass(ptr + l, r - l + 1);
         }
 
+        // std::string_view-style modifiers returning a new view (PascalCase)
+        SelfClass RemovePrefix(int n) const
+        {
+            if (n <= 0) return *this;
+            if (n >= Length()) return SelfClass();
+            return SelfClass(ptr + n, length - n);
+        }
+
+        SelfClass RemoveSuffix(int n) const
+        {
+            if (n <= 0) return *this;
+            if (n >= Length()) return SelfClass();
+            return SelfClass(ptr, length - n);
+        }
+
+        // StartsWith/EndsWith/Contains (PascalCase names)
+        bool StartsWith(const T ch) const { if (IsEmpty()) return false; return GetFirstChar() == ch; }
+        bool StartsWith(const T *s) const { if (!s || *s == 0) return false; int l = hgl::strlen(s); if (l > Length()) return false; return hgl::strcmp(c_str(), l, s, l) == 0; }
+        bool StartsWith(const SelfClass &s) const { if (s.IsEmpty()) return false; if (s.Length() > Length()) return false; return hgl::strcmp(c_str(), s.Length(), s.c_str(), s.Length()) == 0; }
+        bool StartsWith(const std::basic_string_view<T> &sv) const { if (sv.empty()) return false; if ((int)sv.size() > Length()) return false; return hgl::strcmp(c_str(), int(sv.size()), sv.data(), int(sv.size())) == 0; }
+
+        bool EndsWith(const T ch) const { if (IsEmpty()) return false; return GetLastChar() == ch; }
+        bool EndsWith(const T *s) const { if (!s || *s == 0) return false; int l = hgl::strlen(s); if (l > Length()) return false; return hgl::strcmp(c_str() + (Length() - l), l, s, l) == 0; }
+        bool EndsWith(const SelfClass &s) const { if (s.IsEmpty()) return false; if (s.Length() > Length()) return false; return hgl::strcmp(c_str() + (Length() - s.Length()), s.Length(), s.c_str(), s.Length()) == 0; }
+        bool EndsWith(const std::basic_string_view<T> &sv) const { if (sv.empty()) return false; if ((int)sv.size() > Length()) return false; return hgl::strcmp(c_str() + (Length() - int(sv.size())), int(sv.size()), sv.data(), int(sv.size())) == 0; }
+
+        bool Contains(const T ch) const { return FindChar(0, ch) >= 0; }
+        bool Contains(const T *s) const { if (!s || *s == 0) return false; return FindString(SelfClass(s), 0) >= 0; }
+        bool Contains(const SelfClass &s) const { return FindString(s, 0) >= 0; }
+        bool Contains(const std::basic_string_view<T> &sv) const { if (sv.empty()) return false; return FindString(SelfClass(sv.data(), int(sv.size())), 0) >= 0; }
+
         // utility
         int StatChar(const T ch) const { return ::StatChar(c_str(), ch); }
         int StatLine() const { return ::StatLine(c_str()); }
