@@ -5,6 +5,8 @@
 #include <memory>        // for std::unique_ptr
 #include <vector>        // for AutoDeleteObjectArray
 #include <algorithm>     // for std::fill, std::for_each
+#include <cstddef>
+#include <cstdint>
 
 namespace hgl
 {
@@ -155,7 +157,13 @@ namespace hgl
      */
     template<typename T> struct SmartData:public RefCount
     {
-        T *data;                 // 被管理的对象指针
+        T *data{
+#if defined(_MSC_VER)
+            nullptr
+#else
+            nullptr
+#endif
+        };
 
     public:
 
@@ -199,7 +207,7 @@ namespace hgl
      */
     template<typename T> struct SmartArrayData:public ArrayRefCount
     {
-        T *data;                 // 指向 T[] 数组
+        T *data{nullptr};
 
     public:
 
@@ -215,7 +223,7 @@ namespace hgl
             SAFE_CLEAR_ARRAY(data);    // 自定义安全宏，确保指针清零
         }
 
-        const T &operator *() const {return data;}
+        const T &operator *() const {return data[0];}
         const bool operator!() const{return !data;}
 
         bool lock()
@@ -251,21 +259,20 @@ namespace hgl
 
         _Smart()
         {
-            sd=0;
+            sd=nullptr;
         }
 
-        /* 之前加了 explicit 导致大量旧代码无法从 T* 隐式转换，这里恢复隐式行为 */
         _Smart(T *ptr)
         {
             if(ptr)
                 sd=new SD(ptr);
             else
-                sd=0;
+                sd=nullptr;
         }
 
         _Smart(const SelfClass &st)
         {
-            sd=0;
+            sd=nullptr;
             set(st.get());              // 复制时建立新的控制块（语义：深复制底层裸指针）
         }
 
@@ -282,7 +289,7 @@ namespace hgl
 
             if(!ptr)
             {
-                sd=0;
+                sd=nullptr;
                 return nullptr;
             }
 
@@ -306,7 +313,7 @@ namespace hgl
             if(sd)
             {
                 sd->unref();
-                sd=0;
+                sd=nullptr;
             }
         }
 
@@ -326,7 +333,7 @@ namespace hgl
             if(sd)
             {
                 sd->unref_weak();
-                sd=0;
+                sd=nullptr;
             }
         }
 
@@ -359,8 +366,8 @@ namespace hgl
         }
 
         // 基础访问接口 -------------------------------------------------
-                T *     get         ()const{return sd?sd->data:0;}          ///< 返回裸指针（可能为空）
-          const T *     const_get   ()const{return sd?sd->data:0;}          ///< const 版 get
+                T *     get         ()const{return sd?sd->data:nullptr;}          ///< 返回裸指针（可能为空）
+          const T *     const_get   ()const{return sd?sd->data:nullptr;}          ///< const 版 get
         virtual bool    valid       ()const{return sd && sd->valid();}         ///< 是否指向一个尚未析构的对象
                 int     use_count   ()const{return sd?sd->count.load(std::memory_order_acquire):-1;}  ///< 强引用计数（空指针返回 -1）
                 bool    only        ()const{return sd?sd->count.load(std::memory_order_acquire)==1:true;} ///< 是否唯一拥有者
@@ -371,8 +378,8 @@ namespace hgl
         const   T &     operator *  ()const{return *(sd->data);}             ///< 解引用（调用方需保证 valid==true）
         const   bool    operator !  ()const{return !(sd && sd->valid());}       ///< 与 !valid 语义一致
 
-                        operator T *()const{return(sd?sd->data:0);}          ///< 隐式转换成裸指针（不建议新代码使用）
-                T *     operator -> ()const{return(sd?sd->data:0);}          ///< 访问成员
+                        operator T *()const{return(sd?sd->data:nullptr);}          ///< 隐式转换成裸指针（不建议新代码使用）
+                T *     operator -> ()const{return(sd?sd->data:nullptr);}          ///< 访问成员
 
                 bool    operator == (const SelfClass & rp)const{return(get()==rp.get());}
                 bool    operator == (const T *         rp)const{return(get()==rp);}        ///< 与裸指针比较
@@ -460,7 +467,7 @@ namespace hgl
         operator T *(){ return SuperClass::get(); }
         operator const T *()const{ return SuperClass::get(); }
 
-        T &operator [](int n){ return SuperClass::sd->data[n]; }
+        T &operator [](std::size_t n){ return SuperClass::sd->data[n]; }
 
         SelfClass &operator =(const SelfClass &sap)
         {
@@ -627,12 +634,12 @@ namespace hgl
     template<typename T> class AutoDeleteArray
     {
         std::unique_ptr<T[]> obj;   // managed array
-        size_t size = 0;
+        std::size_t size = 0;
 
     public:
         AutoDeleteArray()=default;
 
-        explicit AutoDeleteArray(const size_t count)
+        explicit AutoDeleteArray(const std::size_t count)
         {
             if(count>0)
             {
@@ -641,7 +648,7 @@ namespace hgl
             }
         }
 
-        AutoDeleteArray(T *o,const size_t count)
+        AutoDeleteArray(T *o,const std::size_t count)
         {
             obj.reset(o);
             size = count;
@@ -668,13 +675,13 @@ namespace hgl
 
         ~AutoDeleteArray()=default;
 
-        void set(T *o,const size_t count)
+        void set(T *o,const std::size_t count)
         {
             obj.reset(o);
             size = count;
         }
 
-        T *alloc(const size_t count)
+        T *alloc(const std::size_t count)
         {
             if(count==0)
             {
@@ -689,7 +696,8 @@ namespace hgl
 
         T *operator -> (){return obj.get();}
 
-        T *data(){return obj.get();}
+        T *data(){return obj.get();
+        }
         operator T *(){return obj.get();}
         operator const T *()const{return obj.get();}
         const bool operator !()const{return !obj;}
@@ -703,8 +711,8 @@ namespace hgl
                 std::fill(begin(), end(), T());
         }
 
-                T &operator[](int index){return obj[index];}
-        const   T &operator[](int index)const{return obj[index];}
+                T &operator[](std::size_t index){return obj[index];}
+        const   T &operator[](std::size_t index)const{return obj[index];}
 
         void Discard()
         {
@@ -712,7 +720,7 @@ namespace hgl
             size=0;
         }
 
-        size_t length() const { return size; }
+        std::size_t length() const { return size; }
     };//template<typename T> class AutoDeleteArray
     
     /**
@@ -729,18 +737,18 @@ namespace hgl
 
     public:
         AutoDeleteObjectArray()=default;
-        explicit AutoDeleteObjectArray(uint c)
+        explicit AutoDeleteObjectArray(std::size_t c)
         {
             if(c>0)
             {
                 items.resize(c,nullptr);
             }
         }
-        AutoDeleteObjectArray(T **o,uint c)
+        AutoDeleteObjectArray(T **o,std::size_t c)
         {
             if(o && c>0)
             {
-                items.assign(o,o+c); // 复制指针并接管所有权
+                items.assign(o,o+c);
             }
         }
 
@@ -769,8 +777,8 @@ namespace hgl
         operator const T * const *()const{return items.data();}
         const bool operator !()const{return items.empty();}
 
-                T *&operator[](int index){return items[index];}
-        const   T *operator[](int index)const{return items[index];}
+                T *&operator[](std::size_t index){return items[index];}
+        const   T *operator[](std::size_t index)const{return items[index];}
 
         void Discard()
         {
@@ -780,8 +788,8 @@ namespace hgl
 
         void DiscardObject() { Discard(); }
 
-        uint count() const { return static_cast<uint>(items.size()); }
-        void resize(uint c){ items.resize(c,nullptr); }
+        std::size_t count() const { return items.size(); }
+        void resize(std::size_t c){ items.resize(c,nullptr); }
         T **begin(){ return items.data(); }
         T **end(){ return items.data()+items.size(); }
     };//template<typename T> class AutoDeleteObjectArray
