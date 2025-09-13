@@ -5,12 +5,9 @@
 #include <string>
 #include <string_view>
 #include <unordered_set>
-#include <hgl/type/String.h>
 
 namespace hgl
 {
-    template<typename T> class String;
-
     template<typename T>
     class StringView : public Comparator<StringView<T>>
     {
@@ -49,12 +46,6 @@ namespace hgl
             else { ptr = s.data(); length = int(s.size()); }
         }
 
-        explicit StringView(const String<T> &s)
-        {
-            if (s.IsEmpty()) { ptr = nullptr; length = 0; }
-            else { ptr = s.c_str(); length = s.Length(); }
-        }
-
         // observers
         const int Length() const { return length; }
         const bool IsEmpty() const { return length == 0; }
@@ -68,8 +59,8 @@ namespace hgl
         operator const T *() const { return c_str(); }
         operator std::basic_string_view<T>() const { if (IsEmpty()) return std::basic_string_view<T>(); return std::basic_string_view<T>(ptr, size_t(length)); }
 
-        // copy conversion to owning String
-        String<T> ToString() const { return IsEmpty() ? String<T>() : String<T>(ptr, length); }
+        // conversion to owning std::basic_string
+        std::basic_string<T> ToStdString() const { return IsEmpty() ? std::basic_string<T>() : std::basic_string<T>(ptr, ptr + length); }
 
         // substring/view creation
         SelfClass SubString(int start, int n = -1) const
@@ -85,15 +76,6 @@ namespace hgl
             if (start < 0 || n <= 0 || start + n > Length()) return false;
             sc = SelfClass(ptr + start, n);
             return true;
-        }
-
-        // copy-substring to owning String (matches String API)
-        String<T> SubStringToString(int start, int n = -1) const
-        {
-            if (start < 0 || start >= Length()) return String<T>();
-            if (n < 0) n = Length() - start;
-            if (n <= 0 || start + n > Length()) return String<T>();
-            return String<T>(ptr + start, n);
         }
 
         // get char (read-only)
@@ -191,20 +173,20 @@ namespace hgl
         int  Comp(const SelfClass &rhs, const int num)                  const { if (num <= 0) return 0; return hgl::strcmp(c_str(), rhs.c_str(), num); }
         int  Comp(const T *str, const int num)                          const { if (num <= 0) return 0; return hgl::strcmp(c_str(), str, num); }
 
-        int  Comp(const uint pos, const SelfClass &rhs)                 const
+        int  Comp(const unsigned int pos, const SelfClass &rhs)         const
         {
-            if (pos > (uint)Length()) return 0;
+            if (pos > (unsigned int)Length()) return 0;
             return hgl::strcmp(c_str() + pos, Length() - pos, rhs.c_str(), rhs.Length());
         }
 
-        int  Comp(const uint pos, const SelfClass &rhs, const int num)  const
+        int  Comp(const unsigned int pos, const SelfClass &rhs, const int num)  const
         {
-            if (pos > (uint)Length() || num <= 0) return 0;
+            if (pos > (unsigned int)Length() || num <= 0) return 0;
             return hgl::strcmp(c_str() + pos, rhs.c_str(), num);
         }
 
-        int  Comp(const uint pos, const T *str)                         const { if (pos > (uint)Length()) return 0; return hgl::strcmp(c_str() + pos, Length() - pos, str, hgl::strlen(str)); }
-        int  Comp(const uint pos, const T *str, const int num)          const { if (pos > (uint)Length() || num <= 0) return 0; return hgl::strcmp(c_str() + pos, str, num); }
+        int  Comp(const unsigned int pos, const T *str)                         const { if (pos > (unsigned int)Length()) return 0; return hgl::strcmp(c_str() + pos, Length() - pos, str, hgl::strlen(str)); }
+        int  Comp(const unsigned int pos, const T *str, const int num)          const { if (pos > (unsigned int)Length() || num <= 0) return 0; return hgl::strcmp(c_str() + pos, str, num); }
 
         int CaseComp(const SelfClass &rhs)                         const
         {
@@ -225,7 +207,7 @@ namespace hgl
 
         int CaseComp(const SelfClass &rhs, const int num)          const { if (num <= 0) return 0; return hgl::stricmp(c_str(), Length(), rhs.c_str(), num); }
         int CaseComp(const T *str, const int num)                  const { if (num <= 0) return 0; return hgl::stricmp(c_str(), Length(), str, num); }
-        int CaseComp(const uint pos, const T *str, const int num)  const { if (num <= 0 || pos > (uint)Length()) return 0; return hgl::stricmp(c_str() + pos, Length() - pos, str, num); }
+        int CaseComp(const unsigned int pos, const T *str, const int num)  const { if (num <= 0 || pos > (unsigned int)Length()) return 0; return hgl::stricmp(c_str() + pos, Length() - pos, str, num); }
 
         // CN: String to bool/int/float conversion
         bool ToBool (bool &result)  const { return stob(c_str(), result); }
@@ -233,14 +215,36 @@ namespace hgl
         template<typename U>    bool ToUint (U &result)     const { return etof(c_str(), result); }
         template<typename F>    bool ToFloat(F &result)     const { return etof(c_str(), result); }
 
-        // case conversions returning owning String (non-modifying for view)
-        String<T> ToLowerCase() const { return ToString().ToLowerCase(); }
-        String<T> ToUpperCase() const { return ToString().ToUpperCase(); }
+        // case conversions returning owning std::basic_string (non-modifying for view)
+        std::basic_string<T> ToLowerCase() const { if (IsEmpty()) return {}; std::basic_string<T> s(ptr, ptr + length); to_lower_char(s.data()); return s; }
+        std::basic_string<T> ToUpperCase() const { if (IsEmpty()) return {}; std::basic_string<T> s(ptr, ptr + length); to_upper_char(s.data()); return s; }
 
-        // trim returning owning String
-        String<T> TrimLeft() const  { return ToString().TrimLeft(); }
-        String<T> TrimRight() const { return ToString().TrimRight(); }
-        String<T> Trim() const      { return ToString().Trim(); }
+        // trim returning view
+        SelfClass TrimLeft() const
+        {
+            if (IsEmpty()) return SelfClass();
+            int i = 0; while (i < length && is_space<T>(ptr[i])) ++i;
+            if (i == 0) return *this;
+            return SelfClass(ptr + i, length - i);
+        }
+
+        SelfClass TrimRight() const
+        {
+            if (IsEmpty()) return SelfClass();
+            int r = length - 1; while (r >= 0 && is_space<T>(ptr[r])) --r;
+            if (r == length - 1) return *this;
+            return SelfClass(ptr, r + 1);
+        }
+
+        SelfClass Trim() const
+        {
+            if (IsEmpty()) return SelfClass();
+            int l = 0; while (l < length && is_space<T>(ptr[l])) ++l;
+            int r = length - 1; while (r >= l && is_space<T>(ptr[r])) --r;
+            if (l == 0 && r == length - 1) return *this;
+            if (r < l) return SelfClass();
+            return SelfClass(ptr + l, r - l + 1);
+        }
 
         // utility
         int StatChar(const T ch) const { return ::StatChar(c_str(), ch); }
@@ -265,7 +269,7 @@ namespace hgl
         // compare override for Comparator compatibility
         const int compare(const SelfClass &str) const override { return Comp(str); }
 
-        // comparison operators with StringView, String<T> and C string
+        // comparison operators with StringView and C string
         friend bool operator==(const SelfClass &a, const SelfClass &b) { return a.Comp(b) == 0; }
         friend bool operator!=(const SelfClass &a, const SelfClass &b) { return a.Comp(b) != 0; }
         friend bool operator<(const SelfClass &a, const SelfClass &b)  { return a.Comp(b) < 0; }
@@ -278,58 +282,8 @@ namespace hgl
         friend bool operator==(const T *a, const SelfClass &b) { return b.Comp(a) == 0; }
         friend bool operator!=(const T *a, const SelfClass &b) { return b.Comp(a) != 0; }
 
-        friend bool operator==(const SelfClass &a, const String<T> &b) { return a.Comp(b.c_str()) == 0; }
-        friend bool operator!=(const SelfClass &a, const String<T> &b) { return a.Comp(b.c_str()) != 0; }
-        friend bool operator==(const String<T> &a, const SelfClass &b) { return b.Comp(a.c_str()) == 0; }
-        friend bool operator!=(const String<T> &a, const SelfClass &b) { return b.Comp(a.c_str()) != 0; }
-
-        // concatenation operators returning owning String<T>
-        friend String<T> operator+(const SelfClass &a, const SelfClass &b)
-        {
-            if (a.IsEmpty()) return b.ToString();
-            if (b.IsEmpty()) return a.ToString();
-            return String<T>::ComboString(a.c_str(), a.Length(), b.c_str(), b.Length());
-        }
-
-        friend String<T> operator+(const SelfClass &a, const T *b)
-        {
-            if (!b || *b == 0) return a.ToString();
-            if (a.IsEmpty()) return String<T>(b);
-            return String<T>::ComboString(a.c_str(), a.Length(), b, hgl::strlen(b));
-        }
-
-        friend String<T> operator+(const T *a, const SelfClass &b)
-        {
-            if (!a || *a == 0) return b.ToString();
-            if (b.IsEmpty()) return String<T>(a);
-            return String<T>::ComboString(a, hgl::strlen(a), b.c_str(), b.Length());
-        }
-
-        friend String<T> operator+(const SelfClass &a, const T ch)
-        {
-            if (a.IsEmpty()) return String<T>::charOf(ch);
-            return String<T>::ComboString(a.c_str(), a.Length(), &ch, 1);
-        }
-
-        friend String<T> operator+(const String<T> &a, const SelfClass &b)
-        {
-            if (a.IsEmpty()) return b.ToString();
-            if (b.IsEmpty()) return a;
-            return String<T>::ComboString(a.c_str(), a.Length(), b.c_str(), b.Length());
-        }
-
-        friend String<T> operator+(const SelfClass &a, const String<T> &b)
-        {
-            if (a.IsEmpty()) return b;
-            if (b.IsEmpty()) return a.ToString();
-            return String<T>::ComboString(a.c_str(), a.Length(), b.c_str(), b.Length());
-        }
-
         // boolean conversion
         explicit operator bool() const { return !IsEmpty(); }
-
-        // conversion to owning std::basic_string
-        std::basic_string<T> ToStdString() const { return IsEmpty() ? std::basic_string<T>() : std::basic_string<T>(ptr, ptr + length); }
 
     };// class StringView
 
