@@ -265,6 +265,69 @@ namespace hgl
         // compare override for Comparator compatibility
         const int compare(const SelfClass &str) const override { return Comp(str); }
 
+        // comparison operators with StringView, String<T> and C string
+        friend bool operator==(const SelfClass &a, const SelfClass &b) { return a.Comp(b) == 0; }
+        friend bool operator!=(const SelfClass &a, const SelfClass &b) { return a.Comp(b) != 0; }
+        friend bool operator<(const SelfClass &a, const SelfClass &b)  { return a.Comp(b) < 0; }
+        friend bool operator<=(const SelfClass &a, const SelfClass &b) { return a.Comp(b) <= 0; }
+        friend bool operator>(const SelfClass &a, const SelfClass &b)  { return a.Comp(b) > 0; }
+        friend bool operator>=(const SelfClass &a, const SelfClass &b) { return a.Comp(b) >= 0; }
+
+        friend bool operator==(const SelfClass &a, const T *b) { return a.Comp(b) == 0; }
+        friend bool operator!=(const SelfClass &a, const T *b) { return a.Comp(b) != 0; }
+        friend bool operator==(const T *a, const SelfClass &b) { return b.Comp(a) == 0; }
+        friend bool operator!=(const T *a, const SelfClass &b) { return b.Comp(a) != 0; }
+
+        friend bool operator==(const SelfClass &a, const String<T> &b) { return a.Comp(b.c_str()) == 0; }
+        friend bool operator!=(const SelfClass &a, const String<T> &b) { return a.Comp(b.c_str()) != 0; }
+        friend bool operator==(const String<T> &a, const SelfClass &b) { return b.Comp(a.c_str()) == 0; }
+        friend bool operator!=(const String<T> &a, const SelfClass &b) { return b.Comp(a.c_str()) != 0; }
+
+        // concatenation operators returning owning String<T>
+        friend String<T> operator+(const SelfClass &a, const SelfClass &b)
+        {
+            if (a.IsEmpty()) return b.ToString();
+            if (b.IsEmpty()) return a.ToString();
+            return String<T>::ComboString(a.c_str(), a.Length(), b.c_str(), b.Length());
+        }
+
+        friend String<T> operator+(const SelfClass &a, const T *b)
+        {
+            if (!b || *b == 0) return a.ToString();
+            if (a.IsEmpty()) return String<T>(b);
+            return String<T>::ComboString(a.c_str(), a.Length(), b, hgl::strlen(b));
+        }
+
+        friend String<T> operator+(const T *a, const SelfClass &b)
+        {
+            if (!a || *a == 0) return b.ToString();
+            if (b.IsEmpty()) return String<T>(a);
+            return String<T>::ComboString(a, hgl::strlen(a), b.c_str(), b.Length());
+        }
+
+        friend String<T> operator+(const SelfClass &a, const T ch)
+        {
+            if (a.IsEmpty()) return String<T>::charOf(ch);
+            return String<T>::ComboString(a.c_str(), a.Length(), &ch, 1);
+        }
+
+        friend String<T> operator+(const String<T> &a, const SelfClass &b)
+        {
+            if (a.IsEmpty()) return b.ToString();
+            if (b.IsEmpty()) return a;
+            return String<T>::ComboString(a.c_str(), a.Length(), b.c_str(), b.Length());
+        }
+
+        friend String<T> operator+(const SelfClass &a, const String<T> &b)
+        {
+            if (a.IsEmpty()) return b;
+            if (b.IsEmpty()) return a.ToString();
+            return String<T>::ComboString(a.c_str(), a.Length(), b.c_str(), b.Length());
+        }
+
+        // boolean conversion
+        explicit operator bool() const { return !IsEmpty(); }
+
         // conversion to owning std::basic_string
         std::basic_string<T> ToStdString() const { return IsEmpty() ? std::basic_string<T>() : std::basic_string<T>(ptr, ptr + length); }
 
