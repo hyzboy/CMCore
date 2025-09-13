@@ -75,7 +75,6 @@ namespace hgl
             using Iter = typename std::vector<std::unique_ptr<StringClass>>::iterator;
 
             Iter it;
-            mutable StringClass *cache{nullptr};
 
         public:
             RawPtrIterator() = default;
@@ -84,11 +83,10 @@ namespace hgl
             {
             }
 
-            // return reference to cached pointer so 'auto &p' can bind
-            StringClass * & operator*()
+            // return pointer by value so 'for (auto *p : list)' works naturally
+            StringClass * operator*()
             {
-                cache = it->get();
-                return cache;
+                return it->get();
             }
 
             RawPtrIterator & operator++()
@@ -113,7 +111,6 @@ namespace hgl
             using Iter = typename std::vector<std::unique_ptr<StringClass>>::const_iterator;
 
             Iter it;
-            mutable StringClass *cache{nullptr};
 
         public:
             ConstRawPtrIterator() = default;
@@ -122,11 +119,10 @@ namespace hgl
             {
             }
 
-            // return reference to cached pointer so 'auto &p' can bind
-            StringClass * & operator*() const
+            // return const pointer by value for safe const-iteration
+            const StringClass * operator*() const
             {
-                cache = it->get();
-                return cache;
+                return it->get();
             }
 
             ConstRawPtrIterator & operator++()
