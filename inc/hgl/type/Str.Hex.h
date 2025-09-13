@@ -1,117 +1,120 @@
 ﻿#pragma once
 #include <hgl/type/Str.Number.h>
 #include <hgl/type/Str.Length.h>
+#include <cstddef>
 namespace hgl
 {
 
     /**
-    * 解晰一个16进制数值字符串
-    * @param dst 解晰出来的原始数据存入处
-    * @param src 用来解晰的16进制数值字符串
-    * @param size 原始数据字节数/2
-    */
-    template<typename T>
-    inline void ParseHexStr(uint8 *dst,const T *src,const int size)
+     * @brief CN: 将十六进制字符串解析为原始字节数据（每两个字符表示一字节）。
+     * @brief EN: Parse a hex string into raw bytes (two characters per byte).
+     *
+     * @param[out] dst CN: 输出字节缓冲区. EN: output byte buffer.
+     * @param[in] src CN: 十六进制字符串. EN: hex source string.
+     * @param[in] byte_count CN: 要解析的字节数（即 src 中字符数应为 byte_count*2）. EN: number of bytes to parse.
+     */
+    template<typename CharT>
+    inline void ParseHexStr(uint8 *dst, const CharT *src, std::size_t byte_count)
     {
-        for(int i=0;i<size;i++)
+        for(std::size_t i = 0; i < byte_count; ++i)
         {
-            *dst = hgl::parse_number_char<16,T>(*src)<<4;
+            *dst = static_cast<uint8>(hgl::parse_number_char<16,CharT>(*src) << 4);
             ++src;
-            *dst |= hgl::parse_number_char<16,T>(*src);
+            *dst |= static_cast<uint8>(hgl::parse_number_char<16,CharT>(*src));
             ++src;
             ++dst;
         }
     }
 
     /**
-    * 将一个16进制数值字符串转换成原始数据
-    * @param str 16进制数值字符串
-    * @param hc 解晰出来的原始数据存放处
-    */
-    template<typename T,typename HC>
-    inline void ParseHexStr(HC &hc,const T *str)
+     * @brief CN: 将十六进制字符串解析为固定类型的数据。
+     * @brief EN: Parse a hex string into a fixed-size data type.
+     *
+     * @tparam CharT 字符类型. EN: character type.
+     * @tparam HC 目标类型. EN: target data type.
+     * @param[out] out_value CN: 输出目标变量. EN: output target value.
+     * @param[in] str CN: 十六进制字符串. EN: hex source string.
+     */
+    template<typename CharT,typename HC>
+    inline void ParseHexStr(HC &out_value,const CharT *str)
     {
-        hgl::ParseHexStr((uint8 *)&hc,str,sizeof(HC));
+        hgl::ParseHexStr<CharT>(reinterpret_cast<uint8 *>(&out_value), str, sizeof(HC));
     }
 
-    template<typename T,typename U>
-    inline void Hex2String(T *str,U value,bool upper=true)
+    template<typename CharT,typename U>
+    inline void Hex2String(CharT *str,U value,bool upper=true)
     {
-        const uchar A=upper?'A':'a';
-        const uint size=sizeof(U)*2;
-        const uint8 *sp=(uint8 *)&value;
-        T *tp=str;
-        uint l,r;
+        const CharT A = static_cast<CharT>(upper ? 'A' : 'a');
+        const std::size_t size = sizeof(U) * 2;
+        const uint8 *sp = reinterpret_cast<const uint8 *>(&value);
+        CharT *tp = str;
 
-        for(uint i=0;i<sizeof(U);i++)
+        for(std::size_t i = 0; i < sizeof(U); ++i)
         {
-            l=((*sp)&0xF0)>>4;
-            r= (*sp)&0x0F;
+            uint8 l = static_cast<uint8>(((sp[i]) & 0xF0) >> 4);
+            uint8 r = static_cast<uint8>((sp[i]) & 0x0F);
 
-            ++sp;
+            if(l < 10) *tp++ = static_cast<CharT>(l + '0');
+            else *tp++ = static_cast<CharT>(l - 10 + A);
 
-            if(l<10)*tp++=l+'0';
-            else *tp++=l-10+A;
-
-            if(r<10)*tp++=r+'0';
-            else *tp++=r-10+A;
+            if(r < 10) *tp++ = static_cast<CharT>(r + '0');
+            else *tp++ = static_cast<CharT>(r - 10 + A);
         }
 
-        *tp=0;
+        *tp = 0;
     }
 
     /**
-    * 将一串原始数据转换成16进制数值字符串
-    * @param str 16进制数值字符串存入处
-    * @param src 原始的数据
-    * @param size 原始数据字节长度
-    * @param hexstr 用于转换的16进制字符
-    * @param gap_char 间隔字符
-    */
-    template<typename T>
-    inline void DataToHexStr(T *str,const uint8 *src,const int size,const char *hexstr,const T gap_char=0)
+     * @brief CN: 将原始数据转换为十六进制字符串。
+     * @brief EN: Convert raw bytes to a hex string.
+     *
+     * @param[out] str CN: 输出十六进制字符串缓冲区. EN: output hex string buffer.
+     * @param[in] src CN: 原始字节数据. EN: source byte data.
+     * @param[in] byte_count CN: 原始数据字节长度. EN: number of bytes in src.
+     * @param[in] hex_chars CN: 用于映射的十六进制字符表（长度至少为16）. EN: array of hex character mappings (length >= 16).
+     * @param[in] gap_char CN: 可选间隔字符（插入在每个字节之间），默认无. EN: optional gap char inserted between bytes.
+     */
+    template<typename CharT>
+    inline void DataToHexStr(CharT *str, const uint8 *src, std::size_t byte_count, const char *hex_chars, const CharT gap_char=0)
     {
-        int i;
-
-        for(i=0;i<size;i++)
+        for(std::size_t i = 0; i < byte_count; ++i)
         {
-            if(i&&gap_char)
+            if(i && gap_char)
             {
-                *str=gap_char;
-                ++str;
+                *str++ = gap_char;
             }
 
-            *str=hexstr[((*src)&0xF0)>>4];
-            ++str;
-            *str=hexstr[ (*src)&0x0F    ];
-            ++str;
-
-            ++src;
+            *str++ = static_cast<CharT>(hex_chars[(src[i] & 0xF0) >> 4]);
+            *str++ = static_cast<CharT>(hex_chars[(src[i] & 0x0F)]);
         }
 
-        *str=0;
+        *str = 0;
     }
 
-    template<typename T> inline void DataToLowerHexStr(T *str,const uint8 *src,const int size,const T gap_char=0){hgl::DataToHexStr<T>(str,src,size,LowerHexChar,gap_char);} 
-    template<typename T> inline void DataToUpperHexStr(T *str,const uint8 *src,const int size,const T gap_char=0){hgl::DataToHexStr<T>(str,src,size,UpperHexChar,gap_char);} 
+    template<typename CharT> inline void DataToLowerHexStr(CharT *str,const uint8 *src,std::size_t byte_count,const CharT gap_char=0){hgl::DataToHexStr<CharT>(str,src,byte_count,LowerHexChar,gap_char);} 
+    template<typename CharT> inline void DataToUpperHexStr(CharT *str,const uint8 *src,std::size_t byte_count,const CharT gap_char=0){hgl::DataToHexStr<CharT>(str,src,byte_count,UpperHexChar,gap_char);} 
 
     /**
-    * 将一串原始数据转转成16进制数值字符串
-    * @param str 16进制数值字符串存入处
-    * @param hc 原始的数据
-    * @param hexstr 用于转换的16进制字符
-    * @param gap_char 间隔字符
-    */
-    template<typename T,typename HC>
-    inline void DataToHexStr(T *str,const HC &hc,const T *hexstr,const T gap_char=0)
+     * @brief CN: 将固定类型的原始数据转换为十六进制字符串。
+     * @brief EN: Convert a fixed-size data type to a hex string.
+     *
+     * @tparam CharT 字符类型. EN: character type.
+     * @tparam HC 目标数据类型. EN: target data type.
+     * @param[out] str CN: 输出十六进制字符串缓冲区. EN: output hex string buffer.
+     * @param[in] hc CN: 源数据. EN: source data.
+     * @param[in] hex_chars CN: 用于映射的十六进制字符表. EN: hex character table.
+     * @param[in] gap_char CN: 可选间隔字符. EN: optional gap char.
+     */
+    template<typename CharT,typename HC>
+    inline void DataToHexStr(CharT *str,const HC &hc,const CharT *hex_chars,const CharT gap_char=0)
     {
-        return hgl::DataToHexStr(str,(const uint8 *)&hc,sizeof(hc),hexstr,gap_char);
+        hgl::DataToHexStr(str,reinterpret_cast<const uint8 *>(&hc),sizeof(hc),hex_chars,gap_char);
     }
 
-    template<typename T,typename HC> inline void ToUpperHexStr(T *str,const HC &hc,const T gap_char=0){hgl::DataToHexStr<T,HC>(str,hc,UpperHexChar,gap_char);} 
-    template<typename T,typename HC> inline void ToLowerHexStr(T *str,const HC &hc,const T gap_char=0){hgl::DataToHexStr<T,HC>(str,hc,LowerHexChar,gap_char);} 
+    template<typename CharT,typename HC> inline void ToUpperHexStr(CharT *str,const HC &hc,const CharT gap_char=0){hgl::DataToHexStr<CharT,HC>(str,hc,UpperHexChar,gap_char);} 
+    template<typename CharT,typename HC> inline void ToLowerHexStr(CharT *str,const HC &hc,const CharT gap_char=0){hgl::DataToHexStr<CharT,HC>(str,hc,LowerHexChar,gap_char);} 
 
-    template<typename T> inline void ToUpperHexStr(T *str,const void *data,const int size,const T gap_char=0){hgl::DataToHexStr<T>(str,(const uint8 *)data,size,UpperHexChar,gap_char);} 
-    template<typename T> inline void ToLowerHexStr(T *str,const void *data,const int size,const T gap_char=0){hgl::DataToHexStr<T>(str,(const uint8 *)data,size,LowerHexChar,gap_char);} 
+    template<typename CharT> inline void ToUpperHexStr(CharT *str,const void *data,std::size_t byte_count,const CharT gap_char=0){hgl::DataToHexStr<CharT>(str,(const uint8 *)data,byte_count,UpperHexChar,gap_char);} 
+    template<typename CharT> inline void ToLowerHexStr(CharT *str,const void *data,std::size_t byte_count,const CharT gap_char=0){hgl::DataToHexStr<CharT>(str,(const uint8 *)data,byte_count,LowerHexChar,gap_char);} 
 
 }//namespace hgl
