@@ -148,8 +148,8 @@ namespace hgl
                 return String<T>();
 
             // collect non-empty args to avoid trailing separators
-            AutoDeleteArray<const T *> ptrs(args.size());
-            AutoDeleteArray<int> str_len(args.size());
+            AutoDeleteArray<const T *> ptrs(static_cast<int>(args.size()));
+            AutoDeleteArray<int> str_len(static_cast<int>(args.size()));
 
             int index = 0;
             for(const T *str:args)
@@ -217,8 +217,8 @@ namespace hgl
                 return String<T>();
 
             // collect non-empty args
-            AutoDeleteArray<const T *> ptrs(args.size());
-            AutoDeleteArray<int> str_len(args.size());
+            AutoDeleteArray<const T *> ptrs(static_cast<int>(args.size()));
+            AutoDeleteArray<int> str_len(static_cast<int>(args.size()));
 
             int index = 0;
             for(const String<T> &str:args)
@@ -303,7 +303,7 @@ namespace hgl
         template<typename T>
         inline const String<T> Combine(const StringList<T> &sl,const T spear_char=(T)HGL_DIRECTORY_SEPARATOR_RAWCHAR)
         {
-            const int count=sl.GetCount();
+            const int count = static_cast<int>(sl.GetCount());
 
             if(count<=0)
                 return String<T>();
@@ -452,7 +452,7 @@ namespace hgl
             int pos=fullname.FindRightChar(fullname.Length()-end,T('.'));
 
             if(pos==-1)
-                return String<T>();
+                return String<T>(fullname); // no dot -> return original name
 
             return clear_dot?   fullname.SubString(0,pos):
                                 fullname.SubString(0,pos+1);
