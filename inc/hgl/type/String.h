@@ -13,11 +13,6 @@
 #include <unordered_set>
 #include <format>
 
-/**
- * @namespace hgl
- * @brief CN: ULRE 通用工具库命名空间
- *        EN: ULRE general utility library namespace
- */
 namespace hgl
 {
     template<typename T> class StringView; // forward declaration for interop
