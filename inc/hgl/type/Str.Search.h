@@ -3,8 +3,10 @@
 #include <hgl/type/Str.Length.h>
 #include <hgl/type/Str.Case.h>
 #include <hgl/type/Str.Copy.h>
+#include <hgl/type/Str.Comp.h>
 #include <cstddef>
 #include <type_traits>
+#include <utility>
 namespace hgl
 {
     /**
@@ -23,7 +25,7 @@ namespace hgl
             const T2 *s2 = str2;
             std::size_t s = size2;
 
-            while(s>0 && (*s1)==(*s2))
+            while(s>0 && char_eq(*s1,*s2))
             {
                 ++s1; ++s2; --s;
             }
@@ -61,7 +63,7 @@ namespace hgl
             const T2 *s2 = str2;
             std::size_t s = size2;
 
-            while(s>0 && (*s1)==(*s2))
+            while(s>0 && char_eq(*s1,*s2))
             {
                 ++s1; ++s2; --s;
             }
@@ -95,12 +97,12 @@ namespace hgl
             const T1 *s1 = str1 + i;
             const T2 *s2 = str2;
             std::size_t s = size2;
+
             bool ok = true;
 
             while(s>0)
             {
-                int gap = hgl::compare_char_icase(*s1, *s2);
-                if(gap!=0)
+                if(hgl::compare_char_icase(*s1,*s2) != 0)
                 {
                     ok = false;
                     break;
@@ -132,7 +134,7 @@ namespace hgl
 
         while(*str)
         {
-            if(*str==ch) return str;
+            if(char_eq(*str,ch)) return str;
             ++str;
         }
 
@@ -157,7 +159,7 @@ namespace hgl
 
         while(n-- && *str)
         {
-            if(*str==ch) return str;
+            if(char_eq(*str,ch)) return str;
             ++str;
         }
 
@@ -208,7 +210,7 @@ namespace hgl
 
         while(*str)
         {
-            if(*str!=ch) return str;
+            if(!char_eq(*str,ch)) return str;
             ++str;
         }
 
@@ -230,7 +232,7 @@ namespace hgl
 
         while(n-- && *str)
         {
-            if(*str!=ch) return str;
+            if(!char_eq(*str,ch)) return str;
             ++str;
         }
 
@@ -278,7 +280,7 @@ namespace hgl
         for(std::size_t i = len; i>0; --i)
         {
             const TS *p = str + (i-1);
-            if(*p==ch) return p;
+            if(char_eq(*p,ch)) return p;
         }
 
         return nullptr;
@@ -323,7 +325,7 @@ namespace hgl
         for(std::size_t i = start; i>0; --i)
         {
             const TS *p = str + (i-1);
-            if(*p==ch) return p;
+            if(char_eq(*p,ch)) return p;
         }
 
         return nullptr;

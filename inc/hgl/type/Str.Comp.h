@@ -2,6 +2,8 @@
 #include <hgl/type/CharType.h>
 #include <hgl/type/Str.Length.h>
 #include <hgl/type/Str.Case.h>
+#include <type_traits>
+#include <utility>
 
 namespace hgl
 {
@@ -30,7 +32,7 @@ namespace hgl
 
         while((*src) && (*dst))
         {
-            if(*src != *dst)
+            if(!char_eq(*src,*dst))
                 return (int)static_cast<int64_t>(*src) - (int)static_cast<int64_t>(*dst);
 
             ++src;
@@ -78,8 +80,8 @@ namespace hgl
 
         while(src_size>0 && dst_size>0)
         {
-            if(*src != *dst)
-                return (int)static_cast<int64_t>(*src) - (int)static_cast<int64_t>(*dst);
+            if(!hgl::char_eq(*src,*dst))
+                return (int)static_cast<int64_t>(static_cast<std::common_type_t<S,D>>(*src)) - (int)static_cast<int64_t>(static_cast<std::common_type_t<S,D>>(*dst));
 
             ++src; ++dst; --src_size; --dst_size;
         }
@@ -118,8 +120,8 @@ namespace hgl
 
         while(count>0 && (*src) && (*dst))
         {
-            if(*src != *dst)
-                return (int)static_cast<int64_t>(*src) - (int)static_cast<int64_t>(*dst);
+            if(!hgl::char_eq(*src,*dst))
+                return (int)static_cast<int64_t>(static_cast<std::common_type_t<S,D>>(*src)) - (int)static_cast<int64_t>(static_cast<std::common_type_t<S,D>>(*dst));
 
             ++src; ++dst; --count;
         }

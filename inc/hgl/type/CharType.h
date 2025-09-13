@@ -14,6 +14,7 @@
 #include <type_traits>
 #include <cstdint>
 #include <cstddef>
+#include <utility>
 
 namespace hgl
 {
@@ -251,7 +252,7 @@ namespace hgl
      * @tparam T 字符类型 / character type
      * @param ch 要测试的字符 / character to test
      * @return
-     * CN: 如果字符为普通空白控制字符（' ', '\f', '\n', '\r', '\t', '\v'）或音响/退格（注意：实现中包含 '\a' 和 '\b'），返回 true；否则 false。
+     * CN: 如果字符为普通空白控制字符（' ', '\f', '\n', '\r', '\t', '\v'）或音响/退格（注意：实施中包含 '\a' 和 '\b'），返回 true；否则 false。
      * EN: Returns true if the character is one of the whitespace/control characters listed (note '\a' and '\b' are included in this implementation), otherwise false.
      */
     template<typename T>
@@ -650,6 +651,14 @@ namespace hgl
         if (ls < ld) return -1;
         if (ls > ld) return  1;
         return 0;
+    }
+
+    // safe character equality across possibly different character types
+    template<typename A, typename B>
+    inline bool char_eq(A a, B b)
+    {
+        using C = std::common_type_t<A, B>;
+        return static_cast<C>(a) == static_cast<C>(b);
     }
 
     /**
