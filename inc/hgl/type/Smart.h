@@ -32,16 +32,7 @@ namespace hgl
 
     public:
 
-        /**
-         * @brief CN: 默认构造函数。
-         *        EN: Default constructor.
-         */
         RefCount()=default;
-
-        /**
-         * @brief CN: 虚析构函数。
-         *        EN: Virtual destructor.
-         */
         virtual ~RefCount()=default;
 
         /**
@@ -423,20 +414,20 @@ namespace hgl
         }
 
         // 基础访问接口 -------------------------------------------------
-                T *     get         ()const{return sd?sd->data:nullptr;}          ///< 返回裸指针（可能为空）
-          const T *     const_get   ()const{return sd?sd->data:nullptr;}          ///< const 版 get
-        virtual bool    valid       ()const{return sd && sd->valid();}         ///< 是否指向一个尚未析构的对象
+                T *         get         ()const{return sd?sd->data:nullptr;}            ///< 返回裸指针（可能为空）
+          const T *         const_get   ()const{return sd?sd->data:nullptr;}            ///< const 版 get
+        virtual bool        valid       ()const{return sd && sd->valid();}              ///< 是否指向一个尚未析构的对象
                 std::size_t use_count   ()const{return sd? static_cast<std::size_t>(sd->count.load(std::memory_order_acquire)) : 0;}  ///< 强引用计数（空时返回 0）
-                bool    only        ()const{return sd?sd->count.load(std::memory_order_acquire)==1:true;} ///< 是否唯一拥有者
+                bool        only        ()const{return sd?sd->count.load(std::memory_order_acquire)==1:true;} ///< 是否唯一拥有者
 
     public:
 
         // 运算符（兼容性） -------------------------------------------------
-        const   T &     operator *  ()const{return *(sd->data);}             ///< 解引用（调用方需保证 valid==true）
-        const   bool    operator !  ()const{return !(sd && sd->valid());}       ///< 与 !valid 语义一致
+        const   T &     operator *  ()const{return *(sd->data);}                    ///< 解引用（调用方需保证 valid==true）
+        const   bool    operator !  ()const{return !(sd && sd->valid());}           ///< 与 !valid 语义一致
 
-                        operator T *()const{return(sd?sd->data:nullptr);}          ///< 隐式转换成裸指针（不建议新代码使用）
-                T *     operator -> ()const{return(sd?sd->data:nullptr);}          ///< 访问成员
+                        operator T *()const{return(sd?sd->data:nullptr);}           ///< 隐式转换成裸指针（不建议新代码使用）
+                T *     operator -> ()const{return(sd?sd->data:nullptr);}           ///< 访问成员
 
                 bool    operator == (const SelfClass & rp)const{return(get()==rp.get());}
                 bool    operator == (const T *         rp)const{return(get()==rp);}        ///< 与裸指针比较
