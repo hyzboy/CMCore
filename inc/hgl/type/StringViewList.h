@@ -20,6 +20,97 @@ namespace hgl
 
     public:
 
+        using underlying_iterator = typename ObjectList<StringView<CharT>>::Iterator;
+        using underlying_const_iterator = typename ObjectList<StringView<CharT>>::ConstIterator;
+
+        // Adapter iterator that yields StringView<CharT>& instead of pointer
+        class iterator
+        {
+            friend class const_iterator;
+        public:
+            using value_type = StringView<CharT>;
+            using pointer = StringView<CharT>*;
+            using reference = StringView<CharT>&;
+            using difference_type = std::ptrdiff_t;
+            using iterator_category = std::random_access_iterator_tag; // underlying supports random access-like ops
+
+            iterator() = default;
+            explicit iterator(const underlying_iterator &u): it(u) {}
+
+            reference operator*() const
+            {
+                // underlying iterator returns pointer (T*), so dereference that
+                return *(*it);
+            }
+
+            pointer operator->() const
+            {
+                return *it; // returns T*
+            }
+
+            iterator &operator++() { ++it; return *this; }
+            iterator operator++(int) { iterator tmp = *this; ++it; return tmp; }
+            iterator &operator--() { --it; return *this; }
+            iterator operator--(int) { iterator tmp = *this; --it; return tmp; }
+
+            iterator &operator+=(int v) { it += v; return *this; }
+            iterator &operator-=(int v) { it -= v; return *this; }
+
+            iterator operator+(int v) const { iterator t = *this; t += v; return t; }
+            iterator operator-(int v) const { iterator t = *this; t -= v; return t; }
+
+            bool operator==(const iterator &o) const { return it == o.it; }
+            bool operator!=(const iterator &o) const { return it != o.it; }
+
+        private:
+            underlying_iterator it;
+        };
+
+        // Const iterator adapter
+        class const_iterator
+        {
+        public:
+            using value_type = const StringView<CharT>;
+            using pointer = const StringView<CharT>*;
+            using reference = const StringView<CharT>&;
+            using difference_type = std::ptrdiff_t;
+            using iterator_category = std::random_access_iterator_tag;
+
+            const_iterator() = default;
+            explicit const_iterator(const underlying_const_iterator &u): it(u) {}
+            // Allow constructing const_iterator from non-const underlying iterator
+            const_iterator(const underlying_iterator &u): it(u) {}
+            // Implicit conversion from iterator -> const_iterator
+            const_iterator(const iterator &o): it(o.it) {}
+
+            reference operator*() const
+            {
+                return *(*it);
+            }
+
+            pointer operator->() const
+            {
+                return *it;
+            }
+
+            const_iterator &operator++() { ++it; return *this; }
+            const_iterator operator++(int) { const_iterator tmp = *this; ++it; return tmp; }
+            const_iterator &operator--() { --it; return *this; }
+            const_iterator operator--(int) { const_iterator tmp = *this; --it; return tmp; }
+
+            const_iterator &operator+=(int v) { it += v; return *this; }
+            const_iterator &operator-=(int v) { it -= v; return *this; }
+
+            const_iterator operator+(int v) const { const_iterator t = *this; t += v; return t; }
+            const_iterator operator-(int v) const { const_iterator t = *this; t -= v; return t; }
+
+            bool operator==(const const_iterator &o) const { return it == o.it; }
+            bool operator!=(const const_iterator &o) const { return it != o.it; }
+
+        private:
+            underlying_const_iterator it;
+        };
+
         StringViewList() = default;
         StringViewList(String<CharT>& text)
         {
@@ -77,10 +168,14 @@ namespace hgl
         size_t GetCount()const{return line_string.GetCount();}                         ///<取得字符串数量
 
         // Range-for support: begin / end
-        StringView<CharT> ** begin()      { return line_string.begin(); }
-        StringView<CharT> ** end()        { return line_string.end(); }
-        StringView<CharT> ** begin() const{ return line_string.begin(); }
-        StringView<CharT> ** end()   const{ return line_string.end(); }
+        iterator begin() { return iterator(line_string.begin()); }
+        iterator end()   { return iterator(line_string.end()); }
+        const_iterator begin() const { return const_iterator(line_string.begin()); }
+        const_iterator end()   const { return const_iterator(line_string.end()); }
+
+        // cbegin/cend helpers
+        const_iterator cbegin() const { return const_iterator(line_string.begin()); }
+        const_iterator cend() const { return const_iterator(line_string.end()); }
 
         const StringView<CharT> GetString(int n)const                          ///<取得指定行字符串
         {
@@ -107,6 +202,6 @@ namespace hgl
     int LoadStringViewListFromText(U16StringViewList &sl, const void* data, const int size, const CharSet& cs = UTF8CharSet);               ///<加载一个原始文本块到WideStringViewList
 
     int LoadStringViewListFromTextFile(U8StringViewList  &sl, const OSString &filename, const CharSet& cs = UTF8CharSet);                   ///<加载一个原始文本块到AnsiStringViewList
-    int LoadStringViewListFromTextFile(U16StringViewList &sl, const OSString& filename, const CharSet& cs = UTF8CharSet);                   ///<加载一个原始文本块到WideStringViewList
+    int LoadStringViewListFromTextFile(U16StringViewList &sl, const OSString &filename, const CharSet& cs = UTF8CharSet);                   ///<加载一个原始文本块到WideStringViewList
 
 }//namespace hgl
