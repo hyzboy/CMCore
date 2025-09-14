@@ -6,8 +6,7 @@
 #include<hgl/io/DataOutputStream.h>
 #include<initializer_list>
 #include<algorithm>
-#include<vector>
-#include<memory>
+#include<hgl/type/ObjectList.h>
 
 namespace hgl
 {
@@ -21,58 +20,20 @@ namespace hgl
 
     protected:
 
-        std::vector<std::unique_ptr<StringClass>> Items;
+        ObjectList<StringClass> Items;
 
     public: //属性
-
-        /**
-         * @brief CN: 获取原始指针列表（按值返回临时容器）。
-         *        EN: Get list of raw pointers (returns a temporary vector).
-         *
-         * @return CN: 返回可修改的指针向量。
-         *         EN: Returns a vector of modifiable raw pointers.
-         */
-        std::vector<StringClass *> GetDataList()
-        {
-            std::vector<StringClass *> v;
-
-            v.reserve(Items.size());
-
-            for (auto &u : Items)
-                v.push_back(u.get());
-
-            return v;
-        }
-
-        /**
-         * @brief CN: 获取原始指针列表（按值返回临时容器，指针为 const）。
-         *        EN: Get list of raw const pointers (returns a temporary vector).
-         *
-         * @return CN: 返回只读指针向量。
-         *         EN: Returns a vector of const raw pointers.
-         */
-        std::vector<const StringClass *> GetDataList() const
-        {
-            std::vector<const StringClass *> v;
-
-            v.reserve(Items.size());
-
-            for (auto &u : Items)
-                v.push_back(u.get());
-
-            return v;
-        }
 
         // 使用 size_t 作为计数类型以符合 STL 风格
         size_t GetCount() const
         {
-            return Items.size();
+            return static_cast<size_t>(Items.GetCount());
         }
 
         // 原始指针迭代器，兼容旧的 range-for 语法: for(StringClass* p : string_list)
         class RawPtrIterator
         {
-            using Iter = typename std::vector<std::unique_ptr<StringClass>>::iterator;
+            using Iter = typename ObjectList<StringClass>::Iterator;
 
             Iter it;
 
@@ -86,7 +47,7 @@ namespace hgl
             // return pointer by value so 'for (auto *p : list)' works naturally
             StringClass * operator*()
             {
-                return it->get();
+                return *it; // ObjectList iterator returns T*
             }
 
             RawPtrIterator & operator++()
@@ -108,7 +69,7 @@ namespace hgl
 
         class ConstRawPtrIterator
         {
-            using Iter = typename std::vector<std::unique_ptr<StringClass>>::const_iterator;
+            using Iter = typename ObjectList<StringClass>::ConstIterator;
 
             Iter it;
 
@@ -122,7 +83,7 @@ namespace hgl
             // return const pointer by value for safe const-iteration
             const StringClass * operator*() const
             {
-                return it->get();
+                return *it; // returns T*
             }
 
             ConstRawPtrIterator & operator++()
@@ -155,15 +116,15 @@ namespace hgl
 
         ConstRawPtrIterator begin() const
         {
-            return ConstRawPtrIterator(Items.cbegin());
+            return ConstRawPtrIterator(Items.begin());
         }
 
         ConstRawPtrIterator end() const
         {
-            return ConstRawPtrIterator(Items.cend());
+            return ConstRawPtrIterator(Items.end());
         }
 
-        // 也同时保留直接访问 unique_ptr 迭代器
+        // 也同时保留直接访问 ObjectList 迭代器
         auto up_begin()
         {
             return Items.begin();
@@ -176,27 +137,27 @@ namespace hgl
 
         auto up_begin() const
         {
-            return Items.cbegin();
+            return Items.begin();
         }
 
         auto up_end() const
         {
-            return Items.cend();
+            return Items.end();
         }
 
         bool IsEmpty() const
         {
-            return Items.empty();
+            return Items.IsEmpty();
         }
 
     public: //操作符重载
 
         StringClass &operator[](int n) const
         {
-            if (n < 0 || n >= static_cast<int>(Items.size()))
+            if (n < 0 || n >= Items.GetCount())
                 return NullString;
 
-            StringClass *result = Items[static_cast<size_t>(n)].get();
+            StringClass *result = Items[n];
 
             if (result)
                 return (*result);
@@ -212,11 +173,11 @@ namespace hgl
 
             StringList<T> tmp;
 
-            const size_t n = sl.GetCount();
+            const int n = sl.GetCount();
 
-            for (size_t i = 0; i < n; ++i)
+            for (int i = 0; i < n; ++i)
             {
-                StringClass *str = sl.Items[i].get();
+                StringClass *str = sl.Items[i];
 
                 // 这里使用 tmp.Add 可能抛出；若抛出则 *this 保持不变
                 tmp.Add(*str);
@@ -250,9 +211,8 @@ namespace hgl
         */
         int Add(const StringClass &str)
         {
-            Items.push_back(std::make_unique<StringClass>(str));
-
-            return static_cast<int>(Items.size() - 1);
+            // ObjectList 接受指针并拥有其所有权
+            return Items.Add(new StringClass(str));
         }
 
         /**
@@ -274,17 +234,17 @@ namespace hgl
         */
         int Add(const StringList<T> &sl)                                                            ///<添加字符串
         {
-            const size_t count = sl.GetCount();
+            const int count = static_cast<int>(sl.GetCount());
 
-            for (size_t i = 0; i < count; ++i)
+            for (int i = 0; i < count; ++i)
             {
-                StringClass *p = sl.Items[i].get();
+                StringClass *p = sl.Items[i];
 
                 if (p)
                     Add(*p);
             }
 
-            return (static_cast<int>(count));
+            return (count);
         }
 
         /**
@@ -293,17 +253,17 @@ namespace hgl
         */
         int AddUnique(const StringList<T> &sl)                                                            ///<添加字符串
         {
-            const size_t count = sl.GetCount();
+            const int count = static_cast<int>(sl.GetCount());
 
-            for (size_t i = 0; i < count; ++i)
+            for (int i = 0; i < count; ++i)
             {
-                StringClass *p = sl.Items[i].get();
+                StringClass *p = sl.Items[i];
 
                 if (p && Find(*p) == -1)
                     Add(*p);
             }
 
-            return (static_cast<int>(count));
+            return (count);
         }
 
         /**
@@ -311,7 +271,7 @@ namespace hgl
         */
         void Clear()
         {
-            Items.clear();
+            Items.Free();
         }
 
         /**
@@ -320,10 +280,10 @@ namespace hgl
         */
         void Delete(int index)
         {
-            if (index < 0 || index >= static_cast<int>(Items.size()))
+            if (index < 0 || index >= Items.GetCount())
                 return;
 
-            Items.erase(Items.begin() + index);
+            Items.DeleteAtOwn(index);
         }
 
         /**
@@ -335,11 +295,11 @@ namespace hgl
         {
             int result = 0;
 
-            for (int i = static_cast<int>(Items.size()) - 1; i >= 0; --i)
+            for (int i = Items.GetCount() - 1; i >= 0; --i)
             {
                 if (Items[i] && Items[i]->Comp(str) == 0)
                 {
-                    Items.erase(Items.begin() + i);
+                    Items.DeleteAtOwn(i);
                     ++result;
                 }
             }
@@ -354,12 +314,12 @@ namespace hgl
         */
         int Find(const StringClass &str) const                                                     ///<查找字符串,未找到返回-1
         {
-            const size_t count = Items.size();
+            const int count = Items.GetCount();
 
-            for (size_t i = 0; i < count; ++i)
+            for (int i = 0; i < count; ++i)
             {
                 if (Items[i] && Items[i]->Comp(str) == 0)
-                    return (static_cast<int>(i));
+                    return (i);
             }
 
             return (-1);
@@ -372,12 +332,12 @@ namespace hgl
         */
         int CaseFind(const StringClass &str) const                                                 ///<查找字符串,英文不区分大小写,未找到返回-1
         {
-            const size_t count = Items.size();
+            const int count = Items.GetCount();
 
-            for (size_t i = 0; i < count; ++i)
+            for (int i = 0; i < count; ++i)
             {
                 if (Items[i] && Items[i]->CaseComp(str) == 0)
-                    return (static_cast<int>(i));
+                    return (i);
             }
 
             return (-1);
@@ -407,12 +367,12 @@ namespace hgl
         */
         int Find(const StringClass &str, const int cn) const                                        ///<查找字符串,未找到返回-1
         {
-            const size_t count = Items.size();
+            const int count = Items.GetCount();
 
-            for (size_t i = 0; i < count; ++i)
+            for (int i = 0; i < count; ++i)
             {
                 if (Items[i] && Items[i]->Comp(str, cn) == 0)
-                    return (static_cast<int>(i));
+                    return (i);
             }
 
             return (-1);
@@ -426,12 +386,12 @@ namespace hgl
         */
         int CaseFind(const StringClass &str, const int cn) const                                    ///<查找字符串,英文不区分大小写,未找到返回-1
         {
-            const size_t count = Items.size();
+            const int count = Items.GetCount();
 
-            for (size_t i = 0; i < count; ++i)
+            for (int i = 0; i < count; ++i)
             {
                 if (Items[i] && Items[i]->CaseComp(str, cn) == 0)
-                    return (static_cast<int>(i));
+                    return (i);
             }
 
             return (-1);
@@ -444,8 +404,8 @@ namespace hgl
         */
         void Insert(int index, const StringClass &str)                                               ///<在指定位置插入一个字符串
         {
-            if (index < static_cast<int>(Items.size()))
-                Items.insert(Items.begin() + index, std::make_unique<StringClass>(str));
+            if (index < Items.GetCount())
+                Items.Insert(index, new StringClass(str));
         }
 
         /**
@@ -455,15 +415,15 @@ namespace hgl
         */
         void Exchange(int index1, int index2)                                                        ///<交换两行字符串
         {
-            if (index1 < 0 || index2 < 0 || index1 >= static_cast<int>(Items.size()) || index2 >= static_cast<int>(Items.size()))
+            if (index1 < 0 || index2 < 0 || index1 >= Items.GetCount() || index2 >= Items.GetCount())
                 return;
 
-            std::swap(Items[static_cast<size_t>(index1)], Items[static_cast<size_t>(index2)]);
+            Items.Exchange(index1, index2);
         }
 
         const StringClass &GetString(int n) const
         {
-            return *(Items[static_cast<size_t>(n)]);
+            return *(Items[n]);
         }                                                                                               ///<取得指定行字符串
     };//template<typename T> class StringList
 
