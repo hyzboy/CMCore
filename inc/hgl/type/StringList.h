@@ -173,15 +173,8 @@ namespace hgl
 
             StringList<T> tmp;
 
-            const int n = sl.GetCount();
-
-            for (int i = 0; i < n; ++i)
-            {
-                StringClass *str = sl.Items[i];
-
-                // 这里使用 tmp.Add 可能抛出；若抛出则 *this 保持不变
+            for(auto str:sl)
                 tmp.Add(*str);
-            }
 
             std::swap(Items, tmp.Items);
 
@@ -210,8 +203,7 @@ namespace hgl
         * @return 增加字符串成功后的索引
         */
         int Add(const StringClass &str)
-        {
-            // ObjectList 接受指针并拥有其所有权
+        {   
             return Items.Add(new StringClass(str));
         }
 
@@ -234,17 +226,10 @@ namespace hgl
         */
         int Add(const StringList<T> &sl)                                                            ///<添加字符串
         {
-            const int count = static_cast<int>(sl.GetCount());
+            for(auto str:sl)
+                Add(*str);
 
-            for (int i = 0; i < count; ++i)
-            {
-                StringClass *p = sl.Items[i];
-
-                if (p)
-                    Add(*p);
-            }
-
-            return (count);
+            return sl.GetCount();
         }
 
         /**
@@ -253,14 +238,15 @@ namespace hgl
         */
         int AddUnique(const StringList<T> &sl)                                                            ///<添加字符串
         {
-            const int count = static_cast<int>(sl.GetCount());
+            int count = 0;
 
-            for (int i = 0; i < count; ++i)
+            for(auto str:sl)
             {
-                StringClass *p = sl.Items[i];
+                if (Find(*str) != -1)
+                    continue;
 
-                if (p && Find(*p) == -1)
-                    Add(*p);
+                Add(*str);
+                ++count;
             }
 
             return (count);

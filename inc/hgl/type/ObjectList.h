@@ -27,6 +27,22 @@ namespace hgl
         // 访问运算符，返回指针
         ItemPointer operator[](int idx) const { return this->data_array.GetData()[idx]; }
 
+        template<typename ...ARGS>
+        T* Create(ARGS...args)
+        {
+            T* obj = new T(args...);
+
+            if (!obj) return nullptr;
+
+            if (!ArrayList<T *>::Add(obj))
+            {
+                delete obj;
+                return nullptr;
+            }
+
+            return obj;
+        }
+
         // 插入元素（保留原 ArrayList 行为）
         bool Insert(int index, const ItemPointer &obj) { return ArrayList<T *>::Insert(index, obj); }
 
