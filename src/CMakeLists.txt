@@ -135,6 +135,7 @@ SOURCE_GROUP("Text\\StrChar" FILES ${STR_CHAR_FILES})
 ##Text--------------------------------------------------------
 SET(STRING_HEADER_FILES ${TYPE_INCLUDE_PATH}/String.h
                         ${TYPE_INCLUDE_PATH}/StringView.h
+                        ${TYPE_INCLUDE_PATH}/StringViewList.h
                         ${TYPE_INCLUDE_PATH}/StringList.h
                         ${TYPE_INCLUDE_PATH}/SplitString.h
                         ${TYPE_INCLUDE_PATH}/MergeString.h
@@ -208,6 +209,7 @@ SET(IO_TEXT_FILES   IO/TextOutputStream.cpp
                     ${IO_INCLUDE_PATH}/TextOutputStream.h
                     Text/LoadString.cpp
                     Text/LoadStringList.cpp
+                    Text/LoadStringViewList.cpp
 
                     ${IO_INCLUDE_PATH}/LoadStringList.h
                     ${IO_INCLUDE_PATH}/SaveStringList.h)

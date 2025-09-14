@@ -66,7 +66,7 @@ namespace hgl
         return(result);
     }//int LoadStringList
 
-    inline int LoadU8StringList      (U8StringList &   sl,io::DataInputStream *dis){return LoadStringList<u8char,  ByteOrderMask::UTF8     >(sl,dis);}
+    inline int LoadU8StringList        (U8StringList &   sl,io::DataInputStream *dis){return LoadStringList<u8char,  ByteOrderMask::UTF8     >(sl,dis);}
     inline int LoadUTF16LEStringList   (U16StringList &  sl,io::DataInputStream *dis){return LoadStringList<u16char, ByteOrderMask::UTF16LE  >(sl,dis);}
     inline int LoadUTF16BEStringList   (U16StringList &  sl,io::DataInputStream *dis){return LoadStringList<u16char, ByteOrderMask::UTF16BE  >(sl,dis);}
 
