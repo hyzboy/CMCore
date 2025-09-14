@@ -503,7 +503,7 @@ namespace hgl
             
             Matrix4f TempMatrix;
 
-            for (TransformBase *tb : transform_list)
+            for(TransformBase *tb:transform_list)
             {
                 tb->GetMatrix(TempMatrix,WorldPosition,WorldNormal);
 
@@ -524,8 +524,9 @@ namespace hgl
 
         TransformManager(const TransformManager *tm):TransformBase(tm)
         {
-            for(TransformBase *tb:tm->transform_list)
+            for(const TransformBase *tb:tm->transform_list)
                 AddTransform(tb->CloneSelf());
+
             UpdateVersion();
         }
 
