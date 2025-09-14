@@ -715,6 +715,9 @@ namespace hgl
         // new conversions and checks to interoperate with std::string_view
         operator std::basic_string_view<T>() const { if (buffer.empty()) return std::basic_string_view<T>(); return std::basic_string_view<T>(buffer.data(), buffer.size()); }
 
+        // Implicit conversion to StringView for interoperability
+        operator StringView<T>() const { return StringView<T>(c_str(), Length()); }
+
         // PascalCase methods (match StringView naming)
         bool StartsWith(const T ch) const;
         bool StartsWith(const T *s) const;
