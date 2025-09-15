@@ -175,6 +175,7 @@ SET(IO_BASE_FILES ${IO_INCLUDE_PATH}/InputStream.h
                   ${IO_INCLUDE_PATH}/IOType.h
                   ${IO_INCLUDE_PATH}/OutputStream.h
                   ${IO_INCLUDE_PATH}/SeekAccess.h
+                  ${IO_INCLUDE_PATH}/MMapFile.h
                   IO/IOType.cpp)
 
 SET(IO_DATA_FILES ${IO_INCLUDE_PATH}/DataInputStream.h
