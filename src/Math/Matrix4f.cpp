@@ -133,7 +133,7 @@ namespace hgl
         //经查证，此代码完全等于glm::lookAtRH，无任何差别
     }
 
-    Vector2f ProjectToScreen(
+    Vector2i ProjectToScreen(
         const Vector3f& world_pos,
         const Matrix4f& view,
         const Matrix4f& projection,
@@ -145,7 +145,7 @@ namespace hgl
 
         // 2. 齐次除法，得到 NDC（注意Z为0~1）
         if (clip.w == 0.0f)
-            return Vector2f(0, 0);
+            return Vector2i(0, 0);
 
         Vector3f ndc;
 
@@ -157,19 +157,19 @@ namespace hgl
         float screen_x = (ndc.x + 1.0f) * 0.5f * viewport_width;
         float screen_y = (ndc.y + 1.0f) * 0.5f * viewport_height; // Y轴向下为正
 
-        return Vector2f(screen_x, screen_y);
+        return Vector2i(screen_x, screen_y);
     }
 
     Vector3f UnProjectToWorld(
-        const Vector2f &win_pos,
+        const Vector2i &win_pos,
         const Matrix4f &view,
         const Matrix4f &projection,
         const float viewport_width,
         const float viewport_height)
     {
         // 1. 归一化到 NDC（[-1, 1]）
-        float ndc_x = (2.0f * win_pos.x) / viewport_width - 1.0f;
-        float ndc_y = (2.0f * win_pos.y) / viewport_height - 1.0f;
+        float ndc_x = (2.0f * float(win_pos.x)) / viewport_width - 1.0f;
+        float ndc_y = (2.0f * float(win_pos.y)) / viewport_height - 1.0f;
         // 这里假设在近平面（z=0），如需支持深度可加参数
         float ndc_z = 0.0f;
 

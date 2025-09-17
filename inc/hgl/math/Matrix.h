@@ -102,7 +102,7 @@ namespace hgl
      */
     Matrix4f LookAtMatrix(const Vector3f &eye,const Vector3f &target,const Vector3f &up=AxisVector::Z);
 
-    Vector2f ProjectToScreen(
+    Vector2i ProjectToScreen(
         const Vector3f& world_pos,
         const Matrix4f& view,
         const Matrix4f& projection,
@@ -110,7 +110,7 @@ namespace hgl
         float viewport_height);
 
     Vector3f UnProjectToWorld(
-        const Vector2f &win_pos,
+        const Vector2i &win_pos,
         const Matrix4f &view,
         const Matrix4f &projection,
         const float viewport_width,
