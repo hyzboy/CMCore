@@ -126,7 +126,7 @@ namespace hgl
             void (*Write)(const LogMessage *);                                                          ///<输出一行日志
         };//struct LogInterface
 
-        static LogInterface LogInterface3=
+        static LogInterface LogInterface4=
         {
             AddLogger,
 
@@ -154,10 +154,10 @@ namespace hgl
 
             bool GetInterface(uint ver,void *data) override
             {
-                if(ver!=3||!data)
+                if(ver!=4||!data)
                     return(false);
 
-                memcpy(data,&LogInterface3,sizeof(LogInterface));
+                memcpy(data,&LogInterface4,sizeof(LogInterface));
                 return(true);
             }
         };//class LogPlugIn
