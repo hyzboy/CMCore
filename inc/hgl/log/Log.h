@@ -98,7 +98,7 @@ public:
 
     extern ObjectLogger GlobalLogger;///<全局日志对象
 
-#define OBJECT_LOGGER   hgl::logger::ObjectLogger Log{&typeid(*this)};
+#define OBJECT_LOGGER   ::hgl::logger::ObjectLogger Log{&typeid(*this)};
 
 #ifdef _DEBUG
     #define LogVerbose(...) this->Log.Verbose   (std::source_location::current(),__VA_ARGS__);
@@ -117,35 +117,35 @@ public:
     //全局日志对象的快捷方式
 
 #ifdef _DEBUG
-    #define GLogVerbose(...) hgl::logger::GlobalLogger.Verbose   (std::source_location::current(),__VA_ARGS__);
-    #define GLogInfo(...)    hgl::logger::GlobalLogger.Info      (std::source_location::current(),__VA_ARGS__);
-    #define GLogHint(...)    hgl::logger::GlobalLogger.Hint      (std::source_location::current(),__VA_ARGS__);
+    #define GLogVerbose(...) ::hgl::logger::GlobalLogger.Verbose   (std::source_location::current(),__VA_ARGS__);
+    #define GLogInfo(...)    ::hgl::logger::GlobalLogger.Info      (std::source_location::current(),__VA_ARGS__);
+    #define GLogHint(...)    ::hgl::logger::GlobalLogger.Hint      (std::source_location::current(),__VA_ARGS__);
 #else
     #define GLogVerbose(...)
     #define GLogInfo(...)
     #define GLogHint(...)
 #endif//
 
-    #define GLogWarning(...) hgl::logger::GlobalLogger.Warning   (std::source_location::current(),__VA_ARGS__);
-    #define GLogError(...)   hgl::logger::GlobalLogger.Error     (std::source_location::current(),__VA_ARGS__);
-    #define GLogFatal(...)   hgl::logger::GlobalLogger.Fatal     (std::source_location::current(),__VA_ARGS__);
+    #define GLogWarning(...) ::hgl::logger::GlobalLogger.Warning   (std::source_location::current(),__VA_ARGS__);
+    #define GLogError(...)   ::hgl::logger::GlobalLogger.Error     (std::source_location::current(),__VA_ARGS__);
+    #define GLogFatal(...)   ::hgl::logger::GlobalLogger.Fatal     (std::source_location::current(),__VA_ARGS__);
 
     #define DEFINE_LOGGER_MODULE(name) namespace hgl::logger{hgl::logger::ObjectLogger Log##name(OS_TEXT(#name));}
     #define EXTERN_LOGGER_MODULE(name) namespace hgl::logger{extern hgl::logger::ObjectLogger Log##name;}
 
 #ifdef _DEBUG
-    #define MLogVerbose(name,...)   {hgl::logger::Log##name.Verbose(std::source_location::current(),__VA_ARGS__);}
-    #define MLogInfo(name,...)      {hgl::logger::Log##name.Info   (std::source_location::current(),__VA_ARGS__);}
-    #define MLogHint(name,...)      {hgl::logger::Log##name.Hint   (std::source_location::current(),__VA_ARGS__);}
+    #define MLogVerbose(name,...)   {::hgl::logger::Log##name.Verbose(std::source_location::current(),__VA_ARGS__);}
+    #define MLogInfo(name,...)      {::hgl::logger::Log##name.Info   (std::source_location::current(),__VA_ARGS__);}
+    #define MLogHint(name,...)      {::hgl::logger::Log##name.Hint   (std::source_location::current(),__VA_ARGS__);}
 #else
     #define MLogVerbose(name,...)
     #define MLogInfo(name,...)
     #define MLogHint(name,...)
 #endif//
 
-    #define MLogWarning(name,...)   {hgl::logger::Log##name.Warning(std::source_location::current(),__VA_ARGS__);}
-    #define MLogError(name,...)     {hgl::logger::Log##name.Error  (std::source_location::current(),__VA_ARGS__);}
-    #define MLogFatal(name,...)     {hgl::logger::Log##name.Fatal  (std::source_location::current(),__VA_ARGS__);}
+    #define MLogWarning(name,...)   {::hgl::logger::Log##name.Warning(std::source_location::current(),__VA_ARGS__);}
+    #define MLogError(name,...)     {::hgl::logger::Log##name.Error  (std::source_location::current(),__VA_ARGS__);}
+    #define MLogFatal(name,...)     {::hgl::logger::Log##name.Fatal  (std::source_location::current(),__VA_ARGS__);}
 
     #define RETURN_FALSE            {GLogVerbose(   OS_TEXT("return(false)"));return(false);}
     #define RETURN_ERROR(v)         {GLogInfo(      OS_TEXT("return error(")+OSString::numberOf(v)+OS_TEXT(")"));return(v);}
