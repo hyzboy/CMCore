@@ -102,7 +102,7 @@ namespace hgl
      */
     Matrix4f LookAtMatrix(const Vector3f &eye,const Vector3f &target,const Vector3f &up=AxisVector::Z);
 
-    Vector2f ProjectToScreen(
+    Vector2i ProjectToScreen(
         const Vector3f& world_pos,
         const Matrix4f& view,
         const Matrix4f& projection,
@@ -110,7 +110,7 @@ namespace hgl
         float viewport_height);
 
     Vector3f UnProjectToWorld(
-        const Vector2f &win_pos,
+        const Vector2i &win_pos,
         const Matrix4f &view,
         const Matrix4f &projection,
         const float viewport_width,
@@ -151,9 +151,9 @@ namespace hgl
         return glm::scale(Matrix4f(1.0f),Vector3f(s,s,s));
     }
 
-    inline Matrix4f AxisXRotate(float rad){return glm::rotate(Matrix4f(1.0f),rad,AxisVector::X);}
-    inline Matrix4f AxisYRotate(float rad){return glm::rotate(Matrix4f(1.0f),rad,AxisVector::Y);}
-    inline Matrix4f AxisZRotate(float rad){return glm::rotate(Matrix4f(1.0f),rad,AxisVector::Z);}
+    inline Matrix4f AxisXRotate(float rad){return glm::rotate(Matrix4f(1.0f),rad,AxisVector::X);} 
+    inline Matrix4f AxisYRotate(float rad){return glm::rotate(Matrix4f(1.0f),rad,AxisVector::Y);} 
+    inline Matrix4f AxisZRotate(float rad){return glm::rotate(Matrix4f(1.0f),rad,AxisVector::Z);} 
 
     inline Matrix4f AxisRotate(float rad,const Vector3f &axis)
     {
@@ -173,6 +173,43 @@ namespace hgl
     inline Matrix4f AxisRotate(float rad,const Vector4f &axis)
     {
         return AxisRotate(rad,Vector3f(axis.x,axis.y,axis.z));
+    }
+    
+    // New: Matrix3f variants returning 3x3 rotation matrices
+    inline Matrix3f AxisRotate3(float rad,const Vector3f &axis)
+    {
+        return glm::mat3(glm::rotate(Matrix4f(1.0f), rad, axis));
+    }
+
+    inline Matrix3f AxisRotate3(float rad,float x,float y,float z)
+    {
+        return AxisRotate3(rad, Vector3f(x,y,z));
+    }
+
+    inline Matrix3f AxisRotate3(float rad,float x,float y)
+    {
+        return AxisRotate3(rad, Vector3f(x,y,1.0f));
+    }
+
+    inline Matrix3f AxisRotate3(float rad,const Vector4f &axis)
+    {
+        return AxisRotate3(rad, Vector3f(axis.x, axis.y, axis.z));
+    }
+
+    // Degree-based convenience overloads
+    inline Matrix3f AxisRotate3Deg(float deg,const Vector3f &axis)
+    {
+        return AxisRotate3(glm::radians(deg), axis);
+    }
+
+    inline Matrix3f AxisRotate3Deg(float deg,float x,float y,float z)
+    {
+        return AxisRotate3Deg(deg, Vector3f(x,y,z));
+    }
+
+    inline Matrix3f AxisRotate3Deg(float deg,const Vector4f &axis)
+    {
+        return AxisRotate3Deg(deg, Vector3f(axis.x, axis.y, axis.z));
     }
 
     inline Vector3f AxisRotate(const Vector3f &v3f,float rad,const Vector3f &axis)

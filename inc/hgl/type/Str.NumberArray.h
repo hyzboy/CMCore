@@ -3,251 +3,230 @@
 #include <hgl/type/Str.Length.h>
 #include <hgl/type/Str.Search.h>
 #include <hgl/type/Str.Copy.h>
+#include <cstddef>
 namespace hgl
 {
 
     /**
-    * 从字符串中解晰数值阵列,如"1,2,3"或"1 2 3"
-    */
-    template<typename C,typename N> struct ParseNumberArray
+     * @brief CN: 从字符串中解析数值数组的抽象接口（例如用于解析 "1,2,3"）。
+     * @brief EN: Abstract interface for parsing numeric arrays from a string (e.g. "1,2,3").
+     *
+     * @tparam CharT 字符类型。EN: character type.
+     * @tparam NumT 数值类型。EN: numeric value type.
+     */
+    template<typename CharT, typename NumT>
+    struct ParseNumberArray
     {
-    public:
-
-        virtual bool IsChar(const C ch)=0;
-        virtual bool ToNumber(const C *,N &)=0;
+        virtual ~ParseNumberArray() = default;
+        virtual bool IsChar(CharT ch) const = 0;                      ///< CN: 判断当前字符是否属于数字文本的一部分。EN: Test whether character is part of a number token.
+        virtual bool ToNumber(const CharT *str, NumT &out) const = 0;  ///< CN: 将以 str 开始的数字文本解析为数值（遇到分隔符时结束）。EN: Parse number starting at str into out.
     };
 
-    template<typename C,typename N> struct ParseIntArray:public ParseNumberArray<C,N>
+    template<typename CharT, typename NumT>
+    struct ParseIntArray : public ParseNumberArray<CharT,NumT>
     {
-        virtual bool IsChar(const C ch) override{return hgl::is_integer_char(ch);} 
-        virtual bool ToNumber(const C *str,N &result) override{return hgl::stoi(str,result);} 
+        bool IsChar(CharT ch) const override { return hgl::is_integer_char(ch); }
+        bool ToNumber(const CharT *str, NumT &out) const override { return hgl::stoi(str, out); }
     };
 
-    template<typename C,typename N> struct ParseUIntArray:public ParseNumberArray<C,N>
+    template<typename CharT, typename NumT>
+    struct ParseUIntArray : public ParseNumberArray<CharT,NumT>
     {
-        virtual bool IsChar(const C ch) override{return hgl::is_digit(ch);} 
-        virtual bool ToNumber(const C *str,N &result) override{return hgl::stou(str,result);} 
+        bool IsChar(CharT ch) const override { return hgl::is_digit(ch); }
+        bool ToNumber(const CharT *str, NumT &out) const override { return hgl::stou(str, out); }
     };
 
-    template<typename C,typename N> struct ParseFloatArray:public ParseNumberArray<C,N>
+    template<typename CharT, typename NumT>
+    struct ParseFloatArray : public ParseNumberArray<CharT,NumT>
     {
-        virtual bool IsChar(const C ch) override{return hgl::is_float_char(ch);} 
-        virtual bool ToNumber(const C *str,N &result) override{return hgl::etof(str,result);} 
+        bool IsChar(CharT ch) const override { return hgl::is_float_char(ch); }
+        bool ToNumber(const CharT *str, NumT &out) const override { return hgl::etof(str, out); }
     };
 
-    template<typename C,typename N> struct ParseHexArray:public ParseNumberArray<C,N>
+    template<typename CharT, typename NumT>
+    struct ParseHexArray : public ParseNumberArray<CharT,NumT>
     {
-        virtual bool IsChar(const C ch) override{return hgl::is_hex_digit(ch);} 
-        virtual bool ToNumber(const C *str,N &result) override{return hgl::xtou(str,result);} 
+        bool IsChar(CharT ch) const override { return hgl::is_hex_digit(ch); }
+        bool ToNumber(const CharT *str, NumT &out) const override { return hgl::xtou(str, out); }
     };
 
     /**
-    * 解析数值阵列字符串到数组,如"1,2,3"或"1 2 3"
-    * @param str 要解析的字符串
-    * @param result 结果数组
-    * @param max_count 最大个数
-    * @param end_char 结尾字符,默认为0
-    * @param end_pointer 结束指针
-    * @return 解晰出来的数据数量
-    */
-    template<typename C,typename N>
-    inline int parse_number_array(ParseNumberArray<C,N> *pna,const C *str,N *result,int max_count,const C end_char=0,const C **end_pointer=nullptr)
+     * @brief CN: 将字符串解析为数值数组（写入到 result 缓冲区），遇到分隔符或 end_char 停止。
+     * @brief EN: Parse numbers from a string into result array; stop on delimiters or end_char.
+     *
+     * @tparam CharT 字符类型。EN: character type.
+     * @tparam NumT 数值类型。EN: numeric value type.
+     * @param[in] pna CN: 指向解析器实现的指针. EN: pointer to parser implementation.
+     * @param[in] str CN: 源字符串指针（以 NUL 终止）. EN: source string pointer (NUL-terminated).
+     * @param[out] result CN: 输出数值缓冲区. EN: output buffer for parsed values.
+     * @param[in] max_count CN: 能够写入 result 的最大元素数. EN: maximum number of elements to write into result.
+     * @param[in] end_char CN: 可选终止字符（默认 0 表示不使用）. EN: optional end character (default 0 means none).
+     * @param[out] end_pointer CN: 如果非空，返回解析停止时的字符串位置. EN: optional out pointer receiving position where parsing stopped.
+     * @return int CN: 返回成功解析的元素数量，出错返回 -1. EN: number of parsed elements on success, -1 on error.
+     */
+    template<typename CharT, typename NumT>
+    inline int parse_number_array(ParseNumberArray<CharT,NumT> *pna, const CharT *str, NumT *result, std::size_t max_count, const CharT end_char = 0, const CharT **end_pointer = nullptr)
     {
-        if(!str||!result||max_count<=0)return(-1);
+        if(!pna || !str || !result || max_count == 0) return -1;
 
-        const C *p,*sp;
-        int count=0;
+        const CharT *p = str;
+        const CharT *sp = str;
+        std::size_t remaining = max_count;
+        int parsed = 0;
 
-        sp=str;
-        p=sp;
-
-        while(*p&&*p!=end_char)
+        while(*p && *p != end_char)
         {
             if(pna->IsChar(*p))
             {
-                p++;
+                ++p;
                 continue;
             }
 
-            if(pna->ToNumber(sp,*result))
+            if(pna->ToNumber(sp, *result))
             {
-                ++count;
-                --max_count;
+                ++parsed;
+                --remaining;
 
-                if(max_count<=0)
+                if(remaining == 0)
                 {
-                    if(end_pointer)
-                        *end_pointer=p;
-
-                    return(count);
+                    if(end_pointer) *end_pointer = p;
+                    return parsed;
                 }
 
                 ++result;
-
                 ++p;
-                sp=p;
-
+                sp = p;
                 continue;
             }
 
-            if(end_pointer)
-                *end_pointer=p;
-
-            return count;
+            if(end_pointer) *end_pointer = p;
+            return parsed;
         }
 
-        if(p>sp)
+        if(p > sp)
         {
-            pna->ToNumber(sp,*result);
-            ++count;
+            pna->ToNumber(sp, *result);
+            ++parsed;
         }
 
-        if(end_pointer)
-            *end_pointer=p;
-
-        return(count);
+        if(end_pointer) *end_pointer = p;
+        return parsed;
     }
 
     /**
-    * 解析一个由多个浮点数组成的字符串，结果扔进指定数组中。任何非当前进制的字符串都将被视为分隔符。
-    * 
-    * \param str           要解晰的原始字符串
-    * \param result        存放解晰结果的数组
-    * \param max_count     数组最大个数量限制
-    * \param end_char      结尾字符，默认为0
-    * \param end_pointer   字符串结束指针
-    * \return              解晰出来的数据数量
-    */
-    template<typename T,typename I> inline const int parse_float_array(const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseFloatArray<T,I> pna;return hgl::parse_number_array<T,I>(&pna,str,result,max_count,end_char,end_pointer);} 
-
-    /**
-    * 解析一个由多个有符号整数组成的字符串，结果扔进指定数组中。任何非当前进制的字符串都将被视为分隔符。
-    * 
-    * \param str           要解晰的原始字符串
-    * \param result        存放解晰结果的数组
-    * \param max_count     数组最大个数量限制
-    * \param end_char      结尾字符，默认为0
-    * \param end_pointer   字符串结束指针
-    * \return              解晰出来的数据数量
-    */
-    template<typename T,typename I> inline const int parse_int_array  (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseIntArray<T,I>   pna;return hgl::parse_number_array<T,I>(&pna,str,result,max_count,end_char,end_pointer);} 
-
-    /**
-    * 解析一个由多个无符号整数组成的字符串，结果扔进指定数组中。任何非当前进制的字符串都将被视为分隔符。
-    * 
-    * \param str           要解晰的原始字符串
-    * \param result        存放解晰结果的数组
-    * \param max_count     数组最大个数量限制
-    * \param end_char      结尾字符，默认为0
-    * \param end_pointer   字符串结束指针
-    * \return              解晰出来的数据数量
-    */
-    template<typename T,typename I> inline const int parse_uint_array (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseUIntArray<T,I>  pna;return hgl::parse_number_array<T,I>(&pna,str,result,max_count,end_char,end_pointer);} 
-
-    /**
-    * 解析一个由多个16进制整数组成的字符串，结果扔进指定数组中。任何非当前进制的字符串都将被视为分隔符。
-    * 
-    * \param str           要解晰的原始字符串
-    * \param result        存放解晰结果的数组
-    * \param max_count     数组最大个数量限制
-    * \param end_char      结尾字符，默认为0
-    * \param end_pointer   字符串结束指针
-    * \return              解晰出来的数据数量
-    */
-    template<typename T,typename I> inline const int parse_hex_array  (const T *str,I *result,int max_count,const T end_char=0,const T **end_pointer=0){ParseHexArray<T,I>   pna;return hgl::parse_number_array<T,I>(&pna,str,result,max_count,end_char,end_pointer);} 
-
-    /**
-    * 解析数值阵列字符串到数组,如"1,2,3"或"1 2 3"
-    * @param str 要解析的字符串
-    * @param str_len 字符串的长度
-    * @param result_list 结果数组
-    * @return 解晰出来的数据数量
-    * @return -1 出错
-    */
-    template<typename T,typename I,typename SET>
-    inline const int parse_number_array(ParseNumberArray<T,I> *pna,const T *str,const int str_len,SET &result_list)
+     * @brief CN: 便捷函数：解析浮点数数组写入到固定缓冲区。
+     * @brief EN: Convenience wrapper to parse float array into a buffer.
+     */
+    template<typename CharT, typename NumT>
+    inline int parse_float_array(const CharT *str, NumT *result, std::size_t max_count, const CharT end_char = 0, const CharT **end_pointer = nullptr)
     {
-        if(!str||str_len<=0)return(-1);
+        ParseFloatArray<CharT, NumT> pna;
+        return hgl::parse_number_array<CharT, NumT>(&pna, str, result, max_count, end_char, end_pointer);
+    }
 
-        const T *p,*sp;
-        int len=str_len;
-        int count=0;
-        I result;
+    template<typename CharT, typename NumT>
+    inline int parse_int_array(const CharT *str, NumT *result, std::size_t max_count, const CharT end_char = 0, const CharT **end_pointer = nullptr)
+    {
+        ParseIntArray<CharT, NumT> pna;
+        return hgl::parse_number_array<CharT, NumT>(&pna, str, result, max_count, end_char, end_pointer);
+    }
 
-        sp=str;
-        p=sp;
+    template<typename CharT, typename NumT>
+    inline int parse_uint_array(const CharT *str, NumT *result, std::size_t max_count, const CharT end_char = 0, const CharT **end_pointer = nullptr)
+    {
+        ParseUIntArray<CharT, NumT> pna;
+        return hgl::parse_number_array<CharT, NumT>(&pna, str, result, max_count, end_char, end_pointer);
+    }
 
-        while(*p&&len)
+    template<typename CharT, typename NumT>
+    inline int parse_hex_array(const CharT *str, NumT *result, std::size_t max_count, const CharT end_char = 0, const CharT **end_pointer = nullptr)
+    {
+        ParseHexArray<CharT, NumT> pna;
+        return hgl::parse_number_array<CharT, NumT>(&pna, str, result, max_count, end_char, end_pointer);
+    }
+
+    /**
+     * @brief CN: 将数值字符串解析到可调用 Add 的容器中（例如数组列表）。
+     * @brief EN: Parse numbers from string into a container with Add(result) method.
+     *
+     * @tparam CharT 字符类型。EN: character type.
+     * @tparam NumT 数值类型。EN: numeric type.
+     * @tparam Container 类型必须提供 Add(NumT) 方法。EN: container type must provide Add(NumT).
+     * @param[in] pna CN: 解析器实例. EN: parser instance.
+     * @param[in] str CN: 源字符串指针. EN: source string.
+     * @param[in] str_len CN: 要处理的字符长度. EN: number of characters to process.
+     * @param[out] result_list CN: 支持 Add 方法的容器. EN: container to receive parsed values (via Add).
+     * @return int CN/EN: 成功解析的元素数量，失败返回 -1.
+     */
+    template<typename CharT, typename NumT, typename Container>
+    inline int parse_number_array(ParseNumberArray<CharT,NumT> *pna, const CharT *str, std::size_t str_len, Container &result_list)
+    {
+        if(!pna || !str || str_len == 0) return -1;
+
+        const CharT *p = str;
+        const CharT *sp = str;
+        std::size_t remaining = str_len;
+        int parsed = 0;
+        NumT tmp;
+
+        while(*p && remaining > 0)
         {
-            --len;
+            --remaining;
             if(pna->IsChar(*p))
             {
-                p++;
+                ++p;
                 continue;
             }
 
-            if(pna->ToNumber(sp,result))
+            if(pna->ToNumber(sp, tmp))
             {
-                ++count;
-                result_list.Add(result);
+                ++parsed;
+                result_list.Add(tmp);
 
                 ++p;
-                sp=p;
-
+                sp = p;
                 continue;
             }
 
-            return count;
+            return parsed;
         }
 
-        if(p>sp)
+        if(p > sp)
         {
-            pna->ToNumber(sp,result);
-            result_list.Add(result);
-            ++count;
+            pna->ToNumber(sp, tmp);
+            result_list.Add(tmp);
+            ++parsed;
         }
 
-        return(count);
+        return parsed;
     }
 
-    /**
-    * 解析一个由多个浮点数组成的字符串，结果扔进指定列表中。任何非当前进制的字符串都将被视为分隔符。
-    * 
-    * \param str           要解晰的原始字符串
-    * \param len           字符串长度
-    * \param result_list   存放解晰结果的列表
-    * \return              解晰出来的数据数量
-    */
-    template<typename T,typename I,typename SET> inline const int parse_float_array   (const T *str,const int len,SET &result_list){ParseFloatArray<T,I> pna;return hgl::parse_number_array<T,I,SET>(&pna,str,len,result_list);} 
+    template<typename CharT, typename NumT, typename Container>
+    inline int parse_float_array(const CharT *str, std::size_t len, Container &result_list)
+    {
+        ParseFloatArray<CharT, NumT> pna;
+        return hgl::parse_number_array<CharT, NumT, Container>(&pna, str, len, result_list);
+    }
 
-    /**
-    * 解析一个由多个有符号整数组成的字符串，结果扔进指定列表中。任何非当前进制的字符串都将被视为分隔符。
-    * 
-    * \param str           要解晰的原始字符串
-    * \param len           字符串长度
-    * @param result_list   存放解晰结果的列表
-    * \return              解晰出来的数据数量
-    */
-    template<typename T,typename I,typename SET> inline const int parse_int_array      (const T *str,const int len,SET &result_list){ParseIntArray<T,I>   pna;return hgl::parse_number_array<T,I,SET>(&pna,str,len,result_list);} 
+    template<typename CharT, typename NumT, typename Container>
+    inline int parse_int_array(const CharT *str, std::size_t len, Container &result_list)
+    {
+        ParseIntArray<CharT, NumT> pna;
+        return hgl::parse_number_array<CharT, NumT, Container>(&pna, str, len, result_list);
+    }
 
-    /**
-    * 解析一个由多个无符号整数组成的字符串，结果扔进指定列表中。任何非当前进制的字符串都将被视为分隔符。
-    * 
-    * \param str           要解晰的原始字符串
-    * \param len           字符串长度
-    * \param result_list   存放解晰结果的列表
-    * \return              解晰出来的数据数量
-    */
-    template<typename T,typename I,typename SET> inline const int parse_uint_array     (const T *str,const int len,SET &result_list){ParseUIntArray<T,I>  pna;return hgl::parse_number_array<T,I,SET>(&pna,str,len,result_list);} 
+    template<typename CharT, typename NumT, typename Container>
+    inline int parse_uint_array(const CharT *str, std::size_t len, Container &result_list)
+    {
+        ParseUIntArray<CharT, NumT> pna;
+        return hgl::parse_number_array<CharT, NumT, Container>(&pna, str, len, result_list);
+    }
 
-    /**
-    * 解析一个由多个16进制整数组成的字符串，结果扔进指定列表中。任何非当前进制的字符串都将被视为分隔符。
-    * 
-    * \param str           要解晰的原始字符串
-    * \param len           字符串长度
-    * \param result_list   存放解晰结果的列表
-    * \return              解晰出来的数据数量
-    */
-    template<typename T,typename I,typename SET> inline const int parse_hex_array      (const T *str,const int len,SET &result_list){ParseHexArray<T,I>   pna;return hgl::parse_number_array<T,I,SET>(&pna,str,len,result_list);} 
+    template<typename CharT, typename NumT, typename Container>
+    inline int parse_hex_array(const CharT *str, std::size_t len, Container &result_list)
+    {
+        ParseHexArray<CharT, NumT> pna;
+        return hgl::parse_number_array<CharT, NumT, Container>(&pna, str, len, result_list);
+    }
 
 }//namespace hgl

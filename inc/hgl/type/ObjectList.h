@@ -27,6 +27,22 @@ namespace hgl
         // 访问运算符，返回指针
         ItemPointer operator[](int idx) const { return this->data_array.GetData()[idx]; }
 
+        template<typename ...ARGS>
+        T* Create(ARGS...args)
+        {
+            T* obj = new T(args...);
+
+            if (!obj) return nullptr;
+
+            if (!ArrayList<T *>::Add(obj))
+            {
+                delete obj;
+                return nullptr;
+            }
+
+            return obj;
+        }
+
         // 插入元素（保留原 ArrayList 行为）
         bool Insert(int index, const ItemPointer &obj) { return ArrayList<T *>::Insert(index, obj); }
 
@@ -52,7 +68,7 @@ namespace hgl
         virtual bool Unlink(int start, int number)        { return ArrayList<T *>::Delete(start, number); }  ///< 断开一段范围
         virtual bool UnlinkByValue(ItemPointer &ip)       { return ArrayList<T *>::DeleteByValue(ip); }      ///< 通过值断开（单个）
         virtual void UnlinkByValue(ItemPointer *ip, int n){ ArrayList<T *>::DeleteByValue(ip, n); }          ///< 通过数组断开
-        virtual void UnlinkAll()                          { ArrayList<T *>::Clear(); }                       ///< 断开所有（不 delete）
+        virtual void UnlinkAll()                          { ArrayList<T *>::Clear(); }                       ///< 断开所有（不 delete ）
 
     private:
         // 内部辅助：删除范围的元素并先行销毁这些指针
@@ -107,5 +123,145 @@ namespace hgl
             for (int i = 0; i < n; ++i)
                 DeleteByValueOwn(ip[i]);
         }
+
+    public: // 迭代器
+
+        class Iterator
+        {
+        private:
+
+            T **list;
+            T *single; // when constructed from a single element (copy-initialized in range-for)
+            int32 current_index;
+
+        public:
+
+            using pointer = T*;    // pointer to element type
+            using reference = T*;  // element type is pointer (T*)
+
+        public:
+
+            Iterator()
+            {
+                list = nullptr;
+                single = nullptr;
+                current_index = -1;
+            }
+
+            Iterator(T **lst, int32 idx) :list(lst), single(nullptr), current_index(idx) {}
+
+            // Construct from a single element (pointer). This allows code like:
+            // for(ObjectList<T>::Iterator it : objlist) { ... }
+            Iterator(T *elem) : list(nullptr), single(elem), current_index(-1) {}
+
+            // Return the element pointer
+            pointer operator*() const
+            {
+                return (list ? list[current_index] : single);
+            }
+
+            // Pointer-like access to object's members
+            pointer operator->() const
+            {
+                return (list ? list[current_index] : single);
+            }
+
+            Iterator& operator++() { if(list) ++current_index; return *this; }
+            Iterator operator++(int) { Iterator tmp = *this; ++(*this); return tmp; }
+
+            Iterator& operator+=(int32 v) { if(list) current_index += v; return *this; }
+            Iterator& operator-=(int32 v) { if(list) current_index -= v; return *this; }
+
+            Iterator& operator--() { if(list) --current_index; return *this; }
+            Iterator operator--(int) { Iterator tmp = *this; --(*this); return tmp; }
+
+            bool operator==(const Iterator& other) const
+            {
+                if(list || other.list)
+                    return list == other.list && current_index == other.current_index;
+                return single == other.single;
+            }
+
+            bool operator!=(const Iterator& other) const
+            {
+                if(list || other.list)
+                    return list != other.list || current_index != other.current_index;
+                return single != other.single;
+            }
+        };//class Iterator
+
+        Iterator begin  () { return Iterator(this->data_array.GetData(), 0); }
+        Iterator end    () { return Iterator(this->data_array.GetData(), this->data_array.GetCount()); }
+        Iterator last   () { int c = this->data_array.GetCount(); return (c == 0) ? end() : Iterator(this->data_array.GetData(), c - 1); }
+
+    public: // 迭代器
+
+        class ConstIterator
+        {
+        private:
+
+            // pointer to array of pointers; we don't modify pointers via const iterator
+            T * const * list;
+            T * single;
+            int32 current_index;
+
+        public:
+
+            using pointer = T*;      // pointer to element (non-const pointee)
+            using reference = T*;    // element type is pointer
+
+        public:
+
+            ConstIterator()
+            {
+                list = nullptr;
+                single = nullptr;
+                current_index = -1;
+            }
+
+            // Accept a pointer to array of pointers. We keep the internal pointer as
+            // T * const * so that we don't allow modification of the pointer array via const iterator.
+            ConstIterator(T * const * lst, int32 idx) :list(lst), single(nullptr), current_index(idx) {}
+
+            // Construct from a single element pointer
+            ConstIterator(T *elem) : list(nullptr), single(elem), current_index(-1) {}
+
+            reference operator*() const
+            {
+                return (list ? list[current_index] : single);
+            }
+
+            pointer operator->() const
+            {
+                return (list ? list[current_index] : single);
+            }
+
+            ConstIterator& operator++() { if(list) ++current_index; return *this; }
+            ConstIterator operator++(int) { ConstIterator tmp = *this; ++(*this); return tmp; }
+
+            ConstIterator& operator+=(int32 v) { if(list) current_index += v; return *this; }
+            ConstIterator& operator-=(int32 v) { if(list) current_index -= v; return *this; }
+
+            ConstIterator& operator--() { if(list) --current_index; return *this; }
+            ConstIterator operator--(int) { ConstIterator tmp = *this; --(*this); return tmp; }
+
+            bool operator==(const ConstIterator& other) const
+            {
+                if(list || other.list)
+                    return list == other.list && current_index == other.current_index;
+                return single == other.single;
+            }
+
+            bool operator!=(const ConstIterator& other) const
+            {
+                if(list || other.list)
+                    return list != other.list || current_index != other.current_index;
+                return single != other.single;
+            }
+        };//class ConstIterator
+
+        ConstIterator begin ()const { return ConstIterator(this->data_array.GetData(), 0); }
+        ConstIterator end   ()const { return ConstIterator(this->data_array.GetData(), this->data_array.GetCount()); }
+        ConstIterator last  ()const { int c = this->data_array.GetCount(); return (c == 0) ? end() : ConstIterator(this->data_array.GetData(), c - 1); }
     };// class ObjectList
 }// namespace hgl

@@ -5,26 +5,25 @@
 #include <memory>        // for std::unique_ptr
 #include <vector>        // for AutoDeleteObjectArray
 #include <algorithm>     // for std::fill, std::for_each
+#include <cstddef>
+#include <cstdint>
 
 namespace hgl
 {
     /**
-     * RefCount
+     * @file
+     * @brief
+     * CN: 智能指针与自动释放工具集。
+     * EN: Smart pointer and auto-release utilities.
+     */
+
+    /**
+     * @brief RefCount
      * ------------------------------------------------------------
-     * 强/弱引用控制块（非数组对象使用）。
-     * 设计目标：提供类似 std::shared_ptr/std::weak_ptr 的最小核心语义：
-     *  1. count 为强引用计数(>0 表示对象尚未析构)。
-     *  2. weak  为弱引用控制块计数(>=0)。
-     *  3. 当 count 递减到 0 时：调用派生类的 Delete() 释放真实对象，并将数据指针置空，防止“复活”。
-     *  4. 当 count==0 且 weak==0 时：释放控制块自身(delete this)。
-     *
-     * 线程安全：
-     *  - 所有计数操作使用原子，memory_order 采用 acq_rel（增/减）+ acquire（读）保证可见性。
-     *  - 不提供 ABA 级别的严格保障（与标准 shared_ptr 一样我们假定整数溢出不可发生）。
-     *
-     * 注意：
-     *  - Delete() 必须只析构对象本体，并清空指针。不要在派生析构函数再重复 Delete()。
-     *  - 不支持自定义删除器；如需可在 SmartData 内部封装。
+     * CN: 强/弱引用控制块（非数组对象使用）。
+     *     设计目标：提供类似 std::shared_ptr/std::weak_ptr 的最小核心语义。
+     * EN: Strong/weak reference control block (for non-array objects).
+     *     This provides minimal semantics similar to std::shared_ptr/weak_ptr.
      */
     struct RefCount
     {
@@ -37,44 +36,54 @@ namespace hgl
         virtual ~RefCount()=default;
 
         /**
-         * Delete(): 强引用计数从 1 -> 0 时调用一次，用于销毁真实对象。
-         * 约定：实现中须将底层 data 指针清零，避免 WeakPtr 升级成功后获得已释放指针。
+         * @brief CN: 当强引用计数从 1 -> 0 时调用，用于销毁真实对象。
+         *        EN: Called once when strong count drops 1 -> 0 to destroy the real
+         *            object.
          */
         virtual void Delete()=0;
 
-        /** 增加强引用（假定调用者保证对象未过期） */
+        /**
+         * @brief CN: 增加强引用（假定调用者保证对象未过期）。
+         *        EN: Increase strong reference (caller guarantees object not expired).
+         * @return 新的强引用计数。
+         */
         int inc_ref()
         {
             return count.fetch_add(1,std::memory_order_acq_rel)+1;
         }
 
         /**
-         * 释放一个强引用。
-         * 返回剩余强引用数量；若返回 0 表示本次释放后对象已析构（控制块可能仍存活，若还有 weak）。
+         * @brief CN: 释放一个强引用；返回剩余强引用数量。
+         *        EN: Release one strong reference; return remaining strong count.
          */
         virtual int unref()
         {
             int old=count.fetch_sub(1,std::memory_order_acq_rel);
             if(old==1)
             {
-                // old==1 -> 递减后为 0，最后一个强引用释放
                 Delete();
                 if(weak.load(std::memory_order_acquire)==0)
-                    delete this;        // 无弱引用，控制块失效
+                    delete this;
                 return 0;
             }
             return old-1;
         }
 
-        /** 增加弱引用 */
+        /**
+         * @brief CN: 增加弱引用计数。
+         *        EN: Increase weak reference count.
+         * @return 新的弱引用计数。
+         */
         int inc_ref_weak()
         {
             return weak.fetch_add(1,std::memory_order_acq_rel)+1;
         }
 
         /**
-         * 释放一个弱引用。
-         * 若释放后 weak==0 且 count==0，销毁控制块。
+         * @brief CN: 释放一个弱引用；当弱引用和强引用都为 0 时删除控制块。
+         *        EN: Release one weak reference; delete control block when both
+         *            weak and strong counts reach zero.
+         * @return 剩余弱引用计数。
          */
         int unref_weak()
         {
@@ -86,25 +95,28 @@ namespace hgl
                     delete this;
                     return 0;
                 }
-                return 0;   // 仍有强引用，控制块保留
+                return 0;
             }
             return old-1;
         }
     };//struct RefCount
 
+
     /**
-     * ArrayRefCount
-     * ------------------------------------------------------------
-     * 与 RefCount 语义相同，区别在于 Delete() 期望对数组调用 delete[]。
+     * @brief ArrayRefCount
+     * CN: 数组对象的强/弱引用控制块（与 RefCount 语义类似但命名区分）。
+     * EN: Reference block for array objects (similar semantics to RefCount).
      */
     struct ArrayRefCount
     {
         atom_int count{1};
         atom_int weak{0};
 
+    public:
+
         ArrayRefCount()=default;
         virtual ~ArrayRefCount()=default;
-        virtual void Delete()=0;   // 必须 delete[] 或其他数组释放策略
+        virtual void Delete()=0;
 
         int inc_ref()
         {
@@ -139,67 +151,87 @@ namespace hgl
                     delete this;
                     return 0;
                 }
-                return 0; // 仍有强引用
+                return 0;
             }
             return old-1;
         }
     };//struct ArrayRefCount
 
+
     /**
-     * SmartData<T>
-     * ------------------------------------------------------------
-     * 非数组对象的控制块+裸指针包装：
-     *  - data 指向单个 T。
-     *  - Delete() 负责 delete data，并置 data=nullptr。
-     *  - lock(): 尝试从弱引用升级为强引用（CAS 增加 count）。对象已过期或 data==nullptr 则失败。
+     * @brief SmartData
+     * @tparam T 被管理对象类型。
+     *
+     * CN: 为单个对象提供引用计数控制块并保存裸指针。Delete()
+     *     会释放对象。提供 lock()/valid() 用于弱引用升级语义。
+     * EN: Reference-counted control block holding a raw pointer for a single
+     *     object. Delete() clears the pointer. lock()/valid() support weak->strong
+     *     upgrade semantics.
      */
     template<typename T> struct SmartData:public RefCount
     {
-        T *data;                 // 被管理的对象指针
+        T *data{nullptr};
 
     public:
 
+        /**
+         * @brief CN: 构造并保存裸指针。
+         *        EN: Construct and store the raw pointer.
+         */
         SmartData(T *ptr)
         {
             data=ptr;
         }
 
-        ~SmartData() override = default;   // 不在析构中重复 Delete()
+        ~SmartData() override = default;
 
+        /**
+         * @brief CN: 当强引用计数降为 0 时调用以删除对象。
+         *        EN: Called when strong count reaches zero to delete the object.
+         */
         void Delete() override
         {
             SAFE_CLEAR(data);
         }
 
         /**
-         * lock(): 从弱升级为强。
-         * 返回 true 表示已成功增加强引用；false 表示对象已销毁或竞争失败（被销毁）。
+         * @brief CN: 从弱引用尝试升级为强引用（原子检查并增加 count）。
+         *        EN: Try to upgrade from weak to strong reference (atomic check
+         *            and increment).
+         * @return 成功返回 true，否则 false。
          */
         bool lock()
         {
             for(;;)
             {
                 int cur=count.load(std::memory_order_acquire);
-                if(cur<=0||!data) return false;        // 已过期
+                if(cur<=0||!data) return false;
                 if(count.compare_exchange_weak(cur,cur+1,std::memory_order_acq_rel))
-                    return true;                       // 成功
+                    return true;
             }
         }
 
+        /**
+         * @brief CN: 检查当前是否指向有效对象（裸指针非空）。
+         *        EN: Check whether the underlying pointer is non-null.
+         */
         bool valid() const
         {
             return data!=nullptr;
         }
-    };//struct template<typename T> struct SmartData
+    };
+
 
     /**
-     * SmartArrayData<T>
-     * ------------------------------------------------------------
-     * 数组对象的控制块包装，语义同 SmartData，但 Delete 使用 SAFE_CLEAR_ARRAY。
+     * @brief SmartArrayData
+     * @tparam T 数组元素类型。
+     *
+     * CN: 数组版本的引用计数控制块，Delete() 会释放数组。
+     * EN: Array-version reference-counted block; Delete() frees the array.
      */
     template<typename T> struct SmartArrayData:public ArrayRefCount
     {
-        T *data;                 // 指向 T[] 数组
+        T *data{nullptr};
 
     public:
 
@@ -212,10 +244,10 @@ namespace hgl
 
         void Delete() override
         {
-            SAFE_CLEAR_ARRAY(data);    // 自定义安全宏，确保指针清零
+            SAFE_CLEAR_ARRAY(data);
         }
 
-        const T &operator *() const {return data;}
+        const T &operator *() const {return data[0];}
         const bool operator!() const{return !data;}
 
         bool lock()
@@ -233,47 +265,56 @@ namespace hgl
         {
             return data!=nullptr;
         }
-    };//struct template<typename T> struct SmartArrayData
+    };
+
 
     /**
-     * _Smart<SD,T>
-     * ------------------------------------------------------------
-     * 所有 SharedPtr / WeakPtr / SharedArray / WeakArray 的公共基础。
-     * 已移除 expired()，统一使用 !valid() 来判断是否已失效。
+     * @brief _Smart: 智能指针基础模板类。
+     * @tparam SD 控制块类型（SmartData 或 SmartArrayData）。
+     * @tparam T 目标对象类型。
+     *
+     * CN: 封装对控制块的引用与基本操作（inc/ref/unref/weak 等），并
+     *     提供统一的访问接口 get()/valid()/use_count() 等。
+     * EN: Encapsulates handling of the control block and basic operations
+     *     (inc/ref/unref/weak) and provides common accessors get()/valid()
+     *     use_count(), etc.
      */
     template<typename SD,typename T> class _Smart
     {
     protected:
 
-        using SelfClass=_Smart<SD,T>; SD *sd;
+        using SelfClass=_Smart<SD,T>;
+
+        SD *sd;
 
     public:
 
         _Smart()
         {
-            sd=0;
+            sd=nullptr;
         }
 
-        /* 之前加了 explicit 导致大量旧代码无法从 T* 隐式转换，这里恢复隐式行为 */
         _Smart(T *ptr)
         {
             if(ptr)
                 sd=new SD(ptr);
             else
-                sd=0;
+                sd=nullptr;
         }
 
         _Smart(const SelfClass &st)
         {
-            sd=0;
-            set(st.get());              // 复制时建立新的控制块（语义：深复制底层裸指针）
+            sd=nullptr;
+            set(st.get());
         }
 
         virtual ~_Smart()=default;
 
         /**
-         * set(): 释放旧控制块强引用，使用新裸指针创建独立控制块。
-         * 与 shared_ptr 的 reset(ptr) 类似，但不会沿用旧的控制块。
+         * @brief CN: 设定新的裸指针，替换原有引用块（若存在则 unref）。
+         *        EN: Set a new raw pointer, replacing any existing control block
+         *            (unref if present).
+         * @return 返回传入裸指针。
          */
         T *set(T *ptr)
         {
@@ -282,7 +323,7 @@ namespace hgl
 
             if(!ptr)
             {
-                sd=0;
+                sd=nullptr;
                 return nullptr;
             }
 
@@ -290,7 +331,11 @@ namespace hgl
             return ptr;
         }
 
-        /** 复制强引用（与 shared_ptr 拷贝同义） */
+        /**
+         * @brief CN: 从另一个 Smart 对象增加强引用并指向同一控制块。
+         *        EN: Increase strong reference from another Smart object and point
+         *            to the same control block.
+         */
         void inc_ref(const SelfClass &sc)
         {
             if(sd==sc.sd)return;
@@ -300,46 +345,56 @@ namespace hgl
                 sd->inc_ref();
         }
 
-        /** 强引用释放 */
+        /**
+         * @brief CN: 释放当前强引用（若存在）。
+         *        EN: Release current strong reference (if any).
+         */
         void unref()
         {
             if(sd)
             {
                 sd->unref();
-                sd=0;
+                sd=nullptr;
             }
         }
 
-        /** 复制弱引用 */
+        /**
+         * @brief CN: 将自身设为对另一个对象的弱引用（增加弱引用计数）。
+         *        EN: Become a weak reference to another object (increase weak count).
+         */
         void inc_ref_weak(const SelfClass &sc)
         {
             if(sd==sc.sd)return;
-            unref();            // 先释放本对象（按当前是强引用还是弱引用）
+            unref();
             sd=sc.sd;
             if(sd)
                 sd->inc_ref_weak();
         }
 
-        /** 释放弱引用 */
+        /**
+         * @brief CN: 释放当前弱引用（若存在）。
+         *        EN: Release current weak reference (if any).
+         */
         void unref_weak()
         {
             if(sd)
             {
                 sd->unref_weak();
-                sd=0;
+                sd=nullptr;
             }
         }
 
         /**
-         * try_lock_from_weak(): 尝试把一个弱引用升级为强引用。
-         *  - 失败：sd 置为 nullptr。
-         *  - 成功：sd 指向同一控制块，count 已加 1。
+         * @brief CN: 尝试从弱引用升级到强引用（若控制块仍然有效）。
+         *        EN: Try to lock a weak reference and obtain a strong reference if
+         *            the control block is still valid.
+         * @return 成功返回 true 并将 sd 指向控制块，失败返回 false。
          */
         bool try_lock_from_weak(const SelfClass &weak_sc)
         {
             if(sd==weak_sc.sd)
             {
-                if(sd && !sd->data)  // 已失效
+                if(sd && !sd->data)
                 { unref(); return false; }
                 return sd!=nullptr;
             }
@@ -359,38 +414,37 @@ namespace hgl
         }
 
         // 基础访问接口 -------------------------------------------------
-                T *     get         ()const{return sd?sd->data:0;}          ///< 返回裸指针（可能为空）
-          const T *     const_get   ()const{return sd?sd->data:0;}          ///< const 版 get
-        virtual bool    valid       ()const{return sd && sd->valid();}         ///< 是否指向一个尚未析构的对象
-                int     use_count   ()const{return sd?sd->count.load(std::memory_order_acquire):-1;}  ///< 强引用计数（空指针返回 -1）
-                bool    only        ()const{return sd?sd->count.load(std::memory_order_acquire)==1:true;} ///< 是否唯一拥有者
+                T *         get         ()const{return sd?sd->data:nullptr;}            ///< 返回裸指针（可能为空）
+          const T *         const_get   ()const{return sd?sd->data:nullptr;}            ///< const 版 get
+        virtual bool        valid       ()const{return sd && sd->valid();}              ///< 是否指向一个尚未析构的对象
+                std::size_t use_count   ()const{return sd? static_cast<std::size_t>(sd->count.load(std::memory_order_acquire)) : 0;}  ///< 强引用计数（空时返回 0）
+                bool        only        ()const{return sd?sd->count.load(std::memory_order_acquire)==1:true;} ///< 是否唯一拥有者
 
     public:
 
         // 运算符（兼容性） -------------------------------------------------
-        const   T &     operator *  ()const{return *(sd->data);}             ///< 解引用（调用方需保证 valid==true）
-        const   bool    operator !  ()const{return !(sd && sd->valid());}       ///< 与 !valid 语义一致
+        const   T &     operator *  ()const{return *(sd->data);}                    ///< 解引用（调用方需保证 valid==true）
+        const   bool    operator !  ()const{return !(sd && sd->valid());}           ///< 与 !valid 语义一致
 
-                        operator T *()const{return(sd?sd->data:0);}          ///< 隐式转换成裸指针（不建议新代码使用）
-                T *     operator -> ()const{return(sd?sd->data:0);}          ///< 访问成员
+                        operator T *()const{return(sd?sd->data:nullptr);}           ///< 隐式转换成裸指针（不建议新代码使用）
+                T *     operator -> ()const{return(sd?sd->data:nullptr);}           ///< 访问成员
 
                 bool    operator == (const SelfClass & rp)const{return(get()==rp.get());}
                 bool    operator == (const T *         rp)const{return(get()==rp);}        ///< 与裸指针比较
 
                 bool    operator != (const SelfClass & rp)const{return !(operator==(rp));}
                 bool    operator != (const T *         rp)const{return !(operator==(rp));}
-    };//template <typename T> class _Smart
+    };
 
     template<typename T> class WeakPtr;   // 前置声明
 
     /**
-     * SharedPtr<T>
-     * ------------------------------------------------------------
-     * 强引用智能指针：
-     *  - 拷贝/赋值共享所有权；析构时减少强引用计数。
-     *  - 可通过 WeakPtr 升级（失败则置空）。
-     *  - valid() == true 代表底层对象仍存在。
-     *  - 不提供线程级别的获取-使用-释放屏障，需要调用方自行设计更高层同步。
+     * @brief SharedPtr
+     * @tparam T 被管理对象类型。
+     *
+     * CN: 强引用智能指针，语义类似 std::shared_ptr。可由 WeakPtr 升级。
+     * EN: Strong reference smart pointer, similar to std::shared_ptr. Can be
+     *     obtained from WeakPtr via lock().
      */
     template<typename T> class SharedPtr:public _Smart<SmartData<T>,T>
     {
@@ -406,7 +460,7 @@ namespace hgl
         SharedPtr():SuperClass(){}
         SharedPtr(T *ptr):SuperClass(ptr){}
         SharedPtr(const SelfClass &sp):SuperClass(){ operator=(sp); }
-        SharedPtr(const WeakPtr<T> &wp):SuperClass(){ operator=(wp); }  // 升级构造
+        SharedPtr(const WeakPtr<T> &wp):SuperClass(){ operator=(wp); }
 
         ~SharedPtr(){ SuperClass::unref(); }
 
@@ -428,16 +482,17 @@ namespace hgl
         }
 
         bool valid()const override{return SuperClass::valid();}
-    };//template <typename T> class SharedPtr
+    };
 
     template<typename T> class WeakArray; // 前置声明
 
     /**
-     * SharedArray<T>
-     * ------------------------------------------------------------
-     * 针对数组 (T[]) 的强引用智能指针：
-     *  - 语义同 SharedPtr，但 Delete 使用 delete[]。
-     *  - 提供 operator[] 访问。
+     * @brief SharedArray
+     * @tparam T 数组元素类型。
+     *
+     * CN: 管理数组的强引用智能指针，支持下标访问与 WeakArray 升级。
+     * EN: Strong smart pointer managing arrays; supports operator[] and can be
+     *     upgraded from WeakArray.
      */
     template<typename T> class SharedArray:public _Smart<SmartArrayData<T>,T>
     {
@@ -451,7 +506,7 @@ namespace hgl
     public:
 
         SharedArray():SuperClass(){}
-        SharedArray(T *ptr):SuperClass(ptr){}  // 恢复隐式指针构造
+        SharedArray(T *ptr):SuperClass(ptr){}
         SharedArray(const SelfClass &sa):SuperClass(){ operator=(sa); }
         SharedArray(const WeakArray<T> &wa):SuperClass(){ operator=(wa); }
 
@@ -460,7 +515,7 @@ namespace hgl
         operator T *(){ return SuperClass::get(); }
         operator const T *()const{ return SuperClass::get(); }
 
-        T &operator [](int n){ return SuperClass::sd->data[n]; }
+        T &operator [](std::size_t n){ return SuperClass::sd->data[n]; }
 
         SelfClass &operator =(const SelfClass &sap)
         {
@@ -473,15 +528,16 @@ namespace hgl
             SuperClass::try_lock_from_weak(wp);
             return *this;
         }
-    };//template <typename T> class SharedArray
+    };
 
     /**
-     * WeakPtr<T>
-     * ------------------------------------------------------------
-     * 弱引用指针：
-     *  - 不拥有对象生命周期；不阻止对象析构。
-     *  - lock() 尝试获取 SharedPtr；若对象已销毁返回空 SharedPtr。
-     *  - expired() == true 表示对象已被销毁或当前本身为空。
+     * @brief WeakPtr
+     * @tparam T 被引用对象类型。
+     *
+     * CN: 弱引用智能指针，持有弱计数，不影响对象生存周期。可通过
+     *     lock() 升级为 SharedPtr。
+     * EN: Weak smart pointer holding weak count. Does not affect object lifetime.
+     *     Can be upgraded to SharedPtr via lock().
      */
     template<typename T> class WeakPtr:public _Smart<SmartData<T>,T>
     {
@@ -515,22 +571,16 @@ namespace hgl
             return *this;
         }
 
-        /** 尝试获取强引用 */
         SharedPtr<T> lock() const
         {
             SharedPtr<T> r;
             if(!this->sd) return r;
             if(this->sd->lock())
-                r.SuperClass::sd=this->sd;   // 已增加 strong 计数
+                r.SuperClass::sd=this->sd;
             return r;
         }
-    };//template<typename T> class WeakPtr
+    };
 
-    /**
-     * WeakArray<T>
-     * ------------------------------------------------------------
-     * 数组版本弱引用，语义同 WeakPtr。
-     */
     template<typename T> class WeakArray:public _Smart<SmartArrayData<T>,T>
     {
         friend class SharedArray<T>;
@@ -571,16 +621,15 @@ namespace hgl
                 r.SuperClass::sd=this->sd;
             return r;
         }
-    };//template<typename T> class WeakArray
+    };
+
 
     /**
-     * AutoDelete<T>
-     * ------------------------------------------------------------
-     * 作用域辅助类：
-     *  - 拥有一块动态分配的对象（单个 T）。
-     *  - 析构时自动 delete。
-     *  - 可通过 Finish() 取出并放弃自动删除。
-     *  - 非线程安全，仅用于局部临时管理。
+     * @brief AutoDelete
+     * @tparam T 被管理对象类型。
+     *
+     * CN: 简单 RAII 保持裸指针并在析构时 delete。
+     * EN: Simple RAII holder that deletes the raw pointer on destruction.
      */
     template<typename T> class AutoDelete
     {
@@ -589,7 +638,7 @@ namespace hgl
     public:
 
         AutoDelete(){ obj=nullptr; }
-        AutoDelete(T *o){ obj=o; }   // 允许隐式从 T* 构造，兼容旧代码 AutoDelete<T> x=new T;
+        AutoDelete(T *o){ obj=o; }
         ~AutoDelete(){ if(obj) delete obj; }
 
         void operator = (T *o)
@@ -606,33 +655,33 @@ namespace hgl
 
         void Discard(){ obj=nullptr; }
 
-        /** 取出管理权（不再自动删除） */
         T *Finish()
         {
             T *reuslt=obj;
             obj=nullptr;
             return reuslt;
         }
-    };//template<typename T> class AutoDelete
+    };
+
 
     /**
-     * AutoDeleteArray<T>
-     * ------------------------------------------------------------
-     * RAII 管理 new T[] 分配的数组。
-     *  - 内部使用 std::unique_ptr<T[]> 保障异常安全。
-     *  - alloc()/set() 重新分配或替换。
-     *  - zero() 用缺省值填充。
-     *  - Finish 语义不需要，可直接通过 release+自定义包装实现（这里未提供）。
+     * @brief AutoDeleteArray
+     * @tparam T 数组元素类型。
+     *
+     * CN: 用 std::unique_ptr<T[]> 管理数组生命周期，并提供若干便捷
+     *     接口。保留移动语义，删除拷贝语义。
+     * EN: Manages array lifetime with std::unique_ptr<T[]> and provides
+     *     convenience methods. Movable but not copyable.
      */
     template<typename T> class AutoDeleteArray
     {
         std::unique_ptr<T[]> obj;   // managed array
-        size_t size = 0;
+        std::size_t size = 0;
 
     public:
         AutoDeleteArray()=default;
 
-        explicit AutoDeleteArray(const size_t count)
+        explicit AutoDeleteArray(const std::size_t count)
         {
             if(count>0)
             {
@@ -641,7 +690,7 @@ namespace hgl
             }
         }
 
-        AutoDeleteArray(T *o,const size_t count)
+        AutoDeleteArray(T *o,const std::size_t count)
         {
             obj.reset(o);
             size = count;
@@ -668,13 +717,13 @@ namespace hgl
 
         ~AutoDeleteArray()=default;
 
-        void set(T *o,const size_t count)
+        void set(T *o,const std::size_t count)
         {
             obj.reset(o);
             size = count;
         }
 
-        T *alloc(const size_t count)
+        T *alloc(const std::size_t count)
         {
             if(count==0)
             {
@@ -689,12 +738,14 @@ namespace hgl
 
         T *operator -> (){return obj.get();}
 
-        T *data(){return obj.get();}
+        T *data(){return obj.get();
+        }
         operator T *(){return obj.get();}
         operator const T *()const{return obj.get();}
         const bool operator !()const{return !obj;}
 
-        T *begin(){return obj.get();}
+        T *begin(){return obj.get();
+        }
         T *end(){return obj.get()?obj.get()+size:nullptr;}
 
         void zero()
@@ -703,8 +754,8 @@ namespace hgl
                 std::fill(begin(), end(), T());
         }
 
-                T &operator[](int index){return obj[index];}
-        const   T &operator[](int index)const{return obj[index];}
+                T &operator[](std::size_t index){return obj[index];}
+        const   T &operator[](std::size_t index)const{return obj[index];}
 
         void Discard()
         {
@@ -712,16 +763,18 @@ namespace hgl
             size=0;
         }
 
-        size_t length() const { return size; }
-    };//template<typename T> class AutoDeleteArray
-    
+        std::size_t length() const { return size; }
+    };
+
+
     /**
-     * AutoDeleteObjectArray<T>
-     * ------------------------------------------------------------
-     * 维护一组裸指针（元素所有权在此容器内）：
-     *  - 析构/Discard() 时逐个 delete。
-     *  - 使用场景：需要手工批量管理一组已 new 的对象，又暂不适合使用 vector<unique_ptr<T>>。
-     *  - 不可复制，可移动。
+     * @brief AutoDeleteObjectArray
+     * @tparam T 对象指针类型。
+     *
+     * CN: 使用 std::vector<T*> 存储对象指针，在析构或 Discard 时删除
+     *     每个对象。移动语义保留，拷贝语义删除。
+     * EN: Stores object pointers in std::vector<T*> and deletes each element
+     *     on destruction or Discard(). Movable, not copyable.
      */
     template<typename T> class AutoDeleteObjectArray
     {
@@ -729,18 +782,18 @@ namespace hgl
 
     public:
         AutoDeleteObjectArray()=default;
-        explicit AutoDeleteObjectArray(uint c)
+        explicit AutoDeleteObjectArray(std::size_t c)
         {
             if(c>0)
             {
                 items.resize(c,nullptr);
             }
         }
-        AutoDeleteObjectArray(T **o,uint c)
+        AutoDeleteObjectArray(T **o,std::size_t c)
         {
             if(o && c>0)
             {
-                items.assign(o,o+c); // 复制指针并接管所有权
+                items.assign(o,o+c);
             }
         }
 
@@ -769,8 +822,8 @@ namespace hgl
         operator const T * const *()const{return items.data();}
         const bool operator !()const{return items.empty();}
 
-                T *&operator[](int index){return items[index];}
-        const   T *operator[](int index)const{return items[index];}
+                T *&operator[](std::size_t index){return items[index];}
+        const   T *operator[](std::size_t index)const{return items[index];}
 
         void Discard()
         {
@@ -780,17 +833,19 @@ namespace hgl
 
         void DiscardObject() { Discard(); }
 
-        uint count() const { return static_cast<uint>(items.size()); }
-        void resize(uint c){ items.resize(c,nullptr); }
+        std::size_t count() const { return items.size(); }
+        void resize(std::size_t c){ items.resize(c,nullptr); }
         T **begin(){ return items.data(); }
         T **end(){ return items.data()+items.size(); }
-    };//template<typename T> class AutoDeleteObjectArray
+    };
+
 
     /**
-     * AutoFree<T>
-     * ------------------------------------------------------------
-     * 与 AutoDelete 类似，但使用 free() 释放（适用于 malloc 分配的内存）。
-     * Finish(): 取出所有权，避免析构释放。
+     * @brief AutoFree
+     * @tparam T 被管理指针类型。
+     *
+     * CN: 使用 free() 释放内存的简单 RAII 工具（适用于 malloc 分配的内存）。
+     * EN: Simple RAII tool that frees memory with free() (for malloc'd memory).
      */
     template<typename T> class AutoFree
     {
@@ -823,5 +878,5 @@ namespace hgl
             obj=nullptr;
             return reuslt;
         }
-    };//class AutoFree
-}//namespace hgl
+    };
+} // namespace hgl

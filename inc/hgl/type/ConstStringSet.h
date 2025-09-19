@@ -29,7 +29,7 @@ namespace hgl
             if(length<cs.length)return(-1);
             if(length>cs.length)return( 1);
 
-            return memcmp(str,cs.str,length);
+            return hgl::strcmp(str,cs.str,length);
         }
     };
 

@@ -15,7 +15,7 @@ namespace hgl
         {
             AddFindPath(pn);
 
-            pn=MergeFilename(pn,OS_TEXT("Plug-ins"));
+            pn=JoinPathWithFilename(pn,OS_TEXT("Plug-ins"));
             AddFindPath(pn);
         }
 
@@ -23,7 +23,7 @@ namespace hgl
         {
             AddFindPath(pn);
 
-            pn=MergeFilename(pn,OS_TEXT("Plug-ins"));
+            pn=JoinPathWithFilename(pn,OS_TEXT("Plug-ins"));
             AddFindPath(pn);
         }
     }
@@ -95,7 +95,7 @@ namespace hgl
 
         if(pi)return(pi);
 
-        const uint fp_count=findpath.GetCount();
+        const std::size_t fp_count=findpath.GetCount();
 
         if(fp_count<=0)return(nullptr);
 
@@ -103,9 +103,9 @@ namespace hgl
         OSString pi_fullfilename;
         ExternalPlugIn *epi=new ExternalPlugIn;
 
-        for(uint i=0;i<fp_count;i++)
+        for(std::size_t i=0;i<fp_count;i++)
         {
-            pi_fullfilename=MergeFilename(findpath[i],pi_filename);
+            pi_fullfilename=JoinPathWithFilename(findpath[i],pi_filename);
 
             if(!FileExist(pi_fullfilename))continue;
 

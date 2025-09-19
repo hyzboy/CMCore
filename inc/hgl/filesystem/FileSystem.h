@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include<hgl/type/ArrayList.h>
 #include<hgl/filesystem/Filename.h>
 
 namespace hgl

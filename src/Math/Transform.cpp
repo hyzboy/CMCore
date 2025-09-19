@@ -22,6 +22,8 @@ namespace hgl
 
             is_zero_rotate=true;
             rotation_quat=IdentityQuatf;
+            // rotation changed to identity, mark matrix dirty so it will be updated
+            matrix_dirty=true;
             return;
         }
         else
@@ -71,6 +73,7 @@ namespace hgl
 
         matrix=Identity4f;
         inverse_matrix=Identity4f;
+        transpose_inverse_matrix=Identity4f;
 
         matrix_dirty=false;
 
@@ -122,6 +125,7 @@ namespace hgl
 
         matrix=m;
         inverse_matrix=inverse(m);
+        transpose_inverse_matrix=transpose(inverse_matrix);
 
         matrix_dirty=false;
 

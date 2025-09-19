@@ -39,12 +39,12 @@ namespace hgl
                 if(!GetLocalAppdataPath(local_app_data_path))
                     return(false);
 
-                cmgdk_path=filesystem::MergeFilename(local_app_data_path,OS_TEXT(".cmgdk"));
+                cmgdk_path=filesystem::JoinPathWithFilename(local_app_data_path,OS_TEXT(".cmgdk"));
 
                 if(!filesystem::MakePath(cmgdk_path))
                     return(false);
 
-                fn=filesystem::MergeFilename(cmgdk_path,project_code);
+                fn=filesystem::JoinPathWithFilename(cmgdk_path,project_code);
 
                 for(uint i=0;i<=0xFFFF;i++)
                 {

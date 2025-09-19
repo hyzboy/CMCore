@@ -32,10 +32,3 @@
 #include <hgl/type/Str.Between.h>
 #include <type_traits>
 #include <cmath>
-
-namespace hgl
-{
-
-
-
-} // namespace hgl

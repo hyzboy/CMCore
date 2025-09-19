@@ -22,8 +22,20 @@ namespace hgl
 
     public:
 
-        TransformBase():VersionData(Identity4f){}
-        TransformBase(const TransformBase *tb):VersionData(tb){}
+        TransformBase():VersionData(Identity4f), WorldPosition(ZeroVector3f), WorldNormal(ZeroVector3f){}
+        TransformBase(const TransformBase *tb):VersionData(tb)
+        {
+            if(tb)
+            {
+                WorldPosition=tb->WorldPosition;
+                WorldNormal=tb->WorldNormal;
+            }
+            else
+            {
+                WorldPosition=ZeroVector3f;
+                WorldNormal=ZeroVector3f;
+            }
+        }
         virtual ~TransformBase()=default;
 
         virtual constexpr const size_t GetTypeHash()const=0;                ///<取得类型哈希值
@@ -491,7 +503,7 @@ namespace hgl
             
             Matrix4f TempMatrix;
 
-            for (TransformBase *tb : transform_list)
+            for(TransformBase *tb:transform_list)
             {
                 tb->GetMatrix(TempMatrix,WorldPosition,WorldNormal);
 
@@ -512,8 +524,9 @@ namespace hgl
 
         TransformManager(const TransformManager *tm):TransformBase(tm)
         {
-            for(TransformBase *tb:tm->transform_list)
+            for(const TransformBase *tb:tm->transform_list)
                 AddTransform(tb->CloneSelf());
+
             UpdateVersion();
         }
 
