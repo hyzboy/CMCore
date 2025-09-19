@@ -433,8 +433,8 @@ namespace hgl
             if(pos==-1)
                 return(false);
 
-            pathname.Strcpy(fullname,pos);
-            filename.Strcpy(fullname.c_str()+pos+1);
+            pathname=String<T>(fullname,pos);
+            filename=String<T>(fullname.c_str()+pos+1);
 
             return(true);
         }

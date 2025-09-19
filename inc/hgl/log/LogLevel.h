@@ -5,8 +5,9 @@ namespace hgl
     enum class LogLevel:int
     {
         Verbose=0,
+        Debug,
         Info,
-        Hint,
+        Notice,
         Warning,
         Error,
         Fatal,

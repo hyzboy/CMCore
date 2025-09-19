@@ -13,8 +13,9 @@ namespace hgl::logger
         constexpr const std::string_view LogLevelName[]=
         {
             "Verbose",
+            "Debug",
             "Info",
-            "Hint",
+            "Notice",
             "Warning",
             "Error",
             "Fatal"
@@ -23,8 +24,9 @@ namespace hgl::logger
         constexpr const std::u16string_view LogLevelNameU16[]=
         {
             u"Verbose",
+            u"Debug",
             u"Info",
-            u"Hint",
+            u"Notice",
             u"Warning",
             u"Error",
             u"Fatal"
