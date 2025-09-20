@@ -361,6 +361,20 @@ namespace hgl
         return const_cast<CharT*>(hgl::strrchr<const CharT,C>(static_cast<const CharT*>(str), length, ch));
     }
 
+    template<typename CharT, typename C>
+    inline const CharT *strrchr(const CharT *str, const C ch)
+        requires (!std::is_const_v<CharT>)
+    {
+        return const_cast<CharT*>(hgl::strrchr<const CharT,C>(static_cast<const CharT*>(str), hgl::strlen(str), ch));
+    }
+
+    template<typename CharT, typename C>
+    inline const CharT *strrchr(CharT *str, const C ch)
+        requires (!std::is_const_v<CharT>)
+    {
+        return const_cast<CharT*>(hgl::strrchr<const CharT,C>(static_cast<const CharT*>(str), hgl::strlen(str), ch));
+    }
+
     /**
      * @brief CN: 从字符串结尾向前查找属于字符集合 set 的最后一个字符，限定字符串的长度 length。
      * @brief EN: Reverse search for the last character in `str` that is contained in the character set `set`, within the first `length` characters.
