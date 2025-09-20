@@ -19,7 +19,7 @@ namespace hgl
 
             struct
             {
-                int16 width,height;
+                uint16 width,height;
             };
 
             bool active;
