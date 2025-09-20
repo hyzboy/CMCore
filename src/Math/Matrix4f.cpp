@@ -134,11 +134,10 @@ namespace hgl
     }
 
     Vector2i ProjectToScreen(
-        const Vector3f& world_pos,
-        const Matrix4f& view,
-        const Matrix4f& projection,
-        float viewport_width,
-        float viewport_height)
+        const Vector3f &world_pos,
+        const Matrix4f &view,
+        const Matrix4f &projection,
+        const Vector2u &vp_size)
     {
         // 1. 世界坐标 -> 裁剪空间
         Vector4f clip = projection * view * Vector4f(world_pos.x,world_pos.y,world_pos.z, 1.0f);       //需要转换到OPENGL坐标系
@@ -154,8 +153,8 @@ namespace hgl
         ndc.z = clip.z / clip.w; // 0~1
 
         // 3. NDC -> 屏幕空间
-        float screen_x = (ndc.x + 1.0f) * 0.5f * viewport_width;
-        float screen_y = (ndc.y + 1.0f) * 0.5f * viewport_height; // Y轴向下为正
+        float screen_x = (ndc.x + 1.0f) * 0.5f * float(vp_size.x);
+        float screen_y = (ndc.y + 1.0f) * 0.5f * float(vp_size.y); // Y轴向下为正
 
         return Vector2i(screen_x, screen_y);
     }
@@ -164,12 +163,11 @@ namespace hgl
         const Vector2i &win_pos,
         const Matrix4f &view,
         const Matrix4f &projection,
-        const float viewport_width,
-        const float viewport_height)
+        const Vector2u &vp_size)
     {
         // 1. 归一化到 NDC（[-1, 1]）
-        float ndc_x = (2.0f * float(win_pos.x)) / viewport_width - 1.0f;
-        float ndc_y = (2.0f * float(win_pos.y)) / viewport_height - 1.0f;
+        float ndc_x = (2.0f * float(win_pos.x)) / float(vp_size.x) - 1.0f;
+        float ndc_y = (2.0f * float(win_pos.y)) / float(vp_size.y) - 1.0f;
         // 这里假设在近平面（z=0），如需支持深度可加参数
         float ndc_z = 0.0f;
 

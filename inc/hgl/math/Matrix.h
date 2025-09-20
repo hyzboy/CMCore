@@ -106,15 +106,13 @@ namespace hgl
         const Vector3f& world_pos,
         const Matrix4f& view,
         const Matrix4f& projection,
-        float viewport_width,
-        float viewport_height);
+        const Vector2u& viewport_size);
 
     Vector3f UnProjectToWorld(
         const Vector2i &win_pos,
         const Matrix4f &view,
         const Matrix4f &projection,
-        const float viewport_width,
-        const float viewport_height);
+        const Vector2u &viewport_size);
 
     inline Matrix4f TranslateMatrix(const Vector3f &v)
     {
