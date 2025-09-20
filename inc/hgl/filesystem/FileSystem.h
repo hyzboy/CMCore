@@ -82,7 +82,7 @@ namespace hgl
         */
         struct FileInfo                             ///文件信息
         {
-            os_char name[HGL_MAX_PATH];             ///<文件名(不包含路径)
+            os_char name[HGL_MAX_FILENAME];         ///<文件名(不包含路径)
             os_char fullname[HGL_MAX_PATH];         ///<完整名称(包含路径)
 
             uint64 size;                            ///<文件长度

@@ -53,7 +53,8 @@ using os_char           =wchar_t;
 * 但由于文件系统的不同，我们需要使用 GetVolumeInformation 函数，根据参数lpMaximumComponentLength的返回值来确定每个分区可使用的最大长度
 */
 
-#define HGL_MAX_PATH                    MAX_PATH                                        //文件名最大长度
+#define HGL_MAX_FILENAME                MAX_PATH                                        //文件名最大长度
+#define HGL_MAX_PATH                    32768                                           //路径名最大长度
 
 #define HGL_MEM_ALIGN                   16                                              //内存对齐字节数
 //--------------------------------------------------------------------------------------------------
