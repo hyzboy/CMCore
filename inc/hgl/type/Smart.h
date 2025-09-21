@@ -827,11 +827,8 @@ namespace hgl
 
         void Discard()
         {
-            for(auto &p:items){ delete p; p=nullptr; }
             items.clear();
         }
-
-        void DiscardObject() { Discard(); }
 
         std::size_t count() const { return items.size(); }
         void resize(std::size_t c){ items.resize(c,nullptr); }
