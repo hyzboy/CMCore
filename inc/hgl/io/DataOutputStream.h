@@ -138,18 +138,18 @@ namespace hgl
             template<typename T> bool WriteUTF16LEChars     (const String<T> &str){return WriteUTF16LEChars (str.c_str(),str.Length());}
             template<typename T> bool WriteUTF16BEChars     (const String<T> &str){return WriteUTF16BEChars (str.c_str(),str.Length());}
 
-            template<typename T> bool WriteU8StringWithLength (const u8char *str,const uint length);
-            template<typename T> bool WriteU8StringWithLength (const U16String &str);
+            template<typename T> bool WriteUTF8StringWithLength (const u8char *str,const uint length);
+            template<typename T> bool WriteUTF8StringWithLength (const U16String &str);
 
             template<uchar C,typename T> bool WriteU16StringWithLength(const u16char *str,const uint len);
 
         public:
 
             //32 bit length
-            bool WriteU8String        (const u8char *str,uint length);                                            ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
-            bool WriteU8String        (const u8char *str            );                                            ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
-            bool WriteU8String        (const U8String &str      );                                              ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
-            bool WriteU8String        (const U16String &str     );                                              ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
+            bool WriteUTF8String        (const u8char *str,uint length);                                            ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
+            bool WriteUTF8String        (const u8char *str            );                                            ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
+            bool WriteUTF8String        (const U8String &str      );                                              ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
+            bool WriteUTF8String        (const U16String &str     );                                              ///<按utf8格式写入字符串(前置4字节字符串长度,再写入字符阵列)
 
             bool WriteUTF16LEString     (const u16char *str,uint len);                                              ///<按utf16-le格式写入字符串(前置4字节字符串长度,再写入字符阵列)
             bool WriteUTF16BEString     (const u16char *str,uint len);                                              ///<按utf16-be格式写入字符串(前置4字节字符串长度,再写入字符阵列)
@@ -163,9 +163,9 @@ namespace hgl
             bool WriteUTF16LEString     (const U8String &str      ){return WriteUTF16LEString(to_u16(str));}      ///<按utf16-le格式写入字符串(前置4字节字符串长度,再写入字符阵列)
             bool WriteUTF16BEString     (const U8String &str      ){return WriteUTF16BEString(to_u16(str));}      ///<按utf16-be格式写入字符串(前置4字节字符串长度,再写入字符阵列)
 
-            bool WriteAnsiString        (const char *str,uint length){return WriteU8String((u8char *)str,length);}
-            bool WriteAnsiString        (const char *str            ){return WriteU8String((u8char *)str);}
-            bool WriteAnsiString        (const AnsiString &str      ){return WriteU8String((u8char *)str.c_str(),str.Length());}
+            bool WriteAnsiString        (const char *str,uint length){return WriteUTF8String((u8char *)str,length);}
+            bool WriteAnsiString        (const char *str            ){return WriteUTF8String((u8char *)str);}
+            bool WriteAnsiString        (const AnsiString &str      ){return WriteUTF8String((u8char *)str.c_str(),str.Length());}
 
             //16 bit length
             bool WriteUTF8ShortString   (const u8char *str,uint length);                                            ///<按utf8格式写入字符串(前置2字节字符串长度,再写入字符阵列)

@@ -14,7 +14,7 @@ namespace hgl
     {
         bool WriteString(io::DataOutputStream *dos,const T &str)
         {
-            return dos->WriteU8String(str);
+            return dos->WriteUTF8String(str);
         }
     };
 
