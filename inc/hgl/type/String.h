@@ -131,6 +131,30 @@ namespace hgl
         static SelfClass percentOf(const N1 num, const N2 den, uint frac) { return floatOf(double(num) / double(den) * 100.0, frac); }
 
         /**
+        * @brief CN: 将无符号整数转为十六进制字符串
+        *        EN: Convert unsigned integer to hexadecimal string
+        * @param num CN: 最小字符数 EN: Minimum number of characters
+        * @param upper CN: 是否大写 EN: Whether to use uppercase
+        */
+        static SelfClass hexOf(uint value,int num=0,bool upper=true)
+        {
+            T tmp[2*(1+sizeof(uint))];
+
+            hgl::htos(tmp,sizeof(tmp) / sizeof(T),value,num,upper);
+
+            return SelfClass(tmp);
+        }
+
+        static SelfClass hexOf(uint64 value,int num = 0,bool upper = true)
+        {
+            T tmp[2 * (1 + sizeof(uint64))];
+
+            hgl::htos(tmp,sizeof(tmp) / sizeof(T),value,num,upper);
+
+            return SelfClass(tmp);
+        }
+
+        /**
          * @brief CN: 拼接两个字符序列为一个新字符串 EN: Concatenate two character sequences into a new string
          * @param s1 CN: 第一个字符序列 EN: First character sequence
          * @param l1 CN: 第一个字符序列长度 EN: Length of first sequence
