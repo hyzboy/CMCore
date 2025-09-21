@@ -39,11 +39,11 @@ namespace hgl::io
 
         InputEventSource                source_type;
 
-        EventDispatcher *               parent_input_event;
+        EventDispatcher *               parent_input_event=nullptr;
 
         SortedSet<EventDispatcher *>    child_dispatchers;                      ///<子事件分发器列表
 
-        EventDispatcher *               exclusive_dispatcher;                   ///<独占事件分发器,如果有则只处理这个分发器的事件
+        EventDispatcher *               exclusive_dispatcher=nullptr;           ///<独占事件分发器,如果有则只处理这个分发器的事件
 
     protected:
 
@@ -77,6 +77,14 @@ namespace hgl::io
 
         virtual ~EventDispatcher()
         {
+            if(child_dispatchers.GetCount()>0)
+            {
+                for(auto ed : child_dispatchers)
+                    ed->SetParent(nullptr);
+
+                //child_dispatchers.Clear();    本质是要清理，但是这都析构函数了，就无所谓了。
+            }
+
             if(parent_input_event)
                 parent_input_event->RemoveChildDispatcher(this);
         }
