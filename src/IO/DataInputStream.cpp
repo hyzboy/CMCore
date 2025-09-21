@@ -38,7 +38,7 @@ namespace hgl
         }
 
         template<typename T>
-        bool ReadU8String(char *buf,uint max_len,DataInputStream *dis)
+        bool ReadUTF8String(char *buf,uint max_len,DataInputStream *dis)
         {
             if(!buf||!max_len||!dis)
                 return(false);
@@ -73,12 +73,12 @@ namespace hgl
             return(true);
         }
 
-        bool DataInputStream::ReadU8String          (char *u8str,uint max_len){return hgl::io::ReadU8String<uint32>(u8str,max_len,this);}
-        bool DataInputStream::ReadUTF8ShortString   (char *u8str,uint max_len){return hgl::io::ReadU8String<uint16>(u8str,max_len,this);}
-        bool DataInputStream::ReadUTF8TinyString    (char *u8str,uint max_len){return hgl::io::ReadU8String<uint8 >(u8str,max_len,this);}
+        bool DataInputStream::ReadUTF8String        (char *u8str,uint max_len){return hgl::io::ReadUTF8String<uint32>(u8str,max_len,this);}
+        bool DataInputStream::ReadUTF8ShortString   (char *u8str,uint max_len){return hgl::io::ReadUTF8String<uint16>(u8str,max_len,this);}
+        bool DataInputStream::ReadUTF8TinyString    (char *u8str,uint max_len){return hgl::io::ReadUTF8String<uint8 >(u8str,max_len,this);}
 
         template<typename T>
-        bool ReadU8String(U8String &u8str,uint max_len,DataInputStream *dis)
+        bool ReadUTF8String(U8String &u8str,uint max_len,DataInputStream *dis)
         {
             if(!max_len||!dis)
                 return(false);
@@ -110,12 +110,12 @@ namespace hgl
             return(true);
         }
 
-        bool DataInputStream::ReadU8String          (U8String &u8str,uint max_len){return hgl::io::ReadU8String<uint32>(u8str,max_len,this);}
-        bool DataInputStream::ReadUTF8ShortString   (U8String &u8str,uint max_len){return hgl::io::ReadU8String<uint16>(u8str,max_len,this);}
-        bool DataInputStream::ReadUTF8TinyString    (U8String &u8str,uint max_len){return hgl::io::ReadU8String<uint8 >(u8str,max_len,this);}
+        bool DataInputStream::ReadUTF8String        (U8String &u8str,uint max_len){return hgl::io::ReadUTF8String<uint32>(u8str,max_len,this);}
+        bool DataInputStream::ReadUTF8ShortString   (U8String &u8str,uint max_len){return hgl::io::ReadUTF8String<uint16>(u8str,max_len,this);}
+        bool DataInputStream::ReadUTF8TinyString    (U8String &u8str,uint max_len){return hgl::io::ReadUTF8String<uint8 >(u8str,max_len,this);}
 
         template<typename T>
-        bool ReadU8String(U16String &u16str,uint max_len,DataInputStream *dis)
+        bool ReadUTF8String(U16String &u16str,uint max_len,DataInputStream *dis)
         {
             if(!max_len||!dis)
                 return(false);
@@ -153,9 +153,9 @@ namespace hgl
             return(true);
         }
 
-        bool DataInputStream::ReadU8String          (U16String &u16str,uint max_len){return hgl::io::ReadU8String<uint32>(u16str,max_len,this);}
-        bool DataInputStream::ReadUTF8ShortString   (U16String &u16str,uint max_len){return hgl::io::ReadU8String<uint16>(u16str,max_len,this);}
-        bool DataInputStream::ReadUTF8TinyString    (U16String &u16str,uint max_len){return hgl::io::ReadU8String<uint8 >(u16str,max_len,this);}
+        bool DataInputStream::ReadUTF8String        (U16String &u16str,uint max_len){return hgl::io::ReadUTF8String<uint32>(u16str,max_len,this);}
+        bool DataInputStream::ReadUTF8ShortString   (U16String &u16str,uint max_len){return hgl::io::ReadUTF8String<uint16>(u16str,max_len,this);}
+        bool DataInputStream::ReadUTF8TinyString    (U16String &u16str,uint max_len){return hgl::io::ReadUTF8String<uint8 >(u16str,max_len,this);}
 
         template<char E,typename T>
         bool ReadU16String(u16char *str,uint max_len,DataInputStream *dis)

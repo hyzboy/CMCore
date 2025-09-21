@@ -14,7 +14,7 @@ namespace hgl
     {
         bool ReadString(io::DataInputStream *dis,T &str)
         {
-            return dis->ReadU8String(str);
+            return dis->ReadUTF8String(str);
         }
     };
 
