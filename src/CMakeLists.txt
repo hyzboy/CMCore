@@ -215,6 +215,9 @@ SET(IO_TEXT_FILES   IO/TextOutputStream.cpp
                     ${IO_INCLUDE_PATH}/LoadStringList.h
                     ${IO_INCLUDE_PATH}/SaveStringList.h)
 
+SET(IO_MINI_PACK_FILES ${IO_INCLUDE_PATH}/MiniPack.h
+                        IO/MiniPackReader.cpp)
+
 SET(INPUT_EVENT_FILES   ${IO_INCLUDE_PATH}/event/KeyboardEvent.h
                         ${IO_INCLUDE_PATH}/event/MouseEvent.h
                         ${IO_INCLUDE_PATH}/event/JoystickEvent.h
@@ -233,6 +236,7 @@ SOURCE_GROUP("IO\\MemoryStream" FILES ${IO_MEMORY_STREAM_FILES})
 SOURCE_GROUP("IO\\File"         FILES ${IO_FILE_FILES})
 SOURCE_GROUP("IO\\Jave"         FILES ${IO_JAVA_FILES})
 SOURCE_GROUP("IO\\Text"         FILES ${IO_TEXT_FILES})
+SOURCE_GROUP("IO\\MiniPack"     FILES ${IO_MINI_PACK_FILES})
 
 SET(IO_PIPE_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/proc/Pipe.h
                     ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io/PipeStream.h
@@ -254,7 +258,8 @@ SET(IO_SOURCE_FILES ${IO_BASE_FILES}
                     ${IO_TEXT_FILES}
                     ${INPUT_EVENT_FILES}
                     ${IO_PIPE_FILES}
-                    ${IO_FIFO_FILES})
+                    ${IO_FIFO_FILES}
+                    ${IO_MINI_PACK_FILES})
 
 SET(FILESYSTEM_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/filesystem)
 
