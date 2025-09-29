@@ -191,29 +191,14 @@ namespace hgl::io::minipack
         if(filename.IsEmpty())
             return nullptr;
 
-        // Get existing file size so mapping size is correctly recorded
-        int64 file_size = 0;
-        {
-            hgl::io::FileAccess fa;
-            if(!fa.OpenRead(filename))
-                return nullptr;
-            file_size = fa.GetSize();
-        }
-
-        hgl::MMapFile *mm = nullptr;
-
-        try
-        {
-            // Map entire file read-only using known size
-            mm = new hgl::MMapFile(filename, static_cast<size_t>(file_size), true);
-        }
-        catch(...)
-        {
-            delete mm;
+        hgl::MMapFile *mm = OpenMMapFileOnlyRead(filename);
+        if(!mm)
             return nullptr;
-        }
 
         char *data = static_cast<char *>(mm->data());
+
+        // Header-less size sanity will happen in ParseMiniPack
+        int64 file_size = static_cast<int64>(mm->size());
 
         uint32 data_start = 0; FileEntryList *fel = nullptr; uint32 available = 0;
         if(!ParseMiniPack(data, file_size, data_start, fel, available))
