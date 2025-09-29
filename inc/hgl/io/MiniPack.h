@@ -21,7 +21,6 @@ namespace hgl::io::minipack
 
         virtual int32   FindFile(const U8String &)const = 0;
         virtual uint32  GetFileLength(int32 index)const = 0;
-        virtual uint32  ReadFile(int32 index,void *buf,uint32 start,uint32 size) = 0;
 
     public:
 
@@ -57,9 +56,11 @@ namespace hgl::io::minipack
 
         virtual ~MiniPackMemory() = default;
 
-        void *Map(int32);
+        virtual void *Map(int32)=0;
+
         void *Map(const U8String &name){ return Map(FindFile(name)); }
     };//class MiniPackMemory
 
     MiniPackReader *GetMiniPackReader(const OSString &);
+    MiniPackMemory *GetMiniPackMemory(const OSString &);
 }//namespace hgl::io::minipack
