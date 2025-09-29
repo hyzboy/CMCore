@@ -63,4 +63,5 @@ namespace hgl::io::minipack
 
     MiniPackReader *GetMiniPackReader(const OSString &);
     MiniPackMemory *GetMiniPackMemory(const OSString &);
+    MiniPackMemory *GetMiniPackFileMapping(const OSString &);
 }//namespace hgl::io::minipack
