@@ -215,8 +215,11 @@ SET(IO_TEXT_FILES   IO/TextOutputStream.cpp
                     ${IO_INCLUDE_PATH}/LoadStringList.h
                     ${IO_INCLUDE_PATH}/SaveStringList.h)
 
-SET(IO_MINI_PACK_FILES ${IO_INCLUDE_PATH}/MiniPack.h
-                        IO/MiniPackReader.cpp)
+SET(IO_MINI_PACK_FILES  ${IO_INCLUDE_PATH}/MiniPack.h
+                        IO/MiniPackInfoBlock.h
+                        IO/MiniPackInfoBlock.cpp
+                        IO/MiniPackReader.cpp
+                        IO/MiniPackMemory.cpp)
 
 SET(INPUT_EVENT_FILES   ${IO_INCLUDE_PATH}/event/KeyboardEvent.h
                         ${IO_INCLUDE_PATH}/event/MouseEvent.h

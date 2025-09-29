@@ -27,9 +27,12 @@ namespace hgl
                 cur_pos=0;
             }
 
-            virtual ~MemoryInputStream()
+            MemoryInputStream(void *data,int64 size)
             {
+                Link(data,size);
             }
+
+            virtual ~MemoryInputStream()=default;
 
             /**
              * 关联一个数据区到当前输入流

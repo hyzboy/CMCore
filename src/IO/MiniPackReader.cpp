@@ -1,50 +1,99 @@
 #include<hgl/io/MiniPack.h>
+#include"MiniPackInfoBlock.h"
 #include<hgl/io/DataInputStream.h>
 #include<hgl/io/FileInputStream.h>
-#include<hgl/io/MemoryInputStream.h>
 #include<hgl/log/Log.h>
-#include<hgl/type/MemoryBlock.h>
 
 DEFINE_LOGGER_MODULE(MiniPackReader)
 
 namespace hgl::io::minipack
 {
-    template<typename T> struct FileEntry
-    {
-        T *name;
-        uint8       name_length;
-
-        uint32      offset;
-        uint32      length;
-    };
-
-    template<typename T>
-    class MiniPackReaderFromFile:public MiniPackReader
-    {
-
-        DataInputStream *dis;
-
-        char *info_block;
-
-        DataArray<FileEntry> file_list;
-
-    public:
-
-
-    };
-
     namespace
     {
-        const char kMagic[8] = { 'M','I','N','I','P','A','C','K' };
-
-        enum class NameEncoding: uint8_t
+        class MiniPackReaderFromStream:public MiniPackReader
         {
-            Utf8 = 0,
-            Utf16Le = 1,
+            InputStream *is;
+
+            char *info_block;
+
+            FileEntryList *entry_list;
+
+            int32 data_start;
+
+        public:
+
+            MiniPackReaderFromStream(InputStream *i,char *ib,FileEntryList *fel,const int32 start)
+            {
+                is=i;
+                info_block = ib;
+                entry_list=fel;
+
+                data_start=start;
+            }
+
+            ~MiniPackReaderFromStream() override
+            {
+                delete is;
+                delete[] info_block;
+                delete entry_list;
+            }
+
+            uint GetFileCount() const override
+            {
+                return entry_list->count;
+            }
+
+            int32   FindFile(const U8String &filename)const
+            {
+                if(filename.IsEmpty()||!entry_list->count)
+                    return -1;
+
+                for(uint32 i = 0;i < entry_list->count;i++)
+                {
+                    if(filename.Length()!=entry_list->name_length[i])
+                        continue;
+
+                    if(filename.Comp(entry_list->name[i],entry_list->name_length[i])==0)
+                        return i;
+                }
+
+                return -1;
+            }
+
+            uint32  GetFileLength(int32 index)const
+            {
+                if(index<0||index>=static_cast<int32>(entry_list->count))
+                    return 0;
+
+                return entry_list->length[index];
+            }
+
+            uint32  ReadFile(int32 index,void *buf,uint32 start,uint32 size)
+            {
+                if(index<0||index>=static_cast<int32>(entry_list->count))
+                    return 0;
+
+                if(!buf||size==0)
+                    return 0;
+
+                if(start>=entry_list->length[index])
+                    return 0;
+
+                if(start+size>entry_list->length[index])
+                    size=entry_list->length[index]-start;
+
+                if(is->Seek(data_start+entry_list->offset[index]+start,SeekOrigin::Begin)!=data_start+entry_list->offset[index]+start)
+                {
+                    MLogError(MiniPackReader,"Seek to file %d offset %u failed.",index,entry_list->offset[index]+start);
+                    return 0;
+                }
+
+                return is->ReadFully(buf,size);
+            }
         };
     }
 
-    MiniPackReader *GetMiniPack(InputStream *is)
+    MiniPackReader *GetMiniPackReader(InputStream *is)
     {
         if(!is)
         {
@@ -52,67 +101,42 @@ namespace hgl::io::minipack
             return(nullptr);
         }
 
-        DataInputStream *dis=new LEDataInputStream(is);
+        MiniPackFileHeader header;
 
-        char magic[8];
-
-        if(dis->ReadFully(magic,8)!=8)
+        if(is->ReadFully(&header,MiniPackFileHeaderSize) != MiniPackFileHeaderSize)
         {
-            MLogError(MiniPackReader,"Read magic number failed.");
+            MLogError(MiniPackReader,"Read file header failed.");
             return(nullptr);
         }
 
-        if(memcmp(magic,kMagic,8))
+        if(memcmp(header.magic,MiniPackMagicID,MiniPackMagicIDBytes))
         {
             MLogError(MiniPackReader,"Magic number error.");
             return(nullptr);
         }
 
-        uint32 info_size;
-        if(!dis->ReadUint32(info_size))
+        char *info_block = new char[header.info_size];
+
+        if(is->Read(info_block,header.info_size)!=header.info_size)
         {
-            MLogError(MiniPackReader,"Read info size failed.");
+            MLogError(MiniPackReader,"Read info block failed.");
+            delete[] info_block;
             return(nullptr);
         }
 
-        char *info_block = new char[info_size];
+        FileEntryList *fel = ParseInfoBlock(info_block);
 
-        dis->Peek(info_block,info_size);
-
-        uint32 version;
-        if(!dis->ReadUint32(version))
+        if(!fel)
         {
-            MLogError(MiniPackReader,"Read version failed.");
+            delete is;
+            delete[] info_block;
             return(nullptr);
         }
 
-        if(version!=1)
-        {
-            MLogError(MiniPackReader,"Unsupported version: %d",version);
-            return(nullptr);
-        }
-
-        uint32 entries_number;
-        if(!dis->ReadUint32(entries_number))
-        {
-            MLogError(MiniPackReader,"Read entries number failed.");
-            return(nullptr);
-        }
-
-        uint8 name_encoding;
-        if(!dis->ReadUint8(name_encoding))
-        {
-            MLogError(MiniPackReader,"Read name encoding failed.");
-            return(nullptr);
-        }
-
-        for(uint32 i=0;i<entries_number;i++)
-        {
-
-        }
+        return(new MiniPackReaderFromStream(is,info_block,fel,MiniPackFileHeaderSize + header.info_size));
     }
 
-    MiniPackReader *GetMiniPack(const OSString &filename)
+    MiniPackReader *GetMiniPackReader(const OSString &filename)
     {
         FileInputStream *fis = new FileInputStream;
 
@@ -122,6 +146,6 @@ namespace hgl::io::minipack
             return(nullptr);
         }
 
-        return GetMiniPack(fis);
+        return GetMiniPackReader(fis);
     }
 }//namespace hgl::io::minipack
