@@ -1,4 +1,4 @@
-#include<hgl/io/MiniPack.h>
+﻿#include<hgl/io/MiniPack.h>
 #include"MiniPackInfoBlock.h"
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/io/MMapFile.h>
@@ -92,7 +92,7 @@ namespace hgl::io::minipack
                     if(filename.Length()!=entry_list->name_length[i])
                         continue;
 
-                    if(filename.Comp(entry_list->name[i], entry_list->name_length[i])==0)
+                    if(filename.CaseComp(entry_list->name[i], entry_list->name_length[i])==0)
                         return static_cast<int32>(i);
                 }
 
