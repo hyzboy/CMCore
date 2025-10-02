@@ -5,12 +5,6 @@
 
 namespace hgl::io::minipack
 {
-    enum class NameEncoding:uint8
-    {
-        UTF8        =0,
-        UTF16_LE    =1
-    };//enum class NameEncoding
-
     class MiniPack
     {
     public:
@@ -19,14 +13,14 @@ namespace hgl::io::minipack
 
         virtual uint    GetFileCount()const = 0;
 
-        virtual int32   FindFile(const U8String &)const = 0;
+        virtual int32   FindFile(const AnsiStringView &)const = 0;
         virtual uint32  GetFileLength(int32 index)const = 0;
 
     public:
 
-        bool    IsFileExist(const U8String &name)const{ return FindFile(name) != -1; }
+        bool    IsFileExist(const AnsiStringView &name)const{ return FindFile(name) != -1; }
 
-        uint32  GetFileLength(const U8String &name)const{ return GetFileLength(FindFile(name)); }
+        uint32  GetFileLength(const AnsiStringView &name)const{ return GetFileLength(FindFile(name)); }
     };//class MiniPack
 
     /**
@@ -43,7 +37,7 @@ namespace hgl::io::minipack
 
     public:
 
-        bool    ReadFile(const U8String &name,void *buf,uint32 start,uint32 size){ return ReadFile(FindFile(name),buf,start,size); }
+        bool    ReadFile(const AnsiStringView &name,void *buf,uint32 start,uint32 size){ return ReadFile(FindFile(name),buf,start,size); }
     };//class MiniPackReader
 
     /**
@@ -58,10 +52,10 @@ namespace hgl::io::minipack
 
         virtual void *Map(int32)=0;
 
-        void *Map(const U8String &name){ return Map(FindFile(name)); }
+        void *Map(const AnsiStringView &name){ return Map(FindFile(name)); }
     };//class MiniPackMemory
 
-    MiniPackReader *GetMiniPackReader(const OSString &);
-    MiniPackMemory *GetMiniPackMemory(const OSString &);
-    MiniPackMemory *GetMiniPackFileMapping(const OSString &);
+    MiniPackReader *GetMiniPackReader(const OSStringView &);
+    MiniPackMemory *GetMiniPackMemory(const OSStringView &);
+    MiniPackMemory *GetMiniPackFileMapping(const OSStringView &);
 }//namespace hgl::io::minipack

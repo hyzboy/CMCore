@@ -10,7 +10,7 @@ namespace hgl::io::minipack
     {
         if(!info_block)return(nullptr);
 
-        uint8 *ptr = (uint8 *)info_block;
+        const uint8 *ptr = (const uint8 *)info_block;
         uint32 version = *(uint32 *)ptr;
         if(version != 1)
         {
@@ -35,11 +35,11 @@ namespace hgl::io::minipack
         fel->name_length = ptr;
         ptr += entries_number;
 
-        fel->name = new char8_t *[entries_number];
+        fel->name = new const char *[entries_number];
 
         for(uint32 i = 0;i < entries_number;i++)
         {
-            fel->name[i] = (char8_t *)ptr;
+            fel->name[i] = (const char *)ptr;
             ptr += fel->name_length[i] + 1;
         }
 

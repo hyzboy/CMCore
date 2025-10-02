@@ -43,7 +43,7 @@ namespace hgl::io::minipack
                 return entry_list->count;
             }
 
-            int32   FindFile(const U8String &filename)const
+            int32   FindFile(const AnsiStringView &filename)const override
             {
                 if(filename.IsEmpty()||!entry_list->count)
                     return -1;
@@ -60,7 +60,7 @@ namespace hgl::io::minipack
                 return -1;
             }
 
-            uint32  GetFileLength(int32 index)const
+            uint32  GetFileLength(int32 index)const override
             {
                 if(index<0||index>=static_cast<int32>(entry_list->count))
                     return 0;
@@ -68,7 +68,7 @@ namespace hgl::io::minipack
                 return entry_list->length[index];
             }
 
-            uint32  ReadFile(int32 index,void *buf,uint32 start,uint32 size)
+            uint32  ReadFile(int32 index,void *buf,uint32 start,uint32 size) override
             {
                 if(index<0||index>=static_cast<int32>(entry_list->count))
                     return 0;
@@ -136,11 +136,14 @@ namespace hgl::io::minipack
         return(new MiniPackReaderFromStream(is,info_block,fel,MiniPackFileHeaderSize + header.info_size));
     }
 
-    MiniPackReader *GetMiniPackReader(const OSString &filename)
+    MiniPackReader *GetMiniPackReader(const OSStringView &filename)
     {
         FileInputStream *fis = new FileInputStream;
 
-        if(!fis->Open(filename))
+        // Convert view to owning string for APIs expecting OSString
+        OSString fname(filename.c_str(), filename.Length());
+
+        if(!fis->Open(fname))
         {
             delete fis;
             return(nullptr);

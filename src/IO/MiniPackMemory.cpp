@@ -82,7 +82,7 @@ namespace hgl::io::minipack
                 return entry_list ? entry_list->count : 0;
             }
 
-            int32 FindFile(const U8String &filename) const override
+            int32 FindFile(const AnsiStringView &filename) const override
             {
                 if(!entry_list || filename.IsEmpty() || !entry_list->count)
                     return -1;
@@ -164,13 +164,16 @@ namespace hgl::io::minipack
     }
 
     // Load whole file to memory and use owning buffer
-    MiniPackMemory *GetMiniPackMemory(const OSString &filename)
+    MiniPackMemory *GetMiniPackMemory(const OSStringView &filename)
     {
         if(filename.IsEmpty())
             return nullptr;
 
+        // Convert view to owning string for filesystem APIs
+        OSString fname(filename.c_str(), filename.Length());
+
         char *data = nullptr;
-        int64 file_size = filesystem::LoadFileToMemory(filename, (void **)&data);
+        int64 file_size = filesystem::LoadFileToMemory(fname, (void **)&data);
 
         if(!data)
             return nullptr;
@@ -186,12 +189,15 @@ namespace hgl::io::minipack
     }
 
     // Use file mapping to access file without copying
-    MiniPackMemory *GetMiniPackFileMapping(const OSString &filename)
+    MiniPackMemory *GetMiniPackFileMapping(const OSStringView &filename)
     {
         if(filename.IsEmpty())
             return nullptr;
 
-        hgl::MMapFile *mm = OpenMMapFileOnlyRead(filename);
+        // Convert view to owning string for mapping API
+        OSString fname(filename.c_str(), filename.Length());
+
+        hgl::MMapFile *mm = OpenMMapFileOnlyRead(fname);
         if(!mm)
             return nullptr;
 
