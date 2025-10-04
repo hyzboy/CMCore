@@ -7,6 +7,8 @@
 #include<hgl/thread/RWLock.h>
 
 #include<time.h>
+#include<chrono>
+#include<cmath>
 
 namespace hgl
 {
@@ -194,6 +196,54 @@ namespace hgl
         micro_seconds=ms;
         SetSecond(s);
     }
+
+    // 获取与UTC偏移(秒)
+    static int32 CalcGMTOffset(const std::tm &local_tm)
+    {
+        std::tm temp_local = local_tm;
+        std::tm temp_gm    = local_tm;
+        // mktime assumes tm is local time
+        time_t local_sec = std::mktime(&temp_local);
+        // Build gm tm by using gmtime_r / gmtime_s on local_sec
+        std::tm gm_tm{};
+#if defined(_WIN32)
+        gmtime_s(&gm_tm,&local_sec);
+#else
+        gmtime_r(&local_sec,&gm_tm);
+#endif
+        time_t gm_sec = std::mktime(&gm_tm); // this interprets gm_tm as local, so diff gives offset
+        return int32(difftime(local_sec, gm_sec));
+    }
+
+    void Time::Sync(const double t)
+    {
+        double use_time = t;
+        using namespace std::chrono;
+        if(use_time==0)
+        {
+            auto now = system_clock::now();
+            auto us  = time_point_cast<microseconds>(now).time_since_epoch().count();
+            use_time = double(us)/1'000'000.0;
+        }
+
+        time_t sec_part = time_t(std::floor(use_time));
+        double frac = use_time - double(sec_part);
+        if(frac<0){ frac+=1.0; --sec_part; }
+
+        std::tm lt{};
+#if defined(_WIN32)
+        localtime_s(&lt,&sec_part);
+#else
+        localtime_r(&sec_part,&lt);
+#endif
+        hours = int8(lt.tm_hour);
+        minutes = int8(lt.tm_min);
+        seconds = int8(lt.tm_sec);
+        micro_seconds = int32(std::lround(frac*HGL_MICRO_SEC_PER_SEC));
+        if(micro_seconds>=HGL_MICRO_SEC_PER_SEC){micro_seconds-=HGL_MICRO_SEC_PER_SEC; seconds++;}
+        week_day = int8(lt.tm_wday); // 0=Sunday
+        gmt_off = CalcGMTOffset(lt);
+    }
 }//namespace hgl
 //--------------------------------------------------------------------------------------------------
 namespace hgl
@@ -361,6 +411,39 @@ namespace hgl
     {
         return hgl::DayOfYear(year,month,day);
     }
+
+    void Date::Sync(const double t)
+    {
+        double use_time = t;
+        using namespace std::chrono;
+        if(use_time==0)
+        {
+            auto now = system_clock::now();
+            auto sec = time_point_cast<seconds>(now).time_since_epoch().count();
+            use_time = double(sec);
+        }
+        time_t sec_part = time_t(std::floor(use_time));
+        std::tm lt{};
+#if defined(_WIN32)
+        localtime_s(&lt,&sec_part);
+#else
+        localtime_r(&sec_part,&lt);
+#endif
+        year = lt.tm_year + 1900;
+        month = lt.tm_mon + 1;
+        day = lt.tm_mday;
+        week_day = int8(lt.tm_wday); // 0 Sunday
+        year_day = int16(hgl::DayOfYear(year,month,day));
+        // compute max days of this month
+        const int mdays[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+        if(month==2)
+        {
+            bool leap = (year%4==0 && (year%100!=0 || year%400==0));
+            max_days_per_month = leap ? 29 : 28;
+        }
+        else
+            max_days_per_month = mdays[month-1];
+    }
 }//namespace hgl
 
 namespace hgl
@@ -369,5 +452,37 @@ namespace hgl
     {
         return FromDateTime(d.GetYear(),d.GetMonth(),d.GetDay(),
                             t.GetHour(),t.GetMinute(),t.GetSecond(),t.GetMicroSecond());
+    }
+
+    double FromDateTime(const int year,const int month,const int day,
+                        const int hour,const int minute,const int second,const int micro_second)
+    {
+        std::tm tmv{};
+        tmv.tm_year = year - 1900;
+        tmv.tm_mon  = month - 1;
+        tmv.tm_mday = day;
+        tmv.tm_hour = hour;
+        tmv.tm_min  = minute;
+        tmv.tm_sec  = second;
+        tmv.tm_isdst = -1; // let system determine DST
+        time_t base = std::mktime(&tmv); // local time to epoch
+        if(base == time_t(-1))
+            return 0.0;
+        double result = double(base) + double(micro_second)/double(HGL_MICRO_SEC_PER_SEC);
+        return result;
+    }
+
+    void ToDateTime(Date &d,Time &t,const double cur_time)
+    {
+        double use_time = cur_time;
+        if(use_time==0)
+        {
+            using namespace std::chrono;
+            auto now = std::chrono::system_clock::now();
+            auto us  = std::chrono::time_point_cast<std::chrono::microseconds>(now).time_since_epoch().count();
+            use_time = double(us)/1'000'000.0;
+        }
+        d.Sync(use_time);
+        t.Sync(use_time);
     }
 }//namespace hgl
