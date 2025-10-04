@@ -1,17 +1,10 @@
-﻿#ifndef HGL_DATETIME_INCLUDE
-#define HGL_DATETIME_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/DataType.h>
-#include<hgl/math/TimeConst.h>
+#include<hgl/time/TimeConst.h>
 
 namespace hgl
 {
-    namespace io
-    {
-        class DataInputStream;
-        class DataOutputStream;
-    }//namespace io
-
     /**
     * 时间类，这个类用来保存和计算时间。
     *
@@ -34,7 +27,7 @@ namespace hgl
         int GetHour         ()const{return hours;}                                                                      ///<时
         int GetMinute       ()const{return minutes;}                                                                    ///<分
         int GetSecond       ()const{return seconds;}                                                                    ///<秒
-        int GetMicroSecond  ()const{return micro_seconds;}                                                              ///<微秒(百万分之一秒)
+        int GetMicroSecond  ()const{return micro_seconds;}                                                              ///<微秒(1/1,000,000秒)
 
         int GetDaySeconds   ()const{return (hours*HGL_TIME_ONE_HOUR)+(minutes*HGL_TIME_ONE_MINUTE)+seconds;}            ///<今天过了多少秒
 
@@ -82,9 +75,6 @@ namespace hgl
         const int compare(const Time &)const override;
 
         void Sync(const double=0);                                                                  ///<和系统时间同步
-
-        bool SaveToStream(io::DataOutputStream *) const;
-        bool LoadFromStream(io::DataInputStream *);
     };//class Time
 
     /**
@@ -144,9 +134,6 @@ namespace hgl
         void Sync(const double=0);                                                                  ///<和系统日期同步
 
         int DayOfYear()const;
-
-        bool SaveToStream(io::DataOutputStream *) const;
-        bool LoadFromStream(io::DataInputStream *);
     };//class Date
 
     /**
@@ -164,7 +151,7 @@ namespace hgl
      * @param hour 小时
      * @param minute 分
      * @param second 秒
-     * @param micro_second 微秒(1/1000秒)
+     * @param micro_second 微秒(1/1,000,000秒)
      * @return 转换出的值
      */
     double FromDateTime(const int year,const int month,const int day,
@@ -181,4 +168,3 @@ namespace hgl
         Time time;
     };
 }//namespace hgl
-#endif//HGL_DATETIME_INCLUDE

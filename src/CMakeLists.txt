@@ -277,13 +277,16 @@ SET(FILESYSTEM_SOURCE_FILES FileSystem/FileSystem.cpp
 
 SOURCE_GROUP("FileSystem" FILES ${FILESYSTEM_HEADER_FILES} ${FILESYSTEM_SOURCE_FILES})
 
-SET(BASE_TIME_HEADER_FILES  ${TYPE_INCLUDE_PATH}/DateTime.h
-                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Time.h)
+SET(BASE_TIME_HEADER_FILES  ${CMCORE_ROOT_INCLUDE_PATH}/hgl/time/DateTime.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/time/Time.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/time/TimeConst.h
+)
 
 SET(BASE_TIME_SOURCE_FILES  Time/DateTime.cpp
                             Time/TimeCount.cpp
                             Time/TimeVal.cpp
-                            Time/Time.cpp)
+                            Time/Time.cpp
+                            Time/Date.cpp)
 
 SOURCE_GROUP("Time\\Header Files" FILES ${BASE_TIME_HEADER_FILES})
 SOURCE_GROUP("Time\\Source Files" FILES ${BASE_TIME_SOURCE_FILES})

@@ -1,84 +1,215 @@
-﻿#include<hgl/platform/Platform.h>
-#include<hgl/math/TimeConst.h>
-#include<hgl/Time.h>
+﻿#include<hgl/time/DateTime.h>
+#include<hgl/platform/Platform.h>
+#include<hgl/time/TimeConst.h>
 
 #include <chrono>
-#include <thread>
-#include <ctime>
 
 namespace hgl
 {
-    // 使用 C++20 std::chrono 重新实现，保持原有接口与语义
+    Time::Time()
+    {
+        gmt_off=0;
+        hours=0;
+        minutes=0;
+        seconds=0;
+        micro_seconds=0;
+    }
+
+    Time::Time(const double t)
+    {
+        Sync(t);
+    }
+
+    Time::Time(int h,int m,int s,int ms)
+    {
+        gmt_off=0;
+        hours=h;
+        minutes=m;
+        seconds=s;
+        micro_seconds=ms;
+    }
+
+    Time::Time(const Time &t)
+    {
+        operator = (t);
+    }
 
     /**
-    * 取得当前与GMT的偏移(utc-local)单位:微秒 (保持原Win实现的符号与单位)
-    */
-    long GetGMTOff()
+     * 设置时间
+     * @param h 小时
+     * @param m 分
+     * @param s 秒
+     * @param ms 微秒(百分分之一秒)
+     */
+    void Time::Set(int h,int m,int s,int ms,int wd)
     {
-        using namespace std;
-        using namespace std::chrono;
+        hours=h;
+        minutes=m;
+        seconds=s;
+        micro_seconds=ms;
+        week_day=wd;
+    }
 
-        // 取当前时间点
-        const system_clock::time_point now = system_clock::now();
-        time_t tt = system_clock::to_time_t(now);
+    Time &Time::operator=(const Time &t)
+    {
+        hours            =t.hours;
+        minutes            =t.minutes;
+        seconds            =t.seconds;
+        micro_seconds    =t.micro_seconds;
 
-        std::tm local_tm{};
+        return(*this);
+    }
+
+    const int Time::compare(const Time &t)const
+    {
+        if(hours!=t.hours)
+            return hours-t.hours;
+
+        if(minutes!=t.minutes)
+            return minutes-t.minutes;
+
+        if(seconds!=t.seconds)
+            return seconds-t.seconds;
+
+        return micro_seconds-t.micro_seconds;
+    }
+
+    void Time::SetHour(int h)
+    {
+        if(h<0)
+        {
+            while(h<0)
+                h+=HGL_HOUR_ONE_DAY;
+        }
+        else if(h>0)
+        {
+            while(h>(HGL_HOUR_ONE_DAY-1))
+                h-=HGL_HOUR_ONE_DAY;
+        }
+
+        hours=h;
+    }
+
+    void Time::SetMinute(int m)
+    {
+        int h=hours;
+
+        if(m<0)
+        {
+            while(m<0)
+            {
+                m+=HGL_TIME_ONE_MINUTE;
+                h--;
+            }
+        }
+        else if(m>0)
+        {
+            while(m>(HGL_TIME_ONE_MINUTE-1))
+            {
+                m-=HGL_TIME_ONE_MINUTE;
+                h++;
+            }
+        }
+
+        minutes=m;
+        SetHour(h);
+    }
+
+    void Time::SetSecond(int s)
+    {
+        int m=minutes;
+
+        if(s<0)
+        {
+            while(s<0)
+            {
+                s+=HGL_TIME_ONE_MINUTE;
+                m--;
+            }
+        }
+        else if(s>0)
+        {
+            while(s>(HGL_TIME_ONE_MINUTE-1))
+            {
+                s-=HGL_TIME_ONE_MINUTE;
+                m++;
+            }
+        }
+
+        seconds=s;
+        SetMinute(m);
+    }
+
+    void Time::SetMicroSecond(int ms)
+    {
+        int s=seconds;
+
+        if(ms<0)
+        {
+            while(ms<0)
+            {
+                ms-=HGL_MICRO_SEC_PER_SEC;
+                s--;
+            }
+        }
+        else if(ms>0)
+        {
+            while(ms>(HGL_MICRO_SEC_PER_SEC-1))
+            {
+                ms-=HGL_MICRO_SEC_PER_SEC;
+                s++;
+            }
+        }
+
+        micro_seconds=ms;
+        SetSecond(s);
+    }
+
+    // 获取与UTC偏移(秒)
+    static int32 CalcGMTOffset(const std::tm &local_tm)
+    {
+        std::tm temp_local = local_tm;
+        std::tm temp_gm    = local_tm;
+        // mktime assumes tm is local time
+        time_t local_sec = std::mktime(&temp_local);
+        // Build gm tm by using gmtime_r / gmtime_s on local_sec
         std::tm gm_tm{};
 #if defined(_WIN32)
-        localtime_s(&local_tm, &tt);
-        gmtime_s(&gm_tm, &tt);
-        std::tm local_copy = local_tm;              // mktime/_mkgmtime 可能改写内容，所以复制
-        std::tm gm_copy = gm_tm;
-        time_t local_sec = std::mktime(&local_copy);    // 解释为本地时间 -> epoch(本地转换到UTC秒值)
-        time_t gm_sec = _mkgmtime(&gm_copy);            // 解释为UTC时间
+        gmtime_s(&gm_tm,&local_sec);
 #else
-        local_tm = *std::localtime(&tt);
-        gm_tm    = *std::gmtime(&tt);
-        std::tm local_copy = local_tm;
-        std::tm gm_copy = gm_tm;
-        time_t local_sec = std::mktime(&local_copy);    // 本地
-        time_t gm_sec = timegm(&gm_copy);               // UTC
+        gmtime_r(&local_sec,&gm_tm);
 #endif
-        // Windows旧实现返回: utc_time - local_time (微秒)
-        const long diff_sec = static_cast<long>(gm_sec - local_sec); // = -(local_offset_seconds)
-        return diff_sec * 1000000L; // 微秒
+        time_t gm_sec = std::mktime(&gm_tm); // this interprets gm_tm as local, so diff gives offset
+        return int32(difftime(local_sec, gm_sec));
     }
 
-    /**
-    * 取得当前时间
-    * @return 当前时间(单位：百万分之一秒)
-    */
-    uint64 GetMicroTime()
+    void Time::Sync(const double t)
     {
+        double use_time = t;
         using namespace std::chrono;
-        return static_cast<uint64>(duration_cast<microseconds>(system_clock::now().time_since_epoch()).count());
-    }
+        if(use_time==0)
+        {
+            auto now = system_clock::now();
+            auto us  = time_point_cast<microseconds>(now).time_since_epoch().count();
+            use_time = double(us)/1'000'000.0;
+        }
 
-    /**
-    * 取得当前时间
-    * @return 当前时间(单位：千分之一秒)
-    */
-    uint64 GetTime()
-    {
-        return GetMicroTime()/1000ULL;
-    }
+        time_t sec_part = time_t(std::floor(use_time));
+        double frac = use_time - double(sec_part);
+        if(frac<0){ frac+=1.0; --sec_part; }
 
-    /**
-    * 取得当前时间(双精度)
-    * @return 当前时间(单位：秒)
-    */
-    PreciseTime GetPreciseTime()                                                                        ///<取得当前时间(双精度，单位秒)
-    {
-        return PreciseTime(GetMicroTime())/HGL_MICRO_SEC_PER_SEC;
-    }
-
-    /**
-    * 等待指定时间
-    * @param t 时间(单位：秒)
-    */
-    void WaitTime(const PreciseTime &t)
-    {
-        if(t<=0) return;
-        std::this_thread::sleep_for(std::chrono::duration<PreciseTime>(t));
+        std::tm lt{};
+#if defined(_WIN32)
+        localtime_s(&lt,&sec_part);
+#else
+        localtime_r(&sec_part,&lt);
+#endif
+        hours = int8(lt.tm_hour);
+        minutes = int8(lt.tm_min);
+        seconds = int8(lt.tm_sec);
+        micro_seconds = int32(std::lround(frac*HGL_MICRO_SEC_PER_SEC));
+        if(micro_seconds>=HGL_MICRO_SEC_PER_SEC){micro_seconds-=HGL_MICRO_SEC_PER_SEC; seconds++;}
+        week_day = int8(lt.tm_wday); // 0=Sunday
+        gmt_off = CalcGMTOffset(lt);
     }
 }//namespace hgl

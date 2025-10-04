@@ -4,7 +4,7 @@
 #include<hgl/event/EventProc.h>
 #include<hgl/thread/SwapData.h>
 #include<hgl/thread/Thread.h>
-#include<hgl/Time.h>
+#include<hgl/time/Time.h>
 
 namespace hgl
 {

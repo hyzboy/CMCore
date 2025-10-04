@@ -1,5 +1,5 @@
-﻿#ifndef HGL_MATH_TIME_CONST_INCLUDE
-#define HGL_MATH_TIME_CONST_INCLUDE
+﻿#pragma once
+
 namespace hgl
 {
     /**
@@ -65,4 +65,3 @@ namespace hgl
     constexpr uint  HGL_MICRO_SEC_PER_SEC   =1000*1000;         //微秒
     constexpr uint  HGL_NANO_SEC_PER_SEC    =1000*1000*1000;    //纳秒
 }//namespace hgl
-#endif//HGL_MATH_TIME_CONST_INCLUDE
