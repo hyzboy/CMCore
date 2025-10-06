@@ -68,8 +68,8 @@ namespace hgl::io::minipack
             uint8 *data_block {nullptr};
             uint32 data_size {0};
 
-            MiniPackMemoryBase(FileEntryList *fel, uint8 *db, uint32 ds)
-                : entry_list(fel), data_block(db), data_size(ds) {}
+            MiniPackMemoryBase(const OSStringView &filename, FileEntryList *fel, uint8 *db, uint32 ds)
+                : MiniPackMemory(filename), entry_list(fel), data_block(db), data_size(ds) {}
 
         public:
             ~MiniPackMemoryBase() override
@@ -129,8 +129,8 @@ namespace hgl::io::minipack
             char *file_data {nullptr};
 
         public:
-            MiniPackMemoryInMemory(char *fd, int64 fs, FileEntryList *fel, const uint32 data_start)
-                : MiniPackMemoryBase(fel,
+            MiniPackMemoryInMemory(const OSStringView &filename, char *fd, int64 fs, FileEntryList *fel, const uint32 data_start)
+                : MiniPackMemoryBase(filename, fel,
                                       reinterpret_cast<uint8 *>(fd) + data_start,
                                       (fs>data_start)?static_cast<uint32>(fs-data_start):0)
                 , file_data(fd)
@@ -148,8 +148,8 @@ namespace hgl::io::minipack
             hgl::MMapFile *mm {nullptr};
 
         public:
-            MiniPackMemoryMapped(hgl::MMapFile *mmap, FileEntryList *fel, const uint32 data_start)
-                : MiniPackMemoryBase(fel,
+            MiniPackMemoryMapped(const OSStringView &filename, hgl::MMapFile *mmap, FileEntryList *fel, const uint32 data_start)
+                : MiniPackMemoryBase(filename, fel,
                                       reinterpret_cast<uint8 *>(mmap->data()) + data_start,
                                       (mmap->size()>data_start)?static_cast<uint32>(mmap->size()-data_start):0)
                 , mm(mmap)
@@ -185,7 +185,7 @@ namespace hgl::io::minipack
             return nullptr;
         }
 
-        return new MiniPackMemoryInMemory(data, file_size, fel, data_start);
+        return new MiniPackMemoryInMemory(filename, data, file_size, fel, data_start);
     }
 
     // Use file mapping to access file without copying
@@ -213,6 +213,6 @@ namespace hgl::io::minipack
             return nullptr;
         }
 
-        return new MiniPackMemoryMapped(mm, fel, data_start);
+        return new MiniPackMemoryMapped(filename, mm, fel, data_start);
     }
 }// namespace hgl::io::minipack

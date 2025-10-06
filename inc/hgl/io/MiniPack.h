@@ -2,6 +2,7 @@
 
 #include<hgl/type/DataType.h>
 #include<hgl/type/String.h>
+#include<hgl/log/Log.h>
 
 namespace hgl::io::minipack
 {
@@ -38,6 +39,12 @@ namespace hgl::io::minipack
     public:
 
         bool    ReadFile(const AnsiStringView &name,void *buf,uint32 start,uint32 size){ return ReadFile(FindFile(name),buf,start,size); }
+
+        template<typename T>
+        bool    ReadFileData(const AnsiStringView &name,T *buf)
+        {
+            return ReadFile(name,buf,0,sizeof(T));
+        }
     };//class MiniPackReader
 
     /**
@@ -46,13 +53,40 @@ namespace hgl::io::minipack
     */
     class MiniPackMemory:public MiniPack
     {
+        OBJECT_LOGGER
+
     public:
+
+        MiniPackMemory(const OSStringView &fn):MiniPack()
+        {
+            Log.SetLoggerInstanceName(OSString(fn));
+        }
 
         virtual ~MiniPackMemory() = default;
 
         virtual void *Map(int32)=0;
 
         void *Map(const AnsiStringView &name){ return Map(FindFile(name)); }
+
+        template<typename T>
+        T *MapData(const AnsiStringView &name)
+        {
+            const int32 index=FindFile(name);
+
+            if(index<0)
+            {
+                LogError("File <%s> not found in minipack.",name.c_str());
+                return(nullptr);
+            }
+
+            if(sizeof(T)!=GetFileLength(index))
+            {
+                LogError("File <%s> size mismatch in minipack.",name.c_str());
+                return(nullptr);
+            }
+
+            return (T *)Map(index);
+        }
     };//class MiniPackMemory
 
     MiniPackReader *GetMiniPackReader(const OSStringView &);
