@@ -18,6 +18,7 @@ namespace hgl
     const Quatf IdentityQuatf(1,0,0,0);     //w,x,y,z
 
 #define DEFINE_MATRIX(num)  using Matrix##num##f=glm::mat##num;  \
+                            constexpr const size_t Matrix##num##fBytes=sizeof(Matrix##num##f); \
                             const Matrix##num##f Identity##num##f=Matrix##num##f(1.0f); \
                             inline bool IsIdentityMatrix(const Matrix##num##f &m){return(hgl_cmp(m,Identity##num##f)==0);}  \
                             inline bool IsNearlyEqual(const Matrix##num##f &m1,const Matrix##num##f &m2,const float err=HGL_FLOAT_ERROR)    \
