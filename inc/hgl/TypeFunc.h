@@ -12,10 +12,25 @@
 
 namespace hgl
 {
+    //==================================================================================================
+    // 常量定义 / Constants Definition
+    //==================================================================================================
+    
     #define HGL_OFFICAL_WEB                "www.hyzgame.com"
     #define HGL_OFFICAL_WEB_U8     U8_TEXT("www.hyzgame.com")
     #define HGL_OFFICAL_WEB_OS     OS_TEXT("www.hyzgame.com")
 
+    constexpr const u16char U16_FULL_WIDTH_SPACE=U16_TEXT('　');      //全角空格
+    constexpr const u32char U32_FULL_WIDTH_SPACE=U32_TEXT('　');      //全角空格
+
+    #ifndef NULL
+    #define NULL 0
+    #endif//
+
+    //==================================================================================================
+    // 枚举类工具 / Enum Class Utilities
+    //==================================================================================================
+    
     #define ENUM_CLASS_RANGE(begin,end)     BEGIN_RANGE=begin,END_RANGE=end,RANGE_SIZE=(END_RANGE-BEGIN_RANGE)+1
 
     template<typename T> constexpr const int ToInt(const T &ec){return (int)ec;}
@@ -39,10 +54,10 @@ namespace hgl
     #define RANGE_CHECK_RETURN_FALSE(value)             if(!RangeCheck(value))return(false);
     #define RANGE_CHECK_RETURN_NULLPTR(value)           if(!RangeCheck(value))return(nullptr);
 
-    #ifndef NULL
-    #define NULL 0
-    #endif//
-
+    //==================================================================================================
+    // 颜色打包 / Color Packing
+    //==================================================================================================
+    
     /**
     * r/g/b/a四个分量的颜色打包成一个32位整数，glsl中可用unpackUnorm4x8函数进行还原
     */
@@ -65,15 +80,20 @@ namespace hgl
                 (static_cast<uint32>(a*255.0f)<<24);
     }
 
-    constexpr const u16char U16_FULL_WIDTH_SPACE=U16_TEXT('　');      //全角空格
-    constexpr const u32char U32_FULL_WIDTH_SPACE=U32_TEXT('　');      //全角空格
-
+    //==================================================================================================
+    // 构造与交换 / Construction and Swap
+    //==================================================================================================
+    
     template<typename T>
     inline void hgl_call_construct(T *obj)      //呼叫构造函数
     {
         new (static_cast<void *>(obj)) T();
     }
 
+    //==================================================================================================
+    // 位操作 / Bit Operations
+    //==================================================================================================
+    
     #define HGL_BIT(n)      (1<<(n))
     #define HGL_64BIT(n)    (1L<<(n))
 
@@ -162,6 +182,10 @@ namespace hgl
         return -1;
     }
 
+    //==================================================================================================
+    // 大小常量 / Size Constants
+    //==================================================================================================
+    
     constexpr const uint      HGL_SIZE_1KB    =1024;
     constexpr const uint      HGL_SIZE_1MB    =HGL_SIZE_1KB*1024;
     constexpr const uint      HGL_SIZE_1GB    =HGL_SIZE_1MB*1024;
@@ -171,6 +195,10 @@ namespace hgl
 //  constexpr const uint128    HGL_SIZE_1ZB   =HGL_SIZE_1EB*1024ULL;
 //  constexpr const uint128    HGL_SIZE_1YB   =HGL_SIZE_1ZB*1024ULL;
 
+    //==================================================================================================
+    // 整数极值常量 / Integer Limit Constants
+    //==================================================================================================
+    
     constexpr const uint8     HGL_U8_MAX      =0xFF;
     constexpr const uint16    HGL_U16_MAX     =0xFFFF;
     constexpr const uint32    HGL_U32_MAX     =0xFFFFFFFF;
@@ -192,6 +220,10 @@ namespace hgl
     constexpr const int64     HGL_S64_MIN     =(-0x8000000000000000LL);
 #endif//_MSC_VER
 
+    //==================================================================================================
+    // 整数极值模板函数 / Integer Limit Template Functions
+    //==================================================================================================
+    
     template<typename T> constexpr const T HGL_INTEGER_MAX();
     template<typename T> constexpr const T HGL_INTEGER_MIN();
     template<typename T> constexpr const T HGL_UINTEGER_HALF();
@@ -216,9 +248,17 @@ namespace hgl
     template<> inline constexpr const int32     HGL_INTEGER_MIN<int32   >() { return HGL_S32_MIN; }
     template<> inline constexpr const int64     HGL_INTEGER_MIN<int64   >() { return HGL_S64_MIN; }
 
+    //==================================================================================================
+    // 16进制字符 / Hexadecimal Characters
+    //==================================================================================================
+    
     constexpr char LowerHexChar[16]={'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};  ///<小写16进制字符
     constexpr char UpperHexChar[16]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};  ///<大写16进制字符
 
+    //==================================================================================================
+    // 对齐计算 / Alignment Calculation
+    //==================================================================================================
+    
     /**
      * 求数值对齐后的值
      */
@@ -283,6 +323,10 @@ namespace hgl
         return (x + y - (T)1) / y;
     }
 
+    //==================================================================================================
+    // 交换与比较 / Swap and Comparison
+    //==================================================================================================
+    
     template<typename T> inline void hgl_swap(T &x,T &y)
     {
         T t;
@@ -347,6 +391,10 @@ namespace hgl
         return(value);
     }
 
+    //==================================================================================================
+    // Mipmap 级别计算 / Mipmap Level Calculation
+    //==================================================================================================
+    
     inline constexpr const uint GetMipLevel(const uint size)
     {
         //return static_cast<uint>(floor(log2(size)))+1;
@@ -363,6 +411,10 @@ namespace hgl
         return GetMipLevel(hgl_max(hgl_max(width,height),depth));
     }
 
+    //==================================================================================================
+    // 内存操作 - 复制 / Memory Operations - Copy
+    //==================================================================================================
+    
     /**
      * 同类型复制
      */
@@ -404,6 +456,10 @@ namespace hgl
         std::memmove(dst,src,count*sizeof(T));
     }
 
+    //==================================================================================================
+    // 内存操作 - 赋值 / Memory Operations - Set
+    //==================================================================================================
+    
     /**
      * 指定类型数据块赋值
      */
@@ -439,6 +495,10 @@ namespace hgl
         }
     }
 
+    //==================================================================================================
+    // 内存操作 - 清零 / Memory Operations - Zero
+    //==================================================================================================
+    
     /**
      * 指定类型数据清0
      */
@@ -457,6 +517,10 @@ namespace hgl
         std::memset(data,0,count*sizeof(T));
     }
 
+    //==================================================================================================
+    // 内存分配 / Memory Allocation
+    //==================================================================================================
+    
     /**
      * 分配指定类型数据块并清0
      */
@@ -501,6 +565,10 @@ namespace hgl
         return data;
     }
 
+    //==================================================================================================
+    // 内存操作 - 比较 / Memory Operations - Compare
+    //==================================================================================================
+    
     template<typename T>
     inline int hgl_cmp(const T &a,const T &b)
     {
@@ -513,6 +581,10 @@ namespace hgl
         return std::memcmp(a,b,count*sizeof(T));
     }
 
+    //==================================================================================================
+    // 数组内存管理 / Array Memory Management
+    //==================================================================================================
+    
     template<typename T>
     inline T *array_alloc(const uint count)
     {
@@ -531,6 +603,10 @@ namespace hgl
         hgl_free(items);
     }
 
+    //==================================================================================================
+    // 辅助工具类 / Utility Classes
+    //==================================================================================================
+    
     template<typename C,typename V> struct ArrayWriter
     {
         C *count;
