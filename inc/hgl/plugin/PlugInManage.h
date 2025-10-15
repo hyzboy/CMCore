@@ -1,9 +1,9 @@
-﻿#ifndef HGL_PLUG_IN_MANAGE_INCLUDE
-#define HGL_PLUG_IN_MANAGE_INCLUDE
+﻿#pragma once
 
 #include<hgl/plugin/ExternalPlugIn.h>
 #include<hgl/type/ObjectManage.h>
 #include<hgl/type/StringList.h>
+
 namespace hgl
 {
     /**
@@ -62,10 +62,6 @@ namespace hgl
                                                 extern "C" void register_plugin_##classname;
 #else                       //外部插件
     #define REGISTER_PLUG_IN(name,classname)    static RegisterPlugInProxy<name,classname> plugin_proxy_##classname     \
-    extern "C" void register_plugin_##name(void)
-    {
-        
-    }
-#endif//__MAKE_PLUGIN__  
+    extern "C" void register_plugin_##name(void){}
+#endif//__MAKE_PLUGIN__
 }//namespace hgl
-#endif//HGL_PLUG_IN_MANAGE_INCLUDE

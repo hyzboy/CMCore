@@ -1,7 +1,7 @@
-﻿#ifndef HGL_PLUG_IN_INTERFACE_INCLUDE
-#define HGL_PLUG_IN_INTERFACE_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/DataType.h>
+
 namespace hgl
 {
     typedef void        (*ClosePlugInPROC)();                                                       ///<关闭插件
@@ -31,4 +31,3 @@ namespace hgl
 
     typedef PlugInInterface *(*InitPlugInPROC)();                                                   ///<初始化插件
 }//namespace hgl
-#endif//HGL_PLUG_IN_INTERFACE_INCLUDE
