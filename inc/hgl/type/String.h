@@ -765,6 +765,13 @@ namespace hgl
      * @brief CN: ANSI 编码字符串类型 EN: ANSI encoded string type
      */
     using AnsiString = String<char>;
+
+    /**
+    * @typedef IDString
+    * @brief CN: 标识符字符串类型 EN: Identifier string type
+    */
+    using IDString = String<char>;
+
     /**
      * @typedef U8String
      * @brief CN: UTF-8 编码字符串类型 EN: UTF-8 encoded string type
