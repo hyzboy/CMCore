@@ -1,5 +1,4 @@
-﻿#ifndef HGL_PLATFORM_INCLUDE
-#define HGL_PLATFORM_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/os/vsprintf.h>
 
@@ -260,6 +259,9 @@
 
 namespace hgl
 {
+    const char *GetOSName();          ///<取得操作系统名称
+    const char *GetOSUsername();      ///<取得当前操作系统用户名
+
     #define HGL_WINDOW_DIRECTORY_SEPARATOR  OS_TEXT('\\')
     #define HGL_UNIX_DIRECTORY_SPEARATOR    OS_TEXT('/')
 
@@ -289,4 +291,3 @@ namespace hgl
                                         NO_MOVE(className)
 
 }//namespace hgl
-#endif//HGL_PLATFORM_INCLUDE

@@ -1,8 +1,8 @@
-﻿#ifndef HGL_SYSTEMINFO_INCLUDE
-#define HGL_SYSTEMINFO_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/DataType.h>
-#include<hgl/type/BaseString.h>
+#include<hgl/type/String.h>
+
 namespace hgl
 {
     /**
@@ -27,9 +27,10 @@ namespace hgl
     /**
     * 操作系统及引擎相关路径
     */
-    struct SystemPath                    ///操作系统及引擎相关路径
+    struct SystemPath                   ///操作系统及引擎相关路径
     {
-        OSString start;                 ///<当前应用程序起始路径
+        OSString work;                  ///<当前应用程序工作路径
+        OSString cur_app;               ///<当前应用程序路径
 
         OSString os;                    ///<操作系统路径
         OSString osfont;                ///<操作系统字库路径
@@ -66,4 +67,3 @@ namespace hgl
         SystemInfo();
     };//struct SystemInfo
 }//namespace hgl
-#endif//HGL_SYSTEMINFO_INCLUDE
