@@ -504,7 +504,7 @@ namespace hgl
 
         for(int i=0;i<count;i++)
         {
-            if(!data_pool.Acquire(new_obj))
+            if(!data_pool.GetOrCreate(new_obj))
                 break;
 
             new_obj->key=(*obj)->key;
