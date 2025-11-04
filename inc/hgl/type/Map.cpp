@@ -1,5 +1,4 @@
-﻿#ifndef HGL_MAP_CPP
-#define HGL_MAP_CPP
+﻿#pragma once
 
 namespace hgl
 {
@@ -637,4 +636,3 @@ namespace hgl
         }
     }
 }//namespace hgl
-#endif//HGL_MAP_CPP

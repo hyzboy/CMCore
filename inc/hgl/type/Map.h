@@ -4,7 +4,6 @@
 #include<hgl/type/ArrayList.h>
 #include<hgl/type/Pair.h>
 #include<hgl/type/Pool.h>
-#include<hgl/thread/RWLock.h>
 #include<hgl/type/LifecycleTraits.h>
 
 namespace hgl
