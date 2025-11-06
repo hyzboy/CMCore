@@ -71,7 +71,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    bool SmallMap<K,V>::Delete(const K &key,V &out_value)
+    bool SmallMap<K,V>::GetAndDelete(const K &key,V &out_value)
     {
         int idx = Find(key);
         if(idx < 0) return false;

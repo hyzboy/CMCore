@@ -79,7 +79,7 @@ namespace hgl
 
         // 修改
         KVData * Add (const K &key, const V &value); // 返回插入后的元素地址（可能在后续操作后失效）
-        bool Delete (const K &key, V &out_value);
+        bool GetAndDelete (const K &key, V &out_value);
         bool DeleteByKey (const K &key)
         {
             return DeleteAt(Find(key));

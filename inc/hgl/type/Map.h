@@ -48,7 +48,7 @@ namespace hgl
         virtual V *     GetValuePointer(const K &key)const;                                         ///<取得数据指针
         virtual int     GetValueAndSerial(const K &,V &) const;                                     ///<取得数据与索引
                 bool    Get(const K &key,V &value)const{return(GetValueAndSerial(key,value)>=0);}   ///<取得数据
-        virtual bool    Delete(const K &,V &);                                                      ///<将指定数据从列表中移除，并获得这个数据
+        virtual bool    GetAndDelete(const K &,V &);                                                ///<将指定数据从列表中移除，并获得这个数据
         virtual bool    DeleteByKey(const K &);                                                     ///<根据索引将指定数据从列表中移除
         virtual int     DeleteByKey(const K *,const int);                                           ///<根据索引将指定数据从列表中批量移除
         virtual bool    DeleteByValue(const V &);                                                   ///<根据数据将指定数据从列表中移除

@@ -306,7 +306,7 @@ namespace hgl
     * @return 是否成功
     */
     template<typename K,typename V,typename KVData>
-    bool MapTemplate<K,V,KVData>::Delete(const K &flag,V &data)
+    bool MapTemplate<K,V,KVData>::GetAndDelete(const K &flag,V &data)
     {
         int index=Find(flag);
 
