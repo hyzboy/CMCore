@@ -35,6 +35,16 @@ namespace hgl
             return data_list.end();
         }
 
+        const KVData * Begin() const
+        {
+            return data_list.begin();
+        }
+
+        const KVData * End() const
+        {
+            return data_list.end();
+        }
+
         // 基本信息
         int GetCount () const
         {
