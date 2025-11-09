@@ -1,4 +1,4 @@
-#include<hgl/type/NodeManager.h>
+#include<hgl/type/node/NodeManager.h>
 
 namespace hgl
 {

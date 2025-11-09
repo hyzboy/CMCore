@@ -1,7 +1,7 @@
 #pragma once
 
-#include<hgl/type/NodeManager.h>
-#include<hgl/type/TreeBaseNode.h>
+#include<hgl/type/node/NodeManager.h>
+#include<hgl/type/node/TreeBaseNode.h>
 
 namespace hgl
 {

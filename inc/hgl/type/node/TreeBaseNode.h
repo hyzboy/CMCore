@@ -1,6 +1,6 @@
 #pragma once
 
-#include<hgl/type/Node.h>
+#include<hgl/type/node/Node.h>
 #include<tsl/robin_map.h>
 
 namespace hgl

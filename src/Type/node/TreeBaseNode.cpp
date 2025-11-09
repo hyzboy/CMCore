@@ -1,4 +1,4 @@
-#include<hgl/type/TreeBaseNode.h>
+#include<hgl/type/node/TreeBaseNode.h>
 
 namespace hgl
 {

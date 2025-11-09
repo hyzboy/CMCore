@@ -42,13 +42,13 @@ SET(TYPE_DATA_CHAIN_SOURCE  ${TYPE_INCLUDE_PATH}/DataChain.h
 
 SOURCE_GROUP("DataType\\DataChain" FILES ${TYPE_DATA_CHAIN_SOURCE})
 
-SET(TREE_NODE_FILES ${TYPE_INCLUDE_PATH}/Node.h
-                    ${TYPE_INCLUDE_PATH}/NodeManager.h
-                    ${TYPE_INCLUDE_PATH}/TreeBaseNode.h
-                    ${TYPE_INCLUDE_PATH}/TreeNode.h
-                    Type/Node.cpp
-                    Type/NodeManager.cpp
-                    Type/TreeBaseNode.cpp)
+SET(TREE_NODE_FILES ${TYPE_INCLUDE_PATH}/Node/Node.h
+                    ${TYPE_INCLUDE_PATH}/Node/NodeManager.h
+                    ${TYPE_INCLUDE_PATH}/Node/TreeBaseNode.h
+                    ${TYPE_INCLUDE_PATH}/Node/TreeNode.h
+                    Type/Node/Node.cpp
+                    Type/Node/NodeManager.cpp
+                    Type/Node/TreeBaseNode.cpp)
 
 SOURCE_GROUP("DataType\\Node" FILES ${TREE_NODE_FILES})
 
