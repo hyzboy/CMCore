@@ -8,6 +8,8 @@ namespace hgl
 {
     using MonotonicID=int32;
 
+    constexpr const MonotonicID MONOTONIC_ID_INVALID=0;
+
     /**
      * CN: 单调ID数据列表(仅支持原生数据类型，不支持对象)
      * EN: Monotonic ID data list (only supports primitive data types, not objects)
@@ -24,7 +26,7 @@ namespace hgl
      */
     template<typename T,typename I=MonotonicID> class MonotonicIDList
     {
-        I next_id=0;                            ///< CN: 下一个可用的ID / EN: Next available ID
+        I next_id=1;                            ///< CN: 下一个可用的ID / EN: Next available ID
 
         DataArray<T>        data_array;         ///< CN: 实际数据存储数组 / EN: Actual data storage array
         SmallMap<I,int32>   id_to_location_map; ///< CN: ID到位置的映射表 / EN: Map from ID to location
@@ -305,23 +307,23 @@ namespace hgl
         };
 
         /**
-        * CN: 重新编号：让所有数据的ID从0开始连续编号，使ID与位置一致
-        * EN: Reindex: Renumber all data IDs starting from 0 consecutively, making IDs consistent with positions
+        * CN: 重新编号：让所有数据的ID从1开始连续编号，使ID与位置一致
+        * EN: Reindex: Renumber all data IDs starting from 1 consecutively, making IDs consistent with positions
         *
-        * CN: 该方法会重新分配所有元素的ID，使得ID从0开始连续递增，且ID值等于元素在数组中的位置。
+        * CN: 该方法会重新分配所有元素的ID，使得ID从1开始连续递增。
         *     这在需要序列化数据或导出数据时特别有用。
         *     执行过程：
         *     1. 首先调用Shrink()确保数据紧密排列
         *     2. 构建旧ID到新ID的映射列表
-        *     3. 重建所有映射表，使新ID从0开始连续
-        *     4. 重置next_id为当前元素数量
-        * EN: This method reassigns IDs for all elements, making IDs start from 0 and increase consecutively, with ID values equal to element positions in the array.
+        *     3. 重建所有映射表，使新ID从1开始连续
+        *     4. 重置next_id为当前元素数量+1
+        * EN: This method reassigns IDs for all elements, making IDs start from 1 and increase consecutively.
         *     This is particularly useful when serializing or exporting data.
         *  Execution process:
         *     1. First call Shrink() to ensure data is densely packed
         *     2. Build a mapping list from old IDs to new IDs
-        *     3. Rebuild all mapping tables so new IDs start from 0 consecutively
-        *     4. Reset next_id to the current element count
+        *     3. Rebuild all mapping tables so new IDs start from 1 consecutively
+        *     4. Reset next_id to the current element count + 1
         *
         * @param remap_list CN: 输出参数，返回旧ID到新ID的映射列表
         *                   EN: Output parameter, returns the mapping list from old IDs to new IDs
@@ -346,37 +348,37 @@ namespace hgl
             remap_list.Clear();
             remap_list.Resize(count);
 
-            // CN: 构建旧ID到新ID的映射
-            // EN: Build mapping from old IDs to new IDs
-            // CN: 遍历 location_to_id_map，location 就是新ID
-            // EN: Iterate through location_to_id_map, location is the new ID
-            for(int32 new_id=0; new_id<count; ++new_id)
+            // CN: 构建旧ID到新ID的映射，新ID从1开始
+            // EN: Build mapping from old IDs to new IDs, new IDs start from 1
+            // CN: 遍历 location_to_id_map，location对应新ID-1
+            // EN: Iterate through location_to_id_map, location corresponds to new ID - 1
+            for(int32 i=0; i<count; ++i)
             {
                 I old_id;
-                if(location_to_id_map.Get(new_id,old_id))
+                if(location_to_id_map.Get(i,old_id))
                 {
                     IDRemap remap;
                     remap.old_id=old_id;
-                    remap.new_id=static_cast<I>(new_id);
-                    remap_list[new_id]=remap;
+                    remap.new_id=static_cast<I>(i+1);  // CN: 新ID从1开始 / EN: New ID starts from 1
+                    remap_list[i]=remap;
                 }
             }
 
-            // CN: 重建映射表
-            // EN: Rebuild mapping tables
+            // CN: 重建映射表，新ID从1开始
+            // EN: Rebuild mapping tables, new IDs start from 1
             id_to_location_map.Clear();
             location_to_id_map.Clear();
 
             for(int32 i=0; i<count; ++i)
             {
-                I new_id=static_cast<I>(i);
+                I new_id=static_cast<I>(i+1);  // CN: 新ID从1开始 / EN: New ID starts from 1
                 id_to_location_map.Add(new_id,i);
                 location_to_id_map.Add(i,new_id);
             }
 
-            // CN: 重置 next_id 为当前数据数量
-            // EN: Reset next_id to the current data count
-            next_id=static_cast<I>(count);
+            // CN: 重置 next_id 为当前数据数量+1
+            // EN: Reset next_id to the current data count + 1
+            next_id=static_cast<I>(count+1);
 
             return count;
         }
