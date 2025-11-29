@@ -83,7 +83,9 @@ CMCore is a C++ cross-platform core library providing fundamental data types, IO
 3. **已知Bug待修复 / Known Bug Pending Fix**
    ```
    Issue #5: RefObjectPool index handling (pos>0 bug)
-   状态: 代码中已修复 (使用 Found() 辅助函数)
+   链接: https://github.com/hyzboy/CMCore/issues/5
+   问题: Get/Release 方法中 pos>0 判断错误导致索引0元素无法访问
+   状态: 代码中已修复 (使用 Found() 辅助函数，改为 pos>=0)
    建议: 关闭相关 Issue 并添加回归测试
    ```
 
@@ -207,33 +209,33 @@ tests/
 ```
 
 #### 1.3 完善 README.md
-```markdown
-# CMCore
 
-A cross-platform C++ core library.
+建议 README 内容结构如下:
 
-## Features
+**1. 项目标题和简介**
+- "CMCore - A cross-platform C++ core library"
+
+**2. 特性列表**
 - Modern C++17/20 features
 - Cross-platform support (Windows, Linux, macOS, etc.)
 - Rich type system and containers
 - IO streaming framework
 - Thread management
 
-## Building
-\`\`\`bash
+**3. 构建说明**
+```bash
 mkdir build && cd build
 cmake ..
 cmake --build .
-\`\`\`
+```
 
-## Usage
-\`\`\`cpp
+**4. 使用示例**
+```cpp
 #include <hgl/type/String.h>
 #include <hgl/log/Log.h>
 
 using namespace hgl;
 // ...
-\`\`\`
 ```
 
 ### 第二阶段: 代码质量 / Phase 2: Code Quality (2-4 周)
