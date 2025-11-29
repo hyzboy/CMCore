@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_INPUT_STREAM_INCLUDE
-#define HGL_IO_INPUT_STREAM_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/DataType.h>
 #include<hgl/io/SeekAccess.h>
@@ -39,4 +38,3 @@ namespace hgl
         void *LoadFromInputStream(int64 *size,InputStream *is);                                     ///<从输入流中加载所有的数据到一块内存
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_INPUT_STREAM_INCLUDE

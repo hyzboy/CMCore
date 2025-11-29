@@ -1,5 +1,4 @@
-﻿#ifndef HGL_SEMAPHORE_INCLUDE
-#define HGL_SEMAPHORE_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 #include<hgl/log/Log.h>
@@ -30,4 +29,3 @@ namespace hgl
         virtual bool Acquire(double time);                                                          ///<等待并获取一个信号
     };//class Semaphore
 }//namespace hgl
-#endif//HGL_SEMAPHORE_INCLUDE

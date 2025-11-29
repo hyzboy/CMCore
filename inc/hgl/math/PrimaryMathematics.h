@@ -1,5 +1,4 @@
-﻿#ifndef HGL_Primary_Mathematics_INCLUDE
-#define HGL_Primary_Mathematics_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 namespace hgl
@@ -50,4 +49,3 @@ namespace hgl
         return value;
     }
 }//namespace hgl
-#endif//HGL_Primary_Mathematics_INCLUDE

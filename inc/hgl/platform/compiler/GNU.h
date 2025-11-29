@@ -1,5 +1,4 @@
-﻿#ifndef HGL_COMPILER_GNU_INCLUDE
-#define HGL_COMPILER_GNU_INCLUDE
+﻿#pragma once
 //--------------------------------------------------------------------------------------------------
 #define HGL_COMPILER_NAME       OS_TEXT("GNU C/C++")
 #define HGL_LIB_COMPILER_NAME   OS_TEXT("GCC")
@@ -102,4 +101,3 @@
 #include<hgl/platform/compiler/DataTypeTiny.h>
 #include<hgl/platform/compiler/Property.h>
 //--------------------------------------------------------------------------------------------------
-#endif//HGL_COMPILER_GNU_INCLUDE

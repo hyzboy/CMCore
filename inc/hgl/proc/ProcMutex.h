@@ -1,5 +1,4 @@
-﻿#ifndef HGL_PROCESS_MUTEX_INCLUDE
-#define HGL_PROCESS_MUTEX_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 
@@ -26,4 +25,3 @@ namespace hgl
         bool Unlock();                                                                              ///<解锁
     };//class ProcMutex
 }//namespace hgl
-#endif//HGL_PROCESS_MUTEX_INCLUDE

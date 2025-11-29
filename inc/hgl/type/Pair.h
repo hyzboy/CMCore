@@ -1,5 +1,4 @@
-﻿#ifndef HGL_TYPE_PAIR_INCLUDE
-#define HGL_TYPE_PAIR_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 #include<hgl/Comparator.h>
@@ -79,4 +78,3 @@ namespace hgl
         }
     };//template<typename L,typename R> struct Pair
 }//namespace hgl
-#endif//HGL_TYPE_PAIR_INCLUDE

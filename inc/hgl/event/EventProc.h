@@ -1,5 +1,4 @@
-﻿#ifndef HGL_EVENT_PROC_INCLUDE
-#define HGL_EVENT_PROC_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/Queue.h>
 
@@ -71,4 +70,3 @@ namespace hgl
         return count;
     }
 }//namespace hgl
-#endif//HGL_EVENT_PROC_INCLUDE

@@ -1,5 +1,4 @@
-﻿#ifndef HGL_GAMMA_INCLUDE
-#define HGL_GAMMA_INCLUDE
+﻿#pragma once
 
 #include<hgl/math/Math.h>
 
@@ -115,4 +114,3 @@ namespace hgl
         b= 0.0557f*x-0.2040f*y+1.0570f*z;
     }
 }//namespace hgl
-#endif//HGL_GAMMA_INCLUDE

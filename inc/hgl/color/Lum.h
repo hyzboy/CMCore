@@ -1,5 +1,4 @@
-﻿#ifndef HGL_COLOR_LUM_INCLUDE
-#define HGL_COLOR_LUM_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 
@@ -25,4 +24,3 @@ namespace hgl
         return T(0.2627f*r+0.6780f*g+0.0593f*b);
     }
 }//namespace hgl
-#endif//HGL_COLOR_LUM_INCLUDE

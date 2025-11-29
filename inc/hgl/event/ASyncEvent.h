@@ -1,5 +1,4 @@
-﻿#ifndef HGL_EVENT_ASYNC_INCLUDE
-#define HGL_EVENT_ASYNC_INCLUDE
+﻿#pragma once
 
 #include<hgl/event/EventProc.h>
 #include<hgl/thread/SwapData.h>
@@ -95,4 +94,3 @@ namespace hgl
     et->Start();
     */
 }//namespace hgl
-#endif//HGL_EVENT_ASYNC_INCLUDE

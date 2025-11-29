@@ -1,5 +1,4 @@
-﻿#ifndef HGL_OS_ANDROID_INCLUDE
-#define HGL_OS_ANDROID_INCLUDE
+﻿#pragma once
 
 #include<limits.h>
 #include<hgl/platform/os/CharType.h>
@@ -76,4 +75,3 @@ void InitAndroidSupport(JNIEnv *env,jobject obj);           //JNI混编模式初
 struct ANativeActivity;
 void InitAndroidSupport(struct ANativeActivity *app);           //NativeActivity模式初始化Android支持
 //--------------------------------------------------------------------------------------------------
-#endif//HGL_OS_ANDROID_INCLUDE

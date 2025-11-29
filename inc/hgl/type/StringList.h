@@ -1,5 +1,4 @@
-﻿#ifndef HGL_STRINGLIST_INCLUDE
-#define HGL_STRINGLIST_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/String.h>
 #include<hgl/io/DataInputStream.h>
@@ -426,4 +425,3 @@ namespace hgl
 
 #undef DEFINE_STRING_LIST
 }//namespace hgl
-#endif//HGL_STRINGLIST_INCLUDE

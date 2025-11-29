@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_SEEK_ACCESS_INCLUDE
-#define HGL_IO_SEEK_ACCESS_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 #include<hgl/io/SeekOrigin.h>
@@ -27,4 +26,3 @@ namespace hgl
         };//class SeekAccess
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_SEEK_ACCESS_INCLUDE

@@ -1,5 +1,4 @@
-﻿#ifndef HGL_MATH_BVEC_INCLUDE
-#define HGL_MATH_BVEC_INCLUDE
+﻿#pragma once
 
 #include<hgl/TypeFunc.h>
 namespace hgl
@@ -88,4 +87,3 @@ namespace hgl
     #undef BVEC_BEGIN
     #undef BVEC_END
 }//namespace hgl
-#endif//HGL_MATH_BVEC_INCLUDE

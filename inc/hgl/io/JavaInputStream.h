@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_JAVA_INPUT_STREAM_INCLUDE
-#define HGL_IO_JAVA_INPUT_STREAM_INCLUDE
+﻿#pragma once
 
 #include<hgl/io/DataInputStream.h>
 namespace hgl
@@ -68,4 +67,3 @@ namespace hgl
         };//class JavaInputStream
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_JAVA_INPUT_STREAM_INCLUDE

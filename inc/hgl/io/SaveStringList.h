@@ -1,5 +1,4 @@
-﻿#ifndef HGL_SAVE_STRING_LIST_INCLUDE
-#define HGL_SAVE_STRING_LIST_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/StringList.h>
 
@@ -70,4 +69,3 @@ namespace hgl
         return WriteStringList<T,ByteOrderMask::UTF16BE>(dos,sl);
     }
 }//namespace hgl
-#endif//HGL_SAVE_STRING_LIST_INCLUDE

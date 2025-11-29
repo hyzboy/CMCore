@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_JAVA_OUTPUT_STREAM_INCLUDE
-#define HGL_IO_JAVA_OUTPUT_STREAM_INCLUDE
+﻿#pragma once
 
 #include<hgl/io/DataOutputStream.h>
 namespace hgl
@@ -59,4 +58,3 @@ namespace hgl
         };//class JavaOutputStream
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_JAVA_OUTPUT_STREAM_INCLUDE

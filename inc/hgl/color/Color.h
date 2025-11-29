@@ -1,5 +1,4 @@
-﻿#ifndef HGL_COLOR_TABLE_INCLUDE
-#define HGL_COLOR_TABLE_INCLUDE
+﻿#pragma once
 
 #include<hgl/TypeFunc.h>
 #include<hgl/color/Color4f.h>
@@ -292,4 +291,3 @@ namespace hgl
      */
     const Color3f GetSpectralColor(const double l);
 }//namespace hgl
-#endif//HGL_COLOR_TABLE_INCLUDE

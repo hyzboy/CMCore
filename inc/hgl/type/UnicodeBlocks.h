@@ -1,5 +1,4 @@
-﻿#ifndef HGL_UNICODE_BLOCKS_INCLUDE
-#define HGL_UNICODE_BLOCKS_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/DataType.h>
 
@@ -342,4 +341,3 @@ namespace hgl
     bool isEmoji        (const u32char ch);     ///判断当前字符是否是表情符号    
     bool isPunctuation  (const u32char ch);     ///判断当前字符是否是标点符号
 }//namespace hgl
-#endif//HGL_UNICODE_BLOCKS_INCLUDE

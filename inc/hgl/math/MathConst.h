@@ -1,5 +1,4 @@
-﻿#ifndef HGL_MATH_CONST_INCLUDE
-#define HGL_MATH_CONST_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/DataType.h>
 #include<limits>
@@ -133,4 +132,3 @@ namespace hgl
         return(x_radius*y_radius*z_radius*(HGL_PI*4.0f))/3.0f;
     }
 }//namespace hgl
-#endif//HGL_MATH_CONST_INCLUDE

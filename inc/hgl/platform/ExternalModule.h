@@ -1,5 +1,4 @@
-﻿#ifndef HGL_EXTERNAL_MODULE_INCLUDE
-#define HGL_EXTERNAL_MODULE_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/DataType.h>
 #include<hgl/log/Log.h>
@@ -38,4 +37,3 @@ namespace hgl
 
     ExternalModule *LoadExternalModule(const os_char *);                                            ///<加载一个外部模块
 }//namespace hgl
-#endif//HGL_EXTERNAL_MODULE_INCLUDE

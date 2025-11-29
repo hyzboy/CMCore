@@ -1,5 +1,4 @@
-﻿#ifndef HGL_COMPILER_INTEL_INCLUDE
-#define HGL_COMPILER_INTEL_INCLUDE
+﻿#pragma once
 //--------------------------------------------------------------------------------------------------
 #define HGL_COMPILER_NAME   u"Intel C/C++"
 //--------------------------------------------------------------------------------------------------
@@ -40,4 +39,3 @@
 #elif
     #define HGL_LIB_END     ".a"
 #endif//HGL_OS == HGL_OS_Windows
-#endif//HGL_COMPILER_INTEL_INCLUDE

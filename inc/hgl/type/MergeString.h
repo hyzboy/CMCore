@@ -1,5 +1,4 @@
-﻿#ifndef HGL_MERGE_STRING_INCLUDE
-#define HGL_MERGE_STRING_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/StringList.h>
 namespace hgl
@@ -44,4 +43,3 @@ namespace hgl
         return fullname;
     }
 }//namespace hgl
-#endif//HGL_MERGE_STRING_INCLUDE

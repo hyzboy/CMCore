@@ -1,5 +1,4 @@
-﻿#ifndef HGL_EXTERNAL_PLUG_IN_INCLUDE
-#define HGL_EXTERNAL_PLUG_IN_INCLUDE
+﻿#pragma once
 
 #include<hgl/plugin/PlugIn.h>
 #include<hgl/platform/ExternalModule.h>
@@ -46,4 +45,3 @@ namespace hgl
         virtual bool GetInterface(uint,void *) override;
     };//class ExternalPlugIn:public PlugIn
 }//namespace hgl
-#endif//HGL_EXTERNAL_PLUG_IN_INCLUDE

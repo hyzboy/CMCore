@@ -1,5 +1,4 @@
-﻿#ifndef HGL_OS_LINUX_INCLUDE
-#define HGL_OS_LINUX_INCLUDE
+﻿#pragma once
 
 #include<limits.h>
 #include<hgl/platform/os/CharType.h>
@@ -66,4 +65,3 @@ using ExternalModulePointer     =void *;
 
 #define sprintf_s               snprintf
 //--------------------------------------------------------------------------------------------------
-#endif//HGL_OS_LINUX_INCLUDE

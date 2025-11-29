@@ -1,5 +1,4 @@
-﻿#ifndef HGL_MULTI_PROC_PIPE_INCLUDE
-#define HGL_MULTI_PROC_PIPE_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 
@@ -29,4 +28,3 @@ namespace hgl
     int64 SkipPipe(pipe_ptr, int64 size);
 
 }//namespace hgl
-#endif//HGL_MULTI_PROC_PIPE_INCLUDE

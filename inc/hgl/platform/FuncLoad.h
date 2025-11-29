@@ -1,5 +1,4 @@
-﻿#ifndef HGL_FUNC_LOAD_INCLUDE
-#define HGL_FUNC_LOAD_INCLUDE
+﻿#pragma once
 
 namespace hgl
 {
@@ -28,4 +27,3 @@ namespace hgl
         }
     }
 }//namespace hgl
-#endif//HGL_FUNC_LOAD_INCLUDE

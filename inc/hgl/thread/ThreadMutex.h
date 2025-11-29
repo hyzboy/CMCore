@@ -1,5 +1,4 @@
-﻿#ifndef HGL_THREAD_MUTEX_INCLUDE
-#define HGL_THREAD_MUTEX_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 #include<hgl/Macro.h>
@@ -160,4 +159,3 @@ namespace hgl
         }
     };//class ThreadMutexLock
 }//namespace hgl
-#endif//HGL_THREAD_MUTEX_INCLUDE

@@ -1,5 +1,4 @@
-﻿#ifndef HGL_ALGORITHM_MATH_VECTOR_MATRIX_INCLUDE
-#define HGL_ALGORITHM_MATH_VECTOR_MATRIX_INCLUDE
+﻿#pragma once
 
 #include<hgl/math/Vector.h>
 #include<hgl/TypeFunc.h>
@@ -304,4 +303,3 @@ namespace hgl
     // 函数用于从 glm::mat4 中提取平移、旋转和缩放
     bool DecomposeTransform(const Matrix4f & transform, Vector3f & outTranslation, Quatf & outRotation, Vector3f & outScale);
 }//namespace hgl
-#endif//HGL_ALGORITHM_MATH_VECTOR_MATRIX_INCLUDE

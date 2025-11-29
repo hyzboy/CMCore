@@ -1,5 +1,4 @@
-﻿#ifndef HGL_THREAD_SEM_LOCK_INCLUDE
-#define HGL_THREAD_SEM_LOCK_INCLUDE
+﻿#pragma once
 
 #include<hgl/thread/Semaphore.h>
 #include<hgl/thread/ThreadMutex.h>
@@ -230,4 +229,3 @@ namespace hgl
         }
     };//template<typename T> class SemRWLock
 }//namespace hgl
-#endif//HGL_THREAD_SEM_LOCK_INCLUDE

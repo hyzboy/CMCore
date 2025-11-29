@@ -1,5 +1,4 @@
-﻿#ifndef HGL_THREAD_DATA_POST_INCLUDE
-#define HGL_THREAD_DATA_POST_INCLUDE
+﻿#pragma once
 
 #include<hgl/thread/ThreadMutex.h>
 #include<hgl/thread/Semaphore.h>
@@ -153,4 +152,3 @@ namespace hgl
         }
     };//template<typename T> class SemDataPost:public DataPost<T>
 }//namespace hgl
-#endif//HGL_THREAD_DATA_POST_INCLUDE

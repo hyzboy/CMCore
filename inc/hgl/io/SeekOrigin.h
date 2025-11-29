@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_SEEK_ORIGIN_INCLUDE
-#define HGL_IO_SEEK_ORIGIN_INCLUDE
+﻿#pragma once
 
 namespace hgl
 {
@@ -13,4 +12,3 @@ namespace hgl
         };//enum SeekOrigin
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_SEEK_ORIGIN_INCLUDE

@@ -1,5 +1,4 @@
-﻿#ifndef HGL_MEMORY_ALLOCATOR_INCLUDE
-#define HGL_MEMORY_ALLOCATOR_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/DataType.h>
 namespace hgl
@@ -85,4 +84,3 @@ namespace hgl
         }
     };//class MemoryAllocator:public AbstractMemoryAllocator
 }//namespace hgl
-#endif//HGL_MEMORY_ALLOCATOR_INCLUDE

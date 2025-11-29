@@ -1,5 +1,4 @@
-﻿#ifndef HGL_MATH_PHYSICS_CONST_INCLUDE
-#define HGL_MATH_PHYSICS_CONST_INCLUDE
+﻿#pragma once
 
 namespace hgl
 {
@@ -166,7 +165,3 @@ namespace hgl
         return n * 1.852;
     }
 }//namespace hgl
-#endif//HGL_MATH_PHYSICS_CONST_INCLUDE
-
-
-

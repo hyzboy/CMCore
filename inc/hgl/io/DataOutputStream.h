@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_DATA_OUTPUT_STREAM_INCLUDE
-#define HGL_IO_DATA_OUTPUT_STREAM_INCLUDE
+﻿#pragma once
 
 #include<hgl/io/OutputStream.h>
 #include<hgl/type/String.h>
@@ -233,4 +232,3 @@ namespace hgl
     }//namespace io
 }//namespace hgl
 #include<hgl/io/EndianDataOutputStream.h>
-#endif//HGL_IO_DATA_OUTPUT_STREAM_INCLUDEs

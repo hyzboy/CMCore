@@ -1,5 +1,4 @@
-﻿#ifndef HGL_OS_WIN_INCLUDE
-#define HGL_OS_WIN_INCLUDE
+﻿#pragma once
 
 #include<malloc.h>
 #include<winsock2.h>        //winsock2必须在Windows.h前面，不然会报错
@@ -150,4 +149,3 @@ using cond_var_ptr      =CONDITION_VARIABLE;
 
 using proc_mutex_ptr    =HANDLE;
 //--------------------------------------------------------------------------------------------------
-#endif//HGL_OS_WIN_INCLUDE

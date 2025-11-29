@@ -1,5 +1,4 @@
-﻿#ifndef HGL_OS_MACOS_INCLUDE
-#define HGL_OS_MACOS_INCLUDE
+﻿#pragma once
 
 #include<dirent.h>
 #include<hgl/platform/os/CharType.h>
@@ -67,4 +66,3 @@ using ExternalModulePointer=void *;
 #define hgl_dirent64            dirent
 #define hgl_readdir64           readdir
 //--------------------------------------------------------------------------------------------------
-#endif//HGL_OS_MACOS_INCLUDE

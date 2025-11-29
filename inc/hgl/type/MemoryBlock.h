@@ -1,5 +1,4 @@
-﻿#ifndef HGL_MEMORY_BLOCK_INCLUDE
-#define HGL_MEMORY_BLOCK_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/MemoryAllocator.h>
 #include<string.h>
@@ -38,4 +37,3 @@ namespace hgl
         virtual         void    Copy    (const uint64 target,const uint64 source,const uint64 size);
     };//class MemoryBlock:public AbstractDataBlock
 }//namespace hgl
-#endif//HGL_MEMORY_BLOCK_INCLUDE

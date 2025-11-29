@@ -1,5 +1,4 @@
-﻿#ifndef HGL_CHAR_TYPE_INCLUDE
-#define HGL_CHAR_TYPE_INCLUDE
+﻿#pragma once
 
 using u32char           =char32_t;
 using u16char           =char16_t;
@@ -16,4 +15,3 @@ using os_char           =char;
 #define os_in           std::cin
 #define os_err          std::cerr
 #define os_log          std::clog
-#endif//HGL_CHAR_TYPE_INCLUDE

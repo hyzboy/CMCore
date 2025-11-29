@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_TEXT_OUTPUT_STREAM_INCLUDE
-#define HGL_IO_TEXT_OUTPUT_STREAM_INCLUDE
+﻿#pragma once
 
 #include<hgl/Endian.h>
 #include<hgl/type/StringList.h>
@@ -181,4 +180,3 @@ namespace hgl
         template<typename T> TextOutputStream *CreateTextOutputStream(OutputStream *os);
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_TEXT_OUTPUT_STREAM_INCLUDE

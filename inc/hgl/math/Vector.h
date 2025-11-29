@@ -1,5 +1,4 @@
-﻿#ifndef HGL_ALGORITHM_MATH_VECTOR_INCLUDE
-#define HGL_ALGORITHM_MATH_VECTOR_INCLUDE
+﻿#pragma once
 
 #ifdef _MSC_VER
 #pragma warning(disable:4244)           // double -> int 精度丢失警告
@@ -449,4 +448,3 @@ namespace hgl
         return std::acos(CalculateRadian(a,b));
     }
 }//namespace hgl
-#endif//HGL_ALGORITHM_MATH_VECTOR_INCLUDE

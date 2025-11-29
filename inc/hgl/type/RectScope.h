@@ -1,5 +1,4 @@
-﻿#ifndef HGL_RECTSCOPE_INCLUDE
-#define HGL_RECTSCOPE_INCLUDE
+﻿#pragma once
 
 #include<hgl/math/Math.h>
 namespace hgl
@@ -184,4 +183,3 @@ namespace hgl
     }
 }//namespace hgl
 #include<hgl/type/RectScope.cpp>
-#endif//HGL_RECTSCOPE_INCLUDE

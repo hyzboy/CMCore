@@ -1,5 +1,4 @@
-﻿#ifndef HGL_HALF_FLOAT_INCLUDE
-#define HGL_HALF_FLOAT_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 #include<hgl/math/Math.h>
@@ -115,4 +114,3 @@ namespace hgl
         }
     }
 }//namespace hgl
-#endif//HGL_HALF_FLOAT_INCLUDE

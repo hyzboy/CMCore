@@ -1,5 +1,4 @@
-﻿#ifndef HGL_PLUGIN_INCLUDE
-#define HGL_PLUGIN_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/String.h>
 namespace hgl
@@ -41,4 +40,3 @@ namespace hgl
         virtual bool GetInterface(uint,void *)=0;
     };//class PlugIn
 }//namespace hgl
-#endif//HGL_PLUGIN_INCLUDE

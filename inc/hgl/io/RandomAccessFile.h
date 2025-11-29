@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_RANDOM_ACCESS_FILE_INCLUDE
-#define HGL_IO_RANDOM_ACCESS_FILE_INCLUDE
+﻿#pragma once
 
 #include<hgl/io/InputStream.h>
 #include<hgl/io/OutputStream.h>
@@ -44,4 +43,3 @@ namespace hgl
         };//class RandomAccessFile
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_RANDOM_ACCESS_FILE_INCLUDE

@@ -1,5 +1,4 @@
-﻿#ifndef HGL_OS_BSD_INCLUDE
-#define HGL_OS_BSD_INCLUDE
+﻿#pragma once
 
 #include<limits.h>
 #include<hgl/platform/os/CharType.h>
@@ -71,4 +70,3 @@ typedef void *                  ExternalModulePointer;
 #define hgl_dirent64            dirent
 #define hgl_readdir64           readdir
 //--------------------------------------------------------------------------------------------------
-#endif//HGL_OS_BSD_INCLUDE

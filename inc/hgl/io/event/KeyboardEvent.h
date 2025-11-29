@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_KEYBOARD_EVENT_INCLUDE
-#define HGL_IO_KEYBOARD_EVENT_INCLUDE
+﻿#pragma once
 
 #include<hgl/io/event/EventDispatcher.h>
 namespace hgl
@@ -279,4 +278,3 @@ namespace hgl
         };//class KeyboardStateEvent
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_KEYBOARD_EVENT_INCLUDE

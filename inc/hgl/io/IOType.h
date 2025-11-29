@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_TYPE_INCLUDE
-#define HGL_IO_TYPE_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 namespace hgl
@@ -31,4 +30,3 @@ namespace hgl
         };//template<typename T> struct io_type
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_TYPE_INCLUDE

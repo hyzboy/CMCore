@@ -1,5 +1,4 @@
-﻿#ifndef HGL_WORKFLOW_INCLUDE
-#define HGL_WORKFLOW_INCLUDE
+﻿#pragma once
 
 #include<hgl/thread/Thread.h>
 #include<hgl/thread/ThreadMutex.h>
@@ -368,4 +367,3 @@ namespace hgl
         };//template<typename WP,typename WT> class WorkGroup
     }//namespace workflow
 }//namespace hgl
-#endif//HGL_WORKFLOW_INCLUDE

@@ -1,5 +1,4 @@
-﻿#ifndef HGL_MULTI_THREAD_CONDITION_VARIABLE_INCLUDE
-#define HGL_MULTI_THREAD_CONDITION_VARIABLE_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 namespace hgl
@@ -29,4 +28,3 @@ namespace hgl
         void Broadcast();                                                                           ///<广播一个信号,让所有等待的线程都解锁
     };//class CondVar
 }//namespace hgl
-#endif//HGL_MULTI_THREAD_CONDITION_VARIABLE_INCLUDE

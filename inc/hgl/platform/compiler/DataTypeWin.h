@@ -1,5 +1,4 @@
-﻿#ifndef HGL_DATATYPE_WINDOWS_INCLUDE
-#define HGL_DATATYPE_WINDOWS_INCLUDE
+﻿#pragma once
 
 namespace hgl
 {
@@ -23,4 +22,3 @@ namespace hgl
         using u8char    =char;
     #endif
 }//namespace hgl
-#endif//HGL_DATATYPE_WINDOWS_INCLUDE

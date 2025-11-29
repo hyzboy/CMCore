@@ -1,5 +1,4 @@
-﻿#ifndef HGL_POSIX_THREAD_INCLUDE
-#define HGL_POSIX_THREAD_INCLUDE
+﻿#pragma once
 
 #include<pthread.h>
 #include<semaphore.h>
@@ -28,4 +27,3 @@ namespace hgl
 
     using proc_mutex_ptr    =sem_t *;
 }//namespace hgl
-#endif//HGL_POSIX_THREAD_INCLUDE

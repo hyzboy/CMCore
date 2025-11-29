@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_ENDIAN_DATA_OUTPUT_STREAM_INCLUDE
-#define HGL_IO_ENDIAN_DATA_OUTPUT_STREAM_INCLUDE
+﻿#pragma once
 
 #include<hgl/io/DataOutputStream.h>
 #include<hgl/Endian.h>
@@ -98,4 +97,3 @@ namespace hgl
 #endif//HGL_ENDIAN == HGL_LITTLE_ENDIAN
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_ENDIAN_DATA_OUTPUT_STREAM_INCLUDE

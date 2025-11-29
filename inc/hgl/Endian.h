@@ -1,5 +1,4 @@
-﻿#ifndef HGL_ENDIAN_INCLUDE
-#define HGL_ENDIAN_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>               // 平台定义
 #include<hgl/TypeFunc.h>
@@ -252,4 +251,3 @@ namespace hgl
 
     using namespace endian;
 }//namespace hgl
-#endif//HGL_ENDIAN_INCLUDE

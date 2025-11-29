@@ -1,4 +1,6 @@
-﻿#include<hgl/filesystem/FileSystem.h>
+﻿#pragma once
+
+#include<hgl/filesystem/FileSystem.h>
 #include<hgl/log/Log.h>
 
 namespace hgl

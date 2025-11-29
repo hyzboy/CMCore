@@ -1,5 +1,4 @@
-﻿#ifndef HGL_PROCESS_INCLUDE
-#define HGL_PROCESS_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/StringList.h>
 namespace hgl
@@ -38,4 +37,3 @@ namespace hgl
         bool RequestTerminate();                                                                    ///<请求子进程终止
     };//class Process
 }//namespace hgl
-#endif//HGL_PROCESS_INCLUDE

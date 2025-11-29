@@ -1,5 +1,4 @@
-﻿#ifndef HGL_PROPERTY_INCLUDE
-#define HGL_PROPERTY_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/compiler/EventFunc.h>
 namespace hgl
@@ -94,4 +93,3 @@ namespace hgl
                                                         cmSetPropertyWrite(name,tp,set);    \
                                                     }
 }//namespace hgl
-#endif//HGL_PROPERTY_INCLUDE

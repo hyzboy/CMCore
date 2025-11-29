@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_FILE_ACCESS_INCLUDE
-#define HGL_IO_FILE_ACCESS_INCLUDE
+﻿#pragma once
 
 #include<hgl/log/Log.h>
 #include<hgl/type/String.h>
@@ -83,4 +82,3 @@ namespace hgl
         };//class FileAccess
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_FILE_ACCESS_INCLUDE

@@ -1,5 +1,4 @@
-﻿#ifndef HGL_THREAD_SWAP_DATA_INCLUDE
-#define HGL_THREAD_SWAP_DATA_INCLUDE
+﻿#pragma once
 
 #include<hgl/thread/ThreadMutex.h>
 #include<hgl/thread/Semaphore.h>
@@ -237,4 +236,3 @@ namespace hgl
      *
      */
 }//namespace hgl
-#endif//HGL_THREAD_SWAP_DATA_INCLUDE

@@ -1,5 +1,4 @@
-﻿#ifndef HGL_RWLOCK_INCLUDE
-#define HGL_RWLOCK_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 namespace hgl
@@ -184,4 +183,3 @@ namespace hgl
         }
     };//class WriteLock
 }//namespace hgl
-#endif//HGL_RWLOCK_INCLUDE

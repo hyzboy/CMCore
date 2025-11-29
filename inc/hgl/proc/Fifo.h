@@ -1,5 +1,4 @@
-﻿#ifndef HGL_MULTI_PROC_FIFO_INCLUDE
-#define HGL_MULTI_PROC_FIFO_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 
@@ -33,5 +32,3 @@ namespace hgl
     // 移除命名 FIFO（POSIX 调用 unlink，Windows 可为无操作或关闭服务器）
     void RemoveFifo(const char *name);
 }
-
-#endif//HGL_MULTI_PROC_FIFO_INCLUDE

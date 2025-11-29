@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_FILE_OUTPUT_STREAM_INCLUDE
-#define HGL_IO_FILE_OUTPUT_STREAM_INCLUDE
+﻿#pragma once
 
 #include<hgl/io/OutputStream.h>
 #include<hgl/io/FileAccess.h>
@@ -103,4 +102,3 @@ namespace hgl
         }
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_FILE_OUTPUT_STREAM_INCLUDE

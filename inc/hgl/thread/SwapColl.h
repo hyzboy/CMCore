@@ -1,5 +1,4 @@
-﻿#ifndef HGL_THREAD_SWAP_LIST_INCLUDE
-#define HGL_THREAD_SWAP_LIST_INCLUDE
+﻿#pragma once
 
 #include<hgl/thread/ThreadMutex.h>
 #include<hgl/thread/Semaphore.h>
@@ -153,4 +152,3 @@ namespace hgl
     template<typename T> using SemSwapList=SemSwapColl<T,ArrayList>;     ///<安全信号交换列表
     template<typename T> using SemSwapSet=SemSwapColl<T,Set>;       ///<安全信号交换集合
 }//namespace hgl
-#endif//HGL_THREAD_SWAP_LIST_INCLUDE

@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_OUTPUT_STREAM_INCLUDE
-#define HGL_IO_OUTPUT_STREAM_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/DataType.h>
 #include<hgl/io/SeekAccess.h>
@@ -33,4 +32,3 @@ namespace hgl
         };//class OutputStream
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_OUTPUT_STREAM_INCLUDE

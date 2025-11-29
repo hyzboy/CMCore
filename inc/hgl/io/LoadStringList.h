@@ -1,5 +1,4 @@
-﻿#ifndef HGL_LOAD_STRING_LIST_INCLUDE
-#define HGL_LOAD_STRING_LIST_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/StringList.h>
 
@@ -75,4 +74,3 @@ namespace hgl
     int LoadStringListFromTextFile( U8StringList  &sl,const OSString &filename,       const CharSet &cs=UTF8CharSet);                ///<加载一个原始文本文件到U8StringList
     int LoadStringListFromTextFile( U16StringList &sl,const OSString &filename,       const CharSet &cs=UTF8CharSet);                ///<加载一个原始文本文件到U16StringList
 }//namespace hgl
-#endif//HGL_LOAD_STRING_LIST_INCLUDE

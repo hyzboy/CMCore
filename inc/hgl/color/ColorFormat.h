@@ -1,5 +1,4 @@
-﻿#ifndef HGL_COLOR_FORMAT_INCLUDE
-#define HGL_COLOR_FORMAT_INCLUDE
+﻿#pragma once
 
 #include<hgl/math/HalfFloat.h>
 
@@ -185,4 +184,3 @@ namespace hgl
         }
     }
 }//namespace hgl
-#endif//HGL_COLOR_FORMAT_INCLUDE

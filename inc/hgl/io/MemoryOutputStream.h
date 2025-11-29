@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_MEMORY_OUTPUT_STREAM_INCLUDE
-#define HGL_IO_MEMORY_OUTPUT_STREAM_INCLUDE
+﻿#pragma once
 
 #include<hgl/io/OutputStream.h>
 namespace hgl
@@ -232,4 +231,3 @@ namespace hgl
         };//class MemoryOutputStream
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_MEMORY_OUTPUT_STREAM_INCLUDE

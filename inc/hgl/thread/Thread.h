@@ -1,5 +1,4 @@
-﻿#ifndef HGL_THREAD_INCLUDE
-#define HGL_THREAD_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/DataType.h>
 #include<hgl/type/SortedSet.h>
@@ -227,4 +226,3 @@ namespace hgl
         }
     };//class MultiThreadManage
 }//namespace hgl
-#endif//HGL_THREAD_INCLUDE

@@ -1,5 +1,4 @@
-﻿#ifndef HGL_SPLIT_STRING_INCLUDE
-#define HGL_SPLIT_STRING_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/StringList.h>
 namespace hgl
@@ -540,4 +539,3 @@ namespace hgl
         return splite_string_to_stringlist<T,String<T>,StringList<T>>(str,str_len,sc,result_list);
     }
 }//namespace hgl
-#endif//HGL_SPLIT_STRING_INCLUDE

@@ -1,5 +1,4 @@
-﻿#ifndef HGL_DATA_TYPE_TINY_INCLUDE
-#define HGL_DATA_TYPE_TINY_INCLUDE
+﻿#pragma once
 
 namespace hgl
 {
@@ -27,4 +26,3 @@ namespace hgl
     using uint      = unsigned int;     ///< 无符号整型
     using ulong     = unsigned long;    ///< 无符号长整型
 }//namespace hgl
-#endif//HGL_DATA_TYPE_TINY_INCLUDE

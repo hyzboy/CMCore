@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_CONST_BUFFER_READER_INCLUDE
-#define HGL_IO_CONST_BUFFER_READER_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/String.h>
 #include<hgl/io/SeekOrigin.h>
@@ -146,4 +145,3 @@ namespace hgl
         };//class ConstBufferReader
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_CONST_BUFFER_READER_INCLUDE

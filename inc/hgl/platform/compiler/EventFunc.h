@@ -1,5 +1,4 @@
-﻿#ifndef HGL_EVENT_FUNC_INCLUDE
-#define HGL_EVENT_FUNC_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/_Object.h>
 #include<string.h>
@@ -247,4 +246,3 @@ namespace hgl
 
     */
 }//namespace hgl
-#endif//HGL_EVENT_FUNC_INCLUDE

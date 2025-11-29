@@ -1,5 +1,4 @@
-﻿#ifndef HGL_THREAD_RING_BUFFER_INCLUDE
-#define HGL_THREAD_RING_BUFFER_INCLUDE
+﻿#pragma once
 
 #include<hgl/thread/ThreadMutex.h>
 #include<hgl/io/InputStream.h>
@@ -344,4 +343,3 @@ namespace hgl
         }
     };//class RingBufferSafeWrite
 }//namespace hgl
-#endif//HGL_THREAD_RING_BUFFER_INCLUDE

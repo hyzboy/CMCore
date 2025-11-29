@@ -1,5 +1,4 @@
-﻿#ifndef HGL_LOAD_STRING_INCLUDE
-#define HGL_LOAD_STRING_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/String.h>
 #include<hgl/Charset.h>
@@ -15,4 +14,3 @@ namespace hgl
     int LoadStringFromTextFile(std::string &str,const OSString &filename,const CharSet &cs=UTF8CharSet);                             ///<加载一个原始文本文件到U8String
     int LoadStringFromTextFile(std::wstring &str,const OSString &filename,const CharSet &cs=UTF8CharSet);                            ///<加载一个原始文本文件到U16String
 }//namespace hgl
-#endif//HGL_LOAD_STRING_INCLUDE

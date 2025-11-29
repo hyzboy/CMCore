@@ -1,5 +1,4 @@
-﻿#ifndef HGL_BINARY_CONST_INCLUDE
-#define HGL_BINARY_CONST_INCLUDE
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 namespace hgl
@@ -311,4 +310,3 @@ namespace hgl
     constexpr uint8 HGL_B11111110=254;
     constexpr uint8 HGL_B11111111=255;
 }//namespace hgl
-#endif//HGL_BINARY_CONST_INCLUDE

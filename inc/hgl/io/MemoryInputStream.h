@@ -1,5 +1,4 @@
-﻿#ifndef HGL_IO_MEMORY_INPUT_STREAM_INCLUDE
-#define HGL_IO_MEMORY_INPUT_STREAM_INCLUDE
+﻿#pragma once
 
 #include<hgl/io/InputStream.h>
 namespace hgl
@@ -168,4 +167,3 @@ namespace hgl
         };//class MemoryInputStream
     }//namespace io
 }//namespace hgl
-#endif//HGL_IO_MEMORY_INPUT_STREAM_INCLUDE

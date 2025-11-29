@@ -1,5 +1,4 @@
-﻿#ifndef HGL_COLOR_4_UINT8_INCLUDE
-#define HGL_COLOR_4_UINT8_INCLUDE
+﻿#pragma once
 
 #include<hgl/color/Color3ub.h>
 namespace hgl
@@ -107,4 +106,3 @@ namespace hgl
 
     #define DEF_RGBA_U8_TO_COLOR4UB(r,g,b,a)     Color4ub(r,g,b,a)
 }//namespace hgl
-#endif//HGL_COLOR_4_UINT8_INCLUDE

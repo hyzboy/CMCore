@@ -1,5 +1,4 @@
-﻿#ifndef HGL_TYPE_LRU_CACHE_INCLUDE
-#define HGL_TYPE_LRU_CACHE_INCLUDE
+﻿#pragma once
 
 #include<hgl/type/ArrayList.h>
 namespace hgl
@@ -75,4 +74,3 @@ namespace hgl
     };//template<typename F,typename T> class LRUCache
 }//namespace hgl
 #include<hgl/type/LRUCache.cpp>
-#endif//HGL_TYPE_LRU_CACHE_INCLUDE
