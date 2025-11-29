@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/type/DataType.h>
 #include<hgl/type/String.h>

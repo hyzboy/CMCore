@@ -1,4 +1,4 @@
-#ifndef HGL_WORKFLOW_INCLUDE
+﻿#ifndef HGL_WORKFLOW_INCLUDE
 #define HGL_WORKFLOW_INCLUDE
 
 #include<hgl/thread/Thread.h>

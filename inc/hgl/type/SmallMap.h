@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <hgl/type/KeyValue.h>
 #include <hgl/type/ArrayList.h>

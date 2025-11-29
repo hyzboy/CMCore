@@ -1,4 +1,4 @@
-#ifndef HGL_THREAD_DATA_POST_INCLUDE
+﻿#ifndef HGL_THREAD_DATA_POST_INCLUDE
 #define HGL_THREAD_DATA_POST_INCLUDE
 
 #include<hgl/thread/ThreadMutex.h>

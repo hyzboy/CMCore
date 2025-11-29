@@ -1,4 +1,4 @@
-#ifndef HGL_MATH_BVEC_INCLUDE
+﻿#ifndef HGL_MATH_BVEC_INCLUDE
 #define HGL_MATH_BVEC_INCLUDE
 
 #include<hgl/TypeFunc.h>

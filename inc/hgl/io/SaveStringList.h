@@ -1,4 +1,4 @@
-#ifndef HGL_SAVE_STRING_LIST_INCLUDE
+﻿#ifndef HGL_SAVE_STRING_LIST_INCLUDE
 #define HGL_SAVE_STRING_LIST_INCLUDE
 
 #include<hgl/type/StringList.h>

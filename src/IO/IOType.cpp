@@ -1,4 +1,4 @@
-#include<hgl/io/IOType.h>
+﻿#include<hgl/io/IOType.h>
 #include<hgl/io/DataInputStream.h>
 #include<hgl/io/DataOutputStream.h>
 namespace hgl

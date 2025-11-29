@@ -1,4 +1,4 @@
-#include<hgl/io/FifoStream.h>
+﻿#include<hgl/io/FifoStream.h>
 #include<hgl/type/String.h>
 #include<string>
 

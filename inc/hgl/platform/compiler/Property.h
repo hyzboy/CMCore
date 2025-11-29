@@ -1,4 +1,4 @@
-#ifndef HGL_PROPERTY_INCLUDE
+﻿#ifndef HGL_PROPERTY_INCLUDE
 #define HGL_PROPERTY_INCLUDE
 
 #include<hgl/platform/compiler/EventFunc.h>

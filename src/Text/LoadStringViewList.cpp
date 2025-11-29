@@ -1,4 +1,4 @@
-#include<hgl/type/StringViewList.h>
+﻿#include<hgl/type/StringViewList.h>
 #include<hgl/io/LoadString.h>
 #include<hgl/filesystem/FileSystem.h>
 

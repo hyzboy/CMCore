@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/io/InputStream.h>
 #include<hgl/io/OutputStream.h>

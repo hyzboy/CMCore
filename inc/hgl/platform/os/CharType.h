@@ -1,4 +1,4 @@
-#ifndef HGL_CHAR_TYPE_INCLUDE
+﻿#ifndef HGL_CHAR_TYPE_INCLUDE
 #define HGL_CHAR_TYPE_INCLUDE
 
 using u32char           =char32_t;

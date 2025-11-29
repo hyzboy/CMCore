@@ -1,4 +1,4 @@
-#ifndef HGL_COLOR_FORMAT_INCLUDE
+﻿#ifndef HGL_COLOR_FORMAT_INCLUDE
 #define HGL_COLOR_FORMAT_INCLUDE
 
 #include<hgl/math/HalfFloat.h>

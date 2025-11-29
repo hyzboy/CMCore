@@ -1,4 +1,4 @@
-#include<hgl/log/Log.h>
+﻿#include<hgl/log/Log.h>
 #include<hgl/log/LogMessage.h>
 #include<hgl/Charset.h>
 #include<hgl/type/StdString.h>

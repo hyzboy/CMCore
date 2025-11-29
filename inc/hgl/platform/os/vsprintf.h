@@ -1,4 +1,4 @@
-#ifndef HGL_VSPRINTF_INCLUDE
+﻿#ifndef HGL_VSPRINTF_INCLUDE
 #define HGL_VSPRINTF_INCLUDE
 
 #include<stdarg.h>

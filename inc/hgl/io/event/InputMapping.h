@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/type/IDName.h>
 #include<hgl/io/event/KeyboardEvent.h>

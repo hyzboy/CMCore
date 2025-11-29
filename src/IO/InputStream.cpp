@@ -1,4 +1,4 @@
-#include<hgl/io/InputStream.h>
+﻿#include<hgl/io/InputStream.h>
 
 namespace hgl
 {

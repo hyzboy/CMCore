@@ -1,4 +1,4 @@
-#ifndef HGL_DATATYPE_GNU_INCLUDE
+﻿#ifndef HGL_DATATYPE_GNU_INCLUDE
 #define HGL_DATATYPE_GNU_INCLUDE
 
 namespace hgl

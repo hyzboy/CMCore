@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/type/DataArray.h>
 #include<hgl/type/Stack.h>

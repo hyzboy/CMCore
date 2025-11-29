@@ -1,4 +1,4 @@
-#ifndef HGL_THREAD_SWAP_LIST_INCLUDE
+﻿#ifndef HGL_THREAD_SWAP_LIST_INCLUDE
 #define HGL_THREAD_SWAP_LIST_INCLUDE
 
 #include<hgl/thread/ThreadMutex.h>

@@ -1,4 +1,4 @@
-#ifndef HGL_IO_TYPE_INCLUDE
+﻿#ifndef HGL_IO_TYPE_INCLUDE
 #define HGL_IO_TYPE_INCLUDE
 
 #include<hgl/platform/Platform.h>

@@ -1,4 +1,4 @@
-/**
+﻿/**
 * @file ActiveObjectManager.h
 * @brief CN:活跃对象管理器模板类，支持对象的活跃/闲置状态切换和引用计数。\nEN:Active object manager template class, supports active/idle state switching and reference counting.
 */

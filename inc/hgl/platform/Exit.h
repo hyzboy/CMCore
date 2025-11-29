@@ -1,4 +1,4 @@
-#ifndef HGL_EXIT_INCLUDE
+﻿#ifndef HGL_EXIT_INCLUDE
 #define HGL_EXIT_INCLUDE
 
 namespace hgl

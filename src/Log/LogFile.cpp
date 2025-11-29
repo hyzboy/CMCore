@@ -1,4 +1,4 @@
-#include<hgl/log/Logger.h>
+﻿#include<hgl/log/Logger.h>
 #include<hgl/log/LogMessage.h>
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/io/FileOutputStream.h>

@@ -1,4 +1,4 @@
-#ifndef HGL_COMPILER_LLVM_CLANG_INCLUDE
+﻿#ifndef HGL_COMPILER_LLVM_CLANG_INCLUDE
 #define HGL_COMPILER_LLVM_CLANG_INCLUDE
 //--------------------------------------------------------------------------------------------------
 #define HGL_COMPILER_NAME       OS_TEXT("LLVM Clang")

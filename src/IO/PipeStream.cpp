@@ -1,4 +1,4 @@
-#include<hgl/io/PipeStream.h>
+﻿#include<hgl/io/PipeStream.h>
 
 namespace hgl::io
 {

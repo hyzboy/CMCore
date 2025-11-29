@@ -1,4 +1,4 @@
-#ifndef HGL_EVENT_ASYNC_INCLUDE
+﻿#ifndef HGL_EVENT_ASYNC_INCLUDE
 #define HGL_EVENT_ASYNC_INCLUDE
 
 #include<hgl/event/EventProc.h>

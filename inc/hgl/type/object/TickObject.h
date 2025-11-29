@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include<hgl/type/object/Object.h>
 
 namespace hgl

@@ -1,4 +1,4 @@
-#include<hgl/type/TickObject.h>
+﻿#include<hgl/type/TickObject.h>
 
 namespace hgl
 {

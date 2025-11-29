@@ -1,4 +1,4 @@
-#ifndef HGL_PROCESS_MUTEX_INCLUDE
+﻿#ifndef HGL_PROCESS_MUTEX_INCLUDE
 #define HGL_PROCESS_MUTEX_INCLUDE
 
 #include<hgl/platform/Platform.h>

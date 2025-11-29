@@ -1,4 +1,4 @@
-#ifndef HGL_COMPILER_INTEL_INCLUDE
+﻿#ifndef HGL_COMPILER_INTEL_INCLUDE
 #define HGL_COMPILER_INTEL_INCLUDE
 //--------------------------------------------------------------------------------------------------
 #define HGL_COMPILER_NAME   u"Intel C/C++"

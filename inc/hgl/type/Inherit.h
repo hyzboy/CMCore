@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include<hgl/type/Smart.h>
 #include<hgl/type/_Object.h>
 

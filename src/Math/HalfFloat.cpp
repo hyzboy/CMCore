@@ -1,4 +1,4 @@
-#include<hgl/math/HalfFloat.h>
+﻿#include<hgl/math/HalfFloat.h>
 
 namespace hgl
 {

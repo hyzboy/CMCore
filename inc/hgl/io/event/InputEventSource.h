@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/TypeFunc.h>
 namespace hgl::io

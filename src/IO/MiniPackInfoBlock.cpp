@@ -1,4 +1,4 @@
-#include<hgl/io/MiniPack.h>
+﻿#include<hgl/io/MiniPack.h>
 #include"MiniPackInfoBlock.h"
 #include<hgl/log/Log.h>
 

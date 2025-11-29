@@ -1,4 +1,4 @@
-#ifndef HGL_COLOR_LUM_INCLUDE
+﻿#ifndef HGL_COLOR_LUM_INCLUDE
 #define HGL_COLOR_LUM_INCLUDE
 
 #include<hgl/platform/Platform.h>

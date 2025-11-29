@@ -1,4 +1,4 @@
-#ifndef HGL_COLOR_YCbCr_INCLUDE
+﻿#ifndef HGL_COLOR_YCbCr_INCLUDE
 #define HGL_COLOR_YCbCr_INCLUDE
 
 #include<hgl/math/Math.h>
