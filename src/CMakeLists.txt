@@ -34,7 +34,7 @@ SOURCE_GROUP("DataType\\IDName" FILES ${TYPE_IDNAME_HEADER_FILES} ${TYPE_IDNAME_
 SET(TYPE_COLLECTION_SOURCE  ${TYPE_INCLUDE_PATH}/Collection.h
                             ${TYPE_INCLUDE_PATH}/ElementCollection.h
                             Type/Collection.cpp)
-                            
+
 SOURCE_GROUP("DataType\\Collection" FILES ${TYPE_COLLECTION_SOURCE})
 
 SET(TYPE_DATA_CHAIN_SOURCE  ${TYPE_INCLUDE_PATH}/DataChain.h
@@ -81,6 +81,8 @@ SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
                         ${MATH_INCLUDE_PATH}/PrimaryMathematics.h
                         ${MATH_INCLUDE_PATH}/PhysicsConst.h
                         ${MATH_INCLUDE_PATH}/HalfFloat.h
+                        ${MATH_INCLUDE_PATH}/FloatControl.h
+                        ${MATH_INCLUDE_PATH}/FloatValidation.h
                         ${MATH_INCLUDE_PATH}/LerpType.h
                         ${MATH_INCLUDE_PATH}/Lerp2D.h
                         ${MATH_INCLUDE_PATH}/Lerp3D.h

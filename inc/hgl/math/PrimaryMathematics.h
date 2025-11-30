@@ -1,6 +1,7 @@
 ﻿#pragma once
 
-#include<hgl/platform/Platform.h>
+#include<hgl/type/DataType.h>
+
 namespace hgl
 {
     /**
@@ -21,7 +22,7 @@ namespace hgl
     }
 
     template<typename T,typename T2>
-    inline constexpr T Clamp(const T &value,const T2 &min_value,const T2 &max_value)
+    constexpr T Clamp(const T &value,const T2 &min_value,const T2 &max_value)
     {
         if(value<min_value)return min_value;
         if(value>max_value)return max_value;
@@ -30,19 +31,19 @@ namespace hgl
     }
 
     template<typename T>
-    inline constexpr T Clamp(const T &value)
+    constexpr T Clamp(const T &value)
     {
         return Clamp<T>(value,0,1);
     }
 
-    inline constexpr uint8 ClampU8(const int value)
+    constexpr uint8 ClampU8(const int value)
     {
         if(value<0)return 0;
         if(value>0xFF)return 0xFF;
         return static_cast<uint8>(value);
     }
 
-    inline constexpr uint16 ClampU16(const int value)
+    constexpr uint16 ClampU16(const int value)
     {
         if(value<0)return 0;
         if(value>0xFFFF)return 0xFFFF;
