@@ -55,25 +55,25 @@ namespace hgl
     }
 
     template<typename T>
-    inline constexpr T RGB2Cb(const T &r, const T &g, const T &b)
+    constexpr T RGB2Cb(const T &r, const T &g, const T &b)
     {
         return YCBCR_OFFSET-YCBCR_CB_R*r-YCBCR_CB_G*g+YCBCR_CB_B*b;
     }
     
     template<>
-    inline constexpr uint8 RGB2Cb(const uint8 &r, const uint8 &g, const uint8 &b)
+    constexpr uint8 RGB2Cb(const uint8 &r, const uint8 &g, const uint8 &b)
     {
         return uint8(Clamp(YCBCR_OFFSET-YCBCR_CB_R*r-YCBCR_CB_G*g+YCBCR_CB_B*b));
     }
     
     template<typename T>
-    inline constexpr T RGB2Cr(const T &r, const T &g, const T &b)
+    constexpr T RGB2Cr(const T &r, const T &g, const T &b)
     {
         return YCBCR_OFFSET+YCBCR_CR_R*r-YCBCR_CR_G*g-YCBCR_CR_B*b;
     }
 
     template<>
-    inline constexpr uint8 RGB2Cr(const uint8 &r, const uint8 &g, const uint8 &b)
+    constexpr uint8 RGB2Cr(const uint8 &r, const uint8 &g, const uint8 &b)
     {
         return uint8(Clamp(YCBCR_OFFSET+YCBCR_CR_R*r-YCBCR_CR_G*g-YCBCR_CR_B*b));
     }

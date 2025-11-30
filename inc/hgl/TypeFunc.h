@@ -61,7 +61,7 @@ namespace hgl
     /**
     * r/g/b/a四个分量的颜色打包成一个32位整数，glsl中可用unpackUnorm4x8函数进行还原
     */
-    inline constexpr uint32 PackRGBA8(const uint8_t r,const uint8_t &g,const uint8_t &b,const uint8_t &a)
+    constexpr uint32 PackRGBA8(const uint8_t r,const uint8_t &g,const uint8_t &b,const uint8_t &a)
     {
         return   static_cast<uint32>(r)      |
                 (static_cast<uint32>(g)<< 8) |
@@ -72,7 +72,7 @@ namespace hgl
     /**
     * r/g/b/a四个分量的颜色打包成一个32位整数，glsl中可用unpackUnorm4x8函数进行还原
     */
-    inline constexpr uint32 PackRGBA8Float(const float r,const float &g,const float &b,const float &a)
+    constexpr uint32 PackRGBA8Float(const float r,const float &g,const float &b,const float &a)
     {
         return   static_cast<uint32>(r*255.0f)      |
                 (static_cast<uint32>(g*255.0f)<< 8) |
@@ -165,7 +165,7 @@ namespace hgl
     }
 
     template<typename T>
-    inline constexpr int GetBitOffset(const T value)
+    constexpr int GetBitOffset(const T value)
     {
         int offset=0;
         T bit=1;
@@ -228,25 +228,25 @@ namespace hgl
     template<typename T> constexpr const T HGL_INTEGER_MIN();
     template<typename T> constexpr const T HGL_UINTEGER_HALF();
 
-    template<> inline constexpr const uint8     HGL_INTEGER_MAX<uint8   >() { return HGL_U8_MAX; }
-    template<> inline constexpr const uint16    HGL_INTEGER_MAX<uint16  >() { return HGL_U16_MAX; }
-    template<> inline constexpr const uint32    HGL_INTEGER_MAX<uint32  >() { return HGL_U32_MAX; }
-    template<> inline constexpr const uint64    HGL_INTEGER_MAX<uint64  >() { return HGL_U64_MAX; }
+    template<> constexpr const uint8     HGL_INTEGER_MAX<uint8   >() { return HGL_U8_MAX; }
+    template<> constexpr const uint16    HGL_INTEGER_MAX<uint16  >() { return HGL_U16_MAX; }
+    template<> constexpr const uint32    HGL_INTEGER_MAX<uint32  >() { return HGL_U32_MAX; }
+    template<> constexpr const uint64    HGL_INTEGER_MAX<uint64  >() { return HGL_U64_MAX; }
 
-    template<> inline constexpr const uint8     HGL_UINTEGER_HALF<uint8 >() { return HGL_U8_MAX >> 1; }
-    template<> inline constexpr const uint16    HGL_UINTEGER_HALF<uint16>() { return HGL_U16_MAX >> 1; }
-    template<> inline constexpr const uint32    HGL_UINTEGER_HALF<uint32>() { return HGL_U32_MAX >> 1; }
-    template<> inline constexpr const uint64    HGL_UINTEGER_HALF<uint64>() { return HGL_U64_MAX >> 1; }
+    template<> constexpr const uint8     HGL_UINTEGER_HALF<uint8 >() { return HGL_U8_MAX >> 1; }
+    template<> constexpr const uint16    HGL_UINTEGER_HALF<uint16>() { return HGL_U16_MAX >> 1; }
+    template<> constexpr const uint32    HGL_UINTEGER_HALF<uint32>() { return HGL_U32_MAX >> 1; }
+    template<> constexpr const uint64    HGL_UINTEGER_HALF<uint64>() { return HGL_U64_MAX >> 1; }
 
-    template<> inline constexpr const int8      HGL_INTEGER_MAX<int8    >() { return HGL_S8_MAX; }
-    template<> inline constexpr const int16     HGL_INTEGER_MAX<int16   >() { return HGL_S16_MAX; }
-    template<> inline constexpr const int32     HGL_INTEGER_MAX<int32   >() { return HGL_S32_MAX; }
-    template<> inline constexpr const int64     HGL_INTEGER_MAX<int64   >() { return HGL_S64_MAX; }
+    template<> constexpr const int8      HGL_INTEGER_MAX<int8    >() { return HGL_S8_MAX; }
+    template<> constexpr const int16     HGL_INTEGER_MAX<int16   >() { return HGL_S16_MAX; }
+    template<> constexpr const int32     HGL_INTEGER_MAX<int32   >() { return HGL_S32_MAX; }
+    template<> constexpr const int64     HGL_INTEGER_MAX<int64   >() { return HGL_S64_MAX; }
 
-    template<> inline constexpr const int8      HGL_INTEGER_MIN<int8    >() { return HGL_S8_MIN; }
-    template<> inline constexpr const int16     HGL_INTEGER_MIN<int16   >() { return HGL_S16_MIN; }
-    template<> inline constexpr const int32     HGL_INTEGER_MIN<int32   >() { return HGL_S32_MIN; }
-    template<> inline constexpr const int64     HGL_INTEGER_MIN<int64   >() { return HGL_S64_MIN; }
+    template<> constexpr const int8      HGL_INTEGER_MIN<int8    >() { return HGL_S8_MIN; }
+    template<> constexpr const int16     HGL_INTEGER_MIN<int16   >() { return HGL_S16_MIN; }
+    template<> constexpr const int32     HGL_INTEGER_MIN<int32   >() { return HGL_S32_MIN; }
+    template<> constexpr const int64     HGL_INTEGER_MIN<int64   >() { return HGL_S64_MIN; }
 
     //==================================================================================================
     // 16进制字符 / Hexadecimal Characters
@@ -395,18 +395,18 @@ namespace hgl
     // Mipmap 级别计算 / Mipmap Level Calculation
     //==================================================================================================
     
-    inline constexpr const uint GetMipLevel(const uint size)
+    constexpr const uint GetMipLevel(const uint size)
     {
         //return static_cast<uint>(floor(log2(size)))+1;
         return std::bit_width(size);
     }
 
-    inline constexpr const uint GetMipLevel(const uint width,const uint height)
+    constexpr const uint GetMipLevel(const uint width,const uint height)
     {
         return GetMipLevel(hgl_max(width,height));
     }
 
-    inline constexpr const uint GetMipLevel(const uint width,const uint height,const uint depth)
+    constexpr const uint GetMipLevel(const uint width,const uint height,const uint depth)
     {
         return GetMipLevel(hgl_max(hgl_max(width,height),depth));
     }

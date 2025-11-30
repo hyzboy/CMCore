@@ -67,7 +67,7 @@ namespace hgl
      * EN: Returns true if it is a lowercase letter, otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_lower_alpha(T ch) noexcept
+    constexpr bool is_lower_alpha(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_lower_alpha requires integral/character type");
         return(ch>='a'&&ch<='z');
@@ -85,7 +85,7 @@ namespace hgl
      * EN: Returns true if it is an uppercase letter, otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_upper_alpha(T ch) noexcept
+    constexpr bool is_upper_alpha(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_upper_alpha requires integral/character type");
         return(ch>='A'&&ch<='Z');
@@ -103,7 +103,7 @@ namespace hgl
      * EN: Returns true if it is a letter, otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_alpha(T ch) noexcept
+    constexpr bool is_alpha(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_alpha requires integral/character type");
         return(hgl::is_lower_alpha(ch)||hgl::is_upper_alpha(ch));
@@ -121,7 +121,7 @@ namespace hgl
      * EN: Returns true if it is a digit, otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_digit(T ch) noexcept
+    constexpr bool is_digit(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_digit requires integral/character type");
         return(ch>='0'&&ch<='9');
@@ -139,7 +139,7 @@ namespace hgl
      * EN: Returns true if the character is a digit, sign, decimal point, exponent marker (E/e), or float suffix (f/F).
      */
     template<typename T>
-    inline constexpr bool is_float_char(T ch) noexcept
+    constexpr bool is_float_char(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_float_char requires integral/character type");
         return hgl::is_digit(ch)
@@ -164,7 +164,7 @@ namespace hgl
      * EN: Returns true if it is a digit or a sign character, otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_integer_char(T ch) noexcept
+    constexpr bool is_integer_char(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_integer_char requires integral/character type");
         return hgl::is_digit(ch)
@@ -184,7 +184,7 @@ namespace hgl
      * EN: Returns true if the character is a valid hexadecimal digit, otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_hex_digit(T ch) noexcept
+    constexpr bool is_hex_digit(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_hex_digit requires integral/character type");
         // use character literals for readability
@@ -208,7 +208,7 @@ namespace hgl
      * EN: Returns true if str is non-null and all characters within length are hexadecimal digits; otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_hex_digit(const T *str, std::size_t length) noexcept
+    constexpr bool is_hex_digit(const T *str, std::size_t length) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_hex_digit requires integral/character type");
         if(!str || length==0)
@@ -238,7 +238,7 @@ namespace hgl
      * EN: Returns true if the character is '/' or '\\', otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_slash(const T &ch)
+    constexpr bool is_slash(const T &ch)
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_slash requires integral/character type");
         return (ch == '\\') || (ch == '/');
@@ -256,7 +256,7 @@ namespace hgl
      * EN: Returns true if the character is one of the whitespace/control characters listed (note '\a' and '\b' are included in this implementation), otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_space(T ch) noexcept
+    constexpr bool is_space(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_space requires integral/character type");
         // ASCII control/whitespace characters (explicitly exclude NUL)
@@ -283,7 +283,7 @@ namespace hgl
      * EN: Returns true for common whitespace or fullwidth space, otherwise false.
      */
     template<>
-    inline constexpr bool is_space(u32char ch) noexcept
+    constexpr bool is_space(u32char ch) noexcept
     {
         return(
         /* no NUL */
@@ -309,7 +309,7 @@ namespace hgl
      * EN: Returns true for common whitespace or fullwidth space, otherwise false.
      */
     template<>
-    inline constexpr bool is_space(u16char ch) noexcept
+    constexpr bool is_space(u16char ch) noexcept
     {
         return(
         /* no NUL */
@@ -335,7 +335,7 @@ namespace hgl
      * EN: Returns true if the character is a common whitespace/control character, otherwise false.
      */
     template<>
-    inline constexpr bool is_space(char ch) noexcept
+    constexpr bool is_space(char ch) noexcept
     {
         return(
         /* no NUL */
@@ -361,7 +361,7 @@ namespace hgl
      * EN: Returns true if the character is a common whitespace/control character, otherwise false.
      */
     template<>
-    inline constexpr bool is_space(char8_t ch) noexcept
+    constexpr bool is_space(char8_t ch) noexcept
     {
         return(
         /* no NUL */
@@ -388,7 +388,7 @@ namespace hgl
      * EN: Returns true if it is a letter or digit, otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_alpha_numeric(T ch) noexcept
+    constexpr bool is_alpha_numeric(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_alpha_numeric requires integral/character type");
         return(hgl::is_alpha(ch)||hgl::is_digit(ch));
@@ -406,7 +406,7 @@ namespace hgl
      * EN: Returns true if it is an identifier character, otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_identifier_char(T ch) noexcept
+    constexpr bool is_identifier_char(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_identifier_char requires integral/character type");
         return(hgl::is_alpha_numeric(ch)||ch=='_');
@@ -424,7 +424,7 @@ namespace hgl
      * EN: Returns true if it is not an identifier character, otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_not_identifier_char(T ch) noexcept
+    constexpr bool is_not_identifier_char(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_not_identifier_char requires integral/character type");
         return(!hgl::is_identifier_char(ch));
@@ -442,7 +442,7 @@ namespace hgl
      * EN: Returns true if it is allowed in a filename, otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_filename_char(T ch) noexcept
+    constexpr bool is_filename_char(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_filename_char requires integral/character type");
         return(ch=='.'||hgl::is_identifier_char(ch));
@@ -460,7 +460,7 @@ namespace hgl
      * EN: Returns true if it is not allowed in a filename, otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_not_filename_char(T ch) noexcept
+    constexpr bool is_not_filename_char(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_not_filename_char requires integral/character type");
         return(!hgl::is_filename_char(ch));
@@ -478,7 +478,7 @@ namespace hgl
      * EN: Returns true if the character belongs to the Base64 set, otherwise false.
      */
     template<typename T>
-    inline constexpr bool is_base64_char(T c) noexcept
+    constexpr bool is_base64_char(T c) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_base64_char requires integral/character type");
         // use character literals for clarity and include padding '='
@@ -502,7 +502,7 @@ namespace hgl
      * EN: Returns the converted character (unchanged if not uppercase ASCII).
      */
     template<typename T>
-    inline constexpr T to_lower_char(T ch) noexcept
+    constexpr T to_lower_char(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "to_lower_char requires integral/character type");
         if(ch>='A'&&ch<='Z')
@@ -523,7 +523,7 @@ namespace hgl
      * EN: Returns the converted character (unchanged if not lowercase ASCII).
      */
     template<typename T>
-    inline constexpr T to_upper_char(T ch) noexcept
+    constexpr T to_upper_char(T ch) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "to_upper_char requires integral/character type");
         if(ch>='a'&&ch<='z')
@@ -546,7 +546,7 @@ namespace hgl
      * CN: 返回转换后的字符（若无映射则返回原字符）。
      * EN: Returns the converted character; if no mapping exists, returns the original char.
      */
-    inline constexpr u32char to_lower_char(u32char ch) noexcept
+    constexpr u32char to_lower_char(u32char ch) noexcept
     {
         // ASCII
         if (ch >= U'A' && ch <= U'Z')
@@ -573,7 +573,7 @@ namespace hgl
      * CN: 返回转换后的字符（若无映射则返回原字符）。
      * EN: Returns the converted character; if no mapping exists, returns the original char.
      */
-    inline constexpr u32char to_upper_char(u32char ch) noexcept
+    constexpr u32char to_upper_char(u32char ch) noexcept
     {
         // ASCII
         if (ch >= U'a' && ch <= U'z')
@@ -600,7 +600,7 @@ namespace hgl
      * CN: 返回转换后的 16 位字符。
      * EN: Returns the converted 16-bit character.
      */
-    inline constexpr u16char to_lower_char(u16char ch) noexcept
+    constexpr u16char to_lower_char(u16char ch) noexcept
     {
         // Promote to 32-bit to reuse above logic safely
         const u32char c = static_cast<u32char>(ch);
@@ -618,7 +618,7 @@ namespace hgl
      * CN: 返回转换后的 16 位字符。
      * EN: Returns the converted 16-bit character.
      */
-    inline constexpr u16char to_upper_char(u16char ch) noexcept
+    constexpr u16char to_upper_char(u16char ch) noexcept
     {
         const u32char c = static_cast<u32char>(ch);
         const u32char r = to_upper_char(c);
@@ -639,7 +639,7 @@ namespace hgl
      * EN: Returns the integer difference of lower(src) - lower(dst) (note possible truncation to int for wide types).
      */
     template<typename S,typename D>
-    inline constexpr int compare_char_icase(S src,D dst) noexcept
+    constexpr int compare_char_icase(S src,D dst) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<S>::type>::value && std::is_integral<typename std::remove_cv<D>::type>::value,
             "compare_char_icase requires integral/character types");
@@ -672,7 +672,7 @@ namespace hgl
      * CN: 若 str 为合法标识符返回 true；若 str 为空或包含非法字符返回 false。
      * EN: Returns true if str is a valid identifier; false if str is null or contains invalid characters.
      */
-    template<typename T> inline constexpr bool is_valid_identifier(const T *str) noexcept
+    template<typename T> constexpr bool is_valid_identifier(const T *str) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "is_valid_identifier requires integral/character type");
 
@@ -702,7 +702,7 @@ namespace hgl
      * CN: 若包含无效字符或空白返回 true；否则返回 false。若 str 为 nullptr 返回 false。
      * EN: Returns true if the string contains invalid characters or whitespace; false otherwise. If str is nullptr returns false.
      */
-    template<typename T> inline constexpr bool contains_invalid_chars(const T *str) noexcept
+    template<typename T> constexpr bool contains_invalid_chars(const T *str) noexcept
     {
         static_assert(std::is_integral<typename std::remove_cv<T>::type>::value, "contains_invalid_chars requires integral/character type");
 
@@ -766,7 +766,7 @@ namespace hgl
      * EN: Returns true if an invalid char or whitespace is found; false if str is nullptr or none found.
      */
     template<>
-    inline constexpr bool contains_invalid_chars(const u16char *str) noexcept
+    constexpr bool contains_invalid_chars(const u16char *str) noexcept
     {
         if(!str) return false;
 
@@ -803,7 +803,7 @@ namespace hgl
      * EN: Returns true if an invalid char or whitespace is found; otherwise false.
      */
     template<>
-    inline constexpr bool contains_invalid_chars(const u32char *str) noexcept
+    constexpr bool contains_invalid_chars(const u32char *str) noexcept
     {
         if(!str) return false;
 

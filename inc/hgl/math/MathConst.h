@@ -81,7 +81,7 @@ namespace hgl
     /**
      * 角度转弧度
      */
-    inline constexpr float deg2rad(const float deg)
+    constexpr float deg2rad(const float deg)
     {
         return deg*(HGL_PI/180.0f);
     }
@@ -89,7 +89,7 @@ namespace hgl
     /**
      * 弧度转角度
      */
-    inline constexpr double rad2deg(const float rad)
+    constexpr double rad2deg(const float rad)
     {
         return rad*(180.0f/HGL_PI);
     }
@@ -116,7 +116,7 @@ namespace hgl
      * 球体积计算
      * @param radius 球半径
      */
-    inline constexpr double SphereVolume(const double radius)
+    constexpr double SphereVolume(const double radius)
     {
         return(radius*radius*radius*(HGL_PI*4.0f))/3.0f;
     }
@@ -127,7 +127,7 @@ namespace hgl
      * @param y_radius y半径
      * @param z_radius z半径
      */
-    inline constexpr double EllipsoidVolume(const double x_radius,const double y_radius,const double z_radius)
+    constexpr double EllipsoidVolume(const double x_radius,const double y_radius,const double z_radius)
     {
         return(x_radius*y_radius*z_radius*(HGL_PI*4.0f))/3.0f;
     }

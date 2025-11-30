@@ -41,7 +41,7 @@ namespace hgl
     constexpr const double XYZ2SRGB_B_Z =  1.0570;
 
     template<typename T>
-    inline constexpr T sRGB2Linear(const T &in)
+    constexpr T sRGB2Linear(const T &in)
     {
         if(in<=SRGB_LINEAR_THRESHOLD)
             return (double)in/SRGB_LINEAR_DIVISOR;
@@ -50,7 +50,7 @@ namespace hgl
     }
 
     template<>
-    inline constexpr uint8 sRGB2Linear(const uint8 &in)
+    constexpr uint8 sRGB2Linear(const uint8 &in)
     {
         if(in<=0x0A)
             return in/SRGB_LINEAR_DIVISOR;
@@ -59,7 +59,7 @@ namespace hgl
     }
 
     template<typename T>
-    inline constexpr T sRGB2Linear(const T &in,const double &gamma,const double &srgb_alpha)
+    constexpr T sRGB2Linear(const T &in,const double &gamma,const double &srgb_alpha)
     {
         if(in<=SRGB_LINEAR_THRESHOLD)
             return (double)in/SRGB_LINEAR_DIVISOR;
@@ -68,7 +68,7 @@ namespace hgl
     }
 
     template<>
-    inline constexpr uint8 sRGB2Linear(const uint8 &in,const double &gamma,const double &srgb_alpha)
+    constexpr uint8 sRGB2Linear(const uint8 &in,const double &gamma,const double &srgb_alpha)
     {
         if(in<=0x0A)
             return in/SRGB_LINEAR_DIVISOR;
@@ -77,7 +77,7 @@ namespace hgl
     }
     
     template<typename T>
-    inline constexpr T Linear2sRGB(const T &in)
+    constexpr T Linear2sRGB(const T &in)
     {
         if(in<=LINEAR_SRGB_THRESHOLD)
             return double(in)*SRGB_LINEAR_DIVISOR;
@@ -86,7 +86,7 @@ namespace hgl
     }
 
     template<>
-    inline constexpr uint8 Linear2sRGB(const uint8 &in)
+    constexpr uint8 Linear2sRGB(const uint8 &in)
     {
         if(in<=0x03)
             return double(in)*SRGB_LINEAR_DIVISOR;
@@ -95,7 +95,7 @@ namespace hgl
     }
     
     template<typename T>
-    inline constexpr T Linear2sRGB(const T &in,const double &inv_gamma,const double &srgb_alpha)
+    constexpr T Linear2sRGB(const T &in,const double &inv_gamma,const double &srgb_alpha)
     {
         if(in<=LINEAR_SRGB_THRESHOLD)
             return double(in)*SRGB_LINEAR_DIVISOR;
@@ -104,7 +104,7 @@ namespace hgl
     }
 
     template<>
-    inline constexpr uint8 Linear2sRGB(const uint8 &in,const double &inv_gamma,const double &srgb_alpha)
+    constexpr uint8 Linear2sRGB(const uint8 &in,const double &inv_gamma,const double &srgb_alpha)
     {
         if(in<=0x03)
             return double(in)*SRGB_LINEAR_DIVISOR;
@@ -113,19 +113,19 @@ namespace hgl
     }
 
     template<typename T>
-    inline constexpr T sRGB2LinearCheaper(const T &in,const double &gamma=GAMMA)
+    constexpr T sRGB2LinearCheaper(const T &in,const double &gamma=GAMMA)
     {
         return (T)pow(double(in),gamma);
     }
 
     template<typename T>
-    inline constexpr T Linear2sRGBCheaper(const T &in,const double &inv_gamma=INV_GAMMA)
+    constexpr T Linear2sRGBCheaper(const T &in,const double &inv_gamma=INV_GAMMA)
     {
         return (T)pow((double)in,inv_gamma);
     }
 
     template<typename T>
-    inline constexpr T sRGB2LinearCheapest(const T &in)
+    constexpr T sRGB2LinearCheapest(const T &in)
     {
         return in*in;
     }
