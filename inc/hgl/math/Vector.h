@@ -61,49 +61,49 @@ namespace hgl
 
     inline bool operator == (const Vector2f &lhs,const Vector2f &rhs)
     {
-        if(lhs.x!=rhs.x)return(false);
-        if(lhs.y!=rhs.y)return(false);
+        if(!IsNearlyEqual(lhs.x,rhs.x))return(false);
+        if(!IsNearlyEqual(lhs.y,rhs.y))return(false);
         return(true);
     }
 
     inline bool operator != (const Vector2f &lhs,const Vector2f &rhs)
     {
-        if(lhs.x!=rhs.x)return(true);
-        if(lhs.y!=rhs.y)return(true);
+        if(!IsNearlyEqual(lhs.x,rhs.x))return(true);
+        if(!IsNearlyEqual(lhs.y,rhs.y))return(true);
         return(false);
     }
 
     inline bool operator == (const Vector3f &lhs,const Vector3f &rhs)
     {
-        if(lhs.x!=rhs.x)return(false);
-        if(lhs.y!=rhs.y)return(false);
-        if(lhs.z!=rhs.z)return(false);
+        if(!IsNearlyEqual(lhs.x,rhs.x))return(false);
+        if(!IsNearlyEqual(lhs.y,rhs.y))return(false);
+        if(!IsNearlyEqual(lhs.z,rhs.z))return(false);
         return(true);
     }
 
     inline bool operator != (const Vector3f &lhs,const Vector3f &rhs)
     {
-        if(lhs.x!=rhs.x)return(true);
-        if(lhs.y!=rhs.y)return(true);
-        if(lhs.z!=rhs.z)return(true);
+        if(!IsNearlyEqual(lhs.x,rhs.x))return(true);
+        if(!IsNearlyEqual(lhs.y,rhs.y))return(true);
+        if(!IsNearlyEqual(lhs.z,rhs.z))return(true);
         return(false);
     }
 
     inline bool operator == (const Vector4f &lhs,const Vector4f &rhs)
     {
-        if(lhs.x!=rhs.x)return(false);
-        if(lhs.y!=rhs.y)return(false);
-        if(lhs.z!=rhs.z)return(false);
-        if(lhs.w!=rhs.w)return(false);
+        if(!IsNearlyEqual(lhs.x,rhs.x))return(false);
+        if(!IsNearlyEqual(lhs.y,rhs.y))return(false);
+        if(!IsNearlyEqual(lhs.z,rhs.z))return(false);
+        if(!IsNearlyEqual(lhs.w,rhs.w))return(false);
         return(true);
     }
 
     inline bool operator != (const Vector4f &lhs,const Vector4f &rhs)
     {
-        if(lhs.x!=rhs.x)return(true);
-        if(lhs.y!=rhs.y)return(true);
-        if(lhs.z!=rhs.z)return(true);
-        if(lhs.w!=rhs.w)return(true);
+        if(!IsNearlyEqual(lhs.x,rhs.x))return(true);
+        if(!IsNearlyEqual(lhs.y,rhs.y))return(true);
+        if(!IsNearlyEqual(lhs.z,rhs.z))return(true);
+        if(!IsNearlyEqual(lhs.w,rhs.w))return(true);
         return(false);
     }
 

@@ -106,7 +106,7 @@ public:
     #define LogDebug(...)   this->Log.Debug     (std::source_location::current(),__VA_ARGS__);
 #else
     #define LogVerbose(...)
-    #define LogDebug(...)            
+    #define LogDebug(...)
 #endif//
 
     #define LogInfo(...)    this->Log.Info      (std::source_location::current(),__VA_ARGS__);

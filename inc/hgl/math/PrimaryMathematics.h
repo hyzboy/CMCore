@@ -35,17 +35,17 @@ namespace hgl
         return Clamp<T>(value,0,1);
     }
 
-    inline constexpr uint8 ClampU8(const int &value)
+    inline constexpr uint8 ClampU8(const int value)
     {
         if(value<0)return 0;
         if(value>0xFF)return 0xFF;
-        return value;
+        return static_cast<uint8>(value);
     }
 
     inline constexpr uint16 ClampU16(const int value)
     {
         if(value<0)return 0;
         if(value>0xFFFF)return 0xFFFF;
-        return value;
+        return static_cast<uint16>(value);
     }
 }//namespace hgl

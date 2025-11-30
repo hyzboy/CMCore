@@ -32,7 +32,7 @@ namespace hgl
 
         bool all()const
         {
-            bool result = false;
+            bool result = true;
 
             for (int i = 0; i < N; ++i)
                 result &= data[i];

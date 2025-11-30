@@ -23,7 +23,7 @@ namespace hgl
     public:
 
         TransformBase():VersionData(Identity4f), WorldPosition(ZeroVector3f), WorldNormal(ZeroVector3f){}
-        TransformBase(const TransformBase *tb):VersionData(tb)
+        TransformBase(const TransformBase * const tb):VersionData(tb)
         {
             if(tb)
             {

@@ -64,7 +64,7 @@ namespace hgl
     constexpr const double HGL_SIN_270=-1;
     constexpr const double HGL_SIN_315=-0.707106781187;
 
-    #define HGL_DEF_DEG2RAD(ang)    constexpr const double HGL_RAD_##ang=double(ang)*(HGL_PI/180.0f);
+    #define HGL_DEF_DEG2RAD(ang)    constexpr const double HGL_RAD_##ang=double(ang)*(HGL_PI/180.0);
 
     HGL_DEF_DEG2RAD(0)
     HGL_DEF_DEG2RAD(45)
