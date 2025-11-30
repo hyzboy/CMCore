@@ -8,7 +8,8 @@
     #define HGL_LIB_DEBUG_NAME  "Release"
 #endif//
 
-#define HGL_MERGE32(a,b,c,d)        (a|b<<8|c<<16|d<<24)
+// Preprocessor-safe merge of four bytes into a 32-bit id. Use masking to avoid typed casts
+#define HGL_MERGE32(a,b,c,d)        ((((a) & 0xFFu)      ) | (((b) & 0xFFu) << 8) | (((c) & 0xFFu) << 16) | (((d) & 0xFFu) << 24))
 
 #define HGL_OS_Windows              HGL_MERGE32('W','i','n',' ')
 #define HGL_OS_macOS                HGL_MERGE32('m','a','c',' ')
@@ -199,7 +200,7 @@
         #include<hgl/platform/compiler/LLVM.h>
     #elif HGL_COMPILER == HGL_COMPILER_Intel
         #include<hgl/platform/compiler/Intel.h>
-    #elif defined(HGL_COMPILER == HGL_COMPILER_MinGW64)||defined(HGL_COMPILER == HGL_COMPILER_GNU)
+    #elif (HGL_COMPILER == HGL_COMPILER_MinGW64) || (HGL_COMPILER == HGL_COMPILER_GNU)
         #include<hgl/platform/compiler/GNU.h>
     #else
         #error Unrecognized compiler
@@ -236,7 +237,7 @@
     #if HGL_COMPILER == HGL_COMPILER_Intel
         #include<hgl/platform/compiler/Intel.h>
     #elif HGL_COMPILER == HGL_COMPILER_IBM
-        #include<hgl/platform/compiler/IBM.h}
+        #include<hgl/platform/compiler/IBM.h>
     #elif HGL_COMPILER == HGL_COMPILER_LLVM
         #include<hgl/platform/compiler/LLVM.h>
     #elif HGL_COMPILER == HGL_COMPILER_GNU
