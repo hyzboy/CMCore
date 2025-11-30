@@ -76,7 +76,7 @@
      || defined(__ppc__) || defined(__PPC__) || defined(__ppc) \
      || defined(_M_PPC) ||defined(_M_MPPC) \
      || defined(_ARCH_PPC) || defined(_ARCH_PWR)
-        #ifdef defined(__ppc64__)||defined(__PPC64__)||defined(__powerpc64__)   \
+        #if defined(__ppc64__)||defined(__PPC64__)||defined(__powerpc64__)   \
              ||defined(_ARCH_PPC64)||defined(__64BIT__)
             #define HGL_CPU             HGL_CPU_PowerPC64
             #define HGL_CPU_NAME        OS_TEXT("PowerPC64")
@@ -145,7 +145,6 @@
     #define HGL_OS_BSD      1
 #elif defined(__OPENBSD)||defined(__OpenBSD__)
     #define HGL_OS          HGL_OS_OpenBSD
-    #define HGL_OS_BSD      1
 #elif defined(__linux__)||defined(__LINUX__)||defined(linux)||defined(__linux)
     #define HGL_OS          HGL_OS_Linux
 #elif defined(__CYGWIN__)
@@ -237,7 +236,7 @@
     #if HGL_COMPILER == HGL_COMPILER_Intel
         #include<hgl/platform/compiler/Intel.h>
     #elif HGL_COMPILER == HGL_COMPILER_IBM
-        #include<hgl/platform/compiler/IBM.h>
+        #include<hgl/platform/compiler/IBM.h}
     #elif HGL_COMPILER == HGL_COMPILER_LLVM
         #include<hgl/platform/compiler/LLVM.h>
     #elif HGL_COMPILER == HGL_COMPILER_GNU
@@ -246,7 +245,7 @@
         #error Unrecognized compiler
     #endif
 
-#elif defined(HGL_OS == HGL_OS_macOS)||defined(HGL_OS == HGL_OS_iOS)||defined(HGL_OS == HGL_OS_tvOS)
+#elif (HGL_OS == HGL_OS_macOS) || (HGL_OS == HGL_OS_iOS) || (HGL_OS == HGL_OS_tvOS)
 
     #include<hgl/platform/os/Apple.h>
     #include<hgl/platform/compiler/LLVM.h>
@@ -263,12 +262,14 @@ namespace hgl
     const char *GetOSUsername();      ///<取得当前操作系统用户名
 
     #define HGL_WINDOW_DIRECTORY_SEPARATOR  OS_TEXT('\\')
-    #define HGL_UNIX_DIRECTORY_SPEARATOR    OS_TEXT('/')
+    #define HGL_UNIX_DIRECTORY_SEPARATOR    OS_TEXT('/')
 
     #if HGL_DIRECTORY_SEPARATOR_RAWCHAR=='\\'
         #define HGL_INCORRECT_DIRECTORY_SEPARATOR   OS_TEXT('/')
+
     #else
         #define HGL_INCORRECT_DIRECTORY_SEPARATOR   OS_TEXT('\\')
+
     #endif//
     
 #if (HGL_COMPILER == HGL_COMPILER_GNU)||(HGL_COMPILER == HGL_COMPILER_LLVM)

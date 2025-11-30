@@ -57,5 +57,3 @@ namespace hgl
         return uint8(Clamp(0.5f+0.5f*r-0.418688f*g-0.081312f*b));
     }
 }//namespace hgl
-#endif//HGL_COLOR_YCbCr_INCLUDE
-    
