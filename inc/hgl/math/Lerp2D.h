@@ -6,10 +6,6 @@ namespace hgl
 {
     namespace graph
     {
-        //*******************************************************************************************
-        //以下代码由Github Coplot自动生成，尚未测试
-        //*******************************************************************************************
-
         inline float LerpLinear(const float from,const float to,const float t)
         {
             return from+(to-from)*t;
@@ -30,7 +26,7 @@ namespace hgl
             return from*(2.0f*t3-3.0f*t2+1.0f)+to*(3.0f*t2-2.0f*t3);
         }
 
-        inline float LerpHermite(const float from,const float to,const float t)
+        inline float LerpCubicEase(const float from,const float to,const float t)
         {
             float t2=t*t;
             float t3=t2*t;
@@ -58,7 +54,7 @@ namespace hgl
             return from*(2.0f*t3-3.0f*t2+1.0f)+to*(3.0f*t2-2.0f*t3);
         }
 
-        inline Vector2f LerpHermite(const Vector2f &from,const Vector2f &to,const float t)
+        inline Vector2f LerpCubicEase(const Vector2f &from,const Vector2f &to,const float t)
         {
             float t2=t*t;
             float t3=t2*t;

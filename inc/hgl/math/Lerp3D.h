@@ -6,10 +6,6 @@ namespace hgl
 {
     namespace graph
     {
-        //*******************************************************************************************
-        //以下代码由Github Coplot自动生成，尚未测试
-        //*******************************************************************************************
-
         inline Vector3f LerpLinear(const Vector3f &from,const Vector3f &to,const float t)
         {
             return from+(to-from)*t;
@@ -30,7 +26,7 @@ namespace hgl
             return from*(2.0f*t3-3.0f*t2+1.0f)+to*(3.0f*t2-2.0f*t3);
         }
 
-        inline Vector3f LerpHermite(const Vector3f &from,const Vector3f &to,const float t)
+        inline Vector3f LerpCubicEase(const Vector3f &from,const Vector3f &to,const float t)
         {
             float t2=t*t;
             float t3=t2*t;
@@ -55,11 +51,10 @@ namespace hgl
             float t2=t*t;
             float t3=t2*t;
 
-            float it=1.0f-t;
-            float it2=it*it;
-            float it3=it2*it;
-
-            return p0*it3+p1*(3.0f*it2*t)+p2*(3.0f*it*t2)+p3*t3;
+            return   p0*((-t3+2.0f*t2-t)*0.5f)
+                    +p1*((3.0f*t3-5.0f*t2+2.0f)*0.5f)
+                    +p2*((-3.0f*t3+4.0f*t2+t)*0.5f)
+                    +p3*((t3-t2)*0.5f);
         }
 
         inline Vector3f LerpBSpline(const Vector3f &p0,const Vector3f &p1,const Vector3f &p2,const Vector3f &p3,const float t)
@@ -67,11 +62,10 @@ namespace hgl
             float t2=t*t;
             float t3=t2*t;
 
-            float it=1.0f-t;
-            float it2=it*it;
-            float it3=it2*it;
-
-            return p0*(-it3/6.0f)+p1*(3.0f*t3/6.0f+3.0f*t2/6.0f+1.0f/6.0f)+p2*(-3.0f*t3/6.0f+3.0f*t2/6.0f)+p3*(t3/6.0f);
+            return   p0*((-t3+3.0f*t2-3.0f*t+1.0f)/6.0f)
+                    +p1*((3.0f*t3-6.0f*t2+4.0f)/6.0f)
+                    +p2*((-3.0f*t3+3.0f*t2+3.0f*t+1.0f)/6.0f)
+                    +p3*(t3)/6.0f;
         }
     }//namespace graph
 }//namespace hgl
