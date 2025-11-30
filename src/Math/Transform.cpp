@@ -12,7 +12,7 @@ namespace hgl
 
         return result;
     }
-    
+
     void Transform::UpdateQuat()
     {
         if(IsNearlyZero(rotate_angle))
@@ -65,7 +65,7 @@ namespace hgl
 
         UpdateVersion();
     }
-    
+
     void Transform::SetToIdentity()
     {
         is_identity=true;
@@ -83,7 +83,7 @@ namespace hgl
         rotate_angle=0;
         scale_vector=OneVector3f;
     }
-    
+
     const bool Transform::operator == (const Transform &t)
     {
         if(is_identity)

@@ -52,7 +52,7 @@ namespace hgl
      * @param zfar 远平台z值
      */
     Matrix4f OrthoMatrix(float width,float height,float znear,float zfar)
-    {        
+    {
         return OrthoMatrix(0.0f,width,height,0.0f,znear,zfar);
     }
 
@@ -62,7 +62,7 @@ namespace hgl
      * @param height 高
      */
     Matrix4f OrthoMatrix(float width,float height)
-    {    
+    {
         return OrthoMatrix(width,height,0.0f,1.0f);
     }
 
@@ -77,7 +77,7 @@ namespace hgl
                                 float aspect_ratio,
                                 float znear,
                                 float zfar)
-    { 
+    {
         float f = 1.0f / tanf( deg2rad( 0.5f * field_of_view ) );
 
         return Matrix4f(
@@ -95,7 +95,7 @@ namespace hgl
           0.0f,
           zfar/(znear-zfar),
           -1.0f,
-      
+
           0.0f,
           0.0f,
           (znear * zfar) / (znear-zfar),
