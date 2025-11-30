@@ -68,18 +68,18 @@ namespace hgl
     //--------------------------------------------------------------------------------------------------
     bool Color3f::operator == (const Color3f &v) const
     {
-        if(r!=v.r)return(false);
-        if(g!=v.g)return(false);
-        if(b!=v.b)return(false);
+        if(!IsNearlyEqual(r,v.r))return(false);
+        if(!IsNearlyEqual(g,v.g))return(false);
+        if(!IsNearlyEqual(b,v.b))return(false);
 
         return(true);
     }
     //--------------------------------------------------------------------------------------------------
     bool Color3f::operator != (const Color3f &v) const
     {
-        if(r!=v.r)return(true);
-        if(g!=v.g)return(true);
-        if(b!=v.b)return(true);
+        if(!IsNearlyEqual(r,v.r))return(true);
+        if(!IsNearlyEqual(g,v.g))return(true);
+        if(!IsNearlyEqual(b,v.b))return(true);
 
         return(false);
     }

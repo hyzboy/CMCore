@@ -91,7 +91,7 @@ namespace hgl
 
     const Color3f BlackColor3f(0,0,0);
     const Color3f WhiteColor3f(1,1,1);
-    const Color3f RedColor3f(1,1,0);
+    const Color3f RedColor3f(1,0,0);
     const Color3f GreenColor3f(0,1,0);
     const Color3f BlueColor3f(0,0,1);
     const Color3f YellowColor3f(1,1,0);
