@@ -10,6 +10,9 @@ using os_char           =char;
 #define U16_TEXT(str)   u##str
 #define U32_TEXT(str)   U##str
 
+#define os_string       std::string
+#define os_regex        std::regex
+
 #define os_main         main
 #define os_out          std::cout
 #define os_in           std::cin

@@ -24,6 +24,9 @@ using os_char           =wchar_t;
 #define os_err          std::wcerr
 #define os_log          std::wclog
 
+#define os_string       std::wstring
+#define os_regex        std::wregex
+
 #define HGL_OS_NAME             OS_TEXT("Windows")
 
 #if HGL_CPU == HGL_CPU_X86_32
