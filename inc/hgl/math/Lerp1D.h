@@ -265,6 +265,310 @@ namespace hgl
                  + p3 * (t3 / 6.0f);
         }
 
+        // ==================== Easing Functions ====================
+
+        // --- EaseIn Functions ---
+
+        /**
+         * @brief Quadratic ease-in interpolation (t^2)
+         */
+        inline float LerpEaseInQuad(const float from, const float to, const float t)
+        {
+            float eased = t * t;
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Cubic ease-in interpolation (t^3)
+         */
+        inline float LerpEaseInCubic(const float from, const float to, const float t)
+        {
+            float eased = t * t * t;
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Quartic ease-in interpolation (t^4)
+         */
+        inline float LerpEaseInQuart(const float from, const float to, const float t)
+        {
+            float eased = t * t * t * t;
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Quintic ease-in interpolation (t^5)
+         */
+        inline float LerpEaseInQuint(const float from, const float to, const float t)
+        {
+            float eased = t * t * t * t * t;
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Exponential ease-in interpolation
+         */
+        inline float LerpEaseInExpo(const float from, const float to, const float t)
+        {
+            float eased = (t == 0.0f) ? 0.0f : pow(2.0f, 10.0f * t - 10.0f);
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Circular ease-in interpolation
+         */
+        inline float LerpEaseInCirc(const float from, const float to, const float t)
+        {
+            float eased = 1.0f - sqrt(1.0f - t * t);
+            return from + (to - from) * eased;
+        }
+
+        // --- EaseOut Functions ---
+
+        /**
+         * @brief Quadratic ease-out interpolation
+         */
+        inline float LerpEaseOutQuad(const float from, const float to, const float t)
+        {
+            float eased = 1.0f - (1.0f - t) * (1.0f - t);
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Cubic ease-out interpolation
+         */
+        inline float LerpEaseOutCubic(const float from, const float to, const float t)
+        {
+            float eased = 1.0f - pow(1.0f - t, 3.0f);
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Quartic ease-out interpolation
+         */
+        inline float LerpEaseOutQuart(const float from, const float to, const float t)
+        {
+            float eased = 1.0f - pow(1.0f - t, 4.0f);
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Quintic ease-out interpolation
+         */
+        inline float LerpEaseOutQuint(const float from, const float to, const float t)
+        {
+            float eased = 1.0f - pow(1.0f - t, 5.0f);
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Exponential ease-out interpolation
+         */
+        inline float LerpEaseOutExpo(const float from, const float to, const float t)
+        {
+            float eased = (t == 1.0f) ? 1.0f : 1.0f - pow(2.0f, -10.0f * t);
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Circular ease-out interpolation
+         */
+        inline float LerpEaseOutCirc(const float from, const float to, const float t)
+        {
+            float eased = sqrt(1.0f - (t - 1.0f) * (t - 1.0f));
+            return from + (to - from) * eased;
+        }
+
+        // --- EaseInOut Functions ---
+
+        /**
+         * @brief Quadratic ease-in-out interpolation
+         */
+        inline float LerpEaseInOutQuad(const float from, const float to, const float t)
+        {
+            float eased = (t < 0.5f) ? 2.0f * t * t : 1.0f - pow(-2.0f * t + 2.0f, 2.0f) / 2.0f;
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Cubic ease-in-out interpolation
+         */
+        inline float LerpEaseInOutCubic(const float from, const float to, const float t)
+        {
+            float eased = (t < 0.5f) ? 4.0f * t * t * t : 1.0f - pow(-2.0f * t + 2.0f, 3.0f) / 2.0f;
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Quartic ease-in-out interpolation
+         */
+        inline float LerpEaseInOutQuart(const float from, const float to, const float t)
+        {
+            float eased = (t < 0.5f) ? 8.0f * t * t * t * t : 1.0f - pow(-2.0f * t + 2.0f, 4.0f) / 2.0f;
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Quintic ease-in-out interpolation
+         */
+        inline float LerpEaseInOutQuint(const float from, const float to, const float t)
+        {
+            float eased = (t < 0.5f) ? 16.0f * t * t * t * t * t : 1.0f - pow(-2.0f * t + 2.0f, 5.0f) / 2.0f;
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Exponential ease-in-out interpolation
+         */
+        inline float LerpEaseInOutExpo(const float from, const float to, const float t)
+        {
+            float eased = (t == 0.0f) ? 0.0f : (t == 1.0f) ? 1.0f : 
+                         (t < 0.5f) ? pow(2.0f, 20.0f * t - 10.0f) / 2.0f : (2.0f - pow(2.0f, -20.0f * t + 10.0f)) / 2.0f;
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Circular ease-in-out interpolation
+         */
+        inline float LerpEaseInOutCirc(const float from, const float to, const float t)
+        {
+            float eased = (t < 0.5f) ? (1.0f - sqrt(1.0f - pow(2.0f * t, 2.0f))) / 2.0f : 
+                         (sqrt(1.0f - pow(-2.0f * t + 2.0f, 2.0f)) + 1.0f) / 2.0f;
+            return from + (to - from) * eased;
+        }
+
+        // --- Special Functions ---
+
+        /**
+         * @brief Smooth step interpolation (3t^2 - 2t^3)
+         */
+        inline float LerpSmoothStep(const float from, const float to, const float t)
+        {
+            float eased = t * t * (3.0f - 2.0f * t);
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Smoother step interpolation (6t^5 - 15t^4 + 10t^3)
+         */
+        inline float LerpSmootherStep(const float from, const float to, const float t)
+        {
+            float eased = t * t * t * (t * (t * 6.0f - 15.0f) + 10.0f);
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Elastic ease-in interpolation
+         */
+        inline float LerpEaseInElastic(const float from, const float to, const float t)
+        {
+            float eased = (t == 0.0f) ? 0.0f : (t == 1.0f) ? 1.0f :
+                         -pow(2.0f, 10.0f * t - 10.0f) * sin((t * 10.0f - 10.75f) * (2.0f * HGL_PI) / 3.0f);
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Elastic ease-out interpolation
+         */
+        inline float LerpEaseOutElastic(const float from, const float to, const float t)
+        {
+            float eased = (t == 0.0f) ? 0.0f : (t == 1.0f) ? 1.0f :
+                         pow(2.0f, -10.0f * t) * sin((t * 10.0f - 0.75f) * (2.0f * HGL_PI) / 3.0f) + 1.0f;
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Elastic ease-in-out interpolation
+         */
+        inline float LerpEaseInOutElastic(const float from, const float to, const float t)
+        {
+            float eased = (t == 0.0f) ? 0.0f : (t == 1.0f) ? 1.0f :
+                         (t < 0.5f) ? -(pow(2.0f, 20.0f * t - 10.0f) * sin((20.0f * t - 11.125f) * (2.0f * HGL_PI) / 4.5f)) / 2.0f :
+                         (pow(2.0f, -20.0f * t + 10.0f) * sin((20.0f * t - 11.125f) * (2.0f * HGL_PI) / 4.5f)) / 2.0f + 1.0f;
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Back ease-in interpolation (overshoot at start)
+         */
+        inline float LerpEaseInBack(const float from, const float to, const float t)
+        {
+            const float c1 = 1.70158f;
+            const float c3 = c1 + 1.0f;
+            float eased = c3 * t * t * t - c1 * t * t;
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Back ease-out interpolation (overshoot at end)
+         */
+        inline float LerpEaseOutBack(const float from, const float to, const float t)
+        {
+            const float c1 = 1.70158f;
+            const float c3 = c1 + 1.0f;
+            float eased = 1.0f + c3 * pow(t - 1.0f, 3.0f) + c1 * pow(t - 1.0f, 2.0f);
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Back ease-in-out interpolation
+         */
+        inline float LerpEaseInOutBack(const float from, const float to, const float t)
+        {
+            const float c1 = 1.70158f;
+            const float c2 = c1 * 1.525f;
+            float eased = (t < 0.5f) ? (pow(2.0f * t, 2.0f) * ((c2 + 1.0f) * 2.0f * t - c2)) / 2.0f :
+                         (pow(2.0f * t - 2.0f, 2.0f) * ((c2 + 1.0f) * (t * 2.0f - 2.0f) + c2) + 2.0f) / 2.0f;
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Bounce ease-in interpolation
+         */
+        inline float LerpEaseInBounce(const float from, const float to, const float t)
+        {
+            float eased = 1.0f - LerpEaseOutBounce(0.0f, 1.0f, 1.0f - t);
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Bounce ease-out interpolation
+         */
+        inline float LerpEaseOutBounce(const float from, const float to, const float t)
+        {
+            const float n1 = 7.5625f;
+            const float d1 = 2.75f;
+
+            float eased;
+            if (t < 1.0f / d1)
+            {
+                eased = n1 * t * t;
+            }
+            else if (t < 2.0f / d1)
+            {
+                eased = n1 * (t -= 1.5f / d1) * t + 0.75f;
+            }
+            else if (t < 2.5f / d1)
+            {
+                eased = n1 * (t -= 2.25f / d1) * t + 0.9375f;
+            }
+            else
+            {
+                eased = n1 * (t -= 2.625f / d1) * t + 0.984375f;
+            }
+            return from + (to - from) * eased;
+        }
+
+        /**
+         * @brief Bounce ease-in-out interpolation
+         */
+        inline float LerpEaseInOutBounce(const float from, const float to, const float t)
+        {
+            float eased = (t < 0.5f) ? (1.0f - LerpEaseOutBounce(0.0f, 1.0f, 1.0f - 2.0f * t)) / 2.0f :
+                         (1.0f + LerpEaseOutBounce(0.0f, 1.0f, 2.0f * t - 1.0f)) / 2.0f;
+            return from + (to - from) * eased;
+        }
+
         // ==================== Function Pointer Getters ====================
 
         /**
