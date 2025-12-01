@@ -270,9 +270,8 @@ namespace hgl
 
     #else
         #define HGL_INCORRECT_DIRECTORY_SEPARATOR   OS_TEXT('\\')
-
     #endif//
-    
+
 #if (HGL_COMPILER == HGL_COMPILER_GNU)||(HGL_COMPILER == HGL_COMPILER_LLVM)
     #define __HGL_FUNC__    __PRETTY_FUNCTION__
 #elif HGL_COMPILER == HGL_COMPILER_Microsoft

@@ -84,6 +84,7 @@ SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
                         ${MATH_INCLUDE_PATH}/FloatControl.h
                         ${MATH_INCLUDE_PATH}/FloatValidation.h
                         ${MATH_INCLUDE_PATH}/LerpType.h
+                        ${MATH_INCLUDE_PATH}/Lerp1D.h
                         ${MATH_INCLUDE_PATH}/Lerp2D.h
                         ${MATH_INCLUDE_PATH}/Lerp3D.h
                         )

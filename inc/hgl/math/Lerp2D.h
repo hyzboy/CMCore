@@ -1,11 +1,22 @@
 ﻿#pragma once
 
 #include<hgl/math/Vector.h>
+#include<hgl/math/LerpType.h>
 
 namespace hgl
 {
     namespace graph
     {
+        // ==================== Function Pointer Type Definitions ====================
+
+        /// 2-point Vector2f Lerp function pointer type (Linear, Cosine, Cubic, Hermite)
+        typedef Vector2f (*LerpFunc2PointVec2f)(const Vector2f&, const Vector2f&, const float);
+
+        /// 4-point Vector2f Lerp function pointer type (Bezier, CatmullRom, BSpline)
+        typedef Vector2f (*LerpFunc4PointVec2f)(const Vector2f&, const Vector2f&, const Vector2f&, const Vector2f&, const float);
+
+        // ==================== Interpolation Functions ====================
+
         inline float LerpLinear(const float from,const float to,const float t)
         {
             return from+(to-from)*t;
@@ -103,5 +114,41 @@ namespace hgl
                     +p2*((-3.0f*t3+3.0f*t2+3.0f*t+1.0f)/6.0f)
                     +p3*(t3)/6.0f;
         }
+
+        // ==================== Function Pointer Getters ====================
+
+        /**
+         * @brief Get 2-point Lerp function pointer for Vector2f (Linear, Cosine, Cubic, Hermite)
+         * @param type Interpolation type
+         * @return Function pointer to the corresponding Lerp function, or nullptr if invalid type
+         */
+        inline LerpFunc2PointVec2f GetLerpFuncPointer(LerpType type)
+        {
+            switch (type)
+            {
+                case LerpType::Linear:      return LerpLinear;
+                case LerpType::Cos:         return LerpCos;
+                case LerpType::Cubic:       return LerpCubic;
+                case LerpType::Hermite:     return LerpCubicEase;  // Hermite is alias for Cubic
+                default:                    return nullptr;
+            }
+        }
+
+        /**
+         * @brief Get 4-point Lerp function pointer for Vector2f (Bezier, CatmullRom, BSpline)
+         * @param type Interpolation type
+         * @return Function pointer to the corresponding Lerp function, or nullptr if invalid type
+         */
+        inline LerpFunc4PointVec2f GetLerpBezierFuncPointer(LerpType type)
+        {
+            switch (type)
+            {
+                case LerpType::Bezier:      return LerpBezier;
+                case LerpType::CatmullRom:  return LerpCatmullRom;
+                case LerpType::BSpline:     return LerpBSpline;
+                default:                    return nullptr;
+            }
+        }
+
     }//namespace graph
 }//namespace hgl
