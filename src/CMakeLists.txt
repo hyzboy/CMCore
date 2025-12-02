@@ -78,7 +78,10 @@ SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
                         ${MATH_INCLUDE_PATH}/MathConstants.h
                         ${MATH_INCLUDE_PATH}/TrigConstants.h
                         ${MATH_INCLUDE_PATH}/MathUtils.h
-                        ${MATH_INCLUDE_PATH}/Matrix.h
+                        ${MATH_INCLUDE_PATH}/MatrixTypes.h
+                        ${MATH_INCLUDE_PATH}/MatrixOperations.h
+                        ${MATH_INCLUDE_PATH}/Quaternion.h
+                        ${MATH_INCLUDE_PATH}/Projection.h
                         ${MATH_INCLUDE_PATH}/Transform.h
                         ${MATH_INCLUDE_PATH}/Vector.h
                         ${MATH_INCLUDE_PATH}/VectorTypes.h
@@ -236,7 +239,7 @@ SOURCE_GROUP("IO\\DataIOStream" FILES ${IO_DATA_FILES})
 SOURCE_GROUP("IO\\DataArray"    FILES ${IO_DATA_ARRAY_FILES})
 SOURCE_GROUP("IO\\MemoryStream" FILES ${IO_MEMORY_STREAM_FILES})
 SOURCE_GROUP("IO\\File"         FILES ${IO_FILE_FILES})
-SOURCE_GROUP("IO\\Jave"         FILES ${IO_JAVA_FILES})
+SOURCE_GROUP("IO\\Java"         FILES ${IO_JAVA_FILES})
 SOURCE_GROUP("IO\\Text"         FILES ${IO_TEXT_FILES})
 SOURCE_GROUP("IO\\MiniPack"     FILES ${IO_MINI_PACK_FILES})
 
