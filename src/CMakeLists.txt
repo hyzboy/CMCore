@@ -1,23 +1,6 @@
 ﻿SET(CORE_PLATFORM_INCLUDE_PATH  ${CMCORE_ROOT_INCLUDE_PATH}/hgl/platform)
 
-SET(CORE_PLATFORM_HEADER_FILES  ${CORE_PLATFORM_INCLUDE_PATH}/Platform.h)
-
 SET(TYPE_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type)
-
-FILE(GLOB CORE_PLATFORM_OS_FILES ${CORE_PLATFORM_INCLUDE_PATH}/os/*.h)
-FILE(GLOB CORE_PLATFORM_COMPILER_FILES ${CORE_PLATFORM_INCLUDE_PATH}/compiler/*.h)
-
-SOURCE_GROUP("Platform" FILES ${CORE_PLATFORM_HEADER_FILES})
-SOURCE_GROUP("Platform\\OS" FILES ${CORE_PLATFORM_OS_FILES})
-SOURCE_GROUP("Platform\\Compiler" FILES ${CORE_PLATFORM_COMPILER_FILES})
-
-SET(CORE_PLATFORM_HEADER_FILES  ${CORE_PLATFORM_HEADER_FILES}
-                              ${CORE_PLATFORM_OS_FILES}
-                              ${CORE_PLATFORM_COMPILER_FILES})
-
-SET(TYPE_INFO_FILE ${TYPE_INCLUDE_PATH}/TypeInfo.h)
-
-SOURCE_GROUP("DataType" FILES ${TYPE_INFO_FILE})
 
 SET(BITS_ARRAY_FILES ${TYPE_INCLUDE_PATH}/BitsArray.h
                     Type/BitsArray.cpp)
@@ -56,8 +39,6 @@ SOURCE_GROUP("DataType\\ActiveManager" FILES ${ACTIVE_MANAGER_FILES})
 SET(SYSTEM_INFO_SOURCE  ${CORE_PLATFORM_INCLUDE_PATH}/SystemInfo.h
                         SystemInfo.cpp)
 
-SET(MATH_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/math)
-
 SET(BASE_OBJECT_HEADER_FILES    ${TYPE_INCLUDE_PATH}/object/ObjectBaseInfo.h
                                 ${TYPE_INCLUDE_PATH}/object/Object.h)
 
@@ -68,36 +49,6 @@ SET(BASE_OBJECT_SOURCE_FILES    Object/ObjectBaseInfo.cpp
 SOURCE_GROUP("DataType\\Object" FILES ${BASE_OBJECT_HEADER_FILES}
                                       ${BASE_OBJECT_SOURCE_FILES})
 
-##Math--------------------------------------------------------
-SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
-                        ${MATH_INCLUDE_PATH}/FastTriangle.h
-                        ${MATH_INCLUDE_PATH}/Bezier.h
-                        ${MATH_INCLUDE_PATH}/Area.h
-                        ${MATH_INCLUDE_PATH}/Math.h
-                        ${MATH_INCLUDE_PATH}/MathConst.h
-                        ${MATH_INCLUDE_PATH}/Matrix.h
-                        ${MATH_INCLUDE_PATH}/Transform.h
-                        ${MATH_INCLUDE_PATH}/Vector.h
-                        ${MATH_INCLUDE_PATH}/PrimaryMathematics.h
-                        ${MATH_INCLUDE_PATH}/PhysicsConst.h
-                        ${MATH_INCLUDE_PATH}/HalfFloat.h
-                        ${MATH_INCLUDE_PATH}/FloatControl.h
-                        ${MATH_INCLUDE_PATH}/FloatValidation.h
-                        ${MATH_INCLUDE_PATH}/LerpType.h
-                        ${MATH_INCLUDE_PATH}/Lerp1D.h
-                        ${MATH_INCLUDE_PATH}/Lerp2D.h
-                        ${MATH_INCLUDE_PATH}/Lerp3D.h
-                        )
-
-SET(MATH_SOURCE_FILES   Math/LAtan.cpp
-                        Math/LSinCos.cpp
-                        Math/Matrix4f.cpp
-                        Math/HalfFloat.cpp
-                        Math/Transform.cpp)
-
-SOURCE_GROUP("Math\\Header Files" FILES ${MATH_HEADER_FILES})
-SOURCE_GROUP("Math\\Source Files" FILES ${MATH_SOURCE_FILES})
-
 ##Color--------------------------------------------------------
 FILE(GLOB COLOR_HEADER_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/color/*.h)
 FILE(GLOB COLOR_SOURCE_FILES Color/*.cpp)
@@ -105,40 +56,8 @@ FILE(GLOB COLOR_SOURCE_FILES Color/*.cpp)
 SOURCE_GROUP("Datatype\\Color\\Header Files" FILES ${COLOR_HEADER_FILES})
 SOURCE_GROUP("Datatype\\Color\\Source Files" FILES ${COLOR_SOURCE_FILES})
 
-##Char & String--------------------------------------------------------
-
-SET(STR_CHAR_FILES  ${TYPE_INCLUDE_PATH}/StrChar.h
-                    ${TYPE_INCLUDE_PATH}/CharType.h
-                    ${TYPE_INCLUDE_PATH}/Str.Length.h
-                    ${TYPE_INCLUDE_PATH}/Str.Copy.h
-                    ${TYPE_INCLUDE_PATH}/Str.Stat.h
-                    ${TYPE_INCLUDE_PATH}/Str.Search.h
-                    ${TYPE_INCLUDE_PATH}/Str.Comp.h
-                    ${TYPE_INCLUDE_PATH}/Str.TrimClip.h
-                    ${TYPE_INCLUDE_PATH}/Str.Case.h
-                    ${TYPE_INCLUDE_PATH}/Str.Number.h
-                    ${TYPE_INCLUDE_PATH}/Str.NumberArray.h
-                    ${TYPE_INCLUDE_PATH}/Str.StringArray.h
-                    ${TYPE_INCLUDE_PATH}/Str.Between.h
-                    ${TYPE_INCLUDE_PATH}/Str.Hex.h
-)
-
-SOURCE_GROUP("Text\\StrChar" FILES ${STR_CHAR_FILES})
-
 ##Text--------------------------------------------------------
-SET(STRING_HEADER_FILES ${TYPE_INCLUDE_PATH}/String.h
-                        ${TYPE_INCLUDE_PATH}/StringView.h
-                        ${TYPE_INCLUDE_PATH}/StringViewList.h
-                        ${TYPE_INCLUDE_PATH}/StringList.h
-                        ${TYPE_INCLUDE_PATH}/SplitString.h
-                        ${TYPE_INCLUDE_PATH}/MergeString.h
-                        ${TYPE_INCLUDE_PATH}/StdString.h
-)
-
-SET(TEXT_HEADER_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Endian.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/utf.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Charset.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/text/FontInfo.h
+SET(TEXT_HEADER_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/text/FontInfo.h
                         ${TYPE_INCLUDE_PATH}/UnicodeBlocks.h
                         ${TYPE_INCLUDE_PATH}/StrChar.h)
 
@@ -314,10 +233,8 @@ file(GLOB BASE_LOG_SOURCE Log/*.*)
 SOURCE_GROUP("Log\\Header Files" FILES ${BASE_LOG_HEADER})
 SOURCE_GROUP("Log\\Source Files" FILES ${BASE_LOG_SOURCE})
 
-add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
+add_cm_library(CMCore "CM"
                         #${SYSTEM_INFO_SOURCE}
-
-                        ${TYPE_INFO_FILE}
                         ${BASE_OBJECT_HEADER_FILES}
                         ${BASE_OBJECT_SOURCE_FILES}
 
@@ -346,9 +263,6 @@ add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
                         ${TYPE_IDNAME_HEADER_FILES}
                         ${TYPE_IDNAME_SOURCE_FILES}
 
-                        ${MATH_HEADER_FILES}
-                        ${MATH_SOURCE_FILES}
-
                         ${FILESYSTEM_HEADER_FILES}
                         ${FILESYSTEM_SOURCE_FILES}
 
@@ -369,3 +283,5 @@ add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
                         ${BASE_LOG_HEADER}
                         ${BASE_LOG_SOURCE}
                         )
+
+target_link_libraries(CMCore PRIVATE CMMath CMTypeCore)
