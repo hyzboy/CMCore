@@ -1,6 +1,7 @@
 ﻿#include<hgl/color/Color3f.h>
 #include<hgl/color/Color3ub.h>
 #include<hgl/color/Color.h>
+#include<hgl/math/MathConst.h>
 namespace hgl
 {
     //--------------------------------------------------------------------------------------------------

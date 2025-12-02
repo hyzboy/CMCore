@@ -2,7 +2,6 @@
 
 #include<hgl/TypeFunc.h>
 #include<hgl/color/Color4f.h>
-#include<hgl/math/Vector.h>
 
 namespace hgl
 {

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/math/Vector.h>
+#include<hgl/platform/Platform.h>
 namespace hgl
 {
     class Color3f;  // Forward declaration
