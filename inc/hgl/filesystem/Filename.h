@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include<hgl/type/StringList.h>
-#include<hgl/math/PrimaryMathematics.h>
 #include<initializer_list>
 
 /**

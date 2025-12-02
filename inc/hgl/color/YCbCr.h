@@ -1,6 +1,7 @@
 ﻿#pragma once
 
-#include<hgl/math/Math.h>
+#include<hgl/math/Clamp.h>
+
 namespace hgl
 {
     // YCbCr conversion coefficients (ITU-R BT.601)

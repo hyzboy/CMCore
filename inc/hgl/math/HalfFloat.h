@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/math/PrimaryMathematics.h>
+#include<hgl/math/Clamp.h>
 
 namespace hgl
 {

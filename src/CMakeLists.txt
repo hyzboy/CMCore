@@ -87,7 +87,8 @@ SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
                         ${MATH_INCLUDE_PATH}/VectorTypes.h
                         ${MATH_INCLUDE_PATH}/VectorOperations.h
                         ${MATH_INCLUDE_PATH}/VectorUtils.h
-                        ${MATH_INCLUDE_PATH}/PrimaryMathematics.h
+                        ${MATH_INCLUDE_PATH}/Sum.h
+                        ${MATH_INCLUDE_PATH}/Clamp.h
                         ${MATH_INCLUDE_PATH}/PhysicsConst.h
                         ${MATH_INCLUDE_PATH}/HalfFloat.h
                         ${MATH_INCLUDE_PATH}/FloatControl.h
