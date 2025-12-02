@@ -97,7 +97,6 @@
 
 #define HGL_LIB_END     ".a"
 //--------------------------------------------------------------------------------------------------
-#include<hgl/platform/compiler/DataTypeGNU.h>
-#include<hgl/platform/compiler/DataTypeTiny.h>
+#include<hgl/BasicType.h>
 #include<hgl/platform/compiler/Property.h>
 //--------------------------------------------------------------------------------------------------

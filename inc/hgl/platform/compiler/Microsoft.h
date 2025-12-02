@@ -49,7 +49,6 @@
 
 #define HGL_LIB_END        ".LIB"
 //--------------------------------------------------------------------------------------------------
-#include<hgl/platform/compiler/DataTypeWin.h>
-#include<hgl/platform/compiler/DataTypeTiny.h>
+#include<hgl/BasicType.h>
 #include<hgl/platform/compiler/Property.h>
 //--------------------------------------------------------------------------------------------------

@@ -1,7 +1,29 @@
-﻿#pragma once
+#pragma once
+
+#include<cstdint>
 
 namespace hgl
 {
+    using int8   = std::int8_t;
+    using uint8  = std::uint8_t;
+    using int16  = std::int16_t;
+    using uint16 = std::uint16_t;
+    using int32  = std::int32_t;
+    using uint32 = std::uint32_t;
+    using int64  = std::int64_t;
+    using uint64 = std::uint64_t;
+    
+    using half_float = uint16;
+    using float32    = float;
+    using float64    = double;
+
+#if defined(__cpp_char8_t)||defined(__cpp_lib_char8_t)
+    #define HGL_SUPPORT_CHAR8_T
+    using u8char = char8_t;
+#else
+    using u8char = char;
+#endif
+    
     using i8=int8;
     using i16=int16;
     using i32=int32;
