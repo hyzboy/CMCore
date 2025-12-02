@@ -1,5 +1,6 @@
 ﻿#include<hgl/math/MatrixOperations.h>
 #include<hgl/math/Projection.h>
+#include<hgl/math/TrigConstants.h>
 
 // Vulkan Cookbook
 // ISBN: 9781786468154

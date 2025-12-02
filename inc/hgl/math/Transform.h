@@ -1,9 +1,11 @@
 ﻿#pragma once
 #include<hgl/type/TypeInfo.h>
+#include<hgl/math/VectorOperations.h>
 #include<hgl/math/VectorTypes.h>
 #include<hgl/math/MatrixTypes.h>
 #include<hgl/math/MatrixOperations.h>
 #include<hgl/math/Quaternion.h>
+#include<hgl/math/Projection.h>
 #include<hgl/type/ObjectList.h>
 #include<hgl/type/VersionData.h>
 
