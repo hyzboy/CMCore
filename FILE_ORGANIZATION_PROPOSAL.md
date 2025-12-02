@@ -880,9 +880,10 @@ for old in "${!dir_map[@]}"; do
 done
 
 # 更新 CMakeLists.txt
-sed -i 's/Color\//color\//g' src/CMakeLists.txt
-sed -i 's/FileSystem\//filesystem\//g' src/CMakeLists.txt
-# ... 更多替换
+for old in "${!dir_map[@]}"; do
+    new="${dir_map[$old]}"
+    sed -i "s/${old}\//${new}\//g" src/CMakeLists.txt
+done
 ```
 
 #### CMake 路径更新脚本
@@ -966,7 +967,7 @@ namespace old_namespace = new_namespace;
 
 1. **C++ 核心指南** - https://isocpp.github.io/CppCoreGuidelines/
 2. **Google C++ 风格指南** - https://google.github.io/styleguide/cppguide.html
-3. **LLVM 编码规范** - https://llvm.org/docs/CodingStandards.html
+3. **LLVM 编码规范** - https://llvm.org/docs/CodingStandards.html (参考当前版本的最新文档)
 4. **Boost 库结构** - https://www.boost.org/
 5. **CMake 最佳实践** - https://cliutils.gitlab.io/modern-cmake/
 
