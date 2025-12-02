@@ -967,7 +967,7 @@ namespace old_namespace = new_namespace;
 
 1. **C++ 核心指南** - https://isocpp.github.io/CppCoreGuidelines/
 2. **Google C++ 风格指南** - https://google.github.io/styleguide/cppguide.html
-3. **LLVM 编码规范** - https://llvm.org/docs/CodingStandards.html (参考当前版本的最新文档)
+3. **LLVM 编码规范** - https://llvm.org/docs/CodingStandards.html
 4. **Boost 库结构** - https://www.boost.org/
 5. **CMake 最佳实践** - https://cliutils.gitlab.io/modern-cmake/
 
@@ -1017,7 +1017,7 @@ namespace old_namespace = new_namespace;
 
 ---
 
-**文档生成时间**: 2024-12-02  
+**文档生成时间**: 2025-12-02  
 **文档版本**: 1.0  
 **建议有效期**: 6个月（需根据项目发展调整）
 
