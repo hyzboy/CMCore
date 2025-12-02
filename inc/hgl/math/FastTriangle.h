@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/math/MathConst.h>
+#include<hgl/math/MathConstants.h>
 #include<math.h>
 namespace hgl
 {

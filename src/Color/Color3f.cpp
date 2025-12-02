@@ -1,7 +1,7 @@
 ﻿#include<hgl/color/Color3f.h>
 #include<hgl/color/Color3ub.h>
 #include<hgl/color/Color.h>
-#include<hgl/math/MathConst.h>
+#include<hgl/math/FloatPrecision.h>
 namespace hgl
 {
     //--------------------------------------------------------------------------------------------------

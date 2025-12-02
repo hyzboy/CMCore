@@ -74,10 +74,16 @@ SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
                         ${MATH_INCLUDE_PATH}/Bezier.h
                         ${MATH_INCLUDE_PATH}/Area.h
                         ${MATH_INCLUDE_PATH}/Math.h
-                        ${MATH_INCLUDE_PATH}/MathConst.h
+                        ${MATH_INCLUDE_PATH}/FloatPrecision.h
+                        ${MATH_INCLUDE_PATH}/MathConstants.h
+                        ${MATH_INCLUDE_PATH}/TrigConstants.h
+                        ${MATH_INCLUDE_PATH}/MathUtils.h
                         ${MATH_INCLUDE_PATH}/Matrix.h
                         ${MATH_INCLUDE_PATH}/Transform.h
                         ${MATH_INCLUDE_PATH}/Vector.h
+                        ${MATH_INCLUDE_PATH}/VectorTypes.h
+                        ${MATH_INCLUDE_PATH}/VectorOperations.h
+                        ${MATH_INCLUDE_PATH}/VectorUtils.h
                         ${MATH_INCLUDE_PATH}/PrimaryMathematics.h
                         ${MATH_INCLUDE_PATH}/PhysicsConst.h
                         ${MATH_INCLUDE_PATH}/HalfFloat.h
