@@ -36,7 +36,7 @@ namespace hgl
             b=nb;
             return;
         }
-        
+
         r+=(nr-r)*pos;
         g+=(ng-g)*pos;
         b+=(nb-b)*pos;

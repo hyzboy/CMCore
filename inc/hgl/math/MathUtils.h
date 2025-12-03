@@ -9,7 +9,6 @@
 #pragma once
 
 #include<hgl/math/MathConstants.h>
-#include<hgl/type/DataType.h>
 #include<cmath>
 
 namespace hgl

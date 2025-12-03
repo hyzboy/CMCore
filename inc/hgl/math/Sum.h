@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include<hgl/type/DataType.h>
-
 namespace hgl
 {
     /**

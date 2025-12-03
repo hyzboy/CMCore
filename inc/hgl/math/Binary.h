@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/platform/Platform.h>
+#include<hgl/BasicType.h>
 namespace hgl
 {
     /**
