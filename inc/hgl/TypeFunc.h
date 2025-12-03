@@ -55,32 +55,6 @@ namespace hgl
     #define RANGE_CHECK_RETURN_NULLPTR(value)           if(!RangeCheck(value))return(nullptr);
 
     //==================================================================================================
-    // 颜色打包 / Color Packing
-    //==================================================================================================
-    
-    /**
-    * r/g/b/a四个分量的颜色打包成一个32位整数，glsl中可用unpackUnorm4x8函数进行还原
-    */
-    constexpr uint32 PackRGBA8(const uint8_t r,const uint8_t &g,const uint8_t &b,const uint8_t &a)
-    {
-        return   static_cast<uint32>(r)      |
-                (static_cast<uint32>(g)<< 8) |
-                (static_cast<uint32>(b)<<16) |
-                (static_cast<uint32>(a)<<24);
-    }
-
-    /**
-    * r/g/b/a四个分量的颜色打包成一个32位整数，glsl中可用unpackUnorm4x8函数进行还原
-    */
-    constexpr uint32 PackRGBA8Float(const float r,const float &g,const float &b,const float &a)
-    {
-        return   static_cast<uint32>(r*255.0f)      |
-                (static_cast<uint32>(g*255.0f)<< 8) |
-                (static_cast<uint32>(b*255.0f)<<16) |
-                (static_cast<uint32>(a*255.0f)<<24);
-    }
-
-    //==================================================================================================
     // 构造与交换 / Construction and Swap
     //==================================================================================================
     
@@ -395,18 +369,17 @@ namespace hgl
     // Mipmap 级别计算 / Mipmap Level Calculation
     //==================================================================================================
     
-    constexpr const uint GetMipLevel(const uint size)
+    inline const uint GetMipLevel(const uint size)
     {
-        //return static_cast<uint>(floor(log2(size)))+1;
-        return std::bit_width(size);
+        return static_cast<uint>(floor(log2(size)))+1;
     }
 
-    constexpr const uint GetMipLevel(const uint width,const uint height)
+    inline  const uint GetMipLevel(const uint width,const uint height)
     {
         return GetMipLevel(hgl_max(width,height));
     }
 
-    constexpr const uint GetMipLevel(const uint width,const uint height,const uint depth)
+    inline  const uint GetMipLevel(const uint width,const uint height,const uint depth)
     {
         return GetMipLevel(hgl_max(hgl_max(width,height),depth));
     }
