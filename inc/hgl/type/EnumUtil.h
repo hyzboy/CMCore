@@ -11,7 +11,7 @@ namespace hgl
     #define ENUM_CLASS_RANGE(begin,end)     BEGIN_RANGE=begin,END_RANGE=end,RANGE_SIZE=(END_RANGE-BEGIN_RANGE)+1
 
     template<typename T> constexpr const int ToInt(const T &ec){return (int)ec;}
-    template<typename T> constexpr const T FromInt(int ec){return (enum class T)ec;}
+    template<typename T> constexpr const T FromInt(int ec){return static_cast<T>(ec);}
 
     template<typename T> constexpr const size_t RangeSize(){return T::RANGE_SIZE;}
 

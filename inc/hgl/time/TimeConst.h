@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include<hgl/platform/Platform.h>
+
 namespace hgl
 {
     /**

@@ -2,6 +2,7 @@
 
 #include<hgl/platform/Platform.h>               // 平台定义
 #include<hgl/type/EnumUtil.h>
+#include<cstring>                                // for memcpy, memcmp
 namespace hgl
 {
     namespace endian
