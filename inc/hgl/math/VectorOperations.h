@@ -2,7 +2,6 @@
 
 #include<hgl/math/VectorTypes.h>
 #include<hgl/math/FloatPrecision.h>
-#include<hgl/type/DataType.h>
 #include<glm/glm.hpp>
 
 namespace hgl

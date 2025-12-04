@@ -4,6 +4,7 @@
 #include<hgl/math/VectorOperations.h>
 #include<hgl/math/FastTriangle.h>
 #include<hgl/math/TrigConstants.h>
+#include<hgl/type/CompareUtil.h>
 
 namespace hgl
 {
