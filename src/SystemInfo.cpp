@@ -1,6 +1,6 @@
 ﻿#include<hgl/platform/SystemInfo.h>
-#include<hgl/log/LogInfo.h>
-#include<hgl/PlugIn.h>
+#include<hgl/log/Log.h>
+#include<hgl/plugin/PlugIn.h>
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/Info.h>
 
