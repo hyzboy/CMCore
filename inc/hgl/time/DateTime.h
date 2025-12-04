@@ -2,7 +2,6 @@
 
 #include<hgl/time/TimeConst.h>
 #include<hgl/Comparator.h>
-#include<hgl/time/TimeConst.h>
 
 namespace hgl
 {

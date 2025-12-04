@@ -5,7 +5,6 @@
  */
 #pragma once
 
-#include<hgl/type/StrChar.h>
 #include <hgl/type/StrChar.h>
 #include <hgl/Comparator.h>
 #include <string>
