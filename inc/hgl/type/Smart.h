@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/TypeFunc.h>
+#include<hgl/Macro.h>
 #include<hgl/thread/Atomic.h>
 #include <memory>        // for std::unique_ptr
 #include <vector>        // for AutoDeleteObjectArray

@@ -11,7 +11,7 @@
 #pragma once
 
 #include<hgl/math/FloatPrecision.h>
-#include<hgl/TypeFunc.h>
+#include<hgl/type/MemoryUtil.h>
 #include<glm/glm.hpp>
 
 //注：GLM/CML(OpenGLMode)是列矩阵,计算坐标matrix*pos

@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include<hgl/TypeFunc.h>
 #include<hgl/color/Color4f.h>
+#include<hgl/type/EnumUtil.h>
 
 namespace hgl
 {

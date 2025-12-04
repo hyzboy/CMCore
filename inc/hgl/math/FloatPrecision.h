@@ -12,6 +12,7 @@
 
 #include<hgl/BasicType.h>
 #include<limits>
+#include<cmath>
 
 namespace hgl
 {

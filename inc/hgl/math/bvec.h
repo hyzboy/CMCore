@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/TypeFunc.h>
+#include<hgl/type/MemoryUtil.h>
 namespace hgl
 {
     /**

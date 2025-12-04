@@ -10,8 +10,8 @@
  *      across different compilers and standard libraries.
  */
 
-#include <hgl/TypeFunc.h>
-#include <type_traits>
+#include<hgl/type/Constants.h>
+#include<type_traits>
 #include <cstdint>
 #include <cstddef>
 #include <utility>

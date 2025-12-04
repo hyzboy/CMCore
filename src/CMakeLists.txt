@@ -31,8 +31,7 @@ SET(TYPE_INFO_FILE ${TYPE_INCLUDE_PATH}/TypeInfo.h)
 SOURCE_GROUP("DataType" FILES ${TYPE_INFO_FILE})
 
 ## Type 类型工具模块（模块化拆分）
-SET(TYPE_UTIL_HEADER_FILES  ${CMCORE_ROOT_INCLUDE_PATH}/hgl/TypeFunc.h
-                            ${TYPE_INCLUDE_PATH}/Constants.h
+SET(TYPE_UTIL_HEADER_FILES  ${TYPE_INCLUDE_PATH}/Constants.h
                             ${TYPE_INCLUDE_PATH}/EnumUtil.h
                             ${TYPE_INCLUDE_PATH}/BitOperations.h
                             ${TYPE_INCLUDE_PATH}/TypeLimits.h

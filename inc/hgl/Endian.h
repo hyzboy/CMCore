@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/platform/Platform.h>               // 平台定义
-#include<hgl/TypeFunc.h>
+#include<hgl/type/EnumUtil.h>
 namespace hgl
 {
     namespace endian
