@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 
@@ -14,10 +14,6 @@ namespace hgl
 
     constexpr const u16char U16_FULL_WIDTH_SPACE=U16_TEXT('　');      //全角空格
     constexpr const u32char U32_FULL_WIDTH_SPACE=U32_TEXT('　');      //全角空格
-
-    #ifndef NULL
-    #define NULL 0
-    #endif//
 
     //==================================================================================================
     // 大小常量 / Size Constants
