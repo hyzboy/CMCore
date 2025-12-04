@@ -7,18 +7,6 @@ SET(TYPE_INFO_FILE ${TYPE_INCLUDE_PATH}/TypeInfo.h)
 
 SOURCE_GROUP("DataType" FILES ${TYPE_INFO_FILE})
 
-## Type 类型工具模块（模块化拆分）
-SET(TYPE_UTIL_HEADER_FILES  ${TYPE_INCLUDE_PATH}/EnumUtil.h
-                            ${TYPE_INCLUDE_PATH}/BitOperations.h
-                            ${TYPE_INCLUDE_PATH}/AlignUtil.h
-                            ${TYPE_INCLUDE_PATH}/CompareUtil.h
-                            ${TYPE_INCLUDE_PATH}/MemoryUtil.h
-                            ${TYPE_INCLUDE_PATH}/MemoryAlloc.h
-                            ${TYPE_INCLUDE_PATH}/MipmapUtil.h
-                            ${TYPE_INCLUDE_PATH}/ArrayWriter.h)
-
-SOURCE_GROUP("DataType\\TypeUtil" FILES ${TYPE_UTIL_HEADER_FILES})
-
 ## BitsArray 位数组
 SET(BITS_ARRAY_FILES ${TYPE_INCLUDE_PATH}/BitsArray.h
                     Type/BitsArray.cpp)
@@ -84,40 +72,9 @@ SOURCE_GROUP("DataType\\Memory" FILES ${BASE_OTHER_SOURCE})
 ##==================================================================================================
 SET(MATH_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/math)
 
-SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/bvec.h
-                        ${MATH_INCLUDE_PATH}/FastTriangle.h
-                        ${MATH_INCLUDE_PATH}/Area.h
-                        ${MATH_INCLUDE_PATH}/Math.h
-                        ${MATH_INCLUDE_PATH}/FloatPrecision.h
-                        ${MATH_INCLUDE_PATH}/MathConstants.h
-                        ${MATH_INCLUDE_PATH}/TrigConstants.h
-                        ${MATH_INCLUDE_PATH}/MathUtils.h
-                        ${MATH_INCLUDE_PATH}/MatrixTypes.h
-                        ${MATH_INCLUDE_PATH}/MatrixOperations.h
-                        ${MATH_INCLUDE_PATH}/Quaternion.h
-                        ${MATH_INCLUDE_PATH}/Projection.h
-                        ${MATH_INCLUDE_PATH}/Transform.h
-                        ${MATH_INCLUDE_PATH}/Vector.h
-                        ${MATH_INCLUDE_PATH}/VectorTypes.h
-                        ${MATH_INCLUDE_PATH}/VectorOperations.h
-                        ${MATH_INCLUDE_PATH}/VectorUtils.h
-                        ${MATH_INCLUDE_PATH}/Sum.h
-                        ${MATH_INCLUDE_PATH}/Clamp.h
-                        ${MATH_INCLUDE_PATH}/PhysicsConst.h
-                        ${MATH_INCLUDE_PATH}/HalfFloat.h
-                        ${MATH_INCLUDE_PATH}/FloatControl.h
-                        ${MATH_INCLUDE_PATH}/FloatValidation.h
-                        ${MATH_INCLUDE_PATH}/LerpType.h
-                        ${MATH_INCLUDE_PATH}/Lerp1D.h
-                        ${MATH_INCLUDE_PATH}/Lerp2D.h
-                        ${MATH_INCLUDE_PATH}/Lerp3D.h
-                        )
+SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/Transform.h)
 
-SET(MATH_SOURCE_FILES   Math/LAtan.cpp
-                        Math/LSinCos.cpp
-                        Math/Matrix4f.cpp
-                        Math/HalfFloat.cpp
-                        Math/Transform.cpp)
+SET(MATH_SOURCE_FILES   Math/Transform.cpp)
 
 SOURCE_GROUP("Math\\Header Files" FILES ${MATH_HEADER_FILES})
 SOURCE_GROUP("Math\\Source Files" FILES ${MATH_SOURCE_FILES})
@@ -131,28 +88,6 @@ FILE(GLOB COLOR_SOURCE_FILES Color/*.cpp)
 SOURCE_GROUP("DataType\\Color\\Header Files" FILES ${COLOR_HEADER_FILES})
 SOURCE_GROUP("DataType\\Color\\Source Files" FILES ${COLOR_SOURCE_FILES})
 
-##==================================================================================================
-## Text 文本处理
-##==================================================================================================
-
-## StrChar 字符串字符操作
-SET(STR_CHAR_FILES  ${TYPE_INCLUDE_PATH}/StrChar.h
-                    ${TYPE_INCLUDE_PATH}/CharType.h
-                    ${TYPE_INCLUDE_PATH}/Str.Length.h
-                    ${TYPE_INCLUDE_PATH}/Str.Copy.h
-                    ${TYPE_INCLUDE_PATH}/Str.Stat.h
-                    ${TYPE_INCLUDE_PATH}/Str.Search.h
-                    ${TYPE_INCLUDE_PATH}/Str.Comp.h
-                    ${TYPE_INCLUDE_PATH}/Str.TrimClip.h
-                    ${TYPE_INCLUDE_PATH}/Str.Case.h
-                    ${TYPE_INCLUDE_PATH}/Str.Number.h
-                    ${TYPE_INCLUDE_PATH}/Str.NumberArray.h
-                    ${TYPE_INCLUDE_PATH}/Str.StringArray.h
-                    ${TYPE_INCLUDE_PATH}/Str.Between.h
-                    ${TYPE_INCLUDE_PATH}/Str.Hex.h
-)
-
-SOURCE_GROUP("Text\\StrChar" FILES ${STR_CHAR_FILES})
 
 ## String 字符串类
 SET(STRING_HEADER_FILES ${TYPE_INCLUDE_PATH}/String.h
@@ -172,8 +107,7 @@ SET(TEXT_HEADER_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Endian.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/utf.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Charset.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/text/FontInfo.h
-                        ${TYPE_INCLUDE_PATH}/UnicodeBlocks.h
-                        ${TYPE_INCLUDE_PATH}/StrChar.h)
+                        ${TYPE_INCLUDE_PATH}/UnicodeBlocks.h)
 
 SET(TEXT_SOURCE_FILES   Text/Endian.cpp
                         Text/utf.cpp
@@ -326,8 +260,7 @@ SET(TIME_HEADER_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/time)
 
 SET(BASE_TIME_HEADER_FILES  ${TIME_HEADER_PATH}/DateTime.h
                             ${TIME_HEADER_PATH}/Time.h
-                            ${TIME_HEADER_PATH}/TimeID.h
-                            ${TIME_HEADER_PATH}/TimeConst.h)
+                            ${TIME_HEADER_PATH}/TimeID.h)
 
 SET(BASE_TIME_SOURCE_FILES  Time/DateTime.cpp
                             Time/TimeCount.cpp
@@ -380,7 +313,6 @@ add_cm_library(CMCore "CM"
 #                        ${SYSTEM_INFO_SOURCE}
 
                         ${TYPE_INFO_FILE}
-                        ${TYPE_UTIL_HEADER_FILES}
                         ${BASE_OBJECT_HEADER_FILES}
                         ${BASE_OBJECT_SOURCE_FILES}
 
@@ -389,7 +321,6 @@ add_cm_library(CMCore "CM"
                         ${COLOR_HEADER_FILES}
                         ${COLOR_SOURCE_FILES}
 
-                        ${STR_CHAR_FILES}
                         ${STRING_HEADER_FILES}
                         ${TEXT_HEADER_FILES}
                         ${TEXT_SOURCE_FILES}

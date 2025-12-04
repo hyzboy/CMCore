@@ -1,6 +1,8 @@
-﻿#include<hgl/type/DataType.h>
+﻿#include<hgl/time/TimeConst.h>
 
-#if HGL_OS_BSD
+#if HGL_OS == HGL_OS_WINDOWS
+#include<WinSock2.h>
+#else defined(HGL_OS_BSD)
 #include<sys/time.h>
 #endif//
 

@@ -1,4 +1,5 @@
 ﻿#include <hgl/time/Time.h>
+#include <hgl/time/TimeConst.h>
 #include <chrono>
 #include <thread>
 #include <ctime>

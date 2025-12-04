@@ -1,6 +1,7 @@
 ﻿#pragma once
 
-#include<hgl/type/DataType.h>
+#include<hgl/CoreType.h>
+#include<hgl/type/EnumUtil.h>
 
 namespace hgl
 {

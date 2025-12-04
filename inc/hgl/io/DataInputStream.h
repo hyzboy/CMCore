@@ -2,7 +2,7 @@
 
 #include<hgl/io/InputStream.h>
 #include<hgl/type/String.h>
-#include<hgl/math/Vector.h>
+
 namespace hgl
 {
     namespace io
@@ -111,10 +111,6 @@ namespace hgl
             STREAM_READ(double,     Double  );
 
             #undef STREAM_READ
-
-            bool Read(Vector2f &vec){return ReadFloat((float *)&vec,2)==2;}
-            bool Read(Vector3f &vec){return ReadFloat((float *)&vec,3)==3;}
-            bool Read(Vector4f &vec){return ReadFloat((float *)&vec,4)==4;}
 
             /**
             * 自适应类型数据读取</p>

@@ -15,8 +15,5 @@
 #include<hgl/type/MemoryAlloc.h>        // 内存分配
 #include<hgl/type/MipmapUtil.h>         // Mipmap计算
 #include<hgl/type/ArrayWriter.h>        // 数组写入器
-#include<hgl/math/Binary.h>             // 二进制常数
-#include<hgl/time/TimeConst.h>          // 时间常数
-#include<hgl/math/PhysicsConst.h>       // 物理常数
 #include<hgl/Endian.h>                  // 编码序定义
 #include<hgl/Comparator.h>              // 比较操作符实现定义
