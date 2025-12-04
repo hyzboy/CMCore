@@ -1,6 +1,7 @@
 ﻿#pragma once
 
-#include<hgl/type/DataType.h>
+#include<hgl/time/TimeConst.h>
+#include<hgl/Comparator.h>
 #include<hgl/time/TimeConst.h>
 
 namespace hgl

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/DataType.h>
+#include<hgl/type/Smart.h>
 #include<hgl/type/SortedSet.h>
 #include<hgl/type/String.h>
 #include<hgl/thread/ThreadMutex.h>

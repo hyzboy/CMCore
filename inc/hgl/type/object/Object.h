@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include<hgl/type/DataType.h>
+#include<hgl/type/Smart.h>
+#include<hgl/Comparator.h>
 #include<hgl/type/object/ObjectBaseInfo.h>
 #include<source_location>
 

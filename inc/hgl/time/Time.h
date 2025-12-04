@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/DataType.h>
+#include<hgl/time/TimeConst.h>
 
 namespace hgl   //时间
 {

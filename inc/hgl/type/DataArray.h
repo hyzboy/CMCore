@@ -1,6 +1,7 @@
 ﻿#pragma once
 
-#include<hgl/type/DataType.h>
+#include<hgl/type/StrChar.h>
+#include<hgl/Comparator.h>
 #include<hgl/type/ArrayRearrangeHelper.h>
 #include<hgl/type/ArrayItemProcess.h>
 namespace hgl

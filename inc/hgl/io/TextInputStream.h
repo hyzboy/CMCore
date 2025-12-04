@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include<hgl/type/DataType.h>
+#include<hgl/type/StrChar.h>
 #include<hgl/type/String.h>
 #include<hgl/io/InputStream.h>
 

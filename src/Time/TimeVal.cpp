@@ -1,4 +1,4 @@
-﻿#include<hgl/type/DataType.h>
+﻿#include<hgl/time/TimeConst.h>
 
 #if HGL_OS_BSD
 #include<sys/time.h>

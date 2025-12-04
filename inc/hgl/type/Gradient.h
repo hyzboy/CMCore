@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/DataType.h>
+#include<hgl/type/StrChar.h>
 #include<hgl/type/ArrayList.h>
 #include<hgl/util/sort/Sort.h>
 

@@ -1,6 +1,8 @@
 ﻿#pragma once
 
-#include<hgl/type/DataType.h>
+#include<hgl/type/StrChar.h>
+#include<hgl/type/MemoryAlloc.h>
+#include<hgl/Comparator.h>
 namespace hgl
 {
     /**

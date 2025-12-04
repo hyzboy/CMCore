@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include<hgl/type/DataType.h>
+#include<hgl/type/MemoryUtil.h>
+#include<hgl/type/AlignUtil.h>
 namespace hgl
 {
     namespace io

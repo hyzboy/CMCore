@@ -1,4 +1,4 @@
-﻿#include<hgl/type/DataType.h>
+﻿#include<hgl/time/TimeConst.h>
 #include<hgl/time/DateTime.h>
 
 #include<chrono>

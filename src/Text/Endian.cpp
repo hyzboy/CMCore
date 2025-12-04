@@ -1,4 +1,4 @@
-﻿#include<hgl/type/DataType.h>
+﻿#include<hgl/Endian.h>
 
 namespace hgl
 {

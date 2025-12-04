@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/DataType.h>
+#include<hgl/type/StrChar.h>
 #include<hgl/log/Log.h>
 #include<hgl/platform/FuncLoad.h>
 #include OS_EXTERNAL_H

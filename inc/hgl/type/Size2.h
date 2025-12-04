@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/DataType.h>
+#include<hgl/type/CompareUtil.h>
 #include<hgl/math/Vector.h>
 
 namespace hgl
