@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Clamp.h - 数值范围限制函数
  * 
  * 包含：
@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include<hgl/BasicType.h>
+#include<hgl/CoreType.h>
 
 namespace hgl
 {

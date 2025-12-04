@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/math/Clamp.h>
-#include<hgl/BasicType.h>
+#include<hgl/CoreType.h>
 
 namespace hgl
 {

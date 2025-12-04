@@ -1,27 +1,4 @@
 ﻿##==================================================================================================
-## Platform 平台相关
-##==================================================================================================
-SET(CORE_PLATFORM_INCLUDE_PATH  ${CMCORE_ROOT_INCLUDE_PATH}/hgl/platform)
-
-SET(CORE_PLATFORM_HEADER_FILES  ${CORE_PLATFORM_INCLUDE_PATH}/Platform.h)
-
-FILE(GLOB CORE_PLATFORM_OS_FILES ${CORE_PLATFORM_INCLUDE_PATH}/os/*.h)
-FILE(GLOB CORE_PLATFORM_COMPILER_FILES ${CORE_PLATFORM_INCLUDE_PATH}/compiler/*.h)
-
-SOURCE_GROUP("Platform" FILES ${CORE_PLATFORM_HEADER_FILES})
-SOURCE_GROUP("Platform\\OS" FILES ${CORE_PLATFORM_OS_FILES})
-SOURCE_GROUP("Platform\\Compiler" FILES ${CORE_PLATFORM_COMPILER_FILES})
-
-SET(CORE_PLATFORM_HEADER_FILES  ${CORE_PLATFORM_HEADER_FILES}
-                              ${CORE_PLATFORM_OS_FILES}
-                              ${CORE_PLATFORM_COMPILER_FILES})
-
-#SET(SYSTEM_INFO_SOURCE  ${CORE_PLATFORM_INCLUDE_PATH}/SystemInfo.h
-#                        SystemInfo.cpp)
-
-#SOURCE_GROUP("Platform\\SystemInfo" FILES ${SYSTEM_INFO_SOURCE})
-
-##==================================================================================================
 ## DataType 数据类型基础
 ##==================================================================================================
 SET(TYPE_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type)
@@ -31,10 +8,8 @@ SET(TYPE_INFO_FILE ${TYPE_INCLUDE_PATH}/TypeInfo.h)
 SOURCE_GROUP("DataType" FILES ${TYPE_INFO_FILE})
 
 ## Type 类型工具模块（模块化拆分）
-SET(TYPE_UTIL_HEADER_FILES  ${TYPE_INCLUDE_PATH}/Constants.h
-                            ${TYPE_INCLUDE_PATH}/EnumUtil.h
+SET(TYPE_UTIL_HEADER_FILES  ${TYPE_INCLUDE_PATH}/EnumUtil.h
                             ${TYPE_INCLUDE_PATH}/BitOperations.h
-                            ${TYPE_INCLUDE_PATH}/TypeLimits.h
                             ${TYPE_INCLUDE_PATH}/AlignUtil.h
                             ${TYPE_INCLUDE_PATH}/CompareUtil.h
                             ${TYPE_INCLUDE_PATH}/MemoryUtil.h
@@ -401,7 +376,7 @@ SOURCE_GROUP("Log\\Source Files" FILES ${BASE_LOG_SOURCE})
 ##==================================================================================================
 ## Library 库定义
 ##==================================================================================================
-add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
+add_cm_library(CMCore "CM"
 #                        ${SYSTEM_INFO_SOURCE}
 
                         ${TYPE_INFO_FILE}
@@ -453,3 +428,5 @@ add_cm_library(CMCore "CM"  ${CORE_PLATFORM_HEADER_FILES}
                         ${BASE_LOG_HEADER}
                         ${BASE_LOG_SOURCE}
                         )
+
+target_link_libraries(CMCore PRIVATE CMCoreType)

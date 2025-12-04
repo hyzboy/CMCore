@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FloatPrecision.h - 浮点数精度常量与比较
  * 
  * 包含：
@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include<hgl/BasicType.h>
+#include<hgl/CoreType.h>
 #include<limits>
 #include<cmath>
 
