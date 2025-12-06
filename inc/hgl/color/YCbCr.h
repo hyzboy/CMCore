@@ -43,16 +43,16 @@ namespace hgl
 
     inline void RGB2YCbCr(uint8 &y,uint8 &cb,uint8 &cr,const uint8 &r,const uint8 &g,const uint8 &b)
     {
-        y =uint8(Clamp(YCBCR_Y_R*r+YCBCR_Y_G*g+YCBCR_Y_B*b));
-        cb=uint8(Clamp(YCBCR_OFFSET-YCBCR_CB_R*r-YCBCR_CB_G*g+YCBCR_CB_B*b));
-        cr=uint8(Clamp(YCBCR_OFFSET+YCBCR_CR_R*r-YCBCR_CR_G*g-YCBCR_CR_B*b));
+        y =uint8(math::Clamp(YCBCR_Y_R*r+YCBCR_Y_G*g+YCBCR_Y_B*b));
+        cb=uint8(math::Clamp(YCBCR_OFFSET-YCBCR_CB_R*r-YCBCR_CB_G*g+YCBCR_CB_B*b));
+        cr=uint8(math::Clamp(YCBCR_OFFSET+YCBCR_CR_R*r-YCBCR_CR_G*g-YCBCR_CR_B*b));
     }
     
     inline void YCbCr2RGB(uint8 &r,uint8 &g,uint8 &b,const uint8 &y,const uint8 &cb,const uint8 &cr)
     {
-        r=uint8(Clamp(y+YCBCR2RGB_CR*(cr-YCBCR_OFFSET)));
-        g=uint8(Clamp(y-YCBCR2RGB_CB_G*(cb-YCBCR_OFFSET)-YCBCR2RGB_CR_G*(cr-YCBCR_OFFSET)));
-        b=uint8(Clamp(y+YCBCR2RGB_CB*(cb-YCBCR_OFFSET)));
+        r=uint8(math::Clamp(y+YCBCR2RGB_CR*(cr-YCBCR_OFFSET)));
+        g=uint8(math::Clamp(y-YCBCR2RGB_CB_G*(cb-YCBCR_OFFSET)-YCBCR2RGB_CR_G*(cr-YCBCR_OFFSET)));
+        b=uint8(math::Clamp(y+YCBCR2RGB_CB*(cb-YCBCR_OFFSET)));
     }
 
     template<typename T>
@@ -64,7 +64,7 @@ namespace hgl
     template<>
     constexpr uint8 RGB2Cb(const uint8 &r, const uint8 &g, const uint8 &b)
     {
-        return uint8(Clamp(YCBCR_OFFSET-YCBCR_CB_R*r-YCBCR_CB_G*g+YCBCR_CB_B*b));
+        return uint8(math::Clamp(YCBCR_OFFSET-YCBCR_CB_R*r-YCBCR_CB_G*g+YCBCR_CB_B*b));
     }
     
     template<typename T>
@@ -76,6 +76,6 @@ namespace hgl
     template<>
     constexpr uint8 RGB2Cr(const uint8 &r, const uint8 &g, const uint8 &b)
     {
-        return uint8(Clamp(YCBCR_OFFSET+YCBCR_CR_R*r-YCBCR_CR_G*g-YCBCR_CR_B*b));
+        return uint8(math::Clamp(YCBCR_OFFSET+YCBCR_CR_R*r-YCBCR_CR_G*g-YCBCR_CR_B*b));
     }
 }//namespace hgl

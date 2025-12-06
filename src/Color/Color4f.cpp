@@ -72,20 +72,20 @@ namespace hgl
     //--------------------------------------------------------------------------------------------------
     bool Color4f::operator == (const Color4f &v) const
     {
-        if(!IsNearlyEqual(r,v.r))return(false);
-        if(!IsNearlyEqual(g,v.g))return(false);
-        if(!IsNearlyEqual(b,v.b))return(false);
-        if(!IsNearlyEqual(a,v.a))return(false);
+        if(!math::IsNearlyEqual(r,v.r))return(false);
+        if(!math::IsNearlyEqual(g,v.g))return(false);
+        if(!math::IsNearlyEqual(b,v.b))return(false);
+        if(!math::IsNearlyEqual(a,v.a))return(false);
 
         return(true);
     }
     //--------------------------------------------------------------------------------------------------
     bool Color4f::operator != (const Color4f &v) const
     {
-        if(!IsNearlyEqual(r,v.r))return(true);
-        if(!IsNearlyEqual(g,v.g))return(true);
-        if(!IsNearlyEqual(b,v.b))return(true);
-        if(!IsNearlyEqual(a,v.a))return(true);
+        if(!math::IsNearlyEqual(r,v.r))return(true);
+        if(!math::IsNearlyEqual(g,v.g))return(true);
+        if(!math::IsNearlyEqual(b,v.b))return(true);
+        if(!math::IsNearlyEqual(a,v.a))return(true);
 
         return(false);
     }
