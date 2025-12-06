@@ -46,7 +46,7 @@ namespace hgl
         const KVData *arr = data_list.GetData();
         for(int i = 0; i < count; ++i)
         {
-            if(hgl_cmp(arr[i].value,value) == 0) return i;
+            if(mem_compare(arr[i].value,value) == 0) return i;
         }
         return -1;
     }

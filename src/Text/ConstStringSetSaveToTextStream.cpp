@@ -39,7 +39,7 @@ namespace hgl
 
             AutoDeleteArray<SC> text(length);
 
-            hgl_cpy<SC>(text,data_array.data(),length);
+            mem_copy<SC>(text,data_array.data(),length);
 
             for(int i=0;i<length;i++)
             {

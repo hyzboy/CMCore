@@ -1,6 +1,6 @@
 ﻿#include<hgl/math/Transform.h>
 
-namespace hgl
+namespace hgl::math
 {
     Transform Lerp(const Transform &from,const Transform &to,const float t)
     {
@@ -106,7 +106,7 @@ namespace hgl
         return(true);
     }
 
-    void Transform::SetFromMatrix4f(const Matrix4f &m)
+    void Transform::SetFromMatrix4f(const math::Matrix4f &m)
     {
         if(is_identity)
         {
@@ -133,4 +133,4 @@ namespace hgl
 
         ExtractedQuat(rotation_quat,rotation_axis,rotate_angle);
     }
-}//namespace hgl
+}//namespace hgl::math

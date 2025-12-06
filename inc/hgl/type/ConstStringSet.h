@@ -184,7 +184,7 @@ namespace hgl
             
                 SC *save_str=str_data.GetData()+csv.offset;
 
-                hgl_cpy<SC>(save_str,str,length);
+                mem_copy<SC>(save_str,str,length);
 
                 save_str[length]=0;
             }

@@ -32,9 +32,9 @@ namespace hgl
         sp=sl.GetDataList();
         for(int i=0;i<line;i++)
         {
-            hgl_cpy(tp,(*sp)->c_str(),(*sp)->Length());
+            mem_copy(tp,(*sp)->c_str(),(*sp)->Length());
             tp+=(*sp)->Length();
-            hgl_cpy(tp,end_line.c_str(),end_line.Length());
+            mem_copy(tp,end_line.c_str(),end_line.Length());
             tp+=end_line.Length();
 
             ++sp;

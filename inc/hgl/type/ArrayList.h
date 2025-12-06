@@ -3,6 +3,7 @@
 #include<stdlib.h>
 #include<initializer_list>
 #include<hgl/type/DataArray.h>
+#include<hgl/type/MemoryUtil.h>
 
 namespace hgl
 {
@@ -91,7 +92,7 @@ namespace hgl
 
             data_array.Expand(n);
 
-            hgl_set(data_array.data()+ec,&data,n);
+            mem_fill_pattern(data_array.data()+ec,&data,n);
 
             return(ec);
         }

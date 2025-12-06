@@ -37,11 +37,11 @@ namespace hgl
         const int       compare         (const DataArray<T> &vil)const override
         {
             if(count==vil.count)
-                return hgl_cmp<T>(items,vil.items,count);
+                return mem_compare<T>(items,vil.items,count);
 
             int cmp_count=hgl_min(count,vil.count);
 
-            int result=hgl_cmp<T>(items,vil.items,cmp_count);
+            int result=mem_compare<T>(items,vil.items,cmp_count);
 
             if(result)
                 return(result);
@@ -149,7 +149,7 @@ namespace hgl
         void Zero()
         {
             if(items)
-                hgl_zero(items,alloc_count);
+                mem_zero(items,alloc_count);
         }
 
         /**
@@ -200,7 +200,7 @@ namespace hgl
         {
             if(index<0||index>=count)return(false);
 
-            hgl_cpy(obj,items[index]);
+            mem_copy(obj,items[index]);
             return(true);
         }
 
@@ -208,7 +208,7 @@ namespace hgl
         {
             if(!obj||start<0||start+num>count)return(false);
 
-            hgl_cpy(obj,items+start,num);
+            mem_copy(obj,items+start,num);
             return(true);
         }
 
@@ -216,7 +216,7 @@ namespace hgl
         {
             if(index<0||index>=count)return(false);
 
-            hgl_cpy(items[index],obj);
+            mem_copy(items[index],obj);
             return(true);
         }
 
@@ -224,7 +224,7 @@ namespace hgl
         {
             if(!obj||start<0||start+num>count)return(false);
 
-            hgl_cpy(items+start,obj,num);
+            mem_copy(items+start,obj,num);
             return(true);
         }
 
@@ -241,14 +241,14 @@ namespace hgl
 
             Resize(da.GetCount());
 
-            hgl_cpy<T>(items,da.items,count);
+            mem_copy<T>(items,da.items,count);
         }
 
         void operator = (const std::initializer_list<T> &l)
         {
             Resize((int64)l.size());
 
-            hgl_cpy<T>(items,l.begin(),count);
+            mem_copy<T>(items,l.begin(),count);
         }
 
         /**
@@ -284,7 +284,7 @@ namespace hgl
                     //      ^             v
                     //      +<<<<<<<<<<<<<+
 
-                    hgl_cpy<T>(items+start,items+start+delete_count,end_count);
+                    mem_copy<T>(items+start,items+start+delete_count,end_count);
                 }
                 else                                                        //后面的数据个数比删除的数据个数多，那就只移动等长的最后一段数据
                 {
@@ -293,7 +293,7 @@ namespace hgl
                     //  ^                v
                     //  +<<<<<<<<<<<<<<<<+
 
-                    hgl_cpy<T>(items+start,items+(count-delete_count),delete_count);
+                    mem_copy<T>(items+start,items+(count-delete_count),delete_count);
                 }
             }
             //else{后面都没数据了，那就啥都不用干了}
@@ -327,7 +327,7 @@ namespace hgl
             const int64 end_count=count-(start+delete_count);
 
             if(end_count>0)
-                hgl_cpy<T>(items+start,items+start+delete_count,end_count);
+                mem_copy<T>(items+start,items+start+delete_count,end_count);
 
             count-=delete_count;
 
@@ -602,9 +602,9 @@ namespace hgl
 
                 T *new_items=hgl_align_malloc<T>(new_alloc_count);
 
-                if(pos>0)       hgl_cpy(new_items,items,pos);
-                                hgl_cpy(new_items+pos,data,data_number);
-                if(pos<count)   hgl_cpy(new_items+pos+data_number,items+pos,(count-pos));
+                if(pos>0)       mem_copy(new_items,items,pos);
+                                mem_copy(new_items+pos,data,data_number);
+                if(pos<count)   mem_copy(new_items+pos+data_number,items+pos,(count-pos));
 
                 hgl_free(items);
                 items=new_items;
@@ -613,9 +613,9 @@ namespace hgl
             else
             {
                 if(pos<count)
-                    hgl_move(items+pos+data_number,items+pos,count-pos);
+                    mem_move(items+pos+data_number,items+pos,count-pos);
 
-                hgl_cpy(items+pos,data,data_number);
+                mem_copy(items+pos,data,data_number);
             }
 
             count+=data_number;

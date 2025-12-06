@@ -24,7 +24,7 @@ namespace hgl
             codepage=0;
         #endif//HGL_OS == HGL_OS_Windows
 
-            hgl_zero(charset);
+            mem_zero(charset);
         }
 
     #if HGL_OS == HGL_OS_Windows
@@ -37,7 +37,7 @@ namespace hgl
 
         CharSet(const CharSetName &cs)
         {
-            hgl_cpy(charset,cs);
+            mem_copy(charset,cs);
         #if HGL_OS == HGL_OS_Windows
             codepage=FindCodePage(charset);
         #endif//HGL_OS == HGL_OS_Windows

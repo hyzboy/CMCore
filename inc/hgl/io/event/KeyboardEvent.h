@@ -202,8 +202,8 @@ namespace hgl
             KeyboardStateEvent():KeyboardEvent()
             {
                 cur_time=0;
-                hgl_zero(press_states);
-                hgl_zero(pressed_time);
+                mem_zero(press_states);
+                mem_zero(pressed_time);
             }
 
             virtual ~KeyboardStateEvent()=default;

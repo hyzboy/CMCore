@@ -100,9 +100,9 @@ namespace hgl
 
             #undef STREAM_WRITE
 
-            bool Write(const Vector2f &vec){return WriteFloat((float *)&vec,2)==2;}
-            bool Write(const Vector3f &vec){return WriteFloat((float *)&vec,3)==3;}
-            bool Write(const Vector4f &vec){return WriteFloat((float *)&vec,4)==4;}
+            bool Write(const math::Vector2f &vec){return WriteFloat((float *)&vec,2)==2;}
+            bool Write(const math::Vector3f &vec){return WriteFloat((float *)&vec,3)==3;}
+            bool Write(const math::Vector4f &vec){return WriteFloat((float *)&vec,4)==4;}
 
             /**
             * 自适应类型数据写入</p>

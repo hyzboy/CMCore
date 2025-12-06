@@ -208,7 +208,7 @@ namespace hgl
                 data_index.Append(index);
             }
 
-            hgl_cpy<T>(data_array[index],data);
+            mem_copy<T>(data_array[index],data);
             return index;
         }
 
@@ -241,7 +241,7 @@ namespace hgl
                     free_index.Pop(index);
                     data_index.Append(index);
 
-                    hgl_cpy<T>(data_array[index],data[i]);
+                    mem_copy<T>(data_array[index],data[i]);
                 }
 
                 n-=mc;
@@ -262,7 +262,7 @@ namespace hgl
                 for(int32 i=0;i<n;i++)
                     data_index[index+i]=index+i;
 
-                hgl_cpy<T>(data_array.At(index),data,n);
+                mem_copy<T>(data_array.At(index),data,n);
 
                 result+=n;
             }
@@ -312,7 +312,7 @@ namespace hgl
                 data_index.Insert(pos,index);
             }
 
-            hgl_cpy<T>(data_array[index],value);
+            mem_copy<T>(data_array[index],value);
             return true;
         }
 
@@ -367,7 +367,7 @@ namespace hgl
             overflow_index.Reserve(count);
             space_location.Reserve(count);
 
-            hgl_cpy(sorted_index.GetData(),data_index.GetData(),count);
+            mem_copy(sorted_index.GetData(),data_index.GetData(),count);
 
             std::sort(sorted_index.begin(),sorted_index.end(),std::less<int>());
 
@@ -418,7 +418,7 @@ namespace hgl
                 {
                     overflow_index.Pop(index);
 
-                    hgl_cpy<T>(data_array[new_location],data_array[data_index[index]]);
+                    mem_copy<T>(data_array[new_location],data_array[data_index[index]]);
 
                     data_index[index]=new_location;
                 }
@@ -474,7 +474,7 @@ namespace hgl
 
                 // 批量复制连续块的数据
                 int length = end - start + 1;
-                hgl_cpy<T>(temp_array+start, data_array.GetData() + data_index[start], length);
+                mem_copy<T>(temp_array+start, data_array.GetData() + data_index[start], length);
 
                 // 更新索引
                 i = end + 1;

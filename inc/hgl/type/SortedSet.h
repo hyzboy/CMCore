@@ -181,7 +181,7 @@ namespace hgl
             if(!begin())
                 return(false);
             
-            hgl_cpy<T>(data,*begin());
+            mem_copy<T>(data,*begin());
             return(true);
         }
         
@@ -190,7 +190,7 @@ namespace hgl
             if(!last())
                 return(false);
 
-            hgl_cpy<T>(data,*last());
+            mem_copy<T>(data,*last());
             return(true);
         }
 

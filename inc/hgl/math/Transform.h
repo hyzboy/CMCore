@@ -9,7 +9,7 @@
 #include<hgl/type/ObjectList.h>
 #include<hgl/type/VersionData.h>
 
-namespace hgl
+namespace hgl::math
 {
     /**
     * 变换基类
@@ -195,7 +195,7 @@ namespace hgl
             UpdateVersion();
         }
 
-        TransformRotateQuat(const Quatf &q):TransformBase()
+        TransformRotateQuat(const math::Quatf &q):TransformBase()
         {
             quat=q;
             UpdateVersion();
@@ -212,8 +212,8 @@ namespace hgl
             return(new TransformRotateQuat(quat));
         }
 
-        const Quatf &GetQuat()const { return quat; }
-        void SetQuat(const Quatf &q)
+        const math::Quatf &GetQuat()const { return quat; }
+        void SetQuat(const math::Quatf &q)
         {
             if(IsNearlyEqual(quat,q))
                 return;
@@ -524,10 +524,10 @@ namespace hgl
 
     public:
 
-        TransformManager()=default;
+        math::TransformManager()=default;
         virtual ~TransformManager()=default;
 
-        TransformManager(const TransformManager *tm):TransformBase(tm)
+        math::TransformManager(const math::TransformManager *tm):TransformBase(tm)
         {
             for(const TransformBase *tb:tm->transform_list)
                 AddTransform(tb->CloneSelf());
@@ -537,7 +537,7 @@ namespace hgl
 
         TransformBase *CloneSelf()const override
         {
-            TransformManager *tm=new TransformManager;
+            math::TransformManager *tm=new math::TransformManager;
 
             for(TransformBase *tb:transform_list)
                 tm->AddTransform(tb->CloneSelf());
@@ -545,7 +545,7 @@ namespace hgl
             return tm;
         }
 
-        void operator = (const TransformManager &tm)
+        void operator = (const math::TransformManager &tm)
         {
             Clear();
 
@@ -585,7 +585,7 @@ namespace hgl
             return tra;
         }
 
-        TransformRotateQuat *AddRotateQuat(const Quatf &q)
+        TransformRotateQuat *AddRotateQuat(const math::Quatf &q)
         {
             TransformRotateQuat *trq=new TransformRotateQuat(q);
 
@@ -663,7 +663,7 @@ namespace hgl
 
             return has_update;
         }
-    };//class TransformManager
+    };//class math::TransformManager
 
     /**
      * 变换矩阵<Br>
@@ -732,7 +732,7 @@ namespace hgl
         const Vector3f &GetTranslation  ()const{return translation_vector;}
         const Vector3f &GetScale        ()const{return scale_vector;}
 
-        const Quatf &   GetRotationQuat ()const{return rotation_quat;}
+        const math::Quatf &   GetRotationQuat ()const{return rotation_quat;}
         const Vector3f &GetRotationAxis ()const{return rotation_axis;}
         const float     GetRotateAngle  ()const{return rotate_angle;}
 
@@ -778,7 +778,7 @@ namespace hgl
             matrix_dirty=true;
         }
 
-        void SetRotation(const Quatf &q)
+        void SetRotation(const math::Quatf &q)
         {
             if(is_identity)
             {
@@ -900,9 +900,19 @@ namespace hgl
         }
 
         Transform(const Transform &t)
+            : version(0)
+            , is_identity(t.is_identity)
+            , is_zero_rotate(t.is_zero_rotate)
+            , matrix_dirty(t.matrix_dirty)
+            , matrix(t.matrix)
+            , inverse_matrix(t.inverse_matrix)
+            , transpose_inverse_matrix(t.transpose_inverse_matrix)
+            , translation_vector(t.translation_vector)
+            , rotation_quat(t.rotation_quat)
+            , rotation_axis(t.rotation_axis)
+            , rotate_angle(t.rotate_angle)
+            , scale_vector(t.scale_vector)
         {
-            hgl_cpy(*this,t);
-            version=0;
         }
 
         void SetToIdentity();
@@ -911,14 +921,28 @@ namespace hgl
 
         void operator = (const Transform &t)
         {
+            if(this == &t)
+                return;
+
             if(operator==(t))
                 return;
 
-            uint32 old_version=version;
+            uint32 old_version = version;
 
-            hgl_cpy(*this,t);
+            // 逐成员复制，避免使用 mem_copy
+            is_identity = t.is_identity;
+            is_zero_rotate = t.is_zero_rotate;
+            matrix_dirty = t.matrix_dirty;
+            matrix = t.matrix;
+            inverse_matrix = t.inverse_matrix;
+            transpose_inverse_matrix = t.transpose_inverse_matrix;
+            translation_vector = t.translation_vector;
+            rotation_quat = t.rotation_quat;
+            rotation_axis = t.rotation_axis;
+            rotate_angle = t.rotate_angle;
+            scale_vector = t.scale_vector;
 
-            version=++old_version;
+            version = ++old_version;
             UpdateMatrix();
         }
 
@@ -962,4 +986,4 @@ namespace hgl
     constexpr const size_t TransformMatrix4fLength=sizeof(Transform);
 
     Transform Lerp(const Transform &from,const Transform &to,const float t);
-}//namespace hgl
+}//namespace hgl::math

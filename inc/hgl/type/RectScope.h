@@ -72,8 +72,8 @@ namespace hgl
 
         bool PointIn(T,T)const;
 
-        bool PointIn(const Vector2f &v)const{return PointIn(v.x,v.y);}
-        bool PointIn(const Vector3f &v)const{return PointIn(v.x,v.y);}
+        bool PointIn(const math::Vector2f &v)const{return PointIn(v.x,v.y);}
+        bool PointIn(const math::Vector3f &v)const{return PointIn(v.x,v.y);}
 
         template<typename N>
         void operator = (const RectScope2<N> &rs)

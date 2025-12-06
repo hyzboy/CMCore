@@ -46,7 +46,7 @@ namespace hgl
 
         FontInfo()
         {
-            hgl_zero(*this);
+            mem_zero(*this);
         }
     };
 

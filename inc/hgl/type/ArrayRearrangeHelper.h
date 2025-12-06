@@ -115,7 +115,7 @@ namespace hgl
 
                 f=field_list+(*index);
 
-                hgl_cpy<T>(p,old_array+f->start,f->count);
+                mem_copy<T>(p,old_array+f->start,f->count);
 
                 p+=f->count;
                 ++index;

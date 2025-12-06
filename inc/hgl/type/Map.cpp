@@ -97,8 +97,8 @@ namespace hgl
 
         for(int i=0;i<count;i++)
         {
-            //if((*data_array)->value==data)
-            if(hgl_cmp((*data_array)->value,data)==0)
+            // 使用 operator== 而不是 mem_compare，以支持非 trivially copyable 类型
+            if((*data_array)->value == data)
                 return(i);
 
             ++data_array;

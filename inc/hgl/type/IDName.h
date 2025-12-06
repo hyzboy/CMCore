@@ -90,7 +90,7 @@ namespace hgl
 
         void operator = (const SelfClass &id_name)
         {
-            hgl_cpy(csv,id_name.csv);
+            mem_copy(csv,id_name.csv);
         }
 
     public:

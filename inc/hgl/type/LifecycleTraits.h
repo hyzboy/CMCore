@@ -10,7 +10,7 @@ namespace hgl
     *  - create: 返回true，不做构造(容器可先分配后手动init)
     *  - destroy: 非平凡析构则显式逐个调用析构
     *  - init:  可平凡类型用 zero， 否则placement new 默认构造
-    *  - copy:  可平凡复制用 hgl_cpy，否则逐个赋值
+    *  - copy:  可平凡复制用 mem_copy，否则逐个赋值
     *  - on_active/on_idle: 缺省返回 true
     */
     template<typename T>
@@ -31,7 +31,7 @@ namespace hgl
         {
             if(!ptr||count<=0) return;
             if constexpr(std::is_trivially_copyable_v<T>)
-                hgl_zero(ptr,count);
+                mem_zero(ptr,count);
             else
                 for(int i=0;i<count;i++) new(ptr+i) T();
         }
@@ -40,7 +40,7 @@ namespace hgl
         {
             if(!dst||!src||count<=0) return;
             if constexpr(std::is_trivially_copyable_v<T>)
-                hgl_cpy(dst,src,count);
+                mem_copy(dst,src,count);
             else
                 for(int i=0;i<count;i++) dst[i]=src[i];
         }
@@ -65,8 +65,8 @@ namespace hgl
                 if(p[i]){ delete p[i]; p[i]=nullptr; }
             }
         }
-        static void init(T **p,int count){ if(!p||count<=0) return; hgl_zero(p,count); }
-        static void copy(T **dst,T *const *src,int count){ if(!dst||!src||count<=0)return; hgl_cpy(dst,src,count); }
+        static void init(T **p,int count){ if(!p||count<=0) return; mem_zero(p,count); }
+        static void copy(T **dst,T *const *src,int count){ if(!dst||!src||count<=0)return; mem_copy(dst,src,count); }
         static bool on_active(T **,int =1){ return true; }
         static bool on_idle  (T **,int =1){ return true; }
     };

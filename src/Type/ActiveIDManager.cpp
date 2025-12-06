@@ -49,7 +49,7 @@ namespace hgl
         if(!Create(end,count))return(0);
 
         if(idp)
-            hgl_cpy(idp,end,count);
+            mem_copy(idp,end,count);
 
         idle_list.Resize(new_count);
 

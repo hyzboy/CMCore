@@ -59,7 +59,7 @@ namespace hgl
          */
         void Stats(RefPoolStats &stats,const K *key_list,const int key_count)
         {
-            hgl_zero(stats);
+            mem_zero(stats);
 
             const K *kp=key_list;
             for(int i=0;i<key_count;i++)

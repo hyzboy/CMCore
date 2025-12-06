@@ -31,14 +31,14 @@ namespace hgl::io
     {
         WindowEventData *wed=nullptr;
 
-        Vector2i WindowSize{};
+        math::Vector2i WindowSize{};
 
     public:
 
         WindowEvent():EventDispatcher(InputEventSource::Window){}
         virtual ~WindowEvent()=default;
 
-        const Vector2i &GetWindowSize()const{return WindowSize;}
+        const math::Vector2i &GetWindowSize()const{return WindowSize;}
 
         virtual EventProcResult OnEvent(const EventHeader &header,const uint64 data) override
         {

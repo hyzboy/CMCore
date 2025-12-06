@@ -91,7 +91,7 @@ namespace hgl
             if(!p)
                 return(false);
 
-            hgl_cpy<T>(*p,value);
+            mem_copy<T>(*p,value);
 
             return(true);
         }
@@ -264,7 +264,7 @@ namespace hgl
                 // EN: Move valid data from the end to the hole position
                 T *src=data_array.At(last_valid_loc);
                 T *dst=data_array.At(free_loc);
-                hgl_cpy<T>(*dst,*src);
+                mem_copy<T>(*dst,*src);
 
                 // CN: 更新双向映射
                 // EN: Update bidirectional mapping

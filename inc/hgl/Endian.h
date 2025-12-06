@@ -177,7 +177,7 @@ namespace hgl
             template<typename T> T ToBigEndian(T value){return value;}
 
             template<typename T> inline void ToBigEndian(T *value,const int64 count){}
-            template<typename D,typename S> inline void ToBigEndian(D *dst,const S *src,const int64 count){hgl_cpy(dst,src,count);}
+            template<typename D,typename S> inline void ToBigEndian(D *dst,const S *src,const int64 count){mem_copy(dst,src,count);}
 
             template<typename T> T ToLittleEndian(T value){return EndianSwap(value);}
 
@@ -202,7 +202,7 @@ namespace hgl
             template<typename T> T ToLittleEndian(T value){return value;}
 
             template<typename T> inline void ToLittleEndian(T *,const int64){}
-            template<typename D,typename S> inline void ToLittleEndian(D *dst,const S *src,const int64 count){typeconv(dst,src,count);}
+            template<typename D,typename S> inline void ToLittleEndian(D *dst,const S *src,const int64 count){convert_copy(dst,src,count);}
 
         #endif//HGL_BIG_ENDIAN
 

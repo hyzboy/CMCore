@@ -18,16 +18,16 @@ namespace hgl
     {
         void Equal(T &dst,const T &src) override {dst=src;}
 
-        void Equal(T *dst,const T *src,const int count) override {hgl_cpy(dst,src,count);}
+        void Equal(T *dst,const T *src,const int count) override {mem_copy(dst,src,count);}
 
         int Comp(const T &a,const T &b) override {return a-b;}
     };
 
     template<typename T> struct MemoryArrayItemProcessCallback:public ArrayItemProcessCallback<T>
     {
-        void Equal(T &dst,const T &src) override {hgl_cpy<T>(dst,src);}
+        void Equal(T &dst,const T &src) override {mem_copy<T>(dst,src);}
 
-        void Equal(T *dst,const T *src,const int count) override {hgl_cpy(dst,src,count);}
+        void Equal(T *dst,const T *src,const int count) override {mem_copy(dst,src,count);}
 
         int Comp(const T &a,const T &b) override {return memcmp(a,b,sizeof(T));}
     };

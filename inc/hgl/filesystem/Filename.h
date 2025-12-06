@@ -164,7 +164,7 @@ namespace hgl::filesystem
                 first = false;
             }
 
-            hgl_cpy<T>(write_ptr, ptrs[i], len); // CN: 拷贝段内容
+            mem_copy<T>(write_ptr, ptrs[i], len); // CN: 拷贝段内容
             // EN: copy segment content
             write_ptr += len;
         }
@@ -279,7 +279,7 @@ namespace hgl::filesystem
                 first = false;
             }
 
-            hgl_cpy<T>(write_ptr, ptrs[i], len);
+            mem_copy<T>(write_ptr, ptrs[i], len);
             write_ptr += len;
         }
 
@@ -368,7 +368,7 @@ namespace hgl::filesystem
         // EN: copy segments and insert separator_char between
         for(int i=0;i<index;i++)
         {
-            hgl_cpy<T>(write_ptr, ptrs[i], lens[i]);
+            mem_copy<T>(write_ptr, ptrs[i], lens[i]);
             write_ptr += lens[i];
 
             if(i < index-1)
@@ -474,7 +474,7 @@ namespace hgl::filesystem
 
         for(int i=0;i<index;i++)
         {
-            hgl_cpy<T>(write_ptr, ptrs[i], lens[i]);
+            mem_copy<T>(write_ptr, ptrs[i], lens[i]);
             write_ptr += lens[i];
 
             if(i < index-1)

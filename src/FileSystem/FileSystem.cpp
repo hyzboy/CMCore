@@ -354,12 +354,12 @@ namespace hgl
 
             struct_stat64 file_state;
 
-            hgl_zero(file_state);
+            mem_zero(file_state);
 
             if(hgl_lstat64(filename,&file_state)==-1)
                 return(false);
 
-            hgl_zero(fi);
+            mem_zero(fi);
 
             if(file_state.st_mode&S_IFREG)
                 fi.is_file=true;
