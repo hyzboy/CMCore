@@ -80,16 +80,8 @@ SOURCE_GROUP("Math\\Header Files" FILES ${MATH_HEADER_FILES})
 SOURCE_GROUP("Math\\Source Files" FILES ${MATH_SOURCE_FILES})
 
 ##==================================================================================================
-## Color 颜色
-##==================================================================================================
-FILE(GLOB COLOR_HEADER_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/color/*.h)
-FILE(GLOB COLOR_SOURCE_FILES Color/*.cpp)
-
-SOURCE_GROUP("DataType\\Color\\Header Files" FILES ${COLOR_HEADER_FILES})
-SOURCE_GROUP("DataType\\Color\\Source Files" FILES ${COLOR_SOURCE_FILES})
-
-
 ## String 字符串类
+##==================================================================================================
 SET(STRING_HEADER_FILES ${TYPE_INCLUDE_PATH}/String.h
                         ${TYPE_INCLUDE_PATH}/StringView.h
                         ${TYPE_INCLUDE_PATH}/StringViewList.h
@@ -317,9 +309,6 @@ add_cm_library(CMCore "CM"
                         ${BASE_OBJECT_SOURCE_FILES}
 
                         ${BITS_ARRAY_FILES}
-
-                        ${COLOR_HEADER_FILES}
-                        ${COLOR_SOURCE_FILES}
 
                         ${STRING_HEADER_FILES}
                         ${TEXT_HEADER_FILES}
