@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+#include <string>
+#include <vector>
+#include <cstdint>
+
 namespace hgl
 {
     struct AndroidVersion
@@ -16,8 +20,56 @@ namespace hgl
     */
     const int GetAndroidAPILevel(const AndroidVersion &);
 
-    constexpr const char *android_api_version_string[]=
+    // Graphics API types available on Android
+    enum class GraphicsAPI : uint8_t
     {
+        Unknown = 0,
+        OpenGLES,
+        Vulkan,
+    };
+
+    // Information about a specific graphics API implementation/version
+    struct GraphicsAPIVersion
+    {
+        GraphicsAPI api = GraphicsAPI::Unknown;
+        unsigned int major = 0;
+        unsigned int minor = 0;
+        std::string driverVersion; // vendor driver string if available
+        bool supported = false;    // whether this API/version is supported on device
+    };
+
+    // Camera information
+    struct CameraInfo
+    {
+        std::string id;                   // camera id string
+        std::string facing;               // "front" or "back" (or other)
+        bool hasDepthCamera = false;      // depth sensor availability
+        bool hasFlash = false;            // flash availability
+        std::vector<std::string> capabilities; // list of capability strings
+    };
+
+    // Aggregated Android device feature information
+    struct AndroidFeatures
+    {
+        AndroidVersion version;                 // parsed Android version
+        int apiLevel = -1;                      // Android API level, -1 if unknown
+
+        std::vector<GraphicsAPIVersion> graphicsAPIs; // list of available graphics APIs and versions
+
+        bool supportsDisplayCutout = false;     // whether the device reports display cutout (notch) support
+
+        std::vector<CameraInfo> cameras;        // list of cameras on the device
+
+        std::vector<std::string> systemFeatures; // other returned system features (eg. "android.hardware.vulkan.level")
+
+        std::string deviceModel;                // device model string
+        std::string manufacturer;               // device manufacturer
+    };
+
+    // Query function to populate AndroidFeatures. Implementation is platform-specific.
+    AndroidFeatures GetAndroidFeatures();
+
+    constexpr const char *android_api_version_string[]={
         "0",        //0
         "1.0",      //1
         "1.1",      //2
