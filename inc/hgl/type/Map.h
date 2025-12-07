@@ -134,6 +134,49 @@ namespace hgl
                 void    EnumAllValue(void (*enum_func)(V &));                                       ///<枚举所有数值
                 void    EnumValue(bool (*enum_func)(V &));                                          ///<枚举所有数值(返回true/false表示是否继续)
 
+                // Template variants to support lambda and other callable types (C++20 compatible)
+                template<typename F>
+                void    EnumKV(F &&func)                                                            ///<枚举所有键值对(支持lambda)
+                {
+                    const int count=data_list.GetCount();
+                    if(count<=0) return;
+                    
+                    KVData **idp=data_list.GetData();
+                    for(int i=0;i<count;i++)
+                    {
+                        func((*idp)->key, (*idp)->value);
+                        ++idp;
+                    }
+                }
+                
+                template<typename F>
+                void    EnumKeys(F &&func)                                                          ///<枚举所有键(支持lambda)
+                {
+                    const int count=data_list.GetCount();
+                    if(count<=0) return;
+                    
+                    KVData **idp=data_list.GetData();
+                    for(int i=0;i<count;i++)
+                    {
+                        func((*idp)->key);
+                        ++idp;
+                    }
+                }
+                
+                template<typename F>
+                void    EnumValues(F &&func)                                                        ///<枚举所有值(支持lambda)
+                {
+                    const int count=data_list.GetCount();
+                    if(count<=0) return;
+                    
+                    KVData **idp=data_list.GetData();
+                    for(int i=0;i<count;i++)
+                    {
+                        func((*idp)->value);
+                        ++idp;
+                    }
+                }
+
                 void    WithList(KVDataList &with_list,const ArrayList<K> &in_list);                     ///<统计出所有在in_list中出现的数据，产生的结果写入with_list
                 void    WithoutList(KVDataList &without_list,const ArrayList<K> &in_list);               ///<统计出所有没有出现在in_list中的数据，产生的结果写入without_list
     };//class MapTemplate

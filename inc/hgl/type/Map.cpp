@@ -5,7 +5,7 @@ namespace hgl
     /**
     * 查找数据是否存在
     * @param flag 数据标识
-    * @return 数据所在索引，-1表示不存在
+    * @return 数据所在索引，-1表示数据不存在
     */
     template<typename K,typename V,typename KVData>
     int MapTemplate<K,V,KVData>::Find(const K &flag)const
@@ -29,12 +29,10 @@ namespace hgl
 
             if(data_array[mid]->key>flag)
             {
-                ++left;
                 right=mid-1;
             }
             else
             {
-                --right;
                 left=mid+1;
             }
         }
@@ -98,10 +96,8 @@ namespace hgl
         for(int i=0;i<count;i++)
         {
             // 使用 operator== 而不是 mem_compare，以支持非 trivially copyable 类型
-            if((*data_array)->value == data)
+            if(data_array[i]->value == data)
                 return(i);
-
-            ++data_array;
         }
 
         return -1;
@@ -396,6 +392,12 @@ namespace hgl
     template<typename K,typename V,typename KVData>
     bool MapTemplate<K,V,KVData>::DeleteAt(int start,int number)
     {
+        const int count = data_list.GetCount();
+        
+        // Validate bounds: start >= 0, number > 0, and start + number <= count
+        if(start < 0 || number <= 0 || start + number > count)
+            return false;
+
         KVData **dp=data_list.GetData()+start;
 
         for(int i=0;i<number;i++)
@@ -488,15 +490,18 @@ namespace hgl
     template<typename K,typename V,typename KVData>
     void MapTemplate<K,V,KVData>::operator=(const ThisClass &ftd)
     {
-        Free();
+        // Handle self-assignment
+        if (this == &ftd)
+            return;
 
-        data_pool.Clear();
-        data_list.Clear();
+        Free();  // Free already includes Clear()
 
         const int count=ftd.data_list.GetCount();
 
         if(count<=0)
             return;
+
+        data_list.Reserve(count);
 
         KVData **obj=ftd.data_list.GetData();
         KVData *new_obj;
@@ -605,7 +610,7 @@ namespace hgl
 
         for(int i=0;i<count;i++)
         {
-            if(in_list.Contains(*sp))
+            if(in_list.Contains(sp->key))
                 with_list.Add(*sp);
 
             ++sp;
@@ -629,7 +634,7 @@ namespace hgl
 
         for(int i=0;i<count;i++)
         {
-            if(!in_list.Contains(*sp))
+            if(!in_list.Contains(sp->key))
                 without_list.Add(*sp);
 
             ++sp;
