@@ -67,12 +67,47 @@ namespace hgl
             if(size<=alloc_count)
                 return(true);
 
-            alloc_count=power_to_2(size);
+            const int64 new_alloc_count = power_to_2(size);
 
             if(!items)
-                items=hgl_align_malloc<T>(alloc_count);
+            {
+                items=hgl_align_malloc<T>(new_alloc_count);
+                alloc_count = new_alloc_count;
+            }
             else
-                items=hgl_align_realloc<T>(items,alloc_count);
+            {
+                // 对于 non-trivial 类型，不能直接使用 realloc
+                if constexpr(!std::is_trivially_copyable_v<T>)
+                {
+                    // 分配新内存
+                    T* new_items = hgl_align_malloc<T>(new_alloc_count);
+                    
+                    if(new_items)
+                    {
+                        // 移动已构造的对象到新位置
+                        for(int64 i = 0; i < count; i++)
+                        {
+                            new (new_items + i) T(std::move(items[i]));  // 移动构造
+                            items[i].~T();  // 析构旧对象
+                        }
+                        
+                        // 释放旧内存
+                        hgl_free(items);
+                        items = new_items;
+                        alloc_count = new_alloc_count;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    // trivially copyable 类型可以安全使用 realloc
+                    items=hgl_align_realloc<T>(items,new_alloc_count);
+                    alloc_count = new_alloc_count;
+                }
+            }
 
             return(items!=nullptr);
         }
@@ -84,7 +119,30 @@ namespace hgl
          */
         int64 Resize(int64 size)                                                                  ///<设置阵列长度(注：非字节数)
         {
+            const int64 old_count = count;
+            
             Reserve(size);
+
+            // 对于 non-trivial 类型，需要构造新增的对象
+            if constexpr(!std::is_trivially_constructible_v<T>)
+            {
+                if(size > old_count)
+                {
+                    // 构造新增的元素
+                    for(int64 i = old_count; i < size; i++)
+                    {
+                        new (items + i) T();  // placement new with default constructor
+                    }
+                }
+                else if(size < old_count)
+                {
+                    // 析构移除的元素
+                    for(int64 i = size; i < old_count; i++)
+                    {
+                        items[i].~T();
+                    }
+                }
+            }
 
             count=size;
             return count;
@@ -111,20 +169,13 @@ namespace hgl
 
         DataArray(int64 size)
         {
-            if(size<=0)
-                items=nullptr;
-            else
-                items=(T *)hgl_malloc(size*sizeof(T));
-
-            if(items)
+            items=nullptr;
+            count=0;
+            alloc_count=0;
+            
+            if(size > 0)
             {
-                count=size;
-                alloc_count=size;
-            }
-            else
-            {
-                count=0;
-                alloc_count=0;
+                Resize(size);  // 使用 Resize 来正确构造对象
             }
         }
 
@@ -135,6 +186,15 @@ namespace hgl
 
         void Free()
         {
+            // 对于 non-trivial 类型，需要先析构所有对象
+            if constexpr(!std::is_trivially_destructible_v<T>)
+            {
+                for(int64 i = 0; i < count; i++)
+                {
+                    items[i].~T();
+                }
+            }
+            
             SAFE_FREE(items);
 
             count=0;
@@ -298,6 +358,15 @@ namespace hgl
             }
             //else{后面都没数据了，那就啥都不用干了}
 
+            // 对于 non-trivial 类型，析构被移除的元素
+            if constexpr(!std::is_trivially_destructible_v<T>)
+            {
+                for(int64 i = count - delete_count; i < count; i++)
+                {
+                    items[i].~T();
+                }
+            }
+
             count-=delete_count;
 
             return(true);
@@ -327,7 +396,16 @@ namespace hgl
             const int64 end_count=count-(start+delete_count);
 
             if(end_count>0)
-                mem_copy<T>(items+start,items+start+delete_count,end_count);
+                mem_move<T>(items+start,items+start+delete_count,end_count);  // 使用 mem_move 而不是 mem_copy
+
+            // 对于 non-trivial 类型，析构被移除的元素
+            if constexpr(!std::is_trivially_destructible_v<T>)
+            {
+                for(int64 i = count - delete_count; i < count; i++)
+                {
+                    items[i].~T();
+                }
+            }
 
             count-=delete_count;
 
@@ -360,7 +438,7 @@ namespace hgl
             if(new_index>=count)new_index=count;
 
             if(old_index+move_number>count)
-                move_number=count-move_number;
+                move_number=count-old_index;  // 修正：限制为从old_index到结尾的元素数量
 
             if(move_number<=0)return(false);
 
@@ -555,6 +633,13 @@ namespace hgl
 
             if(result)
             {
+                // 对于非平凡类型，需要显式调用旧对象的析构函数
+                if constexpr(!std::is_trivially_destructible_v<T>)
+                {
+                    for(int64 i=0; i<count; i++)
+                        items[i].~T();
+                }
+                
                 hgl_free(items);
                 items=new_items;
                 alloc_count=new_alloc_count;
@@ -563,6 +648,7 @@ namespace hgl
             }
             else
             {
+                // ArrayRearrange 失败，释放新分配的内存
                 hgl_free(new_items);
                 return(false);
             }
