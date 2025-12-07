@@ -187,13 +187,7 @@ namespace hgl
         void Free()
         {
             // 对于 non-trivial 类型，需要先析构所有对象
-            if constexpr(!std::is_trivially_destructible_v<T>)
-            {
-                for(int64 i = 0; i < count; i++)
-                {
-                    items[i].~T();
-                }
-            }
+            destroy_range<T>(items, count);
             
             SAFE_FREE(items);
 
@@ -359,13 +353,7 @@ namespace hgl
             //else{后面都没数据了，那就啥都不用干了}
 
             // 对于 non-trivial 类型，析构被移除的元素
-            if constexpr(!std::is_trivially_destructible_v<T>)
-            {
-                for(int64 i = count - delete_count; i < count; i++)
-                {
-                    items[i].~T();
-                }
-            }
+            destroy_range<T>(items, count - delete_count, count);
 
             count-=delete_count;
 
@@ -399,13 +387,7 @@ namespace hgl
                 mem_move<T>(items+start,items+start+delete_count,end_count);  // 使用 mem_move 而不是 mem_copy
 
             // 对于 non-trivial 类型，析构被移除的元素
-            if constexpr(!std::is_trivially_destructible_v<T>)
-            {
-                for(int64 i = count - delete_count; i < count; i++)
-                {
-                    items[i].~T();
-                }
-            }
+            destroy_range<T>(items, count - delete_count, count);
 
             count-=delete_count;
 
@@ -634,11 +616,7 @@ namespace hgl
             if(result)
             {
                 // 对于非平凡类型，需要显式调用旧对象的析构函数
-                if constexpr(!std::is_trivially_destructible_v<T>)
-                {
-                    for(int64 i=0; i<count; i++)
-                        items[i].~T();
-                }
+                destroy_range<T>(items, count);
                 
                 hgl_free(items);
                 items=new_items;

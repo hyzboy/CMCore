@@ -22,9 +22,7 @@ namespace hgl
 
         static void destroy(T *ptr,int count)
         {
-            if(!ptr||count<=0) return;
-            if constexpr(!std::is_trivially_destructible_v<T>)
-                for(int i=0;i<count;i++) (ptr+i)->~T();
+            destroy_range<T>(ptr, count);
         }
 
         static void init(T *ptr,int count)

@@ -116,18 +116,7 @@ namespace hgl
                 f=field_list+(*index);
 
                 // 对于非平凡类型，需要使用移动构造而不是mem_copy
-                if constexpr(!std::is_trivially_copyable_v<T>)
-                {
-                    // 移动构造每个元素到新位置
-                    for(int64 j=0; j<f->count; j++)
-                    {
-                        new (p + j) T(std::move(const_cast<T&>(old_array[f->start + j])));
-                    }
-                }
-                else
-                {
-                    mem_copy<T>(p,old_array+f->start,f->count);
-                }
+                copy_construct_range<T>(p, old_array + f->start, f->count);
 
                 p+=f->count;
                 ++index;
