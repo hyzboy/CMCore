@@ -129,11 +129,6 @@ namespace hgl
 
                 void    operator=(const ThisClass &);                                               ///<操作符重载，复制一个列表
 
-                void    Enum(void (*enum_func)(const K &,V &));                                     ///<枚举所有数据项
-                void    EnumKey(void (*enum_func)(const K &));                                      ///<枚举所有索引
-                void    EnumAllValue(void (*enum_func)(V &));                                       ///<枚举所有数值
-                void    EnumValue(bool (*enum_func)(V &));                                          ///<枚举所有数值(返回true/false表示是否继续)
-
                 // Template variants to support lambda and other callable types (C++20 compatible)
                 template<typename F>
                 void    EnumKV(F &&func)                                                            ///<枚举所有键值对(支持lambda)
