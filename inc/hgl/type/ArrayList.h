@@ -117,7 +117,7 @@ namespace hgl
             return(ec);
         }
 
-                int  Add(const ArrayList<T> &l){return Add(l.items,l.count);}                            ///<增加一批数据
+                int  Add(const ArrayList<T> &l){return Add(l.GetData(),l.GetCount());}                            ///<增加一批数据
 
         virtual void Free(){data_array.Free();}                                                     ///<清除所有数据，并释放内存
         virtual void Clear(){data_array.Clear();}                                                   ///<清除所有数据，但不清空缓冲区

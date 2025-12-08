@@ -34,7 +34,7 @@ namespace hgl
 
             if (!obj) return nullptr;
 
-            if (!ArrayList<T *>::Add(obj))
+            if (ArrayList<T *>::Add(obj) < 0)  // Add returns index, -1 on failure
             {
                 delete obj;
                 return nullptr;
