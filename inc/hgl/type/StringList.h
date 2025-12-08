@@ -5,6 +5,7 @@
 #include<hgl/io/DataOutputStream.h>
 #include<initializer_list>
 #include<algorithm>
+#include<stdexcept>
 #include<hgl/type/ObjectList.h>
 
 namespace hgl
@@ -15,7 +16,6 @@ namespace hgl
     template<typename T> class StringList                                                           ///字符串列表处理类
     {
         using StringClass=String<T>;
-        static StringClass NullString;
 
     protected:
 
@@ -23,10 +23,13 @@ namespace hgl
 
     public: //属性
 
-        // 使用 size_t 作为计数类型以符合 STL 风格
-        size_t GetCount() const
+        /**
+        * 获取字符串数量
+        * @return 字符串数量
+        */
+        int GetCount() const
         {
-            return static_cast<size_t>(Items.GetCount());
+            return Items.GetCount();
         }
 
         // 原始指针迭代器，兼容旧的 range-for 语法: for(StringClass* p : string_list)
@@ -149,35 +152,69 @@ namespace hgl
             return Items.IsEmpty();
         }
 
+        /**
+        * 安全访问指定位置的字符串（带边界检查）
+        * @param n 字符串索引
+        * @return 字符串引用
+        * @throws std::out_of_range 如果索引越界
+        */
+        const StringClass &At(int n) const
+        {
+            if (n < 0 || n >= Items.GetCount())
+                throw std::out_of_range("StringList index out of range");
+
+            StringClass *result = Items[n];
+            if (!result)
+                throw std::runtime_error("StringList contains null pointer");
+
+            return (*result);
+        }
+
+        StringClass &At(int n)
+        {
+            return const_cast<StringClass&>(static_cast<const StringList*>(this)->At(n));
+        }
+
     public: //操作符重载
 
         StringClass &operator[](int n) const
         {
             if (n < 0 || n >= Items.GetCount())
-                return NullString;
+                throw std::out_of_range("StringList index out of range");
 
             StringClass *result = Items[n];
 
-            if (result)
-                return (*result);
+            if (!result)
+                throw std::runtime_error("StringList contains null pointer");
 
-            return NullString;
+            return (*result);
         }
 
-        // 强异常安全的赋值：先构造临时副本，然后 swap
+        /**
+         * @brief Copy assignment operator performs deep copy  
+         * CN: 拷贝赋值运算符执行深拷贝
+         * EN: Copy assignment operator performs deep copy
+         * 
+         * Note: This performs deep copy via CopyFrom(). For explicit control,
+         * use CopyFrom() method directly.
+         */
         StringList<T> &operator=(const StringList<T> &sl)
         {
-            if (this == &sl)
-                return *this;
-
-            StringList<T> tmp;
-
-            for(auto str:sl)
-                tmp.Add(*str);
-
-            std::swap(Items, tmp.Items);
-
+            if (this != &sl)
+                CopyFrom(sl);
             return *this;
+        }
+
+        /**
+        * 显式从另一个StringList拷贝内容
+        * @param sl 源字符串列表
+        */
+        void CopyFrom(const StringList<T> &sl)
+        {
+            Clear();
+            Items.Reserve(sl.GetCount());
+            for(auto str : sl)
+                Add(*str);
         }
 
     public: //方法
@@ -225,6 +262,7 @@ namespace hgl
         */
         int Add(const StringList<T> &sl)                                                            ///<添加字符串
         {
+            Items.Reserve(Items.GetCount() + sl.GetCount());
             for(auto str:sl)
                 Add(*str);
 
@@ -249,6 +287,15 @@ namespace hgl
             }
 
             return (count);
+        }
+
+        /**
+        * 预分配指定容量
+        * @param capacity 预分配的容量
+        */
+        void Reserve(int capacity)
+        {
+            Items.Reserve(capacity);
         }
 
         /**
@@ -337,6 +384,14 @@ namespace hgl
         }
 
         /**
+         * 确认字符串存在,英文区分大小写（STL风格命名）
+         */
+        bool Contains(const StringClass &str) const
+        {
+            return Find(str) != -1;
+        }
+
+        /**
          * 确认字符串存在,英文不区分大小写
          */
         bool CaseExist(const StringClass &str) const                                                ///<确认字符串存在,英文不区分大小写
@@ -384,13 +439,15 @@ namespace hgl
 
         /**
         * 在指定位置插入一个字符串
-        * @param index 要插入字符串的位置
+        * @param index 要插入字符串的位置（0 到 GetCount()）
         * @param str 要插入的字符串
+        * @throws std::out_of_range 如果索引无效
         */
         void Insert(int index, const StringClass &str)                                               ///<在指定位置插入一个字符串
         {
-            if (index < Items.GetCount())
-                Items.Insert(index, new StringClass(str));
+            if (index < 0 || index > Items.GetCount())
+                throw std::out_of_range("Insert index out of range");
+            Items.Insert(index, new StringClass(str));
         }
 
         /**
@@ -408,11 +465,16 @@ namespace hgl
 
         const StringClass &GetString(int n) const
         {
-            return *(Items[n]);
+            if (n < 0 || n >= Items.GetCount())
+                throw std::out_of_range("StringList index out of range");
+            
+            StringClass *result = Items[n];
+            if (!result)
+                throw std::runtime_error("StringList contains null pointer");
+            
+            return *result;
         }                                                                                               ///<取得指定行字符串
     };//template<typename T> class StringList
-
-    template<typename T> String<T> StringList<T>::NullString;                                       ///<空字符串实例
 
 #define DEFINE_STRING_LIST(name)    using name##StringList=StringList<name##String::CharType>;
 
