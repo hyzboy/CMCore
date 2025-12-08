@@ -32,7 +32,7 @@ namespace hgl
 
                 T *     begin           ()const{return items;}                                      ///<取得阵列起始地址指针
                 T *     end             ()const{return items+count;}                                ///<取得阵列结束地址指针
-                T *     last            ()const{return items+(count-1);}                            ///<取得阵列最后一个数据地址指针
+                T *     last            ()const{return (count>0)?(items+(count-1)):nullptr;}        ///<取得阵列最后一个数据地址指针
 
         const int       compare         (const DataArray<T> &vil)const override
         {
@@ -666,9 +666,29 @@ namespace hgl
 
                 T *new_items=hgl_align_malloc<T>(new_alloc_count);
 
-                if(pos>0)       mem_copy(new_items,items,pos);
-                                mem_copy(new_items+pos,data,data_number);
-                if(pos<count)   mem_copy(new_items+pos+data_number,items+pos,(count-pos));
+                // 对于 non-trivial 类型，需要使用移动/复制构造到未初始化内存
+                if constexpr(std::is_trivially_copyable_v<T>)
+                {
+                    if(pos>0)       mem_copy(new_items,items,pos);
+                                    mem_copy(new_items+pos,data,data_number);
+                    if(pos<count)   mem_copy(new_items+pos+data_number,items+pos,(count-pos));
+                }
+                else
+                {
+                    // 移动构造已存在的元素到新位置
+                    if(pos>0)
+                        move_construct_range(new_items, items, pos);
+                    
+                    // 复制构造要插入的元素
+                    copy_construct_range(new_items+pos, data, data_number);
+                    
+                    // 移动构造后面的元素
+                    if(pos<count)
+                        move_construct_range(new_items+pos+data_number, items+pos, count-pos);
+                    
+                    // 析构旧元素
+                    destroy_range<T>(items, count);
+                }
 
                 hgl_free(items);
                 items=new_items;
@@ -676,10 +696,49 @@ namespace hgl
             }
             else
             {
-                if(pos<count)
-                    mem_move(items+pos+data_number,items+pos,count-pos);
+                // 空间足够，在原地插入
+                if constexpr(std::is_trivially_copyable_v<T>)
+                {
+                    if(pos<count)
+                        mem_move(items+pos+data_number,items+pos,count-pos);
 
-                mem_copy(items+pos,data,data_number);
+                    mem_copy(items+pos,data,data_number);
+                }
+                else
+                {
+                    // Non-trivial 类型：需要小心处理未初始化内存
+                    // 策略：从后往前，先移动构造到未初始化区域，再移动赋值到已初始化区域
+                    if(pos<count)
+                    {
+                        int64 move_count = count - pos;
+                        int64 new_end = count + data_number;
+                        
+                        // 从后往前处理：最后 data_number 个位置是未初始化的
+                        for(int64 i = move_count - 1; i >= 0; i--)
+                        {
+                            int64 src_idx = pos + i;
+                            int64 dst_idx = pos + data_number + i;
+                            
+                            if(dst_idx >= count)
+                            {
+                                // 目标位置是未初始化内存，使用移动构造
+                                new (items + dst_idx) T(std::move(items[src_idx]));
+                                items[src_idx].~T();  // 析构源对象
+                            }
+                            else
+                            {
+                                // 目标位置已初始化，使用移动赋值
+                                items[dst_idx] = std::move(items[src_idx]);
+                            }
+                        }
+                    }
+                    
+                    // 复制构造新元素（这些位置现在是未初始化或已析构）
+                    for(int64 i = 0; i < data_number; i++)
+                    {
+                        new (items + pos + i) T(data[i]);
+                    }
+                }
             }
 
             count+=data_number;

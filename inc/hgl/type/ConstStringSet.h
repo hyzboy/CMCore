@@ -95,10 +95,12 @@ namespace hgl
 
             ConstStringView<SC> csv;
 
-            csv.length=length;
-            csv.str=str;
+            csv.str_data=nullptr;
+            csv.id      =-1;
+            csv.length  =length;
+            csv.str     =str;
 
-            return(str_set.FindPos(csv)!=-1);
+            return(str_set.Find(csv)!=-1);
         }
 
         const int GetID(const SC *str,int length)const                              ///<取得字符串ID
@@ -107,6 +109,7 @@ namespace hgl
 
             ConstStringView<SC> csv;
 
+            csv.str_data=nullptr;
             csv.id      =-1;
             csv.length  =length;
             csv.str     =str;
