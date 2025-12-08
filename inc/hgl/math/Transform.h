@@ -707,9 +707,9 @@ namespace hgl::math
 
         void UpdateMatrix();
 
-        const uint32    GetVersion  (){UpdateMatrix();return version;}
-        const bool      IsIdentity  (){UpdateMatrix();return is_identity;}
-        const Matrix4f &GetMatrix   (){UpdateMatrix();return matrix;}
+        const uint32    GetVersion  ()const{return version;}
+        const bool      IsIdentity  ()const{return is_identity;}
+        const Matrix4f &GetMatrix   (){if(matrix_dirty)UpdateMatrix();return matrix;}
 
         const Matrix4f GetMatrix()const     //不能执行UpdateMatrix时的获取
         {
@@ -752,6 +752,7 @@ namespace hgl::math
             translation_vector.y=y;
             translation_vector.z=z;
             matrix_dirty=true;
+            UpdateVersion();
         }
 
         void SetTranslation(const Vector3f &v)
@@ -768,14 +769,17 @@ namespace hgl::math
 
             translation_vector=v;
             matrix_dirty=true;
+            UpdateVersion();
         }
 
         void ClearRotation()
         {
+            is_zero_rotate=true;
             rotation_quat=IdentityQuatf;
             rotation_axis=ZeroVector3f;
             rotate_angle=0;
             matrix_dirty=true;
+            UpdateVersion();
         }
 
         void SetRotation(const math::Quatf &q)
@@ -790,7 +794,9 @@ namespace hgl::math
 
             rotation_quat=q;
             ExtractedQuat(q,rotation_axis,rotate_angle);
+            is_zero_rotate=IsNearlyEqual(q, IdentityQuatf);
             matrix_dirty=true;
+            UpdateVersion();
         }
 
         void SetRotation(const Vector3f &axis,const float angle)
@@ -848,6 +854,7 @@ namespace hgl::math
 
             scale_vector=Vector3f(v,v,v);
             matrix_dirty=true;
+            UpdateVersion();
         }
 
         void SetScale(const float x,const float y,const float z)
@@ -867,6 +874,7 @@ namespace hgl::math
             scale_vector.z=z;
 
             matrix_dirty=true;
+            UpdateVersion();
         }
 
         void SetScale(const Vector3f &v)
@@ -883,6 +891,7 @@ namespace hgl::math
 
             scale_vector=v;
             matrix_dirty=true;
+            UpdateVersion();
         }
 
     public:
@@ -927,8 +936,6 @@ namespace hgl::math
             if(operator==(t))
                 return;
 
-            uint32 old_version = version;
-
             // 逐成员复制，避免使用 mem_copy
             is_identity = t.is_identity;
             is_zero_rotate = t.is_zero_rotate;
@@ -942,31 +949,28 @@ namespace hgl::math
             rotate_angle = t.rotate_angle;
             scale_vector = t.scale_vector;
 
-            version = ++old_version;
-            UpdateMatrix();
+            UpdateVersion();
         }
 
         void SetFromMatrix4f(const Matrix4f &m);
 
-        const bool IsIdentity()const{return is_identity;}
-
         const bool IsLastVersion()const{return !matrix_dirty;}
 
-        inline Vector3f TransformPosition   (const Vector3f &v){UpdateMatrix();return Vector3f(matrix*Vector4f(v,1.0f));}
-        inline Vector3f TransformDirection  (const Vector3f &v){UpdateMatrix();return Vector3f(matrix*Vector4f(v,0.0f));}
-        inline Vector3f TransformNormal     (const Vector3f &v){UpdateMatrix();return normalize(Vector3f(transpose_inverse_matrix*Vector4f(v,0.0f)));}
-        inline Matrix3f TransformMatrix     (const Matrix3f &child){UpdateMatrix();return Matrix3f(matrix*Matrix4f(child));}
-        inline Matrix4f TransformMatrix     (const Matrix4f &child){UpdateMatrix();return matrix*child;}
+        inline Vector3f TransformPosition   (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return Vector3f(matrix*Vector4f(v,1.0f));}
+        inline Vector3f TransformDirection  (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return Vector3f(matrix*Vector4f(v,0.0f));}
+        inline Vector3f TransformNormal     (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return normalize(Vector3f(transpose_inverse_matrix*Vector4f(v,0.0f)));}
+        inline Matrix3f TransformMatrix     (const Matrix3f &child){if(matrix_dirty)UpdateMatrix();return Matrix3f(matrix*Matrix4f(child));}
+        inline Matrix4f TransformMatrix     (const Matrix4f &child){if(matrix_dirty)UpdateMatrix();return matrix*child;}
 
-        inline Vector3f InverseTransformPosition    (const Vector3f &v){UpdateMatrix();return Vector3f(inverse_matrix*Vector4f(v,1.0f));}
-        inline Vector3f InverseTransformDirection   (const Vector3f &v){UpdateMatrix();return Vector3f(inverse_matrix*Vector4f(v,0.0f));}
-        inline Vector3f InverseTransformNormal      (const Vector3f &v){UpdateMatrix();return normalize(Vector3f(transpose_inverse_matrix*Vector4f(v,0.0f)));}
-        inline Matrix3f InverseTransformMatrix      (const Matrix3f &child){UpdateMatrix();return Matrix3f(inverse_matrix*Matrix4f(child));}
-        inline Matrix4f InverseTransformMatrix      (const Matrix4f &child){UpdateMatrix();return inverse_matrix*child;}
+        inline Vector3f InverseTransformPosition    (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return Vector3f(inverse_matrix*Vector4f(v,1.0f));}
+        inline Vector3f InverseTransformDirection   (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return Vector3f(inverse_matrix*Vector4f(v,0.0f));}
+        inline Vector3f InverseTransformNormal      (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return normalize(Vector3f(transpose(matrix)*Vector4f(v,0.0f)));}
+        inline Matrix3f InverseTransformMatrix      (const Matrix3f &child){if(matrix_dirty)UpdateMatrix();return Matrix3f(inverse_matrix*Matrix4f(child));}
+        inline Matrix4f InverseTransformMatrix      (const Matrix4f &child){if(matrix_dirty)UpdateMatrix();return inverse_matrix*child;}
 
         inline Transform TransformTransform(const Transform &child)
         {
-            UpdateMatrix();
+            if(matrix_dirty)UpdateMatrix();
             const Matrix4f &child_matrix=child.GetMatrix();
 
             return Transform(matrix*child_matrix);

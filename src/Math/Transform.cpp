@@ -24,6 +24,7 @@ namespace hgl::math
             rotation_quat=IdentityQuatf;
             // rotation changed to identity, mark matrix dirty so it will be updated
             matrix_dirty=true;
+            UpdateVersion();
             return;
         }
         else
@@ -33,6 +34,7 @@ namespace hgl::math
         }
 
         matrix_dirty=true;
+        UpdateVersion();
     }
 
     void Transform::UpdateMatrix()
