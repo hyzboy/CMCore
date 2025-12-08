@@ -34,9 +34,7 @@ namespace hgl
         if(count<=cur_count)
             return(true);
 
-        total_bytes=count*unit_bytes;
-
-        if(!memory_block->Reserve(total_bytes))
+        if(!memory_block->Reserve(count*unit_bytes))
             return(false);
 
         return(true);
@@ -72,6 +70,9 @@ namespace hgl
         if(!memory_block)
             return(false);
 
+        if(c.GetUnitBytes() != unit_bytes)
+            return(false);
+
         const uint64 source_bytes=c.GetTotalBytes();
 
         if(!source_bytes)return(true);
@@ -82,7 +83,7 @@ namespace hgl
         if(!memory_block->Write(total_bytes,c.GetMemoryBlock(),0,source_bytes))
             return(false);
 
-        ++data_count;
+        data_count+=c.GetCount();
         total_bytes+=source_bytes;
         return(true);
     }
@@ -130,6 +131,9 @@ namespace hgl
         if(!element)
             return(false);
 
+        if(offset>data_count)
+            return(false);
+
         if(data_count==0)
             return Add(element);
 
@@ -155,6 +159,7 @@ namespace hgl
     {
         if(data_count<2)return(false);
         if(target==source)return(true);
+        if(target>=data_count||source>=data_count)return(false);
 
         target*=unit_bytes;
         source*=unit_bytes;
@@ -182,15 +187,8 @@ namespace hgl
     {
         if(range<=0)return(nullptr);
         if(!memory_block)return(nullptr);
-
-        if(start+range>data_count)
-        {
-            if(!memory_block->Reserve((start+range)*unit_bytes))
-                return(nullptr);
-
-            data_count=start+range;
-            total_bytes=data_count*unit_bytes;
-        }
+        if(start>=data_count)return(nullptr);
+        if(start+range>data_count)return(nullptr);
 
         return memory_block->Get(start*unit_bytes);
     }
@@ -216,7 +214,7 @@ namespace hgl
         if(!memory_block)
             return(false);
 
-        if(offset>data_count)
+        if(offset>=data_count)
             return(false);
 
         --data_count;

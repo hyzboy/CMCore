@@ -138,7 +138,7 @@ namespace hgl
         }
 
         template<typename T>
-        int64 indexOfValue(const T &value)                                                  ///<获取数据在合集中的索引
+        int64 indexOfValue(const T &value) const                                            ///<获取数据在合集中的索引
         {
             CheckElementEqual<T> cee(value);
 
