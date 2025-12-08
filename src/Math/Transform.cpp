@@ -53,6 +53,7 @@ namespace hgl::math
             }
 
             SetToIdentity();
+            UpdateVersion();    // SetToIdentity改变了数据状态，需要更新版本
         }
         else
         {
@@ -64,8 +65,7 @@ namespace hgl::math
         }
 
         matrix_dirty=false;
-
-        UpdateVersion();
+        // 移除这里的UpdateVersion() - 矩阵计算不应该改变版本号
     }
 
     void Transform::SetToIdentity()
