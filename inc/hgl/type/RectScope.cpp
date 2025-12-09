@@ -1,8 +1,6 @@
-﻿#ifndef HGL_RECT_SCOPE_CPP
-#define HGL_RECT_SCOPE_CPP
+﻿#pragma once
 
-#include<hgl/type/RectScope.h>
-namespace hgl
+namespace hgl::math
 {
     /**
     * 本类构造函数
@@ -76,5 +74,4 @@ namespace hgl
 
         return(true);
     }
-}//namespace hgl
-#endif//HGL_RECT_SCOPE_CPP
+}//namespace hgl::math

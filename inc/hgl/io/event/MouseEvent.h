@@ -5,6 +5,8 @@
 
 namespace hgl::io
 {
+    using namespace hgl::math;
+
     /**
     * 鼠标按钮枚举
     */
@@ -47,7 +49,7 @@ namespace hgl::io
     {
         MouseEventData *med=nullptr;
 
-        math::Vector2i position{};
+        Vector2i position{};
 
         bool pressed_statues[size_t(MouseButton::RANGE_SIZE)]{};
 
@@ -58,12 +60,12 @@ namespace hgl::io
 
         virtual EventProcResult OnEvent     (const EventHeader &header,const uint64 data) override;
 
-        virtual EventProcResult OnMove      (const math::Vector2i &){return EventProcResult::Continue;}
-        virtual EventProcResult OnWheel     (const math::Vector2i &){return EventProcResult::Continue;}
+        virtual EventProcResult OnMove      (const Vector2i &){return EventProcResult::Continue;}
+        virtual EventProcResult OnWheel     (const Vector2i &){return EventProcResult::Continue;}
 
-        virtual EventProcResult OnPressed   (const math::Vector2i &,MouseButton){return EventProcResult::Continue;}
-        virtual EventProcResult OnReleased  (const math::Vector2i &,MouseButton){return EventProcResult::Continue;}
-        virtual EventProcResult OnDblClicked(const math::Vector2i &,MouseButton){return EventProcResult::Continue;}
+        virtual EventProcResult OnPressed   (const Vector2i &,MouseButton){return EventProcResult::Continue;}
+        virtual EventProcResult OnReleased  (const Vector2i &,MouseButton){return EventProcResult::Continue;}
+        virtual EventProcResult OnDblClicked(const Vector2i &,MouseButton){return EventProcResult::Continue;}
 
         /**
          * 某按键是否按下
@@ -77,6 +79,6 @@ namespace hgl::io
 
     public:
 
-        const math::Vector2i &GetMouseCoord()const{return position;}
+        const Vector2i &GetMouseCoord()const{return position;}
     };//class MouseEvent
 }//namespace hgl::io

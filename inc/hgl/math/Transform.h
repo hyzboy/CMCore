@@ -195,7 +195,7 @@ namespace hgl::math
             UpdateVersion();
         }
 
-        TransformRotateQuat(const math::Quatf &q):TransformBase()
+        TransformRotateQuat(const Quatf &q):TransformBase()
         {
             quat=q;
             UpdateVersion();
@@ -212,8 +212,8 @@ namespace hgl::math
             return(new TransformRotateQuat(quat));
         }
 
-        const math::Quatf &GetQuat()const { return quat; }
-        void SetQuat(const math::Quatf &q)
+        const Quatf &GetQuat()const { return quat; }
+        void SetQuat(const Quatf &q)
         {
             if(IsNearlyEqual(quat,q))
                 return;
@@ -524,10 +524,10 @@ namespace hgl::math
 
     public:
 
-        math::TransformManager()=default;
+        TransformManager()=default;
         virtual ~TransformManager()=default;
 
-        math::TransformManager(const math::TransformManager *tm):TransformBase(tm)
+        TransformManager(const TransformManager *tm):TransformBase(tm)
         {
             for(const TransformBase *tb:tm->transform_list)
                 AddTransform(tb->CloneSelf());
@@ -537,7 +537,7 @@ namespace hgl::math
 
         TransformBase *CloneSelf()const override
         {
-            math::TransformManager *tm=new math::TransformManager;
+            TransformManager *tm=new TransformManager;
 
             for(TransformBase *tb:transform_list)
                 tm->AddTransform(tb->CloneSelf());
@@ -545,7 +545,7 @@ namespace hgl::math
             return tm;
         }
 
-        void operator = (const math::TransformManager &tm)
+        void operator = (const TransformManager &tm)
         {
             Clear();
 
@@ -585,7 +585,7 @@ namespace hgl::math
             return tra;
         }
 
-        TransformRotateQuat *AddRotateQuat(const math::Quatf &q)
+        TransformRotateQuat *AddRotateQuat(const Quatf &q)
         {
             TransformRotateQuat *trq=new TransformRotateQuat(q);
 
@@ -663,7 +663,7 @@ namespace hgl::math
 
             return has_update;
         }
-    };//class math::TransformManager
+    };//class TransformManager
 
     /**
      * 变换矩阵<Br>
@@ -732,7 +732,7 @@ namespace hgl::math
         const Vector3f &GetTranslation  ()const{return translation_vector;}
         const Vector3f &GetScale        ()const{return scale_vector;}
 
-        const math::Quatf &   GetRotationQuat ()const{return rotation_quat;}
+        const Quatf &   GetRotationQuat ()const{return rotation_quat;}
         const Vector3f &GetRotationAxis ()const{return rotation_axis;}
         const float     GetRotateAngle  ()const{return rotate_angle;}
 
@@ -782,7 +782,7 @@ namespace hgl::math
             UpdateVersion();
         }
 
-        void SetRotation(const math::Quatf &q)
+        void SetRotation(const Quatf &q)
         {
             if(is_identity)
             {

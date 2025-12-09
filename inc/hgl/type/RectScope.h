@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include<hgl/math/Vector.h>
-namespace hgl
+
+namespace hgl::math
 {
     /**
     * 这个类用于描述和处理一个矩形范围
@@ -72,8 +73,8 @@ namespace hgl
 
         bool PointIn(T,T)const;
 
-        bool PointIn(const math::Vector2f &v)const{return PointIn(v.x,v.y);}
-        bool PointIn(const math::Vector3f &v)const{return PointIn(v.x,v.y);}
+        bool PointIn(const Vector2f &v)const{return PointIn(v.x,v.y);}
+        bool PointIn(const Vector3f &v)const{return PointIn(v.x,v.y);}
 
         template<typename N>
         void operator = (const RectScope2<N> &rs)
@@ -181,5 +182,5 @@ namespace hgl
 
         return target;
     }
-}//namespace hgl
+}//namespace hgl::math
 #include<hgl/type/RectScope.cpp>

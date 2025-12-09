@@ -5,6 +5,8 @@
 
 namespace hgl::io
 {
+    using namespace hgl::math;
+
     enum class WindowEventID
     {
         Create,
@@ -31,14 +33,14 @@ namespace hgl::io
     {
         WindowEventData *wed=nullptr;
 
-        math::Vector2i WindowSize{};
+        Vector2i WindowSize{};
 
     public:
 
         WindowEvent():EventDispatcher(InputEventSource::Window){}
         virtual ~WindowEvent()=default;
 
-        const math::Vector2i &GetWindowSize()const{return WindowSize;}
+        const Vector2i &GetWindowSize()const{return WindowSize;}
 
         virtual EventProcResult OnEvent(const EventHeader &header,const uint64 data) override
         {
