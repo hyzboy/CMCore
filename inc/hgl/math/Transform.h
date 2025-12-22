@@ -292,7 +292,12 @@ namespace hgl::math
             UpdateVersion();
         }
 
-        void SetFromMatrix4f(const Matrix4f &m);
+        void SetFromMatrix4f(const Matrix4f &m)
+        {
+            DecomposeTransform(m,translation_vector,rotation_quat,scale_vector);
+
+            UpdateVersion();    
+        }
 
         const bool IsLastVersion()const{return !matrix_dirty;}
 
