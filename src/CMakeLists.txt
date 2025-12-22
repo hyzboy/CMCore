@@ -72,7 +72,8 @@ SOURCE_GROUP("DataType\\Memory" FILES ${BASE_OTHER_SOURCE})
 ##==================================================================================================
 SET(MATH_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/math)
 
-SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/Transform.h)
+SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/Transform.h
+                        ${MATH_INCLUDE_PATH}/TransformAction.h)
 
 SET(MATH_SOURCE_FILES   Math/Transform.cpp)
 
