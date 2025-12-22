@@ -14,7 +14,7 @@ namespace hgl::math
     /**
     * 变换基类
     */
-    class TransformBase:public VersionData<Matrix4f>
+    class TransformAction:public VersionData<Matrix4f>
     {
     protected:
 
@@ -27,8 +27,8 @@ namespace hgl::math
 
     public:
 
-        TransformBase():VersionData(Identity4f), WorldPosition(ZeroVector3f), WorldNormal(ZeroVector3f){}
-        TransformBase(const TransformBase * const tb):VersionData(tb)
+        TransformAction():VersionData(Identity4f), WorldPosition(ZeroVector3f), WorldNormal(ZeroVector3f){}
+        TransformAction(const TransformAction * const tb):VersionData(tb)
         {
             if(tb)
             {
@@ -41,7 +41,7 @@ namespace hgl::math
                 WorldNormal=ZeroVector3f;
             }
         }
-        virtual ~TransformBase()=default;
+        virtual ~TransformAction()=default;
 
         virtual constexpr const size_t GetTypeHash()const=0;                ///<取得类型哈希值
 
@@ -53,12 +53,12 @@ namespace hgl::math
             return GetNewestVersionData(mat);
         }
 
-        virtual TransformBase *CloneSelf()const=0;                     ///<创建一个自身的复制
+        virtual TransformAction *CloneSelf()const=0;                     ///<创建一个自身的复制
 
         virtual bool Update(){return false;}
-    };//class TransformBase
+    };//class TransformAction
 
-    class TransformMatrix :public TransformBase
+    class TransActionMatrix :public TransformAction
     {
         Matrix4f transform_matrix;
 
@@ -71,31 +71,31 @@ namespace hgl::math
 
     public:
 
-        constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformMatrix>(); }
+        constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransActionMatrix>(); }
 
     public:
 
-        TransformMatrix():TransformBase()
+        TransActionMatrix():TransformAction()
         {
             transform_matrix=Identity4f;
             UpdateVersion();
         }
 
-        TransformMatrix(const Matrix4f &mat):TransformBase()
+        TransActionMatrix(const Matrix4f &mat):TransformAction()
         {
             transform_matrix=mat;
             UpdateVersion();
         }
 
-        TransformMatrix(const TransformMatrix *tm):TransformBase(tm)
+        TransActionMatrix(const TransActionMatrix *tm):TransformAction(tm)
         {
             transform_matrix=tm->transform_matrix;
             UpdateVersion();
         }
 
-        TransformBase *CloneSelf()const override
+        TransformAction *CloneSelf()const override
         {
-            return(new TransformMatrix(this));
+            return(new TransActionMatrix(this));
         }
 
         const Matrix4f &GetTransformMatrix()const { return transform_matrix; }
@@ -108,9 +108,9 @@ namespace hgl::math
             transform_matrix=mat;
             UpdateVersion();
         }
-    };//class TransformMatrix
+    };//class TransActionMatrix
 
-    class TransformTranslate3f :public TransformBase
+    class TransActionTranslate :public TransformAction
     {
         Vector3f offset;
 
@@ -123,31 +123,31 @@ namespace hgl::math
 
     public:
 
-        constexpr const size_t GetTypeHash()const override{return hgl::GetTypeHash<TransformTranslate3f>();}
+        constexpr const size_t GetTypeHash()const override{return hgl::GetTypeHash<TransActionTranslate>();}
 
     public:
 
-        TransformTranslate3f():TransformBase()
+        TransActionTranslate():TransformAction()
         {
             offset=ZeroVector3f;
             UpdateVersion();
         }
 
-        TransformTranslate3f(const Vector3f &o):TransformBase()
+        TransActionTranslate(const Vector3f &o):TransformAction()
         {
             offset=o;
             UpdateVersion();
         }
 
-        TransformTranslate3f(const TransformTranslate3f *tt):TransformBase(tt)
+        TransActionTranslate(const TransActionTranslate *tt):TransformAction(tt)
         {
             offset=tt->offset;
             UpdateVersion();
         }
 
-        TransformBase *CloneSelf()const override
+        TransformAction *CloneSelf()const override
         {
-            return(new TransformTranslate3f(this));
+            return(new TransActionTranslate(this));
         }
 
         const Vector3f &GetOffset()const { return offset; }
@@ -168,11 +168,11 @@ namespace hgl::math
             offset+=o;
             UpdateVersion();
         }
-    };//class TransformTranslate3f
+    };//class TransActionTranslate
 
-    using TransformMove3f=TransformTranslate3f;
+    using TransActionMove=TransActionTranslate;
 
-    class TransformRotateQuat :public TransformBase
+    class TransActionRotateQuat :public TransformAction
     {
         Quatf quat;
 
@@ -185,31 +185,31 @@ namespace hgl::math
 
     public:
 
-        constexpr const size_t GetTypeHash()const override{return hgl::GetTypeHash<TransformRotateQuat>();}
+        constexpr const size_t GetTypeHash()const override{return hgl::GetTypeHash<TransActionRotateQuat>();}
 
     public:
 
-        TransformRotateQuat():TransformBase()
+        TransActionRotateQuat():TransformAction()
         {
             quat=IdentityQuatf;
             UpdateVersion();
         }
 
-        TransformRotateQuat(const Quatf &q):TransformBase()
+        TransActionRotateQuat(const Quatf &q):TransformAction()
         {
             quat=q;
             UpdateVersion();
         }
 
-        TransformRotateQuat(const TransformRotateQuat *trq):TransformBase(trq)
+        TransActionRotateQuat(const TransActionRotateQuat *trq):TransformAction(trq)
         {
             quat=trq->quat;
             UpdateVersion();
         }
 
-        TransformBase *CloneSelf()const override
+        TransformAction *CloneSelf()const override
         {
-            return(new TransformRotateQuat(quat));
+            return(new TransActionRotateQuat(quat));
         }
 
         const Quatf &GetQuat()const { return quat; }
@@ -221,9 +221,9 @@ namespace hgl::math
             quat=q;
             UpdateVersion();
         }
-    };//class TransformRotateQuat
+    };//class TransActionRotateQuat
 
-    class TransformRotateAxis :public TransformBase
+    class TransActionRotateAxis :public TransformAction
     {
         Vector3f axis;
         float angle;
@@ -237,34 +237,34 @@ namespace hgl::math
 
     public:
 
-        constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformRotateAxis>(); }
+        constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransActionRotateAxis>(); }
 
     public:
 
-        TransformRotateAxis():TransformBase()
+        TransActionRotateAxis():TransformAction()
         {
             axis=AxisVector::Z; // default to unit Z axis to avoid using zero vector
             angle=0;
             UpdateVersion();
         }
 
-        TransformRotateAxis(const Vector3f &a,float ang):TransformBase()
+        TransActionRotateAxis(const Vector3f &a,float ang):TransformAction()
         {
             axis=a;
             angle=ang;
             UpdateVersion();
         }
 
-        TransformRotateAxis(const TransformRotateAxis *tra):TransformBase(tra)
+        TransActionRotateAxis(const TransActionRotateAxis *tra):TransformAction(tra)
         {
             axis=tra->axis;
             angle=tra->angle;
             UpdateVersion();
         }
 
-        TransformBase *CloneSelf()const override
+        TransformAction *CloneSelf()const override
         {
-            return(new TransformRotateAxis(axis,angle));
+            return(new TransActionRotateAxis(axis,angle));
         }
 
         const Vector3f &GetAxis()const { return axis; }
@@ -297,9 +297,9 @@ namespace hgl::math
             angle=a;
             UpdateVersion();
         }
-    };//class TransformRotateAxis
+    };//class TransActionRotateAxis
 
-    class TransformRotateEuler :public TransformBase
+    class TransActionRotateEuler :public TransformAction
     {
         Vector3f euler;
 
@@ -312,31 +312,31 @@ namespace hgl::math
 
     public:
 
-        constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformRotateEuler>(); }
+        constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransActionRotateEuler>(); }
 
     public:
 
-        TransformRotateEuler():TransformBase()
+        TransActionRotateEuler():TransformAction()
         {
             euler=ZeroVector3f;
             UpdateVersion();
         }
 
-        TransformRotateEuler(const Vector3f &e):TransformBase()
+        TransActionRotateEuler(const Vector3f &e):TransformAction()
         {
             euler=e;
             UpdateVersion();
         }
 
-        TransformRotateEuler(const TransformRotateEuler *tre):TransformBase(tre)
+        TransActionRotateEuler(const TransActionRotateEuler *tre):TransformAction(tre)
         {
             euler=tre->euler;
             UpdateVersion();
         }
 
-        TransformBase *CloneSelf()const override
+        TransformAction *CloneSelf()const override
         {
-            return(new TransformRotateEuler(euler));
+            return(new TransActionRotateEuler(euler));
         }
 
         const Vector3f &GetEuler()const { return euler; }
@@ -349,9 +349,9 @@ namespace hgl::math
         void SetPitch   (const float p      ){if(IsNearlyEqual(euler.x,p))return;euler.x=p;UpdateVersion();}
         void SetYaw     (const float y      ){if(IsNearlyEqual(euler.y,y))return;euler.y=y;UpdateVersion();}
         void SetRoll    (const float r      ){if(IsNearlyEqual(euler.z,r))return;euler.z=r;UpdateVersion();}
-    };//class TransformRotateEuler
+    };//class TransActionRotateEuler
 
-    class TransformScale3f :public TransformBase
+    class TransActionScale :public TransformAction
     {
         Vector3f scale3f;
 
@@ -364,31 +364,31 @@ namespace hgl::math
 
     public:
 
-        constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformScale3f>(); }
+        constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransActionScale>(); }
 
     public:
 
-        TransformScale3f():TransformBase()
+        TransActionScale():TransformAction()
         {
             scale3f=Vector3f(1,1,1);
             UpdateVersion();
         }
 
-        TransformScale3f(const Vector3f &s):TransformBase()
+        TransActionScale(const Vector3f &s):TransformAction()
         {
             scale3f=s;
             UpdateVersion();
         }
 
-        TransformScale3f(const TransformScale3f *ts):TransformBase(ts)
+        TransActionScale(const TransActionScale *ts):TransformAction(ts)
         {
             scale3f=ts->scale3f;
             UpdateVersion();
         }
 
-        TransformBase *CloneSelf()const override
+        TransformAction *CloneSelf()const override
         {
-            return(new TransformScale3f(scale3f));
+            return(new TransActionScale(scale3f));
         }
 
         const Vector3f &GetScale()const { return scale3f; }
@@ -402,7 +402,7 @@ namespace hgl::math
         }
     };//class TransformScale
 
-    class TransformLookAt :public TransformBase
+    class TransActionLookAt :public TransformAction
     {
         Vector3f eye;
         Vector3f center;
@@ -417,11 +417,11 @@ namespace hgl::math
 
     public:
 
-        constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformLookAt>(); }
+        constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransActionLookAt>(); }
 
     public:
 
-        TransformLookAt():TransformBase()
+        TransActionLookAt():TransformAction()
         {
             eye     =OneVector3f;
             center  =ZeroVector3f;
@@ -429,7 +429,7 @@ namespace hgl::math
             UpdateVersion();
         }
 
-        TransformLookAt(const Vector3f &e,const Vector3f &c,const Vector3f &u=AxisVector::Z)
+        TransActionLookAt(const Vector3f &e,const Vector3f &c,const Vector3f &u=AxisVector::Z)
         {
             eye     =e;
             center  =c;
@@ -437,7 +437,7 @@ namespace hgl::math
             UpdateVersion();
         }
 
-        TransformLookAt(const TransformLookAt *tla):TransformBase(tla)
+        TransActionLookAt(const TransActionLookAt *tla):TransformAction(tla)
         {
             eye     =tla->eye;
             center  =tla->center;
@@ -445,9 +445,9 @@ namespace hgl::math
             UpdateVersion();
         }
 
-        TransformBase *CloneSelf()const override
+        TransformAction *CloneSelf()const override
         {
-            return(new TransformLookAt(eye,center,up));
+            return(new TransActionLookAt(eye,center,up));
         }
 
         const Vector3f &GetEye()const { return eye; }
@@ -491,11 +491,11 @@ namespace hgl::math
             up=pos;
             UpdateVersion();
         }
-    };//class TransformLookAt
+    };//class TransActionLookAt
 
-    class TransformManager: public TransformBase
+    class TransActionManager: public TransformAction
     {
-        ObjectList<TransformBase> transform_list;
+        ObjectList<TransformAction> transform_list;
 
     protected:
 
@@ -508,7 +508,7 @@ namespace hgl::math
             
             Matrix4f TempMatrix;
 
-            for(TransformBase *tb:transform_list)
+            for(TransformAction *tb:transform_list)
             {
                 tb->GetMatrix(TempMatrix,WorldPosition,WorldNormal);
 
@@ -518,38 +518,38 @@ namespace hgl::math
         
     public:
 
-        virtual constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransformManager>(); }
+        virtual constexpr const size_t GetTypeHash()const override { return hgl::GetTypeHash<TransActionManager>(); }
 
         const bool IsEmpty()const { return transform_list.IsEmpty(); }
 
     public:
 
-        TransformManager()=default;
-        virtual ~TransformManager()=default;
+        TransActionManager()=default;
+        virtual ~TransActionManager()=default;
 
-        TransformManager(const TransformManager *tm):TransformBase(tm)
+        TransActionManager(const TransActionManager *tm):TransformAction(tm)
         {
-            for(const TransformBase *tb:tm->transform_list)
+            for(const TransformAction *tb:tm->transform_list)
                 AddTransform(tb->CloneSelf());
 
             UpdateVersion();
         }
 
-        TransformBase *CloneSelf()const override
+        TransformAction *CloneSelf()const override
         {
-            TransformManager *tm=new TransformManager;
+            TransActionManager *tm=new TransActionManager;
 
-            for(TransformBase *tb:transform_list)
+            for(TransformAction *tb:transform_list)
                 tm->AddTransform(tb->CloneSelf());
 
             return tm;
         }
 
-        void operator = (const TransformManager &tm)
+        void operator = (const TransActionManager &tm)
         {
             Clear();
 
-            for(TransformBase *tb:tm.transform_list)
+            for(TransformAction *tb:tm.transform_list)
                 AddTransform(tb->CloneSelf());
         }
 
@@ -559,62 +559,62 @@ namespace hgl::math
             UpdateVersion();
         }
 
-        void AddTransform(TransformBase *tb)
+        void AddTransform(TransformAction *tb)
         {
             transform_list.Add(tb);
             UpdateVersion();
         }
 
-        TransformTranslate3f *AddTranslate(const Vector3f &v)
+        TransActionTranslate *AddTranslate(const Vector3f &v)
         {
-            TransformTranslate3f *tt=new TransformTranslate3f(v);
+            TransActionTranslate *tt=new TransActionTranslate(v);
 
             AddTransform(tt);
 
             return tt;
         }
 
-        TransformMove3f *AddMove(const Vector3f &v){return AddTranslate(v); }
+        TransActionMove *AddMove(const Vector3f &v){return AddTranslate(v); }
 
-        TransformRotateAxis *AddRotateAxis(const Vector3f &axis,const float angle)
+        TransActionRotateAxis *AddRotateAxis(const Vector3f &axis,const float angle)
         {
-            TransformRotateAxis *tra=new TransformRotateAxis(axis,angle);
+            TransActionRotateAxis *tra=new TransActionRotateAxis(axis,angle);
 
             AddTransform(tra);
 
             return tra;
         }
 
-        TransformRotateQuat *AddRotateQuat(const Quatf &q)
+        TransActionRotateQuat *AddRotateQuat(const Quatf &q)
         {
-            TransformRotateQuat *trq=new TransformRotateQuat(q);
+            TransActionRotateQuat *trq=new TransActionRotateQuat(q);
 
             AddTransform(trq);
 
             return trq;
         }
 
-        TransformRotateEuler *AddRotateEuler(const Vector3f &euler)
+        TransActionRotateEuler *AddRotateEuler(const Vector3f &euler)
         {
-            TransformRotateEuler *tre=new TransformRotateEuler(euler);
+            TransActionRotateEuler *tre=new TransActionRotateEuler(euler);
 
             AddTransform(tre);
 
             return tre;
         }
 
-        TransformScale3f *AddScale(const Vector3f &v)
+        TransActionScale *AddScale(const Vector3f &v)
         {
-            TransformScale3f *ts=new TransformScale3f(v);
+            TransActionScale *ts=new TransActionScale(v);
 
             AddTransform(ts);
 
             return ts;
         }
 
-        TransformLookAt *AddLookAt(const Vector3f &eye,const Vector3f &center,const Vector3f &up)
+        TransActionLookAt *AddLookAt(const Vector3f &eye,const Vector3f &center,const Vector3f &up)
         {
-            TransformLookAt *tla=new TransformLookAt;
+            TransActionLookAt *tla=new TransActionLookAt;
 
             tla->SetLookAt(eye,center,up);
 
@@ -623,16 +623,16 @@ namespace hgl::math
             return tla;
         }
 
-        TransformMatrix *AddMatrix(const Matrix4f &mat)
+        TransActionMatrix *AddMatrix(const Matrix4f &mat)
         {
-            TransformMatrix *tm=new TransformMatrix(mat);
+            TransActionMatrix *tm=new TransActionMatrix(mat);
 
             AddTransform(tm);
 
             return tm;
         }
 
-        void RemoveTransform(TransformBase *tb)
+        void RemoveTransform(TransformAction *tb)
         {
             if(!tb)
                 return;
@@ -651,7 +651,7 @@ namespace hgl::math
         {
             bool has_update=false;
 
-            for(TransformBase *tb:transform_list)
+            for(TransformAction *tb:transform_list)
                 if(tb->UpdateNewestData())
                     has_update=true;
 
@@ -663,7 +663,7 @@ namespace hgl::math
 
             return has_update;
         }
-    };//class TransformManager
+    };//class TransActionManager
 
     /**
      * 变换矩阵<Br>
@@ -959,8 +959,8 @@ namespace hgl::math
         inline Vector3f TransformPosition   (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return Vector3f(matrix*Vector4f(v,1.0f));}
         inline Vector3f TransformDirection  (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return Vector3f(matrix*Vector4f(v,0.0f));}
         inline Vector3f TransformNormal     (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return normalize(Vector3f(transpose_inverse_matrix*Vector4f(v,0.0f)));}
-        inline Matrix3f TransformMatrix     (const Matrix3f &child){if(matrix_dirty)UpdateMatrix();return Matrix3f(matrix*Matrix4f(child));}
-        inline Matrix4f TransformMatrix     (const Matrix4f &child){if(matrix_dirty)UpdateMatrix();return matrix*child;}
+        inline Matrix3f TransActionMatrix     (const Matrix3f &child){if(matrix_dirty)UpdateMatrix();return Matrix3f(matrix*Matrix4f(child));}
+        inline Matrix4f TransActionMatrix     (const Matrix4f &child){if(matrix_dirty)UpdateMatrix();return matrix*child;}
 
         inline Vector3f InverseTransformPosition    (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return Vector3f(inverse_matrix*Vector4f(v,1.0f));}
         inline Vector3f InverseTransformDirection   (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return Vector3f(inverse_matrix*Vector4f(v,0.0f));}
