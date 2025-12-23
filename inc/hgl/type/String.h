@@ -777,6 +777,7 @@ namespace hgl
      * @brief CN: UTF-8 编码字符串类型 EN: UTF-8 encoded string type
      */
     using U8String   = String<u8char>;
+
     /**
      * @typedef U16String
      * @brief CN: UTF-16 编码字符串类型 EN: UTF-16 encoded string type

@@ -86,7 +86,7 @@ namespace hgl
     inline OSString ToOSString(const u8char *str){return to_u16(str);}              // utf8 -> u16
     inline OSString ToOSString(const U8String &str){return to_u16(str.c_str(), (int)(str.Length()));}
 
-#define ToU16String ToOSString
+    #define ToU16String ToOSString
 
     inline U8String ToU8String(const os_char *str){return to_u8(str,strlen(str));}
     inline U8String ToU8String(const OSString &str){return to_u8(str);}             // u16 -> utf8
@@ -96,6 +96,13 @@ namespace hgl
 
     inline U8String ToU8String(const os_char *str){return U8String(str);}           // 已经是utf8
     inline U8String ToU8String(const OSString &str){return str;}
+#endif//
+
+#ifdef HGL_SUPPORT_CHAR8_T
+    inline U8String ToU8String(const AnsiString &str)
+    {
+        return U8String((const u8char *)str.c_str(),str.Length());
+    }
 #endif//
 
     namespace endian
