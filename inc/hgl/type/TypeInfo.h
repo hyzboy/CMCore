@@ -8,6 +8,8 @@ namespace hgl
     template<typename T> constexpr const size_t GetTypeHash()noexcept{return typeid(T).hash_code();} ///<取得一个类型的哈希值
     template<typename T> constexpr const char * GetTypeName()noexcept{return typeid(T).name();}      ///<取得一个类型的名称
 
+    template<typename T> constexpr const size_t GetTypeHash(T t)noexcept{return typeid(t).hash_code();}
+
     // 1. 判断是否是类或结构体
     template<typename T>
     constexpr bool IsClassOrStruct() noexcept
