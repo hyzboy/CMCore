@@ -101,10 +101,7 @@ SET(CMCORE_TEXT_STRING_HEADERS  ${CMCORE_TYPE_INCLUDE_PATH}/String.h
                                 ${CMCORE_TYPE_INCLUDE_PATH}/MergeString.h
                                 ${CMCORE_TYPE_INCLUDE_PATH}/StdString.h)
 
-SET(CMCORE_TEXT_STRING_SOURCES  Text/StringList.cpp)
-
-SOURCE_GROUP("Text\\String\\Headers" FILES ${CMCORE_TEXT_STRING_HEADERS})
-SOURCE_GROUP("Text\\String\\Sources" FILES ${CMCORE_TEXT_STRING_SOURCES})
+SOURCE_GROUP("Text\\String" FILES ${CMCORE_TEXT_STRING_HEADERS})
 
 ## Text 文本编码
 SET(CMCORE_TEXT_ENCODING_HEADERS    ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Endian.h
@@ -348,7 +345,6 @@ add_cm_library(CMCore "CM"
                         ${CMCORE_TYPE_BITSARRAY_SOURCES}
 
                         ${CMCORE_TEXT_STRING_HEADERS}
-                        ${CMCORE_TEXT_STRING_SOURCES}
                         ${CMCORE_TEXT_ENCODING_HEADERS}
                         ${CMCORE_TEXT_ENCODING_SOURCES}
 
