@@ -298,13 +298,13 @@ namespace hgl::math
 
         inline Vector3f TransformPosition   (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return Vector3f(matrix*Vector4f(v,1.0f));}
         inline Vector3f TransformDirection  (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return Vector3f(matrix*Vector4f(v,0.0f));}
-        inline Vector3f TransformNormal     (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return normalize(Vector3f(transpose_inverse_matrix*Vector4f(v,0.0f)));}
+        inline Vector3f TransformNormal     (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return Normalized(Vector3f(transpose_inverse_matrix*Vector4f(v,0.0f)));}
         inline Matrix3f TransActionMatrix     (const Matrix3f &child){if(matrix_dirty)UpdateMatrix();return Matrix3f(matrix*Matrix4f(child));}
         inline Matrix4f TransActionMatrix     (const Matrix4f &child){if(matrix_dirty)UpdateMatrix();return matrix*child;}
 
         inline Vector3f InverseTransformPosition    (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return Vector3f(inverse_matrix*Vector4f(v,1.0f));}
         inline Vector3f InverseTransformDirection   (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return Vector3f(inverse_matrix*Vector4f(v,0.0f));}
-        inline Vector3f InverseTransformNormal      (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return normalize(Vector3f(transpose(matrix)*Vector4f(v,0.0f)));}
+        inline Vector3f InverseTransformNormal      (const Vector3f &v){if(matrix_dirty)UpdateMatrix();return Normalized(Vector3f(Transpose(matrix)*Vector4f(v,0.0f)));}
         inline Matrix3f InverseTransformMatrix      (const Matrix3f &child){if(matrix_dirty)UpdateMatrix();return Matrix3f(inverse_matrix*Matrix4f(child));}
         inline Matrix4f InverseTransformMatrix      (const Matrix4f &child){if(matrix_dirty)UpdateMatrix();return inverse_matrix*child;}
 

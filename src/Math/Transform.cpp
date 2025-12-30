@@ -58,8 +58,8 @@ namespace hgl::math
         else
         {
             matrix=TranslateMatrix(translation_vector)*ToMatrix(rotation_quat)*ScaleMatrix(scale_vector);
-            inverse_matrix=inverse(matrix);
-            transpose_inverse_matrix=transpose(inverse_matrix);
+            inverse_matrix=Inverse(matrix);
+            transpose_inverse_matrix=Transpose(inverse_matrix);
 
             is_identity=false;
         }
@@ -126,8 +126,8 @@ namespace hgl::math
         }
 
         matrix=m;
-        inverse_matrix=inverse(m);
-        transpose_inverse_matrix=transpose(inverse_matrix);
+        inverse_matrix=Inverse(m);
+        transpose_inverse_matrix=Transpose(inverse_matrix);
 
         matrix_dirty=false;
 
