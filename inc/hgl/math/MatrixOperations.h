@@ -6,7 +6,8 @@
 #include<hgl/math/MatrixTypes.h>
 #include<hgl/math/Vector.h>
 
-// Forward declare Quatf to avoid circular dependency
+// Quatf type alias (matching definition in Quaternion.h)
+// Using forward declaration here to avoid including Quaternion.h
 namespace hgl::math { using Quatf = glm::quat; }
 
 namespace hgl::math
