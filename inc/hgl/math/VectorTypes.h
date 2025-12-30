@@ -2,8 +2,5 @@
 
 #include<hgl/math/Vector.h>
 
-// This file is for backward compatibility and additional type definitions
-namespace hgl::math
-{
-    // Additional vector type aliases can be added here
-}//namespace hgl::math
+// This file provides backward compatibility for code that includes VectorTypes.h
+// All vector type definitions are in Vector.h

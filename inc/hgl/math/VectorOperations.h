@@ -2,7 +2,7 @@
 
 #include<glm/glm.hpp>
 #include<glm/gtx/norm.hpp>
-#include<hgl/math/VectorTypes.h>
+#include<hgl/math/Vector.h>
 
 namespace hgl::math
 {

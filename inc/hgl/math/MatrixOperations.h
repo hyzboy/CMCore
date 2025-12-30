@@ -4,7 +4,7 @@
 #include<glm/gtc/matrix_transform.hpp>
 #include<glm/gtx/matrix_decompose.hpp>
 #include<hgl/math/MatrixTypes.h>
-#include<hgl/math/VectorTypes.h>
+#include<hgl/math/Vector.h>
 
 namespace hgl::math
 {
