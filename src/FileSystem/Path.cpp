@@ -7,11 +7,7 @@ namespace hgl::filesystem
         if (part.IsEmpty())
             return *this;
 
-#if HGL_OS == HGL_OS_Windows
-        full_path = JoinPathWithFilename<os_char>(full_path, part, HGL_DIRECTORY_SEPARATOR, HGL_DIRECTORY_SEPARATOR_STR);
-#else
-        full_path = JoinPathWithFilename<os_char>(full_path, part, HGL_DIRECTORY_SEPARATOR, HGL_DIRECTORY_SEPARATOR_U8STR);
-#endif
+        full_path = JoinPathWithFilename(full_path, part);
         return *this;
     }
 }
