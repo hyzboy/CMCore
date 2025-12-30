@@ -98,5 +98,41 @@ namespace hgl::math
         Vector4f perspective;
         return glm::decompose(m, scale, rotation, translation, skew, perspective);
     }
-    
+
+    // ========================================
+    // Vector transformation helpers
+    // ========================================
+
+    /**
+     * Transform position (considers translation)
+     */
+    inline Vector3f TransformPosition(const Matrix4f& m, const Vector3f& v)
+    {
+        return Vector3f(m * Vector4f(v, 1.0f));
+    }
+
+    /**
+     * Transform direction (ignores translation)
+     */
+    inline Vector3f TransformDirection(const Matrix4f& m, const Vector3f& v)
+    {
+        return Vector3f(m * Vector4f(v, 0.0f));
+    }
+
+    /**
+     * Transform normal (uses inverse transpose matrix)
+     */
+    inline Vector3f TransformNormal(const Matrix4f& m, const Vector3f& v)
+    {
+        return Normalized(Vector3f(Transpose(Inverse(m)) * Vector4f(v, 0.0f)));
+    }
+
+    /**
+     * Transform normal (3x3 matrix version)
+     */
+    inline Vector3f TransformNormal(const Matrix3f& m, const Vector3f& v)
+    {
+        return Normalized(m * v);
+    }
+
 }//namespace hgl::math
