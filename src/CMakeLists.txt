@@ -1,305 +1,338 @@
 #==================================================================================================
 ## DataType 数据类型基础
 ##==================================================================================================
-SET(TYPE_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type)
+SET(CMCORE_TYPE_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type)
 
-SET(TYPE_INFO_FILE ${TYPE_INCLUDE_PATH}/TypeInfo.h)
+## TypeInfo 类型信息
+SET(CMCORE_TYPE_INFO_HEADERS ${CMCORE_TYPE_INCLUDE_PATH}/TypeInfo.h)
 
-SOURCE_GROUP("DataType" FILES ${TYPE_INFO_FILE})
+SOURCE_GROUP("DataType\\TypeInfo" FILES ${CMCORE_TYPE_INFO_HEADERS})
 
 ## BitsArray 位数组
-SET(BITS_ARRAY_FILES ${TYPE_INCLUDE_PATH}/BitsArray.h
-                    Type/BitsArray.cpp)
+SET(CMCORE_TYPE_BITSARRAY_HEADERS ${CMCORE_TYPE_INCLUDE_PATH}/BitsArray.h)
+SET(CMCORE_TYPE_BITSARRAY_SOURCES Type/BitsArray.cpp)
 
-SOURCE_GROUP("DataType\\BitsArray" FILES ${BITS_ARRAY_FILES})
+SOURCE_GROUP("DataType\\BitsArray\\Headers" FILES ${CMCORE_TYPE_BITSARRAY_HEADERS})
+SOURCE_GROUP("DataType\\BitsArray\\Sources" FILES ${CMCORE_TYPE_BITSARRAY_SOURCES})
 
 ## Object 对象基类
-SET(BASE_OBJECT_HEADER_FILES    ${TYPE_INCLUDE_PATH}/object/ObjectBaseInfo.h
-                                ${TYPE_INCLUDE_PATH}/object/Object.h)
+SET(CMCORE_TYPE_OBJECT_HEADERS  ${CMCORE_TYPE_INCLUDE_PATH}/object/ObjectBaseInfo.h
+                                ${CMCORE_TYPE_INCLUDE_PATH}/object/Object.h)
 
-SET(BASE_OBJECT_SOURCE_FILES    Object/ObjectBaseInfo.cpp
+SET(CMCORE_TYPE_OBJECT_SOURCES  Object/ObjectBaseInfo.cpp
                                 Object/Object.cpp
                                 Object/TickObject.cpp)
 
-SOURCE_GROUP("DataType\\Object" FILES ${BASE_OBJECT_HEADER_FILES}
-                                      ${BASE_OBJECT_SOURCE_FILES})
+SOURCE_GROUP("DataType\\Object\\Headers" FILES ${CMCORE_TYPE_OBJECT_HEADERS})
+SOURCE_GROUP("DataType\\Object\\Sources" FILES ${CMCORE_TYPE_OBJECT_SOURCES})
 
 ## IDName 标识名称
-SET(TYPE_IDNAME_HEADER_FILES    ${TYPE_INCLUDE_PATH}/ConstStringSet.h
-                                ${TYPE_INCLUDE_PATH}/IDName.h)
+SET(CMCORE_TYPE_IDNAME_HEADERS  ${CMCORE_TYPE_INCLUDE_PATH}/ConstStringSet.h
+                                ${CMCORE_TYPE_INCLUDE_PATH}/IDName.h)
 
-SET(TYPE_IDNAME_SOURCE_FILES    Text/ConstStringSetSaveToTextStream.cpp)
+SET(CMCORE_TYPE_IDNAME_SOURCES  Text/ConstStringSetSaveToTextStream.cpp)
 
-SOURCE_GROUP("DataType\\IDName" FILES ${TYPE_IDNAME_HEADER_FILES} ${TYPE_IDNAME_SOURCE_FILES})
+SOURCE_GROUP("DataType\\IDName\\Headers" FILES ${CMCORE_TYPE_IDNAME_HEADERS})
+SOURCE_GROUP("DataType\\IDName\\Sources" FILES ${CMCORE_TYPE_IDNAME_SOURCES})
 
 ## Collection 集合
-SET(TYPE_COLLECTION_SOURCE  ${TYPE_INCLUDE_PATH}/Collection.h
-                            ${TYPE_INCLUDE_PATH}/ElementCollection.h
-                            Type/Collection.cpp)
+SET(CMCORE_TYPE_COLLECTION_HEADERS  ${CMCORE_TYPE_INCLUDE_PATH}/Collection.h
+                                    ${CMCORE_TYPE_INCLUDE_PATH}/ElementCollection.h)
 
-SOURCE_GROUP("DataType\\Collection" FILES ${TYPE_COLLECTION_SOURCE})
+SET(CMCORE_TYPE_COLLECTION_SOURCES  Type/Collection.cpp)
+
+SOURCE_GROUP("DataType\\Collection\\Headers" FILES ${CMCORE_TYPE_COLLECTION_HEADERS})
+SOURCE_GROUP("DataType\\Collection\\Sources" FILES ${CMCORE_TYPE_COLLECTION_SOURCES})
 
 ## DataChain 数据链
-SET(TYPE_DATA_CHAIN_SOURCE  ${TYPE_INCLUDE_PATH}/DataChain.h
-                            Type/DataChain.cpp)
+SET(CMCORE_TYPE_DATACHAIN_HEADERS   ${CMCORE_TYPE_INCLUDE_PATH}/DataChain.h)
+SET(CMCORE_TYPE_DATACHAIN_SOURCES   Type/DataChain.cpp)
 
-SOURCE_GROUP("DataType\\DataChain" FILES ${TYPE_DATA_CHAIN_SOURCE})
+SOURCE_GROUP("DataType\\DataChain\\Headers" FILES ${CMCORE_TYPE_DATACHAIN_HEADERS})
+SOURCE_GROUP("DataType\\DataChain\\Sources" FILES ${CMCORE_TYPE_DATACHAIN_SOURCES})
 
 ## ActiveManager 活跃管理器
-SET(ACTIVE_MANAGER_FILES    ${TYPE_INCLUDE_PATH}/ActiveIDManager.h
-                            ${TYPE_INCLUDE_PATH}/ActiveMemoryBlockManager.h
-                            ${TYPE_INCLUDE_PATH}/ActiveDataManager.h
-                            Type/ActiveIDManager.cpp
-                            Type/ActiveMemoryBlockManager.cpp)
+SET(CMCORE_TYPE_ACTIVEMANAGER_HEADERS   ${CMCORE_TYPE_INCLUDE_PATH}/ActiveIDManager.h
+                                        ${CMCORE_TYPE_INCLUDE_PATH}/ActiveMemoryBlockManager.h
+                                        ${CMCORE_TYPE_INCLUDE_PATH}/ActiveDataManager.h)
 
-SOURCE_GROUP("DataType\\ActiveManager" FILES ${ACTIVE_MANAGER_FILES})
+SET(CMCORE_TYPE_ACTIVEMANAGER_SOURCES   Type/ActiveIDManager.cpp
+                                        Type/ActiveMemoryBlockManager.cpp)
+
+SOURCE_GROUP("DataType\\ActiveManager\\Headers" FILES ${CMCORE_TYPE_ACTIVEMANAGER_HEADERS})
+SOURCE_GROUP("DataType\\ActiveManager\\Sources" FILES ${CMCORE_TYPE_ACTIVEMANAGER_SOURCES})
 
 ## Template 模板类
-file(GLOB TYPE_TEMPLATE_HEADER ${TYPE_INCLUDE_PATH}/*.h)
+file(GLOB CMCORE_TYPE_TEMPLATE_HEADERS ${CMCORE_TYPE_INCLUDE_PATH}/*.h)
 
-SOURCE_GROUP("DataType\\Template" FILES ${TYPE_TEMPLATE_HEADER})
+SOURCE_GROUP("DataType\\Template" FILES ${CMCORE_TYPE_TEMPLATE_HEADERS})
 
 ## Memory 内存管理
-SET(BASE_OTHER_SOURCE   ${TYPE_INCLUDE_PATH}/MemoryBlock.h
-                        ${TYPE_INCLUDE_PATH}/MemoryAllocator.h
-                        Other/MemoryBlock.cpp
-                        Other/MemoryAllocator.cpp)
+SET(CMCORE_TYPE_MEMORY_HEADERS  ${CMCORE_TYPE_INCLUDE_PATH}/MemoryBlock.h
+                                ${CMCORE_TYPE_INCLUDE_PATH}/MemoryAllocator.h)
 
-SOURCE_GROUP("DataType\\Memory" FILES ${BASE_OTHER_SOURCE})
+SET(CMCORE_TYPE_MEMORY_SOURCES  Other/MemoryBlock.cpp
+                                Other/MemoryAllocator.cpp)
+
+SOURCE_GROUP("DataType\\Memory\\Headers" FILES ${CMCORE_TYPE_MEMORY_HEADERS})
+SOURCE_GROUP("DataType\\Memory\\Sources" FILES ${CMCORE_TYPE_MEMORY_SOURCES})
 
 ##==================================================================================================
 ## Math 数学库
 ##==================================================================================================
-SET(MATH_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/math)
+SET(CMCORE_MATH_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/math)
 
-SET(MATH_HEADER_FILES   ${MATH_INCLUDE_PATH}/Transform.h
-                        ${MATH_INCLUDE_PATH}/TransformAction.h)
+SET(CMCORE_MATH_HEADERS ${CMCORE_MATH_INCLUDE_PATH}/Transform.h
+                        ${CMCORE_MATH_INCLUDE_PATH}/TransformAction.h)
 
-SET(MATH_SOURCE_FILES   Math/Transform.cpp)
+SET(CMCORE_MATH_SOURCES Math/Transform.cpp)
 
-SOURCE_GROUP("Math\\Header Files" FILES ${MATH_HEADER_FILES})
-SOURCE_GROUP("Math\\Source Files" FILES ${MATH_SOURCE_FILES})
+SOURCE_GROUP("Math\\Headers" FILES ${CMCORE_MATH_HEADERS})
+SOURCE_GROUP("Math\\Sources" FILES ${CMCORE_MATH_SOURCES})
 
 ##==================================================================================================
 ## String 字符串类
 ##==================================================================================================
-SET(STRING_HEADER_FILES ${TYPE_INCLUDE_PATH}/String.h
-                        ${TYPE_INCLUDE_PATH}/StringView.h
-                        ${TYPE_INCLUDE_PATH}/StringViewList.h
-                        ${TYPE_INCLUDE_PATH}/StringList.h
-                        ${TYPE_INCLUDE_PATH}/SplitString.h
-                        ${TYPE_INCLUDE_PATH}/MergeString.h
-                        ${TYPE_INCLUDE_PATH}/StdString.h
-)
+SET(CMCORE_TEXT_STRING_HEADERS  ${CMCORE_TYPE_INCLUDE_PATH}/String.h
+                                ${CMCORE_TYPE_INCLUDE_PATH}/StringView.h
+                                ${CMCORE_TYPE_INCLUDE_PATH}/StringViewList.h
+                                ${CMCORE_TYPE_INCLUDE_PATH}/StringList.h
+                                ${CMCORE_TYPE_INCLUDE_PATH}/SplitString.h
+                                ${CMCORE_TYPE_INCLUDE_PATH}/MergeString.h
+                                ${CMCORE_TYPE_INCLUDE_PATH}/StdString.h)
 
-SOURCE_GROUP("Text\\String" FILES   ${STRING_HEADER_FILES}
-                                    Text/StringList.cpp)
+SET(CMCORE_TEXT_STRING_SOURCES  Text/StringList.cpp)
+
+SOURCE_GROUP("Text\\String\\Headers" FILES ${CMCORE_TEXT_STRING_HEADERS})
+SOURCE_GROUP("Text\\String\\Sources" FILES ${CMCORE_TEXT_STRING_SOURCES})
 
 ## Text 文本编码
-SET(TEXT_HEADER_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Endian.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/utf.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Charset.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/text/FontInfo.h
-                        ${TYPE_INCLUDE_PATH}/UnicodeBlocks.h)
+SET(CMCORE_TEXT_ENCODING_HEADERS    ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Endian.h
+                                    ${CMCORE_ROOT_INCLUDE_PATH}/hgl/utf.h
+                                    ${CMCORE_ROOT_INCLUDE_PATH}/hgl/Charset.h
+                                    ${CMCORE_ROOT_INCLUDE_PATH}/hgl/text/FontInfo.h
+                                    ${CMCORE_TYPE_INCLUDE_PATH}/UnicodeBlocks.h)
 
-SET(TEXT_SOURCE_FILES   Text/Endian.cpp
-                        Text/utf.cpp
-                        Text/CodePage.cpp
-                        Text/UnicodeBlocks.cpp)
+SET(CMCORE_TEXT_ENCODING_SOURCES    Text/Endian.cpp
+                                    Text/utf.cpp
+                                    Text/CodePage.cpp
+                                    Text/UnicodeBlocks.cpp)
 
-SOURCE_GROUP("Text\\Header Files" FILES ${TEXT_HEADER_FILES})
-SOURCE_GROUP("Text\\Source Files" FILES ${TEXT_SOURCE_FILES})
+SOURCE_GROUP("Text\\Encoding\\Headers" FILES ${CMCORE_TEXT_ENCODING_HEADERS})
+SOURCE_GROUP("Text\\Encoding\\Sources" FILES ${CMCORE_TEXT_ENCODING_SOURCES})
 
 ##==================================================================================================
 ## IO 输入输出
 ##==================================================================================================
-SET(IO_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io)
+SET(CMCORE_IO_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io)
 
 ## IO Base 基础
-SET(IO_BASE_FILES ${IO_INCLUDE_PATH}/InputStream.h
-                  ${IO_INCLUDE_PATH}/IOType.h
-                  ${IO_INCLUDE_PATH}/OutputStream.h
-                  ${IO_INCLUDE_PATH}/SeekAccess.h
-                  ${IO_INCLUDE_PATH}/MMapFile.h
-                  IO/IOType.cpp)
+SET(CMCORE_IO_BASE_HEADERS  ${CMCORE_IO_INCLUDE_PATH}/InputStream.h
+                            ${CMCORE_IO_INCLUDE_PATH}/IOType.h
+                            ${CMCORE_IO_INCLUDE_PATH}/OutputStream.h
+                            ${CMCORE_IO_INCLUDE_PATH}/SeekAccess.h
+                            ${CMCORE_IO_INCLUDE_PATH}/MMapFile.h)
 
-SOURCE_GROUP("IO\\Base" FILES ${IO_BASE_FILES})
+SET(CMCORE_IO_BASE_SOURCES  IO/IOType.cpp)
+
+SOURCE_GROUP("IO\\Base\\Headers" FILES ${CMCORE_IO_BASE_HEADERS})
+SOURCE_GROUP("IO\\Base\\Sources" FILES ${CMCORE_IO_BASE_SOURCES})
 
 ## IO DataStream 数据流
-SET(IO_DATA_FILES ${IO_INCLUDE_PATH}/DataInputStream.h
-                  ${IO_INCLUDE_PATH}/DataOutputStream.h
-                  ${IO_INCLUDE_PATH}/EndianDataInputStream.h
-                  ${IO_INCLUDE_PATH}/EndianDataOutputStream.h
-                  IO/InputStream.cpp
-                  IO/DataInputStream.cpp
-                  IO/DataOutputStream.cpp)
+SET(CMCORE_IO_DATASTREAM_HEADERS    ${CMCORE_IO_INCLUDE_PATH}/DataInputStream.h
+                                    ${CMCORE_IO_INCLUDE_PATH}/DataOutputStream.h
+                                    ${CMCORE_IO_INCLUDE_PATH}/EndianDataInputStream.h
+                                    ${CMCORE_IO_INCLUDE_PATH}/EndianDataOutputStream.h)
 
-SOURCE_GROUP("IO\\DataIOStream" FILES ${IO_DATA_FILES})
+SET(CMCORE_IO_DATASTREAM_SOURCES    IO/InputStream.cpp
+                                    IO/DataInputStream.cpp
+                                    IO/DataOutputStream.cpp)
+
+SOURCE_GROUP("IO\\DataStream\\Headers" FILES ${CMCORE_IO_DATASTREAM_HEADERS})
+SOURCE_GROUP("IO\\DataStream\\Sources" FILES ${CMCORE_IO_DATASTREAM_SOURCES})
 
 ## IO MemoryStream 内存流
-SET(IO_MEMORY_STREAM_FILES  ${IO_INCLUDE_PATH}/MemoryInputStream.h
-                            ${IO_INCLUDE_PATH}/MemoryOutputStream.h)
+SET(CMCORE_IO_MEMORYSTREAM_HEADERS  ${CMCORE_IO_INCLUDE_PATH}/MemoryInputStream.h
+                                    ${CMCORE_IO_INCLUDE_PATH}/MemoryOutputStream.h)
 
-SOURCE_GROUP("IO\\MemoryStream" FILES ${IO_MEMORY_STREAM_FILES})
+SOURCE_GROUP("IO\\MemoryStream\\Headers" FILES ${CMCORE_IO_MEMORYSTREAM_HEADERS})
 
 ## IO DataArray 数据数组
-SET(IO_DATA_ARRAY_FILES ${IO_INCLUDE_PATH}/LoadDataArray.h
-                        ${IO_INCLUDE_PATH}/SaveDataArray.h)
+SET(CMCORE_IO_DATAARRAY_HEADERS ${CMCORE_IO_INCLUDE_PATH}/LoadDataArray.h
+                                ${CMCORE_IO_INCLUDE_PATH}/SaveDataArray.h)
 
-SOURCE_GROUP("IO\\DataArray" FILES ${IO_DATA_ARRAY_FILES})
+SOURCE_GROUP("IO\\DataArray\\Headers" FILES ${CMCORE_IO_DATAARRAY_HEADERS})
 
 ## IO File 文件访问
-SET(IO_FILE_FILES ${IO_INCLUDE_PATH}/FileAccess.h
-                  ${IO_INCLUDE_PATH}/FileInputStream.h
-                  ${IO_INCLUDE_PATH}/FileOutputStream.h
-                  ${IO_INCLUDE_PATH}/RandomAccessFile.h
-                  IO/FileAccess.cpp
-                  IO/FileInputStream.cpp
-                  IO/FileOutputStream.cpp
-                  IO/RandomAccessFile.cpp)
+SET(CMCORE_IO_FILE_HEADERS  ${CMCORE_IO_INCLUDE_PATH}/FileAccess.h
+                            ${CMCORE_IO_INCLUDE_PATH}/FileInputStream.h
+                            ${CMCORE_IO_INCLUDE_PATH}/FileOutputStream.h
+                            ${CMCORE_IO_INCLUDE_PATH}/RandomAccessFile.h)
 
-SOURCE_GROUP("IO\\File" FILES ${IO_FILE_FILES})
+SET(CMCORE_IO_FILE_SOURCES  IO/FileAccess.cpp
+                            IO/FileInputStream.cpp
+                            IO/FileOutputStream.cpp
+                            IO/RandomAccessFile.cpp)
+
+SOURCE_GROUP("IO\\File\\Headers" FILES ${CMCORE_IO_FILE_HEADERS})
+SOURCE_GROUP("IO\\File\\Sources" FILES ${CMCORE_IO_FILE_SOURCES})
 
 ## IO Java Java风格IO
-SET(IO_JAVA_FILES   ${IO_INCLUDE_PATH}/JavaInputStream.h
-                    ${IO_INCLUDE_PATH}/JavaOutputStream.h)
+SET(CMCORE_IO_JAVA_HEADERS  ${CMCORE_IO_INCLUDE_PATH}/JavaInputStream.h
+                            ${CMCORE_IO_INCLUDE_PATH}/JavaOutputStream.h)
 
-SOURCE_GROUP("IO\\Java" FILES ${IO_JAVA_FILES})
+SOURCE_GROUP("IO\\Java\\Headers" FILES ${CMCORE_IO_JAVA_HEADERS})
 
 ## IO Text 文本IO
-SET(IO_TEXT_FILES   IO/TextOutputStream.cpp
-                    IO/TextInputStream.cpp
-                    ${IO_INCLUDE_PATH}/TextInputStream.h
-                    ${IO_INCLUDE_PATH}/TextOutputStream.h
-                    Text/LoadString.cpp
-                    Text/LoadStringList.cpp
-                    Text/LoadStringViewList.cpp
+SET(CMCORE_IO_TEXT_HEADERS  ${CMCORE_IO_INCLUDE_PATH}/TextInputStream.h
+                            ${CMCORE_IO_INCLUDE_PATH}/TextOutputStream.h
+                            ${CMCORE_IO_INCLUDE_PATH}/LoadStringList.h
+                            ${CMCORE_IO_INCLUDE_PATH}/SaveStringList.h)
 
-                    ${IO_INCLUDE_PATH}/LoadStringList.h
-                    ${IO_INCLUDE_PATH}/SaveStringList.h)
+SET(CMCORE_IO_TEXT_SOURCES  IO/TextOutputStream.cpp
+                            IO/TextInputStream.cpp
+                            Text/LoadString.cpp
+                            Text/LoadStringList.cpp
+                            Text/LoadStringViewList.cpp)
 
-SOURCE_GROUP("IO\\Text" FILES ${IO_TEXT_FILES})
+SOURCE_GROUP("IO\\Text\\Headers" FILES ${CMCORE_IO_TEXT_HEADERS})
+SOURCE_GROUP("IO\\Text\\Sources" FILES ${CMCORE_IO_TEXT_SOURCES})
 
 ## IO MiniPack 迷你打包
-SET(IO_MINI_PACK_FILES  ${IO_INCLUDE_PATH}/MiniPack.h
-                        IO/MiniPackInfoBlock.h
-                        IO/MiniPackInfoBlock.cpp
-                        IO/MiniPackReader.cpp
-                        IO/MiniPackMemory.cpp)
+SET(CMCORE_IO_MINIPACK_HEADERS  ${CMCORE_IO_INCLUDE_PATH}/MiniPack.h
+                                IO/MiniPackInfoBlock.h)
 
-SOURCE_GROUP("IO\\MiniPack" FILES ${IO_MINI_PACK_FILES})
+SET(CMCORE_IO_MINIPACK_SOURCES  IO/MiniPackInfoBlock.cpp
+                                IO/MiniPackReader.cpp
+                                IO/MiniPackMemory.cpp)
+
+SOURCE_GROUP("IO\\MiniPack\\Headers" FILES ${CMCORE_IO_MINIPACK_HEADERS})
+SOURCE_GROUP("IO\\MiniPack\\Sources" FILES ${CMCORE_IO_MINIPACK_SOURCES})
 
 ## IO Event 输入事件
-SET(INPUT_EVENT_FILES   ${IO_INCLUDE_PATH}/event/KeyboardEvent.h
-                        ${IO_INCLUDE_PATH}/event/MouseEvent.h
-                        ${IO_INCLUDE_PATH}/event/JoystickEvent.h
-                        ${IO_INCLUDE_PATH}/event/EventDispatcher.h
-                        ${IO_INCLUDE_PATH}/event/InputMapping.h
-                        IO/Event/MouseEvent.cpp
-                        IO/Event/EventDispatcher.cpp
-)
+SET(CMCORE_IO_EVENT_HEADERS ${CMCORE_IO_INCLUDE_PATH}/event/KeyboardEvent.h
+                            ${CMCORE_IO_INCLUDE_PATH}/event/MouseEvent.h
+                            ${CMCORE_IO_INCLUDE_PATH}/event/JoystickEvent.h
+                            ${CMCORE_IO_INCLUDE_PATH}/event/EventDispatcher.h
+                            ${CMCORE_IO_INCLUDE_PATH}/event/InputMapping.h)
 
-SOURCE_GROUP("IO\\Event" FILES ${INPUT_EVENT_FILES})
+SET(CMCORE_IO_EVENT_SOURCES IO/Event/MouseEvent.cpp
+                            IO/Event/EventDispatcher.cpp)
+
+SOURCE_GROUP("IO\\Event\\Headers" FILES ${CMCORE_IO_EVENT_HEADERS})
+SOURCE_GROUP("IO\\Event\\Sources" FILES ${CMCORE_IO_EVENT_SOURCES})
 
 ## IO Pipe 管道
-SET(IO_PIPE_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/proc/Pipe.h
-                    ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io/PipeStream.h
-                    IO/PipeStream.cpp)
+SET(CMCORE_IO_PIPE_HEADERS  ${CMCORE_ROOT_INCLUDE_PATH}/hgl/proc/Pipe.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io/PipeStream.h)
 
-SOURCE_GROUP("IO\\Pipe" FILES ${IO_PIPE_FILES})
+SET(CMCORE_IO_PIPE_SOURCES  IO/PipeStream.cpp)
+
+SOURCE_GROUP("IO\\Pipe\\Headers" FILES ${CMCORE_IO_PIPE_HEADERS})
+SOURCE_GROUP("IO\\Pipe\\Sources" FILES ${CMCORE_IO_PIPE_SOURCES})
 
 ## IO Fifo 先进先出
-SET(IO_FIFO_FILES   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/proc/Fifo.h
-                    ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io/FifoStream.h
-                    IO/FifoStream.cpp)
+SET(CMCORE_IO_FIFO_HEADERS  ${CMCORE_ROOT_INCLUDE_PATH}/hgl/proc/Fifo.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io/FifoStream.h)
 
-SOURCE_GROUP("IO\\Fifo" FILES ${IO_FIFO_FILES})
+SET(CMCORE_IO_FIFO_SOURCES  IO/FifoStream.cpp)
+
+SOURCE_GROUP("IO\\Fifo\\Headers" FILES ${CMCORE_IO_FIFO_HEADERS})
+SOURCE_GROUP("IO\\Fifo\\Sources" FILES ${CMCORE_IO_FIFO_SOURCES})
 
 ## IO 汇总
-SET(IO_SOURCE_FILES ${IO_BASE_FILES}
-                    ${IO_DATA_FILES}
-                    ${IO_DATA_ARRAY_FILES}
-                    ${IO_MEMORY_STREAM_FILES}
-                    ${IO_FILE_FILES}
-                    ${IO_JAVA_FILES}
-                    ${IO_TEXT_FILES}
-                    ${INPUT_EVENT_FILES}
-                    ${IO_PIPE_FILES}
-                    ${IO_FIFO_FILES}
-                    ${IO_MINI_PACK_FILES})
+SET(CMCORE_IO_ALL_FILES ${CMCORE_IO_BASE_HEADERS}
+                        ${CMCORE_IO_BASE_SOURCES}
+                        ${CMCORE_IO_DATASTREAM_HEADERS}
+                        ${CMCORE_IO_DATASTREAM_SOURCES}
+                        ${CMCORE_IO_DATAARRAY_HEADERS}
+                        ${CMCORE_IO_MEMORYSTREAM_HEADERS}
+                        ${CMCORE_IO_FILE_HEADERS}
+                        ${CMCORE_IO_FILE_SOURCES}
+                        ${CMCORE_IO_JAVA_HEADERS}
+                        ${CMCORE_IO_TEXT_HEADERS}
+                        ${CMCORE_IO_TEXT_SOURCES}
+                        ${CMCORE_IO_EVENT_HEADERS}
+                        ${CMCORE_IO_EVENT_SOURCES}
+                        ${CMCORE_IO_PIPE_HEADERS}
+                        ${CMCORE_IO_PIPE_SOURCES}
+                        ${CMCORE_IO_FIFO_HEADERS}
+                        ${CMCORE_IO_FIFO_SOURCES}
+                        ${CMCORE_IO_MINIPACK_HEADERS}
+                        ${CMCORE_IO_MINIPACK_SOURCES})
 
 ##==================================================================================================
 ## FileSystem 文件系统
 ##==================================================================================================
-SET(FILESYSTEM_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/filesystem)
+SET(CMCORE_FILESYSTEM_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/filesystem)
 
-SET(FILESYSTEM_HEADER_FILES ${FILESYSTEM_INCLUDE_PATH}/EnumFile.h
-                            ${FILESYSTEM_INCLUDE_PATH}/EnumVolume.h
-                            ${FILESYSTEM_INCLUDE_PATH}/FileSystem.h
-                            ${FILESYSTEM_INCLUDE_PATH}/Filename.h
-                            ${FILESYSTEM_INCLUDE_PATH}/Path.h
-                            ${FILESYSTEM_INCLUDE_PATH}/CollectFiles.h
-)
+SET(CMCORE_FILESYSTEM_HEADERS   ${CMCORE_FILESYSTEM_INCLUDE_PATH}/EnumFile.h
+                                ${CMCORE_FILESYSTEM_INCLUDE_PATH}/EnumVolume.h
+                                ${CMCORE_FILESYSTEM_INCLUDE_PATH}/FileSystem.h
+                                ${CMCORE_FILESYSTEM_INCLUDE_PATH}/Filename.h
+                                ${CMCORE_FILESYSTEM_INCLUDE_PATH}/Path.h
+                                ${CMCORE_FILESYSTEM_INCLUDE_PATH}/CollectFiles.h)
 
-SET(FILESYSTEM_SOURCE_FILES FileSystem/FileSystem.cpp
-                            FileSystem/EnumFile.cpp
-                            FileSystem/Path.cpp
-                            FileSystem/CollectFiles.cpp)
+SET(CMCORE_FILESYSTEM_SOURCES   FileSystem/FileSystem.cpp
+                                FileSystem/EnumFile.cpp
+                                FileSystem/Path.cpp
+                                FileSystem/CollectFiles.cpp)
 
-SOURCE_GROUP("FileSystem" FILES ${FILESYSTEM_HEADER_FILES} ${FILESYSTEM_SOURCE_FILES})
+SOURCE_GROUP("FileSystem\\Headers" FILES ${CMCORE_FILESYSTEM_HEADERS})
+SOURCE_GROUP("FileSystem\\Sources" FILES ${CMCORE_FILESYSTEM_SOURCES})
 
 ##==================================================================================================
 ## Time 时间
 ##==================================================================================================
-SET(TIME_HEADER_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/time)
+SET(CMCORE_TIME_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/time)
 
-SET(BASE_TIME_HEADER_FILES  ${TIME_HEADER_PATH}/DateTime.h
-                            ${TIME_HEADER_PATH}/Time.h
-                            ${TIME_HEADER_PATH}/TimeID.h)
+SET(CMCORE_TIME_HEADERS ${CMCORE_TIME_INCLUDE_PATH}/DateTime.h
+                        ${CMCORE_TIME_INCLUDE_PATH}/Time.h
+                        ${CMCORE_TIME_INCLUDE_PATH}/TimeID.h)
 
-SET(BASE_TIME_SOURCE_FILES  Time/DateTime.cpp
-                            Time/TimeCount.cpp
-                            Time/TimeVal.cpp
-                            Time/Time.cpp
-                            Time/Date.cpp
-                            Time/TimeID.cpp)
+SET(CMCORE_TIME_SOURCES Time/DateTime.cpp
+                        Time/TimeCount.cpp
+                        Time/TimeVal.cpp
+                        Time/Time.cpp
+                        Time/Date.cpp
+                        Time/TimeID.cpp)
 
-SOURCE_GROUP("Time\\Header Files" FILES ${BASE_TIME_HEADER_FILES})
-SOURCE_GROUP("Time\\Source Files" FILES ${BASE_TIME_SOURCE_FILES})
+SOURCE_GROUP("Time\\Headers" FILES ${CMCORE_TIME_HEADERS})
+SOURCE_GROUP("Time\\Sources" FILES ${CMCORE_TIME_SOURCES})
 
 ##==================================================================================================
 ## Thread 线程
 ##==================================================================================================
-FILE(GLOB BASE_THREAD_HEADER_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/*.h)
-SET(BASE_THREAD_SOURCE_FILES   Other/ThreadFunc.cpp)
+FILE(GLOB CMCORE_THREAD_HEADERS ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/*.h)
+SET(CMCORE_THREAD_SOURCES   Other/ThreadFunc.cpp)
 
-SOURCE_GROUP("Thread" FILES ${BASE_THREAD_HEADER_FILES}
-                            ${BASE_THREAD_SOURCE_FILES})
+SOURCE_GROUP("Thread\\Headers" FILES ${CMCORE_THREAD_HEADERS})
+SOURCE_GROUP("Thread\\Sources" FILES ${CMCORE_THREAD_SOURCES})
 
 ##==================================================================================================
 ## Event 事件
 ##==================================================================================================
-FILE(GLOB BASE_EVENT_HEADER_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/event/*.*)
+FILE(GLOB CMCORE_EVENT_HEADERS ${CMCORE_ROOT_INCLUDE_PATH}/hgl/event/*.*)
 
-SOURCE_GROUP("Event" FILES  ${BASE_EVENT_HEADER_FILES})
+SOURCE_GROUP("Event\\Headers" FILES ${CMCORE_EVENT_HEADERS})
 
 ##==================================================================================================
 ## PlugIn 插件
 ##==================================================================================================
-file(GLOB BASE_PLUG_IN_HEADER ${CMCORE_ROOT_INCLUDE_PATH}/hgl/plugin/*.h)
-file(GLOB BASE_PLUG_IN_SOURCE PlugIn/*.cpp)
+file(GLOB CMCORE_PLUGIN_HEADERS ${CMCORE_ROOT_INCLUDE_PATH}/hgl/plugin/*.h)
+file(GLOB CMCORE_PLUGIN_SOURCES PlugIn/*.cpp)
 
-SOURCE_GROUP("PlugIn\\Header Files" FILES ${BASE_PLUG_IN_HEADER})
-SOURCE_GROUP("PlugIn\\Source Files" FILES ${BASE_PLUG_IN_SOURCE})
+SOURCE_GROUP("PlugIn\\Headers" FILES ${CMCORE_PLUGIN_HEADERS})
+SOURCE_GROUP("PlugIn\\Sources" FILES ${CMCORE_PLUGIN_SOURCES})
 
 ##==================================================================================================
 ## Log 日志
 ##==================================================================================================
-file(GLOB BASE_LOG_HEADER ${CMCORE_ROOT_INCLUDE_PATH}/hgl/log/*.h)
-file(GLOB BASE_LOG_SOURCE Log/*.*)
+file(GLOB CMCORE_LOG_HEADERS ${CMCORE_ROOT_INCLUDE_PATH}/hgl/log/*.h)
+file(GLOB CMCORE_LOG_SOURCES Log/*.*)
 
-SOURCE_GROUP("Log\\Header Files" FILES ${BASE_LOG_HEADER})
-SOURCE_GROUP("Log\\Source Files" FILES ${BASE_LOG_SOURCE})
+SOURCE_GROUP("Log\\Headers" FILES ${CMCORE_LOG_HEADERS})
+SOURCE_GROUP("Log\\Sources" FILES ${CMCORE_LOG_SOURCES})
 
 ##==================================================================================================
 ## Library 库定义
@@ -307,49 +340,55 @@ SOURCE_GROUP("Log\\Source Files" FILES ${BASE_LOG_SOURCE})
 add_cm_library(CMCore "CM"
 #                        ${SYSTEM_INFO_SOURCE}
 
-                        ${TYPE_INFO_FILE}
-                        ${BASE_OBJECT_HEADER_FILES}
-                        ${BASE_OBJECT_SOURCE_FILES}
+                        ${CMCORE_TYPE_INFO_HEADERS}
+                        ${CMCORE_TYPE_OBJECT_HEADERS}
+                        ${CMCORE_TYPE_OBJECT_SOURCES}
 
-                        ${BITS_ARRAY_FILES}
+                        ${CMCORE_TYPE_BITSARRAY_HEADERS}
+                        ${CMCORE_TYPE_BITSARRAY_SOURCES}
 
-                        ${STRING_HEADER_FILES}
-                        ${TEXT_HEADER_FILES}
-                        ${TEXT_SOURCE_FILES}
+                        ${CMCORE_TEXT_STRING_HEADERS}
+                        ${CMCORE_TEXT_STRING_SOURCES}
+                        ${CMCORE_TEXT_ENCODING_HEADERS}
+                        ${CMCORE_TEXT_ENCODING_SOURCES}
 
-                        ${ACTIVE_MANAGER_FILES}
+                        ${CMCORE_TYPE_ACTIVEMANAGER_HEADERS}
+                        ${CMCORE_TYPE_ACTIVEMANAGER_SOURCES}
 
-                        ${TYPE_TEMPLATE_HEADER}
+                        ${CMCORE_TYPE_TEMPLATE_HEADERS}
 
-                        ${TYPE_COLLECTION_SOURCE}
-                        ${TYPE_DATA_CHAIN_SOURCE}
+                        ${CMCORE_TYPE_COLLECTION_HEADERS}
+                        ${CMCORE_TYPE_COLLECTION_SOURCES}
+                        ${CMCORE_TYPE_DATACHAIN_HEADERS}
+                        ${CMCORE_TYPE_DATACHAIN_SOURCES}
 
-                        ${BASE_OTHER_SOURCE}
+                        ${CMCORE_TYPE_MEMORY_HEADERS}
+                        ${CMCORE_TYPE_MEMORY_SOURCES}
 
-                        ${IO_SOURCE_FILES}
+                        ${CMCORE_IO_ALL_FILES}
 
-                        ${TYPE_IDNAME_HEADER_FILES}
-                        ${TYPE_IDNAME_SOURCE_FILES}
+                        ${CMCORE_TYPE_IDNAME_HEADERS}
+                        ${CMCORE_TYPE_IDNAME_SOURCES}
 
-                        ${MATH_HEADER_FILES}
-                        ${MATH_SOURCE_FILES}
+                        ${CMCORE_MATH_HEADERS}
+                        ${CMCORE_MATH_SOURCES}
 
-                        ${FILESYSTEM_HEADER_FILES}
-                        ${FILESYSTEM_SOURCE_FILES}
+                        ${CMCORE_FILESYSTEM_HEADERS}
+                        ${CMCORE_FILESYSTEM_SOURCES}
 
-                        ${BASE_TIME_HEADER_FILES}
-                        ${BASE_TIME_SOURCE_FILES}
+                        ${CMCORE_TIME_HEADERS}
+                        ${CMCORE_TIME_SOURCES}
                         
-                        ${BASE_THREAD_HEADER_FILES}
-                        ${BASE_THREAD_SOURCE_FILES}
+                        ${CMCORE_THREAD_HEADERS}
+                        ${CMCORE_THREAD_SOURCES}
                         
-                        ${BASE_EVENT_HEADER_FILES}
+                        ${CMCORE_EVENT_HEADERS}
 
-                        ${BASE_PLUG_IN_HEADER}
-                        ${BASE_PLUG_IN_SOURCE}
+                        ${CMCORE_PLUGIN_HEADERS}
+                        ${CMCORE_PLUGIN_SOURCES}
 
-                        ${BASE_LOG_HEADER}
-                        ${BASE_LOG_SOURCE}
+                        ${CMCORE_LOG_HEADERS}
+                        ${CMCORE_LOG_SOURCES}
                         )
 
 target_link_libraries(CMCore PRIVATE CMCoreType)
