@@ -6,6 +6,9 @@
 #include<hgl/math/MatrixTypes.h>
 #include<hgl/math/Vector.h>
 
+// Forward declare Quatf to avoid circular dependency
+namespace hgl::math { using Quatf = glm::quat; }
+
 namespace hgl::math
 {
     // ========================================
@@ -81,7 +84,7 @@ namespace hgl::math
     /**
      * Decompose a 4x4 transformation matrix into translation, rotation, and scale
      */
-    inline bool DecomposeTransform(const Matrix4f& m, Vector3f& translation, glm::quat& rotation, Vector3f& scale)
+    inline bool DecomposeTransform(const Matrix4f& m, Vector3f& translation, Quatf& rotation, Vector3f& scale)
     {
         Vector3f skew;
         Vector4f perspective;

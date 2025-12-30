@@ -3,7 +3,7 @@
 #include<glm/glm.hpp>
 #include<glm/gtc/quaternion.hpp>
 #include<glm/gtx/quaternion.hpp>
-#include<hgl/math/VectorTypes.h>
+#include<hgl/math/Vector.h>
 #include<hgl/math/MatrixTypes.h>
 
 namespace hgl::math

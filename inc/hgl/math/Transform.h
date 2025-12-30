@@ -2,6 +2,7 @@
 
 #include<hgl/type/VersionData.h>
 #include<hgl/math/MatrixOperations.h>
+#include<hgl/math/VectorOperations.h>
 
 namespace hgl::math
 {
