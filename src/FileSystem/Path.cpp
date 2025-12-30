@@ -1,17 +1,17 @@
 #include <hgl/filesystem/Path.h>
-#include <hgl/filesystem/Filename.h>
 
-namespace hgl
+namespace hgl::filesystem
 {
-    namespace filesystem
+    Path &Path::Append(const OSString &part)
     {
-        Path &Path::Append(const OSString &part)
-        {
-            if (part.IsEmpty())
-                return *this;
-
-            full_path = JoinPathWithFilename(full_path, part);
+        if (part.IsEmpty())
             return *this;
-        }
+
+#if HGL_OS == HGL_OS_Windows
+        full_path = JoinPathWithFilename<os_char>(full_path, part, HGL_DIRECTORY_SEPARATOR, HGL_DIRECTORY_SEPARATOR_STR);
+#else
+        full_path = JoinPathWithFilename<os_char>(full_path, part, HGL_DIRECTORY_SEPARATOR, HGL_DIRECTORY_SEPARATOR_U8STR);
+#endif
+        return *this;
     }
 }
