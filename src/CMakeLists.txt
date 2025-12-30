@@ -1,4 +1,4 @@
-﻿##==================================================================================================
+#==================================================================================================
 ## DataType 数据类型基础
 ##==================================================================================================
 SET(TYPE_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type)
@@ -237,11 +237,13 @@ SET(FILESYSTEM_HEADER_FILES ${FILESYSTEM_INCLUDE_PATH}/EnumFile.h
                             ${FILESYSTEM_INCLUDE_PATH}/EnumVolume.h
                             ${FILESYSTEM_INCLUDE_PATH}/FileSystem.h
                             ${FILESYSTEM_INCLUDE_PATH}/Filename.h
+                            ${FILESYSTEM_INCLUDE_PATH}/Path.h
                             ${FILESYSTEM_INCLUDE_PATH}/CollectFiles.h
 )
 
 SET(FILESYSTEM_SOURCE_FILES FileSystem/FileSystem.cpp
                             FileSystem/EnumFile.cpp
+                            FileSystem/Path.cpp
                             FileSystem/CollectFiles.cpp)
 
 SOURCE_GROUP("FileSystem" FILES ${FILESYSTEM_HEADER_FILES} ${FILESYSTEM_SOURCE_FILES})
