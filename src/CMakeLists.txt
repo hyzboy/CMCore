@@ -78,19 +78,6 @@ SOURCE_GROUP("DataType\\Memory\\Headers" FILES ${CMCORE_TYPE_MEMORY_HEADERS})
 SOURCE_GROUP("DataType\\Memory\\Sources" FILES ${CMCORE_TYPE_MEMORY_SOURCES})
 
 ##==================================================================================================
-## Math 数学库
-##==================================================================================================
-SET(CMCORE_MATH_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/math)
-
-SET(CMCORE_MATH_HEADERS ${CMCORE_MATH_INCLUDE_PATH}/Transform.h
-                        ${CMCORE_MATH_INCLUDE_PATH}/TransformAction.h)
-
-SET(CMCORE_MATH_SOURCES Math/Transform.cpp)
-
-SOURCE_GROUP("Math\\Headers" FILES ${CMCORE_MATH_HEADERS})
-SOURCE_GROUP("Math\\Sources" FILES ${CMCORE_MATH_SOURCES})
-
-##==================================================================================================
 ## String 字符串类
 ##==================================================================================================
 SET(CMCORE_TEXT_STRING_HEADERS  ${CMCORE_TYPE_INCLUDE_PATH}/String.h
@@ -366,9 +353,6 @@ add_cm_library(CMCore "CM"
                         ${CMCORE_TYPE_IDNAME_HEADERS}
                         ${CMCORE_TYPE_IDNAME_SOURCES}
 
-                        ${CMCORE_MATH_HEADERS}
-                        ${CMCORE_MATH_SOURCES}
-
                         ${CMCORE_FILESYSTEM_HEADERS}
                         ${CMCORE_FILESYSTEM_SOURCES}
 
@@ -388,6 +372,7 @@ add_cm_library(CMCore "CM"
                         )
 
 target_link_libraries(CMCore PRIVATE CMCoreType)
+target_link_libraries(CMCore PUBLIC CMMath)
 
 ##==================================================================================================
 ## Platform 平台相关（从CMPlatform合并）
