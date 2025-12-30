@@ -76,7 +76,17 @@ namespace hgl::math
      */
     inline bool IsIdentityMatrix(const Matrix4f& m)
     {
-        return glm::all(glm::epsilonEqual(m, Identity4f, 1e-5f));
+        constexpr float epsilon = 1e-5f;
+        for (int col = 0; col < 4; ++col)
+        {
+            for (int row = 0; row < 4; ++row)
+            {
+                float expected = (col == row) ? 1.0f : 0.0f;
+                if (glm::abs(m[col][row] - expected) > epsilon)
+                    return false;
+            }
+        }
+        return true;
     }
     
     /**
