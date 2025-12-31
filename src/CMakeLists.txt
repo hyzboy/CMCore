@@ -372,7 +372,6 @@ add_cm_library(CMCore "CM"
                         )
 
 target_link_libraries(CMCore PRIVATE CMCoreType)
-target_link_libraries(CMCore PUBLIC CMMath)
 
 ##==================================================================================================
 ## Platform 平台相关（从CMPlatform合并）
