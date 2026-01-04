@@ -29,10 +29,14 @@
 - `NumaNode`: NUMA节点信息（节点ID、CPU数量、内存大小）
 - `CCDInfo`: CCD信息（主要用于AMD Zen架构）
 - `CpuTopology`: CPU拓扑信息（包含所有NUMA节点和CCD信息）
+- `CpuDistribution`: CPU分布信息（每个CPU的NUMA/CCD归属）
+- `NumaCcdDistribution`: NUMA+CCD分布映射表（完整的CPU拓扑映射）
 
 **函数**:
 - `GetCpuTopology()`: 获取CPU拓扑信息
 - `FreeCpuTopology()`: 释放拓扑信息
+- `GetNumaCcdDistribution()`: **【新增】** 获取NUMA+CCD分布信息，返回每个CPU核心的详细归属
+- `FreeNumaCcdDistribution()`: **【新增】** 释放分布信息
 - `SetProcessAffinity()`: 设置进程CPU亲合性
 - `SetThreadAffinity()`: 设置线程CPU亲合性
 - `GetProcessAffinity()`: 获取进程CPU亲合性
@@ -180,3 +184,158 @@ hgl::ResetMemoryPolicy();
 2. 增加性能监控和统计功能
 3. 支持动态负载均衡
 4. 增加对Apple Silicon的优化支持
+
+## GetNumaCcdDistribution() 详解
+
+### 功能说明
+
+`GetNumaCcdDistribution()` 是一个强大的新增函数，用于获取系统中每个CPU核心到NUMA节点和CCD的完整映射关系。这个函数解决了开发者在多NUMA/多CCD系统上难以确定"应该将线程工作在哪些CPU上"的问题。
+
+### 返回的信息
+
+函数返回 `NumaCcdDistribution` 结构，包含：
+
+1. **总CPU数量** (`total_cpus`): 系统中的逻辑处理器总数
+2. **CPU列表** (`cpu_list`): 每个CPU的详细信息数组
+   - `cpu_id`: CPU逻辑ID（0到total_cpus-1）
+   - `numa_node`: 该CPU所属的NUMA节点
+   - `ccd_id`: 该CPU所属的CCD ID（AMD处理器）
+   - `physical_core`: 物理核心ID
+   - `is_hyperthread`: 是否为超线程（SMT）
+3. **NUMA节点数量** (`numa_node_count`)
+4. **CCD数量** (`ccd_count`)
+
+### 典型使用场景
+
+#### 1. 智能线程分配
+
+```cpp
+// 根据NUMA拓扑智能分配工作线程
+hgl::NumaCcdDistribution dist;
+if (hgl::GetNumaCcdDistribution(&dist))
+{
+    // 为每个NUMA节点创建一组工作线程
+    for (uint node = 0; node < dist.numa_node_count; ++node)
+    {
+        // 收集该节点的所有CPU
+        std::vector<uint> node_cpus;
+        for (uint i = 0; i < dist.total_cpus; ++i)
+        {
+            if (dist.cpu_list[i].numa_node == node && 
+                !dist.cpu_list[i].is_hyperthread)  // 只用物理核心
+            {
+                node_cpus.push_back(dist.cpu_list[i].cpu_id);
+            }
+        }
+        
+        // 为该节点创建线程池
+        CreateThreadPoolForNode(node, node_cpus);
+    }
+    
+    hgl::FreeNumaCcdDistribution(&dist);
+}
+```
+
+#### 2. 避免跨CCD通信（AMD处理器优化）
+
+```cpp
+// 在AMD Ryzen/EPYC上利用CCD结构
+hgl::NumaCcdDistribution dist;
+if (hgl::GetNumaCcdDistribution(&dist) && dist.ccd_count > 0)
+{
+    // 为每个CCD分配独立的任务
+    std::map<uint, std::vector<uint>> ccd_cpus;
+    
+    for (uint i = 0; i < dist.total_cpus; ++i)
+    {
+        if (dist.cpu_list[i].ccd_id != (uint)-1)
+        {
+            ccd_cpus[dist.cpu_list[i].ccd_id].push_back(dist.cpu_list[i].cpu_id);
+        }
+    }
+    
+    // 每个CCD运行独立的处理单元
+    for (const auto& ccd : ccd_cpus)
+    {
+        BindTaskToCcd(ccd.first, ccd.second);
+    }
+    
+    hgl::FreeNumaCcdDistribution(&dist);
+}
+```
+
+#### 3. 超线程感知调度
+
+```cpp
+// 性能关键任务避免使用超线程
+hgl::NumaCcdDistribution dist;
+if (hgl::GetNumaCcdDistribution(&dist))
+{
+    std::vector<uint> physical_cores;
+    std::vector<uint> hyperthreads;
+    
+    for (uint i = 0; i < dist.total_cpus; ++i)
+    {
+        if (dist.cpu_list[i].is_hyperthread)
+            hyperthreads.push_back(dist.cpu_list[i].cpu_id);
+        else
+            physical_cores.push_back(dist.cpu_list[i].cpu_id);
+    }
+    
+    // 高优先级任务使用物理核心
+    AssignHighPriorityTasks(physical_cores);
+    
+    // 低优先级任务使用超线程
+    AssignLowPriorityTasks(hyperthreads);
+    
+    hgl::FreeNumaCcdDistribution(&dist);
+}
+```
+
+### 平台特性
+
+#### Windows
+- 完整的NUMA节点检测
+- 物理核心和超线程识别
+- 不提供CCD信息（Windows API限制）
+
+#### Linux/UNIX
+- 完整的NUMA节点检测（从 `/sys/devices/system/node`）
+- 物理核心和超线程识别（从 `/sys/devices/system/cpu/cpu*/topology`）
+- CCD信息通过L3缓存ID推断（AMD处理器）
+
+### 性能建议
+
+1. **调用一次，多次使用**: 该函数涉及系统调用和文件I/O，建议在程序启动时调用一次，缓存结果
+2. **优先物理核心**: 对于计算密集型任务，优先分配物理核心而非超线程
+3. **NUMA局部性**: 将线程和其访问的内存绑定到同一NUMA节点
+4. **CCD亲和性**: 在AMD处理器上，同一CCD内的核心共享L3缓存，通信更快
+
+### 示例输出
+
+在一个AMD Ryzen 9 7950X系统上（16核32线程，2个CCD）：
+
+```
+系统总CPU数量: 32
+NUMA节点数量: 1
+CCD数量: 2
+
+CPU_ID | NUMA节点 | CCD_ID | 物理核心 | 超线程
+-------|---------|--------|----------|--------
+   0   |    0    |   0    |    0     |   否
+   1   |    0    |   0    |    1     |   否
+  ...
+   7   |    0    |   0    |    7     |   否
+   8   |    0    |   1    |    8     |   否
+  ...
+  15   |    0    |   1    |   15    |   否
+  16   |    0    |   0    |    0     |   是
+  17   |    0    |   0    |    1     |   是
+  ...
+```
+
+从输出可以看出：
+- CPU 0-7 在CCD 0上
+- CPU 8-15 在CCD 1上
+- CPU 16-31 是对应物理核心的超线程
+

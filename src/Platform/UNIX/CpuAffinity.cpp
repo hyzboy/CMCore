@@ -6,6 +6,7 @@
 #include<fstream>
 #include<sstream>
 #include<set>
+#include<map>
 
 // NUMA support (optional, may not be available on all systems)
 #ifdef __has_include
@@ -417,5 +418,127 @@ namespace hgl
         }
 
         return pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset) == 0;
+    }
+
+    bool GetNumaCcdDistribution(NumaCcdDistribution *distribution)
+    {
+        if (!distribution) return false;
+
+        memset(distribution, 0, sizeof(NumaCcdDistribution));
+
+        // 获取系统CPU数量
+        long num_cpus = sysconf(_SC_NPROCESSORS_ONLN);
+        if (num_cpus <= 0) return false;
+
+        distribution->total_cpus = static_cast<uint>(num_cpus);
+        distribution->cpu_list = new CpuDistribution[distribution->total_cpus];
+
+        // 初始化CPU列表
+        for (uint i = 0; i < distribution->total_cpus; ++i)
+        {
+            distribution->cpu_list[i].cpu_id = i;
+            distribution->cpu_list[i].numa_node = 0;
+            distribution->cpu_list[i].ccd_id = (uint)-1;
+            distribution->cpu_list[i].physical_core = i;
+            distribution->cpu_list[i].is_hyperthread = false;
+        }
+
+        std::set<uint> numa_nodes;
+        std::map<uint, uint> physical_to_first_logical;
+
+        // 从/sys/devices/system/cpu读取CPU信息
+        for (uint cpu_id = 0; cpu_id < distribution->total_cpus; ++cpu_id)
+        {
+            // 读取NUMA节点
+            std::ostringstream numa_path;
+            numa_path << "/sys/devices/system/cpu/cpu" << cpu_id << "/node";
+            
+            std::ifstream numa_file(numa_path.str());
+            if (numa_file.is_open())
+            {
+                std::string line;
+                if (std::getline(numa_file, line))
+                {
+                    // 解析 "node0" 或者直接是数字
+                    size_t node_pos = line.find("node");
+                    if (node_pos != std::string::npos)
+                    {
+                        uint node_num = std::stoi(line.substr(node_pos + 4));
+                        distribution->cpu_list[cpu_id].numa_node = node_num;
+                        numa_nodes.insert(node_num);
+                    }
+                }
+            }
+
+            // 读取物理核心ID
+            std::ostringstream core_path;
+            core_path << "/sys/devices/system/cpu/cpu" << cpu_id << "/topology/core_id";
+            
+            std::ifstream core_file(core_path.str());
+            if (core_file.is_open())
+            {
+                uint physical_core;
+                if (core_file >> physical_core)
+                {
+                    distribution->cpu_list[cpu_id].physical_core = physical_core;
+
+                    // 检测超线程：如果这个物理核心已经有对应的逻辑CPU，则当前是超线程
+                    if (physical_to_first_logical.find(physical_core) != physical_to_first_logical.end())
+                    {
+                        distribution->cpu_list[cpu_id].is_hyperthread = true;
+                    }
+                    else
+                    {
+                        physical_to_first_logical[physical_core] = cpu_id;
+                    }
+                }
+            }
+
+            // 尝试读取CCD信息（仅AMD处理器）
+            // 检查 /sys/devices/system/cpu/cpu*/cache/index3/id 来推断CCD
+            std::ostringstream cache_path;
+            cache_path << "/sys/devices/system/cpu/cpu" << cpu_id << "/cache/index3/id";
+            
+            std::ifstream cache_file(cache_path.str());
+            if (cache_file.is_open())
+            {
+                uint cache_id;
+                if (cache_file >> cache_id)
+                {
+                    // L3缓存ID可以作为CCD的近似标识
+                    distribution->cpu_list[cpu_id].ccd_id = cache_id;
+                }
+            }
+        }
+
+        distribution->numa_node_count = numa_nodes.empty() ? 1 : numa_nodes.size();
+        
+        // 计算唯一的CCD数量
+        std::set<uint> unique_ccds;
+        for (uint i = 0; i < distribution->total_cpus; ++i)
+        {
+            if (distribution->cpu_list[i].ccd_id != (uint)-1)
+            {
+                unique_ccds.insert(distribution->cpu_list[i].ccd_id);
+            }
+        }
+        distribution->ccd_count = unique_ccds.size();
+
+        return true;
+    }
+
+    void FreeNumaCcdDistribution(NumaCcdDistribution *distribution)
+    {
+        if (!distribution) return;
+
+        if (distribution->cpu_list)
+        {
+            delete[] distribution->cpu_list;
+            distribution->cpu_list = nullptr;
+        }
+
+        distribution->total_cpus = 0;
+        distribution->numa_node_count = 0;
+        distribution->ccd_count = 0;
     }
 }//namespace hgl

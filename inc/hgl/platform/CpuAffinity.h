@@ -33,7 +33,32 @@ namespace hgl
         uint ccd_id;                    ///< CCD ID
         uint core_count;                ///< 该CCD上的核心数量
         uint numa_node;                 ///< 所属的NUMA节点
+        uint* cpu_ids;                  ///< 该CCD上的CPU ID列表
     };//struct CCDInfo
+
+    /**
+     * CPU分布信息 - 描述每个CPU核心的NUMA和CCD归属
+     */
+    struct CpuDistribution
+    {
+        uint cpu_id;                    ///< CPU逻辑ID
+        uint numa_node;                 ///< 所属NUMA节点
+        uint ccd_id;                    ///< 所属CCD ID (如果适用，否则为-1)
+        uint physical_core;             ///< 物理核心ID
+        bool is_hyperthread;            ///< 是否为超线程
+    };//struct CpuDistribution
+
+    /**
+     * NUMA+CCD分布映射表
+     */
+    struct NumaCcdDistribution
+    {
+        uint total_cpus;                ///< 总CPU数量
+        CpuDistribution* cpu_list;      ///< CPU分布列表
+        
+        uint numa_node_count;           ///< NUMA节点数量
+        uint ccd_count;                 ///< CCD数量
+    };//struct NumaCcdDistribution
 
     /**
      * CPU拓扑信息
@@ -59,6 +84,20 @@ namespace hgl
      * @param topology 需要释放的拓扑信息
      */
     void FreeCpuTopology(CpuTopology *topology);
+
+    /**
+     * 获取NUMA+CCD分布信息
+     * 返回每个CPU核心所属的NUMA节点和CCD信息，方便开发者决定线程应该工作在哪些CPU上
+     * @param distribution 输出的分布信息，由调用者负责释放内存
+     * @return 是否成功获取
+     */
+    bool GetNumaCcdDistribution(NumaCcdDistribution *distribution);
+
+    /**
+     * 释放NUMA+CCD分布信息
+     * @param distribution 需要释放的分布信息
+     */
+    void FreeNumaCcdDistribution(NumaCcdDistribution *distribution);
 
     /**
      * 设置当前进程的CPU亲合性
