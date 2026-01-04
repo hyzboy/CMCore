@@ -1,5 +1,6 @@
 ﻿#include<hgl/platform/MemoryAffinity.h>
 #include<windows.h>
+#include<Psapi.h>
 #include<memory.h>
 
 namespace hgl
