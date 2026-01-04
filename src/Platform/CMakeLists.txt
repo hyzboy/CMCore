@@ -4,7 +4,9 @@
 SET(CMCORE_PLATFORM_CPUINFO_HEADERS ${CMCORE_PLATFORM_INCLUDE_PATH}/CpuInfo.h
                                     ${CMCORE_PLATFORM_INCLUDE_PATH}/CpuX86Features.h
                                     ${CMCORE_PLATFORM_INCLUDE_PATH}/CpuARMFeatures.h
-                                    ${CMCORE_PLATFORM_INCLUDE_PATH}/BigLittleDetector.h)
+                                    ${CMCORE_PLATFORM_INCLUDE_PATH}/BigLittleDetector.h
+                                    ${CMCORE_PLATFORM_INCLUDE_PATH}/CpuAffinity.h
+                                    ${CMCORE_PLATFORM_INCLUDE_PATH}/MemoryAffinity.h)
 
 IF(UNIX)
     # 根据处理器架构选择不同的CPU信息实现
@@ -27,6 +29,10 @@ IF(UNIX)
             message(WARNING "Unknown processor architecture ${CMAKE_SYSTEM_PROCESSOR}, using X86 CPU info")
         ENDIF()
     ENDIF()
+
+    # CPU/Memory Affinity 亲合性支持
+    SET(CMCORE_PLATFORM_AFFINITY_SOURCES    UNIX/CpuAffinity.cpp
+                                            UNIX/MemoryAffinity.cpp)
 
     SET(CMCORE_PLATFORM_MMAP_SOURCES        /MMapFile.cpp)
 
@@ -52,6 +58,12 @@ IF(UNIX)
 
         SET(CMCORE_PLATFORM_THREAD_SOURCES      ${CMCORE_PLATFORM_THREAD_SOURCES}
                                                 UNIX/Semaphore.cpp)
+
+        # Android ARM CPU Affinity support
+        IF(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|armv7|arm")
+            SET(CMCORE_PLATFORM_AFFINITY_SOURCES ${CMCORE_PLATFORM_AFFINITY_SOURCES}
+                                                Android/CpuAffinityARM.cpp)
+        ENDIF()
     ELSE()
         SET(CMCORE_PLATFORM_CHARSET_SOURCES     UNIX/Charset.cpp)
         SET(CMCORE_PLATFORM_LOG_SOURCES         UNIX/LogConsole.cpp)
@@ -62,6 +74,12 @@ IF(UNIX)
 
             SET(CMCORE_PLATFORM_FILE_SOURCES    ${CMCORE_PLATFORM_FILE_SOURCES}
                                                 Apple/ProgramPath.mm)
+
+            # Apple ARM (iOS/macOS) CPU Affinity support
+            IF(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64|aarch64")
+                SET(CMCORE_PLATFORM_AFFINITY_SOURCES ${CMCORE_PLATFORM_AFFINITY_SOURCES}
+                                                    Apple/CpuAffinityARM.cpp)
+            ENDIF()
         ELSE()
             SET(CMCORE_PLATFORM_THREAD_SOURCES  ${CMCORE_PLATFORM_THREAD_SOURCES}
                                                 UNIX/Semaphore.cpp)
@@ -89,6 +107,10 @@ IF(WIN32)
     # 通过源文件内部的编译时宏来区分具体编译哪一个实现，避免在CMake中基于处理器字符串做选择。
     set(CMCORE_PLATFORM_CPUINFO_SOURCES     Win/CpuInfo_X86.cpp
                                             Win/CpuInfo_ARM.cpp)
+
+    # CPU/Memory Affinity 亲合性支持
+    SET(CMCORE_PLATFORM_AFFINITY_SOURCES    Win/CpuAffinity.cpp
+                                            Win/MemoryAffinity.cpp)
 
     SET(CMCORE_PLATFORM_MMAP_SOURCES        Win/MMapFile.cpp)
 
@@ -153,6 +175,7 @@ SOURCE_GROUP("Platform\\Window\\Sources"        FILES ${CMCORE_PLATFORM_WINDOW_S
 
 SOURCE_GROUP("Hardware\\CpuInfo\\Headers"       FILES ${CMCORE_PLATFORM_CPUINFO_HEADERS})
 SOURCE_GROUP("Hardware\\CpuInfo\\Sources"       FILES ${CMCORE_PLATFORM_CPUINFO_SOURCES})
+SOURCE_GROUP("Hardware\\Affinity\\Sources"      FILES ${CMCORE_PLATFORM_AFFINITY_SOURCES})
 
 ## Android 安卓平台
 SET(CMCORE_PLATFORM_ANDROID_HEADERS ${CMCORE_ROOT_INCLUDE_PATH}/hgl/platform/Android.h)
@@ -193,6 +216,7 @@ SET(CMCORE_PLATFORM_ALL_SOURCES ${CMCORE_PLATFORM_ALL_SOURCES}
 
                                 ${CMCORE_PLATFORM_CPUINFO_HEADERS}
                                 ${CMCORE_PLATFORM_CPUINFO_SOURCES}
+                                ${CMCORE_PLATFORM_AFFINITY_SOURCES}
                                 ${CMCORE_PLATFORM_ANDROID_HEADERS}
                                 ${CMCORE_PLATFORM_ANDROID_SOURCES}
                                 ${CMCORE_PLATFORM_SOC_HEADERS}
