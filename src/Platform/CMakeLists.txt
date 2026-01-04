@@ -58,6 +58,12 @@ IF(UNIX)
 
         SET(CMCORE_PLATFORM_THREAD_SOURCES      ${CMCORE_PLATFORM_THREAD_SOURCES}
                                                 UNIX/Semaphore.cpp)
+
+        # Android ARM CPU Affinity support
+        IF(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|armv7|arm")
+            SET(CMCORE_PLATFORM_AFFINITY_SOURCES ${CMCORE_PLATFORM_AFFINITY_SOURCES}
+                                                Android/CpuAffinityARM.cpp)
+        ENDIF()
     ELSE()
         SET(CMCORE_PLATFORM_CHARSET_SOURCES     UNIX/Charset.cpp)
         SET(CMCORE_PLATFORM_LOG_SOURCES         UNIX/LogConsole.cpp)
@@ -68,6 +74,12 @@ IF(UNIX)
 
             SET(CMCORE_PLATFORM_FILE_SOURCES    ${CMCORE_PLATFORM_FILE_SOURCES}
                                                 Apple/ProgramPath.mm)
+
+            # Apple ARM (iOS/macOS) CPU Affinity support
+            IF(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64|aarch64")
+                SET(CMCORE_PLATFORM_AFFINITY_SOURCES ${CMCORE_PLATFORM_AFFINITY_SOURCES}
+                                                    Apple/CpuAffinityARM.cpp)
+            ENDIF()
         ELSE()
             SET(CMCORE_PLATFORM_THREAD_SOURCES  ${CMCORE_PLATFORM_THREAD_SOURCES}
                                                 UNIX/Semaphore.cpp)

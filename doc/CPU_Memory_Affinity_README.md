@@ -339,3 +339,158 @@ CPU_ID | NUMA节点 | CCD_ID | 物理核心 | 超线程
 - CPU 8-15 在CCD 1上
 - CPU 16-31 是对应物理核心的超线程
 
+
+## ARM big.LITTLE 支持
+
+### 概述
+
+针对ARM处理器的big.LITTLE（大小核）架构，新增了专门的检测和亲和性控制功能。适用于iOS、Android等移动平台。
+
+### 新增数据结构
+
+**ArmCoreInfo**: ARM核心信息
+- `core_id`: 核心ID
+- `is_big_core`: 是否为大核（性能核）
+- `max_frequency`: 最大频率(MHz)
+- `cluster_id`: 所属cluster ID
+
+**ArmBigLittleDistribution**: ARM大小核分布信息
+- `total_cores`: 总核心数
+- `core_list`: 核心信息列表
+- `big_core_count`: 大核数量
+- `little_core_count`: 小核数量
+- `big_core_ids`: 大核ID列表
+- `little_core_ids`: 小核ID列表
+
+### 新增函数
+
+**GetArmBigLittleDistribution()**: 获取ARM大小核分布信息
+- 返回每个核心的详细信息，包括类型、频率、cluster归属
+- 自动识别大核和小核
+
+**FreeArmBigLittleDistribution()**: 释放大小核分布信息
+
+**BindThreadToBigCores()**: 将当前线程绑定到性能核心
+- iOS/macOS: 设置QoS为USER_INTERACTIVE
+- Android: 直接设置CPU亲和性到大核
+
+**BindThreadToLittleCores()**: 将当前线程绑定到效率核心
+- iOS/macOS: 设置QoS为BACKGROUND
+- Android: 直接设置CPU亲和性到小核
+
+**BindThreadToCoreType()**: 根据布尔值选择核心类型
+
+### 平台实现细节
+
+#### iOS/macOS (Apple Silicon)
+
+**检测方法**:
+- 使用`sysctlbyname`查询`hw.perflevel0.physicalcpu`（性能核）
+- 使用`sysctlbyname`查询`hw.perflevel1.physicalcpu`（效率核）
+
+**亲和性控制**:
+- 使用`pthread_set_qos_class_self_np`设置QoS级别
+- `QOS_CLASS_USER_INTERACTIVE`: 优先使用性能核
+- `QOS_CLASS_BACKGROUND`: 优先使用效率核
+
+**特点**:
+- 间接控制，系统保留最终调度决定权
+- 符合iOS能源管理策略
+- 无需特殊权限
+
+#### Android
+
+**检测方法**:
+- 读取`/sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq`获取每个核心的最大频率
+- 通过频率差异自动识别大核和小核
+- 读取`/sys/devices/system/cpu/cpu*/topology/physical_package_id`获取cluster信息
+
+**亲和性控制**:
+- 使用`pthread_setaffinity_np`直接设置CPU亲和性
+- 精确绑定到指定的核心集合
+
+**特点**:
+- 直接控制，更精确
+- 需要系统支持CPU affinity
+- 某些设备可能需要root权限
+
+### 典型应用场景
+
+#### 1. 移动游戏优化
+
+```cpp
+// 主渲染线程使用性能核
+hgl::BindThreadToBigCores();
+
+// 后台音频处理使用效率核
+hgl::BindThreadToLittleCores();
+```
+
+#### 2. 视频处理应用
+
+```cpp
+// 视频编解码使用性能核
+if (is_encoding || is_decoding)
+    hgl::BindThreadToBigCores();
+
+// 文件I/O使用效率核
+else
+    hgl::BindThreadToLittleCores();
+```
+
+#### 3. 省电策略
+
+```cpp
+// 根据电池状态动态调整
+if (battery_level < 20%)
+    hgl::BindThreadToLittleCores();  // 省电模式
+else if (is_plugged_in)
+    hgl::BindThreadToBigCores();     // 性能模式
+```
+
+### 性能对比
+
+典型ARM big.LITTLE配置（例如：4大核 + 4小核）：
+
+| 核心类型 | 频率范围 | 性能 | 功耗 | 适用场景 |
+|---------|---------|------|------|---------|
+| 大核 | 2.0-3.0 GHz | 高 | 高 | 计算密集型任务 |
+| 小核 | 1.5-2.0 GHz | 中 | 低 | I/O密集型、后台任务 |
+
+性能核心通常比效率核心：
+- 性能高出 **2-3倍**
+- 功耗高出 **3-5倍**
+
+### 限制和注意事项
+
+1. **编译时检查**: 所有ARM big.LITTLE函数都需要在ARM架构上编译和运行
+2. **运行时检测**: 函数会检查系统是否支持big.LITTLE，不支持时会返回失败
+3. **权限要求**: Android上可能需要特定权限
+4. **系统版本**: iOS 14+, Android 8.0+有更好的支持
+5. **电池管理**: 长时间使用性能核会显著影响电池续航
+
+### 编译要求
+
+**iOS/macOS**:
+- Xcode 12+
+- iOS 14+ / macOS 11+ SDK
+- 目标设备：Apple Silicon (M1/M2/M3) 或 A系列芯片
+
+**Android**:
+- NDK r21+
+- Android API Level 26+
+- CMake 3.10+
+
+### 文件列表
+
+**头文件**:
+- `inc/hgl/platform/CpuAffinity.h` - 包含ARM big.LITTLE结构和函数声明
+
+**实现文件**:
+- `src/Platform/Apple/CpuAffinityARM.cpp` - iOS/macOS实现
+- `src/Platform/Android/CpuAffinityARM.cpp` - Android实现
+
+**文档**:
+- `doc/CpuMemoryAffinityExamples.md` - 详细使用示例
+- `doc/CPU_Memory_Affinity_README.md` - 本文档
+

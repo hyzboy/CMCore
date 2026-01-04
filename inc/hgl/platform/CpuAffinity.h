@@ -151,4 +151,63 @@ namespace hgl
      * @return 是否绑定成功
      */
     bool BindThreadToNumaNode(uint numa_node);
+
+#if defined(__ARM_ARCH) || defined(__aarch64__) || defined(_M_ARM) || defined(_M_ARM64)
+    /**
+     * ARM大小核信息
+     */
+    struct ArmCoreInfo
+    {
+        uint core_id;                   ///< 核心ID
+        bool is_big_core;               ///< 是否为大核(性能核)
+        uint max_frequency;             ///< 最大频率(MHz)
+        uint cluster_id;                ///< 所属cluster ID
+    };//struct ArmCoreInfo
+
+    /**
+     * ARM大小核分布信息
+     */
+    struct ArmBigLittleDistribution
+    {
+        uint total_cores;               ///< 总核心数
+        ArmCoreInfo* core_list;         ///< 核心信息列表
+        
+        uint big_core_count;            ///< 大核数量
+        uint little_core_count;         ///< 小核数量
+        uint* big_core_ids;             ///< 大核ID列表
+        uint* little_core_ids;          ///< 小核ID列表
+    };//struct ArmBigLittleDistribution
+
+    /**
+     * 获取ARM大小核分布信息
+     * @param distribution 输出的分布信息
+     * @return 是否成功获取
+     */
+    bool GetArmBigLittleDistribution(ArmBigLittleDistribution *distribution);
+
+    /**
+     * 释放ARM大小核分布信息
+     * @param distribution 需要释放的分布信息
+     */
+    void FreeArmBigLittleDistribution(ArmBigLittleDistribution *distribution);
+
+    /**
+     * 将当前线程绑定到大核(性能核)
+     * @return 是否绑定成功
+     */
+    bool BindThreadToBigCores();
+
+    /**
+     * 将当前线程绑定到小核(效率核)
+     * @return 是否绑定成功
+     */
+    bool BindThreadToLittleCores();
+
+    /**
+     * 将当前线程绑定到指定的核心类型
+     * @param use_big_cores true绑定到大核，false绑定到小核
+     * @return 是否绑定成功
+     */
+    bool BindThreadToCoreType(bool use_big_cores);
+#endif // ARM架构
 }//namespace hgl
