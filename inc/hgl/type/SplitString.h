@@ -135,12 +135,13 @@ namespace hgl
      */
     template<typename T,typename C> class SplitStringToStringListByCondition:public SplitStringToStringList<T>
     {
-        const C (*isFunc)(const T &);
+        using FuncType = C (*)(T);
+        FuncType isFunc;
         C is_condition;
 
     public:
 
-        SplitStringToStringListByCondition(StringList<T> *sl,const C (*func)(const T &),const C is_con):SplitStringToStringList<T>(sl)
+        SplitStringToStringListByCondition(StringList<T> *sl,FuncType func,const C is_con):SplitStringToStringList<T>(sl)
         {
             isFunc=func;
             is_condition=is_con;

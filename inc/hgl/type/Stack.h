@@ -122,7 +122,7 @@ namespace hgl
         virtual bool Push(T *obj)
         {
             if(!obj)return(false);
-            return StackTemplate<T *>::Push(obj,1);
+            return StackTemplate<T *>::Push(obj);
         }
 
         T *Pop()

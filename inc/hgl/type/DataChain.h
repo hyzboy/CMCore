@@ -44,11 +44,7 @@ namespace hgl
 
         SortedSet<UserNode *> ud_set;      ///<用户数据占用合集
 
-    #ifdef _DEBUG
     public:
-    #else
-    protected:
-    #endif//
 
         /**
         * 数据块链表节点
@@ -66,6 +62,8 @@ namespace hgl
             const int GetEnd()const{return start+count;}
         };//struct ChainNode
 
+    private:
+
         DataStackPool<ChainNode> node_pool; ///<链表节点池
 
         int free_count;                     ///<空闲数据块数量
@@ -77,10 +75,8 @@ namespace hgl
         const int GetMaxCount   ()const{return max_count;}
         const int GetFreeCount  ()const{return free_count;}
 
-    #ifdef _DEBUG
-        ChainNode *GetStartNode()const{return start;}
-        ChainNode *GetEndNode  ()const{return end;}
-    #endif//
+        ChainNode *GetStartNode ()const{return start;}
+        ChainNode *GetEndNode   ()const{return end;}
 
     public:
 

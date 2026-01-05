@@ -386,7 +386,6 @@ namespace hgl
             ClearActive();
             ClearIdle();
         }
-
     };
 
     /**

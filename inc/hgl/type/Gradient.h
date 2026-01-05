@@ -128,7 +128,7 @@ namespace hgl
             return false;
         }
 
-        virtual void Get(T &reuslt,const T &start,const T &end,const float &pos)
+        virtual void Get(T &result,const T &start,const T &end,const float &pos)
         {
             result=start+(end-start)*pos;
         }
