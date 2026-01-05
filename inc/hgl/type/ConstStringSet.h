@@ -201,11 +201,18 @@ namespace hgl
         }
     };//class ConstStringSet
 
-    using ConstWStringSet    =ConstStringSet<wchar_t>;
+    using ConstAnsiStringSet  =ConstStringSet<char>;
+    using ConstWideStringSet  =ConstStringSet<wchar_t>;
     using ConstU8StringSet    =ConstStringSet<u8char>;
     using ConstU16StringSet   =ConstStringSet<u16char>;
 //    using ConstUTF32StringSet   =ConstStringSet<u32char>;
     using ConstOSStringSet      =ConstStringSet<os_char>;
+
+    using ConstAnsiStringView   =ConstStringView<char>;
+    using ConstWideStringView   =ConstStringView<wchar_t>;
+    using ConstU8StringView     =ConstStringView<u8char>;
+    using ConstU16StringView    =ConstStringView<u16char>;
+    using ConstOSStringView     =ConstStringView<os_char>;
 
     template<typename SC> bool SaveToTextStream(hgl::io::TextOutputStream *tos,const ConstStringSet<SC> *css,bool output_id=false);
     template<typename SC> bool SaveToTextFile(const OSString &filename,const ConstStringSet<SC> *css,bool output_id=false,bool output_bom=true);
