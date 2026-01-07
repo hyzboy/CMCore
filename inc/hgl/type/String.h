@@ -765,6 +765,7 @@ namespace hgl
      * @brief CN: ANSI 编码字符串类型 EN: ANSI encoded string type
      */
     using AnsiString = String<char>;
+    inline AnsiString operator "" _str(const char *str,size_t len){return AnsiString(str,static_cast<int>(len));}
 
     /**
     * @typedef IDString
@@ -777,27 +778,36 @@ namespace hgl
      * @brief CN: UTF-8 编码字符串类型 EN: UTF-8 encoded string type
      */
     using U8String   = String<u8char>;
+    inline U8String operator "" _u8(const u8char *str,size_t len) { return U8String(str,static_cast<int>(len)); }
 
     /**
      * @typedef U16String
      * @brief CN: UTF-16 编码字符串类型 EN: UTF-16 encoded string type
      */
     using U16String  = String<u16char>;
+    inline U16String operator "" _u16(const u16char *str,size_t len) { return U16String(str,static_cast<int>(len)); }
+
     /**
      * @typedef U32String
      * @brief CN: UTF-32 编码字符串类型 EN: UTF-32 encoded string type
      */
     using U32String  = String<char32_t>;
+    inline U32String operator "" _u32(const char32_t *str,size_t len) { return U32String(str,static_cast<int>(len)); }
+
     /**
      * @typedef OSString
      * @brief CN: 操作系统本地编码字符串类型 EN: OS native encoded string type
      */
     using OSString   = String<os_char>;
+    inline OSString operator "" _os(const os_char *str,size_t len) { return OSString(str,static_cast<int>(len)); }
+
     /**
      * @typedef WideString
      * @brief CN: 宽字符编码字符串类型 EN: Wide character encoded string type
      */
     using WideString = String<wchar_t>;
+    inline WideString operator "" _ws(const wchar_t *str,size_t len) { return WideString(str,static_cast<int>(len)); }
+
     /**
      * @typedef CodeString
      * @brief CN: 默认编码字符串类型 EN: Default encoded string type
