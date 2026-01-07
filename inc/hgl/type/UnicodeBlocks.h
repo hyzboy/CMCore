@@ -339,6 +339,6 @@ namespace hgl
     bool isLatin        (const u32char ch);     ///判断当前字符是否是拉丁字符
     bool isCJK          (const u16char ch);     ///判断当前字符是否是CJK字符
     bool isCJK          (const u32char ch);     ///判断当前字符是否是CJK字符
-    bool isEmoji        (const u32char ch);     ///判断当前字符是否是表情符号    
+    bool isEmoji        (const u32char ch);     ///判断当前字符是否是表情符号
     bool isPunctuation  (const u32char ch);     ///判断当前字符是否是标点符号
 }//namespace hgl

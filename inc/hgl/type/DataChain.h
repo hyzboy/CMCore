@@ -16,7 +16,7 @@ namespace hgl
         SeriesInt series;                   ///<序号池
 
         int max_count;                      ///<最大数量
-    
+
     public:
 
         /**
@@ -32,7 +32,7 @@ namespace hgl
             friend class DataChain;
 
         public:
-            
+
             const int GetStart()const{return start;}
             const int GetCount()const{return count;}
             const int GetEnd()const{return start+count;}
@@ -58,7 +58,7 @@ namespace hgl
             int count;                      ///<数据块数量
 
         public:
-            
+
             const int GetEnd()const{return start+count;}
         };//struct ChainNode
 
@@ -67,7 +67,7 @@ namespace hgl
         DataStackPool<ChainNode> node_pool; ///<链表节点池
 
         int free_count;                     ///<空闲数据块数量
-        
+
         ChainNode *start,*end;
 
     public:

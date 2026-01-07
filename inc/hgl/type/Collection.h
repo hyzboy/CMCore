@@ -10,14 +10,14 @@ namespace hgl
         virtual         void Update(const void *){}
         virtual const   bool Check(const void *)const=0;
     };//struct CheckElement
-    
+
     struct CheckElementMemcmp:public CheckElement
     {
         const void *value;
         size_t size;
 
     public:
-    
+
         CheckElementMemcmp(const size_t s)
         {
             value=nullptr;

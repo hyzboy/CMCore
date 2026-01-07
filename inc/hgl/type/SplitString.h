@@ -11,7 +11,7 @@ namespace hgl
     public:
 
         virtual ~SplitString()=default;
-        
+
         virtual void OnNewString(const T *,const int)=0;                                            ///<发现一个新的字符串
 
         virtual bool isSeparatorChar(const T &)=0;                                                  ///<是否是分隔符
@@ -89,7 +89,7 @@ namespace hgl
             return Split(str.c_str(),str.Length());
         }
     };//template<typename T> class SplitString
-    
+
     /**
      * 拆分字符串到字符串列表模板类
      */
@@ -206,7 +206,7 @@ namespace hgl
 
         return split.Split(str,size);
     }//int SplitToStringListByCodes
-    
+
     SPLIT_STRING_TO_STRING_LIST(Codes)
 
     /**
@@ -224,9 +224,9 @@ namespace hgl
 
         return split.Split(str,size);
     }//int SplitToStringListByDigit
-    
+
     SPLIT_STRING_TO_STRING_LIST(Digit)
-    
+
     /**
      * 拆分16进制数字串到一个字符串列表
      * @param sl 字符串列表处理类
@@ -242,7 +242,7 @@ namespace hgl
 
         return split.Split(str,size);
     }//int SplitToStringListByXDigit
-    
+
     SPLIT_STRING_TO_STRING_LIST(XDigit)
 
     /**
@@ -260,9 +260,9 @@ namespace hgl
 
         return split.Split(str,size);
     }//int SplitToStringListByFloat
-    
+
     SPLIT_STRING_TO_STRING_LIST(Float)
-    
+
     /**
      * 基于指定字符拆分字符串到字符串列表模板类
      */
@@ -298,14 +298,14 @@ namespace hgl
 
         return split.Split(str,size);
     }//int SplitToStringList
-    
+
     template<typename T> int SplitToStringListByChar(StringList<T> &sl,const String<T> &str,const T &split_char)
     {
         SplitStringToStringListByChar<T> split(&sl,split_char);
 
         return split.Split(str.c_str(),str.Length());
     }
-    
+
     /**
      * 基于指定的多个字符拆分字符串到字符串列表模板类
      */
@@ -326,7 +326,7 @@ namespace hgl
             return separator_char.FindChar(ch)!=-1;
         }
     };//template<typename T,typename C> class SplitStringToStringListByChars:public SplitStringToStringList<T>
-    
+
     /**
      * 以指定字符为分隔拆解一个字符串到一个字符串列表
      * @param sl 字符串列表处理类
@@ -341,7 +341,7 @@ namespace hgl
 
         return split.Split(str,size);
     }//int SplitToStringList
-    
+
     template<typename T> int SplitToStringListByChars(StringList<T> &sl,const String<T> &str,const String<T> &split_chars)
     {
         SplitStringToStringListByChars<T> split(&sl,split_chars);
@@ -454,14 +454,14 @@ namespace hgl
     {
         if(str.IsEmpty())return;
         if(center.IsEmpty())return;
-    
+
         int pos = str.FindString(center);
 
         if(pos < 0)
         {
             if(left)
                 *left = str;
-        
+
             if(right)
                 right->Clear();
         }

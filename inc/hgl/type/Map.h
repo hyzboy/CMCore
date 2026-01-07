@@ -14,7 +14,7 @@ namespace hgl
     template<typename K,typename V,typename KVData> class MapTemplate
     {
     protected:
-    
+
         using ThisClass=MapTemplate<K,V,KVData>;
 
         using KVDataPool=ObjectPool<KVData>;
@@ -98,7 +98,7 @@ namespace hgl
                     }
 
                     return count;
-                } 
+                }
 
                 template<typename ITK,typename ITV>
                 int     GetList(ITK &key_list,ITV &value_list)                                      ///<取得所有索引合集
@@ -120,7 +120,7 @@ namespace hgl
                     return count;
                 }
 
-                KVData *GetItem(int n){return GetObjectFromMap(data_list,n);}                      ///<取指定序号的数据
+                KVData *GetItem(int n){return GetObjectFromMap(data_list,n);}                       ///<取指定序号的数据
                 bool    GetBySerial(int,K &,V &) const;                                             ///<取指定序号的数据
                 bool    GetKey(int,K &);                                                            ///<取指定序号的索引
                 bool    GetValue(int,V &);                                                          ///<取指定序号的数据
@@ -135,7 +135,7 @@ namespace hgl
                 {
                     const int count=data_list.GetCount();
                     if(count<=0) return;
-                    
+
                     KVData **idp=data_list.GetData();
                     for(int i=0;i<count;i++)
                     {
@@ -143,13 +143,13 @@ namespace hgl
                         ++idp;
                     }
                 }
-                
+
                 template<typename F>
                 void    EnumKeys(F &&func)                                                          ///<枚举所有键(支持lambda)
                 {
                     const int count=data_list.GetCount();
                     if(count<=0) return;
-                    
+
                     KVData **idp=data_list.GetData();
                     for(int i=0;i<count;i++)
                     {
@@ -157,13 +157,13 @@ namespace hgl
                         ++idp;
                     }
                 }
-                
+
                 template<typename F>
                 void    EnumValues(F &&func)                                                        ///<枚举所有值(支持lambda)
                 {
                     const int count=data_list.GetCount();
                     if(count<=0) return;
-                    
+
                     KVData **idp=data_list.GetData();
                     for(int i=0;i<count;i++)
                     {

@@ -45,7 +45,7 @@ namespace hgl
     bool MapTemplate<K,V,KVData>::FindPos(const K &flag,int &pos)const
     {
         const int count = data_list.GetCount();
-        
+
         // Handle empty list
         if(count == 0)
         {
@@ -61,7 +61,7 @@ namespace hgl
         while(left <= right)
         {
             int mid = left + (right - left) / 2;  // Avoid overflow
-            
+
             if(data_array[mid]->key == flag)
             {
                 // Found exact match
@@ -113,7 +113,7 @@ namespace hgl
     KVData *MapTemplate<K,V,KVData>::Add(const K &flag,const V &data)
     {
         KVData *dp=new KVData;
-        
+
         dp->key=flag;
         dp->value=data;
 
@@ -138,9 +138,9 @@ namespace hgl
     void MapTemplate<K,V,KVData>::Add(KVData *obj)
     {
         if(!obj) return;
-        
+
         int pos;
-        
+
         // Check if key already exists to prevent duplicate keys
         if(FindPos(obj->key, pos))
         {
@@ -149,11 +149,11 @@ namespace hgl
             data_pool.Release(obj);
             return;
         }
-        
+
         // Safe to insert at pos - key doesn't exist
         if(!data_pool.AppendToActive(obj))
             return;
-            
+
         data_list.Insert(pos, obj);
     }
 
@@ -226,7 +226,7 @@ namespace hgl
     bool MapTemplate<K,V,KVData>::GetBySerial(int index,K &f,V &t) const
     {
         if(index<0||index>=data_list.GetCount())return(false);
-        
+
         KVData *ds;
 
         if(!data_list.Get(index,ds))
@@ -248,7 +248,7 @@ namespace hgl
     bool MapTemplate<K,V,KVData>::GetKey(int index,K &f)
     {
         if(index<0||index>=data_list.GetCount())return(false);
-        
+
         KVData *ds;
 
         if(!data_list.Get(index,ds))
@@ -269,7 +269,7 @@ namespace hgl
     bool MapTemplate<K,V,KVData>::GetValue(int index,V &t)
     {
         if(index<0||index>=data_list.GetCount())return(false);
-        
+
         KVData *ds;
 
         if(!data_list.Get(index,ds))
@@ -393,7 +393,7 @@ namespace hgl
     bool MapTemplate<K,V,KVData>::DeleteAt(int start,int number)
     {
         const int count = data_list.GetCount();
-        
+
         // Validate bounds: start >= 0, number > 0, and start + number <= count
         if(start < 0 || number <= 0 || start + number > count)
             return false;
@@ -543,7 +543,7 @@ namespace hgl
             ++sp;
         }
     }
-    
+
     /**
      * 统计出所有没有出现在in_list中的数据，产生的结果写入without_list
      */

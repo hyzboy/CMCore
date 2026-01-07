@@ -21,7 +21,7 @@ namespace hgl
     * 按添加进来的名字先后顺序一个个产生连续的序号，所有数据只可读不可写
     */
     template<typename SC,typename MANAGER> class OrderedIDName:public Comparator<OrderedIDName<SC,MANAGER>>
-    {   
+    {
     public:
 
         using SelfClass=OrderedIDName<SC,MANAGER>;
@@ -58,7 +58,7 @@ namespace hgl
             static size_t class_hc=typeid(self).hash_code();
 
             return class_hc;
-        }          
+        }
 
                 const int       GetID           ()const{return csv.id;}                                 ///<获取名称ID
                 const SC *      GetName         ()const{return csv.GetString();}                        ///<获取名称字符串

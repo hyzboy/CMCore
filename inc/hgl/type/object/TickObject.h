@@ -10,9 +10,9 @@ namespace hgl
         bool tickable=true;
 
     public:
-        
+
         bool IsTickable()const{return tickable;}
-        
+
         void SetTickable(bool t){tickable=t;}
 
     public:

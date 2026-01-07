@@ -73,7 +73,7 @@ namespace hgl
             data_array.Expand(1);
 
             data_array.WriteAt(data,index);
-            
+
             return index;
         }
 
@@ -179,7 +179,7 @@ namespace hgl
         }
 
         /**
-        * 移动一批数据到新的位置 
+        * 移动一批数据到新的位置
         * @param new_pos 新的位置
         * @param old_pos 原来的位置
         * @param move_count 要移动的数据个数

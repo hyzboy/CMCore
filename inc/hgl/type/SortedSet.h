@@ -7,7 +7,7 @@ namespace hgl
      * 有序合集</br>
      * 集合数据列表中不允许数据出现重复性，同时它会将数据排序</br>
      * 我们删除了批量添加数据的Add函数，因为每一次添加数据都会导致一次插入，这样效率太低了。我们建议将数据全部添加到List，再转换为SortedSet。</br>
-     * 
+     *
      * @tparam T 必须支持 operator< 用于排序，可以是任何可排序的类型（包括非平凡可复制类型）
      */
     template<typename T> class SortedSet
@@ -183,11 +183,11 @@ namespace hgl
             T *ptr = begin();
             if(!ptr)
                 return(false);
-            
+
             data = *ptr;
             return(true);
         }
-        
+
         bool    GetLast         (T &data)const                                              ///<取得最后面一个数据
         {
             T *ptr = last();

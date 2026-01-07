@@ -13,13 +13,13 @@ namespace hgl
         int64 data_offset;        ///<当前访问偏移
 
         int64 field_count;        ///<分段数量
-        
+
         struct Field
         {
             int64 start;
             int64 count;
         };
-        
+
         Field *field_list;
         int64 field_index;
 
@@ -79,7 +79,7 @@ namespace hgl
         {
             if(left_count>0)
             {
-                if(field_index>=field_count)return(false);                
+                if(field_index>=field_count)return(false);
 
                 field_list[field_index].start=data_offset;
                 field_list[field_index].count=left_count;

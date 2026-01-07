@@ -109,7 +109,7 @@ namespace hgl
         Iterator begin  (){return Iterator(this,0);}
         Iterator end    (){return Iterator(this,data_index.GetCount());}
         Iterator last   (){return Iterator(this,data_index.GetCount()-1);}
-        
+
     public: // 只读迭代器
 
         class ConstIterator
@@ -178,7 +178,7 @@ namespace hgl
             else
             {
                 int32 index;
-                
+
                 free_index.Pop(index);
                 data_index.Append(index);
 

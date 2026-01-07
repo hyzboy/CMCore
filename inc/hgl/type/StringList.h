@@ -191,10 +191,10 @@ namespace hgl
         }
 
         /**
-         * @brief Copy assignment operator performs deep copy  
+         * @brief Copy assignment operator performs deep copy
          * CN: 拷贝赋值运算符执行深拷贝
          * EN: Copy assignment operator performs deep copy
-         * 
+         *
          * Note: This performs deep copy via CopyFrom(). For explicit control,
          * use CopyFrom() method directly.
          */
@@ -239,7 +239,7 @@ namespace hgl
         * @return 增加字符串成功后的索引
         */
         int Add(const StringClass &str)
-        {   
+        {
             return Items.Add(new StringClass(str));
         }
 
@@ -467,11 +467,11 @@ namespace hgl
         {
             if (n < 0 || n >= Items.GetCount())
                 throw std::out_of_range("StringList index out of range");
-            
+
             StringClass *result = Items[n];
             if (!result)
                 throw std::runtime_error("StringList contains null pointer");
-            
+
             return *result;
         }                                                                                               ///<取得指定行字符串
     };//template<typename T> class StringList

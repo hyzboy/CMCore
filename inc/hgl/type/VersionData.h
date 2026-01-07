@@ -15,7 +15,7 @@ namespace hgl
         T cur_data;
 
     protected:
-        
+
         const uint32 UpdateVersion()                                                                ///<更新版本号
         {
             //版本号只是为了记录变化，让程序知道和上次不一样，所以最大值是多少其实无所谓的
