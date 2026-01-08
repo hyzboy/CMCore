@@ -640,6 +640,44 @@ namespace hgl
         }
 
         /**
+        * @brief 替换子串（就地），将所有 tstr 替换为 sstr
+        * CN: 支持批量子串替换
+        * EN: Supports batch substring replacement
+        */
+        int     Replace     (const SelfClass &tstr, const SelfClass &sstr)
+        {
+            if (IsEmpty() || tstr.IsEmpty()) return 0;
+            int count = 0;
+            size_t pos = 0;
+            while ((pos = buffer.find(tstr.c_str(), pos, tstr.Length())) != std::basic_string<T>::npos)
+            {
+                buffer.replace(pos, tstr.Length(), sstr.c_str(), sstr.Length());
+                pos += sstr.Length();
+                ++count;
+            }
+            return count;
+        }
+
+        /**
+        * @brief 替换指定位置的指定数量的字符为新的子串
+        */
+        bool    Replace     (int pos, int num, const SelfClass &sstr)
+        {
+            if (pos < 0 || num < 0 || pos + num > Length()) return false;
+
+            if(num==sstr.Length())
+            {
+                memcpy(buffer.data() + pos, sstr.c_str(), num * sizeof(T));
+                return true;
+            }
+            else
+            {
+                buffer.replace(pos, num, sstr.c_str(), sstr.Length());
+            }
+            return true;
+        }
+
+        /**
          * @brief 常量索引访问（越界返回静态 0）
          * CN: 支持安全的只读索引访问
          * EN: Supports safe read-only index access
