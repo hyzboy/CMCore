@@ -10,35 +10,42 @@ namespace hgl
 
     namespace
     {
-        uint64 program_start_time=0;
+        uint64 program_start_time=0;        ///< 程序启动时的系统时间(单位：微秒 1/1000000秒)
 
-        long gmt_off=0;            //windows下为long
+        long gmt_off=0;                     ///< 时区偏移值(单位：微秒 1/1000000秒) windows下为long
 
         struct TimeInit
         {
             TimeInit()
             {
-                program_start_time=GetMicroTime();
+                program_start_time=GetTimeUs();     // 记录程序启动时间戳
 
-                gmt_off=GetGMTOff();
+                gmt_off=GetGMTOff();                // 计算时区偏移
             }
         };//struct TimeInit
 
-        static TimeInit time_init;
+        static TimeInit time_init;          ///< 静态初始化，程序启动时自动执行
     }//namespace
 
     /**
-     * 返回时区时差
+     * 返回时区偏移
+     * @return 时区偏移(单位：秒 second)
+     * @note 内部存储为微秒，返回时转换为秒
      */
-    int GetTimeZone()
+    int GetTimeZoneOffset()
     {
-        return gmt_off;
+        return gmt_off / HGL_MICRO_SEC_PER_SEC;     // 微秒转秒 (1/1000000 -> 1)
     }
     
-    // 使用 C++20 std::chrono 重新实现，保持原有接口与语义
+    // ========================================================================
+    // 使用 C++11/C++20 std::chrono 重新实现，保持原有接口与语义
+    // ========================================================================
 
     /**
-    * 取得当前与GMT的偏移(utc-local)单位:微秒 (保持原Win实现的符号与单位)
+    * 取得当前与GMT的偏移(UTC-Local)
+    * @return 时区偏移(单位：微秒 microsecond, 1/1000000秒)
+    * @note 返回值 = GMT时间 - 本地时间 (东时区为负值，西时区为正值)
+    * @example 北京时间(UTC+8)返回 -28800000000 微秒 (-8小时)
     */
     long GetGMTOff()
     {
@@ -52,84 +59,106 @@ namespace hgl
         std::tm local_tm{};
         std::tm gm_tm{};
 #if defined(_WIN32)
-        localtime_s(&local_tm, &tt);
-        gmtime_s(&gm_tm, &tt);
-        std::tm local_copy = local_tm;              // mktime/_mkgmtime 可能改写内容，所以复制
+        localtime_s(&local_tm, &tt);                    // 转换为本地时间结构
+        gmtime_s(&gm_tm, &tt);                          // 转换为UTC时间结构
+        std::tm local_copy = local_tm;                  // mktime/_mkgmtime 可能改写内容，所以复制
         std::tm gm_copy = gm_tm;
-        time_t local_sec = std::mktime(&local_copy);    // 解释为本地时间 -> epoch(本地转换到UTC秒值)
-        time_t gm_sec = _mkgmtime(&gm_copy);            // 解释为UTC时间
+        time_t local_sec = std::mktime(&local_copy);    // 将本地时间结构解释为本地时间戳
+        time_t gm_sec = _mkgmtime(&gm_copy);            // 将UTC时间结构解释为UTC时间戳
 #else
-        local_tm = *std::localtime(&tt);
+        local_tm = *std::localtime(&tt);                // POSIX线程不安全版本
         gm_tm    = *std::gmtime(&tt);
         std::tm local_copy = local_tm;
         std::tm gm_copy = gm_tm;
-        time_t local_sec = std::mktime(&local_copy);    // 本地
-        time_t gm_sec = timegm(&gm_copy);               // UTC
+        time_t local_sec = std::mktime(&local_copy);    // 本地时间戳
+        time_t gm_sec = timegm(&gm_copy);               // UTC时间戳(GNU扩展)
 #endif
-        // Windows旧实现返回: utc_time - local_time (微秒)
-        const long diff_sec = static_cast<long>(gm_sec - local_sec); // = -(local_offset_seconds)
-        return diff_sec * 1000000L; // 微秒
+        // 计算偏移：UTC时间 - 本地时间 = -(本地时区偏移)
+        // 例如：北京时间(UTC+8)，gm_sec比local_sec小8小时，diff_sec = -8*3600
+        const long diff_sec = static_cast<long>(gm_sec - local_sec);
+        return diff_sec * 1000000L;                     // 秒转微秒 (1 -> 1/1000000)
     }
 
     /**
-    * 取得当前时间
-    * @return 当前时间(单位：百万分之一秒)
+    * 取得当前系统时间
+    * @return 当前时间(单位：微秒 microsecond, 1/1000000秒)
+    * @note 自Unix纪元(1970-01-01 00:00:00 UTC)起的微秒数
     */
-    uint64 GetMicroTime()
+    uint64 GetTimeUs()
     {
         using namespace std::chrono;
         return static_cast<uint64>(duration_cast<microseconds>(system_clock::now().time_since_epoch()).count());
     }
 
     /**
-    * 取得当前时间
-    * @return 当前时间(单位：千分之一秒)
+    * 取得当前系统时间
+    * @return 当前时间(单位：毫秒 millisecond, 1/1000秒)
+    * @note 自Unix纪元(1970-01-01 00:00:00 UTC)起的毫秒数
     */
-    uint64 GetTime()
+    uint64 GetTimeMs()
     {
-        return GetMicroTime()/1000ULL;
+        return GetTimeUs()/1000ULL;                     // 微秒转毫秒 (1/1000000 -> 1/1000)
     }
 
     /**
-    * 取得当前时间(双精度)
-    * @return 当前时间(单位：秒)
+    * 取得当前系统时间(高精度)
+    * @return 当前时间(单位：秒 second, 双精度浮点)
+    * @note 自Unix纪元(1970-01-01 00:00:00 UTC)起的秒数，保留小数精度
     */
-    PreciseTime GetPreciseTime()                                                                        ///<取得当前时间(双精度，单位秒)
+    PreciseTime GetTimeSec()
     {
-        return PreciseTime(GetMicroTime())/HGL_MICRO_SEC_PER_SEC;
+        return PreciseTime(GetTimeUs())/HGL_MICRO_SEC_PER_SEC;  // 微秒转秒 (1/1000000 -> 1)
     }
 
     /**
-    * 等待指定时间
-    * @param t 时间(单位：秒)
+    * 休眠指定时间
+    * @param seconds 时间(单位：秒 second, 支持小数)
+    * @note 若参数<=0则不休眠
     */
-    void WaitTime(const PreciseTime &t)
+    void SleepSecond(PreciseTime seconds)
     {
-        if(t<=0) return;
-        std::this_thread::sleep_for(std::chrono::duration<PreciseTime>(t));
+        if(seconds<=0) return;
+        std::this_thread::sleep_for(std::chrono::duration<PreciseTime>(seconds));
     }
 
     /**
-    * 取得本地当前时间(双精度)
-    * @return 当前时间(单位：秒)
+    * 取得本地当前时间(高精度)
+    * @return 当前本地时间(单位：秒 second, 双精度浮点)
+    * @note 返回值 = UTC时间 + 时区偏移
+    * @example UTC时间为 1000.5秒，北京时区(+8小时)，返回 1000.5 + 28800 = 29800.5秒
     */
-    double GetLocaPreciseTime()
+    PreciseTime GetLocalTimeSec()
     {
-        return GetPreciseTime()+GetTimeZone();
+        return GetTimeSec()+GetTimeZoneOffset();        // UTC时间 + 时区偏移(秒)
     }
 
-    uint64 GetMilliStartTime()
+    /**
+    * 取得程序运行时间
+    * @return 程序运行时间(单位：毫秒 millisecond, 1/1000秒)
+    * @note 自程序启动(TimeInit构造)起的毫秒数
+    */
+    uint64 GetUptimeMs()
     {
-        return program_start_time/1000;
+        return (GetTimeUs()-program_start_time)/1000ULL;    // 微秒差转毫秒 (1/1000000 -> 1/1000)
     }
 
-    uint64 GetMicroStartTime()
+    /**
+    * 取得程序运行时间
+    * @return 程序运行时间(单位：微秒 microsecond, 1/1000000秒)
+    * @note 自程序启动(TimeInit构造)起的微秒数
+    */
+    uint64 GetUptimeUs()
     {
-        return program_start_time;
+        return GetTimeUs()-program_start_time;              // 微秒差值
     }
 
-    double GetPreciseStartTime()
+    /**
+    * 取得程序运行时间(高精度)
+    * @return 程序运行时间(单位：秒 second, 双精度浮点)
+    * @note 自程序启动(TimeInit构造)起的秒数，保留小数精度
+    */
+    PreciseTime GetUptimeSec()
     {
-        return double(program_start_time)/HGL_MICRO_SEC_PER_SEC;
+        return PreciseTime(GetTimeUs()-program_start_time)/HGL_MICRO_SEC_PER_SEC;  // 微秒差转秒 (1/1000000 -> 1)
     }
 }//namespace hgl

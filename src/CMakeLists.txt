@@ -277,8 +277,8 @@ SET(CMCORE_TIME_HEADERS ${CMCORE_TIME_INCLUDE_PATH}/DateTime.h
 SET(CMCORE_TIME_SOURCES Time/DateTime.cpp
                         Time/TimeCount.cpp
                         Time/TimeVal.cpp
-                        Time/Time.cpp
-                        Time/Date.cpp
+                        Time/TimeOfDay.cpp
+                        Time/CalendarDate.cpp
                         Time/TimeID.cpp)
 
 SOURCE_GROUP("Time\\Headers" FILES ${CMCORE_TIME_HEADERS})
