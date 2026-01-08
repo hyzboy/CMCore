@@ -37,7 +37,7 @@ namespace hgl
 
             buffer=buf;
             buffer_size=buf_size;
-            cur_buf_size=buf_size;            
+            cur_buf_size=buf_size;
 
             bom=ByteOrderMask::NONE;
             default_bom=ByteOrderMask::UTF8;
@@ -120,7 +120,7 @@ namespace hgl
                     else
                     {
                         bom=default_bom;
-                    }   
+                    }
                 }
             }
 

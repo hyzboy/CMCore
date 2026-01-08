@@ -116,7 +116,7 @@ namespace hgl
 
             return(true);
         }
-        
+
         void *LoadFileToMemory(const OSString &filename,int64 &size,bool append_zero)
         {
             io::FileAccess fa;
@@ -414,7 +414,7 @@ namespace hgl
 
             return count;
         }
-        
+
         /**
          * 在多个目录内查找一个文件，这个文件可能有多个文件名
          * @param filenames 要查找的文件名称

@@ -14,7 +14,7 @@ namespace hgl
             os_string os_pat = pat.ToStdString();
             os_string out;
             out.reserve(os_pat.size() * 2);
-            
+
             for (os_char ch : os_pat)
             {
                 switch (ch)
@@ -22,21 +22,21 @@ namespace hgl
                 case OS_TEXT('*'): out += OS_TEXT(".*"); break;
                 case OS_TEXT('?'): out += OS_TEXT('.'); break;
                 case OS_TEXT('.'): out += OS_TEXT("."); break;
-                case OS_TEXT('('): case OS_TEXT(')'): 
-                case OS_TEXT('['): case OS_TEXT(']'): 
+                case OS_TEXT('('): case OS_TEXT(')'):
+                case OS_TEXT('['): case OS_TEXT(']'):
                 case OS_TEXT('{'): case OS_TEXT('}'):
-                case OS_TEXT('^'): case OS_TEXT('$'): 
-                case OS_TEXT('|'): case OS_TEXT('+'): 
+                case OS_TEXT('^'): case OS_TEXT('$'):
+                case OS_TEXT('|'): case OS_TEXT('+'):
                 case OS_TEXT('\\'):
-                    out += OS_TEXT('\\'); 
-                    out += ch; 
+                    out += OS_TEXT('\\');
+                    out += ch;
                     break;
-                default: 
-                    out += ch; 
+                default:
+                    out += ch;
                     break;
                 }
             }
-            
+
             // 添加首尾锚点
             out.insert(out.begin(), OS_TEXT('^'));
             out.push_back(OS_TEXT('$'));
@@ -48,7 +48,7 @@ namespace hgl
             ArrayList<FileInfo> &out;
             os_regex re;
             bool match_all = false;
-            
+
         public:
             CollectEnum(ArrayList<FileInfo> &o, const OSString &pattern, bool use_regex)
                 : out(o)
@@ -73,7 +73,7 @@ namespace hgl
                     out.Add(fi);
                     return;
                 }
-                
+
                 if (std::regex_match(fi.name, re))
                     out.Add(fi);
             }

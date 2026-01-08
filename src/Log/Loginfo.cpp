@@ -55,14 +55,14 @@ namespace hgl
             if(log_list->GetCount()<=0)
                 return(false);
 
-            Date d;
-            Time t;
+            CalendarDate d;
+            TimeOfDay t;
 
             ToDateTime(d,t);
-            
+
             OSString cur_path;
             OSString cur_program;
-    
+
             filesystem::GetCurrentPath(cur_path);
             filesystem::GetCurrentProgram(cur_program);
 
@@ -208,7 +208,7 @@ namespace hgl
     {
         Logger *CreateLoggerConsole (LogLevel);
         Logger *CreateLoggerFile    (const OSString &,LogLevel);
-    
+
         /**
          * 独立的日志系统初始化<br>
          * 供不整体使用SDK的应用程序使用

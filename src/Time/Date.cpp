@@ -27,17 +27,17 @@ namespace hgl
         return doy;
     }
 
-    Date::Date(const double t)
+    CalendarDate::CalendarDate(const double t)
     {
         Sync(t);
     }
 
-    Date::Date(const Date &t)
+    CalendarDate::CalendarDate(const CalendarDate &t)
     {
         operator = (t);
     }
 
-    Date &Date::operator=(const Date &t)
+    CalendarDate &CalendarDate::operator=(const CalendarDate &t)
     {
         year    =t.year;
         month    =t.month;
@@ -49,7 +49,7 @@ namespace hgl
         return(*this);
     }
 
-    const int Date::compare(const Date &t)const
+    const int CalendarDate::compare(const CalendarDate &t)const
     {
         if(year!=t.year)
             return year-t.year;
@@ -60,7 +60,7 @@ namespace hgl
         return day-t.day;
     }
 
-    Date::Date()
+    CalendarDate::CalendarDate()
     {
         year=2000;
         month=1;
@@ -70,12 +70,12 @@ namespace hgl
         max_days_per_month=0;
     }
 
-    Date::Date(int y,int m,int d)
+    CalendarDate::CalendarDate(int y,int m,int d)
     {
         Set(y,m,d);
     }
 
-    void Date::Set(int y,int m,int d,int wd,int yd)
+    void CalendarDate::Set(int y,int m,int d,int wd,int yd)
     {
         day=d;
         month=m;
@@ -85,7 +85,7 @@ namespace hgl
         max_days_per_month=0;
     }
 
-    void Date::SetMonth(int m)
+    void CalendarDate::SetMonth(int m)
     {
         if(m<1)
         {
@@ -118,7 +118,7 @@ namespace hgl
             max_days_per_month=md[month-1];
     }
 
-    void Date::SetDay(int d)
+    void CalendarDate::SetDay(int d)
     {
         int m=month;
 
@@ -143,12 +143,12 @@ namespace hgl
         SetMonth(m);
     }
 
-    int Date::DayOfYear()const
+    int CalendarDate::DayOfYear()const
     {
         return hgl::DayOfYear(year,month,day);
     }
 
-    void Date::Sync(const double t)
+    void CalendarDate::Sync(const double t)
     {
         double use_time = t;
         using namespace std::chrono;

@@ -6,7 +6,7 @@
 
 namespace hgl
 {
-    Time::Time()
+    TimeOfDay::TimeOfDay()
     {
         gmt_off=0;
         hours=0;
@@ -15,12 +15,12 @@ namespace hgl
         micro_seconds=0;
     }
 
-    Time::Time(const double t)
+    TimeOfDay::TimeOfDay(const double t)
     {
         Sync(t);
     }
 
-    Time::Time(int h,int m,int s,int ms)
+    TimeOfDay::TimeOfDay(int h,int m,int s,int ms)
     {
         gmt_off=0;
         hours=h;
@@ -29,7 +29,7 @@ namespace hgl
         micro_seconds=ms;
     }
 
-    Time::Time(const Time &t)
+    TimeOfDay::TimeOfDay(const TimeOfDay &t)
     {
         operator = (t);
     }
@@ -41,7 +41,7 @@ namespace hgl
      * @param s 秒
      * @param ms 微秒(百分分之一秒)
      */
-    void Time::Set(int h,int m,int s,int ms,int wd)
+    void TimeOfDay::Set(int h,int m,int s,int ms,int wd)
     {
         hours=h;
         minutes=m;
@@ -50,7 +50,7 @@ namespace hgl
         week_day=wd;
     }
 
-    Time &Time::operator=(const Time &t)
+    TimeOfDay &TimeOfDay::operator=(const TimeOfDay &t)
     {
         hours            =t.hours;
         minutes            =t.minutes;
@@ -60,7 +60,7 @@ namespace hgl
         return(*this);
     }
 
-    const int Time::compare(const Time &t)const
+    const int TimeOfDay::compare(const TimeOfDay &t)const
     {
         if(hours!=t.hours)
             return hours-t.hours;
@@ -74,7 +74,7 @@ namespace hgl
         return micro_seconds-t.micro_seconds;
     }
 
-    void Time::SetHour(int h)
+    void TimeOfDay::SetHour(int h)
     {
         if(h<0)
         {
@@ -90,7 +90,7 @@ namespace hgl
         hours=h;
     }
 
-    void Time::SetMinute(int m)
+    void TimeOfDay::SetMinute(int m)
     {
         int h=hours;
 
@@ -115,7 +115,7 @@ namespace hgl
         SetHour(h);
     }
 
-    void Time::SetSecond(int s)
+    void TimeOfDay::SetSecond(int s)
     {
         int m=minutes;
 
@@ -140,7 +140,7 @@ namespace hgl
         SetMinute(m);
     }
 
-    void Time::SetMicroSecond(int ms)
+    void TimeOfDay::SetMicroSecond(int ms)
     {
         int s=seconds;
 
@@ -183,7 +183,7 @@ namespace hgl
         return int32(difftime(local_sec, gm_sec));
     }
 
-    void Time::Sync(const double t)
+    void TimeOfDay::Sync(const double t)
     {
         double use_time = t;
         using namespace std::chrono;

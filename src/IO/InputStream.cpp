@@ -29,7 +29,7 @@ namespace hgl
             void *result=new char[total];
 
             int64 read_size=is->ReadFully(result,total);
-            
+
             if(size)
                 *size=read_size;
             return result;
