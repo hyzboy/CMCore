@@ -24,7 +24,7 @@ namespace hgl
 
 		return(ChangeDisplaySettings(&VideoMode,CDS_FULLSCREEN)==DISP_CHANGE_SUCCESSFUL);
 	}
-	
+
 	/**
 	* 取得当前桌面显示模式
 	* @param width 宽

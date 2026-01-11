@@ -13,11 +13,11 @@ namespace hgl
         while(*sp && (sp-src)<src_size)
         {
             if(*sp<=0x7F)                       // U-00000000 - U-0000007F: 0xxxxxxx
-                dst_size+=1;          
+                dst_size+=1;
             else if(*sp<=0x7FF)                 // U-00000080 - U-000007FF: 110xxxxx 10xxxxxx
-                dst_size+=2;          
+                dst_size+=2;
             else                                // U-00000800 - U-0000FFFF: 1110xxxx 10xxxxxx 10xxxxxx
-                dst_size+=3;          
+                dst_size+=3;
 
             ++sp;
         }

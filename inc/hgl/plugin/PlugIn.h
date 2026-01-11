@@ -22,7 +22,7 @@ namespace hgl
 
         const uint          GetVersion  ()const{return ver;}                                        ///<取得插件版本
         const OSString &    GetName     ()const{return name;}                                       ///<取得插件名称
-        const U16String & GetIntro    ()const{return intro;}                                      ///<取得插件介绍
+        const U16String &   GetIntro    ()const{return intro;}                                      ///<取得插件介绍
 
     public:
 

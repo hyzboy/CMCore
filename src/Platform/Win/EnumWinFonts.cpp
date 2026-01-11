@@ -7,21 +7,21 @@ namespace hgl
     namespace
     {
         BOOL CALLBACK EnumFontFamCallBack(CONST LOGFONTW *lplf, CONST TEXTMETRICW *lpntm, DWORD FontType, LPARAM lpUser)
-        { 
+        {
             FontInfoList *fi_list=(FontInfoList *)lpUser;
- 
+
             FontInfo fi;
 
             hgl::strcpy(fi.name,HGL_FONT_NAME_MAX_LENGTH,lplf->lfFaceName);
- 
+
             if (FontType & RASTER_FONTTYPE  ) fi.type=FontType::Raster;else
             if (FontType & TRUETYPE_FONTTYPE) fi.type=FontType::TrueType;else
                                               fi.type=FontType::Vector;
- 
+
             fi.charset             =lpntm->tmCharSet;
             fi.height              =lpntm->tmHeight;
             fi.ascent              =lpntm->tmAscent;
-            fi.descent             =lpntm->tmDescent;           
+            fi.descent             =lpntm->tmDescent;
             fi.internal_leading    =lpntm->tmInternalLeading;
             fi.external_leading    =lpntm->tmExternalLeading;
             fi.ave_char_width      =lpntm->tmAveCharWidth;

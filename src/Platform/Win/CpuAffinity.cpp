@@ -17,7 +17,7 @@ namespace hgl
             if (!node) return false;
 
             node->node_id = node_id;
-            
+
             ULONGLONG available_memory = 0;
             if (GetNumaAvailableMemoryNodeEx(node_id, &available_memory))
             {
@@ -31,13 +31,13 @@ namespace hgl
             // 获取该节点的处理器信息
             DWORD length = 0;
             GetLogicalProcessorInformationEx(RelationNumaNode, nullptr, &length);
-            
+
             if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
                 return false;
 
             AutoFree<SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX> buffer;
             buffer = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX*)malloc(length);
-            
+
             if (!GetLogicalProcessorInformationEx(RelationNumaNode, buffer, &length))
                 return false;
 
@@ -48,8 +48,8 @@ namespace hgl
             while (length > 0)
             {
                 auto* info = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX*)ptr;
-                
-                if (info->Relationship == RelationNumaNode && 
+
+                if (info->Relationship == RelationNumaNode &&
                     info->NumaNode.NodeNumber == node_id)
                 {
                     // 计算该节点的CPU数量
@@ -64,14 +64,14 @@ namespace hgl
                     }
                     break;
                 }
-                
+
                 ptr += info->Size;
                 length -= info->Size;
             }
 
             node->cpu_count = cpu_count;
             node->memory_size = 0; // Windows API不直接提供此信息
-            
+
             return true;
         }
     }//namespace
@@ -134,11 +134,11 @@ namespace hgl
         if (!cpu_mask || mask_size == 0) return false;
 
         HANDLE process = GetCurrentProcess();
-        
+
         // Windows使用DWORD_PTR作为亲合性掩码
         // 对于64位系统，一个DWORD_PTR可以表示64个CPU
         DWORD_PTR affinity_mask = 0;
-        
+
         if (mask_size > 0)
         {
             affinity_mask = static_cast<DWORD_PTR>(cpu_mask[0]);
@@ -152,9 +152,9 @@ namespace hgl
         if (!cpu_mask || mask_size == 0) return false;
 
         HANDLE thread = GetCurrentThread();
-        
+
         DWORD_PTR affinity_mask = 0;
-        
+
         if (mask_size > 0)
         {
             affinity_mask = static_cast<DWORD_PTR>(cpu_mask[0]);
@@ -191,7 +191,7 @@ namespace hgl
         // 使用临时设置并恢复的方法
         HANDLE thread = GetCurrentThread();
         DWORD_PTR old_mask = SetThreadAffinityMask(thread, (DWORD_PTR)-1);
-        
+
         if (old_mask == 0)
             return false;
 
@@ -211,14 +211,14 @@ namespace hgl
     {
         HANDLE thread = GetCurrentThread();
         DWORD_PTR mask = static_cast<DWORD_PTR>(1) << cpu_id;
-        
+
         return SetThreadAffinityMask(thread, mask) != (DWORD_PTR)-1;
     }
 
     bool BindProcessToNumaNode(uint numa_node)
     {
         HANDLE process = GetCurrentProcess();
-        
+
         // 获取NUMA节点的处理器掩码
         ULONGLONG process_mask = 0;
         if (!GetNumaNodeProcessorMaskEx(numa_node, (PGROUP_AFFINITY)&process_mask))
@@ -236,7 +236,7 @@ namespace hgl
 
         HANDLE thread = GetCurrentThread();
         GROUP_AFFINITY old_affinity;
-        
+
         return SetThreadGroupAffinity(thread, &group_affinity, &old_affinity) != 0;
     }
 
@@ -249,13 +249,13 @@ namespace hgl
         // 获取逻辑处理器信息
         DWORD length = 0;
         GetLogicalProcessorInformationEx(RelationAll, nullptr, &length);
-        
+
         if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
             return false;
 
         AutoFree<SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX> buffer;
         buffer = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX*)malloc(length);
-        
+
         if (!GetLogicalProcessorInformationEx(RelationAll, buffer, &length))
             return false;
 
@@ -307,7 +307,7 @@ namespace hgl
                 KAFFINITY mask = info->Processor.GroupMask[0].Mask;
                 uint logical_count = 0;
                 uint first_cpu = (uint)-1;
-                
+
                 for (uint cpu_id = 0; cpu_id < 64 && cpu_id < distribution->total_cpus; ++cpu_id)
                 {
                     if (mask & (1ULL << cpu_id))

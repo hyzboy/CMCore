@@ -39,7 +39,7 @@ namespace hgl
     {
         return(WaitForSingleObject(ptr,0)==WAIT_OBJECT_0);
     }
-    
+
     /**
     * 等待并获取一个信号
     * @return 是否等待到了,如果超过最长时间,仍未等到即为超时,返回false
