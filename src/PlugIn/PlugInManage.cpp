@@ -1,5 +1,6 @@
 ﻿#include<hgl/plugin/PlugInManage.h>
 #include<hgl/filesystem/FileSystem.h>
+#include<hgl/plugin/ExternalPlugIn.h>
 
 namespace hgl
 {
@@ -26,6 +27,170 @@ namespace hgl
             pn=JoinPathWithFilename(pn,OS_TEXT("Plug-ins"));
             AddFindPath(pn);
         }
+    }
+
+    bool PlugInManage::HasPluginFile(const OSString &pi_name,OSString *fullpath) const
+    {
+        if(pi_name.IsEmpty())return(false);
+
+        const std::size_t fp_count=findpath.GetCount();
+        if(fp_count<=0)return(false);
+
+        OSString pi_filename=name+OS_TEXT(".")+pi_name+HGL_PLUGIN_EXTNAME;
+        OSString pi_fullfilename;
+
+        for(std::size_t i=0;i<fp_count;i++)
+        {
+            pi_fullfilename=JoinPathWithFilename(findpath[i],pi_filename);
+            if(FileExist(pi_fullfilename))
+            {
+                if(fullpath)*fullpath=pi_fullfilename;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool PlugInManage::ExistsByFilename(const OSString &full_filename) const
+    {
+        if(full_filename.IsEmpty())return(false);
+        return FileExist(full_filename);
+    }
+
+    bool PlugInManage::IsLoaded(const OSString &pi_name) const
+    {
+        return this->Find(pi_name)!=nullptr;
+    }
+
+    PlugInStatus PlugInManage::GetStatus(const OSString &pi_name) const
+    {
+        PlugIn *pi=(const_cast<PlugInManage*>(this))->Find(pi_name);
+        if(pi) return PlugInStatus::COMPLETE;
+
+        OSString fp;
+        if(HasPluginFile(pi_name,&fp))
+            return PlugInStatus::NO_LOAD;
+
+        return PlugInStatus::NONE;
+    }
+
+    int PlugInManage::Scan(OSStringList &out_names) const
+    {
+        out_names.Clear();
+
+        const std::size_t fp_count=findpath.GetCount();
+        if(fp_count<=0)return 0;
+
+        OSString prefix=name+OS_TEXT(".");
+        OSString ext=OS_TEXT("")+OSString(HGL_PLUGIN_EXTNAME);
+
+        for(std::size_t i=0;i<fp_count;i++)
+        {
+            ArrayList<FileInfo> fi_list;
+            if(GetFileInfoList(fi_list,findpath[i],false,true,false)<=0)
+                continue;
+
+            const int count=fi_list.GetCount();
+            for(int n=0;n<count;n++)
+            {
+                const FileInfo *fi=fi_list.At(n);
+                if(!fi||!fi->is_file)continue;
+
+                OSString fname=fi->name;
+                if(!fname.EndsWithIgnoreCase(ext))continue;
+                if( fname.StartsWithIgnoreCase(prefix))continue;
+
+                OSString plugin_name=fname.SubString(prefix.Length(),fname.Length()-prefix.Length()-ext.Length());
+
+                #if HGL_OS == HGL_OS_Windows
+                    if(out_names.CaseFind(plugin_name)==-1)
+                        out_names.Add(plugin_name);
+                #else
+                    if(out_names.Find(plugin_name)==-1)
+                        out_names.Add(plugin_name);
+                #endif
+            }
+        }
+
+        return out_names.GetCount();
+    }
+
+    int PlugInManage::ScanDetailed(hgl::ArrayList<PlugInInfo> &out_infos,bool probe) const
+    {
+        out_infos.Clear();
+
+        OSStringList names;
+        Scan(names);
+
+        const int ncount=names.GetCount();
+        for(int i=0;i<ncount;i++)
+        {
+            PlugInInfo info;
+            info.name=names[i];
+            info.version=0;
+            info.status=PlugInStatus::NONE;
+            info.intro.Clear();
+            info.filename.Clear();
+
+            OSString fullpath;
+            if(HasPluginFile(info.name,&fullpath))
+            {
+                info.filename=fullpath;
+                info.status=PlugInStatus::NO_LOAD;
+            }
+
+            if(probe && !fullpath.IsEmpty())
+            {
+                ExternalPlugIn epi;
+                if(epi.Load(info.name,fullpath))
+                {
+                    info.version=epi.GetVersion();
+                    info.intro=epi.GetIntro();
+                    info.status=PlugInStatus::COMPLETE;
+                    epi.Free();
+                }
+                else
+                {
+                    info.status=PlugInStatus::LOAD_FAILED;
+                }
+            }
+
+            out_infos.Add(info);
+        }
+
+        return out_infos.GetCount();
+    }
+
+    bool PlugInManage::ProbePlugin(const OSString &pi_name,PlugInInfo &out_info) const
+    {
+        out_info.name=pi_name;
+        out_info.filename.Clear();
+        out_info.version=0;
+        out_info.intro.Clear();
+        out_info.status=PlugInStatus::NONE;
+
+        OSString fullpath;
+        if(!HasPluginFile(pi_name,&fullpath))
+        {
+            return false;
+        }
+
+        out_info.filename=fullpath;
+        out_info.status=PlugInStatus::NO_LOAD;
+
+        ExternalPlugIn epi;
+        if(epi.Load(pi_name,fullpath))
+        {
+            out_info.version=epi.GetVersion();
+            out_info.intro=epi.GetIntro();
+            out_info.status=PlugInStatus::COMPLETE;
+            epi.Free();
+            return true;
+        }
+
+        out_info.status=PlugInStatus::LOAD_FAILED;
+        return false;
     }
 
     bool PlugInManage::RegisterPlugin(PlugIn *pi)
