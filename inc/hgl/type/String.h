@@ -471,6 +471,30 @@ namespace hgl
             return true;
         }
 
+        /** @brief 取左侧 n 个字符为新字符串 */
+        SelfClass Left(int n) const
+        {
+            if (n <= 0 || IsEmpty())
+                return SelfClass();
+
+            if (n >= Length())
+                return *this;
+
+            return SelfClass(c_str(), n);
+        }
+
+        /** @brief 取右侧 n 个字符为新字符串 */
+        SelfClass Right(int n) const
+        {
+            if (n <= 0 || IsEmpty())
+                return SelfClass();
+
+            if (n >= Length())
+                return *this;
+
+            return SelfClass(c_str() + (Length() - n), n);
+        }
+
         /** @brief 统计字符出现次数 */
         int StatChar(const T ch)const { return ::StatChar(c_str(), ch); }
         /** @brief 统计行数 */
@@ -786,10 +810,16 @@ namespace hgl
         bool StartsWith(const SelfClass &s) const;
         bool StartsWith(const StringView<T> &sv) const;
 
+        bool StartsWithIgnoreCase(const T *s) const;
+        bool StartsWithIgnoreCase(const SelfClass &s) const;
+
         bool EndsWith(const T ch) const;
         bool EndsWith(const T *s) const;
         bool EndsWith(const SelfClass &s) const;
         bool EndsWith(const StringView<T> &sv) const;
+
+        bool EndsWithIgnoreCase(const T *s) const;
+        bool EndsWithIgnoreCase(const SelfClass &s) const;
 
         bool Contains(const T ch) const;
         bool Contains(const T *s) const;
@@ -957,6 +987,23 @@ namespace hgl
     }
 
     template<typename T>
+    bool String<T>::StartsWithIgnoreCase(const T *s) const
+    {
+        if (!s || *s == 0) return false;
+        int l = hgl::strlen(s);
+        if (l > Length()) return false;
+        return hgl::stricmp(c_str(), l, s, l) == 0;
+    }
+
+    template<typename T>
+    bool String<T>::StartsWithIgnoreCase(const SelfClass &s) const
+    {
+        if (s.IsEmpty()) return false;
+        if (s.Length() > Length()) return false;
+        return hgl::stricmp(c_str(), s.Length(), s.c_str(), s.Length()) == 0;
+    }
+
+    template<typename T>
     bool String<T>::EndsWith(const T ch) const
     {
         if (IsEmpty()) return false;
@@ -986,6 +1033,23 @@ namespace hgl
         if (sv.IsEmpty()) return false;
         if (sv.Length() > Length()) return false;
         return hgl::strcmp(c_str() + (Length() - sv.Length()), sv.Length(), sv.c_str(), sv.Length()) == 0;
+    }
+
+    template<typename T>
+    bool String<T>::EndsWithIgnoreCase(const T *s) const
+    {
+        if (!s || *s == 0) return false;
+        int l = hgl::strlen(s);
+        if (l > Length()) return false;
+        return hgl::stricmp(c_str() + (Length() - l), l, s, l) == 0;
+    }
+
+    template<typename T>
+    bool String<T>::EndsWithIgnoreCase(const SelfClass &s) const
+    {
+        if (s.IsEmpty()) return false;
+        if (s.Length() > Length()) return false;
+        return hgl::stricmp(c_str() + (Length() - s.Length()), s.c_str(), s.Length()) == 0;
     }
 
     template<typename T>
