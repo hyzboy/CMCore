@@ -120,7 +120,7 @@ namespace hgl
                     return count;
                 }
 
-                KVData *GetItem(int n){return GetObjectFromMap(data_list,n);}                       ///<取指定序号的数据
+                KVData *GetItem(int n)const{return GetObjectFromMap(data_list,n);}                  ///<取指定序号的数据
                 bool    GetBySerial(int,K &,V &) const;                                             ///<取指定序号的数据
                 bool    GetKey(int,K &);                                                            ///<取指定序号的索引
                 bool    GetValue(int,V &);                                                          ///<取指定序号的数据

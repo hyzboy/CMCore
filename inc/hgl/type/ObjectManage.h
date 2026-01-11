@@ -136,7 +136,7 @@ namespace hgl
         * @param key CN:键。EN:Key.
         * @return CN:对象指针或nullptr。EN:Object pointer or nullptr.
         */
-        virtual V *Find(const K &key)
+        virtual V *Find(const K &key)const
         {
             int index = items.Find(key);
 
