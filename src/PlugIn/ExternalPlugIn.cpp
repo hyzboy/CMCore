@@ -19,8 +19,8 @@ namespace hgl
     {
         if(!pi_module)return;
         
-        if(plugin_interface->Close)
-            plugin_interface->Close();
+        if(plugin_interface->ClosePlugIn)
+            plugin_interface->ClosePlugIn();
 
         plugin_interface=nullptr;
 

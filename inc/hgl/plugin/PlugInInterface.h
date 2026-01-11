@@ -17,7 +17,7 @@ namespace hgl
 
     struct PlugInInterface
     {
-        ClosePlugInPROC             Close;
+        ClosePlugInPROC             ClosePlugIn;
 
         GetPlugInVersionPROC        GetVersion;
         GetPlugInIntroPROC          GetIntro;
