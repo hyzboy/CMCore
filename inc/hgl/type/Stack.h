@@ -21,7 +21,7 @@ namespace hgl
         int GetAllocCount() const { return data_array.GetAllocCount(); }      ///< 已分配容量 / Allocated capacity
         int GetCount() const { return data_array.GetCount(); }                ///< 当前元素数量 / Current element count
         bool IsEmpty() const { return data_array.IsEmpty(); }                 ///< 是否为空 / Is empty
-        
+
         int GetTotalBytes() const { return data_array.GetTotalBytes(); }      ///< 总字节数 / Total bytes
 
         /**
@@ -33,17 +33,19 @@ namespace hgl
 
         /**
          * @brief 获取迭代器（开始）
-         * CN: 用于范围遍历
-         * EN: Iterator begin
+         * CN: 用于范围遍历，提供const和非const两个版本
+         * EN: Iterator begin, provides both const and non-const versions
          */
-        T* begin() const { return data_array.begin(); }
+        const T* begin() const { return data_array.begin(); }
+        T* begin() { return data_array.begin(); }
 
         /**
          * @brief 获取迭代器（结束）
-         * CN: 用于范围遍历
-         * EN: Iterator end
+         * CN: 用于范围遍历，提供const和非const两个版本
+         * EN: Iterator end, provides both const and non-const versions
          */
-        T* end() const { return data_array.end(); }
+        const T* end() const { return data_array.end(); }
+        T* end() { return data_array.end(); }
 
     public:
         // ===== 构造/析构 / Constructor/Destructor =====
@@ -66,6 +68,10 @@ namespace hgl
          * EN: Get mutable DataArray for direct access
          */
         operator DataArray<T>&() { return data_array; }
+
+        // ===== 拷贝语义 / Copy Semantics =====
+
+        StackBase(const StackBase& rhs) : data_array(rhs.data_array) {}
 
         // ===== 移动语义 / Move Semantics =====
 
@@ -219,6 +225,11 @@ namespace hgl
     class Stack : public StackBase<T>
     {
     public:
+        // C++20: Ensure T is trivially copyable, otherwise use ObjectStack
+        static_assert(std::is_trivially_copyable_v<T>,
+            "Stack only supports trivially copyable types (primitives, POD structures, etc.). "
+            "For non-trivial types with custom constructors/destructors, use ObjectStack<T> instead.");
+
         Stack() = default;
         virtual ~Stack() = default;
 
@@ -340,6 +351,27 @@ namespace hgl
         }
 
         /**
+         * @brief 调整栈大小
+         * CN: 改变栈中元素数量，新增位置初始化为nullptr
+         * EN: Resize stack with new positions initialized to nullptr
+         */
+        bool Resize(int count)
+        {
+            int old_count = this->GetCount();
+            if (!StackBase<T*>::Resize(count))
+                return false;
+
+            // 新增的位置必须初始化为 nullptr，否则 Clear() 时会删除垃圾指针
+            if (count > old_count)
+            {
+                T** ptr = const_cast<T**>(this->GetData());
+                for (int i = old_count; i < count; i++)
+                    ptr[i] = nullptr;
+            }
+            return true;
+        }
+
+        /**
          * @brief 清空所有对象
          * CN: 删除所有指向的对象
          * EN: Delete all pointed objects
@@ -349,7 +381,8 @@ namespace hgl
             T** ptr = const_cast<T**>(this->GetData());
             int n = this->GetCount();
             LifecycleTraitsOwningPtr<T>::destroy(ptr, n);
-            StackBase<T*>::Clear();
+            // 直接清空数组，避免StackBase::Clear()再次调用destroy
+            this->data_array.Clear();
         }
 
         /**
@@ -359,8 +392,9 @@ namespace hgl
          */
         void Free()
         {
-            Clear();
-            StackBase<T*>::Free();
+            Clear();  // Clear()已经完整处理了对象删除和数组清空
+            // 只释放内存，不再调用destroy
+            this->data_array.Free();
         }
 
     }; // class ObjectStack

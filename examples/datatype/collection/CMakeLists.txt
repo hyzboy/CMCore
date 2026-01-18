@@ -9,7 +9,9 @@ cm_example_project("DataType/Collection" MinimalTest            MinimalTest.cpp)
 cm_example_project("DataType/Collection" MoveTest               MoveTest.cpp)
 cm_example_project("DataType/Collection" Move734Test            Move734Test.cpp)
 cm_example_project("DataType/Collection" FixVerificationTest    FixVerificationTest.cpp)
-cm_example_project("DataType/Collection" StackTest              StackTest.cpp)
+
+add_subdirectory(stack)
+
 cm_example_project("DataType/Collection" QueueTest              QueueTest.cpp)
 cm_example_project("DataType/Collection" PoolTest               PoolTest.cpp)
 cm_example_project("DataType/Collection" ListTest               ListTest.cpp)
@@ -21,7 +23,6 @@ cm_example_project("DataType/Collection" StringSetTest          StringSetTest.cp
 cm_example_project("DataType/Collection" StringListTest         StringListTest.cpp)
 cm_example_project("DataType/Collection" SimpleSortedSetTest    SimpleSortedSetTest.cpp)
 cm_example_project("DataType/Collection" GetLastTest            GetLastTest.cpp)
-cm_example_project("DataType/Collection" StackPoolTest          StackPoolTest.cpp)
 cm_example_project("DataType/Collection" DataChainTest          DataChainTest.cpp)
 cm_example_project("DataType/Collection" DataChainTest2         DataChainTest2.cpp)
 cm_example_project("DataType/Collection" MonotonicIDListTest    MonotonicIDListTest.cpp)
