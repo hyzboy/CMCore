@@ -1,0 +1,23 @@
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+cm_example_project("DataType" UbyteColor            color_test_example.cpp)
+cm_example_project("DataType" HalfFloatTest         HalfFloatTest.cpp)
+target_link_libraries(HalfFloatTest PRIVATE CMMath)
+cm_example_project("DataType" AlphaBlendTest        AlphaBlendTest.cpp)
+target_link_libraries(AlphaBlendTest PRIVATE CMMath)
+cm_example_project("DataType" SplitStringTest       SplitStringTest.cpp)
+cm_example_project("DataType" StrChrTest            strchr_test.cpp)
+cm_example_project("DataType" Uint2StrTest          utos_test.cpp)
+cm_example_project("DataType" Size2Test             Size2Test.cpp)
+cm_example_project("DataType" MemcmpTest            MemcmpTest.cpp)
+cm_example_project("DataType" Uint2HexStrTest       Uint2HexStrTest.cpp)
+cm_example_project("DataType" ConstStringSetTest    ConstStringSetTest.cpp)
+cm_example_project("DataType" IDNameTest            IDNameTest.cpp)
+cm_example_project("DataType" IDObjectManagerTest   IDObjectManagerTest.cpp)
+
+cm_example_project("DataType/ActiveManager" 1_ActiveIDManagerTest           ActiveIDManagerTest.cpp)
+cm_example_project("DataType/ActiveManager" 2_ActiveMemoryBlockManagerTest  ActiveMemoryBlockManagerTest.cpp)
+cm_example_project("DataType/ActiveManager" 3_ActiveDataManagerTest         ActiveDataManagerTest.cpp)
+
+add_subdirectory(ram)
+add_subdirectory(collection)
