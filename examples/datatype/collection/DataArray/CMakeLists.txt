@@ -9,6 +9,10 @@
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
+cm_example_project("DataType/Collection/DataArray" DataArrayTest          DataArrayTest.cpp)
+cm_example_project("DataType/Collection/DataArray" DataArrayTestEnhanced  DataArrayTestEnhanced.cpp)
+cm_example_project("DataType/Collection/DataArray" DataArrayBugDemo       DataArrayBugDemo.cpp)
+
 # 综合功能测试
 cm_example_project("DataType/Collection/DataArray" DataArrayComprehensiveTest  ComprehensiveTest.cpp)
 
