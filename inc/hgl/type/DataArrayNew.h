@@ -298,9 +298,6 @@ public:
         if(start + delete_count > this->count)
             delete_count = this->count - start;
 
-        // 析构被删除的对象
-        destroy_range<T>(this->items + start, delete_count);
-
         // 将后续元素前移
         for(int64 i = start + delete_count; i < this->count; ++i)
         {
@@ -308,7 +305,6 @@ public:
         }
 
         this->count -= delete_count;
-        destroy_range<T>(this->items + this->count, delete_count);
 
         return true;
     }
@@ -322,15 +318,12 @@ public:
         if(start + delete_count > this->count)
             delete_count = this->count - start;
 
-        destroy_range<T>(this->items + start, delete_count);
-
         for(int64 i = start + delete_count; i < this->count; ++i)
         {
             this->items[i - delete_count] = std::move(this->items[i]);
         }
 
         this->count -= delete_count;
-        destroy_range<T>(this->items + this->count, delete_count);
 
         return true;
     }
@@ -351,26 +344,13 @@ public:
             {
                 int64 src = pos + i;
                 int64 dst = pos + data_number + i;
-
-                if(dst >= this->count)
-                {
-                    new (this->items + dst) T(std::move(this->items[src]));
-                    this->items[src].~T();
-                }
-                else
-                {
-                    this->items[dst] = std::move(this->items[src]);
-                }
+                this->items[dst] = std::move(this->items[src]);
             }
         }
 
         for(int64 i = 0; i < data_number; ++i)
         {
-            int64 idx = pos + i;
-            if(idx < this->count)
-                this->items[idx] = data[i];
-            else
-                new (this->items + idx) T(data[i]);
+            this->items[pos + i] = data[i];
         }
 
         this->count += data_number;
@@ -614,15 +594,12 @@ public:
         if(start + delete_count > this->count)
             delete_count = this->count - start;
 
-        destroy_range<T>(this->items + start, delete_count);
-
         for(int64 i = start + delete_count; i < this->count; ++i)
         {
             this->items[i - delete_count] = std::move(this->items[i]);
         }
 
         this->count -= delete_count;
-        destroy_range<T>(this->items + this->count, delete_count);
 
         return true;
     }
@@ -643,26 +620,13 @@ public:
             {
                 int64 src = pos + i;
                 int64 dst = pos + data_number + i;
-
-                if(dst >= this->count)
-                {
-                    new (this->items + dst) T(std::move(this->items[src]));
-                    this->items[src].~T();
-                }
-                else
-                {
-                    this->items[dst] = std::move(this->items[src]);
-                }
+                this->items[dst] = std::move(this->items[src]);
             }
         }
 
         for(int64 i = 0; i < data_number; ++i)
         {
-            int64 idx = pos + i;
-            if(idx < this->count)
-                this->items[idx] = data[i];
-            else
-                new (this->items + idx) T(data[i]);
+            this->items[pos + i] = data[i];
         }
 
         this->count += data_number;
