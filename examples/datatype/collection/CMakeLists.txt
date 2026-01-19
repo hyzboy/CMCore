@@ -11,6 +11,7 @@ cm_example_project("DataType/Collection" Move734Test            Move734Test.cpp)
 cm_example_project("DataType/Collection" FixVerificationTest    FixVerificationTest.cpp)
 
 add_subdirectory(stack)
+add_subdirectory(DataArray)
 
 cm_example_project("DataType/Collection" QueueTest              QueueTest.cpp)
 cm_example_project("DataType/Collection" PoolTest               PoolTest.cpp)
