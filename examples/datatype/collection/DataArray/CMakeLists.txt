@@ -13,7 +13,6 @@ cm_example_project("DataType/Collection/DataArray" DataArrayNewTest          Dat
 cm_example_project("DataType/Collection/DataArray" DataArrayTest          DataArrayTest.cpp)
 cm_example_project("DataType/Collection/DataArray" DataArrayTestEnhanced  DataArrayTestEnhanced.cpp)
 cm_example_project("DataType/Collection/DataArray" DataArrayBugDemo       DataArrayBugDemo.cpp)
-cm_example_project("DataType/Collection/DataArray" ArrayRearrangeHelperTest ArrayRearrangeHelperTest.cpp)
 
 # 综合功能测试
 cm_example_project("DataType/Collection/DataArray" DataArrayComprehensiveTest  ComprehensiveTest.cpp)
