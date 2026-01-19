@@ -1,13 +1,13 @@
 /**
- * DataArray 边界案例和性能测试
+ * DataArray Boundary Cases and Performance Testing
  * 
- * 本测试覆盖边界条件和特殊情况：
- * 1. 空数组操作
- * 2. 单元素数组操作
- * 3. 大规模数据操作
- * 4. 边界索引操作
- * 5. 内存重叠情况
- * 6. 性能基准测试
+ * This test covers boundary conditions and special cases:
+ * 1. Empty array operations
+ * 2. Single element array operations
+ * 3. Large-scale data operations
+ * 4. Boundary index operations
+ * 5. Memory overlap scenarios
+ * 6. Performance benchmark testing
  */
 
 #include<hgl/type/DataArray.h>
@@ -20,7 +20,7 @@
 using namespace hgl;
 
 // ============================================================================
-// 测试辅助工具
+// Test Helper Tools
 // ============================================================================
 
 #define TEST_ASSERT(condition, message) \
@@ -47,125 +47,125 @@ void print_array(const DataArray<T>& arr, const char* label, int max_print = 10)
 }
 
 // ============================================================================
-// 测试用例 1: 空数组边界情况
+// Test Case 1: Empty Array Boundary
 // ============================================================================
 
 bool test_empty_array_boundary()
 {
-    std::cout << "\n【测试 1: 空数组边界情况】" << std::endl;
+    std::cout << "\n[Test 1: Empty Array Boundary]" << std::endl;
     
     DataArray<int> arr;
     
-    // 在空数组上执行操作
-    TEST_ASSERT(arr.IsEmpty(), "新建数组应为空");
-    TEST_ASSERT(arr.GetCount() == 0, "空数组计数为0");
-    TEST_ASSERT(arr.last() == nullptr, "空数组last()应返回nullptr");
-    TEST_ASSERT(arr.At(0) == nullptr, "At(0)在空数组上应返回nullptr");
+    // Operations on empty array
+    TEST_ASSERT(arr.IsEmpty(), "new array should be empty");
+    TEST_ASSERT(arr.GetCount() == 0, "empty array count should be 0");
+    TEST_ASSERT(arr.last() == nullptr, "last() on empty array should return nullptr");
+    TEST_ASSERT(arr.At(0) == nullptr, "At(0) on empty array should return nullptr");
     
-    // 查找不应崩溃
-    TEST_ASSERT(arr.Find(999) < 0, "在空数组中查找应返回-1");
+    // Find should not crash
+    TEST_ASSERT(arr.Find(999) < 0, "find in empty array should return -1");
     
-    // 清空空数组
+    // Clear empty array
     arr.Clear();
-    TEST_ASSERT(arr.GetCount() == 0, "清空空数组后应仍为空");
+    TEST_ASSERT(arr.GetCount() == 0, "after clear, array should still be empty");
     
-    // 释放空数组
+    // Free empty array
     arr.Free();
-    TEST_ASSERT(arr.GetCount() == 0, "释放空数组后应仍为空");
+    TEST_ASSERT(arr.GetCount() == 0, "after free, array should still be empty");
     
-    // Zero空数组不应崩溃
+    // Zero empty array should not crash
     arr.Zero();
     
     return true;
 }
 
 // ============================================================================
-// 测试用例 2: 单元素数组
+// Test Case 2: Single Element Array
 // ============================================================================
 
 bool test_single_element_array()
 {
-    std::cout << "\n【测试 2: 单元素数组】" << std::endl;
+    std::cout << "\n[Test 2: Single Element Array]" << std::endl;
     
     DataArray<int> arr;
     arr.Append(42);
     
-    TEST_ASSERT(arr.GetCount() == 1, "单元素数组计数为1");
-    TEST_ASSERT(arr[0] == 42, "元素值应正确");
-    TEST_ASSERT(arr.last() != nullptr, "last()应指向该元素");
-    TEST_ASSERT(*arr.last() == 42, "last()值应正确");
+    TEST_ASSERT(arr.GetCount() == 1, "single element array count should be 1");
+    TEST_ASSERT(arr[0] == 42, "element value should be correct");
+    TEST_ASSERT(arr.last() != nullptr, "last() should point to the element");
+    TEST_ASSERT(*arr.last() == 42, "last() value should be correct");
     
-    TEST_ASSERT(arr.Find(42) == 0, "Find应找到该元素");
-    TEST_ASSERT(arr.At(0) != nullptr, "At(0)应返回有效指针");
+    TEST_ASSERT(arr.Find(42) == 0, "Find should locate the element");
+    TEST_ASSERT(arr.At(0) != nullptr, "At(0) should return valid pointer");
     
-    // 删除唯一的元素
+    // Delete the only element
     arr.Delete(0);
-    TEST_ASSERT(arr.GetCount() == 0, "删除后应为空");
+    TEST_ASSERT(arr.GetCount() == 0, "after delete, should be empty");
     
     return true;
 }
 
 // ============================================================================
-// 测试用例 3: 边界索引操作
+// Test Case 3: Boundary Index Operations
 // ============================================================================
 
 bool test_boundary_index_operations()
 {
-    std::cout << "\n【测试 3: 边界索引操作】" << std::endl;
+    std::cout << "\n[Test 3: Boundary Index Operations]" << std::endl;
     
     DataArray<int> arr;
     arr.Resize(10);
     for (int i = 0; i < 10; i++)
         arr[i] = i;
     
-    // 访问第一个元素
-    TEST_ASSERT(arr.At(0) != nullptr, "At(0)应有效");
-    TEST_ASSERT(*arr.At(0) == 0, "第一个元素应正确");
+    // Access first element
+    TEST_ASSERT(arr.At(0) != nullptr, "At(0) should be valid");
+    TEST_ASSERT(*arr.At(0) == 0, "first element should be correct");
     
-    // 访问最后一个元素
-    TEST_ASSERT(arr.At(9) != nullptr, "At(9)应有效");
-    TEST_ASSERT(*arr.At(9) == 9, "最后一个元素应正确");
+    // Access last element
+    TEST_ASSERT(arr.At(9) != nullptr, "At(9) should be valid");
+    TEST_ASSERT(*arr.At(9) == 9, "last element should be correct");
     
-    // 越界访问
-    TEST_ASSERT(arr.At(-1) == nullptr, "At(-1)应返回nullptr");
-    TEST_ASSERT(arr.At(10) == nullptr, "At(10)应返回nullptr");
-    TEST_ASSERT(arr.At(1000) == nullptr, "At(1000)应返回nullptr");
+    // Out of bounds access
+    TEST_ASSERT(arr.At(-1) == nullptr, "At(-1) should return nullptr");
+    TEST_ASSERT(arr.At(10) == nullptr, "At(10) should return nullptr");
+    TEST_ASSERT(arr.At(1000) == nullptr, "At(1000) should return nullptr");
     
-    // 删除第一个元素
+    // Delete first element
     arr.Delete(0);
-    TEST_ASSERT(arr.GetCount() == 9, "删除第一个元素后计数为9");
+    TEST_ASSERT(arr.GetCount() == 9, "after delete first, count should be 9");
     
-    // 删除最后一个元素
+    // Delete last element
     arr.Delete(8);
-    TEST_ASSERT(arr.GetCount() == 8, "删除最后一个元素后计数为8");
+    TEST_ASSERT(arr.GetCount() == 8, "after delete last, count should be 8");
     
-    // 插入到边界
+    // Insert at boundary
     int data[] = {99};
     arr.Insert(0, data, 1);
-    TEST_ASSERT(arr[0] == 99, "在开始处插入应成功");
+    TEST_ASSERT(arr[0] == 99, "insert at start should succeed");
     
     return true;
 }
 
 // ============================================================================
-// 测试用例 4: 大规模数据操作
+// Test Case 4: Large Scale Operations
 // ============================================================================
 
 bool test_large_scale_operations()
 {
-    std::cout << "\n【测试 4: 大规模数据操作 (10000 elements)】" << std::endl;
+    std::cout << "\n[Test 4: Large Scale Operations (10000 elements)]" << std::endl;
     
     DataArray<int> arr;
     
-    // 添加大量元素
-    std::cout << "  添加10000个元素..." << std::endl;
+    // Add large amount of elements
+    std::cout << "  Adding 10000 elements..." << std::endl;
     for (int i = 0; i < 10000; i++)
         arr.Append(i);
     
-    TEST_ASSERT(arr.GetCount() == 10000, "应有10000个元素");
+    TEST_ASSERT(arr.GetCount() == 10000, "should have 10000 elements");
     
-    // 验证数据完整性
-    std::cout << "  验证数据完整性..." << std::endl;
+    // Verify data integrity
+    std::cout << "  Verifying data integrity..." << std::endl;
     bool data_valid = true;
     for (int i = 0; i < 10000; i++)
     {
@@ -175,15 +175,15 @@ bool test_large_scale_operations()
             break;
         }
     }
-    TEST_ASSERT(data_valid, "所有数据应正确");
+    TEST_ASSERT(data_valid, "all data should be correct");
     
-    // 删除一半
-    std::cout << "  删除5000个元素..." << std::endl;
+    // Delete half
+    std::cout << "  Deleting 5000 elements..." << std::endl;
     arr.Delete(0, 5000);
-    TEST_ASSERT(arr.GetCount() == 5000, "应有5000个元素");
+    TEST_ASSERT(arr.GetCount() == 5000, "should have 5000 elements");
     
-    // 验证删除后的数据
-    std::cout << "  验证删除后的数据..." << std::endl;
+    // Verify data after deletion
+    std::cout << "  Verifying data after deletion..." << std::endl;
     for (int i = 0; i < (int)arr.GetCount(); i++)
     {
         if (arr[i] >= 5000)
@@ -194,162 +194,162 @@ bool test_large_scale_operations()
 }
 
 // ============================================================================
-// 测试用例 5: Reserve的多次操作
+// Test Case 5: Multiple Reserve Operations
 // ============================================================================
 
 bool test_multiple_reserve_operations()
 {
-    std::cout << "\n【测试 5: 多次Reserve操作】" << std::endl;
+    std::cout << "\n[Test 5: Multiple Reserve Operations]" << std::endl;
     
     DataArray<int> arr;
     
-    // 首次预留
+    // First reserve
     arr.Reserve(100);
     int64 alloc1 = arr.GetAllocCount();
-    TEST_ASSERT(alloc1 >= 100, "首次预留应>=100");
+    TEST_ASSERT(alloc1 >= 100, "first reserve should be >= 100");
     
-    // 多次扩展
+    // Multiple expansions
     for (int i = 0; i < 5; i++)
     {
         arr.Reserve(alloc1 * 2);
         int64 alloc_new = arr.GetAllocCount();
-        TEST_ASSERT(alloc_new >= alloc1, "预留应单调递增");
+        TEST_ASSERT(alloc_new >= alloc1, "reserve should be monotonically increasing");
         alloc1 = alloc_new;
     }
     
-    // 数据应仍为空（Reserve不改变count）
-    TEST_ASSERT(arr.GetCount() == 0, "Reserve不应改变count");
+    // Data should still be empty (Reserve does not change count)
+    TEST_ASSERT(arr.GetCount() == 0, "Reserve should not change count");
     
-    // 现在添加数据应快速
+    // Now adding data should be fast
     for (int i = 0; i < 100; i++)
         arr.Append(i);
     
-    TEST_ASSERT(arr.GetCount() == 100, "应成功添加100个元素");
+    TEST_ASSERT(arr.GetCount() == 100, "should successfully add 100 elements");
     
     return true;
 }
 
 // ============================================================================
-// 测试用例 6: 连续Delete操作
+// Test Case 6: Consecutive Delete Operations
 // ============================================================================
 
 bool test_consecutive_deletes()
 {
-    std::cout << "\n【测试 6: 连续Delete操作】" << std::endl;
+    std::cout << "\n[Test 6: Consecutive Delete Operations]" << std::endl;
     
     DataArray<int> arr;
     arr.Resize(20);
     for (int i = 0; i < 20; i++)
         arr[i] = i;
     
-    // 多次删除同一位置
+    // Delete from same position multiple times
     while (arr.GetCount() > 0)
     {
         arr.Delete(0);
-        // 验证剩余数据有效
+        // Verify remaining data is valid
         for (int64 i = 0; i < arr.GetCount(); i++)
             if (arr[i] < 0 || arr[i] >= 20)
                 return false;
     }
     
-    TEST_ASSERT(arr.GetCount() == 0, "所有元素应被删除");
+    TEST_ASSERT(arr.GetCount() == 0, "all elements should be deleted");
     
     return true;
 }
 
 // ============================================================================
-// 测试用例 7: 连续DeleteShift操作
+// Test Case 7: Consecutive DeleteShift Operations
 // ============================================================================
 
 bool test_consecutive_delete_shifts()
 {
-    std::cout << "\n【测试 7: 连续DeleteShift操作】" << std::endl;
+    std::cout << "\n[Test 7: Consecutive DeleteShift Operations]" << std::endl;
     
     DataArray<int> arr;
     arr.Resize(10);
     for (int i = 0; i < 10; i++)
         arr[i] = i;
     
-    // 从后向前删除（避免索引变化问题）
+    // Delete from back to front (avoid index shift issues)
     while (arr.GetCount() > 0)
     {
         arr.DeleteShift(0);
     }
     
-    TEST_ASSERT(arr.GetCount() == 0, "所有元素应被删除");
+    TEST_ASSERT(arr.GetCount() == 0, "all elements should be deleted");
     
     return true;
 }
 
 // ============================================================================
-// 测试用例 8: 随机访问模式
+// Test Case 8: Random Access Pattern
 // ============================================================================
 
 bool test_random_access_pattern()
 {
-    std::cout << "\n【测试 8: 随机访问模式】" << std::endl;
+    std::cout << "\n[Test 8: Random Access Pattern]" << std::endl;
     
     DataArray<int> arr;
     
-    // 创建数组
+    // Create array
     for (int i = 0; i < 100; i++)
         arr.Append(i * 10);
     
-    // 随机访问验证
-    TEST_ASSERT(*arr.At(0) == 0, "At(0)应正确");
-    TEST_ASSERT(*arr.At(50) == 500, "At(50)应正确");
-    TEST_ASSERT(*arr.At(99) == 990, "At(99)应正确");
+    // Random access verification
+    TEST_ASSERT(*arr.At(0) == 0, "At(0) should be correct");
+    TEST_ASSERT(*arr.At(50) == 500, "At(50) should be correct");
+    TEST_ASSERT(*arr.At(99) == 990, "At(99) should be correct");
     
-    // 使用[]访问
-    TEST_ASSERT(arr[0] == 0, "operator[0]应正确");
-    TEST_ASSERT(arr[50] == 500, "operator[50]应正确");
-    TEST_ASSERT(arr[99] == 990, "operator[99]应正确");
+    // Using [] access
+    TEST_ASSERT(arr[0] == 0, "operator[0] should be correct");
+    TEST_ASSERT(arr[50] == 500, "operator[50] should be correct");
+    TEST_ASSERT(arr[99] == 990, "operator[99] should be correct");
     
     return true;
 }
 
 // ============================================================================
-// 测试用例 9: 内存重叠情况 (Move)
+// Test Case 9: Memory Overlap Scenarios (Move)
 // ============================================================================
 
 bool test_memory_overlap_scenarios()
 {
-    std::cout << "\n【测试 9: 内存重叠情况 (Move)】" << std::endl;
+    std::cout << "\n[Test 9: Memory Overlap Scenarios (Move)]" << std::endl;
     
     DataArray<int> arr;
     arr.Resize(10);
     for (int i = 0; i < 10; i++)
         arr[i] = i;
     
-    // 源区间和目标区间重叠（向后移动）
-    std::cout << "  重叠移动 (向后): Move(6, 2, 3)" << std::endl;
+    // Source and target ranges overlap (move backward)
+    std::cout << "  Overlapping move (backward): Move(6, 2, 3)" << std::endl;
     arr.Move(6, 2, 3);
-    // 结果：0,1,4,5,6,7,2,3,8,9
-    TEST_ASSERT(arr.GetCount() == 10, "元素数应保持");
+    // Result: 0,1,4,5,6,7,2,3,8,9
+    TEST_ASSERT(arr.GetCount() == 10, "element count should remain");
     
-    // 源区间和目标区间重叠（向前移动）
+    // Source and target ranges overlap (move forward)
     arr.Resize(10);
     for (int i = 0; i < 10; i++)
         arr[i] = i;
     
-    std::cout << "  重叠移动 (向前): Move(2, 6, 3)" << std::endl;
+    std::cout << "  Overlapping move (forward): Move(2, 6, 3)" << std::endl;
     arr.Move(2, 6, 3);
-    TEST_ASSERT(arr.GetCount() == 10, "元素数应保持");
+    TEST_ASSERT(arr.GetCount() == 10, "element count should remain");
     
     return true;
 }
 
 // ============================================================================
-// 性能基准测试
+// Performance Benchmark Testing
 // ============================================================================
 
 bool test_performance_benchmarks()
 {
-    std::cout << "\n【性能基准测试】" << std::endl;
+    std::cout << "\n[Performance Benchmark Testing]" << std::endl;
     
-    // 基准 1: Append性能
+    // Benchmark 1: Append performance
     {
-        std::cout << "  基准 1: Append 100000个元素..." << std::endl;
+        std::cout << "  Benchmark 1: Append 100000 elements..." << std::endl;
         auto start = std::chrono::high_resolution_clock::now();
         
         DataArray<int> arr;
@@ -359,15 +359,15 @@ bool test_performance_benchmarks()
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
         
-        std::cout << "    耗时: " << duration.count() << " ms" << std::endl;
-        std::cout << "    速率: " << (100000.0 / duration.count() * 1000) << " ops/sec" << std::endl;
+        std::cout << "    Time: " << duration.count() << " ms" << std::endl;
+        std::cout << "    Rate: " << (100000.0 / duration.count() * 1000) << " ops/sec" << std::endl;
         
-        TEST_ASSERT(arr.GetCount() == 100000, "应添加100000个元素");
+        TEST_ASSERT(arr.GetCount() == 100000, "should add 100000 elements");
     }
     
-    // 基准 2: Reserve + Append性能
+    // Benchmark 2: Reserve + Append performance
     {
-        std::cout << "  基准 2: Reserve + Append 100000个元素..." << std::endl;
+        std::cout << "  Benchmark 2: Reserve + Append 100000 elements..." << std::endl;
         auto start = std::chrono::high_resolution_clock::now();
         
         DataArray<int> arr;
@@ -378,13 +378,13 @@ bool test_performance_benchmarks()
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
         
-        std::cout << "    耗时: " << duration.count() << " ms" << std::endl;
-        std::cout << "    速率: " << (100000.0 / duration.count() * 1000) << " ops/sec" << std::endl;
+        std::cout << "    Time: " << duration.count() << " ms" << std::endl;
+        std::cout << "    Rate: " << (100000.0 / duration.count() * 1000) << " ops/sec" << std::endl;
     }
     
-    // 基准 3: 随机访问性能
+    // Benchmark 3: Random access performance
     {
-        std::cout << "  基准 3: 随机访问 1000000次..." << std::endl;
+        std::cout << "  Benchmark 3: Random access 1000000 times..." << std::endl;
         
         DataArray<int> arr;
         for (int i = 0; i < 1000; i++)
@@ -399,14 +399,14 @@ bool test_performance_benchmarks()
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
         
-        std::cout << "    耗时: " << duration.count() << " ms" << std::endl;
-        std::cout << "    速率: " << (1000000.0 / duration.count() * 1000) << " ops/sec" << std::endl;
-        std::cout << "    (sum=" << sum << " - 防止编译器优化)" << std::endl;
+        std::cout << "    Time: " << duration.count() << " ms" << std::endl;
+        std::cout << "    Rate: " << (1000000.0 / duration.count() * 1000) << " ops/sec" << std::endl;
+        std::cout << "    (sum=" << sum << " - prevent compiler optimization)" << std::endl;
     }
     
-    // 基准 4: Delete性能
+    // Benchmark 4: Delete performance
     {
-        std::cout << "  基准 4: Delete 操作..." << std::endl;
+        std::cout << "  Benchmark 4: Delete operations..." << std::endl;
         
         DataArray<int> arr;
         for (int i = 0; i < 10000; i++)
@@ -420,49 +420,49 @@ bool test_performance_benchmarks()
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
         
-        std::cout << "    删除10000个元素耗时: " << duration.count() << " ms" << std::endl;
+        std::cout << "    Time to delete 10000 elements: " << duration.count() << " ms" << std::endl;
     }
     
     return true;
 }
 
 // ============================================================================
-// 测试用例 10: 比较不同大小的数组
+// Test Case 10: Array Comparisons
 // ============================================================================
 
 bool test_array_comparisons()
 {
-    std::cout << "\n【测试 10: 数组比较】" << std::endl;
+    std::cout << "\n[Test 10: Array Comparisons]" << std::endl;
     
     DataArray<int> arr1, arr2, arr3;
     
-    // 相同内容不同对象
+    // Same content, different objects
     for (int i = 0; i < 5; i++)
     {
         arr1.Append(i * 10);
         arr2.Append(i * 10);
     }
-    TEST_ASSERT(arr1.compare(arr2) == 0, "内容相同的数组应相等");
+    TEST_ASSERT(arr1.compare(arr2) == 0, "arrays with same content should be equal");
     
-    // 不同大小
+    // Different sizes
     arr3.Append(100);
     int cmp = arr1.compare(arr3);
-    TEST_ASSERT(cmp > 0, "较大的数组应比较大");
+    TEST_ASSERT(cmp > 0, "larger array should compare greater");
     
-    // 相同大小不同内容
+    // Same size, different content
     DataArray<int> arr4, arr5;
     arr4.Append(1);
     arr4.Append(2);
     arr5.Append(1);
     arr5.Append(3);
     int cmp2 = arr4.compare(arr5);
-    TEST_ASSERT(cmp2 != 0, "不同内容应不相等");
+    TEST_ASSERT(cmp2 != 0, "arrays with different content should not be equal");
     
     return true;
 }
 
 // ============================================================================
-// 主测试函数
+// Main Test Function
 // ============================================================================
 
 int main(int argc, char** argv)
@@ -470,7 +470,7 @@ int main(int argc, char** argv)
     int passed = 0, failed = 0;
     
     std::cout << "========================================" << std::endl;
-    std::cout << "  DataArray 边界和性能测试" << std::endl;
+    std::cout << "  DataArray Boundary and Performance Test" << std::endl;
     std::cout << "========================================" << std::endl;
     
     if (test_empty_array_boundary()) { passed++; } else { failed++; }
@@ -485,13 +485,13 @@ int main(int argc, char** argv)
     if (test_performance_benchmarks()) { passed++; } else { failed++; }
     if (test_array_comparisons()) { passed++; } else { failed++; }
     
-    // 汇总测试结果
+    // Summary of test results
     std::cout << "\n========================================" << std::endl;
-    std::cout << "  测试结果汇总" << std::endl;
+    std::cout << "  Test Results Summary" << std::endl;
     std::cout << "========================================" << std::endl;
-    std::cout << "  总测试数: " << (passed + failed) << std::endl;
-    std::cout << "  通过: " << passed << std::endl;
-    std::cout << "  失败: " << failed << std::endl;
+    std::cout << "  Total tests: " << (passed + failed) << std::endl;
+    std::cout << "  Passed: " << passed << std::endl;
+    std::cout << "  Failed: " << failed << std::endl;
     std::cout << "========================================" << std::endl;
     
     return (failed == 0) ? 0 : 1;
