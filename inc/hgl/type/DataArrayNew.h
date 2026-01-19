@@ -4,6 +4,7 @@
 #include<hgl/type/ArrayRearrangeHelper.h>
 #include<hgl/type/ArrayItemProcess.h>
 #include<type_traits>
+#include<utility>
 
 namespace hgl
 {
@@ -31,6 +32,7 @@ namespace hgl
         int64 alloc_count;
 
     public:
+        DataArrayBase():items(nullptr),count(0),alloc_count(0){}
         // Query methods
         int64   GetCount()       const { return count; }
         int64   GetAllocCount()  const { return alloc_count; }
@@ -178,21 +180,11 @@ namespace hgl
 
             result_list.Clear();
             result_list.Reserve(local_count);
-
-            int64 result = 0;
-            T *p = result_list.items;
-
-            for(T &sp : *this)  // 修改：从 const T *sp 改为 T *sp
+            for(T &sp : *this)
             {
                 if(!without_list.Contains(sp))
-                {
-                    *p = sp;
-                    ++p;
-                    ++result;
-                }
+                    result_list.Append(sp);
             }
-
-            result_list.Resize(result);
         }
 
         virtual ~DataArrayBase() {}
@@ -260,14 +252,14 @@ public:
         if(size <= 0)
         {
             Free();
+            count = 0;
             return 0;
         }
 
         if(size > this->alloc_count)
             Reserve(size);
 
-        if(size < this->count)
-            this->count = size;
+        this->count = size;
 
         return this->count;
     }
@@ -280,6 +272,7 @@ public:
             this->items = nullptr;
             this->alloc_count = 0;
         }
+        this->count = 0;
     }
 
     virtual void Clear() override
@@ -305,9 +298,17 @@ public:
         if(start + delete_count > this->count)
             delete_count = this->count - start;
 
-        mem_move(this->items + start, this->items + start + delete_count, this->count - (start + delete_count));
+        // 析构被删除的对象
+        destroy_range<T>(this->items + start, delete_count);
+
+        // 将后续元素前移
+        for(int64 i = start + delete_count; i < this->count; ++i)
+        {
+            this->items[i - delete_count] = std::move(this->items[i]);
+        }
 
         this->count -= delete_count;
+        destroy_range<T>(this->items + this->count, delete_count);
 
         return true;
     }
@@ -321,9 +322,15 @@ public:
         if(start + delete_count > this->count)
             delete_count = this->count - start;
 
-        mem_move(this->items + start, this->items + start + delete_count, this->count - (start + delete_count));
+        destroy_range<T>(this->items + start, delete_count);
+
+        for(int64 i = start + delete_count; i < this->count; ++i)
+        {
+            this->items[i - delete_count] = std::move(this->items[i]);
+        }
 
         this->count -= delete_count;
+        destroy_range<T>(this->items + this->count, delete_count);
 
         return true;
     }
@@ -338,9 +345,33 @@ public:
             Reserve(this->count + data_number);
 
         if(pos < this->count)
-            mem_move(this->items + pos + data_number, this->items + pos, this->count - pos);
+        {
+            int64 move_count = this->count - pos;
+            for(int64 i = move_count - 1; i >= 0; --i)
+            {
+                int64 src = pos + i;
+                int64 dst = pos + data_number + i;
 
-        mem_copy(this->items + pos, data, data_number);
+                if(dst >= this->count)
+                {
+                    new (this->items + dst) T(std::move(this->items[src]));
+                    this->items[src].~T();
+                }
+                else
+                {
+                    this->items[dst] = std::move(this->items[src]);
+                }
+            }
+        }
+
+        for(int64 i = 0; i < data_number; ++i)
+        {
+            int64 idx = pos + i;
+            if(idx < this->count)
+                this->items[idx] = data[i];
+            else
+                new (this->items + idx) T(data[i]);
+        }
 
         this->count += data_number;
 
@@ -482,23 +513,20 @@ public:
     {
         if(size <= 0) return false;
 
-        if(size != this->alloc_count)
-        {
-            T *new_items = hgl_align_malloc<T>(size);
+        if(size <= this->alloc_count)
+            return true;
 
-            if(this->items)
-            {
-                if(this->count > size) this->count = size;
+        const int64 new_alloc = power_to_2(size);
+        T *new_items = hgl_align_malloc<T>(new_alloc);
 
-                mem_copy(new_items, this->items, this->count);
+        // 移动构造已有元素到新缓冲区
+        move_construct_range(new_items, this->items, this->count);
 
-                hgl_free(this->items);
-            }
+        destroy_range<T>(this->items, this->count);
+        hgl_free(this->items);
 
-            this->items = new_items;
-            this->alloc_count = size;
-        }
-
+        this->items = new_items;
+        this->alloc_count = new_alloc;
         return true;
     }
 
@@ -513,8 +541,17 @@ public:
         if(size > this->alloc_count)
             Reserve(size);
 
-        if(size < this->count)
-            this->count = size;
+        if(size > this->count)
+        {
+            for(int64 i = this->count; i < size; ++i)
+                new (this->items + i) T();
+        }
+        else if(size < this->count)
+        {
+            destroy_range<T>(this->items, size, this->count);
+        }
+
+        this->count = size;
 
         return this->count;
     }
@@ -523,23 +560,26 @@ public:
     {
         if(this->items)
         {
+            destroy_range<T>(this->items, this->count);
             hgl_free(this->items);
             this->items = nullptr;
             this->alloc_count = 0;
         }
+        this->count = 0;
     }
 
     virtual void Clear() override
     {
+        destroy_range<T>(this->items, this->count);
         this->count = 0;
     }
 
     virtual void Append(const T &obj) override
     {
         if(this->count >= this->alloc_count)
-            Reserve(this->alloc_count + 1);
+            Reserve(this->count + 1);
 
-        this->items[this->count] = obj;
+        new (this->items + this->count) T(obj);
         ++this->count;
     }
 
@@ -552,9 +592,15 @@ public:
         if(start + delete_count > this->count)
             delete_count = this->count - start;
 
-        mem_move(this->items + start, this->items + start + delete_count, this->count - (start + delete_count));
+        destroy_range<T>(this->items + start, delete_count);
+
+        for(int64 i = start + delete_count; i < this->count; ++i)
+        {
+            this->items[i - delete_count] = std::move(this->items[i]);
+        }
 
         this->count -= delete_count;
+        destroy_range<T>(this->items + this->count, delete_count);
 
         return true;
     }
@@ -568,9 +614,15 @@ public:
         if(start + delete_count > this->count)
             delete_count = this->count - start;
 
-        mem_move(this->items + start, this->items + start + delete_count, this->count - (start + delete_count));
+        destroy_range<T>(this->items + start, delete_count);
+
+        for(int64 i = start + delete_count; i < this->count; ++i)
+        {
+            this->items[i - delete_count] = std::move(this->items[i]);
+        }
 
         this->count -= delete_count;
+        destroy_range<T>(this->items + this->count, delete_count);
 
         return true;
     }
@@ -585,9 +637,33 @@ public:
             Reserve(this->count + data_number);
 
         if(pos < this->count)
-            mem_move(this->items + pos + data_number, this->items + pos, this->count - pos);
+        {
+            int64 move_count = this->count - pos;
+            for(int64 i = move_count - 1; i >= 0; --i)
+            {
+                int64 src = pos + i;
+                int64 dst = pos + data_number + i;
 
-        mem_copy(this->items + pos, data, data_number);
+                if(dst >= this->count)
+                {
+                    new (this->items + dst) T(std::move(this->items[src]));
+                    this->items[src].~T();
+                }
+                else
+                {
+                    this->items[dst] = std::move(this->items[src]);
+                }
+            }
+        }
+
+        for(int64 i = 0; i < data_number; ++i)
+        {
+            int64 idx = pos + i;
+            if(idx < this->count)
+                this->items[idx] = data[i];
+            else
+                new (this->items + idx) T(data[i]);
+        }
 
         this->count += data_number;
 
@@ -605,6 +681,7 @@ public:
     virtual void Move(int64 new_index, int64 old_index, int64 move_number = 1) override
     {
         if(!items) return;
+        if(count <= 0) return;
         if(new_index == old_index) return;
         if(old_index < 0 || old_index >= count) return;
 
@@ -690,6 +767,7 @@ public:
         }
         else
         {
+            destroy_range<T>(new_items, count);
             hgl_free(new_items);
         }
     }
