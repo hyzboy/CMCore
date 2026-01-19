@@ -11,7 +11,7 @@ namespace hgl
     // ============================================================================
     // 前置声明
     // ============================================================================
-    
+
     template<typename T> class DataArrayBase;
     template<typename T> class TrivialDataArrayImpl;
     template<typename T> class NonTrivialDataArrayImpl;
@@ -19,11 +19,11 @@ namespace hgl
     // ============================================================================
     // DataArrayBase - 公共接口和基础功能
     // ============================================================================
-    
+
     /**
      * 数据阵列基类 - 定义公共接口
      */
-    template<typename T> 
+    template<typename T>
     class DataArrayBase : public Comparator<DataArrayBase<T>>
     {
     protected:
@@ -50,7 +50,7 @@ namespace hgl
         // Element access
         T&      operator[](int64 n)       { return items[n]; }
         const T& operator[](int64 n) const { return items[n]; }
-        
+
         T*      At(int64 n) const
         {
             return (n < 0 || n >= count) ? nullptr : items + n;
@@ -77,7 +77,7 @@ namespace hgl
         // Search
         int64 Find(const T &data, const int64 start = 0, int64 find_count = -1) const
         {
-            if(!items || count <= 0 || start < 0 || start >= count) 
+            if(!items || count <= 0 || start < 0 || start >= count)
                 return -1;
 
             if(find_count < 0 || find_count > count - start)
@@ -211,7 +211,7 @@ public:
 
     // 构造函数（初始化成员变量）
     TrivialDataArrayImpl() : DataArrayBase<T>() {}
-    
+
     TrivialDataArrayImpl(int64 size) : DataArrayBase<T>()
     {
         if(size > 0)
@@ -477,7 +477,7 @@ public:
 
     // 构造函数（初始化成员变量）
     NonTrivialDataArrayImpl() : DataArrayBase<T>() {}
-    
+
     NonTrivialDataArrayImpl(int64 size) : DataArrayBase<T>()
     {
         if(size > 0)
@@ -610,25 +610,36 @@ public:
         if(data_number <= 0) return true;
         if(!data) return false;
 
-        if(this->count + data_number > this->alloc_count)
-            Reserve(this->count + data_number);
+        // 为了简化，总是用新缓冲区
+        const int64 new_alloc_count = power_to_2(this->count + data_number);
+        T *new_items = hgl_align_malloc<T>(new_alloc_count);
 
-        if(pos < this->count)
+        if(!new_items) return false;
+
+        // 前pos个元素
+        for(int64 i = 0; i < pos; ++i)
         {
-            int64 move_count = this->count - pos;
-            for(int64 i = move_count - 1; i >= 0; --i)
-            {
-                int64 src = pos + i;
-                int64 dst = pos + data_number + i;
-                this->items[dst] = std::move(this->items[src]);
-            }
+            new (new_items + i) T(this->items[i]);
         }
 
+        // 新数据
         for(int64 i = 0; i < data_number; ++i)
         {
-            this->items[pos + i] = data[i];
+            new (new_items + pos + i) T(data[i]);
         }
 
+        // 后续元素
+        for(int64 i = 0; i < this->count - pos; ++i)
+        {
+            new (new_items + pos + data_number + i) T(this->items[pos + i]);
+        }
+
+        // 析构和释放原缓冲
+        destroy_range<T>(this->items, this->count);
+        hgl_free(this->items);
+
+        this->items = new_items;
+        this->alloc_count = new_alloc_count;
         this->count += data_number;
 
         return true;
@@ -660,6 +671,8 @@ public:
         // Non-trivial 类型：需要小心处理对象生命周期
         const int64 new_alloc_count = power_to_2(count);
         T *new_items = hgl_align_malloc<T>(new_alloc_count);
+
+        if(!new_items) return;
 
         bool result = false;
 
@@ -731,7 +744,8 @@ public:
         }
         else
         {
-            destroy_range<T>(new_items, count);
+            // ArrayRearrange 已经在内部清理了失败情况下的对象
+            // 这里只需释放内存
             hgl_free(new_items);
         }
     }
@@ -745,11 +759,11 @@ namespace hgl
 {
     /**
      * 数据阵列 - 根据类型特征自动选择最优实现
-     * 
+     *
      * 编译时类型选择机制：
      * - Trivial 类型 → TrivialDataArrayImpl（高性能）
      * - Non-trivial 类型 → NonTrivialDataArrayImpl（完整支持）
-     * 
+     *
      * 示例：
      *   DataArray<int> arr1;           // 自动使用 TrivialDataArrayImpl
      *   DataArray<float> arr2;          // 自动使用 TrivialDataArrayImpl

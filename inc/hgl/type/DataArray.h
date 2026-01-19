@@ -784,11 +784,11 @@ namespace hgl
 
             T *p=result_list.items;
 
-            for(const T *sp:*this)
+            for(const T &sp:*this)
             {
-                if(!without_list.Contains(*sp))
+                if(!without_list.Contains(sp))
                 {
-                    *p=*sp;
+                    *p=sp;
                     ++p;
                     ++result;
                 }

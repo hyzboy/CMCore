@@ -20,7 +20,7 @@ void test_trivial_types()
     arr.Append(1);
     arr.Append(2);
     arr.Append(3);
-    
+
     std::cout << "Count: " << arr.GetCount() << std::endl;
     std::cout << "Elements: ";
     for(int i = 0; i < arr.GetCount(); i++)
@@ -89,7 +89,7 @@ void test_trivial_types()
 
     DataArray<int> result;
     arr3.WithoutList(result, without);
-    
+
     std::cout << "WithoutList result: ";
     for(int i = 0; i < result.GetCount(); i++)
         std::cout << result[i] << " ";
@@ -115,24 +115,38 @@ void test_non_trivial_types()
     arr.Resize(5);
     arr[3] = "C++";
     arr[4] = "Test";
-    
+
     std::cout << "After Resize and assign: ";
     for(int i = 0; i < arr.GetCount(); i++)
         std::cout << arr[i] << " ";
     std::cout << std::endl;
 
-    // Insert
+    // Insert - step by step
+    std::cout << "About to Insert..." << std::endl;
+    std::cout << "Current count: " << arr.GetCount() << ", alloc: " << arr.GetAllocCount() << std::endl;
+
+    std::cout << "Creating test array..." << std::endl;
     std::string insert_data[] = {"Insert1", "Insert2"};
-    arr.Insert(2, insert_data, 2);
-    
+    std::cout << "Test data created: " << insert_data[0] << ", " << insert_data[1] << std::endl;
+
+    std::cout << "Calling arr.Insert(2, insert_data, 2)..." << std::endl;
+    std::cout.flush();
+
+    bool insert_result = arr.Insert(2, insert_data, 2);
+
+    std::cout << "Insert returned: " << (insert_result ? "true" : "false") << std::endl;
+    std::cout.flush();
+
+    int64 count_after = arr.GetCount();
+    std::cout << "After Insert, count: " << count_after << std::endl;
     std::cout << "After Insert: ";
-    for(int i = 0; i < arr.GetCount(); i++)
+    for(int i = 0; i < count_after; i++)
         std::cout << arr[i] << " ";
     std::cout << std::endl;
 
     // Delete
     arr.DeleteShift(3, 2);
-    
+
     std::cout << "After DeleteShift: ";
     for(int i = 0; i < arr.GetCount(); i++)
         std::cout << arr[i] << " ";
@@ -163,7 +177,7 @@ void test_type_selection()
     DataArray<int> int_arr;
     DataArray<std::string> str_arr;
 
-    std::cout << "DataArray<int> uses: " 
+    std::cout << "DataArray<int> uses: "
               << (std::is_same_v<decltype(int_arr), TrivialDataArrayImpl<int>> ? "TrivialDataArrayImpl" : "NonTrivialDataArrayImpl")
               << std::endl;
 
@@ -194,6 +208,31 @@ void test_move_operation()
     std::cout << std::endl;
 }
 
+void test_string_move_operation()
+{
+    TEST_SECTION("String Move Operation Test");
+
+    DataArray<std::string> arr;
+    arr.Append("Apple");
+    arr.Append("Banana");
+    arr.Append("Cherry");
+    arr.Append("Date");
+    arr.Append("Elderberry");
+
+    std::cout << "Before Move: ";
+    for(int i = 0; i < arr.GetCount(); i++)
+        std::cout << arr[i] << " ";
+    std::cout << std::endl;
+
+    // Move elements from index 1 to index 3 (2 elements: Banana, Cherry)
+    arr.Move(3, 1, 2);
+
+    std::cout << "After Move(3, 1, 2): ";
+    for(int i = 0; i < arr.GetCount(); i++)
+        std::cout << arr[i] << " ";
+    std::cout << std::endl;
+}
+
 int main()
 {
     std::cout << "========================================" << std::endl;
@@ -206,6 +245,7 @@ int main()
         test_non_trivial_types();
         test_type_selection();
         test_move_operation();
+        test_string_move_operation();
 
         std::cout << "\n========================================" << std::endl;
         std::cout << "  All Tests Completed Successfully!" << std::endl;

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include<initializer_list>
+#include<type_traits>
 
 namespace hgl
 {
@@ -107,19 +108,33 @@ namespace hgl
 
             T *p=new_array;
             Field *f;
+            int64 constructed = 0;
 
-            for(int64 i=0;i<field_index;i++)
+            try
             {
-                if(*index<0||*index>=field_index)
-                    return(false);
+                for(int64 i=0;i<field_index;i++)
+                {
+                    if(*index<0||*index>=field_index)
+                        return(false);
 
-                f=field_list+(*index);
+                    f=field_list+(*index);
 
-                // 对于非平凡类型，需要使用移动构造而不是mem_copy
-                copy_construct_range<T>(p, old_array + f->start, f->count);
+                    // 对于非平凡类型，需要使用移动构造而不是mem_copy
+                    copy_construct_range<T>(p, old_array + f->start, f->count);
+                    constructed += f->count;
 
-                p+=f->count;
-                ++index;
+                    p+=f->count;
+                    ++index;
+                }
+            }
+            catch(...)
+            {
+                // 如果构造失败，析构已构造的对象
+                if(constructed > 0 && !std::is_trivially_destructible_v<T>)
+                {
+                    destroy_range<T>(new_array, constructed);
+                }
+                return(false);
             }
 
             return(true);
