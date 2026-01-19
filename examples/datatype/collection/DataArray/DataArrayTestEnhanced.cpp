@@ -13,6 +13,7 @@
 #include<iomanip>
 #include<string>
 #include<cstring>
+#include<type_traits>
 
 using namespace hgl;
 
@@ -35,85 +36,19 @@ struct Point2D
     }
 };
 
-// 带有动态内存的非平凡类
-class TrackedObject
-{
-public:
-    int id;
-    std::string data;
-    int* ref;
-
-    static int aliveCount;
-    static int totalCreated;
-    static int totalDestroyed;
-    static int copyCount;
-
-    TrackedObject() : id(0), data(""), ref(new int(0))
-    {
-        aliveCount++;
-        totalCreated++;
-        std::cout << "    [T" << id << "] Constructed (default)" << std::endl;
-    }
-
-    TrackedObject(int _id, const std::string& _data) 
-        : id(_id), data(_data), ref(new int(_id))
-    {
-        aliveCount++;
-        totalCreated++;
-        std::cout << "    [T" << id << "] Constructed (" << data << ")" << std::endl;
-    }
-
-    TrackedObject(const TrackedObject& other)
-        : id(other.id), data(other.data), ref(new int(*other.ref))
-    {
-        aliveCount++;
-        copyCount++;
-        std::cout << "    [T" << id << "] Copy constructed from T" << other.id << std::endl;
-    }
-
-    TrackedObject& operator=(const TrackedObject& other)
-    {
-        if (this != &other)
-        {
-            id = other.id;
-            data = other.data;
-            *ref = *other.ref;
-            copyCount++;
-            std::cout << "    [T" << id << "] Copy assigned from T" << other.id << std::endl;
-        }
-        return *this;
-    }
-
-    ~TrackedObject()
-    {
-        aliveCount--;
-        totalDestroyed++;
-        std::cout << "    [T" << id << "] Destroyed (" << data << ") [alive=" << aliveCount << "]" << std::endl;
-        delete ref;
-    }
-
-    bool operator==(const TrackedObject& other) const
-    {
-        return id == other.id && data == other.data;
-    }
-};
-
-int TrackedObject::aliveCount = 0;
-int TrackedObject::totalCreated = 0;
-int TrackedObject::totalDestroyed = 0;
-int TrackedObject::copyCount = 0;
-
 // ============================================================================
 // 工具函数
 // ============================================================================
 
-template<typename T>
-void PrintDataArray(const DataArray<T>& arr, const char* label)
+template<typename Array>
+void PrintDataArray(const Array& arr, const char* label)
 {
+    using Elem = std::remove_cv_t<std::remove_reference_t<decltype(arr[0])>>;
+
     std::cout << "  " << std::setw(30) << label << " [" << std::setw(2) << arr.GetCount() 
               << "/" << std::setw(2) << arr.GetAllocCount() << "]: ";
 
-    if constexpr (std::is_same_v<T, int>)
+    if constexpr (std::is_same_v<Elem, int>)
     {
         for (int64 i = 0; i < arr.GetCount(); i++)
         {
@@ -121,7 +56,7 @@ void PrintDataArray(const DataArray<T>& arr, const char* label)
             std::cout << arr[i];
         }
     }
-    else if constexpr (std::is_same_v<T, Point2D>)
+    else if constexpr (std::is_same_v<Elem, Point2D>)
     {
         for (int64 i = 0; i < arr.GetCount(); i++)
         {
@@ -129,32 +64,8 @@ void PrintDataArray(const DataArray<T>& arr, const char* label)
             std::cout << "(" << arr[i].x << "," << arr[i].y << ")";
         }
     }
-    else if constexpr (std::is_same_v<T, TrackedObject>)
-    {
-        for (int64 i = 0; i < arr.GetCount(); i++)
-        {
-            if (i > 0) std::cout << ",";
-            std::cout << "{" << arr[i].id << ":" << arr[i].data << "}";
-        }
-    }
 
     std::cout << std::endl;
-}
-
-void ResetTracking()
-{
-    TrackedObject::aliveCount = 0;
-    TrackedObject::totalCreated = 0;
-    TrackedObject::totalDestroyed = 0;
-    TrackedObject::copyCount = 0;
-}
-
-void PrintTracking()
-{
-    std::cout << "    Tracking: Created=" << TrackedObject::totalCreated
-              << ", Destroyed=" << TrackedObject::totalDestroyed
-              << ", Alive=" << TrackedObject::aliveCount
-              << ", Copies=" << TrackedObject::copyCount << std::endl;
 }
 
 // ============================================================================
@@ -380,159 +291,6 @@ void TestPODType()
     PrintDataArray(arr, "After Move(0,5,2)");
 }
 
-void TestNonTrivialType()
-{
-    std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 6: Non-Trivial Type (TrackedObject)" << std::endl;
-    std::cout << "========================================" << std::endl;
-
-    ResetTracking();
-
-    // 测试基本操作
-    std::cout << "\n[6.1] Create and fill array:" << std::endl;
-    {
-        DataArray<TrackedObject> arr;
-        arr.Resize(5);
-        
-        for (int64 i = 0; i < 5; i++)
-        {
-            std::cout << "  Setting element " << i << ":" << std::endl;
-            arr[i] = TrackedObject(i, "Data" + std::to_string(i));
-        }
-        
-        PrintDataArray(arr, "Initial");
-        PrintTracking();
-
-        // 测试Delete - 关键！这会调用析构函数
-        std::cout << "\n[6.2] Delete non-trivial objects:" << std::endl;
-        arr.Delete(1, 2);
-        PrintDataArray(arr, "After Delete(1,2)");
-        PrintTracking();
-
-        // 测试WriteAt - 测试赋值操作
-        std::cout << "\n[6.3] WriteAt (copy assignment):" << std::endl;
-        TrackedObject newObj(99, "NewData");
-        arr.WriteAt(newObj, 1);
-        PrintDataArray(arr, "After WriteAt");
-        PrintTracking();
-
-        std::cout << "\n[6.4] Scope exit (should destroy all):" << std::endl;
-    }
-    
-    std::cout << "\nAfter scope:" << std::endl;
-    PrintTracking();
-    std::cout << "  Leak check: " << (TrackedObject::aliveCount == 0 ? "PASS" : "FAIL") << std::endl;
-}
-
-void TestNonTrivialDeleteShift()
-{
-    std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 7: Non-Trivial DeleteShift (mem_move test)" << std::endl;
-    std::cout << "========================================" << std::endl;
-
-    ResetTracking();
-
-    std::cout << "\n[7.1] Setup array:" << std::endl;
-    {
-        DataArray<TrackedObject> arr;
-        arr.Resize(8);
-        
-        for (int64 i = 0; i < 8; i++)
-        {
-            arr[i] = TrackedObject(i, "Obj" + std::to_string(i));
-        }
-        
-        PrintDataArray(arr, "Initial");
-        PrintTracking();
-
-        // 这个操作会使用mem_move，对于non-trivial类型需要特别注意
-        std::cout << "\n[7.2] DeleteShift (critical for mem_move):" << std::endl;
-        arr.DeleteShift(2, 3);
-        PrintDataArray(arr, "After DeleteShift(2,3)");
-        PrintTracking();
-
-        std::cout << "\n[7.3] Cleanup:" << std::endl;
-    }
-    
-    std::cout << "\nAfter scope:" << std::endl;
-    PrintTracking();
-    std::cout << "  Leak check: " << (TrackedObject::aliveCount == 0 ? "PASS" : "FAIL") << std::endl;
-}
-
-void TestNonTrivialMove()
-{
-    std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 8: Non-Trivial Move (mem_move overlap test)" << std::endl;
-    std::cout << "========================================" << std::endl;
-
-    ResetTracking();
-
-    std::cout << "\n[8.1] Setup array:" << std::endl;
-    {
-        DataArray<TrackedObject> arr;
-        arr.Resize(10);
-        
-        for (int64 i = 0; i < 10; i++)
-        {
-            arr[i] = TrackedObject(i, "Item" + std::to_string(i));
-        }
-        
-        PrintDataArray(arr, "Initial");
-        PrintTracking();
-
-        // Move操作可能触发mem_move的重叠区域处理
-        std::cout << "\n[8.2] Move with potential overlap:" << std::endl;
-        arr.Move(7, 3, 4);  // Move [3,4,5,6] to position 7
-        PrintDataArray(arr, "After Move(7,3,4)");
-        PrintTracking();
-
-        std::cout << "\n[8.3] Move in opposite direction:" << std::endl;
-        arr.Move(2, 7, 3);  // Move elements back
-        PrintDataArray(arr, "After Move(2,7,3)");
-        PrintTracking();
-
-        std::cout << "\n[8.4] Cleanup:" << std::endl;
-    }
-    
-    std::cout << "\nAfter scope:" << std::endl;
-    PrintTracking();
-    std::cout << "  Leak check: " << (TrackedObject::aliveCount == 0 ? "PASS" : "FAIL") << std::endl;
-}
-
-void TestCopyAssignment()
-{
-    std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 9: Copy Assignment (mem_copy test)" << std::endl;
-    std::cout << "========================================" << std::endl;
-
-    ResetTracking();
-
-    std::cout << "\n[9.1] Create source array:" << std::endl;
-    DataArray<TrackedObject> arr1;
-    arr1.Resize(5);
-    for (int64 i = 0; i < 5; i++)
-    {
-        arr1[i] = TrackedObject(i, "Source" + std::to_string(i));
-    }
-    PrintDataArray(arr1, "Source");
-    PrintTracking();
-
-    std::cout << "\n[9.2] Copy to new array (operator=):" << std::endl;
-    DataArray<TrackedObject> arr2;
-    arr2 = arr1;
-    PrintDataArray(arr2, "Destination");
-    PrintTracking();
-
-    std::cout << "\n[9.3] Modify source (should not affect copy):" << std::endl;
-    arr1[0] = TrackedObject(100, "Modified");
-    PrintDataArray(arr1, "Source modified");
-    PrintDataArray(arr2, "Destination unchanged");
-
-    std::cout << "\n[9.4] Cleanup:" << std::endl;
-    arr1.Free();
-    PrintDataArray(arr1, "Source freed");
-    PrintTracking();
-}
 
 // ============================================================================
 // Main
@@ -552,10 +310,6 @@ int main(int, char**)
         TestMoveOperations();
         TestInsertOperations();
         TestPODType();
-        TestNonTrivialType();
-        TestNonTrivialDeleteShift();
-        TestNonTrivialMove();
-        TestCopyAssignment();
 
         std::cout << "\n========================================" << std::endl;
         std::cout << "ALL TESTS COMPLETED" << std::endl;

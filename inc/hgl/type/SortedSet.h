@@ -81,7 +81,8 @@ namespace hgl
                 if(FindPos(data,pos))
                     return(-1);         //数据已存在
 
-                data_list.Insert(pos,data);
+                // DataArray::Insert expects a pointer and count
+                data_list.Insert(pos,&data,1);
 
                 return(pos);
             }
@@ -108,7 +109,7 @@ namespace hgl
                     if(FindPos(*dl,pos))
                         break;
 
-                    data_list.Insert(pos,*dl);
+                    data_list.Insert(pos,dl,1);
 
                     ++dl;
                     ++result;

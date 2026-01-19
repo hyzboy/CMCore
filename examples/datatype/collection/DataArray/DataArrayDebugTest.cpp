@@ -3,7 +3,7 @@
  * 逐步调试插入操作
  */
 
-#include <hgl/type/DataArrayNew.h>
+#include <hgl/type/DataArray.h>
 #include <iostream>
 #include <string>
 

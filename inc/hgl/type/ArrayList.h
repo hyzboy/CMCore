@@ -184,9 +184,9 @@ namespace hgl
         * @param old_pos 原来的位置
         * @param move_count 要移动的数据个数
         */
-        virtual bool Move(const int new_pos,const int old_pos,const int move_count)
+        virtual void Move(const int new_pos,const int old_pos,const int move_count)
         {
-            return data_array.Move(new_pos,old_pos,move_count);
+            data_array.Move(new_pos,old_pos,move_count);
         }
 
         virtual void operator = (const DataArray<T> &da){data_array=da;}                            ///<操作符重载复制一个列表
