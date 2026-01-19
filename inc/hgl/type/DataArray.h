@@ -9,14 +9,17 @@
 namespace hgl
 {
     template<typename T>
-    class DataArray: public Comparator<DataArray<T>>
+    class DataArray: public Comparator<DataArray<T> >
     {
     protected:
+
         T *items{};
         int64 count{};
         int64 alloc_count{};
 
     public:
+
+        // Constructors / Assignment
         DataArray()=default;
         explicit DataArray(int64 size)
         {
@@ -24,12 +27,26 @@ namespace hgl
         }
         ~DataArray(){ Free(); }
 
+        void operator=(const DataArray<T> &da)
+        {
+            if(da.count<=0){ count=0; return; }
+            Resize(da.GetCount());
+            mem_copy<T>(items,da.items,count);
+        }
+        void operator=(const std::initializer_list<T> &l)
+        {
+            Resize((int64)l.size());
+            mem_copy<T>(items,l.begin(),count);
+        }
+
         // Query
         int64 GetCount() const { return count; }
         int64 GetAllocCount() const { return alloc_count; }
         int64 GetTotalBytes() const { return count*sizeof(T); }
         int64 GetAllocBytes() const { return alloc_count*sizeof(T); }
         bool IsEmpty() const { return count==0; }
+
+        // Raw data
         T* GetData() const { return items; }
         T* data() const { return items; }
 
@@ -132,8 +149,7 @@ namespace hgl
         }
         int64 Expand(int64 size){ return Resize(count+size); }
 
-        // Mutation
-        void Exchange(int64 a,int64 b){ hgl_swap(items[a],items[b]); }
+        // Memory management
         void SetData(T *data,int64 data_count){ Free(); items=data; alloc_count=count=data_count; }
         void Free()
         {
@@ -141,11 +157,15 @@ namespace hgl
             count=0;
         }
         void Clear(){ count=0; }
+        void Unlink(){ items=nullptr; count=0; alloc_count=0; }
+
+        // Mutation
         void Append(const T &obj)
         {
             if(count>=alloc_count) Reserve(alloc_count+1);
             items[count]=obj; ++count;
         }
+        void Exchange(int64 a,int64 b){ hgl_swap(items[a],items[b]); }
         bool Delete(int64 start,int64 delete_count=1)
         {
             if(start<0||start>=count) return false;
@@ -158,13 +178,7 @@ namespace hgl
         }
         bool DeleteShift(int64 start,int64 delete_count=1)
         {
-            if(start<0||start>=count) return false;
-            if(delete_count<=0) return false;
-            if(start+delete_count>count) delete_count=count-start;
-            for(int64 i=start+delete_count;i<count;++i)
-                items[i-delete_count]=std::move(items[i]);
-            count-=delete_count;
-            return true;
+            return Delete(start,delete_count);
         }
         bool Insert(int64 pos,const T *data,const int64 data_number)
         {
@@ -187,7 +201,6 @@ namespace hgl
             count+=data_number;
             return true;
         }
-        void Unlink(){ items=nullptr; count=0; alloc_count=0; }
         void Move(int64 new_index,int64 old_index,int64 move_number=1)
         {
             if(!items) return; if(new_index==old_index) return; if(old_index<0||old_index>=count) return;
@@ -224,19 +237,6 @@ namespace hgl
             }
             if(result){ hgl_free(items); items=new_items; alloc_count=new_alloc_count; }
             else{ hgl_free(new_items); }
-        }
-
-        // Assignment helpers
-        void operator=(const DataArray<T> &da)
-        {
-            if(da.count<=0){ count=0; return; }
-            Resize(da.GetCount());
-            mem_copy<T>(items,da.items,count);
-        }
-        void operator=(const std::initializer_list<T> &l)
-        {
-            Resize((int64)l.size());
-            mem_copy<T>(items,l.begin(),count);
         }
 
         // Set operation
