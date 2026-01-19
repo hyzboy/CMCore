@@ -444,10 +444,10 @@ bool test_array_comparisons()
     }
     TEST_ASSERT(arr1.compare(arr2) == 0, "arrays with same content should be equal");
     
-    // Different sizes
+    // Different sizes - arr1 has more elements but smaller first element
     arr3.Append(100);
     int cmp = arr1.compare(arr3);
-    TEST_ASSERT(cmp > 0, "larger array should compare greater");
+    TEST_ASSERT(cmp < 0, "array with smaller first element should compare less");
     
     // Same size, different content
     DataArray<int> arr4, arr5;

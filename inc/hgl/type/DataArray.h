@@ -7,6 +7,12 @@ namespace hgl
 {
     /**
      * 数据阵列
+     * 
+     * 支持 trivial 和 non-trivial 类型。
+     * 注意：对于 non-trivial 类型（如 std::string），会使用构造/析构和移动语义，
+     *       性能可能不如 trivial 类型。
+     * 
+     * 如果确定只使用 trivial 类型（如 int, float, POD struct），建议使用 TrivialDataArray 以获得更好的性能。
      */
     template<typename T> class DataArray:Comparator<DataArray<T>>
     {
@@ -644,9 +650,19 @@ namespace hgl
             if(!items||count<=0||start<0||start>=count)return(-1);
 
             if(find_count<0||find_count>count-start)
-                find_count=count;
+                find_count=count-start;
 
             return FindDataPositionInArray<T>(items+start,find_count,data);
+        }
+
+        /**
+         * 检查数据是否存在于数组中
+         * @param data 要查找的数据
+         * @return true 存在，false 不存在
+         */
+        bool Contains(const T &data) const
+        {
+            return Find(data) >= 0;
         }
 
         /**
@@ -752,7 +768,7 @@ namespace hgl
         }
 
         /**
-        * 统计出不在without_list中的数据，产生的结果写入result_list
+        * 统计出不在without_list中的数据，产生的结果洗脑result_list
         */
         void WithoutList(DataArray<T> &result_list,const DataArray<T> &without_list)
         {
@@ -884,4 +900,190 @@ namespace hgl
 
         //int64     Clear           (const SortedSet<T> &clear_sets);                          ///<清除指定合集中所有数据
     };//template<typename T> class DataArray
+
+    /**
+     * Trivial 类型专用数据阵列（高性能版本）
+     * 
+     * 仅支持 trivial 类型（trivially copyable 且 trivially destructible）。
+     * 相比通用的 DataArray，TrivialDataArray 有以下优势：
+     * 1. 移除了所有 if constexpr 分支，代码更简洁
+     * 2. 不需要调用构造/析构函数，性能更高
+     * 3. 可以使用 realloc、memcpy、memmove 等高效内存操作
+     * 4. 适用于：int, float, double, POD struct 等类型
+     * 
+     * 示例：
+     *   TrivialDataArray<int> numbers;
+     *   TrivialDataArray<Vector3f> vertices;
+     *   TrivialDataArray<MyPODStruct> data;
+     */
+    template<typename T> 
+    class TrivialDataArray : public DataArray<T>
+    {
+        // 编译时检查：只允许 trivial 类型
+        static_assert(std::is_trivially_copyable_v<T>, 
+                      "TrivialDataArray requires trivially copyable type. Use DataArray<T> for non-trivial types like std::string.");
+        static_assert(std::is_trivially_destructible_v<T>, 
+                      "TrivialDataArray requires trivially destructible type. Use DataArray<T> for types with custom destructors.");
+        
+    public:
+        using DataArray<T>::items;
+        using DataArray<T>::count;
+        using DataArray<T>::alloc_count;
+
+        // 使用基类的构造函数
+        TrivialDataArray() : DataArray<T>() {}
+        TrivialDataArray(int64 size) : DataArray<T>(size) {}
+
+        // 优化的 Reserve（移除 if constexpr 分支）
+        bool Reserve(int64 size)
+        {
+            if(size <= alloc_count)
+                return true;
+
+            const int64 new_alloc_count = power_to_2(size);
+
+            if(!items)
+            {
+                items = hgl_align_malloc<T>(new_alloc_count);
+                alloc_count = new_alloc_count;
+            }
+            else
+            {
+                // Trivial 类型可以安全使用 realloc
+                items = hgl_align_realloc<T>(items, new_alloc_count);
+                alloc_count = new_alloc_count;
+            }
+
+            return (items != nullptr);
+        }
+
+        // 优化的 Resize（不需要构造/析构）
+        int64 Resize(int64 size)
+        {
+            Reserve(size);
+            count = size;
+            return count;
+        }
+
+        // 优化的 Free（不需要析构）
+        void Free()
+        {
+            SAFE_FREE(items);
+            count = 0;
+            alloc_count = 0;
+        }
+
+        // 优化的 Clear（直接清零计数即可）
+        void Clear()
+        {
+            count = 0;
+        }
+
+        // 优化的 Append（使用直接赋值）
+        void Append(const T &obj)
+        {
+            if(count >= alloc_count)
+                Reserve(count == 0 ? 8 : count * 2);  // 指数增长
+
+            items[count] = obj;
+            ++count;
+        }
+
+        // 优化的 Delete（直接使用 memcpy）
+        bool Delete(int64 start, int64 delete_count = 1)
+        {
+            if(!items) return false;
+            if(start >= count) return false;
+
+            if(start < 0)
+            {
+                delete_count += start;
+                start = 0;
+            }
+
+            if(start + delete_count > count)
+                delete_count = count - start;
+
+            if(delete_count <= 0) return false;
+
+            const int64 end_count = count - (start + delete_count);
+
+            if(end_count > 0)
+            {
+                if(end_count <= delete_count)
+                    mem_copy<T>(items + start, items + start + delete_count, end_count);
+                else
+                    mem_copy<T>(items + start, items + (count - delete_count), delete_count);
+            }
+
+            count -= delete_count;
+            return true;
+        }
+
+        // 优化的 DeleteShift（直接使用 memmove）
+        bool DeleteShift(int64 start, int64 delete_count = 1)
+        {
+            if(!items) return false;
+            if(start >= count) return false;
+
+            if(start < 0)
+            {
+                delete_count += start;
+                start = 0;
+            }
+
+            if(start + delete_count > count)
+                delete_count = count - start;
+
+            if(delete_count <= 0) return false;
+
+            const int64 end_count = count - (start + delete_count);
+
+            if(end_count > 0)
+                mem_move<T>(items + start, items + start + delete_count, end_count);
+
+            count -= delete_count;
+            return true;
+        }
+
+        // 优化的 Insert（直接使用 memcpy/memmove）
+        bool Insert(int64 pos, const T *data, const int64 data_number)
+        {
+            if(!data || data_number <= 0)
+                return false;
+
+            if(pos < 0) pos = 0;
+            if(pos > count) pos = count;
+
+            if(count + data_number > alloc_count)
+            {
+                int64 new_alloc_count = power_to_2(alloc_count + data_number);
+                T *new_items = hgl_align_malloc<T>(new_alloc_count);
+
+                if(pos > 0)       mem_copy(new_items, items, pos);
+                                  mem_copy(new_items + pos, data, data_number);
+                if(pos < count)   mem_copy(new_items + pos + data_number, items + pos, (count - pos));
+
+                hgl_free(items);
+                items = new_items;
+                alloc_count = new_alloc_count;
+            }
+            else
+            {
+                // 空间足够，在原地插入
+                if(pos < count)
+                    mem_move(items + pos + data_number, items + pos, count - pos);
+
+                mem_copy(items + pos, data, data_number);
+            }
+
+            count += data_number;
+            return true;
+        }
+
+        bool Insert(int64 pos, const T &data)
+        {
+            return Insert(pos, &data, 1);
+        }
+    };
 }//namespace hgl

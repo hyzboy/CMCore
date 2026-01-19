@@ -1,4 +1,4 @@
-########################################
+﻿########################################
 # DataArray 综合测试套件
 # 
 # 本目录包含 DataArray 模板的全面测试：
@@ -9,6 +9,7 @@
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
+cm_example_project("DataType/Collection/DataArray" DataArrayNewTest          DataArrayNewTest.cpp)
 cm_example_project("DataType/Collection/DataArray" DataArrayTest          DataArrayTest.cpp)
 cm_example_project("DataType/Collection/DataArray" DataArrayTestEnhanced  DataArrayTestEnhanced.cpp)
 cm_example_project("DataType/Collection/DataArray" DataArrayBugDemo       DataArrayBugDemo.cpp)
