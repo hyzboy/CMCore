@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include<hgl/type/DataType.h>
+#include<hgl/type/MemoryUtil.h>
 #include<initializer_list>
 #include<type_traits>
 
