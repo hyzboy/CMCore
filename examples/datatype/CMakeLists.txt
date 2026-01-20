@@ -1,10 +1,6 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 cm_example_project("DataType" UbyteColor            color_test_example.cpp)
-cm_example_project("DataType" HalfFloatTest         HalfFloatTest.cpp)
-target_link_libraries(HalfFloatTest PRIVATE CMMath)
-cm_example_project("DataType" AlphaBlendTest        AlphaBlendTest.cpp)
-target_link_libraries(AlphaBlendTest PRIVATE CMMath)
 cm_example_project("DataType" SplitStringTest       SplitStringTest.cpp)
 cm_example_project("DataType" StrChrTest            strchr_test.cpp)
 cm_example_project("DataType" Uint2StrTest          utos_test.cpp)
