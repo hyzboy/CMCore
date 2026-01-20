@@ -116,7 +116,7 @@ namespace hgl
         return out_names.GetCount();
     }
 
-    int PlugInManage::ScanDetailed(hgl::ArrayList<PlugInInfo> &out_infos,bool probe) const
+    int PlugInManage::ScanDetailed(hgl::ObjectList<PlugInInfo> &out_infos,bool probe) const
     {
         out_infos.Clear();
 
@@ -126,33 +126,34 @@ namespace hgl
         const int ncount=names.GetCount();
         for(int i=0;i<ncount;i++)
         {
-            PlugInInfo info;
-            info.name=names[i];
-            info.version=0;
-            info.status=PlugInStatus::NONE;
-            info.intro.Clear();
-            info.filename.Clear();
+            PlugInInfo *info=new PlugInInfo;
+
+            info->name=names[i];
+            info->version=0;
+            info->status=PlugInStatus::NONE;
+            info->intro.Clear();
+            info->filename.Clear();
 
             OSString fullpath;
-            if(HasPluginFile(info.name,&fullpath))
+            if(HasPluginFile(info->name,&fullpath))
             {
-                info.filename=fullpath;
-                info.status=PlugInStatus::NO_LOAD;
+                info->filename=fullpath;
+                info->status=PlugInStatus::NO_LOAD;
             }
 
             if(probe && !fullpath.IsEmpty())
             {
                 ExternalPlugIn epi;
-                if(epi.Load(info.name,fullpath))
+                if(epi.Load(info->name,fullpath))
                 {
-                    info.version=epi.GetVersion();
-                    info.intro=epi.GetIntro();
-                    info.status=PlugInStatus::COMPLETE;
+                    info->version=epi.GetVersion();
+                    info->intro=epi.GetIntro();
+                    info->status=PlugInStatus::COMPLETE;
                     epi.Free();
                 }
                 else
                 {
-                    info.status=PlugInStatus::LOAD_FAILED;
+                    info->status=PlugInStatus::LOAD_FAILED;
                 }
             }
 

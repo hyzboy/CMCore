@@ -42,7 +42,7 @@ namespace hgl
         PlugInStatus GetStatus(const OSString &pi_name) const;                   ///<取得插件状态
 
         int     Scan(OSStringList &out_names) const;                             ///<扫描可用插件名称
-        int     ScanDetailed(hgl::ArrayList<PlugInInfo> &out_infos,bool probe=false) const;   ///<扫描可用插件并可选探测
+        int     ScanDetailed(hgl::ObjectList<PlugInInfo> &out_infos,bool probe=false) const;   ///<扫描可用插件并可选探测
         bool    ProbePlugin(const OSString &pi_name,PlugInInfo &out_info) const; ///<对指定插件做一次信息探测
 
         PlugIn *LoadPlugin  (const OSString &,const OSString &);                ///<加载一个外部插件，明确指定全路径文件名
