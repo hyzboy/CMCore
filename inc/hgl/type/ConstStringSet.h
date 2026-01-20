@@ -70,9 +70,9 @@ namespace hgl
 
         DataArray<SC> str_data;                                 ///<字符串数据
 
-        SortedSet<ConstStringView<SC>> str_set;                 ///<字符串集合
+        SortedObjectSet<ConstStringView<SC>> str_set;           ///<字符串集合
 
-        ObjectList<ConstStringView<SC>> str_list;                ///<字符串列表
+        ObjectList<ConstStringView<SC>> str_list;               ///<字符串列表
         Map<int,size_t> str_offset_map;                         ///<字符串映射
 
     public:
@@ -88,6 +88,9 @@ namespace hgl
     public:
 
         const bool IsEmpty()const{return str_data.IsEmpty();}                                           ///<字符串集合是否为空
+
+        ConstStringView<SC> * const *begin()const{return str_list.GetData();}                           ///<迭代器开始
+        ConstStringView<SC> * const *end()const{return str_list.GetData()+str_list.GetCount();}        ///<迭代器结束
 
         const bool Contains(const SC *str,int length)const                          ///<判断字符串是否为合集成员
         {

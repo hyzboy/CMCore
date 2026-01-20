@@ -54,8 +54,10 @@ void OutputTestObject()
     }
 }
 
-void main()
+int main(int argc, char **argv)
 {
     CreateTestObject();
     OutputTestObject();
+
+    return 0;
 }
