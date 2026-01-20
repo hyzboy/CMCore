@@ -1,7 +1,9 @@
 ﻿#pragma once
 
 #include<type_traits>
+#include<utility>
 #include<algorithm>
+#include<initializer_list>
 #include<hgl/type/ObjectUtil.h>
 
 namespace hgl
@@ -15,66 +17,57 @@ namespace hgl
         static_assert(!std::is_trivially_copyable_v<T>, "Use DataArray for trivially copyable types");
 
     private:
-        T*      data_;
-        int     count_;
-        int     alloc_count_;
+        T*  data_;
+        int count_;
+        int alloc_count_;
+
+    private:
+        // 确保容量充足，按 2 的指数扩张
+        void ensure_capacity(int desired)
+        {
+            if(desired <= alloc_count_)
+                return;
+
+            int new_alloc = alloc_count_ == 0 ? 8 : alloc_count_;
+            while(new_alloc < desired)
+                new_alloc *= 2;
+
+            data_ = reallocate_and_move(data_, count_, new_alloc);
+            alloc_count_ = new_alloc;
+        }
 
     public: // 属性
 
         int     GetAllocCount   ()const { return alloc_count_; }
         int     GetCount        ()const { return count_; }
+        int     GetTotalBytes   ()const { return count_ * static_cast<int>(sizeof(T)); }
+        bool    IsEmpty         ()const { return count_ == 0; }
 
-        bool    Resize(int count)
-        {
-            if(count < 0) return false;
-            
-            if(count > alloc_count_)
-            {
-                data_ = reallocate_and_move(data_, count_, count);
-                alloc_count_ = count;
-            }
+        int     GetAllocBytes   ()const { return alloc_count_ * static_cast<int>(sizeof(T)); }
 
-            // 如果扩大，默认构造新元素
-            if(count > count_)
-            {
-                default_construct_range(data_ + count_, count - count_);
-            }
-            // 如果缩小，销毁多余元素
-            else if(count < count_)
-            {
-                destroy_range(data_ + count, count_ - count);
-            }
+        T*      GetData         (){ return data_; }
+        const T*GetData         ()const{ return data_; }
+        T*      data            (){ return data_; }
+        const T*data            ()const{ return data_; }
 
-            count_ = count;
-            return true;
-        }
-
-        bool    Reserve(int count)
-        {
-            if(count < 0) return false;
-            if(count > alloc_count_)
-            {
-                data_ = reallocate_and_move(data_, count_, count);
-                alloc_count_ = count;
-            }
-            return true;
-        }
-
-        bool    IsEmpty()const { return count_ == 0; }
-
-        T*      GetData()       { return data_; }
-        const T* GetData()const { return data_; }
-        int     GetTotalBytes()const { return count_ * static_cast<int>(sizeof(T)); }
-
-        T*      begin()         { return data_; }
-        T*      end()           { return data_ + count_; }
-        const T* begin()const   { return data_; }
-        const T* end()const     { return data_ + count_; }
-        T*      last()          { return count_ == 0 ? nullptr : data_ + count_ - 1; }
+        T*      begin           (){ return data_; }
+        T*      end             (){ return data_ + count_; }
+        const T*begin           ()const{ return data_; }
+        const T*end             ()const{ return data_ + count_; }
+        T*      last            (){ return count_ == 0 ? nullptr : data_ + count_ - 1; }
+        const T*last            ()const{ return count_ == 0 ? nullptr : data_ + count_ - 1; }
 
     public:
 
         ObjectArray() : data_(nullptr), count_(0), alloc_count_(0) {}
+
+        explicit ObjectArray(int size) : data_(nullptr), count_(0), alloc_count_(0)
+        {
+            if(size > 0)
+            {
+                Resize(size);
+            }
+        }
 
         ObjectArray(const T* lt, const int n) : data_(nullptr), count_(0), alloc_count_(0)
         {
@@ -94,11 +87,33 @@ namespace hgl
                 Reserve(n);
                 auto it = lt.begin();
                 for(int i = 0; i < n; ++i, ++it)
-                {
                     construct_at_copy(data_ + i, *it);
-                }
                 count_ = n;
             }
+        }
+
+        ObjectArray(ObjectArray&& other) noexcept
+            : data_(other.data_), count_(other.count_), alloc_count_(other.alloc_count_)
+        {
+            other.data_ = nullptr;
+            other.count_ = 0;
+            other.alloc_count_ = 0;
+        }
+
+        ObjectArray& operator=(ObjectArray&& other) noexcept
+        {
+            if(this == &other)
+                return *this;
+
+            Free();
+            data_ = other.data_;
+            count_ = other.count_;
+            alloc_count_ = other.alloc_count_;
+
+            other.data_ = nullptr;
+            other.count_ = 0;
+            other.alloc_count_ = 0;
+            return *this;
         }
 
         ~ObjectArray()
@@ -111,30 +126,100 @@ namespace hgl
         ObjectArray(const ObjectArray&) = delete;
         ObjectArray& operator=(const ObjectArray&) = delete;
 
-    public: // 方法
+    public: // 访问
 
-        void Expand(int count)
+        operator T*() { return data_; }
+        operator const T*() const { return data_; }
+
+        T& operator[](int index) { return data_[index]; }
+        const T& operator[](int index)const { return data_[index]; }
+
+        T* At(int index)
         {
-            if(count <= 0) return;
-
-            int new_count = count_ + count;
-            if(new_count > alloc_count_)
-            {
-                int new_alloc = alloc_count_ == 0 ? 8 : alloc_count_ * 2;
-                while(new_alloc < new_count)
-                    new_alloc *= 2;
-                data_ = reallocate_and_move(data_, count_, new_alloc);
-                alloc_count_ = new_alloc;
-            }
-
-            default_construct_range(data_ + count_, count);
-            count_ = new_count;
+            return (index < 0 || index >= count_) ? nullptr : data_ + index;
         }
+
+        const T* At(int index)const
+        {
+            return (index < 0 || index >= count_) ? nullptr : data_ + index;
+        }
+
+        int Find(const T& data)const
+        {
+            for(int i = 0; i < count_; ++i)
+            {
+                if(data_[i] == data)
+                    return i;
+            }
+            return -1;
+        }
+
+        bool Contains(const T& data)const
+        {
+            return Find(data) >= 0;
+        }
+
+    public: // 容量管理
+
+        bool Reserve(int count)
+        {
+            if(count < 0) return false;
+            ensure_capacity(count);
+            return true;
+        }
+
+        bool Resize(int count)
+        {
+            if(count < 0) return false;
+
+            if(count > alloc_count_)
+                ensure_capacity(count);
+
+            if(count > count_)
+                default_construct_range(data_ + count_, count - count_);
+            else if(count < count_)
+                destroy_range(data_ + count, count_ - count);
+
+            count_ = count;
+            return true;
+        }
+
+        int Expand(int count)
+        {
+            if(count <= 0) return count_;
+            Resize(count_ + count);
+            return count_;
+        }
+
+        void SetData(T* data, int data_count)
+        {
+            Free();
+            data_ = data;
+            count_ = data_count;
+            alloc_count_ = data_count;
+        }
+
+        void Unlink()
+        {
+            data_ = nullptr;
+            count_ = 0;
+            alloc_count_ = 0;
+        }
+
+    public: // 读写
 
         bool ReadAt(T& data, int index)const
         {
             if(index < 0 || index >= count_) return false;
             data = data_[index];
+            return true;
+        }
+
+        bool ReadAt(T* data, int start, int num)const
+        {
+            if(!data || start < 0 || num < 0 || start + num > count_) return false;
+            for(int i = 0; i < num; ++i)
+                data[i] = data_[start + i];
             return true;
         }
 
@@ -145,104 +230,27 @@ namespace hgl
             return true;
         }
 
-        bool Insert(int pos, const T* data, const int number)
+        bool WriteAt(const T* data, int start, int num)
         {
-            if(!data || number <= 0) return false;
-            if(pos < 0) pos = 0;
-            if(pos > count_) pos = count_;
-
-            int new_count = count_ + number;
-            if(new_count > alloc_count_)
-            {
-                int new_alloc = alloc_count_ == 0 ? 8 : alloc_count_ * 2;
-                while(new_alloc < new_count)
-                    new_alloc *= 2;
-
-                T* new_data = allocate_raw_memory<T>(new_alloc);
-
-                // 移动 [0, pos) 到新内存
-                move_construct_range(new_data, data_, pos);
-
-                // 复制插入的数据
-                copy_construct_range(new_data + pos, data, number);
-
-                // 移动 [pos, count_) 到新位置
-                move_construct_range(new_data + pos + number, data_ + pos, count_ - pos);
-
-                // 销毁并释放旧内存
-                destroy_range(data_, count_);
-                deallocate_raw_memory(data_);
-                
-                data_ = new_data;
-                alloc_count_ = new_alloc;
-            }
-            else
-            {
-                // 从后向前移动元素，为插入腾出空间
-                for(int i = count_ - 1; i >= pos; --i)
-                {
-                    construct_at_move(data_ + i + number, std::move(data_[i]));
-                    destroy_at(data_ + i);
-                }
-
-                // 插入新数据
-                copy_construct_range(data_ + pos, data, number);
-            }
-
-            count_ = new_count;
+            if(!data || start < 0 || num < 0 || start + num > count_) return false;
+            for(int i = 0; i < num; ++i)
+                data_[start + i] = data[i];
             return true;
         }
 
-        bool Insert(int pos, const T& data)
+        void Zero()
         {
-            return Insert(pos, &data, 1);
+            for(int i = 0; i < count_; ++i)
+                data_[i] = T();
         }
 
-        void Move(const int new_pos, const int old_pos, const int move_count)
+    public: // 修改
+
+        void Append(const T& obj)
         {
-            if(move_count <= 0) return;
-            if(old_pos < 0 || old_pos >= count_) return;
-
-            int mc = move_count;
-            if(old_pos + mc > count_) mc = count_ - old_pos;
-            if(mc <= 0) return;
-
-            int np = new_pos;
-            if(np < 0) np = 0;
-            if(np > count_) np = count_;
-
-            if(np >= old_pos && np <= old_pos + mc) return;
-
-            // 临时保存要移动的对象
-            T* temp = allocate_raw_memory<T>(mc);
-            move_construct_range(temp, data_ + old_pos, mc);
-            destroy_range(data_ + old_pos, mc);
-
-            // 移动其他元素填补空隙或腾出空间
-            if(np < old_pos)
-            {
-                // 向前移动：[np, old_pos) 向后移动 mc 位
-                for(int i = old_pos - 1; i >= np; --i)
-                {
-                    construct_at_move(data_ + i + mc, std::move(data_[i]));
-                    destroy_at(data_ + i);
-                }
-            }
-            else
-            {
-                // 向后移动：[old_pos+mc, np) 向前移动 mc 位
-                for(int i = old_pos; i < np - mc; ++i)
-                {
-                    construct_at_move(data_ + i, std::move(data_[i + mc]));
-                    destroy_at(data_ + i + mc);
-                }
-                np -= mc;
-            }
-
-            // 放置到新位置
-            move_construct_range(data_ + np, temp, mc);
-            destroy_range(temp, mc);
-            deallocate_raw_memory(temp);
+            ensure_capacity(count_ + 1);
+            construct_at_copy(data_ + count_, obj);
+            ++count_;
         }
 
         void Exchange(int a, int b)
@@ -260,10 +268,8 @@ namespace hgl
 
             int delete_count = end_pos - start;
 
-            // 销毁要删除的元素
             destroy_range(data_ + start, delete_count);
 
-            // 移动后面的元素向前填补（不保持顺序，快速删除）
             int move_count = count_ - end_pos;
             for(int i = 0; i < move_count; ++i)
             {
@@ -284,10 +290,8 @@ namespace hgl
 
             int delete_count = end_pos - start;
 
-            // 销毁要删除的元素
             destroy_range(data_ + start, delete_count);
 
-            // 移动后面的元素向前（保持顺序）
             for(int i = end_pos; i < count_; ++i)
             {
                 construct_at_move(data_ + i - delete_count, std::move(data_[i]));
@@ -298,15 +302,85 @@ namespace hgl
             return true;
         }
 
-        int Find(const T& data)const
+        void Move(const int new_pos, const int old_pos, const int move_count)
         {
-            for(int i = 0; i < count_; ++i)
+            if(move_count <= 0) return;
+            if(old_pos < 0 || old_pos >= count_) return;
+
+            int mc = move_count;
+            if(old_pos + mc > count_) mc = count_ - old_pos;
+            if(mc <= 0) return;
+
+            int np = new_pos;
+            if(np < 0) np = 0;
+            if(np > count_) np = count_;
+
+            if(np >= old_pos && np <= old_pos + mc) return;
+
+            T* temp = allocate_raw_memory<T>(mc);
+            move_construct_range(temp, data_ + old_pos, mc);
+            destroy_range(data_ + old_pos, mc);
+
+            if(np < old_pos)
             {
-                if(data_[i] == data)
-                    return i;
+                for(int i = old_pos - 1; i >= np; --i)
+                {
+                    construct_at_move(data_ + i + mc, std::move(data_[i]));
+                    destroy_at(data_ + i);
+                }
             }
-            return -1;
+            else
+            {
+                for(int i = old_pos; i < np - mc; ++i)
+                {
+                    construct_at_move(data_ + i, std::move(data_[i + mc]));
+                    destroy_at(data_ + i + mc);
+                }
+                np -= mc;
+            }
+
+            move_construct_range(data_ + np, temp, mc);
+            destroy_range(temp, mc);
+            deallocate_raw_memory(temp);
         }
+
+        bool Insert(int pos, const T* data, const int number)
+        {
+            if(!data || number <= 0) return false;
+            if(pos < 0) pos = 0;
+            if(pos > count_) pos = count_;
+
+            int new_count = count_ + number;
+            ensure_capacity(new_count);
+
+            if(pos < count_)
+            {
+                for(int i = count_ - 1; i >= pos; --i)
+                {
+                    construct_at_move(data_ + i + number, std::move(data_[i]));
+                    destroy_at(data_ + i);
+                }
+            }
+
+            copy_construct_range(data_ + pos, data, number);
+            count_ = new_count;
+            return true;
+        }
+
+        bool Insert(int pos, const T& data)
+        {
+            return Insert(pos, &data, 1);
+        }
+
+        void Append(const T* data, int number)
+        {
+            if(!data || number <= 0) return;
+            ensure_capacity(count_ + number);
+            copy_construct_range(data_ + count_, data, number);
+            count_ += number;
+        }
+
+    public: // 状态维护
 
         void Clear()
         {
@@ -323,11 +397,34 @@ namespace hgl
             alloc_count_ = 0;
         }
 
-        T* At(const int index)
+    public: // 赋值辅助
+
+        ObjectArray& operator=(const std::initializer_list<T>& l)
         {
-            return (index < 0 || index >= count_) ? nullptr : &data_[index];
+            Clear();
+            const int n = static_cast<int>(l.size());
+            if(n <= 0)
+                return *this;
+
+            ensure_capacity(n);
+            auto it = l.begin();
+            for(int i = 0; i < n; ++i, ++it)
+                construct_at_copy(data_ + i, *it);
+            count_ = n;
+            return *this;
         }
 
-        const T* At(const int index)const
+        void WithoutList(ObjectArray<T>& result_list, const ObjectArray<T>& without_list)
         {
-            return (index < 0 || index >= count_) ? nullptr : &data_[index];
+            result_list.Clear();
+            if(count_ <= 0) return;
+
+            result_list.Reserve(count_);
+            for(int i = 0; i < count_; ++i)
+            {
+                if(!without_list.Contains(data_[i]))
+                    result_list.Append(data_[i]);
+            }
+        }
+    };
+}

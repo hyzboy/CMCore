@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/DataArray.h>
+#include<hgl/type/Array.h>
 namespace hgl
 {
     /**
@@ -14,7 +14,7 @@ namespace hgl
     {
     protected:
 
-        DataArray<T> data_list;
+        ArrayType<T> data_list;
 
         bool    FindPos(const T &flag,int64 &pos)const                                              ///<查找数据如果插入后，会所在的位置，返回是否存在这个数据
                 {return FindInsertPositionInSortedArray(&pos,data_list,flag);}

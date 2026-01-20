@@ -259,6 +259,12 @@ void TestInsertOperations()
     int insert3 = 888;
     arr.Insert(arr.GetCount(), &insert3, 1);
     PrintDataArray(arr, "After Insert(end, 888)");
+
+    // 测试Insert - 触发扩容并保持顺序
+    std::cout << "\n[4.4] Insert with grow (keep order):" << std::endl;
+    int insert4[] = {777, 666, 555};
+    arr.Insert(2, insert4, 3); // 中间插入，触发扩容与后移
+    PrintDataArray(arr, "After Insert(2, {777,666,555})");
 }
 
 void TestPODType()
