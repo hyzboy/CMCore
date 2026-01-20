@@ -1,4 +1,4 @@
-#include<hgl/type/ObjectManage.h>
+#include<hgl/type/ObjectManager.h>
 #include<iostream>
 
 using namespace hgl;

@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include<hgl/type/DataArray.h>
-#include<hgl/type/LifecycleTraits.h>
 namespace hgl
 {
     /**
@@ -180,12 +179,11 @@ namespace hgl
 
         /**
          * @brief 清空所有数据
-         * CN: 移除所有元素但保留容量
-         * EN: Clear all elements but keep capacity
+         * CN: 移除所有元素但保留容量。由 DataArray 处理对象生命周期
+         * EN: Clear all elements but keep capacity. DataArray handles lifecycle
          */
         void Clear()
         {
-            LifecycleTraits<T>::destroy(data_array.GetData(), data_array.GetCount());
             data_array.Clear();
         }
 
@@ -373,15 +371,25 @@ namespace hgl
 
         /**
          * @brief 清空所有对象
-         * CN: 删除所有指向的对象
-         * EN: Delete all pointed objects
+         * CN: 删除所有指向的对象，然后清空数组
+         * EN: Delete all pointed objects and clear array
          */
         void Clear()
         {
             T** ptr = const_cast<T**>(this->GetData());
             int n = this->GetCount();
-            LifecycleTraitsOwningPtr<T>::destroy(ptr, n);
-            // 直接清空数组，避免StackBase::Clear()再次调用destroy
+            
+            // 手动删除所有指向的对象
+            for (int i = 0; i < n; ++i)
+            {
+                if (ptr[i])
+                {
+                    delete ptr[i];
+                    ptr[i] = nullptr;
+                }
+            }
+            
+            // 清空数组
             this->data_array.Clear();
         }
 
@@ -392,8 +400,7 @@ namespace hgl
          */
         void Free()
         {
-            Clear();  // Clear()已经完整处理了对象删除和数组清空
-            // 只释放内存，不再调用destroy
+            Clear();  // Clear() 已经完整处理了对象删除和数组清空
             this->data_array.Free();
         }
 

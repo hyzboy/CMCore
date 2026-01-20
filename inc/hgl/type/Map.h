@@ -4,7 +4,6 @@
 #include<hgl/type/ArrayList.h>
 #include<hgl/type/Pair.h>
 #include<hgl/type/Pool.h>
-#include<hgl/type/LifecycleTraits.h>
 
 namespace hgl
 {
@@ -207,7 +206,7 @@ namespace hgl
         {
             if(!ds)return;
             V *&p=ds->value;
-            if(p){ LifecycleTraitsOwningPtr<V>::destroy(&p,1); }
+            if(p){ delete p; }
         }
 
         void DeleteObject(int index)

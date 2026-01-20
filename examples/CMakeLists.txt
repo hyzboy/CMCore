@@ -13,6 +13,5 @@ endmacro()
 # Add subdirectories
 add_subdirectory(datatype)
 add_subdirectory(filesystem)
-add_subdirectory(misc)
 add_subdirectory(system)
 add_subdirectory(time)

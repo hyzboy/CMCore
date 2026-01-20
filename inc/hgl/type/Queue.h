@@ -1,18 +1,19 @@
 ﻿#pragma once
 
 #include<hgl/type/DataArray.h>
-#include<hgl/type/LifecycleTraits.h>
+#include<hgl/type/ObjectArray.h>
 #include<type_traits>
 namespace hgl
 {
     /**
     * Queue模板类用于保存一个先进先出、后进后出的数据队列
+    * 支持不同的底层数组类型
     */
-    template<typename T> class QueueTemplate                                                        ///队列顺序数据访问类
+    template<typename T, typename ArrayT = DataArray<T>> class QueueTemplate           ///队列顺序数据访问类
     {
     protected:
 
-        DataArray<T> data_array[2];
+        ArrayT data_array[2];
 
         int read_index;
         int write_index;
@@ -38,8 +39,8 @@ namespace hgl
         }
 
     public: //兼容 Active 接口的简易 GetArray()
-        DataArray<T> &GetArray(){ return data_array[write_index]; }
-        const DataArray<T> &GetArray() const { return data_array[write_index]; }
+        ArrayT &GetArray(){ return data_array[write_index]; }
+        const ArrayT &GetArray() const { return data_array[write_index]; }
 
     public: //属性
 
@@ -94,7 +95,7 @@ namespace hgl
             return true;
         }
 
-        virtual bool Push(T &data){return Push(&data,1);}                         ///<压入一个数据
+        virtual bool Push(const T &data){return Push((T*)&data,1);}               ///<压入一个数据
 
         virtual bool Peek(T &data)                                                ///<尝试访问一个数据
         {
@@ -130,23 +131,6 @@ namespace hgl
 
         virtual void Clear()                                                      ///<清除所有数据
         {
-            if(data_array[read_index].GetCount()>read_offset)       //还有没读完的，需要清掉
-            {
-                if constexpr(std::is_pointer_v<T>)
-                    LifecycleTraitsOwningPtr<typename std::remove_pointer<T>::type>::destroy( data_array[read_index].GetData()+read_offset,
-                                                                                               data_array[read_index].GetCount()-read_offset);
-                else
-                    LifecycleTraits<T>::destroy( data_array[read_index].GetData()+read_offset,
-                                                 data_array[read_index].GetCount()-read_offset);
-            }
-
-            if constexpr(std::is_pointer_v<T>)
-                LifecycleTraitsOwningPtr<typename std::remove_pointer<T>::type>::destroy( data_array[write_index].GetData(),
-                                                                                           data_array[write_index].GetCount());
-            else
-                LifecycleTraits<T>::destroy( data_array[write_index].GetData(),
-                                             data_array[write_index].GetCount());
-
             data_array[0].Clear();
             data_array[1].Clear();
             read_offset=0;
@@ -158,46 +142,26 @@ namespace hgl
             data_array[0].Free();
             data_array[1].Free();
         }
-    };//template<typename T> class QueueTemplate
+    };//template<typename T, typename ArrayT> class QueueTemplate
 
-    template<typename T> class Queue:public QueueTemplate<T>
+    /**
+     * 用于平凡类型的队列 - 使用 DataArray
+     */
+    template<typename T> class Queue:public QueueTemplate<T, DataArray<T>>
     {
     public:
-        Queue():QueueTemplate<T>(){};
+        Queue():QueueTemplate<T, DataArray<T>>(){};
         virtual ~Queue()=default;
-    };//template<typename T> class Queue:public QueueTemplate<T>
+    };//template<typename T> class Queue
 
-    template<typename T> class ObjectQueue:public QueueTemplate<T *>             ///对象队列
+    /**
+     * 用于非平凡类型的队列 - 使用 ObjectArray
+     * ObjectArray 自动管理对象的构造和析构
+     */
+    template<typename T> class ObjectQueue:public QueueTemplate<T, ObjectArray<T>>
     {
     public:
-        ObjectQueue():QueueTemplate<T *>(){}
-        virtual ~ObjectQueue() override { Free(); }
-
-        virtual bool Push(T *obj)
-        {
-            if(!obj)return false;
-            return QueueTemplate<T *>::Push(obj);
-        }
-
-        virtual bool Push(T **obj_list,int count)
-        {
-            if(!obj_list)return false;
-            return QueueTemplate<T *>::Push(obj_list,count);
-        }
-
-        T *PopObject()
-        {
-            T *obj;
-            if(!QueueTemplate<T *>::Pop(obj))
-                return nullptr;
-            return obj;
-        }
-
-        void Free()
-        {
-            QueueTemplate<T *>::Clear();
-            this->data_array[0].Free();
-            this->data_array[1].Free();
-        }
+        ObjectQueue():QueueTemplate<T, ObjectArray<T>>(){}
+        virtual ~ObjectQueue() override { this->Free(); }
     };//template<typename T> class ObjectQueue
 }//namespace hgl

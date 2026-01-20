@@ -1,11 +1,10 @@
 ﻿/**
-* @file ObjectManage.h
+* @file ObjectManager.h
 * @brief CN:对象管理模板类，支持引用计数和ID分配。\nEN:Object management template class, supports reference counting and ID allocation.
 */
 #pragma once
 
 #include <hgl/type/Map.h>
-#include <hgl/type/LifecycleTraits.h>
 
 namespace hgl
 {
@@ -13,33 +12,33 @@ namespace hgl
     * @brief CN:带引用计数的键值对结构。\nEN:Key-value pair structure with reference counting.
     */
     template<typename K, typename V>
-    struct RefKeyValue : public KeyValue<K, V *>
+    struct RefCountedKeyValue : public KeyValue<K, V *>
     {
         /**
         * @brief CN:引用计数。\nEN:Reference count.
         */
         int ref_count;
 
-        RefKeyValue()
+        RefCountedKeyValue()
             : KeyValue<K, V *>(), ref_count(1)
         {
         }
     };
 
     /**
-    * @brief CN:对象管理模板类。\nEN:Object management template class.
+    * @brief CN:对象管理实现模板类。\nEN:Object manager implementation template class.
     * @tparam K CN:键类型。EN:Key type.
     * @tparam V CN:值类型。EN:Value type.
     */
     template<typename K, typename V>
-    class ObjectManageTemplate
+    class ObjectManagerImpl
     {
     public:
 
         /**
         * @brief CN:键值对象类型。\nEN:Key-value object type.
         */
-        using KVObject = RefKeyValue<K, V>;
+        using KVObject = RefCountedKeyValue<K, V>;
 
     protected:
 
@@ -50,9 +49,9 @@ namespace hgl
 
     public:
 
-        ObjectManageTemplate() = default;
+        ObjectManagerImpl() = default;
 
-        virtual ~ObjectManageTemplate()
+        virtual ~ObjectManagerImpl()
         {
             Clear();
         }
@@ -70,7 +69,7 @@ namespace hgl
 
                 if (obj && obj->value)
                 {
-                    LifecycleTraitsOwningPtr<V>::destroy(&obj->value, 1);
+                    delete obj->value;
                 }
             }
 
@@ -92,7 +91,7 @@ namespace hgl
                 {
                     if (obj->value)
                     {
-                        LifecycleTraitsOwningPtr<V>::destroy(&obj->value, 1);
+                        delete obj->value;
                     }
 
                     items.DeleteAt(n);
@@ -225,7 +224,7 @@ namespace hgl
             {
                 if (zero_clear && obj->value)
                 {
-                    LifecycleTraitsOwningPtr<V>::destroy(&obj->value, 1);
+                    delete obj->value;
                 }
 
                 if (zero_clear)
@@ -261,28 +260,28 @@ namespace hgl
     };
 
     /**
-    * @brief CN:对象管理类。\nEN:Object management class.
+    * @brief CN:通用对象管理器。\nEN:General purpose object manager.
     * @tparam K CN:键类型。EN:Key type.
     * @tparam V CN:值类型。EN:Value type.
     */
     template<typename K, typename V>
-    class ObjectManage : public ObjectManageTemplate<K, V>
+    class ObjectManager : public ObjectManagerImpl<K, V>
     {
     public:
 
-        ObjectManage() = default;
+        ObjectManager() = default;
 
-        virtual ~ObjectManage() = default;
+        virtual ~ObjectManager() = default;
 
     };
 
     /**
-    * @brief CN:带ID分配的对象管理类。\nEN:Object management class with ID allocation.
+    * @brief CN:带自动ID分配的对象管理器。\nEN:Object manager with automatic ID allocation.
     * @tparam K CN:ID类型。EN:ID type.
     * @tparam V CN:值类型。EN:Value type.
     */
     template<typename K, typename V>
-    class IDObjectManage : public ObjectManage<K, V>
+    class AutoIdObjectManager : public ObjectManager<K, V>
     {
     protected:
 
@@ -293,9 +292,9 @@ namespace hgl
 
     public:
 
-        using ObjectManage<K, V>::ObjectManage;
+        using ObjectManager<K, V>::ObjectManager;
 
-        virtual ~IDObjectManage() = default;
+        virtual ~AutoIdObjectManager() = default;
 
         /**
         * @brief CN:添加对象并分配ID。\nEN:Add object and allocate ID.
@@ -312,13 +311,13 @@ namespace hgl
             {
                 K key;
                 uint count;
-                if (ObjectManage<K, V>::GetKeyByValue(value, &key, &count, true))
+                if (ObjectManager<K, V>::GetKeyByValue(value, &key, &count, true))
                 {
                     return key;
                 }
             }
 
-            if (!ObjectManage<K, V>::Add(id_count, value))
+            if (!ObjectManager<K, V>::Add(id_count, value))
             {
                 return K(-1);
             }
@@ -329,15 +328,14 @@ namespace hgl
     };
 
     /**
-    * @brief CN:以uint32为ID的对象管理类。\nEN:Object management class with uint32 ID.
+    * @brief CN:以uint32为ID的对象管理器。\nEN:Object manager with uint32 ID.
     */
     template<typename V>
-    using U32ObjectManage = IDObjectManage<uint32, V>;
+    using Uint32IdManager = AutoIdObjectManager<uint32, V>;
 
     /**
-    * @brief CN:以uint64为ID的对象管理类。\nEN:Object management class with uint64 ID.
+    * @brief CN:以uint64为ID的对象管理器。\nEN:Object manager with uint64 ID.
     */
     template<typename V>
-    using U64ObjectManage = IDObjectManage<uint64, V>;
-
+    using Uint64IdManager = AutoIdObjectManager<uint64, V>;
 } // namespace hgl

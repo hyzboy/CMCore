@@ -304,12 +304,12 @@ namespace hgl
             {
                 index=data_array.GetCount();
                 data_array.Expand(1);
-                data_index.Insert(pos,index);
+                data_index.Insert(pos,index,1);
             }
             else
             {
                 free_index.Pop(index);
-                data_index.Insert(pos,index);
+                data_index.Insert(pos,index,1);
             }
 
             mem_copy<T>(data_array[index],value);

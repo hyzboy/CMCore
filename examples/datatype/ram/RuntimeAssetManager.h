@@ -1,10 +1,10 @@
 #pragma once
 
-#include<hgl/type/ObjectManage.h>
+#include<hgl/type/ObjectManager.h>
 
 using namespace hgl;
 
-template<typename K,typename V> struct RuntimeAssetManager:public ObjectManage<K,V>
+template<typename K,typename V> struct RuntimeAssetManager:public ObjectManager<K,V>
 {
 public:
 
@@ -12,7 +12,7 @@ public:
     {
         if(!v)return(false);
 
-        return ObjectManage<K,V>::Add(v->GetID(),v);
+        return ObjectManager<K,V>::Add(v->GetID(),v);
     }
 };
 
