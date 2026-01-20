@@ -138,16 +138,15 @@ namespace hgl
 
         const ConstStringView<SC> *GetStringView(const int id)const                  ///<根据ID取得字符串视图
         {
-            return str_list.At(id);
+            const ConstStringView<SC> * const *ptr = str_list.At(id);
+            return ptr ? *ptr : nullptr;
         }
 
         const ConstStringView<SC> *operator[](const int id)const                  ///<根据ID取得字符串视图
         {
-            return str_list.At(id);
+            const ConstStringView<SC> * const *ptr = str_list.At(id);
+            return ptr ? *ptr : nullptr;
         }
-
-        const ConstStringView<SC> *begin()const{return str_list.begin();}
-        const ConstStringView<SC> *end()const{return str_list.end();}
 
     public:
 
@@ -172,7 +171,9 @@ namespace hgl
 
             if(csv.id>=0)
             {
-                str_list.Get(csv.id,csv);
+                ConstStringView<SC> *ptr;
+                str_list.Get(csv.id, ptr);
+                csv = *ptr;
 
                 return csv.id;
             }
@@ -194,7 +195,12 @@ namespace hgl
 
             str_set.Add(csv);
 
-            str_list.Add(csv);
+            ConstStringView<SC> *new_view = str_list.Create();
+            new_view->str_data = csv.str_data;
+            new_view->id = csv.id;
+            new_view->length = csv.length;
+            new_view->offset = csv.offset;
+            
             str_offset_map.Add(csv.id,csv.offset);
 
             return csv.id;

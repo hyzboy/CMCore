@@ -23,9 +23,9 @@ namespace hgl
             {
                 utos<SC>(id_str,sizeof(id_str),csv->id);
 
-                tos->WriteChars(id_str,hgl::strlen(id_str));
-                tos->WriteChars(gap_str,3);
-                tos->WriteChars(csv->GetString(),csv->length);
+                tos->WriteChars(reinterpret_cast<const u8char *>(id_str),hgl::strlen(id_str));
+                tos->WriteChars(reinterpret_cast<const u8char *>(gap_str),3);
+                tos->WriteChars(reinterpret_cast<const u8char *>(csv->GetString()),csv->length);
                 tos->WriteLineEnd();
             }
 
@@ -47,7 +47,7 @@ namespace hgl
                     text[i]=SC('\n');
             }
 
-            tos->WriteChars(text,length);
+            tos->WriteChars(reinterpret_cast<const u8char *>(static_cast<const SC*>(text)),length);
             return(true);
         }
     }
@@ -78,13 +78,24 @@ namespace hgl
 
     //下面这些定义是为了实例化上面的函数，所以不要删掉
 
-    //bool SaveToAnsiTextStream(hgl::io::TextOutputStream *tos,const ConstAnsiStringSet *css,bool output_id){return SaveToTextStream(tos,css,output_id);}
+    bool SaveToAnsiTextStream(hgl::io::TextOutputStream *tos,const ConstAnsiStringSet *css,bool output_id){return SaveToTextStream(tos,css,output_id);}
     bool SaveToWideTextStream(hgl::io::TextOutputStream *tos,const ConstWideStringSet *css,bool output_id){return SaveToTextStream(tos,css,output_id);}
     bool SaveToUTF8TextStream(hgl::io::TextOutputStream *tos,const ConstU8StringSet *css,bool output_id){return SaveToTextStream(tos,css,output_id);}
     bool SaveToUTF16TextStream(hgl::io::TextOutputStream *tos,const ConstU16StringSet *css,bool output_id){return SaveToTextStream(tos,css,output_id);}
 
-    //bool SaveToAnsiTextFile(const OSString &filename,const ConstAnsiStringSet *css,bool output_id,bool output_bom){return SaveToTextFile(filename,css,output_id,output_bom);}
+    bool SaveToAnsiTextFile(const OSString &filename,const ConstAnsiStringSet *css,bool output_id,bool output_bom){return SaveToTextFile(filename,css,output_id,output_bom);}
     bool SaveToWideTextFile(const OSString &filename,const ConstWideStringSet *css,bool output_id,bool output_bom){return SaveToTextFile(filename,css,output_id,output_bom);}
     bool SaveToUTF8TextFile(const OSString &filename,const ConstU8StringSet *css,bool output_id,bool output_bom){return SaveToTextFile(filename,css,output_id,output_bom);}
     bool SaveToUTF16TextFile(const OSString &filename,const ConstU16StringSet *css,bool output_id,bool output_bom){return SaveToTextFile(filename,css,output_id,output_bom);}
+
+    // Explicit template instantiations
+    template bool SaveToTextStream<char>(hgl::io::TextOutputStream *tos,const ConstStringSet<char> *css,bool output_id);
+    template bool SaveToTextStream<wchar_t>(hgl::io::TextOutputStream *tos,const ConstStringSet<wchar_t> *css,bool output_id);
+    template bool SaveToTextStream<u8char>(hgl::io::TextOutputStream *tos,const ConstStringSet<u8char> *css,bool output_id);
+    template bool SaveToTextStream<u16char>(hgl::io::TextOutputStream *tos,const ConstStringSet<u16char> *css,bool output_id);
+
+    template bool SaveToTextFile<char>(const OSString &filename,const ConstStringSet<char> *css,bool output_id,bool output_bom);
+    template bool SaveToTextFile<wchar_t>(const OSString &filename,const ConstStringSet<wchar_t> *css,bool output_id,bool output_bom);
+    template bool SaveToTextFile<u8char>(const OSString &filename,const ConstStringSet<u8char> *css,bool output_id,bool output_bom);
+    template bool SaveToTextFile<u16char>(const OSString &filename,const ConstStringSet<u16char> *css,bool output_id,bool output_bom);
 }//namespace hgl
