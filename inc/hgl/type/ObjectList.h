@@ -19,6 +19,10 @@ namespace hgl
     {
     private:
 
+        static_assert(!std::is_trivially_copyable_v<T>, 
+                      "ObjectList<T> requires non-trivial types (std::string, custom classes with dynamic memory, etc). "
+                      "For trivially copyable types (int, float, POD structs), use ArrayList<T> instead for better performance.");
+
         ArrayList<T *> items;   // composition: store pointers, manage ownership here
 
     public:
@@ -94,11 +98,55 @@ namespace hgl
             return items.Add(l.GetData(), l.GetCount());
         }
 
+        /**
+         * 添加对象的拷贝（方便接口）
+         * @param obj 对象引用，将在堆上创建副本
+         * @return 添加的对象指针，若失败返回nullptr
+         */
+        virtual T* Add(const T &obj)
+        {
+            T* new_obj = new T(obj);
+            if(!new_obj) return nullptr;
+            
+            if(items.Add(new_obj) < 0)
+            {
+                delete new_obj;
+                return nullptr;
+            }
+            return new_obj;
+        }
+
         virtual int RepeatAdd(const ItemPointer &data, int n)
         {
             return items.RepeatAdd(data, n);
         }
 
+        /**
+         * 重复添加对象的拷贝（方便接口）
+         * @param data 对象引用，将在堆上创建多个副本
+         * @param n 重复次数
+         * @return 成功添加的对象数量
+         */
+        virtual int RepeatAdd(const T &data, int n)
+        {
+            if(n <= 0) return 0;
+
+            int result = 0;
+            for(int i = 0; i < n; ++i)
+            {
+                T* new_obj = new T(data);
+                if(!new_obj) break;
+
+                if(items.Add(new_obj) < 0)
+                {
+                    delete new_obj;
+                    break;
+                }
+                ++result;
+            }
+            return result;
+        }
+ 
         // ============ 查找 ============
         virtual int Find(const ItemPointer &data) const { return items.Find(data); }
 

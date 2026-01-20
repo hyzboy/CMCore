@@ -21,8 +21,9 @@ namespace hgl
 
     public: //属性
 
-        static_assert(std::is_trivially_copyable_v<T>, "ArrayList requires trivially copyable T");
-
+        static_assert(std::is_trivially_copyable_v<T>, 
+                      "ArrayList<T> requires trivially copyable types (int, float, POD structs, etc). "
+                      "For non-trivial types (std::string, custom classes with dynamic memory), use ObjectList<T> instead.");
                 const   int     GetAllocCount   ()const{return data_array.GetAllocCount();}         ///<取得已分配容量
                 const   int     GetCount        ()const{return data_array.GetCount();}              ///<取得列表内数据数量
         virtual         bool    Resize          (int count){return data_array.Resize(count);}       ///<设置列表内数据数量
