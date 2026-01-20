@@ -57,28 +57,17 @@ namespace hgl
         virtual     ~DataArray(){ Free(); }
 
         // 基本属性
-        /** @brief 取得元素数量（非字节数）。 */
+
                 int64   GetCount        ()const{return count;}                                      ///<取得元素数量（非字节数）
-        /** @brief 取得已分配的阵列容量（非字节数）。 */
         const   int64   GetAllocCount   ()const{return alloc_count;}                                ///<取得已分配的阵列容量（非字节数）
-        /** @brief 取得已使用的字节数。 */
         const   int64   GetTotalBytes   ()const{return count*sizeof(T);}                            ///<取得已使用的字节数
-        /** @brief 取得已分配的总字节数。 */
         const   int64   GetAllocBytes   ()const{return alloc_count*sizeof(T);}                      ///<取得已分配的总字节数
-        /** @brief 是否为空。 */
         const   bool    IsEmpty         ()const{return count==0;}                                   ///<是否为空
 
-        /** @brief 返回底层数据指针。 */
                 T *     GetData         ()const{return items;}                                      ///<返回底层数据指针
-        /** @brief 返回底层数据指针（STL 风格）。 */
                 T *     data            ()const{return items;}                                      ///<返回底层数据指针（STL风格）
-
-        // 迭代
-        /** @brief 取得起始迭代器。 */
                 T *     begin           ()const{return items;}                                      ///<取得起始迭代器
-        /** @brief 取得尾后迭代器。 */
                 T *     end             ()const{return items+count;}                                ///<取得尾后迭代器
-        /** @brief 取得最后一个元素指针。 */
                 T *     last            ()const{return (count>0)?(items+(count-1)):nullptr;}        ///<取得最后一个元素指针
 
         // 访问
@@ -280,7 +269,7 @@ namespace hgl
             alloc_count=count=data_count;
         }
 
-        /** @brief 释放内部缓冲并重置计数。 */
+        /** @brief 释放内部缓冲并重写计数。 */
         void Free()
         {
             if(items)
@@ -412,6 +401,34 @@ namespace hgl
             }
 
             hgl_free(temp);
+        }
+
+        /**
+         * @brief 在指定位置插入一批数据。
+         * @param pos 插入位置，越界将被夹到 [0,count]。
+         * @param data 源数据指针。
+         * @param data_number 插入数量。
+         * @return true 成功。
+         */
+        bool Insert(int64 pos,const T *data,const int64 data_number)
+        {
+            if(!data||data_number<=0)return false;
+            if(pos<0)pos=0;
+            if(pos>count)pos=count;
+
+            if(count+data_number>alloc_count)
+            {
+                if(!Reserve(count+data_number))
+                    return false;
+            }
+
+            if(pos<count)
+                std::move_backward(items+pos,items+count,items+count+data_number);
+
+            std::copy_n(data,static_cast<size_t>(data_number),items+pos);
+
+            count+=data_number;
+            return true;
         }
 
         // 赋值辅助
