@@ -150,7 +150,11 @@ namespace hgl
     template<typename T> class Queue:public QueueTemplate<T, DataArray<T>>
     {
     public:
-        Queue():QueueTemplate<T, DataArray<T>>(){};
+        static_assert(std::is_trivially_copyable_v<T>,
+            "Queue<T> requires trivially copyable types (int, float, POD structs, etc). "
+            "For non-trivial types (std::string, custom classes with dynamic memory), use ObjectQueue<T> instead.");
+
+        Queue():QueueTemplate<T, DataArray<T>>(){}
         virtual ~Queue()=default;
     };//template<typename T> class Queue
 
@@ -161,7 +165,42 @@ namespace hgl
     template<typename T> class ObjectQueue:public QueueTemplate<T, ObjectArray<T>>
     {
     public:
+        static_assert(!std::is_trivially_copyable_v<T>,
+            "ObjectQueue<T> requires non-trivial types (std::string, custom classes with dynamic memory, etc). "
+            "For trivially copyable types (int, float, POD structs), use Queue<T> instead for better performance.");
+
         ObjectQueue():QueueTemplate<T, ObjectArray<T>>(){}
         virtual ~ObjectQueue() override { this->Free(); }
+
+        /**
+         * 压入一个指针（用于对象指针管理）
+         * 队列接管对象所有权，析构时自动 delete
+         */
+        virtual bool Push(T *ptr)
+        {
+            if(!ptr) return false;
+            // 对于 ObjectArray，我们需要存储对象副本
+            // 这里传递对象引用
+            return QueueTemplate<T, ObjectArray<T>>::Push(*ptr);
+        }
+
+        /**
+         * 弹出一个对象（返回指针版本）
+         */
+        virtual bool Pop(T *&ptr)
+        {
+            // 从数组中读取对象
+            T obj;
+            if(!QueueTemplate<T, ObjectArray<T>>::Pop(obj))
+            {
+                ptr = nullptr;
+                return false;
+            }
+
+            // 创建堆副本并返回指针
+            ptr = new T(obj);
+            return ptr != nullptr;
+        }
+
     };//template<typename T> class ObjectQueue
 }//namespace hgl
