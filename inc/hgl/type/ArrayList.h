@@ -2,6 +2,7 @@
 
 #include<stdlib.h>
 #include<initializer_list>
+#include<type_traits>
 #include<hgl/type/DataArray.h>
 #include<hgl/type/MemoryUtil.h>
 
@@ -19,6 +20,8 @@ namespace hgl
         DataArray<T> data_array;
 
     public: //属性
+
+        static_assert(std::is_trivially_copyable_v<T>, "ArrayList requires trivially copyable T");
 
                 const   int     GetAllocCount   ()const{return data_array.GetAllocCount();}         ///<取得已分配容量
                 const   int     GetCount        ()const{return data_array.GetCount();}              ///<取得列表内数据数量
