@@ -55,7 +55,7 @@ int main()
 
     {
         std::cout << "\n[1] Creating SortedSet..." << std::endl;
-        SortedSet<SimpleData> set;
+        SortedObjectSet<SimpleData> set;
 
         std::cout << "\n[2] Creating first object..." << std::endl;
         SimpleData obj1(10, "First");
