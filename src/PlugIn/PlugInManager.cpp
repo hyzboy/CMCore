@@ -1,4 +1,4 @@
-﻿#include<hgl/plugin/PlugInManage.h>
+﻿#include<hgl/plugin/PlugInManager.h>
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/plugin/ExternalPlugIn.h>
 
@@ -6,7 +6,7 @@ namespace hgl
 {
     using namespace filesystem;
 
-    PlugInManage::PlugInManage(const OSString &n)
+    PlugInManager::PlugInManager(const OSString &n)
     {
         name=OS_TEXT("CMP.")+n;
 
@@ -29,7 +29,7 @@ namespace hgl
         }
     }
 
-    bool PlugInManage::HasPluginFile(const OSString &pi_name,OSString *fullpath) const
+    bool PlugInManager::HasPluginFile(const OSString &pi_name,OSString *fullpath) const
     {
         if(pi_name.IsEmpty())return(false);
 
@@ -52,20 +52,20 @@ namespace hgl
         return false;
     }
 
-    bool PlugInManage::ExistsByFilename(const OSString &full_filename) const
+    bool PlugInManager::ExistsByFilename(const OSString &full_filename) const
     {
         if(full_filename.IsEmpty())return(false);
         return FileExist(full_filename);
     }
 
-    bool PlugInManage::IsLoaded(const OSString &pi_name) const
+    bool PlugInManager::IsLoaded(const OSString &pi_name) const
     {
         return this->Find(pi_name)!=nullptr;
     }
 
-    PlugInStatus PlugInManage::GetStatus(const OSString &pi_name) const
+    PlugInStatus PlugInManager::GetStatus(const OSString &pi_name) const
     {
-        PlugIn *pi=(const_cast<PlugInManage*>(this))->Find(pi_name);
+        PlugIn *pi=(const_cast<PlugInManager*>(this))->Find(pi_name);
         if(pi) return PlugInStatus::COMPLETE;
 
         OSString fp;
@@ -75,7 +75,7 @@ namespace hgl
         return PlugInStatus::NONE;
     }
 
-    int PlugInManage::Scan(OSStringList &out_names) const
+    int PlugInManager::Scan(OSStringList &out_names) const
     {
         out_names.Clear();
 
@@ -116,7 +116,7 @@ namespace hgl
         return out_names.GetCount();
     }
 
-    int PlugInManage::ScanDetailed(hgl::ObjectList<PlugInInfo> &out_infos,bool probe) const
+    int PlugInManager::ScanDetailed(hgl::ObjectList<PlugInInfo> &out_infos,bool probe) const
     {
         out_infos.Clear();
 
@@ -163,7 +163,7 @@ namespace hgl
         return out_infos.GetCount();
     }
 
-    bool PlugInManage::ProbePlugin(const OSString &pi_name,PlugInInfo &out_info) const
+    bool PlugInManager::ProbePlugin(const OSString &pi_name,PlugInInfo &out_info) const
     {
         out_info.name=pi_name;
         out_info.filename.Clear();
@@ -194,7 +194,7 @@ namespace hgl
         return false;
     }
 
-    bool PlugInManage::RegisterPlugin(PlugIn *pi)
+    bool PlugInManager::RegisterPlugin(PlugIn *pi)
     {
         if(!pi)return(false);
 
@@ -206,7 +206,7 @@ namespace hgl
         return this->Add(pi_name,pi);
     }
 
-    uint PlugInManage::UnregisterPlugin(const OSString &pi_name)
+    uint PlugInManager::UnregisterPlugin(const OSString &pi_name)
     {
         PlugIn *pi=this->Find(pi_name);
 
@@ -215,7 +215,7 @@ namespace hgl
         return this->Release(pi);
     }
 
-    bool PlugInManage::AddFindPath(const OSString &path)
+    bool PlugInManager::AddFindPath(const OSString &path)
     {
         if(path.IsEmpty())return(false);
         if(!IsDirectory(path))return(false);
@@ -231,7 +231,7 @@ namespace hgl
         return(true);
     }
 
-    PlugIn *PlugInManage::LoadPlugin(const OSString &pi_name,const OSString &filename)
+    PlugIn *PlugInManager::LoadPlugin(const OSString &pi_name,const OSString &filename)
     {
         if(pi_name.IsEmpty())return(nullptr);
         if(filename.IsEmpty())return(nullptr);
@@ -253,7 +253,7 @@ namespace hgl
         return(nullptr);
     }
 
-    PlugIn *PlugInManage::LoadPlugin(const OSString &pi_name)
+    PlugIn *PlugInManager::LoadPlugin(const OSString &pi_name)
     {
         if(pi_name.IsEmpty())return(nullptr);
 
@@ -288,7 +288,7 @@ namespace hgl
         return(nullptr);
     }
 
-    bool PlugInManage::UnloadPlugin(const OSString &pi_name)
+    bool PlugInManager::UnloadPlugin(const OSString &pi_name)
     {
         if(pi_name.IsEmpty())return(false);
 
