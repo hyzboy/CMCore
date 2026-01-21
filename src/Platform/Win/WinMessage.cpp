@@ -2,6 +2,7 @@
 #include<hgl/io/event/KeyboardEvent.h>
 #include<hgl/io/event/MouseEvent.h>
 #include<hgl/io/event/WindowEvent.h>
+#include<hgl/io/event/PointerEvent.h>
 #include<Windows.h>
 
 #ifdef _DEBUG
@@ -277,6 +278,211 @@ namespace hgl
             }
         #undef WMEF2
 
+            static PointerEventData pointer_event_data;
+
+        #define WMEF_POINTER(name) void name(EventDispatcher *ie,uint32 wParam,uint32 lParam)
+            WMEF_POINTER(WMProcPointerDown)
+            {
+                UINT32 pointerId = GET_POINTERID_WPARAM(wParam);
+                POINTER_INFO pointerInfo;
+                
+                if(GetPointerInfo(pointerId, &pointerInfo))
+                {
+                    pointer_event_data.x = pointerInfo.ptPixelLocation.x;
+                    pointer_event_data.y = pointerInfo.ptPixelLocation.y;
+                    
+                    // 设置设备类型
+                    switch(pointerInfo.pointerType)
+                    {
+                        case PT_POINTER:    pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
+                        case PT_TOUCH:      pointer_event_data.device_type = (uint8)PointerDeviceType::Touch; break;
+                        case PT_PEN:        pointer_event_data.device_type = (uint8)PointerDeviceType::Pen; break;
+                        case PT_MOUSE:      pointer_event_data.device_type = (uint8)PointerDeviceType::Mouse; break;
+                        default:            pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
+                    }
+                    
+                    // 设置按钮状态
+                    if(pointerInfo.pointerFlags & POINTER_FLAG_FIRSTBUTTON)
+                        pointer_event_data.button = (uint8)PointerButton::Primary;
+                    else if(pointerInfo.pointerFlags & POINTER_FLAG_SECONDBUTTON)
+                        pointer_event_data.button = (uint8)PointerButton::Secondary;
+                    else if(pointerInfo.pointerFlags & POINTER_FLAG_THIRDBUTTON)
+                        pointer_event_data.button = (uint8)PointerButton::Tertiary;
+                    else
+                        pointer_event_data.button = (uint8)PointerButton::None;
+                    
+                    // 如果是触控笔，获取压力值
+                    pointer_event_data.pressure = 0;
+                    if(pointerInfo.pointerType == PT_PEN)
+                    {
+                        POINTER_PEN_INFO penInfo;
+                        if(GetPointerPenInfo(pointerId, &penInfo))
+                        {
+                            pointer_event_data.pressure = penInfo.pressure;
+                        }
+                    }
+                    
+                    event_header.type   = InputEventSource::Pointer;
+                    event_header.index  = 0;
+                    event_header.id     = (uint16)PointerEventID::Down;
+                    
+                    ie->OnEvent(event_header, pointer_event_data.data);
+                }
+            }
+
+            WMEF_POINTER(WMProcPointerUp)
+            {
+                UINT32 pointerId = GET_POINTERID_WPARAM(wParam);
+                POINTER_INFO pointerInfo;
+                
+                if(GetPointerInfo(pointerId, &pointerInfo))
+                {
+                    pointer_event_data.x = pointerInfo.ptPixelLocation.x;
+                    pointer_event_data.y = pointerInfo.ptPixelLocation.y;
+                    
+                    switch(pointerInfo.pointerType)
+                    {
+                        case PT_POINTER:    pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
+                        case PT_TOUCH:      pointer_event_data.device_type = (uint8)PointerDeviceType::Touch; break;
+                        case PT_PEN:        pointer_event_data.device_type = (uint8)PointerDeviceType::Pen; break;
+                        case PT_MOUSE:      pointer_event_data.device_type = (uint8)PointerDeviceType::Mouse; break;
+                        default:            pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
+                    }
+                    
+                    if(pointerInfo.pointerFlags & POINTER_FLAG_FIRSTBUTTON)
+                        pointer_event_data.button = (uint8)PointerButton::Primary;
+                    else if(pointerInfo.pointerFlags & POINTER_FLAG_SECONDBUTTON)
+                        pointer_event_data.button = (uint8)PointerButton::Secondary;
+                    else if(pointerInfo.pointerFlags & POINTER_FLAG_THIRDBUTTON)
+                        pointer_event_data.button = (uint8)PointerButton::Tertiary;
+                    else
+                        pointer_event_data.button = (uint8)PointerButton::None;
+                    
+                    pointer_event_data.pressure = 0;
+                    if(pointerInfo.pointerType == PT_PEN)
+                    {
+                        POINTER_PEN_INFO penInfo;
+                        if(GetPointerPenInfo(pointerId, &penInfo))
+                        {
+                            pointer_event_data.pressure = penInfo.pressure;
+                        }
+                    }
+                    
+                    event_header.type   = InputEventSource::Pointer;
+                    event_header.index  = 0;
+                    event_header.id     = (uint16)PointerEventID::Up;
+                    
+                    ie->OnEvent(event_header, pointer_event_data.data);
+                }
+            }
+
+            WMEF_POINTER(WMProcPointerUpdate)
+            {
+                UINT32 pointerId = GET_POINTERID_WPARAM(wParam);
+                POINTER_INFO pointerInfo;
+                
+                if(GetPointerInfo(pointerId, &pointerInfo))
+                {
+                    pointer_event_data.x = pointerInfo.ptPixelLocation.x;
+                    pointer_event_data.y = pointerInfo.ptPixelLocation.y;
+                    
+                    switch(pointerInfo.pointerType)
+                    {
+                        case PT_POINTER:    pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
+                        case PT_TOUCH:      pointer_event_data.device_type = (uint8)PointerDeviceType::Touch; break;
+                        case PT_PEN:        pointer_event_data.device_type = (uint8)PointerDeviceType::Pen; break;
+                        case PT_MOUSE:      pointer_event_data.device_type = (uint8)PointerDeviceType::Mouse; break;
+                        default:            pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
+                    }
+                    
+                    if(pointerInfo.pointerFlags & POINTER_FLAG_FIRSTBUTTON)
+                        pointer_event_data.button = (uint8)PointerButton::Primary;
+                    else if(pointerInfo.pointerFlags & POINTER_FLAG_SECONDBUTTON)
+                        pointer_event_data.button = (uint8)PointerButton::Secondary;
+                    else if(pointerInfo.pointerFlags & POINTER_FLAG_THIRDBUTTON)
+                        pointer_event_data.button = (uint8)PointerButton::Tertiary;
+                    else
+                        pointer_event_data.button = (uint8)PointerButton::None;
+                    
+                    pointer_event_data.pressure = 0;
+                    if(pointerInfo.pointerType == PT_PEN)
+                    {
+                        POINTER_PEN_INFO penInfo;
+                        if(GetPointerPenInfo(pointerId, &penInfo))
+                        {
+                            pointer_event_data.pressure = penInfo.pressure;
+                        }
+                    }
+                    
+                    event_header.type   = InputEventSource::Pointer;
+                    event_header.index  = 0;
+                    event_header.id     = (uint16)PointerEventID::Update;
+                    
+                    ie->OnEvent(event_header, pointer_event_data.data);
+                }
+            }
+
+            WMEF_POINTER(WMProcPointerEnter)
+            {
+                UINT32 pointerId = GET_POINTERID_WPARAM(wParam);
+                POINTER_INFO pointerInfo;
+                
+                if(GetPointerInfo(pointerId, &pointerInfo))
+                {
+                    pointer_event_data.x = pointerInfo.ptPixelLocation.x;
+                    pointer_event_data.y = pointerInfo.ptPixelLocation.y;
+                    
+                    switch(pointerInfo.pointerType)
+                    {
+                        case PT_POINTER:    pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
+                        case PT_TOUCH:      pointer_event_data.device_type = (uint8)PointerDeviceType::Touch; break;
+                        case PT_PEN:        pointer_event_data.device_type = (uint8)PointerDeviceType::Pen; break;
+                        case PT_MOUSE:      pointer_event_data.device_type = (uint8)PointerDeviceType::Mouse; break;
+                        default:            pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
+                    }
+                    
+                    pointer_event_data.button = (uint8)PointerButton::None;
+                    pointer_event_data.pressure = 0;
+                    
+                    event_header.type   = InputEventSource::Pointer;
+                    event_header.index  = 0;
+                    event_header.id     = (uint16)PointerEventID::Enter;
+                    
+                    ie->OnEvent(event_header, pointer_event_data.data);
+                }
+            }
+
+            WMEF_POINTER(WMProcPointerLeave)
+            {
+                UINT32 pointerId = GET_POINTERID_WPARAM(wParam);
+                POINTER_INFO pointerInfo;
+                
+                if(GetPointerInfo(pointerId, &pointerInfo))
+                {
+                    pointer_event_data.x = pointerInfo.ptPixelLocation.x;
+                    pointer_event_data.y = pointerInfo.ptPixelLocation.y;
+                    
+                    switch(pointerInfo.pointerType)
+                    {
+                        case PT_POINTER:    pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
+                        case PT_TOUCH:      pointer_event_data.device_type = (uint8)PointerDeviceType::Touch; break;
+                        case PT_PEN:        pointer_event_data.device_type = (uint8)PointerDeviceType::Pen; break;
+                        case PT_MOUSE:      pointer_event_data.device_type = (uint8)PointerDeviceType::Mouse; break;
+                        default:            pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
+                    }
+                    
+                    pointer_event_data.button = (uint8)PointerButton::None;
+                    pointer_event_data.pressure = 0;
+                    
+                    event_header.type   = InputEventSource::Pointer;
+                    event_header.index  = 0;
+                    event_header.id     = (uint16)PointerEventID::Leave;
+                    
+                    ie->OnEvent(event_header, pointer_event_data.data);
+                }
+            }
+        #undef WMEF_POINTER
+
             static KeyboardEventData keyboard_event_data;
 
         #define WMEF1(name) void name(EventDispatcher *ie,uint32 wParam,uint32)
@@ -359,6 +565,11 @@ namespace hgl
         WM_MAP(WM_SYSCHAR           ,WMProcChar);
         WM_MAP(WM_ACTIVATE          ,WMProcActive);
         WM_MAP(WM_SIZE              ,WMProcSize);
+        WM_MAP(WM_POINTERDOWN       ,WMProcPointerDown);
+        WM_MAP(WM_POINTERUP         ,WMProcPointerUp);
+        WM_MAP(WM_POINTERUPDATE     ,WMProcPointerUpdate);
+        WM_MAP(WM_POINTERENTER      ,WMProcPointerEnter);
+        WM_MAP(WM_POINTERLEAVE      ,WMProcPointerLeave);
 
     #undef WM_MAP
     }

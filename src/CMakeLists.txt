@@ -197,10 +197,12 @@ SOURCE_GROUP("IO\\MiniPack\\Sources" FILES ${CMCORE_IO_MINIPACK_SOURCES})
 SET(CMCORE_IO_EVENT_HEADERS ${CMCORE_IO_INCLUDE_PATH}/event/KeyboardEvent.h
                             ${CMCORE_IO_INCLUDE_PATH}/event/MouseEvent.h
                             ${CMCORE_IO_INCLUDE_PATH}/event/JoystickEvent.h
+                            ${CMCORE_IO_INCLUDE_PATH}/event/PointerEvent.h
                             ${CMCORE_IO_INCLUDE_PATH}/event/EventDispatcher.h
                             ${CMCORE_IO_INCLUDE_PATH}/event/InputMapping.h)
 
 SET(CMCORE_IO_EVENT_SOURCES IO/Event/MouseEvent.cpp
+                            IO/Event/PointerEvent.cpp
                             IO/Event/EventDispatcher.cpp)
 
 SOURCE_GROUP("IO\\Event\\Headers" FILES ${CMCORE_IO_EVENT_HEADERS})

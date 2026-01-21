@@ -13,7 +13,8 @@ namespace hgl::io
         Keyboard,
         Mouse,
         Joystick,
+        Pointer,
 
-        ENUM_CLASS_RANGE(Root,Joystick)
+        ENUM_CLASS_RANGE(Root,Pointer)
     };
 }//namespace hgl::io
