@@ -11,19 +11,19 @@ namespace hgl::io
             position.x=ped->x;
             position.y=ped->y;
 
-            const PointerDeviceType device_type = PointerDeviceType(ped->device_type);
+            current_device_type = PointerDeviceType(ped->device_type);
             const PointerButton button = PointerButton(ped->button);
             const uint16 pressure = ped->pressure;
 
             switch(PointerEventID(header.id))
             {
                 case PointerEventID::Down:      pressed_statues[ped->button]=true;
-                                                if(OnDown   (position,device_type,button,pressure,extended_info)==EventProcResult::Break)return EventProcResult::Break;break;
+                                                if(OnDown   (position,current_device_type,button,pressure,extended_info)==EventProcResult::Break)return EventProcResult::Break;break;
                 case PointerEventID::Up:        pressed_statues[ped->button]=false;
-                                                if(OnUp     (position,device_type,button,pressure,extended_info)==EventProcResult::Break)return EventProcResult::Break;break;
-                case PointerEventID::Update:    if(OnUpdate (position,device_type,button,pressure,extended_info)==EventProcResult::Break)return EventProcResult::Break;break;
-                case PointerEventID::Enter:     if(OnEnter  (position,device_type,extended_info)==EventProcResult::Break)return EventProcResult::Break;break;
-                case PointerEventID::Leave:     if(OnLeave  (position,device_type,extended_info)==EventProcResult::Break)return EventProcResult::Break;break;
+                                                if(OnUp     (position,current_device_type,button,pressure,extended_info)==EventProcResult::Break)return EventProcResult::Break;break;
+                case PointerEventID::Update:    if(OnUpdate (position,current_device_type,button,pressure,extended_info)==EventProcResult::Break)return EventProcResult::Break;break;
+                case PointerEventID::Enter:     if(OnEnter  (position,current_device_type,extended_info)==EventProcResult::Break)return EventProcResult::Break;break;
+                case PointerEventID::Leave:     if(OnLeave  (position,current_device_type,extended_info)==EventProcResult::Break)return EventProcResult::Break;break;
             }
         }
 

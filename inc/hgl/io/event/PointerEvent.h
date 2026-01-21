@@ -93,6 +93,7 @@ namespace hgl::io
         PointerEventData *ped=nullptr;
 
         Vector2i position{};
+        PointerDeviceType current_device_type = PointerDeviceType::None;
 
         bool pressed_statues[size_t(PointerButton::RANGE_SIZE)]{};
 
@@ -120,6 +121,13 @@ namespace hgl::io
 
             return pressed_statues[size_t(pb)];
         }
+
+        /**
+         * 判断当前设备类型
+         */
+        const bool IsPen()const{return current_device_type==PointerDeviceType::Pen;}
+        const bool IsTouch()const{return current_device_type==PointerDeviceType::Touch;}
+        const bool IsMouse()const{return current_device_type==PointerDeviceType::Mouse;}
 
     public:
 
