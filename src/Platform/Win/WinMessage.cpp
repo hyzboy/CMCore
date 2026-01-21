@@ -279,6 +279,7 @@ namespace hgl
         #undef WMEF2
 
             static PointerEventData pointer_event_data;
+            static PointerExtendedInfo pointer_extended_info;
 
         #define WMEF_POINTER(name) void name(EventDispatcher *ie,uint32 wParam,uint32 lParam)
             WMEF_POINTER(WMProcPointerDown)
@@ -290,6 +291,10 @@ namespace hgl
                 {
                     pointer_event_data.x = pointerInfo.ptPixelLocation.x;
                     pointer_event_data.y = pointerInfo.ptPixelLocation.y;
+                    
+                    // 设置基本信息
+                    pointer_extended_info.pointer_id = pointerId;
+                    pointer_extended_info.timestamp = pointerInfo.dwTime;
                     
                     // 设置设备类型
                     switch(pointerInfo.pointerType)
@@ -311,20 +316,38 @@ namespace hgl
                     else
                         pointer_event_data.button = (uint8)PointerButton::None;
                     
-                    // 如果是触控笔，获取压力值
+                    // 如果是触控笔，获取详细信息
                     pointer_event_data.pressure = 0;
+                    pointer_extended_info.tilt_x = 0;
+                    pointer_extended_info.tilt_y = 0;
+                    pointer_extended_info.rotation = 0;
+                    pointer_extended_info.is_eraser = false;
+                    pointer_extended_info.is_inverted = false;
+                    pointer_extended_info.is_barrel_pressed = false;
+                    
                     if(pointerInfo.pointerType == PT_PEN)
                     {
                         POINTER_PEN_INFO penInfo;
                         if(GetPointerPenInfo(pointerId, &penInfo))
                         {
                             pointer_event_data.pressure = penInfo.pressure;
+                            pointer_extended_info.tilt_x = penInfo.tiltX;
+                            pointer_extended_info.tilt_y = penInfo.tiltY;
+                            pointer_extended_info.rotation = penInfo.rotation;
+                            pointer_extended_info.is_eraser = (penInfo.penFlags & PEN_FLAG_ERASER) != 0;
+                            pointer_extended_info.is_inverted = (penInfo.penFlags & PEN_FLAG_INVERTED) != 0;
+                            pointer_extended_info.is_barrel_pressed = (penInfo.penFlags & PEN_FLAG_BARREL) != 0;
                         }
                     }
                     
                     event_header.type   = InputEventSource::Pointer;
                     event_header.index  = 0;
                     event_header.id     = (uint16)PointerEventID::Down;
+                    
+                    // 将扩展信息设置到事件分发器
+                    PointerEvent* pointer_event = dynamic_cast<PointerEvent*>(ie);
+                    if(pointer_event)
+                        pointer_event->extended_info = pointer_extended_info;
                     
                     ie->OnEvent(event_header, pointer_event_data.data);
                 }
@@ -340,6 +363,9 @@ namespace hgl
                     pointer_event_data.x = pointerInfo.ptPixelLocation.x;
                     pointer_event_data.y = pointerInfo.ptPixelLocation.y;
                     
+                    pointer_extended_info.pointer_id = pointerId;
+                    pointer_extended_info.timestamp = pointerInfo.dwTime;
+                    
                     switch(pointerInfo.pointerType)
                     {
                         case PT_POINTER:    pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
@@ -359,18 +385,35 @@ namespace hgl
                         pointer_event_data.button = (uint8)PointerButton::None;
                     
                     pointer_event_data.pressure = 0;
+                    pointer_extended_info.tilt_x = 0;
+                    pointer_extended_info.tilt_y = 0;
+                    pointer_extended_info.rotation = 0;
+                    pointer_extended_info.is_eraser = false;
+                    pointer_extended_info.is_inverted = false;
+                    pointer_extended_info.is_barrel_pressed = false;
+                    
                     if(pointerInfo.pointerType == PT_PEN)
                     {
                         POINTER_PEN_INFO penInfo;
                         if(GetPointerPenInfo(pointerId, &penInfo))
                         {
                             pointer_event_data.pressure = penInfo.pressure;
+                            pointer_extended_info.tilt_x = penInfo.tiltX;
+                            pointer_extended_info.tilt_y = penInfo.tiltY;
+                            pointer_extended_info.rotation = penInfo.rotation;
+                            pointer_extended_info.is_eraser = (penInfo.penFlags & PEN_FLAG_ERASER) != 0;
+                            pointer_extended_info.is_inverted = (penInfo.penFlags & PEN_FLAG_INVERTED) != 0;
+                            pointer_extended_info.is_barrel_pressed = (penInfo.penFlags & PEN_FLAG_BARREL) != 0;
                         }
                     }
                     
                     event_header.type   = InputEventSource::Pointer;
                     event_header.index  = 0;
                     event_header.id     = (uint16)PointerEventID::Up;
+                    
+                    PointerEvent* pointer_event = dynamic_cast<PointerEvent*>(ie);
+                    if(pointer_event)
+                        pointer_event->extended_info = pointer_extended_info;
                     
                     ie->OnEvent(event_header, pointer_event_data.data);
                 }
@@ -386,6 +429,9 @@ namespace hgl
                     pointer_event_data.x = pointerInfo.ptPixelLocation.x;
                     pointer_event_data.y = pointerInfo.ptPixelLocation.y;
                     
+                    pointer_extended_info.pointer_id = pointerId;
+                    pointer_extended_info.timestamp = pointerInfo.dwTime;
+                    
                     switch(pointerInfo.pointerType)
                     {
                         case PT_POINTER:    pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
@@ -405,18 +451,35 @@ namespace hgl
                         pointer_event_data.button = (uint8)PointerButton::None;
                     
                     pointer_event_data.pressure = 0;
+                    pointer_extended_info.tilt_x = 0;
+                    pointer_extended_info.tilt_y = 0;
+                    pointer_extended_info.rotation = 0;
+                    pointer_extended_info.is_eraser = false;
+                    pointer_extended_info.is_inverted = false;
+                    pointer_extended_info.is_barrel_pressed = false;
+                    
                     if(pointerInfo.pointerType == PT_PEN)
                     {
                         POINTER_PEN_INFO penInfo;
                         if(GetPointerPenInfo(pointerId, &penInfo))
                         {
                             pointer_event_data.pressure = penInfo.pressure;
+                            pointer_extended_info.tilt_x = penInfo.tiltX;
+                            pointer_extended_info.tilt_y = penInfo.tiltY;
+                            pointer_extended_info.rotation = penInfo.rotation;
+                            pointer_extended_info.is_eraser = (penInfo.penFlags & PEN_FLAG_ERASER) != 0;
+                            pointer_extended_info.is_inverted = (penInfo.penFlags & PEN_FLAG_INVERTED) != 0;
+                            pointer_extended_info.is_barrel_pressed = (penInfo.penFlags & PEN_FLAG_BARREL) != 0;
                         }
                     }
                     
                     event_header.type   = InputEventSource::Pointer;
                     event_header.index  = 0;
                     event_header.id     = (uint16)PointerEventID::Update;
+                    
+                    PointerEvent* pointer_event = dynamic_cast<PointerEvent*>(ie);
+                    if(pointer_event)
+                        pointer_event->extended_info = pointer_extended_info;
                     
                     ie->OnEvent(event_header, pointer_event_data.data);
                 }
@@ -432,6 +495,9 @@ namespace hgl
                     pointer_event_data.x = pointerInfo.ptPixelLocation.x;
                     pointer_event_data.y = pointerInfo.ptPixelLocation.y;
                     
+                    pointer_extended_info.pointer_id = pointerId;
+                    pointer_extended_info.timestamp = pointerInfo.dwTime;
+                    
                     switch(pointerInfo.pointerType)
                     {
                         case PT_POINTER:    pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
@@ -443,10 +509,20 @@ namespace hgl
                     
                     pointer_event_data.button = (uint8)PointerButton::None;
                     pointer_event_data.pressure = 0;
+                    pointer_extended_info.tilt_x = 0;
+                    pointer_extended_info.tilt_y = 0;
+                    pointer_extended_info.rotation = 0;
+                    pointer_extended_info.is_eraser = false;
+                    pointer_extended_info.is_inverted = false;
+                    pointer_extended_info.is_barrel_pressed = false;
                     
                     event_header.type   = InputEventSource::Pointer;
                     event_header.index  = 0;
                     event_header.id     = (uint16)PointerEventID::Enter;
+                    
+                    PointerEvent* pointer_event = dynamic_cast<PointerEvent*>(ie);
+                    if(pointer_event)
+                        pointer_event->extended_info = pointer_extended_info;
                     
                     ie->OnEvent(event_header, pointer_event_data.data);
                 }
@@ -462,6 +538,9 @@ namespace hgl
                     pointer_event_data.x = pointerInfo.ptPixelLocation.x;
                     pointer_event_data.y = pointerInfo.ptPixelLocation.y;
                     
+                    pointer_extended_info.pointer_id = pointerId;
+                    pointer_extended_info.timestamp = pointerInfo.dwTime;
+                    
                     switch(pointerInfo.pointerType)
                     {
                         case PT_POINTER:    pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
@@ -473,10 +552,20 @@ namespace hgl
                     
                     pointer_event_data.button = (uint8)PointerButton::None;
                     pointer_event_data.pressure = 0;
+                    pointer_extended_info.tilt_x = 0;
+                    pointer_extended_info.tilt_y = 0;
+                    pointer_extended_info.rotation = 0;
+                    pointer_extended_info.is_eraser = false;
+                    pointer_extended_info.is_inverted = false;
+                    pointer_extended_info.is_barrel_pressed = false;
                     
                     event_header.type   = InputEventSource::Pointer;
                     event_header.index  = 0;
                     event_header.id     = (uint16)PointerEventID::Leave;
+                    
+                    PointerEvent* pointer_event = dynamic_cast<PointerEvent*>(ie);
+                    if(pointer_event)
+                        pointer_event->extended_info = pointer_extended_info;
                     
                     ie->OnEvent(event_header, pointer_event_data.data);
                 }

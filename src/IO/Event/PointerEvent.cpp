@@ -18,12 +18,12 @@ namespace hgl::io
             switch(PointerEventID(header.id))
             {
                 case PointerEventID::Down:      pressed_statues[ped->button]=true;
-                                                if(OnDown   (position,device_type,button,pressure)==EventProcResult::Break)return EventProcResult::Break;break;
+                                                if(OnDown   (position,device_type,button,pressure,extended_info)==EventProcResult::Break)return EventProcResult::Break;break;
                 case PointerEventID::Up:        pressed_statues[ped->button]=false;
-                                                if(OnUp     (position,device_type,button,pressure)==EventProcResult::Break)return EventProcResult::Break;break;
-                case PointerEventID::Update:    if(OnUpdate (position,device_type,button,pressure)==EventProcResult::Break)return EventProcResult::Break;break;
-                case PointerEventID::Enter:     if(OnEnter  (position,device_type)==EventProcResult::Break)return EventProcResult::Break;break;
-                case PointerEventID::Leave:     if(OnLeave  (position,device_type)==EventProcResult::Break)return EventProcResult::Break;break;
+                                                if(OnUp     (position,device_type,button,pressure,extended_info)==EventProcResult::Break)return EventProcResult::Break;break;
+                case PointerEventID::Update:    if(OnUpdate (position,device_type,button,pressure,extended_info)==EventProcResult::Break)return EventProcResult::Break;break;
+                case PointerEventID::Enter:     if(OnEnter  (position,device_type,extended_info)==EventProcResult::Break)return EventProcResult::Break;break;
+                case PointerEventID::Leave:     if(OnLeave  (position,device_type,extended_info)==EventProcResult::Break)return EventProcResult::Break;break;
             }
         }
 
