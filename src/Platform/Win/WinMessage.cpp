@@ -3,6 +3,8 @@
 #include<hgl/io/event/MouseEvent.h>
 #include<hgl/io/event/WindowEvent.h>
 #include<hgl/io/event/PointerEvent.h>
+#include<hgl/io/event/TouchEvent.h>
+#include<hgl/io/event/GestureEvent.h>
 #include<Windows.h>
 
 #ifdef _DEBUG
@@ -572,6 +574,141 @@ namespace hgl
             }
         #undef WMEF_POINTER
 
+            static TouchEventData touch_event_data;
+
+        #define WMEF_TOUCH(name) void name(EventDispatcher *ie,uint32 wParam,uint32 lParam)
+            WMEF_TOUCH(WMProcTouch)
+            {
+                UINT cInputs = LOWORD(wParam);
+                HTOUCHINPUT hTouchInput = (HTOUCHINPUT)lParam;
+                
+                if(cInputs > 0)
+                {
+                    TOUCHINPUT *pInputs = new TOUCHINPUT[cInputs];
+                    
+                    if(GetTouchInputInfo(hTouchInput, cInputs, pInputs, sizeof(TOUCHINPUT)))
+                    {
+                        TouchEvent* touch_event = dynamic_cast<TouchEvent*>(ie);
+                        
+                        if(touch_event && cInputs <= 16)
+                        {
+                            // 更新触摸点信息
+                            touch_event->current_touch_count = cInputs;
+                            
+                            for(UINT i = 0; i < cInputs; i++)
+                            {
+                                touch_event->touch_points[i].id = pInputs[i].dwID;
+                                touch_event->touch_points[i].x = pInputs[i].x / 100;
+                                touch_event->touch_points[i].y = pInputs[i].y / 100;
+                                touch_event->touch_points[i].cx = pInputs[i].cxContact / 100;
+                                touch_event->touch_points[i].cy = pInputs[i].cyContact / 100;
+                                touch_event->touch_points[i].flags = pInputs[i].dwFlags;
+                                touch_event->touch_points[i].mask = pInputs[i].dwMask;
+                                touch_event->touch_points[i].time = pInputs[i].dwTime;
+                            }
+                            
+                            // 使用第一个触摸点的位置
+                            touch_event_data.x = pInputs[0].x / 100;
+                            touch_event_data.y = pInputs[0].y / 100;
+                            touch_event_data.touch_count = cInputs;
+                            
+                            event_header.type = InputEventSource::Touch;
+                            event_header.index = 0;
+                            
+                            // 判断事件类型
+                            if(pInputs[0].dwFlags & TOUCHEVENTF_DOWN)
+                                event_header.id = (uint16)TouchEventID::Down;
+                            else if(pInputs[0].dwFlags & TOUCHEVENTF_UP)
+                                event_header.id = (uint16)TouchEventID::Up;
+                            else if(pInputs[0].dwFlags & TOUCHEVENTF_MOVE)
+                                event_header.id = (uint16)TouchEventID::Move;
+                            
+                            ie->OnEvent(event_header, touch_event_data.data);
+                        }
+                        
+                        CloseTouchInputHandle(hTouchInput);
+                    }
+                    
+                    delete[] pInputs;
+                }
+            }
+        #undef WMEF_TOUCH
+
+            static GestureEventData gesture_event_data;
+            static GestureExtendedInfo gesture_extended_info;
+
+        #define WMEF_GESTURE(name) void name(EventDispatcher *ie,uint32 wParam,uint32 lParam)
+            WMEF_GESTURE(WMProcGesture)
+            {
+                GESTUREINFO gi;
+                ZeroMemory(&gi, sizeof(GESTUREINFO));
+                gi.cbSize = sizeof(GESTUREINFO);
+                
+                HGESTUREINFO hGestureInfo = (HGESTUREINFO)lParam;
+                
+                if(GetGestureInfo(hGestureInfo, &gi))
+                {
+                    gesture_event_data.x = gi.ptsLocation.x;
+                    gesture_event_data.y = gi.ptsLocation.y;
+                    gesture_event_data.flags = gi.dwFlags;
+                    
+                    gesture_extended_info.gesture_id = gi.ullArguments;
+                    gesture_extended_info.timestamp = gi.dwID;
+                    gesture_extended_info.sequence_id = gi.dwSequenceID;
+                    
+                    // 判断手势类型
+                    switch(gi.dwID)
+                    {
+                        case GID_BEGIN:
+                            gesture_event_data.gesture_type = (uint8)GestureType::Begin;
+                            event_header.id = (uint16)GestureEventID::Begin;
+                            break;
+                        case GID_END:
+                            gesture_event_data.gesture_type = (uint8)GestureType::End;
+                            event_header.id = (uint16)GestureEventID::End;
+                            break;
+                        case GID_ZOOM:
+                            gesture_event_data.gesture_type = (uint8)GestureType::Zoom;
+                            gesture_extended_info.distance = (int32)gi.ullArguments;
+                            event_header.id = (uint16)GestureEventID::Update;
+                            break;
+                        case GID_PAN:
+                            gesture_event_data.gesture_type = (uint8)GestureType::Pan;
+                            event_header.id = (uint16)GestureEventID::Update;
+                            break;
+                        case GID_ROTATE:
+                            gesture_event_data.gesture_type = (uint8)GestureType::Rotate;
+                            gesture_extended_info.argument = (int32)gi.ullArguments;
+                            event_header.id = (uint16)GestureEventID::Update;
+                            break;
+                        case GID_TWOFINGERTAP:
+                            gesture_event_data.gesture_type = (uint8)GestureType::TwoFingerTap;
+                            event_header.id = (uint16)GestureEventID::Update;
+                            break;
+                        case GID_PRESSANDTAP:
+                            gesture_event_data.gesture_type = (uint8)GestureType::PressAndTap;
+                            event_header.id = (uint16)GestureEventID::Update;
+                            break;
+                        default:
+                            gesture_event_data.gesture_type = (uint8)GestureType::None;
+                            event_header.id = (uint16)GestureEventID::Update;
+                            break;
+                    }
+                    
+                    event_header.type = InputEventSource::Gesture;
+                    event_header.index = 0;
+                    
+                    GestureEvent* gesture_event = dynamic_cast<GestureEvent*>(ie);
+                    if(gesture_event)
+                        gesture_event->extended_info = gesture_extended_info;
+                    
+                    ie->OnEvent(event_header, gesture_event_data.data);
+                    
+                    CloseGestureInfoHandle(hGestureInfo);
+                }
+            }
+        #undef WMEF_GESTURE
+
             static KeyboardEventData keyboard_event_data;
 
         #define WMEF1(name) void name(EventDispatcher *ie,uint32 wParam,uint32)
@@ -659,6 +796,8 @@ namespace hgl
         WM_MAP(WM_POINTERUPDATE     ,WMProcPointerUpdate);
         WM_MAP(WM_POINTERENTER      ,WMProcPointerEnter);
         WM_MAP(WM_POINTERLEAVE      ,WMProcPointerLeave);
+        WM_MAP(WM_TOUCH             ,WMProcTouch);
+        WM_MAP(WM_GESTURE           ,WMProcGesture);
 
     #undef WM_MAP
     }

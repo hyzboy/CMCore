@@ -14,7 +14,9 @@ namespace hgl::io
         Mouse,
         Joystick,
         Pointer,
+        Touch,
+        Gesture,
 
-        ENUM_CLASS_RANGE(Root,Pointer)
+        ENUM_CLASS_RANGE(Root,Gesture)
     };
 }//namespace hgl::io
