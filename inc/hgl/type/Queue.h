@@ -172,6 +172,11 @@ namespace hgl
         ObjectQueue():QueueTemplate<T, ObjectArray<T>>(){}
         virtual ~ObjectQueue() override { this->Free(); }
 
+        // 保留基类的方法
+        using QueueTemplate<T, ObjectArray<T>>::Push;
+        using QueueTemplate<T, ObjectArray<T>>::Pop;
+        using QueueTemplate<T, ObjectArray<T>>::Peek;
+
         /**
          * 压入一个指针（用于对象指针管理）
          * 队列接管对象所有权，析构时自动 delete
@@ -186,6 +191,7 @@ namespace hgl
 
         /**
          * 弹出一个对象（返回指针版本）
+         * 返回新创建的堆对象副本
          */
         virtual bool Pop(T *&ptr)
         {
