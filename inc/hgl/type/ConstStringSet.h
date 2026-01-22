@@ -1,257 +1,235 @@
 ﻿#pragma once
 
-#include<hgl/type/SortedSet.h>
-#include<hgl/type/Map.h>
 #include<hgl/type/ArrayList.h>
 #include<hgl/io/TextOutputStream.h>
 
 namespace hgl
 {
-    template<typename SC> class ConstString
-    {
-        const SC *str;
-        int length;
-
-    public:
-
-        ConstString(const SC *s,int l)
-        {
-            str=s;
-            length=l;
-        }
-
-        const SC *c_str()const{return str;}
-
-        const SC *GetString()const{return str;}
-        int GetLength()const{return length;}
-
-        std::strong_ordering operator<=>(const ConstString &cs)const
-        {
-            if(length != cs.length)
-                return length <=> cs.length;
-
-            return (hgl::strcmp(str, cs.str, length) <=> 0);
-        }
-
-        bool operator==(const ConstString &cs)const
-        {
-            return length == cs.length && hgl::strcmp(str, cs.str, length) == 0;
-        }
-    };
-
+    // ==================== 改进版 ConstStringView ====================
     template<typename SC> struct ConstStringView
     {
-        DataArray<SC> *str_data;
-
-        int id;             ///<顺序号
-        int length;         ///<字符串长度
-
-        union
-        {
-            size_t offset;      ///<字符串在整个数据中的偏移(id>=0插入合集时使用)
-            const SC *str;      ///<字符串指针(id为-1,未插入合集时使用)
-        };
+        DataArray<SC> *str_data;    // 指向字符串数据池
+        int id;                      // 顺序号
+        int length;                  // 字符串长度
+        size_t offset;              // 在数据池中的偏移
 
     public:
 
-        const SC *GetString()const
+        ConstStringView() : str_data(nullptr), id(-1), length(0), offset(0) {}
+
+        const SC *GetString() const
         {
-            if(id==-1)
-                return str;
-            else
-                return str_data->GetData()+offset;
+            return str_data ? str_data->GetData() + offset : nullptr;
         }
 
-        const size_t GetLength()const
+        size_t GetLength() const { return length; }
+
+        // 用于 SortedSet 的比较（只比较字符串内容）
+        std::strong_ordering operator<=>(const ConstStringView<SC> &other) const
         {
-            return length;
+            if(length != other.length)
+                return length <=> other.length;
+
+            const SC *s1 = GetString();
+            const SC *s2 = other.GetString();
+            
+            if(!s1 || !s2)
+                return s1 <=> s2;
+                
+            return hgl::strcmp(s1, s2, length) <=> 0;
         }
 
-        std::strong_ordering operator<=>(const ConstStringView<SC> &csv)const
+        bool operator==(const ConstStringView<SC> &other) const
         {
-            if(length != csv.length)
-                return length <=> csv.length;
-
-            return (hgl::strcmp(GetString(), csv.GetString(), length) <=> 0);
-        }
-
-        bool operator==(const ConstStringView<SC> &csv)const
-        {
-            return length == csv.length && hgl::strcmp(GetString(), csv.GetString(), length) == 0;
+            if(length != other.length)
+                return false;
+                
+            const SC *s1 = GetString();
+            const SC *s2 = other.GetString();
+            
+            return s1 && s2 && hgl::strcmp(s1, s2, length) == 0;
         }
     };
 
+    // ==================== 改进版 ConstStringSet ====================
     template<typename SC> class ConstStringSet
     {
     private:
 
-        DataArray<SC> str_data;                                 ///<字符串数据
-
-        SortedSet<ConstStringView<SC>> str_set;                 ///<字符串集合
-
-        ArrayList<ConstStringView<SC>*> str_list;               ///<字符串列表(存储指针)
-        Map<int,size_t> str_offset_map;                         ///<字符串映射
+        DataArray<SC> str_data;                         // 字符串数据池
+        ArrayList<ConstStringView<SC>> str_list;        // 按 ID 顺序存储（值，不是指针）
 
     public:
 
-        const int GetCount      ()const{return str_list.GetCount();}                                    ///<取得字符串数量
-        const int GetTotalLength()const{return str_data.GetCount();}                                    ///<取得字符串总长度
-        const int GetTotalBytes ()const{return str_data.GetCount()*sizeof(SC);}                         ///<取得字符串总字节数
+        // ==================== 查询接口 ====================
+        
+        int GetCount() const { return str_list.GetCount(); }
+        int GetTotalLength() const { return str_data.GetCount(); }
+        int GetTotalBytes() const { return str_data.GetCount() * sizeof(SC); }
+        bool IsEmpty() const { return str_data.IsEmpty(); }
 
-        const DataArray<SC> &GetStringData()const{return str_data;}                                     ///<取得字符串数据
+        const DataArray<SC>& GetStringData() const { return str_data; }
 
-        const ArrayList<ConstStringView<SC>*> &GetConstStringList()const{return str_list;}               ///<取得字符串列表
-
-    public:
-
-        const bool IsEmpty()const{return str_data.IsEmpty();}                                           ///<字符串集合是否为空
-
-        ConstStringView<SC> * const *begin()const{return str_list.GetData();}                           ///<迭代器开始
-        ConstStringView<SC> * const *end()const{return str_list.GetData()+str_list.GetCount();}        ///<迭代器结束
-
-        const bool Contains(const SC *str,int length)const                          ///<判断字符串是否为合集成员
+        // ==================== 添加接口（简化） ====================
+        
+        // 返回值：字符串的 ID，失败返回 -1
+        int Add(const SC *str, int length)
         {
-            if(!str||!*str||length<=0)return false;
+            if(!str || length <= 0)
+                return -1;
 
-            ConstStringView<SC> csv;
+            // 检查是否已存在（线性查找）
+            for(int i = 0; i < str_list.GetCount(); i++)
+            {
+                const auto& view = str_list[i];
+                if(view.length == length)
+                {
+                    const SC* existing = str_data.GetData() + view.offset;
+                    if(hgl::strcmp(existing, str, length) == 0)
+                        return i;  // 返回已存在的 ID
+                }
+            }
 
-            csv.str_data=nullptr;
-            csv.id      =-1;
-            csv.length  =length;
-            csv.str     =str;
+            // 分配新 ID
+            const int new_id = str_list.GetCount();
 
-            return(str_set.Find(csv)!=-1);
+            // 添加到数据池
+            const size_t offset = str_data.GetCount();
+            str_data.Expand(length + 1);
+            
+            SC *save_str = str_data.GetData() + offset;
+            mem_copy<SC>(save_str, str, length);
+            save_str[length] = 0;
+
+            // 创建 ConstStringView
+            ConstStringView<SC> view;
+            view.str_data = &str_data;
+            view.id = new_id;
+            view.length = length;
+            view.offset = offset;
+
+            // 添加到列表
+            str_list.Add(view);
+
+            return new_id;
         }
 
-        const int GetID(const SC *str,int length)const                              ///<取得字符串ID
+        // 便捷方法：添加并返回 ConstStringView
+        const ConstStringView<SC>* AddAndGet(const SC *str, int length)
         {
-            if(!str||!*str||length<=0)return(-1);
+            int id = Add(str, length);
+            return id >= 0 ? GetStringView(id) : nullptr;
+        }
 
-            ConstStringView<SC> csv;
+        // ==================== 查询接口 ====================
+        
+        bool Contains(const SC *str, int length) const
+        {
+            return GetID(str, length) >= 0;
+        }
 
-            csv.str_data=nullptr;
-            csv.id      =-1;
-            csv.length  =length;
-            csv.str     =str;
+        int GetID(const SC *str, int length) const
+        {
+            if(!str || length <= 0)
+                return -1;
 
-            int64 index=str_set.Find(csv);
-            if(index>=0)
+            // 线性查找
+            for(int i = 0; i < str_list.GetCount(); i++)
             {
-                str_set.Get(index,csv);
-                return csv.id;
+                const auto& view = str_list[i];
+                if(view.length == length)
+                {
+                    const SC* existing = str_data.GetData() + view.offset;
+                    if(hgl::strcmp(existing, str, length) == 0)
+                        return i;
+                }
             }
 
             return -1;
         }
 
-        const SC *GetString(const int id)const                                      ///<根据ID取得字符串
+        const SC* GetString(int id) const
         {
-            if(id<0||id>=GetCount())return(nullptr);
-            
-            size_t offset;
-
-            if(str_offset_map.Get(id,offset))
-                return str_data.GetData()+offset;
-            else
+            if(id < 0 || id >= GetCount())
                 return nullptr;
+                
+            return str_list[id].GetString();
         }
 
-        const ConstStringView<SC> *GetStringView(const int id)const                  ///<根据ID取得字符串视图
+        const ConstStringView<SC>* GetStringView(int id) const
         {
-            const ConstStringView<SC> * const *ptr = str_list.At(id);
-            return ptr ? *ptr : nullptr;
+            if(id < 0 || id >= GetCount())
+                return nullptr;
+                
+            return &str_list[id];
         }
 
-        const ConstStringView<SC> *operator[](const int id)const                  ///<根据ID取得字符串视图
+        const ConstStringView<SC>* operator[](int id) const
         {
-            const ConstStringView<SC> * const *ptr = str_list.At(id);
-            return ptr ? *ptr : nullptr;
+            return GetStringView(id);
         }
 
-    public:
+        // ==================== 迭代器（改进） ====================
+        
+        // ArrayList 使用原始指针作为迭代器
+        const ConstStringView<SC>* begin() const { return str_list.begin(); }
+        const ConstStringView<SC>* end() const { return str_list.end(); }
 
-        ConstStringSet(){}
+        // ==================== 生命周期管理 ====================
+        
+        ConstStringSet() = default;
+        ~ConstStringSet() = default;
 
-        virtual ~ConstStringSet()
-        {
-            Clear();
-        }
+        // 禁用拷贝（如果需要，可以实现）
+        ConstStringSet(const ConstStringSet&) = delete;
+        ConstStringSet& operator=(const ConstStringSet&) = delete;
+
+        // 移动语义
+        ConstStringSet(ConstStringSet&&) = default;
+        ConstStringSet& operator=(ConstStringSet&&) = default;
 
         void Clear()
         {
-            // 释放所有动态分配的 ConstStringView
-            for(int i = 0; i < str_list.GetCount(); i++)
-            {
-                delete str_list[i];
-            }
-            
             str_data.Clear();
-            str_set.Clear();
             str_list.Clear();
-            str_offset_map.Clear();
         }
 
-        int AddString(ConstStringView<SC> &csv,const SC *str,int length)            ///<添加一个字符串
+        // ==================== 批量操作 ====================
+        
+        void Reserve(int count)
         {
-            if(!str||!*str||length<=0)
-                return(-1);
-
-            csv.id=GetID(str,length);
-
-            if(csv.id>=0)
-            {
-                ConstStringView<SC> *ptr;
-                str_list.Get(csv.id, ptr);
-                csv = *ptr;
-
-                return csv.id;
-            }
-
-            csv.str_data=&str_data;
-            csv.id      =str_set.GetCount();
-            csv.length  =length;
-            csv.offset  =str_data.GetCount();
-
-            {
-                str_data.Expand(length+1);
-            
-                SC *save_str=str_data.GetData()+csv.offset;
-
-                mem_copy<SC>(save_str,str,length);
-
-                save_str[length]=0;
-            }
-
-            str_set.Add(csv);
-
-            ConstStringView<SC> *new_view = new ConstStringView<SC>();
-            new_view->str_data = csv.str_data;
-            new_view->id = csv.id;
-            new_view->length = csv.length;
-            new_view->offset = csv.offset;
-            
-            str_list.Add(new_view);
-            str_offset_map.Add(csv.id,csv.offset);
-
-            return csv.id;
+            str_list.Reserve(count);
         }
-    };//class ConstStringSet
 
-    using ConstAnsiStringSet  =ConstStringSet<char>;
-    using ConstWideStringSet  =ConstStringSet<wchar_t>;
-    using ConstU8StringSet    =ConstStringSet<u8char>;
-    using ConstU16StringSet   =ConstStringSet<u16char>;
-//    using ConstUTF32StringSet   =ConstStringSet<u32char>;
-    using ConstOSStringSet      =ConstStringSet<os_char>;
+        // 批量添加
+        template<typename Container>
+        void AddRange(const Container& strings)
+        {
+            for(const auto& str : strings)
+                Add(str.c_str(), str.length());
+        }
+    };
 
-    using ConstAnsiStringView   =ConstStringView<char>;
-    using ConstWideStringView   =ConstStringView<wchar_t>;
-    using ConstU8StringView     =ConstStringView<u8char>;
-    using ConstU16StringView    =ConstStringView<u16char>;
-    using ConstOSStringView     =ConstStringView<os_char>;
+    // ==================== 类型别名 ====================
+    
+    using ConstAnsiStringSet = ConstStringSet<char>;
+    using ConstWideStringSet = ConstStringSet<wchar_t>;
+    using ConstU8StringSet = ConstStringSet<u8char>;
+    using ConstU16StringSet = ConstStringSet<u16char>;
+    using ConstOSStringSet = ConstStringSet<os_char>;
 
-    template<typename SC> bool SaveToTextStream(hgl::io::TextOutputStream *tos,const ConstStringSet<SC> *css,bool output_id=false);
-    template<typename SC> bool SaveToTextFile(const OSString &filename,const ConstStringSet<SC> *css,bool output_id=false,bool output_bom=true);
+    using ConstAnsiStringView = ConstStringView<char>;
+    using ConstWideStringView = ConstStringView<wchar_t>;
+    using ConstU8StringView = ConstStringView<u8char>;
+    using ConstU16StringView = ConstStringView<u16char>;
+    using ConstOSStringView = ConstStringView<os_char>;
 
-    //template<typename SC> bool SaveToDataStream(hgl::io::DataOutputStream *dos,const ConstStringSet<SC> *css);
+    // ==================== 辅助函数 ====================
+    
+    template<typename SC> 
+    bool SaveToTextStream(io::TextOutputStream *tos, const ConstStringSet<SC> *css, bool output_id = false);
+    
+    template<typename SC> 
+    bool SaveToTextFile(const OSString &filename, const ConstStringSet<SC> *css, bool output_id = false, bool output_bom = true);
+
 }//namespace hgl

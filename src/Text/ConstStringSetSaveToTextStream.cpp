@@ -17,12 +17,9 @@ namespace hgl
             SC id_str[16];
             const SC gap_str[4]={SC(' '),SC(':'),SC(' '),0};
 
-            auto &csv_list=css->GetConstStringList();
-
-            for(auto csv_ptr : csv_list)
+            // 新版本：直接迭代 ConstStringSet，得到的是 ConstStringView 的引用
+            for(const auto& csv : *css)
             {
-                const ConstStringView<SC> &csv = *csv_ptr;
-                
                 utos<SC>(id_str,sizeof(id_str)/sizeof(SC),csv.id);
 
                 tos->WriteChars(reinterpret_cast<const u8char *>(id_str),hgl::strlen(id_str));
