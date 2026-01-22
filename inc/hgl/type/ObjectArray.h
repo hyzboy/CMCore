@@ -253,6 +253,49 @@ namespace hgl
             ++count_;
         }
 
+        /**
+         * 向列表中添加一个默认构造的对象
+         * @return 这个对象的指针
+         */
+        T* Add()
+        {
+            ensure_capacity(count_ + 1);
+            construct_at_default(data_ + count_);
+            ++count_;
+            return data_ + (count_ - 1);
+        }
+
+        /**
+         * 追加一个对象，返回其索引
+         */
+        int Add(const T& obj)
+        {
+            const int index = count_;
+            Append(obj);
+            return index;
+        }
+
+        /**
+         * 追加一批对象，返回起始索引
+         */
+        int Add(const T* obj, int number)
+        {
+            if(!obj || number <= 0)
+                return -1;
+
+            const int index = count_;
+            Append(obj, number);
+            return index;
+        }
+
+        /**
+         * 从另一个 ObjectArray 追加全部数据
+         */
+        int Add(const ObjectArray<T>& other)
+        {
+            return Add(other.data_, other.count_);
+        }
+
         void Exchange(int a, int b)
         {
             if(a < 0 || b < 0 || a >= count_ || b >= count_) return;
