@@ -2,6 +2,7 @@
 
 #include<hgl/type/SortedSet.h>
 #include<hgl/type/Map.h>
+#include<hgl/type/ArrayList.h>
 #include<hgl/io/TextOutputStream.h>
 
 namespace hgl
@@ -88,7 +89,7 @@ namespace hgl
 
         SortedSet<ConstStringView<SC>> str_set;                 ///<字符串集合
 
-        ArrayList<ConstStringView<SC>> str_list;               ///<字符串列表
+        ArrayList<ConstStringView<SC>*> str_list;               ///<字符串列表(存储指针)
         Map<int,size_t> str_offset_map;                         ///<字符串映射
 
     public:
@@ -99,7 +100,7 @@ namespace hgl
 
         const DataArray<SC> &GetStringData()const{return str_data;}                                     ///<取得字符串数据
 
-        const ArrayList<ConstStringView<SC>> &GetConstStringList()const{return str_list;}               ///<取得字符串列表
+        const ArrayList<ConstStringView<SC>*> &GetConstStringList()const{return str_list;}               ///<取得字符串列表
 
     public:
 
@@ -171,10 +172,19 @@ namespace hgl
 
         ConstStringSet(){}
 
-        virtual ~ConstStringSet()=default;
+        virtual ~ConstStringSet()
+        {
+            Clear();
+        }
 
         void Clear()
         {
+            // 释放所有动态分配的 ConstStringView
+            for(int i = 0; i < str_list.GetCount(); i++)
+            {
+                delete str_list[i];
+            }
+            
             str_data.Clear();
             str_set.Clear();
             str_list.Clear();
@@ -214,12 +224,13 @@ namespace hgl
 
             str_set.Add(csv);
 
-            ConstStringView<SC> *new_view = str_list.Create();
+            ConstStringView<SC> *new_view = new ConstStringView<SC>();
             new_view->str_data = csv.str_data;
             new_view->id = csv.id;
             new_view->length = csv.length;
             new_view->offset = csv.offset;
             
+            str_list.Add(new_view);
             str_offset_map.Add(csv.id,csv.offset);
 
             return csv.id;

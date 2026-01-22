@@ -19,9 +19,11 @@ namespace hgl
 
             auto &csv_list=css->GetConstStringList();
 
-            for(auto &csv:csv_list)
+            for(auto csv_ptr : csv_list)
             {
-                utos<SC>(id_str,sizeof(id_str),csv.id);
+                const ConstStringView<SC> &csv = *csv_ptr;
+                
+                utos<SC>(id_str,sizeof(id_str)/sizeof(SC),csv.id);
 
                 tos->WriteChars(reinterpret_cast<const u8char *>(id_str),hgl::strlen(id_str));
                 tos->WriteChars(reinterpret_cast<const u8char *>(gap_str),3);
