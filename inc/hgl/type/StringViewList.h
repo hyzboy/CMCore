@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/StringView.h>
-#include<hgl/type/ObjectList.h>
+#include<hgl/type/ArrayList.h>
 #include<hgl/CharSet.h>
 
 namespace hgl
@@ -14,14 +14,14 @@ namespace hgl
     {
         String<CharT> text_string;                                              ///<完整原始文本保存区
 
-        ObjectList<StringView<CharT>> line_string;                              ///<行字符串共享指针列表类型
+        ArrayList<StringView<CharT>> line_string;                              ///<行字符串共享指针列表类型
 
         StringView<CharT> null_view;
 
     public:
 
-        using underlying_iterator = typename ObjectList<StringView<CharT>>::Iterator;
-        using underlying_const_iterator = typename ObjectList<StringView<CharT>>::ConstIterator;
+        using underlying_iterator = StringView<CharT>*;
+        using underlying_const_iterator = const StringView<CharT>*;
 
         // Adapter iterator that yields StringView<CharT>& instead of pointer
         class iterator
@@ -32,20 +32,19 @@ namespace hgl
             using pointer = StringView<CharT>*;
             using reference = StringView<CharT>&;
             using difference_type = std::ptrdiff_t;
-            using iterator_category = std::random_access_iterator_tag; // underlying supports random access-like ops
+            using iterator_category = std::random_access_iterator_tag;
 
             iterator() = default;
-            explicit iterator(const underlying_iterator &u): it(u) {}
+            explicit iterator(underlying_iterator u): it(u) {}
 
             reference operator*() const
             {
-                // underlying iterator returns pointer (T*), so dereference that
-                return *(*it);
+                return *it;
             }
 
             pointer operator->() const
             {
-                return *it; // returns T*
+                return it;
             }
 
             iterator &operator++() { ++it; return *this; }
@@ -77,20 +76,20 @@ namespace hgl
             using iterator_category = std::random_access_iterator_tag;
 
             const_iterator() = default;
-            explicit const_iterator(const underlying_const_iterator &u): it(u) {}
+            explicit const_iterator(underlying_const_iterator u): it(u) {}
             // Allow constructing const_iterator from non-const underlying iterator
-            const_iterator(const underlying_iterator &u): it(u) {}
+            const_iterator(underlying_iterator u): it(u) {}
             // Implicit conversion from iterator -> const_iterator
             const_iterator(const iterator &o): it(o.it) {}
 
             reference operator*() const
             {
-                return *(*it);
+                return *it;
             }
 
             pointer operator->() const
             {
-                return *it;
+                return it;
             }
 
             const_iterator &operator++() { ++it; return *this; }
@@ -143,7 +142,7 @@ namespace hgl
                         --line_length;
                     }
 
-                    line_string.Add(new StringView<CharT>(data + line_start, int(line_length)));
+                    line_string.Add(StringView<CharT>(data + line_start, int(line_length)));
 
                     line_start = pos + 1;
                 }
@@ -152,7 +151,7 @@ namespace hgl
 
             if (line_start < total_length)
             {
-                line_string.Add(new StringView<CharT>(data + line_start, int(total_length - line_start)));
+                line_string.Add(StringView<CharT>(data + line_start, int(total_length - line_start)));
             }
         }
 
@@ -182,7 +181,7 @@ namespace hgl
             if(n<0||n>=line_string.GetCount())
                 return null_view;
 
-            return(*line_string[n]);
+            return line_string[n];
         }
 
         const StringView<CharT> operator [](int n)const                        ///<取得指定行字符串
