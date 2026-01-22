@@ -165,12 +165,11 @@ void test_const_string_set()
     std::cout << "========================================\n" << std::endl;
 
     ConstStringSet<char> css;
-    ConstStringView<char> csv;
 
     std::cout << "[3.1] Add strings:" << std::endl;
-    int id1 = css.AddString(csv, "Hello", 5);
-    int id2 = css.AddString(csv, "World", 5);
-    int id3 = css.AddString(csv, "Test", 4);
+    int id1 = css.Add("Hello", 5);
+    int id2 = css.Add("World", 5);
+    int id3 = css.Add("Test", 4);
 
     TEST_ASSERT(id1 >= 0, "First string added");
     TEST_ASSERT(id2 >= 0, "Second string added");
@@ -178,7 +177,7 @@ void test_const_string_set()
     TEST_ASSERT(css.GetCount() == 3, "Count is 3");
 
     std::cout << "\n[3.2] Add duplicate string:" << std::endl;
-    int id_dup = css.AddString(csv, "Hello", 5);
+    int id_dup = css.Add("Hello", 5);
     TEST_ASSERT(id_dup == id1, "Duplicate returns same ID");
     TEST_ASSERT(css.GetCount() == 3, "Count still 3");
 
@@ -198,22 +197,29 @@ void test_const_string_set()
 
     std::cout << "\n[3.6] Iterate over strings:" << std::endl;
     int iter_count = 0;
-    for (auto* pview = css.begin(); pview != css.end(); ++pview) {
+    for (const auto* view = css.begin(); view != css.end(); ++view) {
         iter_count++;
-        ConstStringView<char>* view = *pview;
         TEST_ASSERT(view->id >= 0, "String view has valid ID");
     }
     TEST_ASSERT(iter_count == 3, "Iterator covered all strings");
 
-    std::cout << "\n[3.7] Large batch test:" << std::endl;
+    std::cout << "\n[3.7] Range-based for loop:" << std::endl;
+    int range_count = 0;
+    for (const auto& view : css) {
+        range_count++;
+        TEST_ASSERT(view.id >= 0, "Range-for view has valid ID");
+    }
+    TEST_ASSERT(range_count == 3, "Range-for covered all strings");
+
+    std::cout << "\n[3.8] Large batch test:" << std::endl;
     for (int i = 0; i < 100; i++) {
         char buf[32];
         sprintf(buf, "String_%d", i);
-        css.AddString(csv, buf, strlen(buf));
+        css.Add(buf, strlen(buf));
     }
     TEST_ASSERT(css.GetCount() == 103, "Count after batch is 103");
 
-    std::cout << "\n[3.8] Clear:" << std::endl;
+    std::cout << "\n[3.9] Clear:" << std::endl;
     css.Clear();
     TEST_ASSERT(css.IsEmpty(), "Set is empty after clear");
 }
@@ -259,10 +265,13 @@ void test_ordered_id_name()
     name6 = name1;
     TEST_ASSERT(name6.GetID() == name1.GetID(), "Copy assignment preserves ID");
 
-    std::cout << "\n[4.6] Compare:" << std::endl;
-    int cmp = name1.compare(name2);
-    TEST_ASSERT(cmp != 0, "Different names compare as different");
-    TEST_ASSERT(name1.compare(name3) == 0, "Same names compare as equal");
+    std::cout << "\n[4.6] Compare using operators:" << std::endl;
+    TEST_ASSERT(name1 != name2, "Different names are not equal");
+    TEST_ASSERT(name1 == name3, "Same names are equal");
+    TEST_ASSERT((name1 <=> name2) != std::strong_ordering::equal, "Three-way comparison works");
+    
+    std::cout << "\n[4.7] Ordering:" << std::endl;
+    TEST_ASSERT(name1.GetID() < name2.GetID() ? (name1 < name2) : (name1 >= name2), "Operator< works");
 }
 
 void test_sorted_set_with_id_name()
@@ -333,18 +342,13 @@ void test_edge_cases()
     std::cout << "\n[6.3] ConstStringSet empty string:" << std::endl;
     ConstStringSet<char> css;
     std::cout << "  ConstStringSet created" << std::endl;
-    ConstStringView<char> csv;
-    csv.str_data = nullptr;
-    csv.id = -1;
-    csv.length = 0;
-    csv.str = nullptr;
-    std::cout << "  Creating csv..." << std::endl;
-    int id = css.AddString(csv, "", 0);
-    std::cout << "  AddString returned: " << id << std::endl;
+    
+    int id = css.Add("", 0);
+    std::cout << "  Add(\"\", 0) returned: " << id << std::endl;
     TEST_ASSERT(id == -1, "Empty string rejected");
 
     std::cout << "\n[6.4] ConstStringSet null pointer:" << std::endl;
-    id = css.AddString(csv, nullptr, 5);
+    id = css.Add(nullptr, 5);
     TEST_ASSERT(id == -1, "Null pointer rejected");
     std::cout << "  [6.4] Completed" << std::endl;
 
@@ -352,7 +356,7 @@ void test_edge_cases()
     char long_str[1024];
     memset(long_str, 'A', 1023);
     long_str[1023] = 0;
-    id = css.AddString(csv, long_str, 1023);
+    id = css.Add(long_str, 1023);
     TEST_ASSERT(id >= 0, "Long string accepted");
     TEST_ASSERT(css.Contains(long_str, 1023), "Long string found");
 
@@ -361,7 +365,7 @@ void test_edge_cases()
     for (int i = 0; i < 1000; i++) {
         char buf[64];
         sprintf(buf, "StressTest_%d_%d", i, i * 7);
-        stress_css.AddString(csv, buf, strlen(buf));
+        stress_css.Add(buf, strlen(buf));
     }
     TEST_ASSERT(stress_css.GetCount() == 1000, "Stress test: 1000 strings added");
 
