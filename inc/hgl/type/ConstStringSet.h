@@ -22,14 +22,22 @@ namespace hgl
         const SC *c_str()const{return str;}
 
         const SC *GetString()const{return str;}
-        const int GetLength()const{return length;}
+        int GetLength()const{return length;}
 
-        const int Comp(const ConstString &cs)const override
+        std::strong_ordering operator<=>(const ConstString &cs)const
         {
-            if(length<cs.length)return(-1);
-            if(length>cs.length)return( 1);
+            if(length != cs.length)
+                return length <=> cs.length;
 
-            return hgl::strcmp(str,cs.str,length);
+            return (hgl::strcmp(str, cs.str, length) <=> 0);
+        }
+
+        const int compare(const ConstString &cs)const override
+        {
+            auto result = *this <=> cs;
+            if(result < 0) return -1;
+            if(result > 0) return 1;
+            return 0;
         }
     };
 
@@ -56,12 +64,20 @@ namespace hgl
                 return str_data->GetData()+offset;
         }
 
+        std::strong_ordering operator<=>(const ConstStringView<SC> &csv)const
+        {
+            if(length != csv.length)
+                return length <=> csv.length;
+
+            return (hgl::strcmp(GetString(), csv.GetString(), length) <=> 0);
+        }
+
         const int compare(const ConstStringView<SC> &csv)const override
         {
-            if(length<csv.length)return(-1);
-            if(length>csv.length)return( 1);
-
-            return hgl::strcmp(GetString(),csv.GetString(),length);
+            auto result = *this <=> csv;
+            if(result < 0) return -1;
+            if(result > 0) return 1;
+            return 0;
         }
     };
 
