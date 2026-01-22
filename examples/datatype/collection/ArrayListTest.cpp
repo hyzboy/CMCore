@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ArrayList 严格测试用例
  * 
  * 测试目标：
@@ -9,6 +9,7 @@
  */
 
 #include<hgl/type/ArrayList.h>
+#include<hgl/type/ObjectArray.h>
 #include<iostream>
 #include<iomanip>
 #include<string>
@@ -194,6 +195,35 @@ void PrintArrayList(const ArrayList<T>& list, const char* label)
     std::cout << std::endl;
 }
 
+template<typename T>
+void PrintArrayList(const ObjectArray<T>& list, const char* label)
+{
+    std::cout << std::setw(30) << label << " [" << std::setw(2) << list.GetCount() 
+              << "/" << std::setw(2) << list.GetAllocCount() << "]: ";
+
+    if constexpr (std::is_same_v<T, NonTrivialClass>)
+    {
+        for (int i = 0; i < list.GetCount(); i++)
+        {
+            if (i > 0) std::cout << ", ";
+            const NonTrivialClass* obj = list.At(i);
+            std::cout << "{" << obj->id << "," << obj->name << "}";
+        }
+    }
+    else
+    {
+        for (int i = 0; i < list.GetCount(); i++)
+        {
+            if (i > 0) std::cout << ", ";
+            const T* obj = list.At(i);
+            std::cout << "(item)";
+            (void)obj;
+        }
+    }
+
+    std::cout << std::endl;
+}
+
 void ResetCounters()
 {
     NonTrivialClass::constructCount = 0;
@@ -328,7 +358,7 @@ void TestNonTrivialArrayList()
     ResetCounters();
 
     std::cout << "\n[3.0] Creating ArrayList..." << std::endl;
-    ArrayList<NonTrivialClass> list;
+    ObjectArray<NonTrivialClass> list;
     std::cout << "  ArrayList created. Count=" << list.GetCount() 
               << ", AllocCount=" << list.GetAllocCount() << std::endl;
 
@@ -416,7 +446,7 @@ void TestMemorySafety()
     std::cout << "\n[5.1] Repeated add/delete cycles:" << std::endl;
     ResetCounters();
     {
-        ArrayList<NonTrivialClass> list;
+        ObjectArray<NonTrivialClass> list;
         
         for (int cycle = 0; cycle < 3; cycle++)
         {
