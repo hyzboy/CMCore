@@ -262,6 +262,22 @@ namespace hgl
             return items.Delete(index);
         }
 
+        /**
+         * 删除指定索引的元素并保持顺序（先销毁对象，再将后续元素向前移动）
+         * @param index 要删除的索引位置
+         * @return 删除成功返回 true，失败返回 false
+         * 
+         * 注意：此函数会先 delete 对应的对象，然后将后面的元素依次向前移动，
+         *       保持列表的顺序。性能开销比 DeleteAtOwn 略高，但可以保持元素顺序。
+         */
+        bool DeleteShift(int index)
+        {
+            if (!_DeleteRange(index, 1))
+                return false;
+
+            return items.DeleteShift(index);
+        }
+
         // 删除一段范围并销毁这些对象
         bool DeleteRangeOwn(int index, int number)
         {
