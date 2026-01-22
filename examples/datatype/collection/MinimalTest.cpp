@@ -1,4 +1,4 @@
-#include<hgl/type/ObjectArray.h>
+﻿#include<hgl/type/ObjectArray.h>
 #include<iostream>
 #include<string>
 

@@ -1,4 +1,4 @@
-#include<hgl/type/ArrayList.h>
+﻿#include<hgl/type/ArrayList.h>
 #include<hgl/type/ObjectList.h>
 #include<iostream>
 #include<string>
@@ -14,10 +14,10 @@ static int tests_failed = 0;
     do { \
         if (condition) { \
             tests_passed++; \
-            std::cout << "  ✓ PASS: " << message << std::endl; \
+            std::cout << "  [PASS]: " << message << std::endl; \
         } else { \
             tests_failed++; \
-            std::cout << "  ✗ FAIL: " << message << std::endl; \
+            std::cout << "  [FAIL]: " << message << std::endl; \
         } \
     } while(0)
 
@@ -312,7 +312,7 @@ void test_list_complex_type()
 
     {
         std::cout << "[6.1] Add complex items:" << std::endl;
-        List<ComplexItem> list;
+        ObjectList<ComplexItem> list;
 
         list.Add(ComplexItem(1, "First"));
     list.Add(ComplexItem(2, "Second"));
@@ -654,9 +654,9 @@ int main()
     std::cout << "Total Tests: " << (tests_passed + tests_failed) << std::endl;
 
     if (tests_failed == 0) {
-        std::cout << "\n🎉 ALL TESTS PASSED! 🎉" << std::endl;
+        std::cout << "\nALL TESTS PASSED!" << std::endl;
     } else {
-        std::cout << "\n❌ SOME TESTS FAILED" << std::endl;
+        std::cout << "\nSOME TESTS FAILED" << std::endl;
     }
 
     return tests_failed > 0 ? 1 : 0;

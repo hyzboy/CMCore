@@ -1,4 +1,4 @@
-#include<hgl/type/IndexedList.h>
+﻿#include<hgl/type/IndexedList.h>
 #include<iostream>
 #include<string>
 #include<cstring>
@@ -13,10 +13,10 @@ static int tests_failed = 0;
     do { \
         if (condition) { \
             tests_passed++; \
-            std::cout << "  ✓ PASS: " << message << std::endl; \
+            std::cout << "  [PASS]: " << message << std::endl; \
         } else { \
             tests_failed++; \
-            std::cout << "  ✗ FAIL: " << message << std::endl; \
+            std::cout << "  [FAIL]: " << message << std::endl; \
         } \
     } while(0)
 
@@ -486,10 +486,10 @@ int main()
     std::cout << "Tests Failed: " << tests_failed << std::endl;
     std::cout << "Total Tests: " << (tests_passed + tests_failed) << std::endl;
 
-    if (tests_failed == 0) {
-        std::cout << "\n🎉 ALL TESTS PASSED! 🎉" << std::endl;
-    } else {
-        std::cout << "\n❌ SOME TESTS FAILED" << std::endl;
+    if (tests_failed == 0) { \
+        std::cout << "\nALL TESTS PASSED!" << std::endl; \
+    } else { \
+        std::cout << "\nSOME TESTS FAILED" << std::endl; \
     }
 
     return tests_failed > 0 ? 1 : 0;

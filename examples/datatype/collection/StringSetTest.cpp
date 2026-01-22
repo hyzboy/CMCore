@@ -1,4 +1,4 @@
-#include<hgl/type/ConstStringSet.h>
+﻿#include<hgl/type/ConstStringSet.h>
 #include<hgl/type/IDName.h>
 #include<hgl/type/SortedSet.h>
 #include<hgl/type/String.h>

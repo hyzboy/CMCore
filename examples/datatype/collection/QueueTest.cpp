@@ -388,21 +388,21 @@ void TestTypeConstraints()
     cout<<"-----------------------------------------"<<endl;
     cout<<"Type Constraints Test"<<endl<<endl;
 
-    cout<<"[1] Queue<int> - 平凡类型 ✓"<<endl;
+    cout<<"[1] Queue<int> - 平凡类型 [OK]"<<endl;
     Queue<int> q1;
     q1.Push(42);
 
-    cout<<"[2] Queue<UserInfo> - 平凡 POD ✓"<<endl;
+    cout<<"[2] Queue<UserInfo> - 平凡 POD [OK]"<<endl;
     Queue<UserInfo> q2;
 
-    cout<<"[3] ObjectQueue<QueueTestObject> - 非平凡类型 ✓"<<endl;
+    cout<<"[3] ObjectQueue<QueueTestObject> - 非平凡类型 [OK]"<<endl;
     ObjectQueue<QueueTestObject> oq1;
 
     cout<<"\n注意：以下类型组合会编译失败："<<endl;
-    cout<<"- Queue<std::string> - ✗"<<endl;
-    cout<<"- Queue<ObjectQueue<T>> - ✗"<<endl;
-    cout<<"- ObjectQueue<int> - ✗"<<endl;
-    cout<<"- ObjectQueue<float> - ✗"<<endl;
+    cout<<"- Queue<std::string> - [X]"<<endl;
+    cout<<"- Queue<ObjectQueue<T>> - [X]"<<endl;
+    cout<<"- ObjectQueue<int> - [X]"<<endl;
+    cout<<"- ObjectQueue<float> - [X]"<<endl;
 }
 
 int os_main(int,os_char **)

@@ -1,4 +1,4 @@
-#include<hgl/type/ArrayList.h>
+﻿#include<hgl/type/ArrayList.h>
 #include<hgl/type/IndexedList.h>
 #include<hgl/time/Time.h>
 #include<random>

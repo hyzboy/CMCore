@@ -1,4 +1,4 @@
-#include<hgl/type/Collection.h>
+﻿#include<hgl/type/Collection.h>
 #include<iostream>
 #include<iomanip>
 #include<string>
