@@ -58,7 +58,8 @@ namespace hgl
 
         const int compare(const ConstStringView<SC> &csv)const override
         {
-            if(length!=csv.length)return(length-csv.length);
+            if(length<csv.length)return(-1);
+            if(length>csv.length)return( 1);
 
             return hgl::strcmp(GetString(),csv.GetString(),length);
         }
@@ -94,7 +95,7 @@ namespace hgl
 
         const bool Contains(const SC *str,int length)const                          ///<判断字符串是否为合集成员
         {
-            if(!str||!*str||length<=0)return(-1);
+            if(!str||!*str||length<=0)return false;
 
             ConstStringView<SC> csv;
 
