@@ -136,7 +136,7 @@ namespace hgl
         {
             if(!items||count<=0)return;
 
-            std::fill_n(items,static_cast<size_t>(count),T{});
+            memset(items,0,sizeof(T)*count);
         }
 
         // 读写
@@ -150,7 +150,7 @@ namespace hgl
         {
             if(index<0||index>=count)return false;
 
-            obj=items[index];
+            memcpy(&obj,items+index,sizeof(T));
             return true;
         }
 
@@ -165,7 +165,7 @@ namespace hgl
         {
             if(!obj||start<0||start+num>count)return false;
 
-            std::copy_n(items+start,static_cast<size_t>(num),obj);
+            memcpy(obj,items+start,num*sizeof(T));
             return true;
         }
 
@@ -179,7 +179,7 @@ namespace hgl
         {
             if(index<0||index>=count)return false;
 
-            items[index]=obj;
+            memcpy(items+index,&obj,sizeof(T));
             return true;
         }
 
@@ -194,7 +194,7 @@ namespace hgl
         {
             if(!obj||start<0||start+num>count)return false;
 
-            std::copy_n(obj,static_cast<size_t>(num),items+start);
+            memcpy(items+start,obj,num*sizeof(T));
             return true;
         }
 
@@ -214,7 +214,7 @@ namespace hgl
 
             if(items)
             {
-                std::copy_n(items,static_cast<size_t>(count),new_items);
+                memcpy(new_items,items,count*sizeof(T));
                 hgl_free(items);
             }
 
@@ -243,7 +243,7 @@ namespace hgl
                 Reserve(size);
 
             if(size>old_count)
-                std::fill_n(items+old_count,static_cast<size_t>(size-old_count),T{});
+                memset(items+old_count,0,sizeof(T)*(size-old_count));
 
             count=size;
             return count;
@@ -303,7 +303,7 @@ namespace hgl
             if(count>=alloc_count)
                 Reserve(alloc_count+1);
 
-            items[count]=obj;
+            memcpy(items+count,&obj,sizeof(T));
             ++count;
         }
 
@@ -334,7 +334,7 @@ namespace hgl
             // [left][delete][right]
             //   ^start        ^start+delete_count
             //   移动 right 段覆盖 delete 段，实现顺序删除
-            std::move(items+start+delete_count,items+count,items+start);
+            memmove(items+start,items+start+delete_count,(count-(start+delete_count))*sizeof(T));
 
             count-=delete_count;
             return true;
@@ -378,7 +378,7 @@ namespace hgl
             T *temp=hgl_align_malloc<T>(move_number);
             if(!temp)return;
 
-            std::copy_n(items+old_index,static_cast<size_t>(move_number),temp);
+            memcpy(temp,items+old_index,move_number*sizeof(T));
 
             if(new_index<old_index)            // 提前：右移 [new_index, old_index) 段
             {
@@ -386,8 +386,8 @@ namespace hgl
                 //   v                    v                      v
                 // [----left----][ old ][----mid----][ right ]
                 // [ old ][----left+mid----][ right ]
-                std::move_backward(items+new_index,items+old_index,items+old_index+move_number);
-                std::copy_n(temp,static_cast<size_t>(move_number),items+new_index);
+                memmove(items+new_index+move_number,items+new_index,(old_index-new_index)*sizeof(T));
+                memcpy(items+new_index,temp,move_number*sizeof(T));
             }
             else                                // 推后：左移 (old_index+move_number, new_index) 段
             {
@@ -396,8 +396,8 @@ namespace hgl
                 // [ left ][ old ][------mid------][ right ]
                 // [ left ][------mid------][ old ][ right ]
                 const int64 mid_len=new_index-(old_index+move_number);
-                std::move(items+old_index+move_number,items+old_index+move_number+mid_len,items+old_index);
-                std::copy_n(temp,static_cast<size_t>(move_number),items+old_index+mid_len);
+                memmove(items+old_index,items+old_index+move_number,mid_len*sizeof(T));
+                memcpy(items+old_index+mid_len,temp,move_number*sizeof(T));
             }
 
             hgl_free(temp);
@@ -423,9 +423,9 @@ namespace hgl
             }
 
             if(pos<count)
-                std::move_backward(items+pos,items+count,items+count+data_number);
+                memmove(items+pos+data_number,items+pos,(count-pos)*sizeof(T));
 
-            std::copy_n(data,static_cast<size_t>(data_number),items+pos);
+            memcpy(items+pos,data,data_number*sizeof(T));
 
             count+=data_number;
             return true;
@@ -441,7 +441,7 @@ namespace hgl
             if(da.count<=0){ count=0; return; }
 
             Resize(da.GetCount());
-            std::copy_n(da.items,static_cast<size_t>(count),items);
+            memcpy(items,da.items,count*sizeof(T));
         }
 
         /**
@@ -451,7 +451,7 @@ namespace hgl
         void operator = (const std::initializer_list<T> &l)
         {
             Resize((int64)l.size());
-            std::copy_n(l.begin(),static_cast<size_t>(count),items);
+            memcpy(items,l.begin(),count*sizeof(T));
         }
 
         // 集合运算

@@ -208,7 +208,7 @@ namespace hgl
                 data_index.Append(index);
             }
 
-            mem_copy<T>(data_array[index],data);
+            memcpy(&data_array[index], &data, sizeof(T));
             return index;
         }
 
@@ -231,17 +231,14 @@ namespace hgl
             {
                 const int32 mc=hgl_min(fc,n);
 
-                int32 index=data_array.GetCount();
-
-                data_array.Expand(n);
-                data_index.Expand(n);
+                int32 index;
 
                 for(int32 i=0;i<mc;i++)
                 {
                     free_index.Pop(index);
                     data_index.Append(index);
 
-                    mem_copy<T>(data_array[index],data[i]);
+                    memcpy(&data_array[index], &data[i], sizeof(T));
                 }
 
                 n-=mc;
@@ -257,12 +254,12 @@ namespace hgl
                 int32 index=data_array.GetCount();
 
                 data_array.Expand(n);
-                data_index.Expand(n);
 
                 for(int32 i=0;i<n;i++)
-                    data_index[index+i]=index+i;
-
-                mem_copy<T>(data_array.At(index),data,n);
+                {
+                    data_index.Append(index+i);
+                    memcpy(&data_array[index+i], &data[i], sizeof(T));
+                }
 
                 result+=n;
             }
@@ -304,15 +301,15 @@ namespace hgl
             {
                 index=data_array.GetCount();
                 data_array.Expand(1);
-                data_index.Insert(pos,index,1);
+                data_index.Insert(pos,&index,1);
             }
             else
             {
                 free_index.Pop(index);
-                data_index.Insert(pos,index,1);
+                data_index.Insert(pos,&index,1);
             }
 
-            mem_copy<T>(data_array[index],value);
+            memcpy(&data_array[index], &value, sizeof(T));
             return true;
         }
 
@@ -418,7 +415,7 @@ namespace hgl
                 {
                     overflow_index.Pop(index);
 
-                    mem_copy<T>(data_array[new_location],data_array[data_index[index]]);
+                    memcpy(&data_array[new_location], &data_array[data_index[index]], sizeof(T));
 
                     data_index[index]=new_location;
                 }
@@ -474,7 +471,7 @@ namespace hgl
 
                 // 批量复制连续块的数据
                 int length = end - start + 1;
-                mem_copy<T>(temp_array+start, data_array.GetData() + data_index[start], length);
+                memcpy(temp_array+start, data_array.GetData() + data_index[start], length * sizeof(T));
 
                 // 更新索引
                 i = end + 1;
