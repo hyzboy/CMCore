@@ -472,14 +472,16 @@ bool test_compare()
     arr3[0] = 1; arr3[1] = 2; arr3[2] = 3; arr3[3] = 4;
     
     // Equal arrays
-    TEST_ASSERT(arr1.compare(arr2) == 0, "Identical arrays should compare equal");
+    TEST_ASSERT(arr1 == arr2, "Identical arrays should compare equal");
     
     // Arrays with different lengths
-    int cmp_result = arr1.compare(arr3);
-    TEST_ASSERT(cmp_result < 0, "Shorter array should compare less");
+    TEST_ASSERT(arr1 < arr3, "Shorter array should compare less");
+    TEST_ASSERT(arr3 > arr1, "Longer array should compare greater");
     
-    cmp_result = arr3.compare(arr1);
-    TEST_ASSERT(cmp_result > 0, "Longer array should compare greater");
+    // Additional comparison tests
+    TEST_ASSERT((arr1 <=> arr2) == std::strong_ordering::equal, "Three-way comparison: equal arrays");
+    TEST_ASSERT((arr1 <=> arr3) == std::strong_ordering::less, "Three-way comparison: shorter < longer");
+    TEST_ASSERT((arr3 <=> arr1) == std::strong_ordering::greater, "Three-way comparison: longer > shorter");
     
     return true;
 }

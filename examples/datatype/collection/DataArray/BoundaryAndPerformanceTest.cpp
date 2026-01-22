@@ -439,12 +439,11 @@ bool test_array_comparisons()
         arr1.Append(i * 10);
         arr2.Append(i * 10);
     }
-    TEST_ASSERT(arr1.compare(arr2) == 0, "arrays with same content should be equal");
+    TEST_ASSERT(arr1 == arr2, "arrays with same content should be equal");
     
     // Different sizes - arr1 has more elements but smaller first element
     arr3.Append(100);
-    int cmp = arr1.compare(arr3);
-    TEST_ASSERT(cmp < 0, "array with smaller first element should compare less");
+    TEST_ASSERT(arr1 < arr3, "array with smaller first element should compare less");
     
     // Same size, different content
     DataArray<int> arr4, arr5;
@@ -452,8 +451,8 @@ bool test_array_comparisons()
     arr4.Append(2);
     arr5.Append(1);
     arr5.Append(3);
-    int cmp2 = arr4.compare(arr5);
-    TEST_ASSERT(cmp2 != 0, "arrays with different content should not be equal");
+    TEST_ASSERT(arr4 != arr5, "arrays with different content should not be equal");
+    TEST_ASSERT(arr4 < arr5, "arr4[1]=2 should be less than arr5[1]=3");
     
     return true;
 }

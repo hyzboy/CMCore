@@ -315,12 +315,13 @@ void test_list_complex_type()
         ObjectList<ComplexItem> list;
 
         list.Add(ComplexItem(1, "First"));
-    list.Add(ComplexItem(2, "Second"));
-    list.Add(ComplexItem(3, "Third"));
+        list.Add(ComplexItem(2, "Second"));
+        list.Add(ComplexItem(3, "Third"));
 
-    TEST_ASSERT(list.GetCount() == 3, "Count is 3");
-    TEST_ASSERT(list.At(0)->id == 1, "First item id is 1");        std::cout << "\n[6.2] Delete complex item:" << std::endl;
-        list.Delete(1);
+        TEST_ASSERT(list.GetCount() == 3, "Count is 3");
+        TEST_ASSERT((*list.At(0))->id == 1, "First item id is 1");        
+        std::cout << "\n[6.2] Delete complex item:" << std::endl;
+        list.DeleteAtOwn(1);
         TEST_ASSERT(list.GetCount() == 2, "Count is 2");
 
         std::cout << "\n[6.3] Scope exit (cleanup):" << std::endl;
