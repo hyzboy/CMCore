@@ -1,25 +1,29 @@
-﻿#pragma once
+#pragma once
 
-#include<hgl/type/Stack.h>
-#include<initializer_list>
-#include<algorithm>
-#include<type_traits>
+#include <hgl/type/ObjectArray.h>
+#include <hgl/type/DataArray.h>
+#include <hgl/type/Stack.h>
+#include <hgl/type/ObjectUtil.h>
+#include <initializer_list>
+#include <algorithm>
+#include <type_traits>
 
 namespace hgl
 {
     /**
-    * 索引数据列表<br>
-    * IndexedList与ArrayList功能类似，但它的区别是它使用索引来访问数据。
-    * 当数据被移动、删除、排序时，数据本身的内存并不会变动，只会调整索引。
+    * 索引数据列表（非平凡类型版本）
+    * 对应 IndexedList，但面向非平凡对象，显式调用构造/析构。
+    * 对于平凡类型请使用 IndexedList。
     */
-    template<typename T,typename I=int32> class IndexedList
+    template<typename T, typename I = int32> class ObjectIndexedList
     {
-        static_assert(std::is_trivially_copyable_v<T>, "IndexedList only supports trivially copyable types; use ObjectIndexedList for non-trivial types.");
+        static_assert(!std::is_trivially_copyable_v<T>, "ObjectIndexedList is for non-trivial types; use IndexedList for trivially copyable types.");
+
     protected:
 
-        DataArray<T> data_array;
-        DataArray<I> data_index;
-        Stack<I> free_index;
+        ObjectArray<T>   data_array;
+        DataArray<I>     data_index;
+        Stack<I>         free_index;
 
     public: //属性
 
@@ -27,7 +31,7 @@ namespace hgl
         const int32     GetCount        ()const{return data_index.GetCount();}
         const int32     GetFreeCount    ()const{return free_index.GetCount();}
 
-        const size_t    GetTotalBytes   ()const{return data_index.GetCount()*sizeof(T);}
+        const size_t    GetTotalBytes   ()const{return static_cast<size_t>(data_index.GetCount())*sizeof(T);}
 
         const bool      IsEmpty         ()const{return data_index.IsEmpty();}
 
@@ -42,7 +46,7 @@ namespace hgl
             return(true);
         }
 
-        const DataArray<T> &GetRawData()const{return data_array;}
+        const ObjectArray<T> &GetRawData()const{return data_array;}
         const DataArray<I> &GetRawIndex()const{return data_index;}
 
         T &operator[](int32 index)
@@ -65,7 +69,7 @@ namespace hgl
         {
         private:
 
-            IndexedList<T,I> *list;
+            ObjectIndexedList<T,I> *list;
             int32 current_index;
 
         public:
@@ -81,7 +85,7 @@ namespace hgl
                 current_index=-1;
             }
 
-            Iterator(IndexedList<T, I>* lst, int32 idx):list(lst),current_index(idx){}
+            Iterator(ObjectIndexedList<T, I>* lst, int32 idx):list(lst),current_index(idx){}
 
             T& operator*()
             {
@@ -118,7 +122,7 @@ namespace hgl
         {
         private:
 
-            const IndexedList<T,I> *list;
+            const ObjectIndexedList<T,I> *list;
             int32 current_index;
 
         public:
@@ -128,7 +132,7 @@ namespace hgl
 
         public:
 
-            ConstIterator(const IndexedList<T, I>* lst, int32 idx):list(lst),current_index(idx){}
+            ConstIterator(const ObjectIndexedList<T, I>* lst, int32 idx):list(lst),current_index(idx){}
 
             const T& operator*()const
             {
@@ -158,11 +162,14 @@ namespace hgl
 
     public:
 
-        IndexedList()=default;
-        IndexedList(const T *lt,const int n){Add(lt,n);}
-        IndexedList(const IndexedList<T,I> &lt){operator=(lt);}
-        IndexedList(const std::initializer_list<T> &lt){operator=(lt);}
-        virtual ~IndexedList(){Free();}
+        ObjectIndexedList()=default;
+        ObjectIndexedList(const T *lt,const int n){Add(lt,n);} // copy elements
+        ObjectIndexedList(const std::initializer_list<T> &lt){Add(lt.begin(),static_cast<int>(lt.size()));}
+        ObjectIndexedList(const ObjectIndexedList<T,I> &)=delete;
+        ObjectIndexedList& operator=(const ObjectIndexedList<T,I> &)=delete;
+        ObjectIndexedList(ObjectIndexedList<T,I> &&)=default;
+        ObjectIndexedList& operator=(ObjectIndexedList<T,I> &&)=default;
+        virtual ~ObjectIndexedList(){Free();}
 
         /**
          * 向列表中添加一个空数据
@@ -184,7 +191,10 @@ namespace hgl
                 free_index.Pop(index);
                 data_index.Append(index);
 
-                return data_array.At(index);
+                T *slot=data_array.At(index);
+                destroy_at(slot);
+                construct_at(slot);
+                return slot;
             }
         }
 
@@ -210,7 +220,9 @@ namespace hgl
                 data_index.Append(index);
             }
 
-            memcpy(&data_array[index], &data, sizeof(T));
+            T *slot=data_array.At(index);
+            destroy_at(slot);
+            construct_at_copy(slot,data);
             return index;
         }
 
@@ -240,7 +252,9 @@ namespace hgl
                     free_index.Pop(index);
                     data_index.Append(index);
 
-                    memcpy(&data_array[index], &data[i], sizeof(T));
+                    T *slot=data_array.At(index);
+                    destroy_at(slot);
+                    construct_at_copy(slot,data[i]);
                 }
 
                 n-=mc;
@@ -260,7 +274,9 @@ namespace hgl
                 for(int32 i=0;i<n;i++)
                 {
                     data_index.Append(index+i);
-                    memcpy(&data_array[index+i], &data[i], sizeof(T));
+                    T *slot=data_array.At(index+i);
+                    destroy_at(slot);
+                    construct_at_copy(slot,data[i]);
                 }
 
                 result+=n;
@@ -271,13 +287,23 @@ namespace hgl
 
         virtual void Clear()
         {
-            data_array.Clear();
+            // 调用析构以释放资源，然后重新默认构造占位，保持 slots 始终处于已构造状态
+            const int32 count=data_index.GetCount();
+            for(int32 i=0;i<count;i++)
+            {
+                const int32 idx=data_index[i];
+                T *slot=data_array.At(idx);
+                destroy_at(slot);
+                construct_at(slot);
+            }
+
             data_index.Clear();
             free_index.Clear();
         }
 
         virtual void Free()
         {
+            Clear();
             data_array.Free();
             data_index.Free();
             free_index.Free();
@@ -311,7 +337,9 @@ namespace hgl
                 data_index.Insert(pos,&index,1);
             }
 
-            memcpy(&data_array[index], &value, sizeof(T));
+            T *slot=data_array.At(index);
+            destroy_at(slot);
+            construct_at_copy(slot,value);
             return true;
         }
 
@@ -332,7 +360,13 @@ namespace hgl
             if(count<=0)return(0);
 
             for(int32 i=start;i<start+count;i++)
-                free_index.Push(data_index[i]);
+            {
+                const int32 idx=data_index[i];
+                T *slot=data_array.At(idx);
+                destroy_at(slot);
+                construct_at(slot); // 保持已构造状态以便未来复用
+                free_index.Push(idx);
+            }
 
             data_index.Delete(start,count);
             return count;
@@ -359,70 +393,19 @@ namespace hgl
 
             const int32 count=GetCount();
 
-            DataArray<int32> sorted_index(count);
-            Stack<int32> overflow_index;
-            Stack<int32> space_location;
+            ObjectArray<T> new_data;
+            new_data.Resize(count);
 
-            overflow_index.Reserve(count);
-            space_location.Reserve(count);
-
-            mem_copy(sorted_index.GetData(),data_index.GetData(),count);
-
-            std::sort(sorted_index.begin(),sorted_index.end(),std::less<int>());
-
-            //查找空的位置
+            for(int32 i=0;i<count;i++)
             {
-                int32 *p=sorted_index.GetData();
-
-                for(int i=0;i<count;i++)
-                {
-                    if(i<*p)
-                    {
-                        space_location.Push(i);
-                    }
-                    else
-                    {
-                        ++p;
-                    }
-                }
+                const int32 src=data_index[i];
+                T *dst=new_data.At(i);
+                destroy_at(dst);
+                construct_at_move(dst,std::move(data_array[src]));
+                data_index[i]=i;
             }
 
-            //查找超出边界的索引
-            {
-                int32 *p=data_index.GetData();
-
-                for(int i=0;i<count;i++)
-                {
-                    if(*p>=count)
-                    {
-                        overflow_index.Push(i);
-                    }
-
-                    ++p;
-                }
-            }
-
-            if(overflow_index.IsEmpty())
-                return(true);
-
-            if(overflow_index.GetCount()!=space_location.GetCount())
-                return(false);
-
-            //直接将超出边界的数据移到空的位置上，并更新索引
-            {
-                int32 new_location;
-                int32 index;
-
-                while(space_location.Pop(new_location))
-                {
-                    overflow_index.Pop(index);
-
-                    memcpy(&data_array[new_location], &data_array[data_index[index]], sizeof(T));
-
-                    data_index[index]=new_location;
-                }
-            }
-
+            data_array = std::move(new_data);
             free_index.Clear();
             return(true);
         }
@@ -457,36 +440,20 @@ namespace hgl
             if(IsOrdered())         //顺序没问题
                 return;
 
-            T *temp_array=hgl_align_malloc<T>(count);
+            ObjectArray<T> new_data;
+            new_data.Resize(count);
 
-            int i = 0;
-            while (i < count)
+            for(int i=0;i<count;i++)
             {
-                int start = i; // 当前连续块的起始位置
-                int end = i;   // 当前连续块的结束位置
-
-                // 检查后续索引是否是连续的正确顺序
-                while (end + 1 < count && data_index[end + 1] == data_index[end] + 1)
-                {
-                    ++end;
-                }
-
-                // 批量复制连续块的数据
-                int length = end - start + 1;
-                memcpy(temp_array+start, data_array.GetData() + data_index[start], length * sizeof(T));
-
-                // 更新索引
-                i = end + 1;
+                const int32 src=data_index[i];
+                T *dst=new_data.At(i);
+                destroy_at(dst);
+                construct_at_move(dst,std::move(data_array[src]));
+                data_index[i]=i;
             }
 
-            // 将临时数组的数据复制回 data_array
-            data_array.SetData(temp_array,count);
-
-            // 更新 data_index，使其与 data_array 的顺序一致
-            for (int i = 0; i < count; ++i)
-            {
-                data_index[i] = i;
-            }
+            data_array = std::move(new_data);
+            free_index.Clear();
         }
-    };//template<typename T> class IndexedList
+    };//template<typename T> class ObjectIndexedList
 }//namespace hgl

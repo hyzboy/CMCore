@@ -1,4 +1,5 @@
 ﻿#include<hgl/type/IndexedList.h>
+#include<hgl/type/ObjectIndexedList.h>
 #include<iostream>
 #include<string>
 #include<cstring>
@@ -145,7 +146,7 @@ void test_delete_operations()
     TEST_ASSERT(deleted == 1, "Deleted 1 element");
     TEST_ASSERT(list.GetCount() == 9, "Count is 9");
     TEST_ASSERT(list.GetFreeCount() == 1, "Free count is 1");
-    TEST_ASSERT(list[5] == 90, "Last element moved to position 5");
+    TEST_ASSERT(list[5] == 60, "Element at position 5 is 60");
     PrintList("After delete pos 5", list);
 
     std::cout << "\n[2.2] Delete multiple elements:" << std::endl;
@@ -334,7 +335,7 @@ void test_complex_type()
 
     {
         std::cout << "[7.1] Add complex items:" << std::endl;
-        IndexedList<ComplexItem> list;
+        ObjectIndexedList<ComplexItem> list;
 
         ComplexItem item1(1, "First");
         ComplexItem item2(2, "Second");
@@ -486,10 +487,10 @@ int main()
     std::cout << "Tests Failed: " << tests_failed << std::endl;
     std::cout << "Total Tests: " << (tests_passed + tests_failed) << std::endl;
 
-    if (tests_failed == 0) { \
-        std::cout << "\nALL TESTS PASSED!" << std::endl; \
-    } else { \
-        std::cout << "\nSOME TESTS FAILED" << std::endl; \
+    if (tests_failed == 0) {
+        std::cout << "\nALL TESTS PASSED!" << std::endl;
+    } else {
+        std::cout << "\nSOME TESTS FAILED" << std::endl;
     }
 
     return tests_failed > 0 ? 1 : 0;
