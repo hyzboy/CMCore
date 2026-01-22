@@ -21,6 +21,35 @@ namespace hgl
 
         static KeyboardButton KeyConvert[256]{};
         static void (*WMProc[2048])(EventDispatcher *,uint32,uint32){};                 //消息处理队列
+        
+        static TOUCHINPUT WinTouchInputBuffer[MAX_TOUCH_COUNT]{};
+
+        /**
+         * Convert Windows TOUCH input data to TouchEvent
+         * This function is marked as friend to access private members of TouchEvent
+         */
+        void UpdateTouchEventFromWindowsTouch_Windows(TouchEvent* touch_event, uint32 touch_count, TOUCHINPUT* touch_inputs)
+        {
+            if(!touch_event || !touch_inputs || touch_count == 0 || touch_count > MAX_TOUCH_POINTS)
+                return;
+
+            touch_event->SetTouchCount(touch_count);
+
+            for(uint32 i = 0; i < touch_count; i++)
+            {
+                TouchPoint tp;
+                tp.id = touch_inputs[i].dwID;
+                tp.x = touch_inputs[i].x / 100;
+                tp.y = touch_inputs[i].y / 100;
+                tp.cx = touch_inputs[i].cxContact / 100;
+                tp.cy = touch_inputs[i].cyContact / 100;
+                tp.flags = touch_inputs[i].dwFlags;
+                tp.mask = touch_inputs[i].dwMask;
+                tp.time = touch_inputs[i].dwTime;
+
+                touch_event->SetTouchPoint(i, tp);
+            }
+        }
 
         void InitKeyConvert()
         {
@@ -580,47 +609,33 @@ namespace hgl
             WMEF_TOUCH(WMProcTouch)
             {
                 UINT cInputs = LOWORD(wParam);
-                HTOUCHINPUT hTouchInput = (HTOUCHINPUT)lParam;
+                HTOUCHINPUT hTouchInput = reinterpret_cast<HTOUCHINPUT>(static_cast<UINT_PTR>(lParam));
                 
                 if(cInputs > 0)
-                {
-                    TOUCHINPUT *pInputs = new TOUCHINPUT[cInputs];
-                    
-                    if(GetTouchInputInfo(hTouchInput, cInputs, pInputs, sizeof(TOUCHINPUT)))
+                {                    
+                    if(GetTouchInputInfo(hTouchInput, cInputs, WinTouchInputBuffer, sizeof(TOUCHINPUT)))
                     {
                         TouchEvent* touch_event = dynamic_cast<TouchEvent*>(ie);
                         
-                        if(touch_event && cInputs <= 16)
+                        if(touch_event && cInputs <= MAX_TOUCH_POINTS)
                         {
-                            // 更新触摸点信息
-                            touch_event->current_touch_count = cInputs;
+                            // Use the Windows-specific function to update touch event
+                            UpdateTouchEventFromWindowsTouch_Windows(touch_event, cInputs, WinTouchInputBuffer);
                             
-                            for(UINT i = 0; i < cInputs; i++)
-                            {
-                                touch_event->touch_points[i].id = pInputs[i].dwID;
-                                touch_event->touch_points[i].x = pInputs[i].x / 100;
-                                touch_event->touch_points[i].y = pInputs[i].y / 100;
-                                touch_event->touch_points[i].cx = pInputs[i].cxContact / 100;
-                                touch_event->touch_points[i].cy = pInputs[i].cyContact / 100;
-                                touch_event->touch_points[i].flags = pInputs[i].dwFlags;
-                                touch_event->touch_points[i].mask = pInputs[i].dwMask;
-                                touch_event->touch_points[i].time = pInputs[i].dwTime;
-                            }
-                            
-                            // 使用第一个触摸点的位置
-                            touch_event_data.x = pInputs[0].x / 100;
-                            touch_event_data.y = pInputs[0].y / 100;
+                            // Use the first touch point for event data
+                            touch_event_data.x = WinTouchInputBuffer[0].x / 100;
+                            touch_event_data.y = WinTouchInputBuffer[0].y / 100;
                             touch_event_data.touch_count = cInputs;
                             
                             event_header.type = InputEventSource::Touch;
                             event_header.index = 0;
                             
-                            // 判断事件类型
-                            if(pInputs[0].dwFlags & TOUCHEVENTF_DOWN)
+                            // Determine event type based on flags
+                            if(WinTouchInputBuffer[0].dwFlags & TOUCHEVENTF_DOWN)
                                 event_header.id = (uint16)TouchEventID::Down;
-                            else if(pInputs[0].dwFlags & TOUCHEVENTF_UP)
+                            else if(WinTouchInputBuffer[0].dwFlags & TOUCHEVENTF_UP)
                                 event_header.id = (uint16)TouchEventID::Up;
-                            else if(pInputs[0].dwFlags & TOUCHEVENTF_MOVE)
+                            else if(WinTouchInputBuffer[0].dwFlags & TOUCHEVENTF_MOVE)
                                 event_header.id = (uint16)TouchEventID::Move;
                             
                             ie->OnEvent(event_header, touch_event_data.data);
@@ -628,8 +643,6 @@ namespace hgl
                         
                         CloseTouchInputHandle(hTouchInput);
                     }
-                    
-                    delete[] pInputs;
                 }
             }
         #undef WMEF_TOUCH
@@ -644,7 +657,7 @@ namespace hgl
                 ZeroMemory(&gi, sizeof(GESTUREINFO));
                 gi.cbSize = sizeof(GESTUREINFO);
                 
-                HGESTUREINFO hGestureInfo = (HGESTUREINFO)lParam;
+                HGESTUREINFO hGestureInfo = reinterpret_cast<HGESTUREINFO>(static_cast<UINT_PTR>(lParam));
                 
                 if(GetGestureInfo(hGestureInfo, &gi))
                 {

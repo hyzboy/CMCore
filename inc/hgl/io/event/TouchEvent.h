@@ -49,16 +49,18 @@ namespace hgl::io
         };
     };
 
-    constexpr size_t TouchEventDataBytes=sizeof(TouchEventData);
+    constexpr const size_t TouchEventDataBytes=sizeof(TouchEventData);
+    
+    constexpr const size_t MAX_TOUCH_POINTS = 16;
         
     class TouchEvent:public EventDispatcher
     {
         TouchEventData *ted=nullptr;
 
         Vector2i position{};
-        
-        static constexpr size_t MAX_TOUCH_POINTS = 16;
+
         TouchPoint touch_points[MAX_TOUCH_POINTS];
+
         uint16 current_touch_count = 0;
 
     public:
@@ -94,5 +96,23 @@ namespace hgl::io
     public:
 
         const Vector2i &GetTouchCoord()const{return position;}
+
+        /**
+         * Set touch point information (used by platform-specific handlers)
+         */
+        void SetTouchPoint(uint16 index, const TouchPoint& point)
+        {
+            if(index < MAX_TOUCH_POINTS)
+                touch_points[index] = point;
+        }
+
+        /**
+         * Set touch count (used by platform-specific handlers)
+         */
+        void SetTouchCount(uint16 count)
+        {
+            if(count <= MAX_TOUCH_POINTS)
+                current_touch_count = count;
+        }
     };//class TouchEvent
 }//namespace hgl::io
