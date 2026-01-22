@@ -90,5 +90,17 @@ int main(int,char **)
     da_list.Move(7,2,3);        //从2号位置开始的3个值移动到7号位置
     output("move(7,2,3)");
 
+    int ins_begin=99;
+    da_list.Insert(0,&ins_begin,1); //在开头插入
+    output("insert(0,99)");
+
+    int ins_mid[]={111,222};
+    da_list.Insert(5,ins_mid,2);    //在中间插入两个
+    output("insert(5,{111,222})");
+
+    int ins_end=888;
+    da_list.Insert(da_list.GetCount(),&ins_end,1); //末尾插入
+    output("insert(end,888)");
+
     return(0);
 }

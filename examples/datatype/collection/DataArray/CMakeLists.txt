@@ -17,8 +17,6 @@ cm_example_project("DataType/Collection/DataArray" DataArrayBugDemo       DataAr
 # 综合功能测试
 cm_example_project("DataType/Collection/DataArray" DataArrayComprehensiveTest  ComprehensiveTest.cpp)
 
-# 非平凡类型测试
-cm_example_project("DataType/Collection/DataArray" DataArrayNonTrivialTest     NonTrivialTypeTest.cpp)
 
 # 边界案例和性能测试
 cm_example_project("DataType/Collection/DataArray" DataArrayBoundaryTest      BoundaryAndPerformanceTest.cpp)

@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/plugin/ExternalPlugIn.h>
-#include<hgl/type/ObjectManage.h>
+#include<hgl/type/ObjectManager.h>
 #include<hgl/type/StringList.h>
 #include<hgl/type/ArrayList.h>
 
@@ -19,7 +19,7 @@ namespace hgl
     /**
      * 插件管理
      */
-    class PlugInManage:public ObjectManage<OSString,PlugIn>
+    class PlugInManager:public ObjectManager<OSString,PlugIn>
     {
         OSString name;                                                          ///<插件类目名称(必须符合代码名称规则)
 
@@ -27,8 +27,8 @@ namespace hgl
 
     public:
 
-        PlugInManage(const OSString &n);
-        virtual ~PlugInManage()=default;
+        PlugInManager(const OSString &n);
+        virtual ~PlugInManager()=default;
 
         bool    RegisterPlugin(PlugIn *);                                       ///<注册一个内置插件
         uint    UnregisterPlugin(const OSString &);                             ///<释放一个内置插件
@@ -42,13 +42,13 @@ namespace hgl
         PlugInStatus GetStatus(const OSString &pi_name) const;                   ///<取得插件状态
 
         int     Scan(OSStringList &out_names) const;                             ///<扫描可用插件名称
-        int     ScanDetailed(hgl::ArrayList<PlugInInfo> &out_infos,bool probe=false) const;   ///<扫描可用插件并可选探测
+        int     ScanDetailed(hgl::ObjectList<PlugInInfo> &out_infos,bool probe=false) const;   ///<扫描可用插件并可选探测
         bool    ProbePlugin(const OSString &pi_name,PlugInInfo &out_info) const; ///<对指定插件做一次信息探测
 
         PlugIn *LoadPlugin  (const OSString &,const OSString &);                ///<加载一个外部插件，明确指定全路径文件名
         PlugIn *LoadPlugin  (const OSString &);                                 ///<加载一个外部插件，自行查找
         bool    UnloadPlugin(const OSString &);                                 ///<释放一个外部插件
-    };//class PlugInManage:public ObjectManage<U16String,PlugIn>
+    };//class PlugInManager:public ObjectManager<U16String,PlugIn>
 
     /**
      * 插件注册模板

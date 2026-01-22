@@ -3,6 +3,7 @@
 #include<hgl/type/DataArray.h>
 #include<hgl/type/Stack.h>
 #include<hgl/type/SmallMap.h>
+#include<type_traits>
 
 namespace hgl
 {
@@ -26,14 +27,36 @@ namespace hgl
      */
     template<typename T,typename I=MonotonicID> class MonotonicIDList
     {
+        static_assert(std::is_trivially_copyable<T>::value,
+                      "MonotonicIDList requires trivially copyable T");
+
+        I id_base=1;                            ///< CN: ID 起始值(默认1) / EN: ID base (default 1)
         I next_id=1;                            ///< CN: 下一个可用的ID / EN: Next available ID
 
-        DataArray<T>        data_array;         ///< CN: 实际数据存储数组 / EN: Actual data storage array
-        SmallMap<I,int32>   id_to_location_map; ///< CN: ID到位置的映射表 / EN: Map from ID to location
-        SmallMap<int32,I>   location_to_id_map; ///< CN: 位置到ID的反向映射表 / EN: Reverse map from location to ID
-        Stack<int32>        free_location;      ///< CN: 空闲位置栈 / EN: Stack of free locations
+        DataArray<T>  data_array;               ///< CN: 实际数据存储数组 / EN: Actual data storage array
+        DataArray<I>  location_to_id;           ///< CN: 位置到ID的并行数组 / EN: Parallel array: location -> ID
+        SmallMap<I,int32> id_to_location_map;   ///< CN: ID到位置映射 / EN: Map: ID -> location
+        Stack<int32>  free_location;            ///< CN: 空闲位置栈 / EN: Stack of free locations
 
     public:
+
+        MonotonicIDList() = default;
+
+        explicit MonotonicIDList(I start_id)
+        {
+            id_base=start_id;
+            next_id=start_id;
+        }
+
+        static constexpr I InvalidID(){ return static_cast<I>(MONOTONIC_ID_INVALID); }
+
+        bool ResetIDBase(I start_id)
+        {
+            if(!Empty()) return false;
+            id_base=start_id;
+            next_id=start_id;
+            return true;
+        }
 
         /**
          * CN: 添加一个新元素并返回其指针
@@ -54,8 +77,10 @@ namespace hgl
             if(free_location.IsEmpty())
             {
                 location=data_array.GetCount();
-
                 data_array.Expand(1);
+                // keep parallel location_to_id in sync
+                if(location_to_id.GetCount()<=location)
+                    location_to_id.Resize(location+1);
             }
             else
             {
@@ -65,7 +90,8 @@ namespace hgl
             T *p=data_array.At(location);
 
             id_to_location_map.Add(next_id,location);
-            location_to_id_map.Add(location,next_id);
+            // mark location -> id
+            *location_to_id.At(location)=next_id;
 
             ++next_id;
 
@@ -91,9 +117,38 @@ namespace hgl
             if(!p)
                 return(false);
 
-            mem_copy<T>(*p,value);
+            *p=value;
 
             return(true);
+        }
+
+        bool Add(T &&value)
+        {
+            T *p=Add();
+            if(!p) return false;
+            *p=static_cast<T&&>(value);
+            return true;
+        }
+
+        I AddGetID(const T &value)
+        {
+            const I new_id=next_id;
+            Add(value);
+            return new_id;
+        }
+
+        I AddGetID(T &&value)
+        {
+            const I new_id=next_id;
+            Add(static_cast<T&&>(value));
+            return new_id;
+        }
+
+        I AddDefaultGetID()
+        {
+            const I new_id=next_id;
+            Add();
+            return new_id;
         }
 
         /**
@@ -119,7 +174,11 @@ namespace hgl
             if(!id_to_location_map.GetAndDelete(id,location))
                 return(false);
 
-            location_to_id_map.DeleteByKey(location);
+            // mark location as free
+            if(location>=0 && location<location_to_id.GetCount())
+            {
+                *location_to_id.At(location)=InvalidID();
+            }
 
             free_location.Push(location);
 
@@ -162,6 +221,38 @@ namespace hgl
             return data_array.At(location);
         }
 
+        const T *Get(const I &id) const
+        {
+            int32 location;
+            if(!id_to_location_map.Get(id,location))
+                return nullptr;
+            return data_array.At(location);
+        }
+
+        bool TryGet(const I &id, T *&out)
+        {
+            int32 location;
+            if(!id_to_location_map.Get(id,location))
+            {
+                out=nullptr;
+                return false;
+            }
+            out=data_array.At(location);
+            return true;
+        }
+
+        bool TryGet(const I &id, const T *&out) const
+        {
+            int32 location;
+            if(!id_to_location_map.Get(id,location))
+            {
+                out=nullptr;
+                return false;
+            }
+            out=data_array.At(location);
+            return true;
+        }
+
         /**
          * CN: 获取指定ID元素在数据数组中的位置
          * EN: Get the location of an element with the specified ID in the data array
@@ -182,6 +273,30 @@ namespace hgl
                 return -1;
 
             return location;
+        }
+
+        int Count() const
+        {
+            return id_to_location_map.GetCount();
+        }
+
+        int StorageSize() const
+        {
+            return data_array.GetCount();
+        }
+
+        bool Empty() const
+        {
+            return Count()==0;
+        }
+
+        void Clear()
+        {
+            data_array.Clear();
+            location_to_id.Clear();
+            id_to_location_map.Clear();
+            free_location.Clear();
+            next_id=id_base;
         }
 
         /**
@@ -211,83 +326,68 @@ namespace hgl
             if(free_location.IsEmpty())
                 return 0;
 
-            // CN: 获取当前数据数组的大小
-            // EN: Get the current size of the data array
-            int32 total_count=data_array.GetCount();
-            int32 free_count=free_location.GetCount();
+            // CN/EN: 当前存储大小
+            int32 total=data_array.GetCount();
+            const int32 original_total=total;
 
-            // CN: 如果所有位置都是空的，直接清空
-                 // EN: If all positions are empty, clear directly
-            if(free_count>=total_count)
+            // CN: 如果空洞覆盖全部，直接清空
+            // EN: If all entries are free, clear all
+            if(free_location.GetCount()>=total)
             {
-                data_array.Clear();
-                free_location.Clear();
-                id_to_location_map.Clear();
-                location_to_id_map.Clear();
-                return free_count;
+                Clear();
+                return original_total; 
             }
 
-            // CN: 从后向前查找有效数据，填充到 free_location 中的空洞
-            // EN: Search for valid data from back to front, filling holes in free_location
             int32 moved_count=0;
 
-            while(!free_location.IsEmpty()&&total_count>0)
+            while(!free_location.IsEmpty() && total>0)
             {
-                int32 free_loc;
-                free_location.Pop(free_loc);
+                int32 hole;
+                free_location.Pop(hole);
 
-                // CN: 如果空洞位置已经在末尾或之后，无需移动
-                // EN: If the hole position is already at or beyond the end, no need to move
-                if(free_loc>=total_count-1)
+                // 跳过尾部连续空洞
+                while(total>0)
                 {
-                    --total_count;
+                    const I tail_id = *location_to_id.At(total-1);
+                    if(tail_id==InvalidID())
+                    {
+                        --total;
+                        continue;
+                    }
+                    break;
+                }
+
+                if(total<=0) break;
+
+                // 如果空洞在尾部或之后，收缩即可
+                if(hole>=total-1)
+                {
+                    --total;
                     continue;
                 }
 
-                // CN: 从末尾找一个有效数据位置
-                // EN: Find a valid data position from the end
-                int32 last_valid_loc=total_count-1;
+                // 将尾部有效元素搬到空洞
+                const int32 tail_loc = total-1;
+                const I tail_id = *location_to_id.At(tail_loc);
 
-                // CN: 使用反向映射快速查找末尾位置对应的ID（O(log n)而非O(n)）
-                // EN: Use reverse mapping to quickly find the ID corresponding to the end position (O(log n) instead of O(n))
-                I last_valid_id;
-                if(!location_to_id_map.Get(last_valid_loc,last_valid_id))
-                {
-                    // CN: 如果末尾也是空洞，继续向前查找
-                             // EN: If the end is also a hole, continue searching forward
-                    --total_count;
-                    free_location.Push(free_loc); // CN: 把当前空洞放回去，稍后处理 / EN: Put the current hole back for later processing
-                    continue;
-                }
+                T *src = data_array.At(tail_loc);
+                T *dst = data_array.At(hole);
+                *dst = *src;
 
-                // CN: 将末尾的有效数据移动到空洞位置
-                // EN: Move valid data from the end to the hole position
-                T *src=data_array.At(last_valid_loc);
-                T *dst=data_array.At(free_loc);
-                mem_copy<T>(*dst,*src);
+                // 更新映射
+                id_to_location_map.Change(tail_id, hole);
+                *location_to_id.At(hole)=tail_id;
+                *location_to_id.At(tail_loc)=InvalidID();
 
-                // CN: 更新双向映射
-                // EN: Update bidirectional mapping
-                id_to_location_map.Change(last_valid_id,free_loc);
-                location_to_id_map.DeleteByKey(last_valid_loc);
-                location_to_id_map.ChangeOrAdd(free_loc,last_valid_id);
-
-                // CN: 缩小数组大小
-                // EN: Reduce array size
-                --total_count;
+                --total;
                 ++moved_count;
             }
 
-            // CN: 收缩 data_array 到实际使用的大小
-            // EN: Shrink data_array to the actual used size
-            int32 original_count=data_array.GetCount();
-            data_array.Resize(total_count);
-
-            // CN: 清空 free_location，因为所有空洞都已处理
-            // EN: Clear free_location because all holes have been processed
+            data_array.Resize(total);
+            location_to_id.Resize(total);
             free_location.Clear();
 
-            return original_count-total_count; // CN: 返回收缩的数量 / EN: Return the number of shrunk elements
+            return original_total-total;
         }
 
         /**
@@ -348,37 +448,27 @@ namespace hgl
             remap_list.Clear();
             remap_list.Resize(count);
 
-            // CN: 构建旧ID到新ID的映射，新ID从1开始
-            // EN: Build mapping from old IDs to new IDs, new IDs start from 1
-            // CN: 遍历 location_to_id_map，location对应新ID-1
-            // EN: Iterate through location_to_id_map, location corresponds to new ID - 1
+            // CN/EN: 构建旧ID到新ID的映射，新ID从 id_base 开始
             for(int32 i=0; i<count; ++i)
             {
-                I old_id;
-                if(location_to_id_map.Get(i,old_id))
-                {
-                    IDRemap remap;
-                    remap.old_id=old_id;
-                    remap.new_id=static_cast<I>(i+1);  // CN: 新ID从1开始 / EN: New ID starts from 1
-                    remap_list[i]=remap;
-                }
+                const I old_id = *location_to_id.At(i);
+                IDRemap remap;
+                remap.old_id=old_id;
+                remap.new_id=static_cast<I>(id_base + i);
+                remap_list[i]=remap;
             }
 
-            // CN: 重建映射表，新ID从1开始
-            // EN: Rebuild mapping tables, new IDs start from 1
+            // 重建映射：新ID从 id_base 连续
             id_to_location_map.Clear();
-            location_to_id_map.Clear();
-
             for(int32 i=0; i<count; ++i)
             {
-                I new_id=static_cast<I>(i+1);  // CN: 新ID从1开始 / EN: New ID starts from 1
-                id_to_location_map.Add(new_id,i);
-                location_to_id_map.Add(i,new_id);
+                const I new_id=static_cast<I>(id_base + i);
+                id_to_location_map.Add(new_id, i);
+                *location_to_id.At(i)=new_id;
             }
 
-            // CN: 重置 next_id 为当前数据数量+1
-            // EN: Reset next_id to the current data count + 1
-            next_id=static_cast<I>(count+1);
+            // 更新 next_id
+            next_id=static_cast<I>(id_base + count);
 
             return count;
         }

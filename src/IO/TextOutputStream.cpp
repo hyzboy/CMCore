@@ -10,6 +10,11 @@ namespace hgl
 
         template<> TextOutputStream *CreateTextOutputStream<u8char>(OutputStream *os){return(new UTF8TextOutputStream(os));}
         template<> TextOutputStream *CreateTextOutputStream<wchar_t>(OutputStream *os){return(new UTF16LETextOutputStream(os));}
+
+#ifdef HGL_SUPPORT_CHAR8_T
+        // When char8_t is supported, u8char is char8_t, so we need a separate specialization for char
+        template<> TextOutputStream *CreateTextOutputStream<char>(OutputStream *os){return(new UTF8TextOutputStream(os));}
+#endif
     }//namespace io
 
     namespace io        //WriteChars函数

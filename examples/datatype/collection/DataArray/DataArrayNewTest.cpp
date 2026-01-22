@@ -3,7 +3,7 @@
  * 验证新架构的所有功能
  */
 
-#include <hgl/type/DataArrayNew.h>
+#include <hgl/type/DataArray.h>
 #include <iostream>
 #include <string>
 
@@ -20,7 +20,7 @@ void test_trivial_types()
     arr.Append(1);
     arr.Append(2);
     arr.Append(3);
-    
+
     std::cout << "Count: " << arr.GetCount() << std::endl;
     std::cout << "Elements: ";
     for(int i = 0; i < arr.GetCount(); i++)
@@ -89,87 +89,11 @@ void test_trivial_types()
 
     DataArray<int> result;
     arr3.WithoutList(result, without);
-    
+
     std::cout << "WithoutList result: ";
     for(int i = 0; i < result.GetCount(); i++)
         std::cout << result[i] << " ";
     std::cout << std::endl;
-}
-
-void test_non_trivial_types()
-{
-    TEST_SECTION("Non-Trivial Types Test (std::string)");
-
-    DataArray<std::string> arr;
-    arr.Append("Hello");
-    arr.Append("World");
-    arr.Append("!");
-
-    std::cout << "Count: " << arr.GetCount() << std::endl;
-    std::cout << "Elements: ";
-    for(int i = 0; i < arr.GetCount(); i++)
-        std::cout << arr[i] << " ";
-    std::cout << std::endl;
-
-    // Resize
-    arr.Resize(5);
-    arr[3] = "C++";
-    arr[4] = "Test";
-    
-    std::cout << "After Resize and assign: ";
-    for(int i = 0; i < arr.GetCount(); i++)
-        std::cout << arr[i] << " ";
-    std::cout << std::endl;
-
-    // Insert
-    std::string insert_data[] = {"Insert1", "Insert2"};
-    arr.Insert(2, insert_data, 2);
-    
-    std::cout << "After Insert: ";
-    for(int i = 0; i < arr.GetCount(); i++)
-        std::cout << arr[i] << " ";
-    std::cout << std::endl;
-
-    // Delete
-    arr.DeleteShift(3, 2);
-    
-    std::cout << "After DeleteShift: ";
-    for(int i = 0; i < arr.GetCount(); i++)
-        std::cout << arr[i] << " ";
-    std::cout << std::endl;
-
-    // Find
-    std::cout << "Find(\"World\"): " << arr.Find(std::string("World")) << std::endl;
-    std::cout << "Contains(\"Hello\"): " << (arr.Contains(std::string("Hello")) ? "true" : "false") << std::endl;
-
-    // operator=
-    DataArray<std::string> arr2;
-    arr2 = arr;
-    std::cout << "After arr2 = arr, arr2[0]: " << arr2[0] << std::endl;
-
-    // initializer_list
-    arr = {"A", "B", "C"};
-    std::cout << "After arr = {\"A\", \"B\", \"C\"}: ";
-    for(int i = 0; i < arr.GetCount(); i++)
-        std::cout << arr[i] << " ";
-    std::cout << std::endl;
-}
-
-void test_type_selection()
-{
-    TEST_SECTION("Type Selection Verification");
-
-    // 验证类型选择是否正确
-    DataArray<int> int_arr;
-    DataArray<std::string> str_arr;
-
-    std::cout << "DataArray<int> uses: " 
-              << (std::is_same_v<decltype(int_arr), TrivialDataArrayImpl<int>> ? "TrivialDataArrayImpl" : "NonTrivialDataArrayImpl")
-              << std::endl;
-
-    std::cout << "DataArray<std::string> uses: "
-              << (std::is_same_v<decltype(str_arr), NonTrivialDataArrayImpl<std::string>> ? "NonTrivialDataArrayImpl" : "TrivialDataArrayImpl")
-              << std::endl;
 }
 
 void test_move_operation()
@@ -203,8 +127,6 @@ int main()
     try
     {
         test_trivial_types();
-        test_non_trivial_types();
-        test_type_selection();
         test_move_operation();
 
         std::cout << "\n========================================" << std::endl;

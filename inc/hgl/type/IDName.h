@@ -100,7 +100,7 @@ namespace hgl
 
     #define HGL_DEFINE_IDNAME(name,char_type)   struct IDName##_##name##_Manager{}; \
                                                 using name=hgl::OrderedIDName<char_type,IDName##_##name##_Manager>;   \
-                                                using name##Set=hgl::SortedSet<name>;
+                                                using name##Set=hgl::SortedObjectSet<name>;
 
     #define HGL_DEFINE_ANSI_IDNAME(name)    HGL_DEFINE_IDNAME(name, char)
     #define HGL_DEFINE_WIDE_IDNAME(name)    HGL_DEFINE_IDNAME(name, wchar_t)

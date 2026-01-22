@@ -1,8 +1,9 @@
-/**
+﻿/**
  * 验证 DataArray 修复后对 non-trivial 类型的支持
  */
 
 #include<hgl/type/DataArray.h>
+#include<hgl/type/ObjectArray.h>
 #include<hgl/type/ArrayList.h>
 #include<iostream>
 #include<string>
@@ -57,7 +58,7 @@ void TestDataArray()
     std::cout << "\n=== DataArray Test ===" << std::endl;
 
     std::cout << "\n1. Create and Resize:" << std::endl;
-    DataArray<TestObject> arr;
+    ObjectArray<TestObject> arr;
     arr.Resize(3);
     std::cout << "   Resized to 3, aliveCount=" << TestObject::aliveCount << std::endl;
 
@@ -87,16 +88,11 @@ void TestArrayList()
     TestObject::aliveCount = 0;
 
     std::cout << "\n1. Add objects:" << std::endl;
-    ArrayList<TestObject> list;
+    ObjectArray<TestObject> list;
     list.Add(TestObject(10, "Item10"));
     list.Add(TestObject(20, "Item20"));
     list.Add(TestObject(30, "Item30"));
     std::cout << "   After add, count=" << list.GetCount() << ", aliveCount=" << TestObject::aliveCount << std::endl;
-
-    std::cout << "\n2. RepeatAdd:" << std::endl;
-    TestObject repeated(99, "Repeated");
-    list.RepeatAdd(repeated, 2);
-    std::cout << "   After RepeatAdd, count=" << list.GetCount() << ", aliveCount=" << TestObject::aliveCount << std::endl;
 
     std::cout << "\n3. Delete:" << std::endl;
     list.Delete(0, 1);

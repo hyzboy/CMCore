@@ -1,8 +1,4 @@
-/**
- * 最小测试 - 验证 DataArray 对 non-trivial 类型的支持
- */
-
-#include<hgl/type/DataArray.h>
+﻿#include<hgl/type/ObjectArray.h>
 #include<iostream>
 #include<string>
 
@@ -48,7 +44,7 @@ int main()
     std::cout << "=== Minimal DataArray Test ===" << std::endl;
 
     std::cout << "\n[1] Creating DataArray..." << std::endl;
-    DataArray<TestObj> arr;
+    ObjectArray<TestObj> arr;
 
     std::cout << "\n[2] Resizing to 3..." << std::endl;
     arr.Resize(3);
@@ -64,7 +60,8 @@ int main()
     arr[2] = TestObj(3, "Third");
 
     std::cout << "\n[6] Reading values..." << std::endl;
-    for(int64 i = 0; i < arr.GetCount(); i++)
+
+    for(int i = 0; i < arr.GetCount(); i++)
     {
         std::cout << "  arr[" << i << "] = {" << arr[i].id << ", " << arr[i].name << "}" << std::endl;
     }

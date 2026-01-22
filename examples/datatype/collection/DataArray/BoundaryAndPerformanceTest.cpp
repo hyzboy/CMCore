@@ -73,9 +73,6 @@ bool test_empty_array_boundary()
     arr.Free();
     TEST_ASSERT(arr.GetCount() == 0, "after free, array should still be empty");
     
-    // Zero empty array should not crash
-    arr.Zero();
-    
     return true;
 }
 

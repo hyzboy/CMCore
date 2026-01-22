@@ -70,9 +70,9 @@ namespace hgl
 
         DataArray<SC> str_data;                                 ///<字符串数据
 
-        SortedSet<ConstStringView<SC>> str_set;                 ///<字符串集合
+        SortedObjectSet<ConstStringView<SC>> str_set;           ///<字符串集合
 
-        ArrayList<ConstStringView<SC>> str_list;                ///<字符串列表
+        ObjectList<ConstStringView<SC>> str_list;               ///<字符串列表
         Map<int,size_t> str_offset_map;                         ///<字符串映射
 
     public:
@@ -83,11 +83,14 @@ namespace hgl
 
         const DataArray<SC> &GetStringData()const{return str_data;}                                     ///<取得字符串数据
 
-        const ArrayList<ConstStringView<SC>> &GetConstStringList()const{return str_list;}               ///<取得字符串列表
+        const ObjectList<ConstStringView<SC>> &GetConstStringList()const{return str_list;}               ///<取得字符串列表
 
     public:
 
         const bool IsEmpty()const{return str_data.IsEmpty();}                                           ///<字符串集合是否为空
+
+        ConstStringView<SC> * const *begin()const{return str_list.GetData();}                           ///<迭代器开始
+        ConstStringView<SC> * const *end()const{return str_list.GetData()+str_list.GetCount();}        ///<迭代器结束
 
         const bool Contains(const SC *str,int length)const                          ///<判断字符串是否为合集成员
         {
@@ -138,16 +141,15 @@ namespace hgl
 
         const ConstStringView<SC> *GetStringView(const int id)const                  ///<根据ID取得字符串视图
         {
-            return str_list.At(id);
+            const ConstStringView<SC> * const *ptr = str_list.At(id);
+            return ptr ? *ptr : nullptr;
         }
 
         const ConstStringView<SC> *operator[](const int id)const                  ///<根据ID取得字符串视图
         {
-            return str_list.At(id);
+            const ConstStringView<SC> * const *ptr = str_list.At(id);
+            return ptr ? *ptr : nullptr;
         }
-
-        const ConstStringView<SC> *begin()const{return str_list.begin();}
-        const ConstStringView<SC> *end()const{return str_list.end();}
 
     public:
 
@@ -172,7 +174,9 @@ namespace hgl
 
             if(csv.id>=0)
             {
-                str_list.Get(csv.id,csv);
+                ConstStringView<SC> *ptr;
+                str_list.Get(csv.id, ptr);
+                csv = *ptr;
 
                 return csv.id;
             }
@@ -194,7 +198,12 @@ namespace hgl
 
             str_set.Add(csv);
 
-            str_list.Add(csv);
+            ConstStringView<SC> *new_view = str_list.Create();
+            new_view->str_data = csv.str_data;
+            new_view->id = csv.id;
+            new_view->length = csv.length;
+            new_view->offset = csv.offset;
+            
             str_offset_map.Add(csv.id,csv.offset);
 
             return csv.id;

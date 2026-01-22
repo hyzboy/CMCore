@@ -2,6 +2,7 @@
 
 #include<stdlib.h>
 #include<initializer_list>
+#include<type_traits>
 #include<hgl/type/DataArray.h>
 #include<hgl/type/MemoryUtil.h>
 
@@ -20,6 +21,9 @@ namespace hgl
 
     public: //属性
 
+        static_assert(std::is_trivially_copyable_v<T>, 
+                      "ArrayList<T> requires trivially copyable types (int, float, POD structs, etc). "
+                      "For non-trivial types (std::string, custom classes with dynamic memory), use ObjectList<T> instead.");
                 const   int     GetAllocCount   ()const{return data_array.GetAllocCount();}         ///<取得已分配容量
                 const   int     GetCount        ()const{return data_array.GetCount();}              ///<取得列表内数据数量
         virtual         bool    Resize          (int count){return data_array.Resize(count);}       ///<设置列表内数据数量
@@ -41,7 +45,9 @@ namespace hgl
 
             operator        DataArray<T> & ()       {return data_array;}
             operator const  DataArray<T> & ()const  {return data_array;}
-
+                    T &     operator[](int index)             {return data_array[index];}
+            const   T &     operator[](int index)const        {return data_array[index];}
+ 
     public: //方法
 
         ArrayList()=default;                                                                             ///<本类构造函数
@@ -184,9 +190,9 @@ namespace hgl
         * @param old_pos 原来的位置
         * @param move_count 要移动的数据个数
         */
-        virtual bool Move(const int new_pos,const int old_pos,const int move_count)
+        virtual void Move(const int new_pos,const int old_pos,const int move_count)
         {
-            return data_array.Move(new_pos,old_pos,move_count);
+            data_array.Move(new_pos,old_pos,move_count);
         }
 
         virtual void operator = (const DataArray<T> &da){data_array=da;}                            ///<操作符重载复制一个列表

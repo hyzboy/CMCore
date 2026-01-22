@@ -6,7 +6,6 @@
 
 #include <hgl/type/ArrayList.h>
 #include <hgl/type/Queue.h>
-#include <hgl/type/LifecycleTraits.h>
 #include <type_traits>
 
 namespace hgl
@@ -201,13 +200,19 @@ namespace hgl
         {
             if (IsFull())
                 return false;
-            bool ok;
+            
+            // 对于指针类型，创建新对象；对于非指针类型，使用默认构造
             if constexpr (std::is_pointer_v<T>)
-                ok = LifecycleTraitsOwningPtr<typename std::remove_pointer<T>::type>::create(&value);
+            {
+                value = new typename std::remove_pointer<T>::type();
+                if (!value)
+                    return false;
+            }
             else
-                ok = LifecycleTraits<T>::create(&value);
-            if (!ok)
-                return false;
+            {
+                value = T();
+            }
+            
             Active.Add(value);
             UpdateHistoryMax();
             return true;
@@ -222,18 +227,20 @@ namespace hgl
             {
                 if (IsFull())
                     return false;
-                bool ok;
+                
+                // 对于指针类型，创建新对象；对于非指针类型，使用默认构造
                 if constexpr (std::is_pointer_v<T>)
-                    ok = LifecycleTraitsOwningPtr<typename std::remove_pointer<T>::type>::create(&value);
+                {
+                    value = new typename std::remove_pointer<T>::type();
+                    if (!value)
+                        return false;
+                }
                 else
-                    ok = LifecycleTraits<T>::create(&value);
-                if (!ok)
-                    return false;
+                {
+                    value = T();
+                }
             }
-            else if constexpr (!std::is_pointer_v<T>)
-            {
-                LifecycleTraits<T>::on_active(&value);
-            }
+            
             Active.Add(value);
             UpdateHistoryMax();
             return true;
@@ -246,8 +253,7 @@ namespace hgl
         {
             if (!Idle.Pop(value))
                 return false;
-            if constexpr (!std::is_pointer_v<T>)
-                LifecycleTraits<T>::on_active(&value);
+            
             Active.Add(value);
             return true;
         }
@@ -286,8 +292,6 @@ namespace hgl
                 Active.Delete(idx);
                 if (!Idle.Push(value))
                     return false;
-                if constexpr (!std::is_pointer_v<T>)
-                    LifecycleTraits<T>::on_idle(&value);
                 return true;
             }
             else
@@ -319,8 +323,6 @@ namespace hgl
                 int cnt = active_data_count(Active, 0);
                 if (ptr && cnt > 0)
                 {
-                    if constexpr (!std::is_pointer_v<T>)
-                        LifecycleTraits<T>::on_idle(ptr, cnt);
                     Idle.Push(ptr, cnt);
                 }
                 Active.Clear();
@@ -332,8 +334,6 @@ namespace hgl
                 // 假定 Active 提供 Pop
                 while (Active.Pop(v))
                 {
-                    if constexpr (!std::is_pointer_v<T>)
-                        LifecycleTraits<T>::on_idle(&v, 1);
                     Idle.Push(v);
                 }
             }
@@ -350,22 +350,29 @@ namespace hgl
                 int cnt = active_data_count(Active, 0);
                 if (ptr && cnt > 0)
                 {
+                    // 对于指针类型，手动删除；对于非指针类型，由容器处理
                     if constexpr (std::is_pointer_v<T>)
-                        LifecycleTraitsOwningPtr<typename std::remove_pointer<T>::type>::destroy(ptr, cnt);
-                    else
-                        LifecycleTraits<T>::destroy(ptr, cnt);
+                    {
+                        for (int i = 0; i < cnt; ++i)
+                        {
+                            if (ptr[i])
+                                delete ptr[i];
+                        }
+                    }
                 }
                 Active.Clear();
             }
             else
             {
+                // 逐个清理
                 T v;
                 while (Active.Pop(v))
                 {
                     if constexpr (std::is_pointer_v<T>)
-                        LifecycleTraitsOwningPtr<typename std::remove_pointer<T>::type>::destroy(&v, 1);
-                    else
-                        LifecycleTraits<T>::destroy(&v, 1);
+                    {
+                        if (v)
+                            delete v;
+                    }
                 }
             }
         }
@@ -375,7 +382,21 @@ namespace hgl
         */
         void ClearIdle()
         {
-            Idle.Clear();
+            // 对于指针类型，需要手动删除
+            if constexpr (std::is_pointer_v<T>)
+            {
+                T v;
+                while (Idle.Pop(v))
+                {
+                    if (v)
+                        delete v;
+                }
+            }
+            else
+            {
+                // 对于非指针类型，容器会自动处理
+                Idle.Clear();
+            }
         }
 
         /**

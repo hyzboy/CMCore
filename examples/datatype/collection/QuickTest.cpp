@@ -1,10 +1,9 @@
-/**
+﻿/**
  * 快速测试脚本
  * 用于快速验证ArrayList和DataArray的基本功能
  */
 
-#include<hgl/type/ArrayList.h>
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ObjectList.h>
 #include<iostream>
 #include<string>
 
@@ -94,31 +93,65 @@ void TestNonTrivialType()
 {
     std::cout << "\n=== Non-Trivial Type Test ===" << std::endl;
 
-    ArrayList<TestClass> list;
+    ObjectList<TestClass> list;
 
+    // 使用新的便捷方法：直接添加对象值，ObjectList会自动创建堆副本
+    std::cout << "[1] Add objects with values (auto heap allocation):" << std::endl;
     list.Add(TestClass(1, "First"));
     list.Add(TestClass(2, "Second"));
     list.Add(TestClass(3, "Third"));
 
-    std::cout << "TestClass ArrayList: ";
+    std::cout << "TestClass ObjectList: ";
     for(int i = 0; i < list.GetCount(); i++)
     {
-        const TestClass* obj = list.At(i);
+        const TestClass* obj = *list.At(i);  // Dereference to get pointer
         std::cout << "{" << obj->id << ":" << obj->name << "} ";
     }
     std::cout << std::endl;
 
-    // 测试RepeatAdd
+    // 测试RepeatAdd - 也使用便捷方法
+    std::cout << "\n[2] RepeatAdd objects with values:" << std::endl;
     TestClass repeated(99, "Repeated");
     list.RepeatAdd(repeated, 2);
 
-    std::cout << "After RepeatAdd: ";
+    std::cout << "After RepeatAdd(99, 2): ";
     for(int i = 0; i < list.GetCount(); i++)
     {
-        const TestClass* obj = list.At(i);
+        const TestClass* obj = *list.At(i);  // Dereference to get pointer
         std::cout << "{" << obj->id << ":" << obj->name << "} ";
     }
     std::cout << std::endl;
+
+    // 测试Get
+    std::cout << "\n[3] Get object by index:" << std::endl;
+    TestClass* obj = nullptr;
+    if(list.Get(0, obj))
+    {
+        std::cout << "First object: {" << obj->id << ":" << obj->name << "}" << std::endl;
+    }
+
+    // 测试迭代器
+    std::cout << "\n[4] Iterate using Iterator:" << std::endl;
+    for(auto it = list.begin(); it != list.end(); ++it)
+    {
+        TestClass* item = *it;
+        std::cout << "{" << item->id << ":" << item->name << "} ";
+    }
+    std::cout << std::endl;
+
+    // 测试删除
+    std::cout << "\n[5] Delete object at index 1:" << std::endl;
+    list.DeleteAtOwn(1);  // Delete and destroy
+    std::cout << "After delete: ";
+    for(int i = 0; i < list.GetCount(); i++)
+    {
+        const TestClass* obj = *list.At(i);  // Dereference to get pointer
+        std::cout << "{" << obj->id << ":" << obj->name << "} ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "Final count: " << list.GetCount() << std::endl;
+    // list destructor will automatically delete all objects
 }
 
 int main()

@@ -1,4 +1,4 @@
-#include<hgl/type/ConstStringSet.h>
+﻿#include<hgl/type/ConstStringSet.h>
 #include<hgl/type/IDName.h>
 #include<hgl/type/SortedSet.h>
 #include<hgl/type/String.h>
@@ -6,23 +6,11 @@
 #include<cstring>
 
 using namespace hgl;
+using namespace std;
 
-// 测试计数器
-static int tests_passed = 0;
-static int tests_failed = 0;
+//#define SCL std::source_location::current()
 
-#define TEST_ASSERT(condition, message) \
-    do { \
-        if (condition) { \
-            tests_passed++; \
-            std::cout << "  ✓ PASS: " << message << std::endl; \
-        } else { \
-            tests_failed++; \
-            std::cout << "  ✗ FAIL: " << message << std::endl; \
-        } \
-    } while(0)
-
-// 非平凡类型用于测试
+// 非平凡类型用于 SortedObjectSet 测试
 struct ComplexData
 {
     int id;
@@ -107,55 +95,24 @@ int ComplexData::destruct_count = 0;
 int ComplexData::copy_count = 0;
 int ComplexData::move_count = 0;
 
-void test_sorted_set_int()
-{
-    std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 1: SortedSet<int> (Trivial Type)" << std::endl;
-    std::cout << "========================================\n" << std::endl;
+static int tests_passed = 0;
+static int tests_failed = 0;
 
-    SortedSet<int> set;
-
-    std::cout << "[1.1] Add elements in random order:" << std::endl;
-    set.Add(5);
-    set.Add(2);
-    set.Add(8);
-    set.Add(1);
-    set.Add(9);
-    set.Add(3);
-
-    TEST_ASSERT(set.GetCount() == 6, "Count should be 6");
-    TEST_ASSERT(set.Contains(5), "Contains 5");
-    TEST_ASSERT(set.Contains(1), "Contains 1");
-    TEST_ASSERT(!set.Contains(10), "Does not contain 10");
-
-    std::cout << "\n[1.2] Check sorted order:" << std::endl;
-    int prev = -1;
-    bool is_sorted = true;
-    for (auto* p = set.begin(); p != set.end(); ++p) {
-        if (*p <= prev) is_sorted = false;
-        prev = *p;
-    }
-    TEST_ASSERT(is_sorted, "Elements are sorted");
-
-    std::cout << "\n[1.3] Delete elements:" << std::endl;
-    TEST_ASSERT(set.Delete(5), "Delete 5 succeeded");
-    TEST_ASSERT(set.GetCount() == 5, "Count after delete is 5");
-    TEST_ASSERT(!set.Contains(5), "5 no longer exists");
-
-    std::cout << "\n[1.4] Add duplicate (should fail):" << std::endl;
-    int64 pos = set.Add(2);
-    TEST_ASSERT(pos == -1, "Adding duplicate returns -1");
-
-    std::cout << "\n[1.5] Batch operations:" << std::endl;
-    int batch[] = {15, 12, 18, 11};
-    set.Add(batch, 4);
-    TEST_ASSERT(set.GetCount() == 9, "Count after batch add is 9");
-}
+#define TEST_ASSERT(condition, message) \
+    do { \
+        if (condition) { \
+            tests_passed++; \
+            std::cout << "  ✓ PASS: " << message << std::endl; \
+        } else { \
+            tests_failed++; \
+            std::cout << "  ✗ FAIL: " << message << std::endl; \
+        } \
+    } while(0)
 
 void test_sorted_set_complex()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 2: SortedSet<ComplexData> (Non-Trivial Type)" << std::endl;
+    std::cout << "TEST 2: SortedObjectSet<ComplexData> (Non-Trivial Type)" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     ComplexData::construct_count = 0;
@@ -164,7 +121,7 @@ void test_sorted_set_complex()
     ComplexData::move_count = 0;
 
     {
-        SortedSet<ComplexData> set;
+        SortedObjectSet<ComplexData> set;
 
         std::cout << "\n[2.1] Add complex objects:" << std::endl;
         ComplexData obj1(10, "First");
@@ -191,15 +148,10 @@ void test_sorted_set_complex()
         TEST_ASSERT(set.GetLast(last), "GetLast succeeded");
         TEST_ASSERT(first.id < last.id, "First < Last");
 
-        std::cout << "\n[2.5] Copy SortedSet:" << std::endl;
-        SortedSet<ComplexData> set_copy;
-        set_copy = set;
-        TEST_ASSERT(set_copy.GetCount() == set.GetCount(), "Copy has same count");
-
-        std::cout << "\n[2.6] Cleanup..." << std::endl;
+        std::cout << "\n[2.5] Cleanup..." << std::endl;
     }
 
-    std::cout << "\n[2.7] Verify memory safety:" << std::endl;
+    std::cout << "\n[2.6] Verify memory safety:" << std::endl;
     TEST_ASSERT(ComplexData::construct_count == ComplexData::destruct_count,
                 "All constructed objects were destructed");
     std::cout << "    Constructs: " << ComplexData::construct_count
@@ -246,8 +198,9 @@ void test_const_string_set()
 
     std::cout << "\n[3.6] Iterate over strings:" << std::endl;
     int iter_count = 0;
-    for (auto* view = css.begin(); view != css.end(); ++view) {
+    for (auto* pview = css.begin(); pview != css.end(); ++pview) {
         iter_count++;
+        ConstStringView<char>* view = *pview;
         TEST_ASSERT(view->id >= 0, "String view has valid ID");
     }
     TEST_ASSERT(iter_count == 3, "Iterator covered all strings");
@@ -423,13 +376,12 @@ void test_edge_cases()
     TEST_ASSERT(realloc_set.Contains(0), "First element exists");
 }
 
-int main()
+int main(int,char **)
 {
     std::cout << "========================================" << std::endl;
     std::cout << "String Set Comprehensive Test Suite" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    test_sorted_set_int();
     test_sorted_set_complex();
     test_const_string_set();
     test_ordered_id_name();

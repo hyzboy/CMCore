@@ -21,7 +21,7 @@ void output(const char *str,float scale)
     cout<<"    gap size: "<<si_gap.Width()<<","<<si_gap.Height()<<endl;
 }
 
-void main()
+int main(int,char **)
 {
     si_screen.Set(1920,1200);
     si_canvas.Set(1280,720);
@@ -31,4 +31,6 @@ void main()
 
     output("min",si_screen.alcScale(si_canvas,false));
     output("max",si_screen.alcScale(si_canvas,true));
+
+    return 0;
 }

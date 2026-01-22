@@ -1,11 +1,11 @@
-/**
- * 修复验证：DataArray 对 non-trivial 类型的处理
+﻿/**
+ * 修复验证：ObjectArray 对 non-trivial 类型的处理
  * 
  * 问题：Resize 后直接使用赋值会崩溃，因为对象未构造
  * 解决：需要先构造对象（placement new）再赋值
  */
 
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ObjectArray.h>
 #include<iostream>
 #include<string>
 
@@ -46,7 +46,7 @@ int main()
     std::cout << "=== Test: DataArray with non-trivial type ===" << std::endl;
     
     std::cout << "\n1. Create DataArray and Resize to 3:" << std::endl;
-    DataArray<SimpleClass> arr;
+    ObjectArray<SimpleClass> arr;
     arr.Resize(3);  // 分配内存但不构造对象！
     
     std::cout << "\n2. Try to WriteAt (will crash if objects not constructed):" << std::endl;

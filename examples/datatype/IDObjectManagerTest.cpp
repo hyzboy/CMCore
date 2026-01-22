@@ -1,4 +1,4 @@
-#include<hgl/type/ObjectManage.h>
+﻿#include<hgl/type/ObjectManager.h>
 #include<iostream>
 
 using namespace hgl;
@@ -27,7 +27,7 @@ int main()
 {
     cout<<"U32ObjectManage Test"<<endl;
 
-    U32ObjectManage<TestObj> mgr;
+    Uint32IdManager<TestObj> mgr;
 
     // create object
     TestObj *p=new TestObj(42);

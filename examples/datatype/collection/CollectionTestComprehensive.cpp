@@ -1,4 +1,4 @@
-#include<hgl/type/Collection.h>
+﻿#include<hgl/type/Collection.h>
 #include<iostream>
 #include<iomanip>
 #include<string>
@@ -789,9 +789,9 @@ bool Test_MultiByteData()
 
 int main(int, char**)
 {
-    std::cout << "\n╔════════════════════════════════════════════════════════════╗" << std::endl;
-    std::cout << "║        Collection Comprehensive Test Suite                ║" << std::endl;
-    std::cout << "╚════════════════════════════════════════════════════════════╝" << std::endl;
+    std::cout << "\n============================================================" << std::endl;
+    std::cout << "   Collection Comprehensive Test Suite" << std::endl;
+    std::cout << "============================================================" << std::endl;
     
     int passed = 0;
     int total = 18;
@@ -815,13 +815,9 @@ int main(int, char**)
     if (Test_ElementEnumerator()) passed++;
     if (Test_MultiByteData()) passed++;
     
-    std::cout << "\n╔════════════════════════════════════════════════════════════╗" << std::endl;
-    std::cout << "║  Test Summary: " << passed << "/" << total << " tests passed";
-    if (passed == total)
-        std::cout << "                           ║" << std::endl;
-    else
-        std::cout << "                          ║" << std::endl;
-    std::cout << "╚════════════════════════════════════════════════════════════╝" << std::endl;
-    
-    return (passed == total) ? 0 : 1;
-}
+    std::cout << "\n============================================================" << std::endl;
+    std::cout << "  Test Summary: " << passed << "/" << total << " tests passed" << std::endl;
+    std::cout << "============================================================" << std::endl;
+ 
+     return (passed == total) ? 0 : 1;
+ }
