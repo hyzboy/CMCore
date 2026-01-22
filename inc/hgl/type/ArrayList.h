@@ -45,7 +45,9 @@ namespace hgl
 
             operator        DataArray<T> & ()       {return data_array;}
             operator const  DataArray<T> & ()const  {return data_array;}
-
+                    T &     operator[](int index)             {return data_array[index];}
+            const   T &     operator[](int index)const        {return data_array[index];}
+ 
     public: //方法
 
         ArrayList()=default;                                                                             ///<本类构造函数

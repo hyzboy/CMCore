@@ -19,7 +19,7 @@ namespace hgl
     {
     protected:
 
-        static_assert(std::is_trivially_copyable_v<T>, "DataArray only supports trivially copyable types; use non-trivial version instead.");
+        static_assert(std::is_trivially_copyable_v<T>, "DataArray only supports trivially copyable types; use ObjectArray<> instead.");
 
         T *items;                                                                                   ///<数据指针
         int64 count;                                                                                ///<当前数据数量
