@@ -10,6 +10,17 @@ namespace hgl
     {
         P pos;                          ///<进度数据
         T data;                         ///<数据
+
+        // C++20 三路比较
+        std::strong_ordering operator<=>(const GradientStop &other) const
+        {
+            return pos <=> other.pos;  // 只比较 pos 字段
+        }
+
+        bool operator==(const GradientStop &other) const
+        {
+            return pos == other.pos;
+        }
     };
 
     /**
@@ -27,14 +38,11 @@ namespace hgl
 
         void Sort()
         {
-            if(!dirty||stop_list.GetCount()<2)
+            if(!dirty || stop_list.GetCount() < 2)
                 return;
 
-            Comparator<GS> comp;
-
-            ::Sort(stop_list.GetArray(),&comp);
-
-            dirty=false;
+            ::Sort(stop_list.GetArray());  // 直接使用 operator<=>
+            dirty = false;
         }
 
     public:
@@ -180,25 +188,19 @@ namespace hgl
 
     #define HGL_GRADIENT_DEFINE(name,P,T)   using name=Gradient<P,T>;  \
                                             using name##Stop=GradientStop<P,T>; \
-                                            \
-                                            int Comparator<name##Stop>::compare(const name##Stop &a,const name##Stop &b)const   \
-                                            {   \
-                                                return a.pos-b.pos; \
-                                            }   \
-                                            \
                                             template<> void name::Get(T &result,const T &start,const T &end,const float &pos)
 
     /*
-    HGL_GRADIENT_DEFINE(GradientColor3f,float,Lum)
+    // 使用示例：
+    HGL_GRADIENT_DEFINE(GradientColor3f,float,float)
     {
         result=start+(end-start)*pos;
     }
 
-    HGL_GRADIENT_DEFINE(GradientColor3u8,uint,Color3b)
+    HGL_GRADIENT_DEFINE(GradientColor3u8,uint8_t,uint32_t)
     {
-        result.r=start.r+float(end.r-start.r)*pos;
-        result.g=start.g+float(end.g-start.g)*pos;
-        result.b=start.b+float(end.b-start.b)*pos;
+        // 自定义插值逻辑
+        result=start+(end-start)*pos;
     }
-*/
+    */
 }//namespace hgl

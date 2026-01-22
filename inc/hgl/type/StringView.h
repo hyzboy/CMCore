@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include <hgl/type/StrChar.h>
-#include <hgl/Comparator.h>
 #include <string>
 #include <string_view>
 #include <unordered_set>
@@ -21,8 +20,7 @@ namespace hgl
      * @tparam T CN: 字符类型（例如 char、wchar_t 等）。
      *           EN: Character type (e.g., char, wchar_t).
      */
-    template<typename T>
-    class StringView : public Comparator<StringView<T> >
+    template<typename T> class StringView
     {
     protected:
         using SelfClass = StringView<T>;
@@ -1470,17 +1468,24 @@ namespace hgl
         }
 
         /**
-         * @brief CN: Comparator 兼容性的比较覆盖函数。
-         *        EN: Compare override for Comparator compatibility.
-         *
-         * @param str CN: 右操作数视图。
-         *            EN: Right-hand side view.
-         * @return CN: 比较结果 <0/0/>0。
-         *         EN: Comparison result <0/0/>0.
+         * @brief CN: C++20 三路比较操作符
+         *        EN: C++20 three-way comparison operator
          */
-        const int compare(const SelfClass &str) const override
+        std::strong_ordering operator<=>(const SelfClass &other) const
         {
-            return Comp(str);
+            int cmp = Comp(other);
+            if(cmp < 0) return std::strong_ordering::less;
+            if(cmp > 0) return std::strong_ordering::greater;
+            return std::strong_ordering::equal;
+        }
+
+        /**
+         * @brief CN: 相等性比较
+         *        EN: Equality comparison
+         */
+        bool operator==(const SelfClass &other) const
+        {
+            return Comp(other) == 0;
         }
 
         /**

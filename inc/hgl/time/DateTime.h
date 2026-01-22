@@ -11,7 +11,7 @@ namespace hgl
     *
     * 当您对Hours,Minutes,Seconds中任何一个值进行加减时，其它值都会自动计算。如：11:30这个值，使用Minutes+=55。会自动计算出55分钟后的时间，值为12:25
     */
-    class TimeOfDay:public Comparator<TimeOfDay>                                                                                  ///时间类
+    class TimeOfDay
     {
         int32 gmt_off;      ///<当前时区与UTC时间的差值
 
@@ -73,7 +73,19 @@ namespace hgl
 
         TimeOfDay &operator = (const TimeOfDay &);
 
-        const int compare(const TimeOfDay &)const override;
+        std::strong_ordering operator<=>(const TimeOfDay &other) const
+        {
+            if(hours != other.hours) return hours <=> other.hours;
+            if(minutes != other.minutes) return minutes <=> other.minutes;
+            if(seconds != other.seconds) return seconds <=> other.seconds;
+            return micro_seconds <=> other.micro_seconds;
+        }
+
+        bool operator==(const TimeOfDay &other) const
+        {
+            return hours == other.hours && minutes == other.minutes && 
+                   seconds == other.seconds && micro_seconds == other.micro_seconds;
+        }
 
         void Sync(const double=0);                                                                  ///<和系统时间同步
     };//class TimeOfDay
@@ -83,7 +95,7 @@ namespace hgl
     *
     * 当您对Year,Month,Day中任意一个值进行修改时，其它值都会自动跟着计算。如1981-4-17,如果使用Day+=400，会自动计算出400天之后的日期，结果是1982-5-21
     */
-    class CalendarDate:public Comparator<CalendarDate>                                                              ///日期类
+    class CalendarDate
     {
         int32 year;
         int8 month;
@@ -130,7 +142,17 @@ namespace hgl
 
         CalendarDate &operator = (const CalendarDate &);
 
-        const int compare(const CalendarDate &)const override;
+        std::strong_ordering operator<=>(const CalendarDate &other) const
+        {
+            if(year != other.year) return year <=> other.year;
+            if(month != other.month) return month <=> other.month;
+            return day <=> other.day;
+        }
+
+        bool operator==(const CalendarDate &other) const
+        {
+            return year == other.year && month == other.month && day == other.day;
+        }
 
         void Sync(const double=0);                                                                  ///<和系统日期同步
 

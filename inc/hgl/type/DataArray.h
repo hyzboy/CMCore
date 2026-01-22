@@ -15,7 +15,7 @@ namespace hgl
      * 仅适用于支持 memcpy/memmove/mem_zero 的类型（trivially copyable）。
      * 非平凡类型请使用具备构造/析构处理的完整版本。
      */
-    template<typename T> class DataArray: public Comparator<DataArray<T> >
+    template<typename T> class DataArray
     {
     protected:
 
@@ -54,7 +54,7 @@ namespace hgl
         /**
          * @brief 析构函数，释放内部缓冲。
          */
-        virtual     ~DataArray(){ Free(); }
+                ~DataArray(){ Free(); }
 
         // 基本属性
 
@@ -92,20 +92,38 @@ namespace hgl
         /**
          * @brief 与另一数组逐元素比较。
          * @param other 待比较的数组。
-         * @return 0 相等，<0 当前数组更小，>0 当前数组更大。
+         * @return 比较的三路排序结果。
          */
-        const int compare(const DataArray<T> &other)const override
+        std::strong_ordering operator<=>(const DataArray<T> &other) const
         {
-            if(count==other.count)
-                return mem_compare<T>(items,other.items,count);
+            if(count == other.count)
+            {
+                int cmp = mem_compare<T>(items, other.items, count);
+                if(cmp < 0) return std::strong_ordering::less;
+                if(cmp > 0) return std::strong_ordering::greater;
+                return std::strong_ordering::equal;
+            }
 
-            const int64 cmp_count=hgl_min(count,other.count);
-            int result=mem_compare<T>(items,other.items,cmp_count);
+            const int64 cmp_count = hgl_min(count, other.count);
+            int result = mem_compare<T>(items, other.items, cmp_count);
 
-            if(result)
-                return result;
+            if(result < 0) return std::strong_ordering::less;
+            if(result > 0) return std::strong_ordering::greater;
 
-            return count-other.count;
+            return count <=> other.count;
+        }
+
+        /**
+         * @brief 与另一数组相等性比较。
+         * @param other 待比较的数组。
+         * @return true 两数组元素完全相等。
+         */
+        bool operator==(const DataArray<T> &other) const
+        {
+            if(count != other.count)
+                return false;
+
+            return mem_compare<T>(items, other.items, count) == 0;
         }
 
         // 查找

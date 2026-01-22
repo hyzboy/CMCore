@@ -49,17 +49,6 @@ namespace hgl
         return(*this);
     }
 
-    const int CalendarDate::compare(const CalendarDate &t)const
-    {
-        if(year!=t.year)
-            return year-t.year;
-
-        if(month!=t.month)
-            return month-t.month;
-
-        return day-t.day;
-    }
-
     CalendarDate::CalendarDate()
     {
         year=2000;

@@ -1,8 +1,5 @@
 ﻿#pragma once
 
-#include<hgl/platform/Platform.h>
-#include<hgl/Comparator.h>
-
 namespace hgl
 {
     /**

@@ -20,7 +20,7 @@ namespace hgl
     * 顺序ID+名称数据结构模板<br>
     * 按添加进来的名字先后顺序一个个产生连续的序号，所有数据只可读不可写
     */
-    template<typename SC,typename MANAGER> class OrderedIDName:public Comparator<OrderedIDName<SC,MANAGER>>
+    template<typename SC,typename MANAGER> class OrderedIDName
     {
     public:
 
@@ -95,7 +95,15 @@ namespace hgl
 
     public:
 
-        const int compare(const OrderedIDName &oin)const override{return GetID()-oin.GetID();}
+        std::strong_ordering operator<=>(const OrderedIDName &oin)const
+        {
+            return GetID() <=> oin.GetID();
+        }
+
+        bool operator==(const OrderedIDName &oin)const
+        {
+            return GetID() == oin.GetID();
+        }
     };//class IDName
 
     #define HGL_DEFINE_IDNAME(name,char_type)   struct IDName##_##name##_Manager{}; \

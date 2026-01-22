@@ -60,20 +60,6 @@ namespace hgl
         return(*this);
     }
 
-    const int TimeOfDay::compare(const TimeOfDay &t)const
-    {
-        if(hours!=t.hours)
-            return hours-t.hours;
-
-        if(minutes!=t.minutes)
-            return minutes-t.minutes;
-
-        if(seconds!=t.seconds)
-            return seconds-t.seconds;
-
-        return micro_seconds-t.micro_seconds;
-    }
-
     void TimeOfDay::SetHour(int h)
     {
         if(h<0)

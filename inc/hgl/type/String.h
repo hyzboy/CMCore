@@ -7,7 +7,6 @@
 
 #include <hgl/type/DataType.h>
 #include <hgl/type/StrChar.h>
-#include <hgl/Comparator.h>
 #include <string>
 #include <initializer_list>
 #include <unordered_set>
@@ -27,7 +26,7 @@ namespace hgl
      * CN: 该类以 std::basic_string<T> 为底层存储，提供额外的便捷方法，同时保持与现有 hgl 字符串工具函数（如 hgl::strlen、hgl::strcmp 等）的兼容。
      * EN: This class uses std::basic_string<T> as underlying storage and provides additional convenient methods, while maintaining compatibility with existing hgl string utility functions (e.g., hgl::strlen, hgl::strcmp).
      */
-    template<typename T> class String:public Comparator<String<T>>
+    template<typename T> class String
     {
     protected:
         /// @brief CN: 用于简化模板类自身类型的引用 EN: Used to simplify references to the template class itself
@@ -761,9 +760,20 @@ namespace hgl
         SelfClass  operator+(const float &)        const = delete;
         SelfClass  operator+(const double &)       const = delete;
 
-        // CN: 重载 compare 方法，便于与 Comparator 基类兼容
-        // EN: Override compare method for compatibility with Comparator base class
-        const int compare(const SelfClass &str) const override { return Comp(str); }
+        // CN: C++20 三路比较操作符
+        // EN: C++20 three-way comparison operator
+        std::strong_ordering operator<=>(const SelfClass &str) const
+        {
+            int cmp = Comp(str);
+            if(cmp < 0) return std::strong_ordering::less;
+            if(cmp > 0) return std::strong_ordering::greater;
+            return std::strong_ordering::equal;
+        }
+
+        bool operator==(const SelfClass &str) const
+        {
+            return Comp(str) == 0;
+        }
 
         /**
          * @brief 返回字符串中不同字符的数量（按字符值不同计数）

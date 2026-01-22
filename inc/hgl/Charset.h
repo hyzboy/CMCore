@@ -8,7 +8,7 @@ namespace hgl
     uint16 FindCodePage(const char *char_set);
 #endif//HGL_OS == HGL_OS_Windows
 
-    struct CharSet:public Comparator<CharSet>
+    struct CharSet
     {
     #if HGL_OS == HGL_OS_Windows
         uint16 codepage;
@@ -43,12 +43,21 @@ namespace hgl
         #endif//HGL_OS == HGL_OS_Windows
         }
 
-        const int compare(const CharSet &other)const override
+        std::strong_ordering operator<=>(const CharSet &other)const
         {
         #if HGL_OS == HGL_OS_Windows
-            return (size_t)codepage-(size_t)other.codepage;
+            return codepage <=> other.codepage;
         #else
-            return hgl::strcmp(charset,other.charset);
+            return (hgl::strcmp(charset, other.charset) <=> 0);
+        #endif//
+        }
+
+        bool operator==(const CharSet &other)const
+        {
+        #if HGL_OS == HGL_OS_Windows
+            return codepage == other.codepage;
+        #else
+            return hgl::strcmp(charset, other.charset) == 0;
         #endif//
         }
     };//struct CharacterSet

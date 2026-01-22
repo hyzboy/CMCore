@@ -19,7 +19,7 @@ namespace hgl
 
             auto &csv_list=css->GetConstStringList();
 
-            for(auto csv:csv_list)
+            for(auto &csv:csv_list)
             {
                 utos<SC>(id_str,sizeof(id_str),csv.id);
 
