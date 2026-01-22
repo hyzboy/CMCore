@@ -6,7 +6,7 @@
 
 namespace hgl
 {
-    template<typename SC> class ConstString:public Comparator<ConstString<SC>>
+    template<typename SC> class ConstString
     {
         const SC *str;
         int length;
@@ -32,16 +32,13 @@ namespace hgl
             return (hgl::strcmp(str, cs.str, length) <=> 0);
         }
 
-        const int compare(const ConstString &cs)const override
+        bool operator==(const ConstString &cs)const
         {
-            auto result = *this <=> cs;
-            if(result < 0) return -1;
-            if(result > 0) return 1;
-            return 0;
+            return length == cs.length && hgl::strcmp(str, cs.str, length) == 0;
         }
     };
 
-    template<typename SC> struct ConstStringView:public Comparator<ConstStringView<SC>>
+    template<typename SC> struct ConstStringView
     {
         DataArray<SC> *str_data;
 
@@ -64,6 +61,11 @@ namespace hgl
                 return str_data->GetData()+offset;
         }
 
+        const size_t GetLength()const
+        {
+            return length;
+        }
+
         std::strong_ordering operator<=>(const ConstStringView<SC> &csv)const
         {
             if(length != csv.length)
@@ -72,12 +74,9 @@ namespace hgl
             return (hgl::strcmp(GetString(), csv.GetString(), length) <=> 0);
         }
 
-        const int compare(const ConstStringView<SC> &csv)const override
+        bool operator==(const ConstStringView<SC> &csv)const
         {
-            auto result = *this <=> csv;
-            if(result < 0) return -1;
-            if(result > 0) return 1;
-            return 0;
+            return length == csv.length && hgl::strcmp(GetString(), csv.GetString(), length) == 0;
         }
     };
 
@@ -87,9 +86,9 @@ namespace hgl
 
         DataArray<SC> str_data;                                 ///<字符串数据
 
-        SortedObjectSet<ConstStringView<SC>> str_set;           ///<字符串集合
+        SortedSet<ConstStringView<SC>> str_set;                 ///<字符串集合
 
-        ObjectList<ConstStringView<SC>> str_list;               ///<字符串列表
+        ArrayList<ConstStringView<SC>> str_list;               ///<字符串列表
         Map<int,size_t> str_offset_map;                         ///<字符串映射
 
     public:
@@ -100,7 +99,7 @@ namespace hgl
 
         const DataArray<SC> &GetStringData()const{return str_data;}                                     ///<取得字符串数据
 
-        const ObjectList<ConstStringView<SC>> &GetConstStringList()const{return str_list;}               ///<取得字符串列表
+        const ArrayList<ConstStringView<SC>> &GetConstStringList()const{return str_list;}               ///<取得字符串列表
 
     public:
 

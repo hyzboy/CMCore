@@ -17,15 +17,15 @@ namespace hgl
             SC id_str[16];
             const SC gap_str[4]={SC(' '),SC(':'),SC(' '),0};
 
-            const ObjectList<ConstStringView<SC>> &csv_list=css->GetConstStringList();
+            auto &csv_list=css->GetConstStringList();
 
             for(auto csv:csv_list)
             {
-                utos<SC>(id_str,sizeof(id_str),csv->id);
+                utos<SC>(id_str,sizeof(id_str),csv.id);
 
                 tos->WriteChars(reinterpret_cast<const u8char *>(id_str),hgl::strlen(id_str));
                 tos->WriteChars(reinterpret_cast<const u8char *>(gap_str),3);
-                tos->WriteChars(reinterpret_cast<const u8char *>(csv->GetString()),csv->length);
+                tos->WriteChars(reinterpret_cast<const u8char *>(csv.GetString()),csv.GetLength());
                 tos->WriteLineEnd();
             }
 
