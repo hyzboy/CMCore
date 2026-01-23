@@ -121,6 +121,11 @@ namespace hgl
             return id >= 0 ? GetStringView(id) : nullptr;
         }
 
+        const ConstStringView<SC> *AddAndGet(const StringView<SC> &sv)
+        {
+            return AddAndGet(sv.c_str(), sv.Length());
+        }
+
         // ==================== 查询接口 ====================
         
         bool Contains(const SC *str, int length) const
