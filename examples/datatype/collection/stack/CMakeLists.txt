@@ -19,3 +19,7 @@ cm_example_project("DataType/Collection/Stack" StackTest11_ConstCorrectness     
 cm_example_project("DataType/Collection/Stack" StackTest12_ImplicitConversion      StackTest12_ImplicitConversion.cpp)
 cm_example_project("DataType/Collection/Stack" StackTest13_NullptrAndEdgeCases     StackTest13_NullptrAndEdgeCases.cpp)
 cm_example_project("DataType/Collection/Stack" StackTest14_ObjectStackDetailed     StackTest14_ObjectStackDetailed.cpp)
+cm_example_project("DataType/Collection/Stack" StackTest15_SearchOperations        StackTest15_SearchOperations.cpp)
+cm_example_project("DataType/Collection/Stack" StackTest16_ComparisonOperators     StackTest16_ComparisonOperators.cpp)
+cm_example_project("DataType/Collection/Stack" StackTest17_StaticEmptyValueBug     StackTest17_StaticEmptyValueBug.cpp)
+cm_example_project("DataType/Collection/Stack" StackTest18_TypeSafety              StackTest18_TypeSafety.cpp)

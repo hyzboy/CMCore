@@ -12,6 +12,7 @@ namespace hgl
     class StackBase
     {
     protected:
+
         DataArray<T> data_array;
 
     public:
@@ -309,7 +310,80 @@ namespace hgl
                 callback(this->data_array[i], i);
         }
 
-    }; // class Stack
+        /**
+         * @brief 检查栈中是否包含指定元素
+         * CN: 线性搜索栈中的元素，返回是否找到
+         * EN: Check if stack contains the specified element (linear search)
+         * 
+         * @param value 要查找的值
+         * @return 如果找到返回 true，否则返回 false
+         */
+        bool Contains(const T& value) const
+        {
+            const T* data = this->data_array.GetData();
+            int count = this->data_array.GetCount();
+            
+            for (int i = 0; i < count; ++i)
+            {
+                if (data[i] == value)
+                    return true;
+            }
+            
+            return false;
+        }
+
+        /**
+         * @brief 查找栈中元素的索引
+         * CN: 线性搜索栈中的元素，返回索引或-1
+         * EN: Find index of element in stack (linear search)
+         * 
+         * @param value 要查找的值
+         * @return 找到的索引（0=栈底, Count-1=栈顶），未找到返回 -1
+         */
+        int Find(const T& value) const
+        {
+            const T* data = this->data_array.GetData();
+            int count = this->data_array.GetCount();
+            
+            for (int i = 0; i < count; ++i)
+            {
+                if (data[i] == value)
+                    return i;
+            }
+            
+            return -1;
+        }
+
+        /**
+         * @brief 相等比较运算符
+         * CN: 比较两个栈中的所有元素是否完全相同
+         * EN: Check if two stacks have identical elements
+         * 
+         * @param other 要比较的另一个栈
+         * @return 如果两个栈的元素相同，返回 true；否则返回 false
+         */
+        bool operator==(const Stack<T>& other) const
+        {
+            if (this->data_array.GetCount() != other.data_array.GetCount())
+                return false;
+            
+            return hgl::mem_compare(this->data_array.GetData(), other.data_array.GetData(), this->data_array.GetCount()) == 0;
+        }
+
+        /**
+         * @brief 不相等比较运算符
+         * CN: 检查两个栈中的元素是否不同
+         * EN: Check if two stacks have different elements
+         * 
+         * @param other 要比较的另一个栈
+         * @return 如果两个栈的元素不同，返回 true；否则返回 false
+         */
+        bool operator!=(const Stack<T>& other) const
+        {
+            return !(*this == other);
+        }
+
+    };// class Stack
 
     /**
      * @brief 对象栈（管理指针所有权）
