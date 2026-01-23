@@ -206,6 +206,36 @@ namespace hgl
         }
 
         void    operator       =(const SortedSet<T> &set){data_list=set.data_list;}        ///<等号操作符重载
+
+        /**
+         * @brief 相等比较运算符
+         * CN: 比较两个已排序集合中的所有元素是否完全相同
+         * EN: Check if two sorted sets have identical elements
+         * 
+         * @param other 要比较的另一个已排序集合
+         * @return 如果两个集合的元素相同，返回 true；否则返回 false
+         */
+        bool operator==(const SortedSet<T>& other) const
+        {
+            if (data_list.GetCount() != other.data_list.GetCount())
+                return false;
+            
+            return hgl::mem_compare(data_list.GetData(), other.data_list.GetData(), data_list.GetCount()) == 0;
+        }
+
+        /**
+         * @brief 不相等比较运算符
+         * CN: 检查两个已排序集合中的元素是否不同
+         * EN: Check if two sorted sets have different elements
+         * 
+         * @param other 要比较的另一个已排序集合
+         * @return 如果两个集合的元素不同，返回 true；否则返回 false
+         */
+        bool operator!=(const SortedSet<T>& other) const
+        {
+            return !(*this == other);
+        }
+
     };//template<typename T> class SortedSet
 
     /**

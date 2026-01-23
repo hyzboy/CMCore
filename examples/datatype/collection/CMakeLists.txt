@@ -7,6 +7,7 @@ cm_example_project("DataType/Collection" FixVerificationTest    FixVerificationT
 
 add_subdirectory(stack)
 add_subdirectory(DataArray)
+add_subdirectory(sortedset)
 
 cm_example_project("DataType/Collection" QueueTest              QueueTest.cpp)
 cm_example_project("DataType/Collection" PoolTest               PoolTest.cpp)
@@ -16,7 +17,6 @@ cm_example_project("DataType/Collection" IndexedListTest        IndexedListTest.
 cm_example_project("DataType/Collection" MapTest                MapTest.cpp)
 cm_example_project("DataType/Collection" StringSetTest          StringSetTest.cpp)
 cm_example_project("DataType/Collection" StringListTest         StringListTest.cpp)
-cm_example_project("DataType/Collection" SimpleSortedSetTest    SimpleSortedSetTest.cpp)
 cm_example_project("DataType/Collection" GetLastTest            GetLastTest.cpp)
 cm_example_project("DataType/Collection" DataChainTest          DataChainTest.cpp)
 cm_example_project("DataType/Collection" DataChainTest2         DataChainTest2.cpp)
