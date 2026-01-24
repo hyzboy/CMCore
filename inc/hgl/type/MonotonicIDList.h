@@ -2,7 +2,7 @@
 
 #include<hgl/type/ValueBuffer.h>
 #include<hgl/type/Stack.h>
-#include<hgl/type/SmallMap.h>
+#include<hgl/type/ValueKVMap.h>
 #include<type_traits>
 
 namespace hgl
@@ -35,7 +35,7 @@ namespace hgl
 
         ValueBuffer<T>  data_array;               ///< CN: 实际数据存储数组 / EN: Actual data storage array
         ValueBuffer<I>  location_to_id;           ///< CN: 位置到ID的并行数组 / EN: Parallel array: location -> ID
-        SmallMap<I,int32> id_to_location_map;   ///< CN: ID到位置映射 / EN: Map: ID -> location
+        ValueKVMap<I,int32> id_to_location_map;   ///< CN: ID到位置映射 / EN: Map: ID -> location
         Stack<int32>  free_location;            ///< CN: 空闲位置栈 / EN: Stack of free locations
 
     public:

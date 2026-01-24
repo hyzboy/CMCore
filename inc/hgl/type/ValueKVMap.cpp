@@ -1,11 +1,11 @@
 ﻿#pragma once
 
-#include <hgl/type/SmallMap.h>
+#include <hgl/type/ValueKVMap.h>
 
 namespace hgl
 {
     template<typename K,typename V>
-    int SmallMap<K,V>::Find(const K &key) const
+    int ValueKVMap<K,V>::Find(const K &key) const
     {
         int left = 0,right = data_list.GetCount() - 1;
         if(right < 0) return -1;
@@ -21,7 +21,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    bool SmallMap<K,V>::FindPos(const K &key,int &pos) const
+    bool ValueKVMap<K,V>::FindPos(const K &key,int &pos) const
     {
         const int count = data_list.GetCount();
         if(count == 0) { pos = 0; return false; }
@@ -39,7 +39,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    int SmallMap<K,V>::FindByValue(const V &value) const
+    int ValueKVMap<K,V>::FindByValue(const V &value) const
     {
         const int count = data_list.GetCount();
         if(count <= 0) return -1;
@@ -52,7 +52,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    bool SmallMap<K,V>::Check(const K &key,const V &value) const
+    bool ValueKVMap<K,V>::Check(const K &key,const V &value) const
     {
         int idx = Find(key);
         if(idx < 0) return false;
@@ -61,7 +61,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    typename SmallMap<K,V>::KVData *SmallMap<K,V>::Add(const K &key,const V &value)
+    typename ValueKVMap<K,V>::KVData *ValueKVMap<K,V>::Add(const K &key,const V &value)
     {
         int pos;
         if(FindPos(key,pos)) return nullptr; // 已存在
@@ -71,7 +71,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    bool SmallMap<K,V>::GetAndDelete(const K &key,V &out_value)
+    bool ValueKVMap<K,V>::GetAndDelete(const K &key,V &out_value)
     {
         int idx = Find(key);
         if(idx < 0) return false;
@@ -81,7 +81,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    int SmallMap<K,V>::DeleteByKey(const K *keys,int count)
+    int ValueKVMap<K,V>::DeleteByKey(const K *keys,int count)
     {
         if(!keys || count <= 0) return 0;
         int total = 0;
@@ -93,7 +93,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    bool SmallMap<K,V>::DeleteAt(int index)
+    bool ValueKVMap<K,V>::DeleteAt(int index)
     {
         if(index < 0 || index >= data_list.GetCount()) return false;
         data_list.DeleteShift(index);
@@ -101,13 +101,13 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    bool SmallMap<K,V>::DeleteAt(int start,int number)
+    bool ValueKVMap<K,V>::DeleteAt(int start,int number)
     {
         return data_list.Delete(start,number);
     }
 
     template<typename K,typename V>
-    bool SmallMap<K,V>::ChangeOrAdd(const K &key,const V &value)
+    bool ValueKVMap<K,V>::ChangeOrAdd(const K &key,const V &value)
     {
         int pos;
         if(FindPos(key,pos))
@@ -121,7 +121,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    bool SmallMap<K,V>::Change(const K &key,const V &value)
+    bool ValueKVMap<K,V>::Change(const K &key,const V &value)
     {
         int idx = Find(key);
         if(idx < 0) return false;
@@ -130,7 +130,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    V *SmallMap<K,V>::GetValuePointer(const K &key) const
+    V *ValueKVMap<K,V>::GetValuePointer(const K &key) const
     {
         int idx = Find(key);
         if(idx < 0) return nullptr;
@@ -140,7 +140,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    int SmallMap<K,V>::GetValueAndSerial(const K &key,V &out) const
+    int ValueKVMap<K,V>::GetValueAndSerial(const K &key,V &out) const
     {
         int idx = Find(key);
         if(idx < 0) return -1;
@@ -150,7 +150,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    bool SmallMap<K,V>::GetBySerial(int index,K &out_key,V &out_value) const
+    bool ValueKVMap<K,V>::GetBySerial(int index,K &out_key,V &out_value) const
     {
         if(index < 0 || index >= data_list.GetCount()) return false;
         const KVData *arr = data_list.GetData();
@@ -160,7 +160,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    bool SmallMap<K,V>::GetKey(int index,K &out_key) const
+    bool ValueKVMap<K,V>::GetKey(int index,K &out_key) const
     {
         if(index < 0 || index >= data_list.GetCount()) return false;
         const KVData *arr = data_list.GetData();
@@ -169,7 +169,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    bool SmallMap<K,V>::GetValue(int index,V &out_value) const
+    bool ValueKVMap<K,V>::GetValue(int index,V &out_value) const
     {
         if(index < 0 || index >= data_list.GetCount()) return false;
         const KVData *arr = data_list.GetData();
@@ -178,7 +178,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    bool SmallMap<K,V>::SetValueBySerial(int index,const V &value)
+    bool ValueKVMap<K,V>::SetValueBySerial(int index,const V &value)
     {
         if(index < 0 || index >= data_list.GetCount()) return false;
         data_list.At(index)->value = value;
@@ -186,7 +186,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    void SmallMap<K,V>::Enum(void (*enum_func)(const K &,V &))
+    void ValueKVMap<K,V>::Enum(void (*enum_func)(const K &,V &))
     {
         const int count = data_list.GetCount();
         if(count <= 0) return;
@@ -195,7 +195,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    void SmallMap<K,V>::EnumKey(void (*enum_func)(const K &))
+    void ValueKVMap<K,V>::EnumKey(void (*enum_func)(const K &))
     {
         const int count = data_list.GetCount();
         if(count <= 0) return;
@@ -204,7 +204,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    void SmallMap<K,V>::EnumAllValue(void (*enum_func)(V &))
+    void ValueKVMap<K,V>::EnumAllValue(void (*enum_func)(V &))
     {
         const int count = data_list.GetCount();
         if(count <= 0) return;
@@ -213,7 +213,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    void SmallMap<K,V>::EnumValue(bool (*enum_func)(V &))
+    void ValueKVMap<K,V>::EnumValue(bool (*enum_func)(V &))
     {
         const int count = data_list.GetCount();
         if(count <= 0) return;
@@ -225,7 +225,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    void SmallMap<K,V>::WithList(typename SmallMap<K,V>::KVDataList &with_list,const ValueArray<K> &in_list) const
+    void ValueKVMap<K,V>::WithList(typename ValueKVMap<K,V>::KVDataList &with_list,const ValueArray<K> &in_list) const
     {
         with_list.Clear();
         const int count = GetCount();
@@ -239,7 +239,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    void SmallMap<K,V>::WithoutList(typename SmallMap<K,V>::KVDataList &without_list,const ValueArray<K> &in_list) const
+    void ValueKVMap<K,V>::WithoutList(typename ValueKVMap<K,V>::KVDataList &without_list,const ValueArray<K> &in_list) const
     {
         without_list.Clear();
         const int count = GetCount();

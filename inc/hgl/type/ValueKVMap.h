@@ -6,12 +6,12 @@
 namespace hgl
 {
     /**
-    * SmallMap: 按值存储的紧凑型有序映射。
+    * ValueKVMap: 按值存储的紧凑型有序映射。
     * - 不使用对象池与指针数组，节省小数据额外开销。
     * - 注意：返回的指针在容器扩容或插入/删除后可能失效。
     */
     template<typename K, typename V>
-    class SmallMap
+    class ValueKVMap
     {
     public:
         using KVData = KeyValue<K, V>;
@@ -21,8 +21,8 @@ namespace hgl
         KVDataList data_list; // 按值存储
 
     public:
-        SmallMap() = default;
-        ~SmallMap() = default;
+        ValueKVMap() = default;
+        ~ValueKVMap() = default;
 
         //迭代支持（只读）
         const KVData * begin () const
@@ -162,4 +162,4 @@ namespace hgl
     };
 }
 
-#include <hgl/type/SmallMap.cpp>
+#include <hgl/type/ValueKVMap.cpp>
