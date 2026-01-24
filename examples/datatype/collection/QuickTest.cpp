@@ -104,7 +104,7 @@ void TestNonTrivialType()
     std::cout << "TestClass ManagedArray: ";
     for(int i = 0; i < list.GetCount(); i++)
     {
-        const TestClass* obj = *list.At(i);  // Dereference to get pointer
+        const TestClass *obj = list.At(i);  // Dereference to get pointer
         std::cout << "{" << obj->id << ":" << obj->name << "} ";
     }
     std::cout << std::endl;
@@ -112,7 +112,7 @@ void TestNonTrivialType()
     std::cout << "After RepeatAdd(99, 2): ";
     for(int i = 0; i < list.GetCount(); i++)
     {
-        const TestClass* obj = *list.At(i);  // Dereference to get pointer
+        const TestClass* obj = list.At(i);  // Dereference to get pointer
         std::cout << "{" << obj->id << ":" << obj->name << "} ";
     }
     std::cout << std::endl;
@@ -136,11 +136,11 @@ void TestNonTrivialType()
 
     // 测试删除
     std::cout << "\n[5] Delete object at index 1:" << std::endl;
-    list.DeleteAtOwn(1);  // Delete and destroy
+    list.DeleteAt(1);  // Delete and destroy
     std::cout << "After delete: ";
     for(int i = 0; i < list.GetCount(); i++)
     {
-        const TestClass* obj = *list.At(i);  // Dereference to get pointer
+        const TestClass *obj = list.At(i);  // Dereference to get pointer
         std::cout << "{" << obj->id << ":" << obj->name << "} ";
     }
     std::cout << std::endl;

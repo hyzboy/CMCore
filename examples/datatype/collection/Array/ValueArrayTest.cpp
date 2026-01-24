@@ -1,6 +1,6 @@
 ﻿/**
  * ValueArray 严格测试用例
- * 
+ *
  * 测试目标：
  * 1. 测试 trivially copyable 类型 (int, double, POD struct)
  * 2. 测试 non-trivial 类型 (std::string, 含析构的类)
@@ -72,14 +72,14 @@ public:
     }
 
     // 拷贝构造
-    NonTrivialClass(const NonTrivialClass& other) 
+    NonTrivialClass(const NonTrivialClass& other)
         : id(other.id), name(other.name)
     {
         if (other.dynamicData)
             dynamicData = new double(*other.dynamicData);
         else
             dynamicData = nullptr;
-        
+
         copyCount++;
         std::cout << "  [NonTrivial] Copy construct #" << id << " (" << name << ")" << std::endl;
     }
@@ -100,7 +100,7 @@ public:
         {
             id = other.id;
             name = other.name;
-            
+
             delete dynamicData;
             if (other.dynamicData)
                 dynamicData = new double(*other.dynamicData);
@@ -120,7 +120,7 @@ public:
         {
             id = other.id;
             name = std::move(other.name);
-            
+
             delete dynamicData;
             dynamicData = other.dynamicData;
             other.dynamicData = nullptr;
@@ -136,7 +136,7 @@ public:
         destructCount++;
         std::cout << "  [NonTrivial] Destruct #" << id << " (" << name << ")"
                   << " dynamicData=" << (void*)dynamicData << std::endl;
-        
+
         if (dynamicData != nullptr)
         {
             delete dynamicData;
@@ -162,9 +162,9 @@ int NonTrivialClass::moveCount = 0;
 template<typename T>
 void PrintArrayList(const ValueArray<T>& list, const char* label)
 {
-    std::cout << std::setw(30) << label << " [" << std::setw(2) << list.GetCount() 
+    std::cout << std::setw(30) << label << " [" << std::setw(2) << list.GetCount()
               << "/" << std::setw(2) << list.GetAllocCount() << "]: ";
-    
+
     if constexpr (std::is_same_v<T, int>)
     {
         for (int i = 0; i < list.GetCount(); i++)
@@ -191,14 +191,14 @@ void PrintArrayList(const ValueArray<T>& list, const char* label)
             std::cout << "{" << obj->id << "," << obj->name << "}";
         }
     }
-    
+
     std::cout << std::endl;
 }
 
 template<typename T>
 void PrintArrayList(const PtrArray<T>& list, const char* label)
 {
-    std::cout << std::setw(30) << label << " [" << std::setw(2) << list.GetCount() 
+    std::cout << std::setw(30) << label << " [" << std::setw(2) << list.GetCount()
               << "/" << std::setw(2) << list.GetAllocCount() << "]: ";
 
     if constexpr (std::is_same_v<T, NonTrivialClass>)
@@ -251,7 +251,7 @@ void TestIntArrayList()
     std::cout << "========================================" << std::endl;
 
     ValueArray<int> list;
-    
+
     // 测试基本添加
     std::cout << "\n[1.1] Add single elements:" << std::endl;
     for (int i = 0; i < 10; i++)
@@ -359,7 +359,7 @@ void TestNonTrivialArrayList()
 
     std::cout << "\n[3.0] Creating ValueArray..." << std::endl;
     PtrArray<NonTrivialClass> list;
-    std::cout << "  ValueArray created. Count=" << list.GetCount() 
+    std::cout << "  ValueArray created. Count=" << list.GetCount()
               << ", AllocCount=" << list.GetAllocCount() << std::endl;
 
     // 测试添加非平凡对象 - 简化测试
@@ -416,11 +416,11 @@ void TestEdgeCases()
     std::cout << "\n[4.3] Reserve and Resize:" << std::endl;
     ValueArray<int> reserveList;
     reserveList.Reserve(100);
-    std::cout << "  After Reserve(100): Count=" << reserveList.GetCount() 
+    std::cout << "  After Reserve(100): Count=" << reserveList.GetCount()
               << ", AllocCount=" << reserveList.GetAllocCount() << std::endl;
-    
+
     reserveList.Resize(50);
-    std::cout << "  After Resize(50): Count=" << reserveList.GetCount() 
+    std::cout << "  After Resize(50): Count=" << reserveList.GetCount()
               << ", AllocCount=" << reserveList.GetAllocCount() << std::endl;
 
     // 测试Move边界情况
@@ -428,11 +428,11 @@ void TestEdgeCases()
     ValueArray<int> moveList;
     for (int i = 0; i < 10; i++)
         moveList.Add(i);
-    
+
     PrintArrayList(moveList, "Before Move");
     moveList.Move(0, 7, 3);  // Move to beginning
     PrintArrayList(moveList, "After Move(0,7,3)");
-    
+
     moveList.Move(7, 0, 3);  // Move to end
     PrintArrayList(moveList, "After Move(7,0,3)");
 }
@@ -447,29 +447,29 @@ void TestMemorySafety()
     ResetCounters();
     {
         PtrArray<NonTrivialClass> list;
-        
+
         for (int cycle = 0; cycle < 3; cycle++)
         {
             std::cout << "\n  Cycle " << cycle << ":" << std::endl;
-            
+
             // Add objects
             for (int i = 0; i < 5; i++)
                 list.Add(NonTrivialClass(cycle * 100 + i, "Obj"));
-            
+
             PrintArrayList(list, "After adding");
-            
+
             // Delete some
             list.Delete(0, 2);
             PrintArrayList(list, "After delete");
         }
-        
+
         std::cout << "\n  Before scope exit:" << std::endl;
     }
     std::cout << "  After scope exit (list destroyed)" << std::endl;
     PrintCounters();
-    
+
     std::cout << "\n[5.2] Memory leak check:" << std::endl;
-    std::cout << "  Constructs - Destructs = " 
+    std::cout << "  Constructs - Destructs = "
               << (NonTrivialClass::constructCount - NonTrivialClass::destructCount) << std::endl;
     std::cout << "  (Should be 0 if no leaks)" << std::endl;
 }

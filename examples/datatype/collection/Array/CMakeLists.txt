@@ -1,0 +1,5 @@
+cm_example_project("DataType/Collection/Array" ValueArrayTest                   ValueArrayTest.cpp)
+cm_example_project("DataType/Collection/Array" ValueArraySimpleTest             ValueArraySimpleTest.cpp)
+cm_example_project("DataType/Collection/Array" ValueArrayComprehensiveTest      ValueArrayComprehensiveTest.cpp)
+cm_example_project("DataType/Collection/Array" ManagedArrayComprehensiveTest    ManagedArrayComprehensiveTest.cpp)
+cm_example_project("DataType/Collection/Array" IndexedValueArrayTest            IndexedValueArrayTest.cpp)

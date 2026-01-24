@@ -315,7 +315,7 @@ namespace hgl
             if (index < 0 || index >= Items.GetCount())
                 return;
 
-            Items.DeleteAtOwn(index);
+            Items.DeleteAt(index);
         }
 
         /**
@@ -331,7 +331,7 @@ namespace hgl
             {
                 if (Items[i] && Items[i]->Comp(str) == 0)
                 {
-                    Items.DeleteAtOwn(i);
+                    Items.DeleteAt(i);
                     ++result;
                 }
             }

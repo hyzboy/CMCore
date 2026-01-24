@@ -90,7 +90,7 @@ int main(int, char **)
     }
 
     // 4) Get 从 idle 获取，不创建新 ID
-    cout << "=== Test 4: Get from idle (LIFO/Stack behavior) ===" << endl;
+    cout << "=== Test 4: Get from idle (FIFO/Queue behavior) ===" << endl;
     cout << "Before Get - Active: " << ambm.GetActiveCount() << ", Idle: " << ambm.GetIdleCount() << endl;
     cout << "idle_ids created: [";
     for (int i = 0; i < 5; ++i) cout << idle_ids[i] << (i < 4 ? ", " : "");
@@ -113,32 +113,32 @@ int main(int, char **)
     assert(ambm.GetActiveCount() == 8); // 原有5活跃 + 3新取
     assert(ambm.GetIdleCount() == 2);
 
-    // 验证取出的是从 idle 末尾的数据（Stack的LIFO行为）
-    // idle中有[0,1,2,3,4]，Pop(3)会取出[2,3,4]
+    // 验证取出的是从 idle 开头的数据（Queue的FIFO行为）
+    // idle中有[0,1,2,3,4]，Get(3)会取出[0,1,2]
     {
         vector<string> names;
         ReadUsername(ambm, user_ids, 3, names);
         
-        cout << "Data read from user_ids (Stack Pop from end):" << endl;
+        cout << "Data read from user_ids (Queue Get from front):" << endl;
         for (int i = 0; i < 3; ++i) {
             cout << "  user_ids[" << i << "]=" << user_ids[i] 
                  << " -> \"" << names[i] << "\"" << endl;
         }
         
-        cout << "Expected data (user_info_array[2-4], from idle list END):" << endl;
+        cout << "Expected data (user_info_array[0-2], from idle list FRONT):" << endl;
         for (int i = 0; i < 3; ++i) {
-            cout << "  user_info_array[" << (i+2) << "].name = \"" 
-                 << user_info_array[i+2].name << "\"" << endl;
+            cout << "  user_info_array[" << i << "].name = \"" 
+                 << user_info_array[i].name << "\"" << endl;
         }
         
-        // 由于 idle_list 使用 Stack (LIFO)，Get() 从末尾取出
-        // 所以取出的应该是 user_info_array[2,3,4]
+        // 由于 idle_list 使用 Queue (FIFO)，Get() 从开头取出
+        // 所以取出的应该是 user_info_array[0,1,2]
         for (int i = 0; i < 3; ++i) {
             cout << "Checking: names[" << i << "]=\"" << names[i] 
-                 << "\" == user_info_array[" << (i+2) << "]=\"" 
-                 << user_info_array[i+2].name << "\" -> "
-                 << (names[i] == user_info_array[i+2].name ? "PASS" : "FAIL") << endl;
-            assert(names[i] == user_info_array[i+2].name);
+                 << "\" == user_info_array[" << i << "]=\"" 
+                 << user_info_array[i].name << "\" -> "
+                 << (names[i] == user_info_array[i].name ? "PASS" : "FAIL") << endl;
+            assert(names[i] == user_info_array[i].name);
         }
     }
     
@@ -168,8 +168,8 @@ int main(int, char **)
     assert(ambm.GetActiveCount() == 14);
     assert(ambm.GetIdleCount() == 0);
     {
-        cout << "=== Test 6b: Reusing released IDs (Stack LIFO) ===" << endl;
-        cout << "Released user_ids (were from idle[2,3,4]): [";
+        cout << "=== Test 6b: Reusing released IDs (Queue FIFO) ===" << endl;
+        cout << "Released user_ids (were from idle[0,1,2]): [";
         for (int i = 0; i < 3; ++i) cout << user_ids[i] << (i < 2 ? ", " : "");
         cout << "]" << endl;
         cout << "Reuse Get returned reuse_ids: [";
@@ -185,12 +185,12 @@ int main(int, char **)
                  << " -> \"" << names[i] << "\"" << endl;
         }
         
-        // user_ids[0,1,2] 被 Release，以相同顺序推入 idle stack
-        // Get(3) 会以 LIFO 顺序取出，所以顺序可能反转或保持取决于实现
-        // 数据应该还是对应 user_info_array[2,3,4]
+        // user_ids[0,1,2] 被 Release，以相同顺序推入 idle queue
+        // Get(3) 会以 FIFO 顺序取出，所以顺序保持
+        // 数据应该还是对应 user_info_array[0,1,2]
         for (int i = 0; i < 3; ++i) {
             cout << "Verifying reuse_ids[" << i << "] data matches original..." << endl;
-            assert(names[i] == user_info_array[i+2].name);
+            assert(names[i] == user_info_array[i].name);
         }
         cout << "Reused IDs maintain their data correctly." << endl << endl;
     }

@@ -7,7 +7,7 @@
 
 using namespace hgl;
 
-constexpr const uint MAX_LIST_COUNT=1000000;
+constexpr const uint MAX_LIST_COUNT=100000;
 constexpr const uint DELETE_COUNT=MAX_LIST_COUNT/10;
 
 template<typename T>

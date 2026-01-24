@@ -12,7 +12,7 @@ namespace hgl
      *
      * 设计要点：
      * - 继承自 ValueArray<T *>，保留其大部分接口；
-     * - 新增以 Own 命名的方法（如 DeleteAtOwn），用于先释放对象再从列表中移除；
+     * - 新增以 Own 命名的方法（如 DeleteAt），用于先释放对象再从列表中移除；
      * - 提供 Unlink 系列方法仅断开关联（不 delete），以支持不同的内存管理策略；
      */
     template<typename T> class ManagedArray
@@ -121,8 +121,8 @@ namespace hgl
         }
 
         // ============ 数据读写 ============
-        ItemPointer *At(int index) { return items.At(index); }
-        const ItemPointer *At(int index) const { return items.At(index); }
+        ItemPointer At(int index) { return *items.At(index); }
+        const ItemPointer At(int index) const { return *items.At(index); }
 
         virtual bool Get(int index, ItemPointer &data) const
         {
@@ -162,7 +162,7 @@ namespace hgl
         virtual void operator+=(ItemPointer &obj) { Add(obj); }
         virtual void operator<<(ItemPointer &obj) { Add(obj); }
 
-        virtual void operator-=(ItemPointer &obj) { DeleteByValueOwn(obj); }
+        virtual void operator-=(ItemPointer &obj) { DeleteByValue(obj); }
 
         // ============ 释放与清理 ============
         // Free: 先 Clear（对元素 delete），再调用基类 Free
@@ -205,7 +205,7 @@ namespace hgl
         // 不使用 override 是为避免与 ValueArray 中 Delete/DeleteByValue 的签名冲突。
 
         // 删除指定索引并销毁该对象
-        bool DeleteAtOwn(int index)
+        bool DeleteAt(int index)
         {
             if (!_DeleteRange(index, 1))
                 return false;
@@ -219,7 +219,7 @@ namespace hgl
          * @return 删除成功返回 true，失败返回 false
          * 
          * 注意：此函数会先 delete 对应的对象，然后将后面的元素依次向前移动，
-         *       保持列表的顺序。性能开销比 DeleteAtOwn 略高，但可以保持元素顺序。
+         *       保持列表的顺序。性能开销比 DeleteAt 略高，但可以保持元素顺序。
          */
         bool DeleteShift(int index)
         {
@@ -230,7 +230,7 @@ namespace hgl
         }
 
         // 删除一段范围并销毁这些对象
-        bool DeleteRangeOwn(int index, int number)
+        bool DeleteRange(int index, int number)
         {
             if (!_DeleteRange(index, number))
                 return false;
@@ -239,7 +239,7 @@ namespace hgl
         }
 
         // 通过值查找并销毁，然后从列表移除（单个）
-        bool DeleteByValueOwn(ItemPointer &ip)
+        bool DeleteByValue(ItemPointer &ip)
         {
             int idx = items.Find(ip);
             if (idx == -1) return false;
@@ -249,12 +249,12 @@ namespace hgl
         }
 
         // 通过数组的值逐个销毁并移除
-        void DeleteByValueOwn(ItemPointer *ip, int n)
+        void DeleteByValue(ItemPointer *ip, int n)
         {
             if (!ip || n <= 0) return;
 
             for (int i = 0; i < n; ++i)
-                DeleteByValueOwn(ip[i]);
+                DeleteByValue(ip[i]);
         }
 
     public: // 迭代器
