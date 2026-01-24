@@ -38,7 +38,10 @@ int os_main(int, os_char**)
     
     // 修改第一个元素
     *mut_begin = 999;
-    assert(stack.GetAt(0) == 999);
+    int result;
+
+    assert(stack.GetAt(0,result));
+    assert(result == 999);
     cout << "  ✓ Non-const iterators allow modification" << endl;
     
     cout << "\n[11.3] const GetData():" << endl;
