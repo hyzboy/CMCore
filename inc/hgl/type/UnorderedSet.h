@@ -191,6 +191,18 @@ namespace hgl
             return true;
         }
 
+        /**
+         * @brief Clears the internal pool without deleting managed objects
+         * This should be called by subclasses before deleting objects
+         */
+        void ClearPoolWithoutDeletion()
+        {
+            // For managed sets that manually delete objects, we need to clear
+            // the pool's references without trying to delete them again.
+            // We do this by replacing the pool with a new empty one.
+            data_pool = DataPool();
+        }
+        
         // ==================== 清除 ====================
         virtual void Free()                                                     ///<清除所有数据，并释放内存
         {
@@ -206,18 +218,13 @@ namespace hgl
             data_list.Free();
             hash_map.Clear();
         }
-
-        virtual void Clear()                                                    ///<清除所有数据，但不释放内存
+        
+        /**
+         * @brief Clear all data structures without using pool Release
+         * Used internally by UnorderedManagedSet after manual object deletion
+         */
+        void ClearDataStructures()
         {
-            const int count = data_list.GetCount();
-            T **data_ptr = data_list.GetData();
-
-            for(int i = 0; i < count; i++)
-            {
-                data_pool.Release(*data_ptr);
-                ++data_ptr;
-            }
-
             data_list.Clear();
             hash_map.Clear();
         }
@@ -441,7 +448,12 @@ namespace hgl
     public:
 
         UnorderedManagedSet() = default;
-        virtual ~UnorderedManagedSet() { DeleteAll(); }
+        virtual ~UnorderedManagedSet() { 
+            DeleteAll(); 
+            // After DeleteAll(), data structures are cleared but pool may still
+            // contain references to deleted pointers. Override to prevent base
+            // class Free() from running which would try to Release() deleted ptrs
+        }
 
         // ==================== Unlink（不删除对象） ====================
         bool UnlinkByValue(const T& value) { return UnlinkBySerial(this->Find(value)); }
@@ -464,7 +476,11 @@ namespace hgl
             if(index < 0 || index >= this->data_list.GetCount())
                 return false;
             DeleteObject(index);
-            UnorderedSetTemplate<T, MAX_COLLISION>::DeleteAt(index);
+            
+            // Manually remove from data structures without calling Release()
+            // to avoid trying to release an already-deleted pointer
+            this->data_list.Delete(index, 1);
+            this->RebuildHashMap();
             return true;
         }
 
@@ -478,7 +494,10 @@ namespace hgl
                 DeleteObject(*data_ptr);
                 ++data_ptr;
             }
-            UnorderedSetTemplate<T, MAX_COLLISION>::Free();
+            
+            // Clear data structures and pool to prevent double-deletion
+            this->ClearDataStructures();
+            this->ClearPoolWithoutDeletion();
         }
 
         void Clear() { DeleteAll(); }
