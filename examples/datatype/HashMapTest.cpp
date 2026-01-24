@@ -40,7 +40,7 @@ bool TestHashMapBasics()
 {
     TEST_SECTION("Test 1: HashMap Basic Operations");
 
-    HashMap<int, std::string> map;
+    ValueHashMap<int, std::string> map;
 
     // 空映射测试
     TEST_ASSERT(map.IsEmpty(), "New map should be empty");
@@ -92,7 +92,7 @@ bool TestHashMapModifications()
 {
     TEST_SECTION("Test 2: HashMap Modification Operations");
 
-    HashMap<int, std::string> map;
+    ValueHashMap<int, std::string> map;
 
     map.Add(1, "original");
     map.Add(2, "value2");
@@ -136,7 +136,7 @@ bool TestHashMapDeletions()
 {
     TEST_SECTION("Test 3: HashMap Deletion Operations");
 
-    HashMap<int, std::string> map;
+    ValueHashMap<int, std::string> map;
 
     for(int i = 1; i <= 10; i++)
         map.Add(i, "value"s + std::to_string(i));
@@ -195,7 +195,7 @@ bool TestHashMapEnumeration()
 {
     TEST_SECTION("Test 4: HashMap Enumeration");
 
-    HashMap<int, std::string> map;
+    ValueHashMap<int, std::string> map;
 
     for(int i = 1; i <= 5; i++)
         map.Add(i, "value"s + std::to_string(i));
@@ -239,7 +239,7 @@ bool TestObjectHashMapBasics()
 {
     TEST_SECTION("Test 5: ObjectHashMap Basic Operations");
 
-    ObjectHashMap<int, TestObject> obj_map;
+    ManagedHashMap<int, TestObject> obj_map;
 
     // 添加对象
     obj_map.Add(1, new TestObject(1, "obj1"));
@@ -284,7 +284,7 @@ bool TestObjectHashMapUnlink()
 {
     TEST_SECTION("Test 6: ObjectHashMap Unlink Operations");
 
-    ObjectHashMap<int, TestObject> obj_map;
+    ManagedHashMap<int, TestObject> obj_map;
 
     TestObject* managed_obj = new TestObject(99, "managed");
     obj_map.Add(1, new TestObject(1, "obj1"));
@@ -326,7 +326,7 @@ bool TestHashMapStatistics()
 {
     TEST_SECTION("Test 7: HashMap Statistics");
 
-    HashMap<int, int> map;
+    ValueHashMap<int, int> map;
 
     const int num_entries = 1000;
 
@@ -373,7 +373,7 @@ bool TestHashMapBoundaries()
 {
     TEST_SECTION("Test 8: HashMap Boundary Conditions");
 
-    HashMap<int, int> map;
+    ValueHashMap<int, int> map;
 
     // 负数键
     map.Add(-1, 100);
@@ -407,7 +407,7 @@ bool TestHashMapCompatibility()
 {
     TEST_SECTION("Test 9: HashMap API Compatibility with Map");
 
-    HashMap<int, std::string> hash_map;
+    ValueHashMap<int, std::string> hash_map;
 
     // 测试所有与 Map 相同的接口
     hash_map.Add(1, "one");

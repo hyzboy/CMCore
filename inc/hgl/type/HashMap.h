@@ -11,11 +11,11 @@ namespace hgl
     * 基于哈希的索引数据模板（O(1) 平均查找时间）
     */
     template<typename K, typename V, typename KVData, int MAX_COLLISION = 4>
-    class HashMapTemplate
+    class ValueHashMapTemplate
     {
     protected:
 
-        using ThisClass = HashMapTemplate<K, V, KVData, MAX_COLLISION>;
+        using ThisClass = ValueHashMapTemplate<K, V, KVData, MAX_COLLISION>;
 
         using KVDataPool = ObjectPool<KVData>;
         using KVDataList = ValueArray<KVData *>;
@@ -46,8 +46,8 @@ namespace hgl
 
     public: // 方法
 
-        HashMapTemplate() = default;
-        virtual ~HashMapTemplate() = default;
+        ValueHashMapTemplate() = default;
+        virtual ~ValueHashMapTemplate() = default;
 
         const int   GetCount() const { return data_list.GetCount(); }           ///<取得数据总量
         const bool  IsEmpty() const { return data_list.IsEmpty(); }             ///<是否为空
@@ -400,13 +400,13 @@ namespace hgl
         }
 
         void operator=(const ThisClass&);  // 禁用赋值
-    };//class HashMapTemplate
+    };//class ValueHashMapTemplate
 
     /**
     * 基于哈希的键值对映射（O(1) 平均查找时间）
     */
     template<typename K, typename V, int MAX_COLLISION = 4>
-    class HashMap : public HashMapTemplate<K, V, KeyValue<K, V>, MAX_COLLISION>
+    class ValueHashMap : public ValueHashMapTemplate<K, V, KeyValue<K, V>, MAX_COLLISION>
     {
     public:
 
@@ -414,23 +414,23 @@ namespace hgl
 
     public:
 
-        HashMap() = default;
-        virtual ~HashMap() = default;
+        ValueHashMap() = default;
+        virtual ~ValueHashMap() = default;
 
         V* operator[](const K& key) const
         {
             return this->GetValuePointer(key);
         }
-    };//class HashMap
+    };//class ValueHashMap
 
     /**
     * 基于哈希的对象指针映射模板（O(1) 平均查找时间）
     */
     template<typename K, typename V, typename KVData, int MAX_COLLISION = 4>
-    class ObjectHashMapTemplate : public HashMapTemplate<K, V*, KVData, MAX_COLLISION>
+    class ManagedHashMapTemplate : public ValueHashMapTemplate<K, V*, KVData, MAX_COLLISION>
     {
     protected:
-        typedef HashMapTemplate<K, V*, KVData, MAX_COLLISION> SuperClass;
+        typedef ValueHashMapTemplate<K, V*, KVData, MAX_COLLISION> SuperClass;
 
         void DeleteObject(KVData* ds)
         {
@@ -446,8 +446,8 @@ namespace hgl
         }
 
     public:
-        ObjectHashMapTemplate() = default;
-        virtual ~ObjectHashMapTemplate() { Clear(); }
+        ManagedHashMapTemplate() = default;
+        virtual ~ManagedHashMapTemplate() { Clear(); }
 
         // ==================== Unlink（不删除对象） ====================
         bool UnlinkByKey(const K& flag) { return UnlinkBySerial(SuperClass::Find(flag)); }
@@ -524,19 +524,11 @@ namespace hgl
     * 基于哈希的对象指针映射（O(1) 平均查找时间）
     */
     template<typename K, typename V, int MAX_COLLISION = 4>
-    class ObjectHashMap : public ObjectHashMapTemplate<K, V, KeyValue<K, V*>, MAX_COLLISION>
+    class ManagedHashMap : public ManagedHashMapTemplate<K, V, KeyValue<K, V*>, MAX_COLLISION>
     {
     public:
-        ObjectHashMap() = default;
-        virtual ~ObjectHashMap() = default;
-    };
-
-    // ==================== 字符串特化哈希函数 ====================
-    template<int MAX_COLLISION>
-    class HashMapTemplate<const char*, const char*, KeyValue<const char*, const char*>, MAX_COLLISION>
-    {
-        // 字符串特化可以使用更高效的哈希算法
-        // 此处预留，具体实现可参考 ConstStringSet
+        ManagedHashMap() = default;
+        virtual ~ManagedHashMap() = default;
     };
 
 }//namespace hgl
