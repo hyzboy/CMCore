@@ -413,12 +413,12 @@ namespace hgl
     * @brief CN:对象池类型定义。\nEN:Object pool type definition.
     */
     template<typename T>
-    using Pool = PoolTemplate<T, ValueArray<T>, Queue<T>>;
+    using Pool = PoolTemplate<T, ValueArray<T>, ValueQueue<T>>;
 
     /**
     * @brief CN:对象指针池类型定义。\nEN:Object pointer pool type definition.
     */
     template<typename T>
-    using ObjectPool = PoolTemplate<T *, ValueArray<T *>, Queue<T *>>;
+    using ObjectPool = PoolTemplate<T *, ValueArray<T *>, ValueQueue<T *>>;
 
 } // namespace hgl

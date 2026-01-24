@@ -90,7 +90,7 @@ int main(int, char **)
     }
 
     // 4) Get 从 idle 获取，不创建新 ID
-    cout << "=== Test 4: Get from idle (FIFO/Queue behavior) ===" << endl;
+    cout << "=== Test 4: Get from idle (FIFO/ValueQueue behavior) ===" << endl;
     cout << "Before Get - Active: " << ambm.GetActiveCount() << ", Idle: " << ambm.GetIdleCount() << endl;
     cout << "idle_ids created: [";
     for (int i = 0; i < 5; ++i) cout << idle_ids[i] << (i < 4 ? ", " : "");
@@ -119,7 +119,7 @@ int main(int, char **)
         vector<string> names;
         ReadUsername(ambm, user_ids, 3, names);
         
-        cout << "Data read from user_ids (Queue Get from front):" << endl;
+        cout << "Data read from user_ids (ValueQueue Get from front):" << endl;
         for (int i = 0; i < 3; ++i) {
             cout << "  user_ids[" << i << "]=" << user_ids[i] 
                  << " -> \"" << names[i] << "\"" << endl;
@@ -131,7 +131,7 @@ int main(int, char **)
                  << user_info_array[i].name << "\"" << endl;
         }
         
-        // 由于 idle_list 使用 Queue (FIFO)，Get() 从开头取出
+        // 由于 idle_list 使用 ValueQueue (FIFO)，Get() 从开头取出
         // 所以取出的应该是 user_info_array[0,1,2]
         for (int i = 0; i < 3; ++i) {
             cout << "Checking: names[" << i << "]=\"" << names[i] 
@@ -168,7 +168,7 @@ int main(int, char **)
     assert(ambm.GetActiveCount() == 14);
     assert(ambm.GetIdleCount() == 0);
     {
-        cout << "=== Test 6b: Reusing released IDs (Queue FIFO) ===" << endl;
+        cout << "=== Test 6b: Reusing released IDs (ValueQueue FIFO) ===" << endl;
         cout << "Released user_ids (were from idle[0,1,2]): [";
         for (int i = 0; i < 3; ++i) cout << user_ids[i] << (i < 2 ? ", " : "");
         cout << "]" << endl;

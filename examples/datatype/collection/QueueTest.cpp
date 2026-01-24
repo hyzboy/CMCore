@@ -9,9 +9,9 @@ void TestQueueOrdered()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"Queue Ordered Test"<<endl<<endl;
+    cout<<"ValueQueue Ordered Test"<<endl<<endl;
 
-    Queue<int> tab;
+    ValueQueue<int> tab;
     int i;
 
     for(i=0;i<10;i++)
@@ -21,7 +21,7 @@ void TestQueueOrdered()
         tab.Push(i);
     }
 
-    cout<<"Queue Count: "<<tab.GetCount()<<endl;
+    cout<<"ValueQueue Count: "<<tab.GetCount()<<endl;
 
     for(i=0;i<10;i++)
     {
@@ -32,16 +32,16 @@ void TestQueueOrdered()
         cout<<"pop "<<val<<endl;
     }
 
-    cout<<"Queue Count: "<<tab.GetCount()<<endl;
+    cout<<"ValueQueue Count: "<<tab.GetCount()<<endl;
 }
 
 void TestQueueUnordered()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"Queue Unordered Test"<<endl<<endl;
+    cout<<"ValueQueue Unordered Test"<<endl<<endl;
 
-    Queue<int> tab;
+    ValueQueue<int> tab;
     int i;
     int val;
 
@@ -67,14 +67,14 @@ void TestQueueStruct()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"Queue Struct Test"<<endl<<endl;
+    cout<<"ValueQueue Struct Test"<<endl<<endl;
 
-    Queue<UserInfo> ui_queue;
+    ValueQueue<UserInfo> ui_queue;
 
     for(uint i=0;i<sizeof(user_info_array)/sizeof(UserInfo);i++)
         ui_queue.Push(user_info_array[i]);
 
-    cout<<"Queue Count: "<<ui_queue.GetCount()<<endl;
+    cout<<"ValueQueue Count: "<<ui_queue.GetCount()<<endl;
 
     for(uint i=0;i<sizeof(user_info_array)/sizeof(UserInfo);i++)
     {
@@ -89,15 +89,15 @@ void TestQueueStruct()
 // ==================== 新增测试 ====================
 
 /**
- * 测试 Queue 的 Peek 操作
+ * 测试 ValueQueue 的 Peek 操作
  */
 void TestQueuePeek()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"Queue Peek Test"<<endl<<endl;
+    cout<<"ValueQueue Peek Test"<<endl<<endl;
 
-    Queue<int> q;
+    ValueQueue<int> q;
     
     // 空队列 Peek
     int val = -1;
@@ -108,27 +108,27 @@ void TestQueuePeek()
     for(int i = 0; i < 5; ++i)
         q.Push(i);
 
-    cout<<"Queue Count: "<<q.GetCount()<<endl;
+    cout<<"ValueQueue Count: "<<q.GetCount()<<endl;
 
     // Peek 不删除元素
     q.Peek(val);
-    cout<<"Peeked value: "<<val<<", Queue Count still: "<<q.GetCount()<<endl;
+    cout<<"Peeked value: "<<val<<", ValueQueue Count still: "<<q.GetCount()<<endl;
 
     // Pop 删除元素
     q.Pop(val);
-    cout<<"Popped value: "<<val<<", Queue Count now: "<<q.GetCount()<<endl;
+    cout<<"Popped value: "<<val<<", ValueQueue Count now: "<<q.GetCount()<<endl;
 }
 
 /**
- * 测试 Queue 的循环缓冲区行为
+ * 测试 ValueQueue 的循环缓冲区行为
  */
 void TestQueueCircularBuffer()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"Queue Circular Buffer Test"<<endl<<endl;
+    cout<<"ValueQueue Circular Buffer Test"<<endl<<endl;
 
-    Queue<int> q;
+    ValueQueue<int> q;
 
     cout<<"[1] 填充队列..."<<endl;
     for(int i = 0; i < 5; ++i)
@@ -157,15 +157,15 @@ void TestQueueCircularBuffer()
 }
 
 /**
- * 测试 Queue 的容量管理
+ * 测试 ValueQueue 的容量管理
  */
 void TestQueueCapacity()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"Queue Capacity Test"<<endl<<endl;
+    cout<<"ValueQueue Capacity Test"<<endl<<endl;
 
-    Queue<int> q;
+    ValueQueue<int> q;
 
     cout<<"[1] 初始状态..."<<endl;
     cout<<"AllocCount: "<<q.GetAllocCount()<<", Count: "<<q.GetCount()<<endl;
@@ -192,20 +192,20 @@ void TestQueueCapacity()
 }
 
 /**
- * 测试 Queue 的 Contains
+ * 测试 ValueQueue 的 Contains
  */
 void TestQueueContains()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"Queue Contains Test"<<endl<<endl;
+    cout<<"ValueQueue Contains Test"<<endl<<endl;
 
-    Queue<int> q;
+    ValueQueue<int> q;
 
     for(int i = 0; i < 5; ++i)
         q.Push(i * 10);
 
-    cout<<"Queue: ";
+    cout<<"ValueQueue: ";
     for(int i = 0; i < 5; ++i)
     {
         int val;
@@ -218,7 +218,7 @@ void TestQueueContains()
     cout<<"Contains(100): "<<(q.Contains(100) ? "yes" : "no")<<endl;
 }
 
-// ==================== ObjectQueue 测试 ====================
+// ==================== ManagedQueue 测试 ====================
 
 class QueueTestObject
 {
@@ -245,9 +245,9 @@ void TestObjectQueue()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"Queue Object Test"<<endl<<endl;
+    cout<<"ValueQueue Object Test"<<endl<<endl;
 
-    ObjectQueue<QueueTestObject> tab;
+    ManagedQueue<QueueTestObject> tab;
 
     int i;
 
@@ -260,7 +260,7 @@ void TestObjectQueue()
         tab.Push(obj);
     }
 
-    cout<<"Queue Count: "<<tab.GetCount()<<endl;
+    cout<<"ValueQueue Count: "<<tab.GetCount()<<endl;
 
     for(i=0;i<5;i++)        //只取出5个,剩几个给自动清理处理
     {
@@ -270,19 +270,19 @@ void TestObjectQueue()
             delete obj;
     }
 
-    cout<<"Queue Count: "<<tab.GetCount()<<endl;
+    cout<<"ValueQueue Count: "<<tab.GetCount()<<endl;
 }
 
 /**
- * 测试 ObjectQueue 的值类型接口
+ * 测试 ManagedQueue 的值类型接口
  */
 void TestObjectQueueValueType()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"ObjectQueue Value Type Test"<<endl<<endl;
+    cout<<"ManagedQueue Value Type Test"<<endl<<endl;
 
-    ObjectQueue<QueueTestObject> q;
+    ManagedQueue<QueueTestObject> q;
 
     cout<<"[1] 通过值类型添加..."<<endl;
     {
@@ -297,20 +297,20 @@ void TestObjectQueueValueType()
     {
         cout<<"Popped successfully"<<endl;
     }
-    cout<<"Queue Count: "<<q.GetCount()<<endl;
+    cout<<"ValueQueue Count: "<<q.GetCount()<<endl;
 }
 
 /**
- * 测试 ObjectQueue 的内存管理
+ * 测试 ManagedQueue 的内存管理
  */
 void TestObjectQueueMemoryManagement()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"ObjectQueue Memory Management Test"<<endl<<endl;
+    cout<<"ManagedQueue Memory Management Test"<<endl<<endl;
 
     {
-        ObjectQueue<QueueTestObject> q;
+        ManagedQueue<QueueTestObject> q;
 
         cout<<"[1] 添加 5 个对象..."<<endl;
         for(int i = 0; i < 5; ++i)
@@ -339,15 +339,15 @@ void TestObjectQueueMemoryManagement()
 }
 
 /**
- * 测试 ObjectQueue 的大量操作
+ * 测试 ManagedQueue 的大量操作
  */
 void TestObjectQueueStress()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"ObjectQueue Stress Test"<<endl<<endl;
+    cout<<"ManagedQueue Stress Test"<<endl<<endl;
 
-    ObjectQueue<QueueTestObject> q;
+    ManagedQueue<QueueTestObject> q;
 
     cout<<"[1] 添加 100 个对象..."<<endl;
     for(int i = 0; i < 100; ++i)
@@ -380,7 +380,7 @@ void TestObjectQueueStress()
 }
 
 /**
- * 对比 Queue 和 ObjectQueue 的类型约束
+ * 对比 ValueQueue 和 ManagedQueue 的类型约束
  */
 void TestTypeConstraints()
 {
@@ -388,21 +388,21 @@ void TestTypeConstraints()
     cout<<"-----------------------------------------"<<endl;
     cout<<"Type Constraints Test"<<endl<<endl;
 
-    cout<<"[1] Queue<int> - 平凡类型 [OK]"<<endl;
-    Queue<int> q1;
+    cout<<"[1] ValueQueue<int> - 平凡类型 [OK]"<<endl;
+    ValueQueue<int> q1;
     q1.Push(42);
 
-    cout<<"[2] Queue<UserInfo> - 平凡 POD [OK]"<<endl;
-    Queue<UserInfo> q2;
+    cout<<"[2] ValueQueue<UserInfo> - 平凡 POD [OK]"<<endl;
+    ValueQueue<UserInfo> q2;
 
-    cout<<"[3] ObjectQueue<QueueTestObject> - 非平凡类型 [OK]"<<endl;
-    ObjectQueue<QueueTestObject> oq1;
+    cout<<"[3] ManagedQueue<QueueTestObject> - 非平凡类型 [OK]"<<endl;
+    ManagedQueue<QueueTestObject> oq1;
 
     cout<<"\n注意：以下类型组合会编译失败："<<endl;
-    cout<<"- Queue<std::string> - [X]"<<endl;
-    cout<<"- Queue<ObjectQueue<T>> - [X]"<<endl;
-    cout<<"- ObjectQueue<int> - [X]"<<endl;
-    cout<<"- ObjectQueue<float> - [X]"<<endl;
+    cout<<"- ValueQueue<std::string> - [X]"<<endl;
+    cout<<"- ValueQueue<ManagedQueue<T>> - [X]"<<endl;
+    cout<<"- ManagedQueue<int> - [X]"<<endl;
+    cout<<"- ManagedQueue<float> - [X]"<<endl;
 }
 
 int os_main(int,os_char **)
@@ -418,7 +418,7 @@ int os_main(int,os_char **)
 
     // ========== 新增测试 ==========
     
-    // Queue 的扩展功能测试
+    // ValueQueue 的扩展功能测试
     TestQueuePeek();
     TestQueueCircularBuffer();
     TestQueueCapacity();
@@ -427,7 +427,7 @@ int os_main(int,os_char **)
     //对象测试
     TestObjectQueue();
 
-    // ObjectQueue 的扩展功能测试
+    // ManagedQueue 的扩展功能测试
     TestObjectQueueValueType();
     TestObjectQueueMemoryManagement();
     TestObjectQueueStress();

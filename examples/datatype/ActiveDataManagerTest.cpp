@@ -64,7 +64,7 @@ void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const Va
     DebugOutputArray(hint,adm,da.GetData(),da.GetCount());
 }
 
-void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const Queue<int> &queue)
+void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const ValueQueue<int> &queue)
 {
     cout<<"("<<hint<<':'<<queue.GetCount()<<")";
     if(queue.GetCount()<=0)return;

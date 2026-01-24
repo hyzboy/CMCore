@@ -232,30 +232,30 @@ namespace hgl
     /**
      * 用于平凡类型的队列 - 使用 ValueBuffer
      */
-    template<typename T> class Queue:public QueueTemplate<T, ValueBuffer<T>>
+    template<typename T> class ValueQueue:public QueueTemplate<T, ValueBuffer<T>>
     {
     public:
         static_assert(std::is_trivially_copyable_v<T>,
-            "Queue<T> requires trivially copyable types (int, float, POD structs, etc). "
-            "For non-trivial types (std::string, custom classes with dynamic memory), use ObjectQueue<T> instead.");
+            "ValueQueue<T> requires trivially copyable types (int, float, POD structs, etc). "
+            "For non-trivial types (std::string, custom classes with dynamic memory), use ManagedQueue<T> instead.");
 
-        Queue():QueueTemplate<T, ValueBuffer<T>>(){}
-        virtual ~Queue()=default;
-    };//template<typename T> class Queue
+        ValueQueue():QueueTemplate<T, ValueBuffer<T>>(){}
+        virtual ~ValueQueue()=default;
+    };//template<typename T> class ValueQueue
 
     /**
      * 用于非平凡类型的队列 - 使用 ObjectArray
      * PtrArray 自动管理对象的构造和析构
      */
-    template<typename T> class ObjectQueue:public QueueTemplate<T, PtrArray<T>>
+    template<typename T> class ManagedQueue:public QueueTemplate<T, PtrArray<T>>
     {
     public:
         static_assert(!std::is_trivially_copyable_v<T>,
-            "ObjectQueue<T> requires non-trivial types (std::string, custom classes with dynamic memory, etc). "
-            "For trivially copyable types (int, float, POD structs), use Queue<T> instead for better performance.");
+            "ManagedQueue<T> requires non-trivial types (std::string, custom classes with dynamic memory, etc). "
+            "For trivially copyable types (int, float, POD structs), use ValueQueue<T> instead for better performance.");
 
-        ObjectQueue():QueueTemplate<T, PtrArray<T>>(){}
-        virtual ~ObjectQueue() override { this->Free(); }
+        ManagedQueue():QueueTemplate<T, PtrArray<T>>(){}
+        virtual ~ManagedQueue() override { this->Free(); }
 
         // 保留基类的方法
         using QueueTemplate<T, PtrArray<T>>::Push;
@@ -292,5 +292,5 @@ namespace hgl
             ptr = new T(obj);
             return ptr != nullptr;
         }
-    };//template<typename T> class ObjectQueue
+    };//template<typename T> class ManagedQueue
 }//namespace hgl

@@ -13,7 +13,7 @@ namespace hgl
     * 设计说明：
     * - 管理一个ID池，支持创建、获取、释放操作
     * - 活跃ID存储在 OrderedValueSet 中，支持快速查询
-    * - 闲置ID存储在 Queue 中（FIFO），确保公平复用，避免ID碎片化
+    * - 闲置ID存储在 ValueQueue 中（FIFO），确保公平复用，避免ID碎片化
     * - 提供完整的验证和统计功能
     */
     class ActiveIDManager
@@ -25,7 +25,7 @@ namespace hgl
         };
 
         OrderedValueSet<int> active_list;         ///<活跃ID列表
-        Queue<int> idle_list;               ///<闲置ID列表（FIFO队列，确保公平复用）
+        ValueQueue<int> idle_list;               ///<闲置ID列表（FIFO队列，确保公平复用）
 
         int id_count;                       ///<创建过的最大ID值+1
         int released_count;                 ///<已释放过的ID总数（用于统计）
