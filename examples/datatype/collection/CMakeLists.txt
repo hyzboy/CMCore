@@ -7,7 +7,8 @@ cm_example_project("DataType/Collection" FixVerificationTest            FixVerif
 
 add_subdirectory(stack)
 add_subdirectory(ValueBuffer)
-add_subdirectory(OrderedSet)
+add_subdirectory(orderedSet)
+add_subdirectory(UnorderedSet)
 
 cm_example_project("DataType/Collection" QueueTest              QueueTest.cpp)
 cm_example_project("DataType/Collection" PoolTest               PoolTest.cpp)
