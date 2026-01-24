@@ -24,7 +24,7 @@ namespace hgl
             int64 count;
         };
 
-        SortedSet<int> active_list;        ///<活跃ID列表
+        SortedSet<int> active_list;         ///<活跃ID列表
         Queue<int> idle_list;               ///<闲置ID列表（FIFO队列，确保公平复用）
 
         int id_count;                       ///<创建过的最大ID值+1
@@ -161,6 +161,30 @@ namespace hgl
          * 检查是否有闲置ID可复用
          */
         bool HasIdleID() const { return idle_list.GetCount() > 0; }
+
+        /**
+         * 获取剩余可分配的ID容量
+         * @return 剩余ID数（基于int范围限制）
+         * 
+         * 注：ID使用int类型，最大值为INT_MAX（2,147,483,647）
+         * 此方法返回还能分配多少个ID而不会溢出
+         */
+        int GetRemainingCapacity() const
+        {
+            // INT_MAX - id_count = 剩余容量
+            if(id_count >= INT_MAX) return 0;
+            return INT_MAX - id_count;
+        }
+
+        /**
+         * 检查是否即将达到ID容量上限
+         * @param threshold 容量警告阈值（默认1亿）
+         * @return true 表示剩余容量小于阈值
+         */
+        bool IsNearCapacity(int threshold = 100000000) const
+        {
+            return GetRemainingCapacity() <= threshold;
+        }
 
         // ==================== 比较运算符 ====================
 

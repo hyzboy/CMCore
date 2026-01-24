@@ -15,6 +15,7 @@ cm_example_project("DataType" IDObjectManagerTest   IDObjectManagerTest.cpp)
 cm_example_project("DataType/ActiveManager" 1_ActiveIDManagerTest           ActiveIDManagerTest.cpp)
 cm_example_project("DataType/ActiveManager" 2_ActiveMemoryBlockManagerTest  ActiveMemoryBlockManagerTest.cpp)
 cm_example_project("DataType/ActiveManager" 3_ActiveDataManagerTest         ActiveDataManagerTest.cpp)
+cm_example_project("DataType/ActiveManager" 4_ActiveIDManagerEnhancedTest   ActiveIDManagerEnhancedTest.cpp)
 
 add_subdirectory(ram)
 add_subdirectory(collection)

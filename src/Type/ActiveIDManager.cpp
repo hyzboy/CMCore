@@ -6,6 +6,13 @@ namespace hgl
     {
         if(!id_list||count<=0)return(false);
 
+        // 检查是否会导致ID溢出
+        if(id_count > INT_MAX - count)
+        {
+            // ID容量已满，无法继续分配
+            return false;
+        }
+
         for(int i=id_count;i<id_count+count;i++)
         {
             *id_list=i;
@@ -91,15 +98,15 @@ namespace hgl
     {
         if(!id||count<=0)return(false);
 
-        // Queue没有批量Pop，需要循环取出
+        // 循环使用Pop，保证安全性（尽管性能略低）
+        // 双缓冲的复杂性使得批量Pop实现困难，单个Pop已足够快
         for(int i=0;i<count;i++)
         {
             if(!idle_list.Pop(id[i]))
                 return(false);
         }
 
-        active_list.Add(id,count);
-
+        active_list.Add(id, count);
         return(true);
     }
 
@@ -125,24 +132,39 @@ namespace hgl
 
     /**
     * 释放指定量的ID数据(会从Active列表中取出，放入Idle列表中)
+    * 
+    * 优化：使用批缓冲减少Queue::Push调用次数，提高性能
     */
     int ActiveIDManager::Release(const int *id,int count)
     {
         if(!id||count<=0)return(0);
 
-        int result=0;
+        int result = 0;
+        const int BATCH_SIZE = 512;  // 批处理缓冲大小
+        int batch_buffer[BATCH_SIZE];
+        int batch_count = 0;
 
         while(count--)
         {
             if(active_list.Delete(*id))
             {
-                idle_list.Push(*id);
+                batch_buffer[batch_count++] = *id;
                 ++result;
                 ++released_count;  // 统计已释放ID
+                
+                // 当缓冲满时，一次性Push所有元素
+                if(batch_count == BATCH_SIZE)
+                {
+                    idle_list.Push(batch_buffer, batch_count);
+                    batch_count = 0;
+                }
             }
-
             ++id;
         }
+
+        // Push剩余的ID
+        if(batch_count > 0)
+            idle_list.Push(batch_buffer, batch_count);
 
         return result;
     }
