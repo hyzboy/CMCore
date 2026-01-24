@@ -429,9 +429,9 @@ void TestManagedSet()
         assert(managed_set.GetCount() == 2);
         cout << "  ✓ ManagedSet delete works" << endl;
 
-        managed_set.Clear();
+        managed_set.Free();
         assert(managed_set.IsEmpty());
-        cout << "  ✓ ManagedSet clear works (objects deleted)" << endl;
+        cout << "  ✓ ManagedSet free works (objects deleted)" << endl;
     }
 }
 

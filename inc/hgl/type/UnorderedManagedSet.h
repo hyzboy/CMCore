@@ -90,7 +90,7 @@ namespace hgl
         
         virtual ~UnorderedManagedSet()
         {
-            Clear();
+            Free();
         }
 
         // ==================== 容量管理 ====================
@@ -98,6 +98,12 @@ namespace hgl
         void Reserve(int capacity)
         {
             ptr_manager.Reserve(capacity);
+        }
+
+        void Free()
+        {
+            ptr_manager.Free();
+            hash_map.Free();
         }
 
         int GetCount() const
@@ -423,5 +429,40 @@ namespace hgl
         ConstIterator end() const { return ConstIterator(this, GetCount()); }
         ConstIterator cbegin() const { return begin(); }
         ConstIterator cend() const { return end(); }
+
+        // ==================== 遍历 ====================
+
+        template<typename F>
+        void Enum(F&& func) const
+        {
+            const ValueBuffer<int>& active_ids = ptr_manager.GetActiveArray();
+            const int count = active_ids.GetCount();
+
+            for (int i = 0; i < count; i++)
+            {
+                int id = active_ids[i];
+                T* ptr = nullptr;
+                if (ptr_manager.GetData(ptr, id) && ptr)
+                    func(*ptr);
+            }
+        }
+
+        template<typename F>
+        void EnumMutable(F&& func)
+        {
+            const ValueBuffer<int>& active_ids = ptr_manager.GetActiveArray();
+            const int count = active_ids.GetCount();
+
+            for (int i = 0; i < count; i++)
+            {
+                int id = active_ids[i];
+                T** ptr_ptr = ptr_manager.At(id);
+                if (ptr_ptr && *ptr_ptr)
+                    func(**ptr_ptr);
+            }
+
+            // 对象内容已变更，重建哈希表以确保查找正确
+            RebuildHashMap();
+        }
     };
 } // namespace hgl

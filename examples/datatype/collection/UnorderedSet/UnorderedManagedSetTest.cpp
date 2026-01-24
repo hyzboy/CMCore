@@ -121,20 +121,20 @@ void TestGetOperations()
     set.Add(new ComplexTestObject(222, 2222, "B"));
     set.Add(new ComplexTestObject(333, 3333, "C"));
 
-    ComplexTestObject first;
-    bool got_first = set.GetFirst(first);
-    assert(got_first == true);
-    std::cout << "  ✓ GetFirst: ID=" << first.GetId() << ", Value=" << first.GetValue() << ", Name=" << first.GetName() << std::endl;
+    const ValueBuffer<int>& ids = set.GetActiveArray();
+    assert(ids.GetCount() == 3);
 
-    ComplexTestObject last;
-    bool got_last = set.GetLast(last);
-    assert(got_last == true);
-    std::cout << "  ✓ GetLast: ID=" << last.GetId() << ", Value=" << last.GetValue() << ", Name=" << last.GetName() << std::endl;
+    const ComplexTestObject* first = set.At(ids[0]);
+    assert(first);
+    std::cout << "  ✓ First: ID=" << first->GetId() << ", Value=" << first->GetValue() << ", Name=" << first->GetName() << std::endl;
 
-    ComplexTestObject by_index;
-    bool got = set.Get(0, by_index);
-    assert(got == true);
-    std::cout << "  ✓ Get(0): ID=" << by_index.GetId() << ", Value=" << by_index.GetValue() << ", Name=" << by_index.GetName() << std::endl;
+    const ComplexTestObject* last = set.At(ids[ids.GetCount() - 1]);
+    assert(last);
+    std::cout << "  ✓ Last: ID=" << last->GetId() << ", Value=" << last->GetValue() << ", Name=" << last->GetName() << std::endl;
+
+    const ComplexTestObject* by_index = set.At(ids[0]);
+    assert(by_index);
+    std::cout << "  ✓ At(ids[0]): ID=" << by_index->GetId() << ", Value=" << by_index->GetValue() << ", Name=" << by_index->GetName() << std::endl;
 }
 
 void TestClear()
@@ -150,9 +150,9 @@ void TestClear()
     assert(set.GetCount() == 3);
     std::cout << "  ✓ Added 3 objects" << std::endl;
 
-    set.Clear();
+    set.Free();
     assert(set.GetCount() == 0);
-    std::cout << "  ✓ Clear successful" << std::endl;
+    std::cout << "  ✓ Free successful" << std::endl;
 }
 
 void TestIsEmpty()
@@ -167,9 +167,9 @@ void TestIsEmpty()
     assert(!set.IsEmpty());
     std::cout << "  ✓ Set is not empty after Add" << std::endl;
 
-    set.Clear();
+    set.Free();
     assert(set.IsEmpty());
-    std::cout << "  ✓ Set is empty after Clear" << std::endl;
+    std::cout << "  ✓ Set is empty after Free" << std::endl;
 }
 
 void TestMultipleOperations()
