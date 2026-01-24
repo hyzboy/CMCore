@@ -162,16 +162,41 @@ void TestIteratorOperations()
     set.Add(20);
     set.Add(30);
 
-    // 使用 begin/end 迭代
-    std::cout << "   迭代器遍历: ";
+    // 使用 range-based for 循环
+    std::cout << "   Range-based for 循环: ";
     int count = 0;
-    for(auto it = set.begin(); it != set.end(); ++it) {
-        std::cout << **it << " ";
+    int sum = 0;
+    for (const auto& value : set) {
+        std::cout << value << " ";
+        sum += value;
         count++;
     }
     std::cout << std::endl;
     assert(count == 3);
-    std::cout << "✓ 迭代器遍历成功" << std::endl;
+    assert(sum == 60);
+    std::cout << "✓ Range-based for 循环遍历成功" << std::endl;
+
+    // 使用传统迭代器
+    std::cout << "   传统迭代器遍历: ";
+    count = 0;
+    for (auto it = set.begin(); it != set.end(); ++it) {
+        std::cout << *it << " ";
+        count++;
+    }
+    std::cout << std::endl;
+    assert(count == 3);
+    std::cout << "✓ 传统迭代器遍历成功" << std::endl;
+
+    // 使用 cbegin/cend
+    std::cout << "   cbegin/cend 遍历: ";
+    count = 0;
+    for (auto it = set.cbegin(); it != set.cend(); ++it) {
+        std::cout << *it << " ";
+        count++;
+    }
+    std::cout << std::endl;
+    assert(count == 3);
+    std::cout << "✓ cbegin/cend 遍历成功" << std::endl;
 
     // Enum 枚举
     std::cout << "   Enum 枚举: ";

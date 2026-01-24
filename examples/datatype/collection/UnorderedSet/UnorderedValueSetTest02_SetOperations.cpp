@@ -3,7 +3,7 @@
  * 集合运算测试 - 测试 Union（并集）、Intersect（交集）、Difference（差集）
  */
 
-#include<hgl/type/UnorderedSet.h>
+#include<hgl/type/UnorderedValueSet.h>
 #include<iostream>
 #include<cassert>
 

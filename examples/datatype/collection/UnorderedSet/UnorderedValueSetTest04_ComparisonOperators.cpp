@@ -3,7 +3,7 @@
  * 比较运算符测试 - 测试 operator== 和 operator!=
  */
 
-#include<hgl/type/UnorderedSet.h>
+#include<hgl/type/UnorderedValueSet.h>
 #include<iostream>
 #include<cassert>
 

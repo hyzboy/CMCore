@@ -3,7 +3,7 @@
  * 哈希统计测试 - 测试哈希性能监控接口
  */
 
-#include<hgl/type/UnorderedSet.h>
+#include<hgl/type/UnorderedValueSet.h>
 #include<iostream>
 #include<iomanip>
 #include<cassert>

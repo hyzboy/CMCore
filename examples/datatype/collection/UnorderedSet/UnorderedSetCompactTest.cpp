@@ -3,7 +3,8 @@
  * 测试新版高性能无序集合的功能和性能
  */
 
-#include <hgl/type/UnorderedSet.h>
+#include <hgl/type/UnorderedValueSet.h>
+#include <hgl/type/UnorderedManagedSet.h>
 #include <iostream>
 #include <cassert>
 #include <chrono>
@@ -141,12 +142,39 @@ void TestMutableEnum()
     cout << "\n=== Test 5: Mutable Enumeration ===" << endl;
 
     UnorderedValueSet<int> set;
-    set.Add(10); set.Add(20); set.Add(30);
+    auto dump = [&](const char* tag)
+    {
+        cout << "  [" << tag << "] count=" << set.GetCount() << " values={";
+
+        bool first = true;
+        set.Enum([&](int v){ if(!first) cout << ", "; cout << v; first=false; });
+        cout << "}" << endl;
+    };
+
+    cout << "  Adding 10: " << set.Add(10) << endl;
+    cout << "  Adding 20: " << set.Add(20) << endl;
+    cout << "  Adding 30: " << set.Add(30) << endl;
+    dump("after add");
+
+    cout << "  Contains before mutate -> 10:" << set.Contains(10)
+         << " 20:" << set.Contains(20)
+         << " 30:" << set.Contains(30) << endl;
 
     // 修改所有元素
     set.EnumMutable([](int& value) {
         value *= 2;
     });
+    cout << "  EnumMutable done" << endl;
+    dump("after mutate");
+
+    cout << "  Contains after mutate -> 10:" << set.Contains(10)
+         << " 20:" << set.Contains(20)
+         << " 40:" << set.Contains(40)
+         << " 60:" << set.Contains(60) << endl;
+
+    int count = 0; int sum = 0;
+    set.Enum([&](int v){ ++count; sum += v; });
+    cout << "  Enum after mutate count=" << count << " sum=" << sum << endl;
 
     assert(set.Contains(20));
     assert(set.Contains(40));
@@ -239,6 +267,15 @@ void TestDirectAccess()
     UnorderedValueSet<int> set;
     set.Add(10); set.Add(20); set.Add(30);
 
+    auto dump = [&](const char* tag)
+    {
+        cout << "  [" << tag << "] count=" << set.GetCount() << " values={";
+
+        bool first = true;
+        set.Enum([&](int v){ if(!first) cout << ", "; cout << v; first=false; });
+        cout << "}" << endl;
+    };
+
     // 通过 ID 直接访问
     const ValueBuffer<int>& ids = set.GetActiveArray();
     cout << "  Active IDs: [";
@@ -250,6 +287,7 @@ void TestDirectAccess()
             cout << *ptr << (i < ids.GetCount() - 1 ? ", " : "");
     }
     cout << "]" << endl;
+    dump("before modify");
 
     // 修改数据
     int* ptr = set.At(ids[0]);
@@ -257,6 +295,14 @@ void TestDirectAccess()
     {
         int old_value = *ptr;
         *ptr = 999;
+        cout << "  Modified id=" << ids[0] << " from " << old_value << " to " << *ptr << endl;
+        set.RefreshHashMap();
+        cout << "  HashMap refreshed" << endl;
+        dump("after modify");
+
+        cout << "  Contains 999:" << set.Contains(999)
+             << " old(" << old_value << "):" << set.Contains(old_value) << endl;
+
         assert(set.Contains(999));
         assert(!set.Contains(old_value));
         cout << "  ✓ Direct modification works correctly" << endl;
@@ -285,54 +331,108 @@ public:
     }
 };
 
+// 非平凡类型，需使用 UnorderedManagedSet
+class ManagedObject
+{
+private:
+    int id;
+    int value;
+    std::string name;    // 使其非平凡
+
+public:
+    ManagedObject() : id(0), value(0), name() {}
+    ManagedObject(int i, int v, std::string n) : id(i), value(v), name(std::move(n)) {}
+
+    int GetId() const { return id; }
+    int GetValue() const { return value; }
+    void SetValue(int v) { value = v; }
+    const std::string& GetName() const { return name; }
+
+    bool operator==(const ManagedObject& other) const
+    {
+        return id == other.id && value == other.value && name == other.name;
+    }
+};
+
 void TestManagedSet()
 {
     cout << "\n=== Test 9: UnorderedManagedSet (Non-trivial Objects) ===" << endl;
 
-    UnorderedManagedSet<TestObject> set;
+    // 对于平凡类型，使用 UnorderedValueSet
+    {
+        UnorderedValueSet<TestObject> value_set;
 
-    // 添加对象
-    set.Add(TestObject(1, 100));
-    set.Add(TestObject(2, 200));
-    set.Add(TestObject(3, 300));
+        value_set.Add(TestObject(1, 100));
+        value_set.Add(TestObject(2, 200));
+        value_set.Add(TestObject(3, 300));
 
-    assert(set.GetCount() == 3);
-    cout << "  ✓ Added objects successfully" << endl;
+        assert(value_set.GetCount() == 3);
+        cout << "  ✓ ValueSet added objects successfully" << endl;
 
-    // 查找
-    assert(set.Contains(TestObject(2, 200)));
-    assert(!set.Contains(TestObject(4, 400)));
-    cout << "  ✓ Contains checks work correctly" << endl;
+        assert(value_set.Contains(TestObject(2, 200)));
+        assert(!value_set.Contains(TestObject(4, 400)));
+        cout << "  ✓ ValueSet contains checks work" << endl;
 
-    // 遍历
-    int sum = 0;
-    set.Enum([&](const TestObject& obj) {
-        sum += obj.GetValue();
-    });
-    assert(sum == 600);
-    cout << "  ✓ Enumeration works correctly (sum=" << sum << ")" << endl;
+        int sum = 0;
+        value_set.Enum([&](const TestObject& obj) { sum += obj.GetValue(); });
+        assert(sum == 600);
+        cout << "  ✓ ValueSet enumeration sum=" << sum << endl;
 
-    // 可变遍历
-    set.EnumMutable([](TestObject& obj) {
-        obj.SetValue(obj.GetValue() * 2);
-    });
+        value_set.EnumMutable([](TestObject& obj) { obj.SetValue(obj.GetValue() * 2); });
+        sum = 0;
+        value_set.Enum([&](const TestObject& obj) { sum += obj.GetValue(); });
+        assert(sum == 1200);
+        cout << "  ✓ ValueSet mutable enumeration sum=" << sum << endl;
 
-    sum = 0;
-    set.Enum([&](const TestObject& obj) {
-        sum += obj.GetValue();
-    });
-    assert(sum == 1200);
-    cout << "  ✓ Mutable enumeration works correctly (sum=" << sum << ")" << endl;
+        assert(value_set.Delete(TestObject(2, 400)));
+        assert(value_set.GetCount() == 2);
+        cout << "  ✓ ValueSet delete works" << endl;
 
-    // 删除
-    assert(set.Delete(TestObject(2, 400)));
-    assert(set.GetCount() == 2);
-    cout << "  ✓ Delete works correctly" << endl;
+        value_set.Clear();
+        assert(value_set.IsEmpty());
+        cout << "  ✓ ValueSet clear works" << endl;
+    }
 
-    // 清空
-    set.Clear();
-    assert(set.IsEmpty());
-    cout << "  ✓ Clear works correctly (all objects deleted)" << endl;
+    // 对于非平凡类型，使用 UnorderedManagedSet（指针接口）
+    {
+        UnorderedManagedSet<ManagedObject> managed_set;
+
+        ManagedObject* a = new ManagedObject(1, 100, "a");
+        ManagedObject* b = new ManagedObject(2, 200, "b");
+        ManagedObject* c = new ManagedObject(3, 300, "c");
+
+        managed_set.Add(a);
+        managed_set.Add(b);
+        managed_set.Add(c);
+
+        assert(managed_set.GetCount() == 3);
+        cout << "  ✓ ManagedSet added objects successfully" << endl;
+
+        assert(managed_set.Contains(b));
+        ManagedObject* fake = new ManagedObject(4, 400, "d");
+        assert(!managed_set.Contains(fake));
+        delete fake;
+        cout << "  ✓ ManagedSet contains checks work" << endl;
+
+        int sum = 0;
+        managed_set.Enum([&](const ManagedObject& obj) { sum += obj.GetValue(); });
+        assert(sum == 600);
+        cout << "  ✓ ManagedSet enumeration sum=" << sum << endl;
+
+        managed_set.EnumMutable([](ManagedObject& obj) { obj.SetValue(obj.GetValue() * 2); });
+        sum = 0;
+        managed_set.Enum([&](const ManagedObject& obj) { sum += obj.GetValue(); });
+        assert(sum == 1200);
+        cout << "  ✓ ManagedSet mutable enumeration sum=" << sum << endl;
+
+        assert(managed_set.Delete(b));
+        assert(managed_set.GetCount() == 2);
+        cout << "  ✓ ManagedSet delete works" << endl;
+
+        managed_set.Clear();
+        assert(managed_set.IsEmpty());
+        cout << "  ✓ ManagedSet clear works (objects deleted)" << endl;
+    }
 }
 
 // ==================== 主函数 ====================

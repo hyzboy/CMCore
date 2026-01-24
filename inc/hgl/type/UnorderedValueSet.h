@@ -4,6 +4,7 @@
  */
 #pragma once
 
+#include <type_traits>
 #include <hgl/type/ActiveDataManager.h>
 #include <hgl/type/HashIDMap.h>
 
@@ -28,6 +29,10 @@ namespace hgl
     protected:
         using ThisClass = UnorderedValueSet<T, MAX_COLLISION>;
 
+        // 编译期检查：T 必须是平凡可复制类型，非平凡类型请使用 UnorderedManagedSet
+        static_assert(std::is_trivially_copyable_v<T>,
+            "UnorderedValueSet requires trivially copyable types; use UnorderedManagedSet for non-trivial types.");
+
         /**
          * @brief CN:数据管理器（连续内存存储）\nEN:Data manager (contiguous memory storage)
          */
@@ -50,6 +55,29 @@ namespace hgl
                 T existing;
                 return data_manager.GetData(existing, id) && existing == value;
             });
+        }
+
+        // 重建哈希表：用于数据被就地修改后
+        void RebuildHashMap()
+        {
+            hash_map.Clear();
+
+            const ValueBuffer<int>& active_ids = data_manager.GetActiveArray();
+            const int count = active_ids.GetCount();
+
+            for (int i = 0; i < count; i++)
+            {
+                int id = active_ids[i];
+                if (!data_manager.IsActive(id))
+                    continue;
+
+                T* ptr = data_manager.At(id);
+                if (!ptr)
+                    continue;
+
+                uint64 hash = ComputeFNV1aHash(*ptr);
+                hash_map.Add(hash, id);
+            }
         }
 
     public:
@@ -399,6 +427,9 @@ namespace hgl
                 if (ptr)
                     func(*ptr);
             }
+
+            // 数据已被修改，重建哈希表以保持查找正确
+            RebuildHashMap();
         }
 
         // ==================== 集合运算 ====================
@@ -479,6 +510,11 @@ namespace hgl
         }
 
         // ==================== 直接数据访问（高性能）====================
+
+        void RefreshHashMap()
+        {
+            RebuildHashMap();
+        }
 
         /**
          * @brief CN:获取活跃ID数组\nEN:Get active ID array
