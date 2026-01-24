@@ -15,12 +15,12 @@ namespace hgl
      * - 新增以 Own 命名的方法（如 DeleteAtOwn），用于先释放对象再从列表中移除；
      * - 提供 Unlink 系列方法仅断开关联（不 delete），以支持不同的内存管理策略；
      */
-    template<typename T> class ObjectList
+    template<typename T> class ManagedArray
     {
     private:
 
         static_assert(!std::is_trivially_copyable_v<T>, 
-                      "ObjectList<T> requires non-trivial types (std::string, custom classes with dynamic memory, etc). "
+                      "ManagedArray<T> requires non-trivial types (std::string, custom classes with dynamic memory, etc). "
                       "For trivially copyable types (int, float, POD structs), use ValueArray<T> instead for better performance.");
 
         ValueArray<T *> items;   // composition: store pointers, manage ownership here
@@ -57,8 +57,8 @@ namespace hgl
 
     public: //方法
 
-        ObjectList()=default;                                                                          ///<本类构造函数
-        virtual ~ObjectList(){Free();}                                                                 ///<本类析构函数
+        ManagedArray()=default;                                                                          ///<本类构造函数
+        virtual ~ManagedArray(){Free();}                                                                 ///<本类析构函数
 
         template<typename ...ARGS>
         T* Create(ARGS...args)
@@ -93,7 +93,7 @@ namespace hgl
             return items.Add(data, n);
         }
 
-        virtual int Add(const ObjectList<T> &l)
+        virtual int Add(const ManagedArray<T> &l)
         {
             return items.Add(l.GetData(), l.GetCount());
         }
@@ -150,7 +150,7 @@ namespace hgl
             items = da;
         }
 
-        virtual void operator=(const ObjectList<T> &ol)
+        virtual void operator=(const ManagedArray<T> &ol)
         {
             if (this != &ol)
             {
@@ -284,7 +284,7 @@ namespace hgl
             Iterator(T **lst, int32 idx) :list(lst), single(nullptr), current_index(idx) {}
 
             // Construct from a single element (pointer). This allows code like:
-            // for(ObjectList<T>::Iterator it : objlist) { ... }
+            // for(ManagedArray<T>::Iterator it : objlist) { ... }
             Iterator(T *elem) : list(nullptr), single(elem), current_index(-1) {}
 
             // Return the element pointer
@@ -396,5 +396,5 @@ namespace hgl
         ConstIterator begin ()const { return ConstIterator(items.GetData(), 0); }
         ConstIterator end   ()const { return ConstIterator(items.GetData(), items.GetCount()); }
         ConstIterator last  ()const { int c = items.GetCount(); return (c == 0) ? end() : ConstIterator(items.GetData(), c - 1); }
-    };// class ObjectList
+    };// class ManagedArray
 }// namespace hgl

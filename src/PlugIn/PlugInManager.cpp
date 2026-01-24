@@ -116,7 +116,7 @@ namespace hgl
         return out_names.GetCount();
     }
 
-    int PlugInManager::ScanDetailed(hgl::ObjectList<PlugInInfo> &out_infos,bool probe) const
+    int PlugInManager::ScanDetailed(hgl::ManagedArray<PlugInInfo> &out_infos,bool probe) const
     {
         out_infos.Clear();
 

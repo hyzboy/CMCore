@@ -3,7 +3,7 @@
  * 用于快速验证ValueArray和ValueBuffer的基本功能
  */
 
-#include<hgl/type/ObjectList.h>
+#include<hgl/type/ManagedArray.h>
 #include<iostream>
 #include<string>
 
@@ -93,15 +93,15 @@ void TestNonTrivialType()
 {
     std::cout << "\n=== Non-Trivial Type Test ===" << std::endl;
 
-    ObjectList<TestClass> list;
+    ManagedArray<TestClass> list;
 
-    // 使用新的便捷方法：直接添加对象值，ObjectList会自动创建堆副本
+    // 使用新的便捷方法：直接添加对象值，ManagedArray会自动创建堆副本
     std::cout << "[1] Add objects with values (auto heap allocation):" << std::endl;
     list.Add(new TestClass(1, "First"));
     list.Add(new TestClass(2, "Second"));
     list.Add(new TestClass(3, "Third"));
 
-    std::cout << "TestClass ObjectList: ";
+    std::cout << "TestClass ManagedArray: ";
     for(int i = 0; i < list.GetCount(); i++)
     {
         const TestClass* obj = *list.At(i);  // Dereference to get pointer

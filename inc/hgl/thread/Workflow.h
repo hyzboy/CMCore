@@ -283,8 +283,8 @@ namespace hgl
          */
         template<typename WP,typename WT> class WorkGroup
         {
-            ObjectList<WP> wp_list;                                                     ///<投递器列表
-            ObjectList<WT> wt_list;                                                     ///<工作线程列表
+            ManagedArray<WP> wp_list;                                                     ///<投递器列表
+            ManagedArray<WT> wt_list;                                                     ///<工作线程列表
 
             bool run=false;
 

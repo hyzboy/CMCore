@@ -1,5 +1,5 @@
 ﻿#include<hgl/type/ValueArray.h>
-#include<hgl/type/ObjectList.h>
+#include<hgl/type/ManagedArray.h>
 #include<iostream>
 #include<string>
 #include<cstring>
@@ -83,7 +83,7 @@ struct ComplexItem
 int ComplexItem::construct_count = 0;
 int ComplexItem::destruct_count = 0;
 
-// 对象类用于ObjectList测试
+// 对象类用于ManagedArray测试
 class TestObject
 {
     int value;
@@ -312,7 +312,7 @@ void test_list_complex_type()
 
     {
         std::cout << "[6.1] Add complex items:" << std::endl;
-        ObjectList<ComplexItem> list;
+        ManagedArray<ComplexItem> list;
 
         list.Add(new ComplexItem(1, "First"));
         list.Add(new ComplexItem(2, "Second"));
@@ -367,18 +367,18 @@ void test_list_edge_cases()
 }
 
 // ========================================
-// ObjectList Tests
+// ManagedArray Tests
 // ========================================
 
 void test_objectlist_basic_operations()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 8: ObjectList - Basic Operations" << std::endl;
+    std::cout << "TEST 8: ManagedArray - Basic Operations" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    std::cout << "[8.1] Create ObjectList:" << std::endl;
-    ObjectList<TestObject> obj_list;
-    TEST_ASSERT(obj_list.IsEmpty(), "New ObjectList is empty");
+    std::cout << "[8.1] Create ManagedArray:" << std::endl;
+    ManagedArray<TestObject> obj_list;
+    TEST_ASSERT(obj_list.IsEmpty(), "New ManagedArray is empty");
     TEST_ASSERT(TestObject::instance_count == 0, "No instances created");
 
     std::cout << "\n[8.2] Add objects (manual new):" << std::endl;
@@ -402,14 +402,14 @@ void test_objectlist_basic_operations()
 void test_objectlist_ownership()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 9: ObjectList - Ownership Management" << std::endl;
+    std::cout << "TEST 9: ManagedArray - Ownership Management" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     TestObject::instance_count = 0;
 
     std::cout << "[9.1] DeleteAtOwn (delete + remove):" << std::endl;
     {
-        ObjectList<TestObject> obj_list;
+        ManagedArray<TestObject> obj_list;
         obj_list.Add(new TestObject(1, "A"));
         obj_list.Add(new TestObject(2, "B"));
         obj_list.Add(new TestObject(3, "C"));
@@ -425,7 +425,7 @@ void test_objectlist_ownership()
     std::cout << "\n[9.2] Unlink (remove without delete):" << std::endl;
     TestObject::instance_count = 0;
     {
-        ObjectList<TestObject> obj_list;
+        ManagedArray<TestObject> obj_list;
         TestObject* obj_to_keep = new TestObject(99, "KeepMe");
         obj_list.Add(obj_to_keep);
         obj_list.Add(new TestObject(2, "B"));
@@ -444,7 +444,7 @@ void test_objectlist_ownership()
     std::cout << "\n[9.3] Clear (delete all):" << std::endl;
     TestObject::instance_count = 0;
     {
-        ObjectList<TestObject> obj_list;
+        ManagedArray<TestObject> obj_list;
         for (int i = 0; i < 5; i++) {
             obj_list.Create(i, "Temp");
         }
@@ -460,12 +460,12 @@ void test_objectlist_ownership()
 void test_objectlist_iterator()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 10: ObjectList - Iterator Operations" << std::endl;
+    std::cout << "TEST 10: ManagedArray - Iterator Operations" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     TestObject::instance_count = 0;
 
-    ObjectList<TestObject> obj_list;
+    ManagedArray<TestObject> obj_list;
     for (int i = 1; i <= 5; i++) {
         obj_list.Create(i * 10, "Item");
     }
@@ -494,13 +494,13 @@ void test_objectlist_iterator()
 void test_objectlist_edge_cases()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 11: ObjectList - Edge Cases" << std::endl;
+    std::cout << "TEST 11: ManagedArray - Edge Cases" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     TestObject::instance_count = 0;
 
-    std::cout << "[11.1] Empty ObjectList:" << std::endl;
-    ObjectList<TestObject> empty;
+    std::cout << "[11.1] Empty ManagedArray:" << std::endl;
+    ManagedArray<TestObject> empty;
     TEST_ASSERT(!empty.DeleteAtOwn(0), "DeleteAtOwn on empty fails");
     TEST_ASSERT(TestObject::instance_count == 0, "No leaks");
 
@@ -530,12 +530,12 @@ void test_objectlist_edge_cases()
 void test_objectlist_mixed_operations()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 12: ObjectList - Mixed Operations" << std::endl;
+    std::cout << "TEST 12: ManagedArray - Mixed Operations" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     TestObject::instance_count = 0;
 
-    ObjectList<TestObject> obj_list;
+    ManagedArray<TestObject> obj_list;
 
     std::cout << "[12.1] Mix of Add and Create:" << std::endl;
     obj_list.Add(new TestObject(1, "Manual"));
@@ -595,14 +595,14 @@ void test_list_stress()
 void test_objectlist_stress()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 14: ObjectList - Stress Test" << std::endl;
+    std::cout << "TEST 14: ManagedArray - Stress Test" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     TestObject::instance_count = 0;
 
     std::cout << "[14.1] Create 1000 objects:" << std::endl;
     {
-        ObjectList<TestObject> obj_list;
+        ManagedArray<TestObject> obj_list;
         for (int i = 0; i < 1000; i++) {
             obj_list.Create(i, "Stress");
         }
@@ -624,7 +624,7 @@ void test_objectlist_stress()
 int main()
 {
     std::cout << "========================================" << std::endl;
-    std::cout << "List and ObjectList Comprehensive Test Suite" << std::endl;
+    std::cout << "List and ManagedArray Comprehensive Test Suite" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     // ValueArray/List tests
@@ -636,7 +636,7 @@ int main()
     test_list_complex_type();
     test_list_edge_cases();
 
-    // ObjectList tests
+    // ManagedArray tests
     test_objectlist_basic_operations();
     test_objectlist_ownership();
     test_objectlist_iterator();

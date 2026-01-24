@@ -6,7 +6,7 @@
 #include<initializer_list>
 #include<algorithm>
 #include<stdexcept>
-#include<hgl/type/ObjectList.h>
+#include<hgl/type/ManagedArray.h>
 
 namespace hgl
 {
@@ -19,7 +19,7 @@ namespace hgl
 
     protected:
 
-        ObjectList<StringClass> Items;
+        ManagedArray<StringClass> Items;
 
     public: //属性
 
@@ -35,7 +35,7 @@ namespace hgl
         // 原始指针迭代器，兼容旧的 range-for 语法: for(StringClass* p : string_list)
         class RawPtrIterator
         {
-            using Iter = typename ObjectList<StringClass>::Iterator;
+            using Iter = typename ManagedArray<StringClass>::Iterator;
 
             Iter it;
 
@@ -49,7 +49,7 @@ namespace hgl
             // return pointer by value so 'for (auto *p : list)' works naturally
             StringClass * operator*()
             {
-                return *it; // ObjectList iterator returns T*
+                return *it; // ManagedArray iterator returns T*
             }
 
             RawPtrIterator & operator++()
@@ -71,7 +71,7 @@ namespace hgl
 
         class ConstRawPtrIterator
         {
-            using Iter = typename ObjectList<StringClass>::ConstIterator;
+            using Iter = typename ManagedArray<StringClass>::ConstIterator;
 
             Iter it;
 
@@ -126,7 +126,7 @@ namespace hgl
             return ConstRawPtrIterator(Items.end());
         }
 
-        // 也同时保留直接访问 ObjectList 迭代器
+        // 也同时保留直接访问 ManagedArray 迭代器
         auto up_begin()
         {
             return Items.begin();
