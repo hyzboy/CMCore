@@ -33,10 +33,6 @@ namespace hgl
         int GetTotalCount   ()const{return aim.GetTotalCount();}
         int GetHistoryMaxId ()const{return aim.GetHistoryMaxId();}
 
-        const ValueBuffer<int> &GetActiveArray()const{return aim.GetActiveArray();}
-        [[deprecated("Use GetIdleView for read-only access - Queue not directly compatible")]]
-        const Queue<int> &GetIdleArray  ()const{return aim.GetIdleArray();}
-
         bool IsActive(const int id)const{return aim.IsActive(id);}  ///<确认指定ID是否处于活跃状态
         bool IsIdle  (const int id)const{return aim.IsIdle(id);}    ///<确认指定ID是否处于闲置状态
         bool IsValid (const int id)const{return aim.IsValid(id);}   ///<确认指定ID是否曾被创建过

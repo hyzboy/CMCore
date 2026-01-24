@@ -23,24 +23,40 @@ void DebugOutputArray(const char *hint,const int *id,const int count)
 
 void DebugOutputArray(const char *hint,UserInfo **ui,const int count)
 {
-    cout<<"("<<hint<<':'<<count<<")";
+    cout<<"("<<hint<<":"<<count<<")";
     if(count<=0)return;
     UserInfo **p=ui;
+    cout<<"[";
+    bool first=true;
     for(int i=0;i<count;i++)
     {
-        cout<<(!i?'[':',')<<(*p)->name;
+        if(!first) cout<<", ";
+        first=false;
+        UserInfo *cur=*p;
+        if(cur)
+            cout<<cur->name;
+        else
+            cout<<"null";
         ++p;
     }
-    cout<<']';
+    cout<<"]";
 }
 
 void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const int *idp,const int count)
 {
-    if(!idp||count<=0)return;
-    UserInfo **ui=new UserInfo *[count];
-    adm.GetData(ui,idp,count);
-    DebugOutputArray(hint,ui,count);
-    delete[] ui;        
+    cout<<"("<<hint<<" ids:"<<count<<")";
+    if(!idp||count<=0){ cout<<"[]"; return; }
+    cout<<"[";
+    bool first=true;
+    for(int i=0;i<count;i++)
+    {
+        if(!first) cout<<", ";
+        first=false;
+        int id=idp[i];
+        UserInfo *ui=adm.At(id);
+        cout<<"{id="<<id<<",ptr="<<ui<<",name="<<(ui?ui->name:"null")<<"}";
+    }
+    cout<<"]";
 }
 
 void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const ValueBuffer<int> &da)
@@ -72,9 +88,9 @@ void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const Qu
 void DebugADMOutput(const char *hint,ActiveDataManager<UserInfo> &adm)
 {
     cout<<hint<<' ';
-    DebugOutputArray("Active",adm,adm.GetActiveArray());
+    DebugOutputArray("Active",adm,adm.GetActiveView());
     cout<<' ';
-    DebugOutputArray("Idle",adm,adm.GetIdleArray());
+    DebugOutputArray("Idle",adm,adm.GetIdleView());
     cout<<endl;
 }
 
@@ -277,7 +293,7 @@ int os_main(int,os_char **)
         adm.Release(to_release, 3);
         cout << "  Phase 4: Released 3 IDs" << endl;
         
-        const ValueBuffer<int> &active_array = adm.GetActiveArray();
+        const ValueBuffer<int> &active_array = adm.GetActiveView();
         for (int i = 0; i < active_array.GetCount(); ++i) {
             int id = active_array[i];
             UserInfo *ptr = adm.At(id);

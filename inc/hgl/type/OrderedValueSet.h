@@ -37,12 +37,18 @@ namespace hgl
 
         const   bool    IsEmpty         ()const {return data_list.IsEmpty();}                       ///<确认列表是否为空
 
-                T *     begin           ()      {return data_list.begin();}
-                T *     end             ()      {return data_list.end();}
-                T *     last            ()      {return data_list.last();}
-        const   T *     begin           ()const {return data_list.begin();}
-        const   T *     end             ()const {return data_list.end();}
-        const   T *     last            ()const {return data_list.last();}
+        using iterator = T*;
+        using const_iterator = const T*;
+
+        iterator begin() { return data_list.begin(); }
+        iterator end() { return data_list.end(); }
+        iterator last() { return data_list.last(); }
+        const_iterator begin() const { return data_list.begin(); }
+        const_iterator end() const { return data_list.end(); }
+        const_iterator last() const { return data_list.last(); }
+
+        const_iterator cbegin() const { return begin(); }
+        const_iterator cend() const { return end(); }
 
         operator        ValueBuffer<T> &  ()      {return data_list;}                                 ///<取得原始数据阵列
         operator const  ValueBuffer<T> &  ()const {return data_list;}                                 ///<取得原始数据阵列

@@ -277,7 +277,7 @@ void TestDirectAccess()
     };
 
     // 通过 ID 直接访问
-    const ValueBuffer<int>& ids = set.GetActiveArray();
+    const ValueBuffer<int>& ids = set.GetActiveView();
     cout << "  Active IDs: [";
     for (int i = 0; i < ids.GetCount(); i++)
     {

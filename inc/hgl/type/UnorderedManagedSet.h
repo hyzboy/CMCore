@@ -66,7 +66,7 @@ namespace hgl
         {
             hash_map.Clear();
 
-            const ValueBuffer<int>& active_ids = ptr_manager.GetActiveArray();
+            const ValueBuffer<int>& active_ids = ptr_manager.GetActiveView();
             const int count = active_ids.GetCount();
 
             for (int i = 0; i < count; i++)
@@ -316,9 +316,9 @@ namespace hgl
         /**
          * @brief CN:获取活跃ID数组\nEN:Get active ID array
          */
-        const ValueBuffer<int>& GetActiveArray() const
+        const ValueBuffer<int>& GetActiveView() const
         {
-            return ptr_manager.GetActiveArray();
+            return ptr_manager.GetActiveView();
         }
 
         /**
@@ -383,7 +383,7 @@ namespace hgl
 
             const T& operator*() const
             {
-                const ValueBuffer<int>& active_ids = set->ptr_manager.GetActiveArray();
+                const ValueBuffer<int>& active_ids = set->ptr_manager.GetActiveView();
                 int id = active_ids[index];
                 T* obj = nullptr;
                 set->ptr_manager.GetData(obj, id);
@@ -392,7 +392,7 @@ namespace hgl
 
             const T* operator->() const
             {
-                const ValueBuffer<int>& active_ids = set->ptr_manager.GetActiveArray();
+                const ValueBuffer<int>& active_ids = set->ptr_manager.GetActiveView();
                 int id = active_ids[index];
                 T* obj = nullptr;
                 set->ptr_manager.GetData(obj, id);
@@ -435,7 +435,7 @@ namespace hgl
         template<typename F>
         void Enum(F&& func) const
         {
-            const ValueBuffer<int>& active_ids = ptr_manager.GetActiveArray();
+            const ValueBuffer<int>& active_ids = ptr_manager.GetActiveView();
             const int count = active_ids.GetCount();
 
             for (int i = 0; i < count; i++)
@@ -450,7 +450,7 @@ namespace hgl
         template<typename F>
         void EnumMutable(F&& func)
         {
-            const ValueBuffer<int>& active_ids = ptr_manager.GetActiveArray();
+            const ValueBuffer<int>& active_ids = ptr_manager.GetActiveView();
             const int count = active_ids.GetCount();
 
             for (int i = 0; i < count; i++)

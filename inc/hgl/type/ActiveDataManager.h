@@ -76,19 +76,33 @@ namespace hgl
         }
 
         /**
-        * @brief CN:获取活跃ID数组。\nEN:Get active ID array.
+        * @brief CN:获取活跃ID数组。\nEN:Get active ID array (copy)
         */
-        const ValueBuffer<int> &GetActiveArray() const
+        const ValueBuffer<int> GetActiveView() const
         {
-            return aim.GetActiveArray();
+            auto view = aim.GetActiveView();
+            ValueBuffer<int> result;
+            if (view.data && view.count > 0)
+            {
+                result.Resize(view.count);
+                memcpy(result.GetData(), view.data, sizeof(int) * view.count);
+            }
+            return result;
         }
 
         /**
-        * @brief CN:获取闲置ID数组。\nEN:Get idle ID array.
+        * @brief CN:获取闲置ID数组。\nEN:Get idle ID array (copy)
         */
-        const Queue<int> &GetIdleArray() const
+        const ValueBuffer<int> GetIdleView() const
         {
-            return aim.GetIdleArray();
+            auto view = aim.GetIdleView();
+            ValueBuffer<int> result;
+            if (view.data && view.count > 0)
+            {
+                result.Resize(view.count);
+                memcpy(result.GetData(), view.data, sizeof(int) * view.count);
+            }
+            return result;
         }
 
     public:

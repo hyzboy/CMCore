@@ -62,7 +62,7 @@ namespace hgl
         {
             hash_map.Clear();
 
-            const ValueBuffer<int>& active_ids = data_manager.GetActiveArray();
+            const ValueBuffer<int>& active_ids = data_manager.GetActiveView();
             const int count = active_ids.GetCount();
 
             for (int i = 0; i < count; i++)
@@ -326,7 +326,7 @@ namespace hgl
          */
         bool DeleteAt(int index)
         {
-            const ValueBuffer<int>& active_ids = data_manager.GetActiveArray();
+            const ValueBuffer<int>& active_ids = data_manager.GetActiveView();
             if (index < 0 || index >= active_ids.GetCount())
                 return false;
 
@@ -366,7 +366,7 @@ namespace hgl
          */
         bool Get(int index, T& value) const
         {
-            const ValueBuffer<int>& active_ids = data_manager.GetActiveArray();
+            const ValueBuffer<int>& active_ids = data_manager.GetActiveView();
             if (index < 0 || index >= active_ids.GetCount())
                 return false;
 
@@ -399,7 +399,7 @@ namespace hgl
         template<typename F>
         void Enum(F&& func) const
         {
-            const ValueBuffer<int>& active_ids = data_manager.GetActiveArray();
+            const ValueBuffer<int>& active_ids = data_manager.GetActiveView();
             const int count = active_ids.GetCount();
 
             for (int i = 0; i < count; i++)
@@ -417,7 +417,7 @@ namespace hgl
         template<typename F>
         void EnumMutable(F&& func)
         {
-            const ValueBuffer<int>& active_ids = data_manager.GetActiveArray();
+            const ValueBuffer<int>& active_ids = data_manager.GetActiveView();
             const int count = active_ids.GetCount();
 
             for (int i = 0; i < count; i++)
@@ -519,9 +519,9 @@ namespace hgl
         /**
          * @brief CN:获取活跃ID数组\nEN:Get active ID array
          */
-        const ValueBuffer<int>& GetActiveArray() const
+        const ValueBuffer<int>& GetActiveView() const
         {
-            return data_manager.GetActiveArray();
+            return data_manager.GetActiveView();
         }
 
         /**

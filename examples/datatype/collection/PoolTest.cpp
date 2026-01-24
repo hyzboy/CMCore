@@ -30,7 +30,7 @@ void StructPoolTest()
             pool.AppendToActive(ui);
     }
 
-    ShowUserInfoArray(pool.GetActiveArray());
+    ShowUserInfoArray(pool.GetActiveView());
 
     //随机释放几个(仅闲置，并不释放内存)
     {
@@ -40,7 +40,7 @@ void StructPoolTest()
             pool.Release(user_info_array[rand()%26]);
     }
 
-    ShowUserInfoArray(pool.GetActiveArray());
+    ShowUserInfoArray(pool.GetActiveView());
 
     cout<<"idle count: "<<pool.GetIdleCount()<<endl;
 
@@ -90,12 +90,12 @@ void ObjectPoolTest()
         }
     }
 
-    ShowUserInfoArray(pool.GetActiveArray());
+    ShowUserInfoArray(pool.GetActiveView());
 
     //释放刚刚记录的几个(仅闲置，并不释放内存)
     pool.Release(release_list.GetData(),release_list.GetCount());
 
-    ShowUserInfoArray(pool.GetActiveArray());
+    ShowUserInfoArray(pool.GetActiveView());
 
     cout<<"idle count: "<<pool.GetIdleCount()<<endl;
 
@@ -148,7 +148,7 @@ void TestPoolCreate()
     cout<<"[3] 闲置对象数量: "<<pool.GetIdleCount()<<endl;
 
     cout<<"\n[4] 释放 5 个到闲置池..."<<endl;
-    const ValueBuffer<int> &active = pool.GetActiveArray();
+    const ValueBuffer<int> &active = pool.GetActiveView();
     for(int i = 0; i < 5 && i < active.GetCount(); ++i)
     {
         pool.Release(active[i]);
@@ -292,7 +292,7 @@ void TestPoolBatchOperations()
     for(int i = 0; i < 5; ++i)
         pool.AppendToActive(user_info_array[i]);
 
-    ShowUserInfoArray(pool.GetActiveArray());
+    ShowUserInfoArray(pool.GetActiveView());
 
     cout<<"\n[2] 准备批量释放..."<<endl;
     ValueArray<UserInfo> release_arr;
@@ -305,7 +305,7 @@ void TestPoolBatchOperations()
 
     cout<<"\n[4] 释放后状态..."<<endl;
     cout<<"活跃: "<<pool.GetActiveCount()<<", 闲置: "<<pool.GetIdleCount()<<endl;
-    ShowUserInfoArray(pool.GetActiveArray());
+    ShowUserInfoArray(pool.GetActiveView());
 
     cout<<"\n[5] 取出所有闲置数据..."<<endl;
     int count = 0;
@@ -379,7 +379,7 @@ void TestObjectPoolCreate()
     cout<<"\n[2] 活跃: "<<pool.GetActiveCount()<<", 闲置: "<<pool.GetIdleCount()<<endl;
 
     cout<<"\n[3] 释放 2 个到闲置..."<<endl;
-    const ValueBuffer<UserInfoClass *> &active = pool.GetActiveArray();
+    const ValueBuffer<UserInfoClass *> &active = pool.GetActiveView();
     for(int i = 0; i < 2 && i < active.GetCount(); ++i)
     {
         pool.Release(active[i]);
@@ -492,7 +492,7 @@ void TestObjectPoolBatchOperations()
     }
     cout<<"已添加到活跃池"<<endl;
 
-    ShowUserInfoArray(pool.GetActiveArray());
+    ShowUserInfoArray(pool.GetActiveView());
 
     cout<<"\n[2] 批量释放前 3 个..."<<endl;
     int released = pool.Release(all_objs.GetData(), 3);
@@ -536,7 +536,7 @@ void TestObjectPoolStress()
         cout<<"活跃: "<<pool.GetActiveCount()<<", 闲置: "<<pool.GetIdleCount()<<endl;
 
         cout<<"\n[2] 释放一半..."<<endl;
-        const ValueBuffer<UserInfoClass *> &active = pool.GetActiveArray();
+        const ValueBuffer<UserInfoClass *> &active = pool.GetActiveView();
         int to_release = active.GetCount() / 2;
         ValueArray<UserInfoClass *> release_list;
         for(int i = 0; i < to_release; ++i)
@@ -584,7 +584,7 @@ void TestObjectPoolDirectAppend()
         pool.AppendToActive(uic);
     }
 
-    ShowUserInfoArray(pool.GetActiveArray());
+    ShowUserInfoArray(pool.GetActiveView());
 
     cout<<"\n[2] 直接添加到闲置..."<<endl;
     UserInfoClass *idle_obj = new UserInfoClass;

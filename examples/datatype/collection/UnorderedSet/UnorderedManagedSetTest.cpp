@@ -121,7 +121,7 @@ void TestGetOperations()
     set.Add(new ComplexTestObject(222, 2222, "B"));
     set.Add(new ComplexTestObject(333, 3333, "C"));
 
-    const ValueBuffer<int>& ids = set.GetActiveArray();
+    const ValueBuffer<int>& ids = set.GetActiveView();
     assert(ids.GetCount() == 3);
 
     const ComplexTestObject* first = set.At(ids[0]);

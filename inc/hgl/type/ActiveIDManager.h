@@ -59,11 +59,6 @@ namespace hgl
         int GetHistoryMaxId ()const{return id_count;}
         int GetReleasedCount()const{return released_count;}        ///<已释放过的ID总数
 
-        [[deprecated("Use GetActiveView for read-only access to maintain invariants")]]
-        const ValueBuffer<int> &GetActiveArray()const{return active_list;}
-        [[deprecated("Use GetIdleView for read-only access to maintain invariants - Queue not directly compatible")]]
-        const Queue<int> &GetIdleArray()const{return idle_list;}
-
         IntView GetActiveView() const
         {
             return {active_list.GetData(), active_list.GetCount()};
