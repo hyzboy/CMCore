@@ -15,11 +15,11 @@ namespace hgl
      * 仅适用于支持 memcpy/memmove/mem_zero 的类型（trivially copyable）。
      * 非平凡类型请使用具备构造/析构处理的完整版本。
      */
-    template<typename T> class DataArray
+    template<typename T> class ValueBuffer
     {
     protected:
 
-        static_assert(std::is_trivially_copyable_v<T>, "DataArray only supports trivially copyable types; use ObjectArray<> instead.");
+        static_assert(std::is_trivially_copyable_v<T>, "ValueBuffer only supports trivially copyable types; use ObjectArray<> instead.");
 
         T *items;                                                                                   ///<数据指针
         int64 count;                                                                                ///<当前数据数量
@@ -30,7 +30,7 @@ namespace hgl
         /**
          * @brief 默认构造，初始化为空阵列。
          */
-                DataArray()
+                ValueBuffer()
                 {
                     items=nullptr;
                     count=0;
@@ -41,7 +41,7 @@ namespace hgl
          * @brief 预分配指定长度的阵列并置零。
          * @param size 预期元素数量（非字节数）。
          */
-        explicit    DataArray(int64 size)
+        explicit    ValueBuffer(int64 size)
                 {
                     items=nullptr;
                     count=0;
@@ -54,7 +54,7 @@ namespace hgl
         /**
          * @brief 析构函数，释放内部缓冲。
          */
-                ~DataArray(){ Free(); }
+                ~ValueBuffer(){ Free(); }
 
         // 基本属性
 
@@ -94,7 +94,7 @@ namespace hgl
          * @param other 待比较的数组。
          * @return 比较的三路排序结果。
          */
-        std::strong_ordering operator<=>(const DataArray<T> &other) const
+        std::strong_ordering operator<=>(const ValueBuffer<T> &other) const
         {
             if(count == other.count)
             {
@@ -118,7 +118,7 @@ namespace hgl
          * @param other 待比较的数组。
          * @return true 两数组元素完全相等。
          */
-        bool operator==(const DataArray<T> &other) const
+        bool operator==(const ValueBuffer<T> &other) const
         {
             if(count != other.count)
                 return false;
@@ -454,7 +454,7 @@ namespace hgl
          * @brief 拷贝赋值，长度自动调整。
          * @param da 源数组。
          */
-        void operator = (const DataArray<T> &da)
+        void operator = (const ValueBuffer<T> &da)
         {
             if(da.count<=0){ count=0; return; }
 
@@ -478,7 +478,7 @@ namespace hgl
          * @param result_list 输出结果列表。
          * @param without_list 需要排除的列表。
          */
-        void WithoutList(DataArray<T> &result_list,const DataArray<T> &without_list)
+        void WithoutList(ValueBuffer<T> &result_list,const ValueBuffer<T> &without_list)
         {
             result_list.Clear();
             const int64 local_count=this->GetCount();

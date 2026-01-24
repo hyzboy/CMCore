@@ -27,7 +27,7 @@ namespace hgl
         /**
         * @brief CN:数据数组。\nEN:Data array.
         */
-        DataArray<T> data_array;
+        ValueBuffer<T> data_array;
 
     public:
 
@@ -81,7 +81,7 @@ namespace hgl
         /**
         * @brief CN:获取活跃ID数组。\nEN:Get active ID array.
         */
-        const DataArray<int> &GetActiveArray() const
+        const ValueBuffer<int> &GetActiveArray() const
         {
             return aim.GetActiveArray();
         }

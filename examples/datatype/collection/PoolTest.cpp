@@ -5,7 +5,7 @@
 using namespace hgl;
 using namespace std;
 
-void ShowUserInfoArray(const DataArray<UserInfo> &ua)
+void ShowUserInfoArray(const ValueBuffer<UserInfo> &ua)
 {
     cout<<"user info array "<<ua.GetCount()<<" ";
 
@@ -54,7 +54,7 @@ void StructPoolTest()
     }
 }
 
-void ShowUserInfoArray(const DataArray<UserInfoClass *> &ua)
+void ShowUserInfoArray(const ValueBuffer<UserInfoClass *> &ua)
 {
     cout<<"user info array "<<ua.GetCount()<<" [";
 
@@ -148,7 +148,7 @@ void TestPoolCreate()
     cout<<"[3] 闲置对象数量: "<<pool.GetIdleCount()<<endl;
 
     cout<<"\n[4] 释放 5 个到闲置池..."<<endl;
-    const DataArray<int> &active = pool.GetActiveArray();
+    const ValueBuffer<int> &active = pool.GetActiveArray();
     for(int i = 0; i < 5 && i < active.GetCount(); ++i)
     {
         pool.Release(active[i]);
@@ -379,7 +379,7 @@ void TestObjectPoolCreate()
     cout<<"\n[2] 活跃: "<<pool.GetActiveCount()<<", 闲置: "<<pool.GetIdleCount()<<endl;
 
     cout<<"\n[3] 释放 2 个到闲置..."<<endl;
-    const DataArray<UserInfoClass *> &active = pool.GetActiveArray();
+    const ValueBuffer<UserInfoClass *> &active = pool.GetActiveArray();
     for(int i = 0; i < 2 && i < active.GetCount(); ++i)
     {
         pool.Release(active[i]);
@@ -536,7 +536,7 @@ void TestObjectPoolStress()
         cout<<"活跃: "<<pool.GetActiveCount()<<", 闲置: "<<pool.GetIdleCount()<<endl;
 
         cout<<"\n[2] 释放一半..."<<endl;
-        const DataArray<UserInfoClass *> &active = pool.GetActiveArray();
+        const ValueBuffer<UserInfoClass *> &active = pool.GetActiveArray();
         int to_release = active.GetCount() / 2;
         ArrayList<UserInfoClass *> release_list;
         for(int i = 0; i < to_release; ++i)

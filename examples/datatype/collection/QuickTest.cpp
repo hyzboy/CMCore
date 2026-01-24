@@ -1,6 +1,6 @@
 ﻿/**
  * 快速测试脚本
- * 用于快速验证ArrayList和DataArray的基本功能
+ * 用于快速验证ArrayList和ValueBuffer的基本功能
  */
 
 #include<hgl/type/ObjectList.h>
@@ -52,9 +52,9 @@ void TestArrayListBasic()
 
 void TestDataArrayBasic()
 {
-    std::cout << "\n=== DataArray Basic Test ===" << std::endl;
+    std::cout << "\n=== ValueBuffer Basic Test ===" << std::endl;
 
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(5);
 
     for(int64 i = 0; i < 5; i++)
@@ -157,7 +157,7 @@ void TestNonTrivialType()
 int main()
 {
     std::cout << "====================================" << std::endl;
-    std::cout << "Quick ArrayList/DataArray Test" << std::endl;
+    std::cout << "Quick ArrayList/ValueBuffer Test" << std::endl;
     std::cout << "====================================" << std::endl;
 
     try

@@ -1,7 +1,7 @@
 /**
- * DataArray Comprehensive Test Suite
+ * ValueBuffer Comprehensive Test Suite
  * 
- * This test suite comprehensively covers all functionalities of the DataArray template class:
+ * This test suite comprehensively covers all functionalities of the ValueBuffer template class:
  * 1. Basic operations (construction, destruction, initialization)
  * 2. Memory management (Reserve, Resize, Expand, Free, Clear)
  * 3. Data addition and access (Append, At, ReadAt, WriteAt)
@@ -12,7 +12,7 @@
  * 8. Special types (POD types, non-trivial types)
  */
 
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ValueBuffer.h>
 #include<iostream>
 #include<iomanip>
 #include<string>
@@ -53,13 +53,13 @@ using namespace hgl;
 bool test_basic_construction()
 {
     // Default constructor
-    DataArray<int> arr1;
+    ValueBuffer<int> arr1;
     TEST_ASSERT(arr1.GetCount() == 0, "Default constructor: count should be 0");
     TEST_ASSERT(arr1.IsEmpty(), "Default constructor: should be empty");
     TEST_ASSERT(arr1.GetAllocCount() == 0, "Default constructor: alloc_count should be 0");
     
     // Constructor with size
-    DataArray<int> arr2(5);
+    ValueBuffer<int> arr2(5);
     TEST_ASSERT(arr2.GetCount() == 5, "Constructor with size: count should be 5");
     TEST_ASSERT(arr2.GetAllocCount() >= 5, "Constructor with size: alloc_count >= 5");
     
@@ -76,7 +76,7 @@ bool test_basic_construction()
 
 bool test_reserve()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     
     // Reserve space
     TEST_ASSERT(arr.Reserve(10), "Reserve(10) should succeed");
@@ -102,7 +102,7 @@ bool test_reserve()
 
 bool test_resize()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     
     // Resize to 5 elements
     arr.Resize(5);
@@ -141,7 +141,7 @@ bool test_resize()
 
 bool test_expand()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(5);
     
     int original_count = arr.GetCount();
@@ -160,7 +160,7 @@ bool test_expand()
 
 bool test_append()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     
     // Add elements
     for (int i = 0; i < 10; i++)
@@ -181,7 +181,7 @@ bool test_append()
 
 bool test_at()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(5);
     
     for (int i = 0; i < 5; i++)
@@ -206,7 +206,7 @@ bool test_at()
 
 bool test_read_write_at()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(5);
     
     // WriteAt - single element
@@ -233,7 +233,7 @@ bool test_read_write_at()
     TEST_ASSERT(!arr.ReadAt(value, 5), "ReadAt with out-of-range index should fail");
     
     // WriteAt/ReadAt - multiple elements
-    DataArray<int> arr2;
+    ValueBuffer<int> arr2;
     arr2.Resize(10);
     
     int write_data[] = {1, 2, 3, 4, 5};
@@ -254,7 +254,7 @@ bool test_read_write_at()
 
 bool test_delete()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(10);
     for (int i = 0; i < 10; i++)
         arr[i] = i;
@@ -293,7 +293,7 @@ bool test_delete()
 
 bool test_delete_shift()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(10);
     for (int i = 0; i < 10; i++)
         arr[i] = i;
@@ -329,7 +329,7 @@ bool test_delete_shift()
 
 bool test_exchange()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(5);
     for (int i = 0; i < 5; i++)
         arr[i] = i * 10;
@@ -356,7 +356,7 @@ bool test_exchange()
 
 bool test_insert()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(5);
     for (int i = 0; i < 5; i++)
         arr[i] = i;
@@ -399,7 +399,7 @@ bool test_insert()
 
 bool test_move()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(10);
     for (int i = 0; i < 10; i++)
         arr[i] = i;
@@ -433,7 +433,7 @@ bool test_move()
 
 bool test_find()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(10);
     for (int i = 0; i < 10; i++)
         arr[i] = i * 10;
@@ -460,7 +460,7 @@ bool test_find()
 
 bool test_compare()
 {
-    DataArray<int> arr1, arr2, arr3;
+    ValueBuffer<int> arr1, arr2, arr3;
     
     arr1.Resize(3);
     arr1[0] = 1; arr1[1] = 2; arr1[2] = 3;
@@ -492,7 +492,7 @@ bool test_compare()
 
 bool test_clear_and_free()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(5);
     for (int i = 0; i < 5; i++)
         arr[i] = i;
@@ -518,7 +518,7 @@ bool test_clear_and_free()
 
 bool test_operators()
 {
-    DataArray<int> arr1, arr2;
+    ValueBuffer<int> arr1, arr2;
     
     // Initialize arr1
     arr1.Resize(5);
@@ -559,7 +559,7 @@ bool test_operators()
 
 bool test_iterators()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(5);
     for (int i = 0; i < 5; i++)
         arr[i] = i * 10;
@@ -576,7 +576,7 @@ bool test_iterators()
     TEST_ASSERT(*arr.last() == 40, "last() should point to last element");
     
     // last() on empty array
-    DataArray<int> empty;
+    ValueBuffer<int> empty;
     TEST_ASSERT(empty.last() == nullptr, "last() on empty array should return nullptr");
     
     return true;
@@ -588,7 +588,7 @@ bool test_iterators()
 
 bool test_without_list()
 {
-    DataArray<int> arr1, arr2, result;
+    ValueBuffer<int> arr1, arr2, result;
     
     // arr1 = {1, 2, 3, 4, 5}
     arr1.Resize(5);
@@ -617,7 +617,7 @@ bool test_without_list()
 
 bool test_byte_sizes()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     
     // Empty array
     TEST_ASSERT(arr.GetTotalBytes() == 0, "Empty array total bytes should be 0");
@@ -640,7 +640,7 @@ bool test_set_data_and_unlink()
     // Create external data
     int external_data[] = {100, 200, 300};
     
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.SetData(external_data, 3);
     
     TEST_ASSERT(arr.GetCount() == 3, "SetData should set count");
@@ -666,7 +666,7 @@ bool test_set_data_and_unlink()
 
 bool test_zero()
 {
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(5);
     for (int i = 0; i < 5; i++)
         arr[i] = i * 100;
@@ -689,7 +689,7 @@ int main(int argc, char** argv)
     int passed = 0, failed = 0, total = 0;
     
     std::cout << "========================================" << std::endl;
-    std::cout << "  DataArray Comprehensive Test Suite" << std::endl;
+    std::cout << "  ValueBuffer Comprehensive Test Suite" << std::endl;
     std::cout << "========================================" << std::endl;
     
     // Basic Functionality Tests

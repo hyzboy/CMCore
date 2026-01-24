@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/ArrayList.h>
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ValueBuffer.h>
 
 namespace hgl
 {
@@ -22,7 +22,7 @@ namespace hgl
     private:
 
         ArrayList<Block>         block_list;                     ///<数据块列表
-        DataArray<char>     data_array;                     ///<数据
+        ValueBuffer<char>     data_array;                     ///<数据
 
     public:
 

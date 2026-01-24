@@ -33,7 +33,7 @@ namespace hgl
         int GetTotalCount   ()const{return aim.GetTotalCount();}
         int GetHistoryMaxId ()const{return aim.GetHistoryMaxId();}
 
-        const DataArray<int> &GetActiveArray()const{return aim.GetActiveArray();}
+        const ValueBuffer<int> &GetActiveArray()const{return aim.GetActiveArray();}
         [[deprecated("Use GetIdleView for read-only access - Queue not directly compatible")]]
         const Queue<int> &GetIdleArray  ()const{return aim.GetIdleArray();}
 

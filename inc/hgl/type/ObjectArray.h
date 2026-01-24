@@ -10,11 +10,11 @@ namespace hgl
 {
     /**
      * 非平凡类型专用的阵列容器。
-     * 与 DataArray 接口尽量保持一致，手动管理内存并显式调用构造/析构函数。
+     * 与 ValueBuffer 接口尽量保持一致，手动管理内存并显式调用构造/析构函数。
      */
     template<typename T> class ObjectArray
     {
-        static_assert(!std::is_trivially_copyable_v<T>, "Use DataArray for trivially copyable types");
+        static_assert(!std::is_trivially_copyable_v<T>, "Use ValueBuffer for trivially copyable types");
 
     private:
         T*  data_;

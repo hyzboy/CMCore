@@ -1,5 +1,5 @@
 /**
- * DataArray 增强测试用例
+ * ValueBuffer 增强测试用例
  * 
  * 测试目标：
  * 1. 深度测试 mem_copy, mem_move, mem_fill_pattern 的正确性
@@ -8,7 +8,7 @@
  * 4. 内存重叠情况测试
  */
 
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ValueBuffer.h>
 #include<iostream>
 #include<iomanip>
 #include<string>
@@ -75,10 +75,10 @@ void PrintDataArray(const Array& arr, const char* label)
 void TestBasicOperations()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 1: Basic DataArray Operations (int)" << std::endl;
+    std::cout << "TEST 1: Basic ValueBuffer Operations (int)" << std::endl;
     std::cout << "========================================" << std::endl;
 
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
 
     // 测试Resize
     std::cout << "\n[1.1] Resize operations:" << std::endl;
@@ -122,7 +122,7 @@ void TestDeleteOperations()
     std::cout << "========================================" << std::endl;
 
     auto createArray = []() {
-        DataArray<int> arr;
+        ValueBuffer<int> arr;
         arr.Resize(10);
         for (int64 i = 0; i < 10; i++)
             arr[i] = i;
@@ -132,7 +132,7 @@ void TestDeleteOperations()
     // 测试Delete - 从头部删除
     std::cout << "\n[2.1] Delete from beginning:" << std::endl;
     {
-        DataArray<int> arr = createArray();
+        ValueBuffer<int> arr = createArray();
         PrintDataArray(arr, "Before");
         arr.Delete(0, 3);
         PrintDataArray(arr, "After Delete(0,3)");
@@ -141,7 +141,7 @@ void TestDeleteOperations()
     // 测试Delete - 从中间删除
     std::cout << "\n[2.2] Delete from middle:" << std::endl;
     {
-        DataArray<int> arr = createArray();
+        ValueBuffer<int> arr = createArray();
         PrintDataArray(arr, "Before");
         arr.Delete(3, 4);
         PrintDataArray(arr, "After Delete(3,4)");
@@ -150,7 +150,7 @@ void TestDeleteOperations()
     // 测试Delete - 从尾部删除
     std::cout << "\n[2.3] Delete from end:" << std::endl;
     {
-        DataArray<int> arr = createArray();
+        ValueBuffer<int> arr = createArray();
         PrintDataArray(arr, "Before");
         arr.Delete(7, 3);
         PrintDataArray(arr, "After Delete(7,3)");
@@ -159,7 +159,7 @@ void TestDeleteOperations()
     // 测试DeleteShift - 使用mem_move
     std::cout << "\n[2.4] DeleteShift (uses mem_move):" << std::endl;
     {
-        DataArray<int> arr = createArray();
+        ValueBuffer<int> arr = createArray();
         PrintDataArray(arr, "Before");
         arr.DeleteShift(2, 3);
         PrintDataArray(arr, "After DeleteShift(2,3)");
@@ -168,7 +168,7 @@ void TestDeleteOperations()
     // 测试边界情况
     std::cout << "\n[2.5] Delete edge cases:" << std::endl;
     {
-        DataArray<int> arr = createArray();
+        ValueBuffer<int> arr = createArray();
         PrintDataArray(arr, "Before");
         
         arr.Delete(-2, 5);  // 负索引
@@ -186,7 +186,7 @@ void TestMoveOperations()
     std::cout << "========================================" << std::endl;
 
     auto createArray = []() {
-        DataArray<int> arr;
+        ValueBuffer<int> arr;
         arr.Resize(10);
         for (int64 i = 0; i < 10; i++)
             arr[i] = i;
@@ -196,7 +196,7 @@ void TestMoveOperations()
     // 测试Move - 向后移动
     std::cout << "\n[3.1] Move forward (may use mem_move with overlap):" << std::endl;
     {
-        DataArray<int> arr = createArray();
+        ValueBuffer<int> arr = createArray();
         PrintDataArray(arr, "Before");
         arr.Move(7, 2, 3);  // Move [2,3,4] to position 7
         PrintDataArray(arr, "After Move(7,2,3)");
@@ -205,7 +205,7 @@ void TestMoveOperations()
     // 测试Move - 向前移动
     std::cout << "\n[3.2] Move backward (may use mem_move with overlap):" << std::endl;
     {
-        DataArray<int> arr = createArray();
+        ValueBuffer<int> arr = createArray();
         PrintDataArray(arr, "Before");
         arr.Move(2, 7, 3);  // Move [7,8,9] to position 2
         PrintDataArray(arr, "After Move(2,7,3)");
@@ -214,7 +214,7 @@ void TestMoveOperations()
     // 测试Move - 到开始
     std::cout << "\n[3.3] Move to beginning:" << std::endl;
     {
-        DataArray<int> arr = createArray();
+        ValueBuffer<int> arr = createArray();
         PrintDataArray(arr, "Before");
         arr.Move(0, 5, 3);
         PrintDataArray(arr, "After Move(0,5,3)");
@@ -223,7 +223,7 @@ void TestMoveOperations()
     // 测试Move - 到结尾
     std::cout << "\n[3.4] Move to end:" << std::endl;
     {
-        DataArray<int> arr = createArray();
+        ValueBuffer<int> arr = createArray();
         PrintDataArray(arr, "Before");
         arr.Move(7, 0, 3);
         PrintDataArray(arr, "After Move(7,0,3)");
@@ -236,7 +236,7 @@ void TestInsertOperations()
     std::cout << "TEST 4: Insert Operations" << std::endl;
     std::cout << "========================================" << std::endl;
 
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(5);
     for (int64 i = 0; i < 5; i++)
         arr[i] = i * 10;
@@ -273,7 +273,7 @@ void TestPODType()
     std::cout << "TEST 5: POD Type (Point2D)" << std::endl;
     std::cout << "========================================" << std::endl;
 
-    DataArray<Point2D> arr;
+    ValueBuffer<Point2D> arr;
 
     // 测试基本操作
     std::cout << "\n[5.1] Basic operations:" << std::endl;
@@ -305,7 +305,7 @@ void TestPODType()
 int main(int, char**)
 {
     std::cout << "========================================" << std::endl;
-    std::cout << "DataArray Enhanced Test Suite" << std::endl;
+    std::cout << "ValueBuffer Enhanced Test Suite" << std::endl;
     std::cout << "Testing mem_copy, mem_move, mem_fill_pattern" << std::endl;
     std::cout << "========================================" << std::endl;
 

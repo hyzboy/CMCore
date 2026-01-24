@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ValueBuffer.h>
 #include<hgl/type/Queue.h>
 #include<hgl/type/SortedSet.h>
 #include<compare>
@@ -60,7 +60,7 @@ namespace hgl
         int GetReleasedCount()const{return released_count;}        ///<已释放过的ID总数
 
         [[deprecated("Use GetActiveView for read-only access to maintain invariants")]]
-        const DataArray<int> &GetActiveArray()const{return active_list;}
+        const ValueBuffer<int> &GetActiveArray()const{return active_list;}
         [[deprecated("Use GetIdleView for read-only access to maintain invariants - Queue not directly compatible")]]
         const Queue<int> &GetIdleArray()const{return idle_list;}
 
@@ -83,15 +83,15 @@ namespace hgl
         // ==================== 创建接口 ====================
         // 返回值: 成功创建并写入的数量；count<=0 返回0且不改动状态；部分成功则返回实际成功数。
 
-        [[nodiscard]] int CreateActive(int *id,const int count=1);              ///<创建若干ID并置于Active；不从Idle复用；部分成功返回实际成功数
-        [[nodiscard]] int CreateIdle  (int *idp=nullptr,const int count=1);     ///<创建若干ID并置于Idle；忽略已存在；部分成功返回实际成功数
-        [[nodiscard]] int CreateIdle  (const int count=1);                      ///<同上（忽略输出）；部分成功返回实际成功数
+        int CreateActive(int *id,const int count=1);              ///<创建若干ID并置于Active；不从Idle复用；部分成功返回实际成功数
+        int CreateIdle  (int *idp=nullptr,const int count=1);     ///<创建若干ID并置于Idle；忽略已存在；部分成功返回实际成功数
+        int CreateIdle  (const int count=1);                      ///<同上（忽略输出）；部分成功返回实际成功数
 
         // ==================== 获取/激活接口 ====================
         // 返回值: 是否“全部成功”。count<=0 直接返回false且不改动；部分成功时返回false，调用方需检查输出数量。
 
-        [[nodiscard]] bool Get        (int *id,const int count=1);              ///<优先Idle，不创建新ID；部分成功返回false
-        [[nodiscard]] bool GetOrCreate(int *id,const int count=1);              ///<先取Idle，不足则创建；部分成功返回false
+        bool Get        (int *id,const int count=1);              ///<优先Idle，不创建新ID；部分成功返回false
+        bool GetOrCreate(int *id,const int count=1);              ///<先取Idle，不足则创建；部分成功返回false
 
         int GetIdle()                                                           ///<从闲置ID列表中获取一个ID，并将其从闲置列表中删除(注：不会创建新的ID)
         {
@@ -106,8 +106,8 @@ namespace hgl
         // ==================== 释放接口 ====================
         // 返回值: 成功释放的数量；count<=0 返回0；部分成功则返回已释放数量。
 
-        [[nodiscard]] int Release     (const int *id,int count=1);              ///<释放指定数量；部分成功返回已释放数量
-        [[nodiscard]] int ReleaseAllActive();                                   ///<释放所有活跃ID；返回释放的数量
+        int Release     (const int *id,int count=1);              ///<释放指定数量；部分成功返回已释放数量
+        int ReleaseAllActive();                                   ///<释放所有活跃ID；返回释放的数量
 
         // ==================== 查询和验证接口 ====================
 

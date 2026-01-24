@@ -1,7 +1,7 @@
 #pragma once
 
 #include <hgl/type/ObjectArray.h>
-#include <hgl/type/DataArray.h>
+#include <hgl/type/ValueBuffer.h>
 #include <hgl/type/Stack.h>
 #include <hgl/type/ObjectUtil.h>
 #include <initializer_list>
@@ -22,7 +22,7 @@ namespace hgl
     protected:
 
         ObjectArray<T>   data_array;
-        DataArray<I>     data_index;
+        ValueBuffer<I>     data_index;
         Stack<I>         free_index;
 
     public: //属性
@@ -47,7 +47,7 @@ namespace hgl
         }
 
         const ObjectArray<T> &GetRawData()const{return data_array;}
-        const DataArray<I> &GetRawIndex()const{return data_index;}
+        const ValueBuffer<I> &GetRawIndex()const{return data_index;}
 
         T &operator[](int32 index)
         {

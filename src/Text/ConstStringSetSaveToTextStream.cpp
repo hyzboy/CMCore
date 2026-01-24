@@ -32,7 +32,7 @@ namespace hgl
         }
         else
         {
-            const DataArray<SC> &data_array=css->GetStringData();
+            const ValueBuffer<SC> &data_array=css->GetStringData();
 
             int length=data_array.GetCount();
 

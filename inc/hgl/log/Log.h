@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/String.h>
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ValueBuffer.h>
 #include<hgl/log/LogLevel.h>
 #include<hgl/Charset.h>
 #include<typeinfo>
@@ -21,8 +21,8 @@ namespace hgl::logger
         OSString object_type_name;
         OSString object_instance_name;
 
-        DataArray<u8char> log_buffer_u8;
-        DataArray<u16char> log_buffer_u16;
+        ValueBuffer<u8char> log_buffer_u8;
+        ValueBuffer<u16char> log_buffer_u16;
 
     public:
 

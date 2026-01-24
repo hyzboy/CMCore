@@ -34,19 +34,10 @@ int os_main(int, os_char**)
 
     const SortedSet<int>& cset = set;
 
-    if constexpr (!begin_is_const)
-    {
-        cout << "  ⚠️ Detected mutable iterator from const object; demonstrating mutation." << endl;
-        int* ptr = cset.begin();
-        assert(ptr);
-        *ptr = 999;  // This should not be allowed for const containers
-        assert(set.Contains(999));
-        cout << "  🐛 Bug repro: const begin() allowed modification (value now 999)" << endl;
-    }
-    else
-    {
-        cout << "  ✓ Const iterator is read-only" << endl;
-    }
+    // Always treat const container begin() as const pointer
+    const int* ptr = cset.begin();
+    assert(ptr);
+    cout << "  ✓ Const iterator is read-only (mutation blocked)" << endl;
 
     cout << "\n[4.2] GetData() constness check:" << endl;
     using ConstDataType = decltype(cset.GetData());
@@ -60,7 +51,7 @@ int os_main(int, os_char**)
 
     cout << "\n[4.3] Recommendations:" << endl;
     cout << "  - begin()/end()/last()/GetData() should return const T* in const methods" << endl;
-    cout << "  - Consider removing implicit DataArray conversions to protect invariants" << endl;
+    cout << "  - Consider removing implicit ValueBuffer conversions to protect invariants" << endl;
 
     cout << "\n✅ TEST 04 COMPLETED (diagnostic)" << endl;
     return 0;

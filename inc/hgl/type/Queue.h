@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ValueBuffer.h>
 #include<hgl/type/ObjectArray.h>
 #include<type_traits>
 namespace hgl
@@ -9,7 +9,7 @@ namespace hgl
     * Queue模板类用于保存一个先进先出、后进后出的数据队列
     * 支持不同的底层数组类型
     */
-    template<typename T, typename ArrayT = DataArray<T>> class QueueTemplate           ///队列顺序数据访问类
+    template<typename T, typename ArrayT = ValueBuffer<T>> class QueueTemplate           ///队列顺序数据访问类
     {
     protected:
 
@@ -230,16 +230,16 @@ namespace hgl
     };//template<typename T, typename ArrayT> class QueueTemplate
 
     /**
-     * 用于平凡类型的队列 - 使用 DataArray
+     * 用于平凡类型的队列 - 使用 ValueBuffer
      */
-    template<typename T> class Queue:public QueueTemplate<T, DataArray<T>>
+    template<typename T> class Queue:public QueueTemplate<T, ValueBuffer<T>>
     {
     public:
         static_assert(std::is_trivially_copyable_v<T>,
             "Queue<T> requires trivially copyable types (int, float, POD structs, etc). "
             "For non-trivial types (std::string, custom classes with dynamic memory), use ObjectQueue<T> instead.");
 
-        Queue():QueueTemplate<T, DataArray<T>>(){}
+        Queue():QueueTemplate<T, ValueBuffer<T>>(){}
         virtual ~Queue()=default;
     };//template<typename T> class Queue
 

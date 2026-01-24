@@ -41,9 +41,9 @@ public:
 
 int main()
 {
-    std::cout << "=== Minimal DataArray Test ===" << std::endl;
+    std::cout << "=== Minimal ValueBuffer Test ===" << std::endl;
 
-    std::cout << "\n[1] Creating DataArray..." << std::endl;
+    std::cout << "\n[1] Creating ValueBuffer..." << std::endl;
     ObjectArray<TestObj> arr;
 
     std::cout << "\n[2] Resizing to 3..." << std::endl;

@@ -1,8 +1,8 @@
 ﻿/**
- * 验证 DataArray 修复后对 non-trivial 类型的支持
+ * 验证 ValueBuffer 修复后对 non-trivial 类型的支持
  */
 
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ValueBuffer.h>
 #include<hgl/type/ObjectArray.h>
 #include<hgl/type/ArrayList.h>
 #include<iostream>
@@ -55,7 +55,7 @@ int TestObject::aliveCount = 0;
 
 void TestDataArray()
 {
-    std::cout << "\n=== DataArray Test ===" << std::endl;
+    std::cout << "\n=== ValueBuffer Test ===" << std::endl;
 
     std::cout << "\n1. Create and Resize:" << std::endl;
     ObjectArray<TestObject> arr;
@@ -104,14 +104,14 @@ void TestArrayList()
 int main()
 {
     std::cout << "====================================" << std::endl;
-    std::cout << "DataArray/ArrayList Fix Verification" << std::endl;
+    std::cout << "ValueBuffer/ArrayList Fix Verification" << std::endl;
     std::cout << "====================================" << std::endl;
 
     try
     {
         TestDataArray();
 
-        std::cout << "\nFinal aliveCount after DataArray test: " << TestObject::aliveCount << std::endl;
+        std::cout << "\nFinal aliveCount after ValueBuffer test: " << TestObject::aliveCount << std::endl;
         if(TestObject::aliveCount != 0)
         {
             std::cout << "ERROR: Memory leak detected!" << std::endl;

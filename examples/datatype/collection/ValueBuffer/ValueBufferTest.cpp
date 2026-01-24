@@ -1,16 +1,16 @@
 ﻿/**
-* DataArray测试
+* ValueBuffer测试
 * 
-*   DataArray是List模板的数据储存类，它也提供一些通用的简单处理。
+*   ValueBuffer是List模板的数据储存类，它也提供一些通用的简单处理。
 */
 
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ValueBuffer.h>
 #include<iostream>
 #include<iomanip>
 
 using namespace hgl;
 
-DataArray<int> da_list;
+ValueBuffer<int> da_list;
 
 void restart()
 {

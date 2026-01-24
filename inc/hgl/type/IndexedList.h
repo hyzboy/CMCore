@@ -17,8 +17,8 @@ namespace hgl
         static_assert(std::is_trivially_copyable_v<T>, "IndexedList only supports trivially copyable types; use ObjectIndexedList for non-trivial types.");
     protected:
 
-        DataArray<T> data_array;
-        DataArray<I> data_index;
+        ValueBuffer<T> data_array;
+        ValueBuffer<I> data_index;
         Stack<I> free_index;
 
     public: //属性
@@ -42,8 +42,8 @@ namespace hgl
             return(true);
         }
 
-        const DataArray<T> &GetRawData()const{return data_array;}
-        const DataArray<I> &GetRawIndex()const{return data_index;}
+        const ValueBuffer<T> &GetRawData()const{return data_array;}
+        const ValueBuffer<I> &GetRawIndex()const{return data_index;}
 
         T &operator[](int32 index)
         {
@@ -359,7 +359,7 @@ namespace hgl
 
             const int32 count=GetCount();
 
-            DataArray<int32> sorted_index(count);
+            ValueBuffer<int32> sorted_index(count);
             Stack<int32> overflow_index;
             Stack<int32> space_location;
 

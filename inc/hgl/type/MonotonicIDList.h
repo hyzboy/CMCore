@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ValueBuffer.h>
 #include<hgl/type/Stack.h>
 #include<hgl/type/SmallMap.h>
 #include<type_traits>
@@ -33,8 +33,8 @@ namespace hgl
         I id_base=1;                            ///< CN: ID 起始值(默认1) / EN: ID base (default 1)
         I next_id=1;                            ///< CN: 下一个可用的ID / EN: Next available ID
 
-        DataArray<T>  data_array;               ///< CN: 实际数据存储数组 / EN: Actual data storage array
-        DataArray<I>  location_to_id;           ///< CN: 位置到ID的并行数组 / EN: Parallel array: location -> ID
+        ValueBuffer<T>  data_array;               ///< CN: 实际数据存储数组 / EN: Actual data storage array
+        ValueBuffer<I>  location_to_id;           ///< CN: 位置到ID的并行数组 / EN: Parallel array: location -> ID
         SmallMap<I,int32> id_to_location_map;   ///< CN: ID到位置映射 / EN: Map: ID -> location
         Stack<int32>  free_location;            ///< CN: 空闲位置栈 / EN: Stack of free locations
 
@@ -430,7 +430,7 @@ namespace hgl
         * @return   CN: 重新编号的数据数量
         *           EN: The number of data items reindexed
         */
-        int Reindex(DataArray<IDRemap> &remap_list)
+        int Reindex(ValueBuffer<IDRemap> &remap_list)
         {
             // CN: 先执行 Shrink，确保数据紧密排列
             // EN: Execute Shrink first to ensure data is densely packed
@@ -477,9 +477,9 @@ namespace hgl
         * CN: 重新编号的简化版本，不返回映射表
         * EN: Simplified version of reindexing without returning the mapping table
         *
-        * CN: 该方法执行与Reindex(DataArray<IDRemap>&)相同的重编号操作，
+        * CN: 该方法执行与Reindex(ValueBuffer<IDRemap>&)相同的重编号操作，
         *     但不返回旧ID到新ID的映射关系，适用于不需要跟踪ID变化的场景。
-        * EN: This method performs the same reindexing operation as Reindex(DataArray<IDRemap>&),
+        * EN: This method performs the same reindexing operation as Reindex(ValueBuffer<IDRemap>&),
         *     but does not return the mapping from old IDs to new IDs, suitable for scenarios where tracking ID changes is not needed.
         *
         * @return   CN: 重新编号的数据数量
@@ -487,7 +487,7 @@ namespace hgl
         */
         int Reindex()
         {
-            DataArray<IDRemap> temp_list;
+            ValueBuffer<IDRemap> temp_list;
             return Reindex(temp_list);
         }
     };//template<typename T,typename I = MonotonicID> class MonotonicIDList

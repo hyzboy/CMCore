@@ -49,11 +49,11 @@ namespace hgl
 
     public:
 
-                    DataArray<ItemPointer> &GetArray ()     {return items.GetArray();}
-            const   DataArray<ItemPointer> &GetArray ()const{return items.GetArray();}
+                    ValueBuffer<ItemPointer> &GetArray ()     {return items.GetArray();}
+            const   ValueBuffer<ItemPointer> &GetArray ()const{return items.GetArray();}
 
-            operator        DataArray<ItemPointer> & ()     {return items.GetArray();}
-            operator const  DataArray<ItemPointer> & ()const{return items.GetArray();}
+            operator        ValueBuffer<ItemPointer> & ()     {return items.GetArray();}
+            operator const  ValueBuffer<ItemPointer> & ()const{return items.GetArray();}
 
     public: //方法
 
@@ -145,7 +145,7 @@ namespace hgl
         }
 
         // ============ 赋值操作符 ============
-        virtual void operator=(const DataArray<ItemPointer> &da)
+        virtual void operator=(const ValueBuffer<ItemPointer> &da)
         {
             items = da;
         }

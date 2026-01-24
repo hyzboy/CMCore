@@ -1,13 +1,13 @@
 ﻿#pragma once
 
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ValueBuffer.h>
 #include<hgl/type/ObjectArray.h>
 namespace hgl
 {
     /**
      * 有序合集（平凡类型专用版本）</br>
      * 集合数据列表中不允许数据出现重复性，同时它会将数据排序</br>
-     * 使用 DataArray 和 memcpy/memmove 进行高效操作，仅支持平凡可复制类型</br>
+     * 使用 ValueBuffer 和 memcpy/memmove 进行高效操作，仅支持平凡可复制类型</br>
      * <b>重要限制：</b>仅支持平凡可复制类型（trivially copyable types）。
      * 非平凡类型（包含虚函数、动态内存、自定义构造/析构等）请使用 SortedObjectSet</br>
      *
@@ -21,7 +21,7 @@ namespace hgl
         static_assert(std::is_trivially_copyable_v<T>,
                       "SortedSet requires trivially copyable types. For non-trivial types (with custom copy/move semantics, virtual functions, dynamic memory), use SortedObjectSet instead.");
 
-        DataArray<T> data_list;
+        ValueBuffer<T> data_list;
 
         bool    FindPos(const T &flag,int64 &pos)const                                              ///<查找数据如果插入后，会所在的位置，返回是否存在这个数据
                 {return FindInsertPositionInSortedArray(&pos,data_list,flag);}
@@ -44,8 +44,8 @@ namespace hgl
         const   T *     end             ()const {return data_list.end();}
         const   T *     last            ()const {return data_list.last();}
 
-        operator        DataArray<T> &  ()      {return data_list;}                                 ///<取得原始数据阵列
-        operator const  DataArray<T> &  ()const {return data_list;}                                 ///<取得原始数据阵列
+        operator        ValueBuffer<T> &  ()      {return data_list;}                                 ///<取得原始数据阵列
+        operator const  ValueBuffer<T> &  ()const {return data_list;}                                 ///<取得原始数据阵列
 
     public:
 
@@ -90,7 +90,7 @@ namespace hgl
                 if(FindPos(data,pos))
                     return(-1);         //数据已存在
 
-                // DataArray::Insert expects a pointer and count
+                // ValueBuffer::Insert expects a pointer and count
                 data_list.Insert(pos,&data,1);
 
                 return(pos);
@@ -168,7 +168,7 @@ namespace hgl
             return total;
         }
 
-        int64 Delete(const DataArray<T> &da)
+        int64 Delete(const ValueBuffer<T> &da)
         {
             if(da.IsEmpty())
                 return 0;
@@ -200,7 +200,7 @@ namespace hgl
 
         bool    GetLast         (T &data)const                                              ///<取得最后面一个数据
         {
-            T *ptr = last();
+            const T *ptr = last();
             if(!ptr)
                 return(false);
 
@@ -272,6 +272,8 @@ namespace hgl
 
                 T *     GetData         ()      {return data_list.GetData();}                    ///<取得数据指针
         const   T *     GetData         ()const{return data_list.GetData();}                    ///<取得数据指针（只读）
+                int64   GetCount        ()const{return data_list.GetCount();}                   ///<取得数据总量
+                int64   GetAllocCount   ()const{return data_list.GetAllocCount();}              ///<取得已分配空间数量
 
         const   bool    IsEmpty         ()const{return data_list.IsEmpty();}                    ///<确认列表是否为空
 

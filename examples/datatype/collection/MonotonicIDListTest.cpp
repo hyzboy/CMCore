@@ -64,8 +64,8 @@ int main(int,char **)
 
     cout<<"\n========== Testing Reindex ==========\n";
 
-    // 使用 DataArray<IDRemap> 存储旧ID到新ID的映射
-    DataArray<IDRemap> remap_list;
+    // 使用 ValueBuffer<IDRemap> 存储旧ID到新ID的映射
+    ValueBuffer<IDRemap> remap_list;
     int reindexed_count=list.Reindex(remap_list);
 
     cout<<"Reindexed "<<reindexed_count<<" items\n\n";
@@ -189,7 +189,7 @@ int main(int,char **)
         cout<<"  After shrink storage: "<<stress_list.StorageSize()<<"\n";
 
         // 执行Reindex
-        DataArray<IDRemap> remap;
+        ValueBuffer<IDRemap> remap;
         int reindex_result = stress_list.Reindex(remap);
         auto after_reindex = chrono::high_resolution_clock::now();
 

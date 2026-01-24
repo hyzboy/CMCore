@@ -8,7 +8,7 @@ namespace hgl
     // ==================== 改进版 ConstStringView ====================
     template<typename SC> struct ConstStringView
     {
-        DataArray<SC> *str_data;    // 指向字符串数据池
+        ValueBuffer<SC> *str_data;    // 指向字符串数据池
         int id;                      // 顺序号
         int length;                  // 字符串长度
         size_t offset;              // 在数据池中的偏移
@@ -56,7 +56,7 @@ namespace hgl
     {
     private:
 
-        DataArray<SC> str_data;                         // 字符串数据池
+        ValueBuffer<SC> str_data;                         // 字符串数据池
         ArrayList<ConstStringView<SC>> str_list;        // 按 ID 顺序存储（值，不是指针）
 
     public:
@@ -68,7 +68,7 @@ namespace hgl
         int GetTotalBytes() const { return str_data.GetCount() * sizeof(SC); }
         bool IsEmpty() const { return str_data.IsEmpty(); }
 
-        const DataArray<SC>& GetStringData() const { return str_data; }
+        const ValueBuffer<SC>& GetStringData() const { return str_data; }
 
         // ==================== 添加接口（简化） ====================
         

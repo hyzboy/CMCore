@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ValueBuffer.h>
 #include<hgl/type/SeriesPool.h>
 
 namespace hgl

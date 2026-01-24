@@ -43,7 +43,7 @@ void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const in
     delete[] ui;        
 }
 
-void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const DataArray<int> &da)
+void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const ValueBuffer<int> &da)
 {
     DebugOutputArray(hint,adm,da.GetData(),da.GetCount());
 }
@@ -277,7 +277,7 @@ int os_main(int,os_char **)
         adm.Release(to_release, 3);
         cout << "  Phase 4: Released 3 IDs" << endl;
         
-        const DataArray<int> &active_array = adm.GetActiveArray();
+        const ValueBuffer<int> &active_array = adm.GetActiveArray();
         for (int i = 0; i < active_array.GetCount(); ++i) {
             int id = active_array[i];
             UserInfo *ptr = adm.At(id);

@@ -3,7 +3,7 @@
 #include<stdlib.h>
 #include<initializer_list>
 #include<type_traits>
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ValueBuffer.h>
 #include<hgl/type/MemoryUtil.h>
 
 namespace hgl
@@ -17,7 +17,7 @@ namespace hgl
     {
     protected:
 
-        DataArray<T> data_array;
+        ValueBuffer<T> data_array;
 
     public: //属性
 
@@ -40,11 +40,11 @@ namespace hgl
 
     public:
 
-            DataArray<T> &      GetArray()          {return data_array;}
-            const DataArray<T> &GetArray()const     {return data_array;}
+            ValueBuffer<T> &      GetArray()          {return data_array;}
+            const ValueBuffer<T> &GetArray()const     {return data_array;}
 
-            operator        DataArray<T> & ()       {return data_array;}
-            operator const  DataArray<T> & ()const  {return data_array;}
+            operator        ValueBuffer<T> & ()       {return data_array;}
+            operator const  ValueBuffer<T> & ()const  {return data_array;}
                     T &     operator[](int index)             {return data_array[index];}
             const   T &     operator[](int index)const        {return data_array[index];}
  
@@ -195,7 +195,7 @@ namespace hgl
             data_array.Move(new_pos,old_pos,move_count);
         }
 
-        virtual void operator = (const DataArray<T> &da){data_array=da;}                            ///<操作符重载复制一个列表
+        virtual void operator = (const ValueBuffer<T> &da){data_array=da;}                            ///<操作符重载复制一个列表
         virtual void operator = (const std::initializer_list<T> &l){data_array=l;}                  ///<操作符重载复制一个列表
 
         virtual void operator += (T &obj){Add(obj);}                                                ///<操作符重载添加一个数据

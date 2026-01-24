@@ -6,7 +6,7 @@ cm_example_project("DataType/Collection" MinimalTest            MinimalTest.cpp)
 cm_example_project("DataType/Collection" FixVerificationTest    FixVerificationTest.cpp)
 
 add_subdirectory(stack)
-add_subdirectory(DataArray)
+add_subdirectory(ValueBuffer)
 add_subdirectory(sortedset)
 
 cm_example_project("DataType/Collection" QueueTest              QueueTest.cpp)

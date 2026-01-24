@@ -128,7 +128,7 @@ namespace hgl
         /**
         * @brief CN:获取活跃对象数组。\nEN:Get active object array.
         */
-        DataArray<T> &GetActiveArray()
+        ValueBuffer<T> &GetActiveArray()
         {
             return Active.GetArray();
         }
@@ -136,7 +136,7 @@ namespace hgl
         /**
         * @brief CN:获取活跃对象数组（常量）。\nEN:Get active object array (const).
         */
-        const DataArray<T> &GetActiveArray() const
+        const ValueBuffer<T> &GetActiveArray() const
         {
             return Active.GetArray();
         }

@@ -1,5 +1,5 @@
 /**
- * DataArray Boundary Cases and Performance Testing
+ * ValueBuffer Boundary Cases and Performance Testing
  * 
  * This test covers boundary conditions and special cases:
  * 1. Empty array operations
@@ -10,7 +10,7 @@
  * 6. Performance benchmark testing
  */
 
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ValueBuffer.h>
 #include<iostream>
 #include<iomanip>
 #include<chrono>
@@ -32,7 +32,7 @@ using namespace hgl;
     } while(0)
 
 template<typename T>
-void print_array(const DataArray<T>& arr, const char* label, int max_print = 10)
+void print_array(const ValueBuffer<T>& arr, const char* label, int max_print = 10)
 {
     std::cout << "  " << label << " [" << arr.GetCount() << "]: ";
     int count = std::min((int)arr.GetCount(), max_print);
@@ -54,7 +54,7 @@ bool test_empty_array_boundary()
 {
     std::cout << "\n[Test 1: Empty Array Boundary]" << std::endl;
     
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     
     // Operations on empty array
     TEST_ASSERT(arr.IsEmpty(), "new array should be empty");
@@ -84,7 +84,7 @@ bool test_single_element_array()
 {
     std::cout << "\n[Test 2: Single Element Array]" << std::endl;
     
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Append(42);
     
     TEST_ASSERT(arr.GetCount() == 1, "single element array count should be 1");
@@ -110,7 +110,7 @@ bool test_boundary_index_operations()
 {
     std::cout << "\n[Test 3: Boundary Index Operations]" << std::endl;
     
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(10);
     for (int i = 0; i < 10; i++)
         arr[i] = i;
@@ -152,7 +152,7 @@ bool test_large_scale_operations()
 {
     std::cout << "\n[Test 4: Large Scale Operations (10000 elements)]" << std::endl;
     
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     
     // Add large amount of elements
     std::cout << "  Adding 10000 elements..." << std::endl;
@@ -198,7 +198,7 @@ bool test_multiple_reserve_operations()
 {
     std::cout << "\n[Test 5: Multiple Reserve Operations]" << std::endl;
     
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     
     // First reserve
     arr.Reserve(100);
@@ -234,7 +234,7 @@ bool test_consecutive_deletes()
 {
     std::cout << "\n[Test 6: Consecutive Delete Operations]" << std::endl;
     
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(20);
     for (int i = 0; i < 20; i++)
         arr[i] = i;
@@ -262,7 +262,7 @@ bool test_consecutive_delete_shifts()
 {
     std::cout << "\n[Test 7: Consecutive DeleteShift Operations]" << std::endl;
     
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(10);
     for (int i = 0; i < 10; i++)
         arr[i] = i;
@@ -286,7 +286,7 @@ bool test_random_access_pattern()
 {
     std::cout << "\n[Test 8: Random Access Pattern]" << std::endl;
     
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     
     // Create array
     for (int i = 0; i < 100; i++)
@@ -313,7 +313,7 @@ bool test_memory_overlap_scenarios()
 {
     std::cout << "\n[Test 9: Memory Overlap Scenarios (Move)]" << std::endl;
     
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Resize(10);
     for (int i = 0; i < 10; i++)
         arr[i] = i;
@@ -349,7 +349,7 @@ bool test_performance_benchmarks()
         std::cout << "  Benchmark 1: Append 100000 elements..." << std::endl;
         auto start = std::chrono::high_resolution_clock::now();
         
-        DataArray<int> arr;
+        ValueBuffer<int> arr;
         for (int i = 0; i < 100000; i++)
             arr.Append(i);
         
@@ -367,7 +367,7 @@ bool test_performance_benchmarks()
         std::cout << "  Benchmark 2: Reserve + Append 100000 elements..." << std::endl;
         auto start = std::chrono::high_resolution_clock::now();
         
-        DataArray<int> arr;
+        ValueBuffer<int> arr;
         arr.Reserve(100000);
         for (int i = 0; i < 100000; i++)
             arr.Append(i);
@@ -383,7 +383,7 @@ bool test_performance_benchmarks()
     {
         std::cout << "  Benchmark 3: Random access 1000000 times..." << std::endl;
         
-        DataArray<int> arr;
+        ValueBuffer<int> arr;
         for (int i = 0; i < 1000; i++)
             arr.Append(i);
         
@@ -405,7 +405,7 @@ bool test_performance_benchmarks()
     {
         std::cout << "  Benchmark 4: Delete operations..." << std::endl;
         
-        DataArray<int> arr;
+        ValueBuffer<int> arr;
         for (int i = 0; i < 10000; i++)
             arr.Append(i);
         
@@ -431,7 +431,7 @@ bool test_array_comparisons()
 {
     std::cout << "\n[Test 10: Array Comparisons]" << std::endl;
     
-    DataArray<int> arr1, arr2, arr3;
+    ValueBuffer<int> arr1, arr2, arr3;
     
     // Same content, different objects
     for (int i = 0; i < 5; i++)
@@ -446,7 +446,7 @@ bool test_array_comparisons()
     TEST_ASSERT(arr1 < arr3, "array with smaller first element should compare less");
     
     // Same size, different content
-    DataArray<int> arr4, arr5;
+    ValueBuffer<int> arr4, arr5;
     arr4.Append(1);
     arr4.Append(2);
     arr5.Append(1);
@@ -466,7 +466,7 @@ int main(int argc, char** argv)
     int passed = 0, failed = 0;
     
     std::cout << "========================================" << std::endl;
-    std::cout << "  DataArray Boundary and Performance Test" << std::endl;
+    std::cout << "  ValueBuffer Boundary and Performance Test" << std::endl;
     std::cout << "========================================" << std::endl;
     
     if (test_empty_array_boundary()) { passed++; } else { failed++; }

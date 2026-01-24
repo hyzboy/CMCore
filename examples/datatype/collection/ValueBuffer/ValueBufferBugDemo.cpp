@@ -43,9 +43,9 @@ public:
 
 int main()
 {
-    std::cout << "=== Test: DataArray with non-trivial type ===" << std::endl;
+    std::cout << "=== Test: ValueBuffer with non-trivial type ===" << std::endl;
     
-    std::cout << "\n1. Create DataArray and Resize to 3:" << std::endl;
+    std::cout << "\n1. Create ValueBuffer and Resize to 3:" << std::endl;
     ObjectArray<SimpleClass> arr;
     arr.Resize(3);  // 分配内存但不构造对象！
     

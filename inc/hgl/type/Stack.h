@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ValueBuffer.h>
 #include<cassert>
 namespace hgl
 {
@@ -14,7 +14,7 @@ namespace hgl
     {
     protected:
 
-        DataArray<T> data_array;
+        ValueBuffer<T> data_array;
 
     public:
         // ===== 属性 / Properties =====
@@ -57,18 +57,18 @@ namespace hgl
         // ===== 隐式转换 / Implicit Conversion =====
 
         /**
-         * @brief 隐式转换为 const DataArray<T>&
-         * CN: 方便与需要 DataArray 的代码兼容
-         * EN: Implicit conversion to const DataArray for compatibility
+         * @brief 隐式转换为 const ValueBuffer<T>&
+         * CN: 方便与需要 ValueBuffer 的代码兼容
+         * EN: Implicit conversion to const ValueBuffer for compatibility
          */
-        operator const DataArray<T>&() const { return data_array; }
+        operator const ValueBuffer<T>&() const { return data_array; }
 
         /**
-         * @brief 隐式转换为 DataArray<T>&
+         * @brief 隐式转换为 ValueBuffer<T>&
          * CN: 用于获取可写的底层数组访问
-         * EN: Get mutable DataArray for direct access
+         * EN: Get mutable ValueBuffer for direct access
          */
-        operator DataArray<T>&() { return data_array; }
+        operator ValueBuffer<T>&() { return data_array; }
 
         // ===== 拷贝语义 / Copy Semantics =====
 
@@ -181,8 +181,8 @@ namespace hgl
 
         /**
          * @brief 清空所有数据
-         * CN: 移除所有元素但保留容量。由 DataArray 处理对象生命周期
-         * EN: Clear all elements but keep capacity. DataArray handles lifecycle
+         * CN: 移除所有元素但保留容量。由 ValueBuffer 处理对象生命周期
+         * EN: Clear all elements but keep capacity. ValueBuffer handles lifecycle
          */
         void Clear()
         {

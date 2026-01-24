@@ -3,7 +3,7 @@
  * 验证新架构的所有功能
  */
 
-#include <hgl/type/DataArray.h>
+#include <hgl/type/ValueBuffer.h>
 #include <iostream>
 #include <string>
 
@@ -16,7 +16,7 @@ void test_trivial_types()
     TEST_SECTION("Trivial Types Test");
 
     // 基本操作
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     arr.Append(1);
     arr.Append(2);
     arr.Append(3);
@@ -67,7 +67,7 @@ void test_trivial_types()
     std::cout << "After WriteAt(999, 0): " << arr[0] << std::endl;
 
     // operator=
-    DataArray<int> arr2;
+    ValueBuffer<int> arr2;
     arr2 = arr;
     std::cout << "After arr2 = arr, arr2.count: " << arr2.GetCount() << std::endl;
 
@@ -79,15 +79,15 @@ void test_trivial_types()
     std::cout << std::endl;
 
     // WithoutList
-    DataArray<int> arr3;
+    ValueBuffer<int> arr3;
     arr3.Append(100);
     arr3.Append(300);
     arr3.Append(500);
 
-    DataArray<int> without;
+    ValueBuffer<int> without;
     without.Append(300);
 
-    DataArray<int> result;
+    ValueBuffer<int> result;
     arr3.WithoutList(result, without);
 
     std::cout << "WithoutList result: ";
@@ -100,7 +100,7 @@ void test_move_operation()
 {
     TEST_SECTION("Move Operation Test");
 
-    DataArray<int> arr;
+    ValueBuffer<int> arr;
     for(int i = 0; i < 10; i++)
         arr.Append(i);
 

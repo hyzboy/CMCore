@@ -1,6 +1,6 @@
 #include<cstring>
 #include<iostream>
-#include<hgl/type/DataArray.h>
+#include<hgl/type/ValueBuffer.h>
 
 int main(int,char **)
 {
