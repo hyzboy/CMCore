@@ -15,9 +15,9 @@ namespace hgl
     * 对应 IndexedValueArray，但面向非平凡对象，显式调用构造/析构。
     * 对于平凡类型请使用 IndexedValueArray。
     */
-    template<typename T, typename I = int32> class ObjectIndexedList
+    template<typename T, typename I = int32> class IndexedManagedArray
     {
-        static_assert(!std::is_trivially_copyable_v<T>, "ObjectIndexedList is for non-trivial types; use IndexedValueArray for trivially copyable types.");
+        static_assert(!std::is_trivially_copyable_v<T>, "IndexedManagedArray is for non-trivial types; use IndexedValueArray for trivially copyable types.");
 
     protected:
 
@@ -69,7 +69,7 @@ namespace hgl
         {
         private:
 
-            ObjectIndexedList<T,I> *list;
+            IndexedManagedArray<T,I> *list;
             int32 current_index;
 
         public:
@@ -85,7 +85,7 @@ namespace hgl
                 current_index=-1;
             }
 
-            Iterator(ObjectIndexedList<T, I>* lst, int32 idx):list(lst),current_index(idx){}
+            Iterator(IndexedManagedArray<T, I>* lst, int32 idx):list(lst),current_index(idx){}
 
             T& operator*()
             {
@@ -122,7 +122,7 @@ namespace hgl
         {
         private:
 
-            const ObjectIndexedList<T,I> *list;
+            const IndexedManagedArray<T,I> *list;
             int32 current_index;
 
         public:
@@ -132,7 +132,7 @@ namespace hgl
 
         public:
 
-            ConstIterator(const ObjectIndexedList<T, I>* lst, int32 idx):list(lst),current_index(idx){}
+            ConstIterator(const IndexedManagedArray<T, I>* lst, int32 idx):list(lst),current_index(idx){}
 
             const T& operator*()const
             {
@@ -162,14 +162,14 @@ namespace hgl
 
     public:
 
-        ObjectIndexedList()=default;
-        ObjectIndexedList(const T *lt,const int n){Add(lt,n);} // copy elements
-        ObjectIndexedList(const std::initializer_list<T> &lt){Add(lt.begin(),static_cast<int>(lt.size()));}
-        ObjectIndexedList(const ObjectIndexedList<T,I> &)=delete;
-        ObjectIndexedList& operator=(const ObjectIndexedList<T,I> &)=delete;
-        ObjectIndexedList(ObjectIndexedList<T,I> &&)=default;
-        ObjectIndexedList& operator=(ObjectIndexedList<T,I> &&)=default;
-        virtual ~ObjectIndexedList(){Free();}
+        IndexedManagedArray()=default;
+        IndexedManagedArray(const T *lt,const int n){Add(lt,n);} // copy elements
+        IndexedManagedArray(const std::initializer_list<T> &lt){Add(lt.begin(),static_cast<int>(lt.size()));}
+        IndexedManagedArray(const IndexedManagedArray<T,I> &)=delete;
+        IndexedManagedArray& operator=(const IndexedManagedArray<T,I> &)=delete;
+        IndexedManagedArray(IndexedManagedArray<T,I> &&)=default;
+        IndexedManagedArray& operator=(IndexedManagedArray<T,I> &&)=default;
+        virtual ~IndexedManagedArray(){Free();}
 
         /**
          * 向列表中添加一个空数据
@@ -455,5 +455,5 @@ namespace hgl
             data_array = std::move(new_data);
             free_index.Clear();
         }
-    };//template<typename T> class ObjectIndexedList
+    };//template<typename T> class IndexedManagedArray
 }//namespace hgl

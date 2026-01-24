@@ -1,5 +1,5 @@
 ﻿#include<hgl/type/IndexedValueArray.h>
-#include<hgl/type/ObjectIndexedList.h>
+#include<hgl/type/IndexedManagedArray.h>
 #include<iostream>
 #include<string>
 #include<cstring>
@@ -335,7 +335,7 @@ void test_complex_type()
 
     {
         std::cout << "[7.1] Add complex items:" << std::endl;
-        ObjectIndexedList<ComplexItem> list;
+        IndexedManagedArray<ComplexItem> list;
 
         ComplexItem item1(1, "First");
         ComplexItem item2(2, "Second");

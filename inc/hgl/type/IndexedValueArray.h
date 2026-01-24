@@ -14,7 +14,7 @@ namespace hgl
     */
     template<typename T,typename I=int32> class IndexedValueArray
     {
-        static_assert(std::is_trivially_copyable_v<T>, "IndexedValueArray only supports trivially copyable types; use ObjectIndexedList for non-trivial types.");
+        static_assert(std::is_trivially_copyable_v<T>, "IndexedValueArray only supports trivially copyable types; use IndexedManagedArray for non-trivial types.");
     protected:
 
         ValueBuffer<T> data_array;
