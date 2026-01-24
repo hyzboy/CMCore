@@ -1,4 +1,4 @@
-﻿#include<hgl/type/DataChain.h>
+﻿#include<hgl/type/BlockAllocator.h>
 #include<hgl/type/ValueArray.h>
 #include<iostream>
 #include<iomanip>
@@ -7,12 +7,12 @@
 using namespace std;
 using namespace hgl;
 
-void out_data_chain(DataChain *dc)
+void out_data_chain(BlockAllocator *dc)
 {
-    DataChain::ChainNode *start =dc->GetStartNode();
-    DataChain::ChainNode *end   =dc->GetEndNode();
+    BlockAllocator::ChainNode *start =dc->GetStartNode();
+    BlockAllocator::ChainNode *end   =dc->GetEndNode();
 
-    DataChain::ChainNode *node  =start;
+    BlockAllocator::ChainNode *node  =start;
 
     cout<<"Data Chain: ";
 
@@ -33,11 +33,11 @@ int os_main(int,os_char **)
 {
     constexpr const int BLOCK_SIZE=100;
 
-    DataChain dc;
+    BlockAllocator dc;
     
     dc.Init(BLOCK_SIZE);                  ///数据链管理器
 
-    cout<<"DataChain Test"<<endl;
+    cout<<"BlockAllocator Test"<<endl;
 
     random_device rd;
     mt19937 gen(rd());
@@ -45,14 +45,14 @@ int os_main(int,os_char **)
     uniform_int_distribution<int> dis_un_count(BLOCK_SIZE/10,BLOCK_SIZE/4);
     uniform_int_distribution<int> dis_block_count(1,BLOCK_SIZE/10);
 
-    ValueArray<DataChain::UserNode *> user_node_list;
+    ValueArray<BlockAllocator::UserNode *> user_node_list;
     int free_count=dc.GetFreeCount();
 
     do
     {
         int ubc=hgl_min(dis_block_count(gen),free_count);
 
-        DataChain::UserNode *un=dc.Acquire(ubc);
+        BlockAllocator::UserNode *un=dc.Acquire(ubc);
 
         if(!un)  //失败了
         {
@@ -88,7 +88,7 @@ int os_main(int,os_char **)
             if(op_count<=0)
                 continue;
 
-            DataChain::UserNode *un=dc.Acquire(op_count);
+            BlockAllocator::UserNode *un=dc.Acquire(op_count);
 
             if(un)
             {
@@ -106,7 +106,7 @@ int os_main(int,os_char **)
         {
             int pos=dis(gen)%user_node_list.GetCount();
 
-            DataChain::UserNode *un;
+            BlockAllocator::UserNode *un;
             
             user_node_list.Get(pos,un);
 

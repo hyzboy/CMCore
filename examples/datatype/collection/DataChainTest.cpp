@@ -1,4 +1,4 @@
-﻿#include<hgl/type/DataChain.h>
+﻿#include<hgl/type/BlockAllocator.h>
 #include<iostream>
 #include<iomanip>
 #include<random>
@@ -6,12 +6,12 @@
 using namespace std;
 using namespace hgl;
 
-void out_data_chain(DataChain *dc)
+void out_data_chain(BlockAllocator *dc)
 {
-    DataChain::ChainNode *start =dc->GetStartNode();
-    DataChain::ChainNode *end   =dc->GetEndNode();
+    BlockAllocator::ChainNode *start =dc->GetStartNode();
+    BlockAllocator::ChainNode *end   =dc->GetEndNode();
 
-    DataChain::ChainNode *node  =start;
+    BlockAllocator::ChainNode *node  =start;
 
     cout<<"Data Chain: ";
 
@@ -30,13 +30,13 @@ void out_data_chain(DataChain *dc)
 
 int os_main(int,os_char **)
 {
-    DataChain dc;
+    BlockAllocator dc;
     
     dc.Init(100);         ///数据链管理器(预定100个块)
 
-    cout<<"DataChain Test"<<endl;
+    cout<<"BlockAllocator Test"<<endl;
 
-    DataChain::UserNode *un[10];
+    BlockAllocator::UserNode *un[10];
 
     for(int i=0;i<10;i++)
     {
@@ -74,7 +74,7 @@ int os_main(int,os_char **)
 
     cout<<"---------------------------------------------------------------------------------"<<endl;
     cout<<"Acquire 20 ";
-    DataChain::UserNode *ud20=dc.Acquire(20);
+    BlockAllocator::UserNode *ud20=dc.Acquire(20);
     out_data_chain(&dc);
 
     cout<<"Release  3 ";
@@ -86,6 +86,6 @@ int os_main(int,os_char **)
     out_data_chain(&dc);
 
     cout<<"Acquire 15 ";
-    DataChain::UserNode *ud15=dc.Acquire(15);
+    BlockAllocator::UserNode *ud15=dc.Acquire(15);
     out_data_chain(&dc);
 }

@@ -1,14 +1,14 @@
-﻿#include<hgl/type/DataChain.h>
+﻿#include<hgl/type/BlockAllocator.h>
 
 namespace hgl
 {
-    DataChain::DataChain()
+    BlockAllocator::BlockAllocator()
     {
         max_count=0;
         free_count=0;
     }
         
-    bool DataChain::Init(const int mc)
+    bool BlockAllocator::Init(const int mc)
     {
         max_count=mc;
         free_count=mc;
@@ -30,7 +30,7 @@ namespace hgl
         return(true);
     }
 
-    DataChain::UserNode *DataChain::Acquire(const int acquire_count)
+    BlockAllocator::UserNode *BlockAllocator::Acquire(const int acquire_count)
     {
         if(acquire_count<=0)
             return(nullptr);
@@ -114,7 +114,7 @@ namespace hgl
         return(ud);
     }
 
-    bool DataChain::Release(DataChain::UserNode *ud)
+    bool BlockAllocator::Release(BlockAllocator::UserNode *ud)
     {
         if(!ud)
             return(false);
@@ -204,7 +204,7 @@ namespace hgl
                     {
                         if(next->start>=ud->start)  //这个块在中间，那就是出错了
                         {
-                            //                            LogError(OS_TEXT("DataChain::Release, block cross."));
+                            //                            LogError(OS_TEXT("BlockAllocator::Release, block cross."));
                             return(false);
                         }
                     }

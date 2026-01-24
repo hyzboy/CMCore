@@ -11,7 +11,7 @@ namespace hgl
      * 当用户释放一个空间时，会自动合并相邻的空间节点。如果没有相邻的空间节点，会自动创建一个新的空间节点。
      * 当用户申请一个新的空间时，会自动查找最适合的空间节点。
      */
-    class DataChain
+    class BlockAllocator
     {
         SeriesInt series;                   ///<序号池
 
@@ -29,7 +29,7 @@ namespace hgl
             int start;                      ///<起始数据块
             int count;                      ///<占用数据块数量
 
-            friend class DataChain;
+            friend class BlockAllocator;
 
         public:
 
@@ -80,12 +80,12 @@ namespace hgl
 
     public:
 
-        DataChain();
-        virtual ~DataChain()=default;
+        BlockAllocator();
+        virtual ~BlockAllocator()=default;
 
         bool Init(const int mc);                            ///<初始化数据链
 
         UserNode *Acquire(const int acquire_count);         ///<请求一个数据区块
         bool Release(UserNode *ud);                         ///<释放一个数据区块
-    };//class DataChain
+    };//class BlockAllocator
 }//namespace hgl
