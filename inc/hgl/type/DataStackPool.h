@@ -32,7 +32,7 @@ namespace hgl
 
         bool Init(const int max_count)
         {
-            data_array=hgl_zero_new<T>(max_count);
+            data_array=zero_new<T>(max_count);
 
             end=data_array+max_count;
 

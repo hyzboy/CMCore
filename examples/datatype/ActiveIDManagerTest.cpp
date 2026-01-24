@@ -52,20 +52,20 @@ int main()
     // --- 参数校验：非法/空请求 ---
     cout << "=== Test 2: Invalid Parameter Validation ===" << endl;
     cout << "Testing: Negative/zero counts and null pointers should be rejected" << endl;
-    
+
     cout << "  CreateIdle(-1) returned: " << aim.CreateIdle(-1) << " (expected: 0)" << endl;
     assert(aim.CreateIdle(-1) == 0);            // count<=0 返回0
-    
+
     cout << "  CreateActive(nullptr, 0) returned: " << aim.CreateActive(nullptr, 0) << " (expected: 0)" << endl;
     assert(aim.CreateActive(nullptr, 0) == 0);  // count<=0 返回0
-    
+
     result = aim.Get(tmp, 0);
     cout << "  Get(tmp, 0) returned: " << result << " (expected: false)" << endl;
     assert(!result);                   // count<=0 返回false
-    
+
     cout << "  Release(nullptr, 0) returned: " << aim.Release(nullptr, 0) << " (expected: 0)" << endl;
     assert(aim.Release(nullptr, 0) == 0);       // count<=0 返回0
-    
+
     ExpectCounts(aim, 0, 0);
     cout << "  State unchanged: Active=" << aim.GetActiveCount() << ", Idle=" << aim.GetIdleCount() << endl;
     cout << "Test 2 passed." << endl << endl;
@@ -95,10 +95,10 @@ int main()
     assert(full);
     ExpectCounts(aim, 2, 1);
     cout << "  Active: " << aim.GetActiveCount() << ", Idle: " << aim.GetIdleCount() << endl;
-    for (int v : userA) { 
+    for (int v : userA) {
         cout << "  ID " << v << " - IsActive: " << aim.IsActive(v) << ", IsIdle: " << aim.IsIdle(v) << endl;
-        assert(aim.IsActive(v)); 
-        assert(!aim.IsIdle(v)); 
+        assert(aim.IsActive(v));
+        assert(!aim.IsIdle(v));
     }
     cout << "Test 4 passed." << endl << endl;
 
@@ -132,10 +132,10 @@ int main()
     assert(released == 2);
     ExpectCounts(aim, 4, 2);
     cout << "  Active: " << aim.GetActiveCount() << ", Idle: " << aim.GetIdleCount() << endl;
-    for (int v : userA) { 
+    for (int v : userA) {
         cout << "  ID " << v << " - IsActive: " << aim.IsActive(v) << ", IsIdle: " << aim.IsIdle(v) << endl;
-        assert(!aim.IsActive(v)); 
-        assert(aim.IsIdle(v)); 
+        assert(!aim.IsActive(v));
+        assert(aim.IsIdle(v));
     }
     cout << "Test 6 passed." << endl << endl;
 
@@ -211,7 +211,7 @@ int main()
         cout << "========================================" << endl;
         cout << "Testing: 100,000 IDs with 20,000 random operations" << endl;
         cout << "Operations: Get (from idle only), GetOrCreate (mix), Release" << endl;
-        
+
         const int target_size = 100000;
         ActiveIDManager big;
         big.Reserve(target_size + 1000);
@@ -250,7 +250,7 @@ int main()
         // 进行一系列随机操作
         const int iterations = 20000;
         buffer.resize(500);
-        
+
         cout << "  Running " << iterations << " random operations..." << endl;
         int get_count = 0, get_or_create_count = 0, release_count = 0;
 
@@ -259,8 +259,8 @@ int main()
             // 每1000次操作输出一次进度
             if ((iter + 1) % 2000 == 0)
             {
-                cout << "    Progress: " << (iter + 1) << "/" << iterations 
-                     << " - Active=" << active_ids.size() 
+                cout << "    Progress: " << (iter + 1) << "/" << iterations
+                     << " - Active=" << active_ids.size()
                      << ", Idle=" << idle_ids.size() << endl;
             }
 

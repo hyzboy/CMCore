@@ -1,6 +1,7 @@
 ﻿#pragma once
 
-#include<hgl/type/Array.h>
+#include<hgl/type/DataArray.h>
+#include<hgl/type/ObjectArray.h>
 namespace hgl
 {
     /**
@@ -17,10 +18,10 @@ namespace hgl
     {
     protected:
 
-        static_assert(std::is_trivially_copyable_v<T>, 
+        static_assert(std::is_trivially_copyable_v<T>,
                       "SortedSet requires trivially copyable types. For non-trivial types (with custom copy/move semantics, virtual functions, dynamic memory), use SortedObjectSet instead.");
 
-        ArrayType<T> data_list;
+        DataArray<T> data_list;
 
         bool    FindPos(const T &flag,int64 &pos)const                                              ///<查找数据如果插入后，会所在的位置，返回是否存在这个数据
                 {return FindInsertPositionInSortedArray(&pos,data_list,flag);}
@@ -29,22 +30,22 @@ namespace hgl
 
     public: //属性
 
-                T *     GetData         ()     {return data_list.GetData();}                    ///<取得数据指针
-        const   T *     GetData         ()const{return data_list.GetData();}                    ///<取得数据指针（只读）
-                int64   GetCount        ()const{return data_list.GetCount();}                   ///<取得数据总量
-                int64   GetAllocCount   ()const{return data_list.GetAllocCount();}              ///<取得已分配空间数量
+                T *     GetData         ()      {return data_list.GetData();}                       ///<取得数据指针
+        const   T *     GetData         ()const {return data_list.GetData();}                       ///<取得数据指针（只读）
+                int64   GetCount        ()const {return data_list.GetCount();}                      ///<取得数据总量
+                int64   GetAllocCount   ()const {return data_list.GetAllocCount();}                 ///<取得已分配空间数量
 
-        const   bool    IsEmpty         ()const{return data_list.IsEmpty();}                    ///<确认列表是否为空
+        const   bool    IsEmpty         ()const {return data_list.IsEmpty();}                       ///<确认列表是否为空
 
-                T *     begin           ()      {return data_list.begin();}                 
-                T *     end             ()      {return data_list.end();}                   
-                T *     last            ()      {return data_list.last();}                 
-        const   T *     begin           ()const{return data_list.begin();}                 
-        const   T *     end             ()const{return data_list.end();}                   
-        const   T *     last            ()const{return data_list.last();}
+                T *     begin           ()      {return data_list.begin();}
+                T *     end             ()      {return data_list.end();}
+                T *     last            ()      {return data_list.last();}
+        const   T *     begin           ()const {return data_list.begin();}
+        const   T *     end             ()const {return data_list.end();}
+        const   T *     last            ()const {return data_list.last();}
 
-        operator        DataArray<T> & ()       {return data_list;}                             ///<取得原始数据阵列
-        operator const  DataArray<T> & ()const  {return data_list;}                             ///<取得原始数据阵列
+        operator        DataArray<T> &  ()      {return data_list;}                                 ///<取得原始数据阵列
+        operator const  DataArray<T> &  ()const {return data_list;}                                 ///<取得原始数据阵列
 
     public:
 
@@ -213,7 +214,7 @@ namespace hgl
          * @brief 相等比较运算符
          * CN: 比较两个已排序集合中的所有元素是否完全相同
          * EN: Check if two sorted sets have identical elements
-         * 
+         *
          * @param other 要比较的另一个已排序集合
          * @return 如果两个集合的元素相同，返回 true；否则返回 false
          */
@@ -221,7 +222,7 @@ namespace hgl
         {
             if (data_list.GetCount() != other.data_list.GetCount())
                 return false;
-            
+
             return hgl::mem_compare(data_list.GetData(), other.data_list.GetData(), data_list.GetCount()) == 0;
         }
 
@@ -229,7 +230,7 @@ namespace hgl
          * @brief 不相等比较运算符
          * CN: 检查两个已排序集合中的元素是否不同
          * EN: Check if two sorted sets have different elements
-         * 
+         *
          * @param other 要比较的另一个已排序集合
          * @return 如果两个集合的元素不同，返回 true；否则返回 false
          */
@@ -251,7 +252,7 @@ namespace hgl
     {
     protected:
 
-        static_assert(!std::is_trivially_copyable_v<T>, 
+        static_assert(!std::is_trivially_copyable_v<T>,
                       "SortedObjectSet requires non-trivial types; use SortedSet for trivially copyable types.");
 
         ObjectArray<T> data_list;
