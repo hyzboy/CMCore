@@ -314,9 +314,9 @@ void test_list_complex_type()
         std::cout << "[6.1] Add complex items:" << std::endl;
         ObjectList<ComplexItem> list;
 
-        list.Add(ComplexItem(1, "First"));
-        list.Add(ComplexItem(2, "Second"));
-        list.Add(ComplexItem(3, "Third"));
+        list.Add(new ComplexItem(1, "First"));
+        list.Add(new ComplexItem(2, "Second"));
+        list.Add(new ComplexItem(3, "Third"));
 
         TEST_ASSERT(list.GetCount() == 3, "Count is 3");
         TEST_ASSERT((*list.At(0))->id == 1, "First item id is 1");        

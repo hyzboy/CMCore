@@ -9,7 +9,7 @@
  */
 
 #include<hgl/type/ValueArray.h>
-#include<hgl/type/ObjectArray.h>
+#include<hgl/type/PtrArray.h>
 #include<iostream>
 #include<iomanip>
 #include<string>
@@ -196,7 +196,7 @@ void PrintArrayList(const ValueArray<T>& list, const char* label)
 }
 
 template<typename T>
-void PrintArrayList(const ObjectArray<T>& list, const char* label)
+void PrintArrayList(const PtrArray<T>& list, const char* label)
 {
     std::cout << std::setw(30) << label << " [" << std::setw(2) << list.GetCount() 
               << "/" << std::setw(2) << list.GetAllocCount() << "]: ";
@@ -358,7 +358,7 @@ void TestNonTrivialArrayList()
     ResetCounters();
 
     std::cout << "\n[3.0] Creating ValueArray..." << std::endl;
-    ObjectArray<NonTrivialClass> list;
+    PtrArray<NonTrivialClass> list;
     std::cout << "  ValueArray created. Count=" << list.GetCount() 
               << ", AllocCount=" << list.GetAllocCount() << std::endl;
 
@@ -446,7 +446,7 @@ void TestMemorySafety()
     std::cout << "\n[5.1] Repeated add/delete cycles:" << std::endl;
     ResetCounters();
     {
-        ObjectArray<NonTrivialClass> list;
+        PtrArray<NonTrivialClass> list;
         
         for (int cycle = 0; cycle < 3; cycle++)
         {

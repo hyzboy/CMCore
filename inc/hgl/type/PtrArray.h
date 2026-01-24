@@ -12,7 +12,7 @@ namespace hgl
      * 非平凡类型专用的阵列容器。
      * 与 ValueBuffer 接口尽量保持一致，手动管理内存并显式调用构造/析构函数。
      */
-    template<typename T> class ObjectArray
+    template<typename T> class PtrArray
     {
         static_assert(!std::is_trivially_copyable_v<T>, "Use ValueBuffer for trivially copyable types");
 
@@ -59,9 +59,9 @@ namespace hgl
 
     public:
 
-        ObjectArray() : data_(nullptr), count_(0), alloc_count_(0) {}
+        PtrArray() : data_(nullptr), count_(0), alloc_count_(0) {}
 
-        explicit ObjectArray(int size) : data_(nullptr), count_(0), alloc_count_(0)
+        explicit PtrArray(int size) : data_(nullptr), count_(0), alloc_count_(0)
         {
             if(size > 0)
             {
@@ -69,7 +69,7 @@ namespace hgl
             }
         }
 
-        ObjectArray(const T* lt, const int n) : data_(nullptr), count_(0), alloc_count_(0)
+        PtrArray(const T* lt, const int n) : data_(nullptr), count_(0), alloc_count_(0)
         {
             if(lt && n > 0)
             {
@@ -79,7 +79,7 @@ namespace hgl
             }
         }
 
-        ObjectArray(const std::initializer_list<T>& lt) : data_(nullptr), count_(0), alloc_count_(0)
+        PtrArray(const std::initializer_list<T>& lt) : data_(nullptr), count_(0), alloc_count_(0)
         {
             const int n = static_cast<int>(lt.size());
             if(n > 0)
@@ -92,7 +92,7 @@ namespace hgl
             }
         }
 
-        ObjectArray(ObjectArray&& other) noexcept
+        PtrArray(PtrArray&& other) noexcept
             : data_(other.data_), count_(other.count_), alloc_count_(other.alloc_count_)
         {
             other.data_ = nullptr;
@@ -100,7 +100,7 @@ namespace hgl
             other.alloc_count_ = 0;
         }
 
-        ObjectArray& operator=(ObjectArray&& other) noexcept
+        PtrArray& operator=(PtrArray&& other) noexcept
         {
             if(this == &other)
                 return *this;
@@ -116,15 +116,15 @@ namespace hgl
             return *this;
         }
 
-        ~ObjectArray()
+        ~PtrArray()
         {
             destroy_range(data_, count_);
             deallocate_raw_memory(data_);
         }
 
         // 禁止拷贝（避免双重释放）
-        ObjectArray(const ObjectArray&) = delete;
-        ObjectArray& operator=(const ObjectArray&) = delete;
+        PtrArray(const PtrArray&) = delete;
+        PtrArray& operator=(const PtrArray&) = delete;
 
     public: // 访问
 
@@ -291,7 +291,7 @@ namespace hgl
         /**
          * 从另一个 ObjectArray 追加全部数据
          */
-        int Add(const ObjectArray<T>& other)
+        int Add(const PtrArray<T>& other)
         {
             return Add(other.data_, other.count_);
         }
@@ -442,7 +442,7 @@ namespace hgl
 
     public: // 赋值辅助
 
-        ObjectArray& operator=(const std::initializer_list<T>& l)
+        PtrArray& operator=(const std::initializer_list<T>& l)
         {
             Clear();
             const int n = static_cast<int>(l.size());
@@ -457,7 +457,7 @@ namespace hgl
             return *this;
         }
 
-        void WithoutList(ObjectArray<T>& result_list, const ObjectArray<T>& without_list)
+        void WithoutList(PtrArray<T>& result_list, const PtrArray<T>& without_list)
         {
             result_list.Clear();
             if(count_ <= 0) return;

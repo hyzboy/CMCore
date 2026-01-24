@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/ValueBuffer.h>
-#include<hgl/type/ObjectArray.h>
+#include<hgl/type/PtrArray.h>
 namespace hgl
 {
     /**
@@ -190,7 +190,7 @@ namespace hgl
 
         bool    GetFirst        (T &data)const                                              ///<取得第一个数据
         {
-            T *ptr = begin();
+            const T *ptr = begin();
             if(!ptr)
                 return(false);
 
@@ -244,7 +244,7 @@ namespace hgl
     /**
      * 有序对象集合（非平凡类型专用版本）</br>
      * 集合数据列表中不允许数据出现重复性，同时它会将数据排序</br>
-     * 本版本使用 ObjectArray 支持非平凡类型（包含动态内存、自定义构造/析构等）</br>
+     * 本版本使用 PtrArray 支持非平凡类型（包含动态内存、自定义构造/析构等）</br>
      *
      * @tparam T 必须支持 operator< 用于排序，且必须是非平凡类型（non-trivial）
      */
@@ -255,7 +255,7 @@ namespace hgl
         static_assert(!std::is_trivially_copyable_v<T>,
                       "SortedObjectSet requires non-trivial types; use SortedSet for trivially copyable types.");
 
-        ObjectArray<T> data_list;
+        PtrArray<T> data_list;
 
         bool    FindPos(const T &flag,int64 &pos)const
         {
@@ -287,8 +287,8 @@ namespace hgl
 
     public:
 
-        operator        ObjectArray<T> & ()       {return data_list;}                         ///<取得原始数据阵列
-        operator const  ObjectArray<T> & ()const  {return data_list;}                         ///<取得原始数据阵列
+        operator        PtrArray<T> & ()       {return data_list;}                         ///<取得原始数据阵列
+        operator const  PtrArray<T> & ()const  {return data_list;}                         ///<取得原始数据阵列
 
     public:
 
@@ -407,7 +407,7 @@ namespace hgl
             return total;
         }
 
-        int64 Delete(const ObjectArray<T> &da)
+        int64 Delete(const PtrArray<T> &da)
         {
             if(da.IsEmpty())
                 return 0;

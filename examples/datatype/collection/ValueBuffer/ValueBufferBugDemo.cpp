@@ -5,7 +5,7 @@
  * 解决：需要先构造对象（placement new）再赋值
  */
 
-#include<hgl/type/ObjectArray.h>
+#include<hgl/type/PtrArray.h>
 #include<iostream>
 #include<string>
 
@@ -46,7 +46,7 @@ int main()
     std::cout << "=== Test: ValueBuffer with non-trivial type ===" << std::endl;
     
     std::cout << "\n1. Create ValueBuffer and Resize to 3:" << std::endl;
-    ObjectArray<SimpleClass> arr;
+    PtrArray<SimpleClass> arr;
     arr.Resize(3);  // 分配内存但不构造对象！
     
     std::cout << "\n2. Try to WriteAt (will crash if objects not constructed):" << std::endl;

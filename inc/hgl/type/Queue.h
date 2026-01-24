@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/ValueBuffer.h>
-#include<hgl/type/ObjectArray.h>
+#include<hgl/type/PtrArray.h>
 #include<type_traits>
 namespace hgl
 {
@@ -245,22 +245,22 @@ namespace hgl
 
     /**
      * 用于非平凡类型的队列 - 使用 ObjectArray
-     * ObjectArray 自动管理对象的构造和析构
+     * PtrArray 自动管理对象的构造和析构
      */
-    template<typename T> class ObjectQueue:public QueueTemplate<T, ObjectArray<T>>
+    template<typename T> class ObjectQueue:public QueueTemplate<T, PtrArray<T>>
     {
     public:
         static_assert(!std::is_trivially_copyable_v<T>,
             "ObjectQueue<T> requires non-trivial types (std::string, custom classes with dynamic memory, etc). "
             "For trivially copyable types (int, float, POD structs), use Queue<T> instead for better performance.");
 
-        ObjectQueue():QueueTemplate<T, ObjectArray<T>>(){}
+        ObjectQueue():QueueTemplate<T, PtrArray<T>>(){}
         virtual ~ObjectQueue() override { this->Free(); }
 
         // 保留基类的方法
-        using QueueTemplate<T, ObjectArray<T>>::Push;
-        using QueueTemplate<T, ObjectArray<T>>::Pop;
-        using QueueTemplate<T, ObjectArray<T>>::Peek;
+        using QueueTemplate<T, PtrArray<T>>::Push;
+        using QueueTemplate<T, PtrArray<T>>::Pop;
+        using QueueTemplate<T, PtrArray<T>>::Peek;
 
         /**
          * 压入一个指针（用于对象指针管理）
@@ -271,7 +271,7 @@ namespace hgl
             if(!ptr) return false;
             // 对于 ObjectArray，我们需要存储对象副本
             // 这里传递对象引用
-            return QueueTemplate<T, ObjectArray<T>>::Push(*ptr);
+            return QueueTemplate<T, PtrArray<T>>::Push(*ptr);
         }
 
         /**
@@ -282,7 +282,7 @@ namespace hgl
         {
             // 从数组中读取对象
             T obj;
-            if(!QueueTemplate<T, ObjectArray<T>>::Pop(obj))
+            if(!QueueTemplate<T, PtrArray<T>>::Pop(obj))
             {
                 ptr = nullptr;
                 return false;

@@ -3,7 +3,7 @@
  */
 
 #include<hgl/type/ValueBuffer.h>
-#include<hgl/type/ObjectArray.h>
+#include<hgl/type/PtrArray.h>
 #include<hgl/type/ValueArray.h>
 #include<iostream>
 #include<string>
@@ -58,7 +58,7 @@ void TestDataArray()
     std::cout << "\n=== ValueBuffer Test ===" << std::endl;
 
     std::cout << "\n1. Create and Resize:" << std::endl;
-    ObjectArray<TestObject> arr;
+    PtrArray<TestObject> arr;
     arr.Resize(3);
     std::cout << "   Resized to 3, aliveCount=" << TestObject::aliveCount << std::endl;
 
@@ -88,7 +88,7 @@ void TestArrayList()
     TestObject::aliveCount = 0;
 
     std::cout << "\n1. Add objects:" << std::endl;
-    ObjectArray<TestObject> list;
+    PtrArray<TestObject> list;
     list.Add(TestObject(10, "Item10"));
     list.Add(TestObject(20, "Item20"));
     list.Add(TestObject(30, "Item30"));

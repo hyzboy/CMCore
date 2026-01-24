@@ -1,6 +1,6 @@
 #pragma once
 
-#include <hgl/type/ObjectArray.h>
+#include <hgl/type/PtrArray.h>
 #include <hgl/type/ValueBuffer.h>
 #include <hgl/type/Stack.h>
 #include <hgl/type/ObjectUtil.h>
@@ -21,7 +21,7 @@ namespace hgl
 
     protected:
 
-        ObjectArray<T>   data_array;
+        PtrArray<T>   data_array;
         ValueBuffer<I>     data_index;
         Stack<I>         free_index;
 
@@ -46,7 +46,7 @@ namespace hgl
             return(true);
         }
 
-        const ObjectArray<T> &GetRawData()const{return data_array;}
+        const PtrArray<T> &GetRawData()const{return data_array;}
         const ValueBuffer<I> &GetRawIndex()const{return data_index;}
 
         T &operator[](int32 index)
@@ -393,7 +393,7 @@ namespace hgl
 
             const int32 count=GetCount();
 
-            ObjectArray<T> new_data;
+            PtrArray<T> new_data;
             new_data.Resize(count);
 
             for(int32 i=0;i<count;i++)
@@ -440,7 +440,7 @@ namespace hgl
             if(IsOrdered())         //顺序没问题
                 return;
 
-            ObjectArray<T> new_data;
+            PtrArray<T> new_data;
             new_data.Resize(count);
 
             for(int i=0;i<count;i++)

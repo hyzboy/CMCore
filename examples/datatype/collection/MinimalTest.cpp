@@ -1,4 +1,4 @@
-﻿#include<hgl/type/ObjectArray.h>
+﻿#include<hgl/type/PtrArray.h>
 #include<iostream>
 #include<string>
 
@@ -44,7 +44,7 @@ int main()
     std::cout << "=== Minimal ValueBuffer Test ===" << std::endl;
 
     std::cout << "\n[1] Creating ValueBuffer..." << std::endl;
-    ObjectArray<TestObj> arr;
+    PtrArray<TestObj> arr;
 
     std::cout << "\n[2] Resizing to 3..." << std::endl;
     arr.Resize(3);

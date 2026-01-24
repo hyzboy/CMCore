@@ -97,9 +97,9 @@ void TestNonTrivialType()
 
     // 使用新的便捷方法：直接添加对象值，ObjectList会自动创建堆副本
     std::cout << "[1] Add objects with values (auto heap allocation):" << std::endl;
-    list.Add(TestClass(1, "First"));
-    list.Add(TestClass(2, "Second"));
-    list.Add(TestClass(3, "Third"));
+    list.Add(new TestClass(1, "First"));
+    list.Add(new TestClass(2, "Second"));
+    list.Add(new TestClass(3, "Third"));
 
     std::cout << "TestClass ObjectList: ";
     for(int i = 0; i < list.GetCount(); i++)
@@ -108,11 +108,6 @@ void TestNonTrivialType()
         std::cout << "{" << obj->id << ":" << obj->name << "} ";
     }
     std::cout << std::endl;
-
-    // 测试RepeatAdd - 也使用便捷方法
-    std::cout << "\n[2] RepeatAdd objects with values:" << std::endl;
-    TestClass repeated(99, "Repeated");
-    list.RepeatAdd(repeated, 2);
 
     std::cout << "After RepeatAdd(99, 2): ";
     for(int i = 0; i < list.GetCount(); i++)
