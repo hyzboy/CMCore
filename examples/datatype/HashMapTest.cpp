@@ -206,6 +206,7 @@ bool TestHashMapEnumeration()
         kv_count++;
         // 验证键值对应关系
         TEST_ASSERT(value == "value"s + std::to_string(key), "Key-value mismatch");
+        return true;
     });
     TEST_ASSERT(kv_count == 5, "Should enumerate 5 entries");
     TEST_PASS("EnumKV");
@@ -215,6 +216,7 @@ bool TestHashMapEnumeration()
     map.EnumKeys([&](int key) {
         key_count++;
         TEST_ASSERT(key >= 1 && key <= 5, "Key out of range");
+        return true;
     });
     TEST_ASSERT(key_count == 5, "Should enumerate 5 keys");
     TEST_PASS("EnumKeys");
@@ -224,6 +226,7 @@ bool TestHashMapEnumeration()
     map.EnumValues([&](const std::string& value) {
         value_count++;
         TEST_ASSERT(value.find("value") == 0, "Value format incorrect");
+        return true;
     });
     TEST_ASSERT(value_count == 5, "Should enumerate 5 values");
     TEST_PASS("EnumValues");
