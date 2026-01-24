@@ -2,10 +2,10 @@
  * UnorderedManagedSetTest.cpp
  * UnorderedManagedSet 测试 - 测试非平凡类型的对象管理
  * 
- * 注意: 该测试避免复杂的析构流程，重点测试API功能而非内存管理细节
+ * 注意: UnorderedManagedSet 内部管理对象指针并负责delete
  */
 
-#include<hgl/type/UnorderedSet.h>
+#include<hgl/type/UnorderedManagedSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -40,9 +40,9 @@ void TestBasicOperations()
 
     UnorderedManagedSet<SimpleTestObject> set;
 
-    SimpleTestObject obj1(1, 100);
-    SimpleTestObject obj2(2, 200);
-    SimpleTestObject obj3(3, 300);
+    SimpleTestObject* obj1 = new SimpleTestObject(1, 100);
+    SimpleTestObject* obj2 = new SimpleTestObject(2, 200);
+    SimpleTestObject* obj3 = new SimpleTestObject(3, 300);
 
     set.Add(obj1);
     set.Add(obj2);
@@ -66,13 +66,13 @@ void TestDelete()
     std::cout << "\n=== Test 2: Delete Operations ===" << std::endl;
 
     UnorderedManagedSet<SimpleTestObject> set;
-    SimpleTestObject obj(10, 1000);
+    SimpleTestObject* obj = new SimpleTestObject(10, 1000);
 
     set.Add(obj);
     assert(set.GetCount() == 1);
     std::cout << "  ✓ Added object" << std::endl;
 
-    bool deleted = set.Delete(obj);
+    bool deleted = set.Delete(SimpleTestObject(10, 1000));
     assert(deleted == true);
     assert(set.GetCount() == 0);
     std::cout << "  ✓ Delete successful" << std::endl;
@@ -83,16 +83,19 @@ void TestUnlink()
     std::cout << "\n=== Test 3: Unlink Operations ===" << std::endl;
 
     UnorderedManagedSet<SimpleTestObject> set;
-    SimpleTestObject obj(20, 2000);
+    SimpleTestObject* obj = new SimpleTestObject(20, 2000);
 
     set.Add(obj);
     assert(set.GetCount() == 1);
     std::cout << "  ✓ Added object" << std::endl;
 
-    bool unlinked = set.UnlinkByValue(obj);
+    bool unlinked = set.UnlinkByValue(SimpleTestObject(20, 2000));
     assert(unlinked == true);
     assert(set.GetCount() == 0);
     std::cout << "  ✓ Unlink successful" << std::endl;
+    
+    // 手动删除（因为 Unlink 不会删除对象）
+    delete obj;
 }
 
 void TestGetOperations()
@@ -101,9 +104,9 @@ void TestGetOperations()
 
     UnorderedManagedSet<SimpleTestObject> set;
 
-    set.Add(SimpleTestObject(111, 1111));
-    set.Add(SimpleTestObject(222, 2222));
-    set.Add(SimpleTestObject(333, 3333));
+    set.Add(new SimpleTestObject(111, 1111));
+    set.Add(new SimpleTestObject(222, 2222));
+    set.Add(new SimpleTestObject(333, 3333));
 
     SimpleTestObject first(0, 0);
     bool got_first = set.GetFirst(first);
@@ -128,7 +131,7 @@ void TestClear()
     UnorderedManagedSet<SimpleTestObject> set;
 
     for(int i = 1; i <= 3; i++) {
-        set.Add(SimpleTestObject(i, i * 100));
+        set.Add(new SimpleTestObject(i, i * 100));
     }
 
     assert(set.GetCount() == 3);
@@ -147,7 +150,7 @@ void TestIsEmpty()
     assert(set.IsEmpty());
     std::cout << "  ✓ New set is empty" << std::endl;
 
-    set.Add(SimpleTestObject(1, 100));
+    set.Add(new SimpleTestObject(1, 100));
     assert(!set.IsEmpty());
     std::cout << "  ✓ Set is not empty after Add" << std::endl;
 
@@ -163,7 +166,7 @@ void TestMultipleOperations()
     UnorderedManagedSet<SimpleTestObject> set;
 
     for(int i = 1; i <= 5; i++) {
-        set.Add(SimpleTestObject(i, i * 10));
+        set.Add(new SimpleTestObject(i, i * 10));
     }
     assert(set.GetCount() == 5);
     std::cout << "  ✓ Added 5 objects" << std::endl;
@@ -178,7 +181,7 @@ void TestMultipleOperations()
     bool unlinked = set.UnlinkByValue(to_unlink);
     assert(unlinked == true);
     assert(set.GetCount() == 3);
-    std::cout << "  ✓ Unlinked 1 object, count now 3" << std::endl;
+    std::cout << "  ✓ Unlinked 1 object, count now 3 (manual cleanup needed)" << std::endl;
 
     int count = 0;
     set.Enum([&count](const SimpleTestObject&) { count++; });

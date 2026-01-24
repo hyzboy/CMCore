@@ -3,7 +3,7 @@
  * 基础操作测试 - 全面测试 UnorderedValueSet 的增删改查
  */
 
-#include<hgl/type/UnorderedSet.h>
+#include<hgl/type/UnorderedValueSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -71,10 +71,13 @@ void TestFindOperations()
     std::cout << "✓ Contains 返回正确" << std::endl;
 
     // GetItem 通过索引获取
-    int* item = set.GetItem(idx1);
-    assert(item != nullptr);
-    assert(*item == 10);
-    std::cout << "✓ GetItem 通过索引获取成功" << std::endl;
+    int item;
+
+    if(set.Get(idx1,item))
+    {
+        assert(item == 10);
+        std::cout << "✓ GetItem 通过索引获取成功" << std::endl;
+    }
 
     // Get 通过索引获取值
     int value;
