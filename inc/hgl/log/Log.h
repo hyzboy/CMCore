@@ -105,8 +105,8 @@ public:
     #define LogVerbose(...) this->Log.Verbose   (std::source_location::current(),__VA_ARGS__);
     #define LogDebug(...)   this->Log.Debug     (std::source_location::current(),__VA_ARGS__);
 #else
-    #define LogVerbose(...)
-    #define LogDebug(...)
+    #define LogVerbose(...) {}
+    #define LogDebug(...)   {}
 #endif//
 
     #define LogInfo(...)    this->Log.Info      (std::source_location::current(),__VA_ARGS__);
@@ -121,8 +121,8 @@ public:
     #define GLogVerbose(...)    ::hgl::logger::GlobalLogger.Verbose   (std::source_location::current(),__VA_ARGS__);
     #define GLogDebug(...)      ::hgl::logger::GlobalLogger.Verbose   (std::source_location::current(),__VA_ARGS__);
 #else
-    #define GLogVerbose(...)
-    #define GLogDebug(...)
+    #define GLogVerbose(...)    {}
+    #define GLogDebug(...)      {}
 #endif//
 
     #define GLogInfo(...)       ::hgl::logger::GlobalLogger.Info      (std::source_location::current(),__VA_ARGS__);
@@ -138,8 +138,8 @@ public:
     #define MLogVerbose(name,...)   {::hgl::logger::Log##name.Verbose(std::source_location::current(),__VA_ARGS__);}
     #define MLogDebug(name,...)     {::hgl::logger::Log##name.Debug  (std::source_location::current(),__VA_ARGS__);}
 #else
-    #define MLogVerbose(name,...)
-    #define MLogDebug(name,...)
+    #define MLogVerbose(name,...)   {}
+    #define MLogDebug(name,...)     {}
 #endif//
 
     #define MLogInfo(name,...)      {::hgl::logger::Log##name.Info   (std::source_location::current(),__VA_ARGS__);}
