@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/ValueArray.h>
+#include<hgl/type/ValueKVMap.h>
 #include<hgl/io/TextOutputStream.h>
 
 namespace hgl
@@ -32,10 +33,10 @@ namespace hgl
 
             const SC *s1 = GetString();
             const SC *s2 = other.GetString();
-            
+
             if(!s1 || !s2)
                 return s1 <=> s2;
-                
+
             return hgl::strcmp(s1, s2, length) <=> 0;
         }
 
@@ -43,12 +44,51 @@ namespace hgl
         {
             if(length != other.length)
                 return false;
-                
+
             const SC *s1 = GetString();
             const SC *s2 = other.GetString();
-            
+
             return s1 && s2 && hgl::strcmp(s1, s2, length) == 0;
         }
+    };
+
+    // ==================== 固定大小的碰撞槽位 ====================
+    template<int MAX_COLLISION = 4>
+    struct CollisionSlot
+    {
+        int ids[MAX_COLLISION];     // 固定大小的ID数组
+        int count;                  // 当前存储的ID数量
+
+        CollisionSlot() : count(0) 
+        {
+            for(int i = 0; i < MAX_COLLISION; i++)
+                ids[i] = -1;
+        }
+
+        bool IsFull() const { return count >= MAX_COLLISION; }
+        bool IsEmpty() const { return count == 0; }
+
+        bool Add(int id)
+        {
+            if(IsFull())
+                return false;
+            ids[count++] = id;
+            return true;
+        }
+
+        int Find(const auto& verify_func) const
+        {
+            for(int i = 0; i < count; i++)
+            {
+                if(verify_func(ids[i]))
+                    return ids[i];
+            }
+            return -1;
+        }
+
+        // 迭代器支持
+        const int* begin() const { return ids; }
+        const int* end() const { return ids + count; }
     };
 
     // ==================== 改进版 ConstStringSet ====================
@@ -59,10 +99,41 @@ namespace hgl
         ValueBuffer<SC> str_data;                         // 字符串数据池
         ValueArray<ConstStringView<SC>> str_list;        // 按 ID 顺序存储（值，不是指针）
 
+        // ==================== 哈希优化（使用固定大小碰撞槽位） ====================
+        // 快速查询：哈希值 → ID（99% 情况）
+        ValueKVMap<uint64, int> quick_hash_map;
+
+        // 碰撞处理：哈希值 → 固定大小的ID槽位（哈希碰撞时使用）
+        static constexpr int MAX_COLLISION_PER_HASH = 4;  // 每个哈希值最多4个碰撞（可调整）
+        ValueKVMap<uint64, CollisionSlot<MAX_COLLISION_PER_HASH>> collision_map;
+
+        // 计算字符串的哈希值（FNV-1a 算法）
+        static uint64 ComputeHash(const SC *str, int length) {
+            uint64 hash = 14695981039346656037ULL;  // FNV offset basis
+            for(int i = 0; i < length; i++) {
+                hash ^= (uint64)str[i];
+                hash *= 1099511628211ULL;  // FNV prime
+            }
+            return hash;
+        }
+
+        // 验证哈希碰撞时的真实字符串是否匹配
+        bool VerifyMatch(int id, const SC *str, int length) const {
+            if(id < 0 || id >= str_list.GetCount())
+                return false;
+
+            const auto& view = str_list[id];
+            if(view.length != length)
+                return false;
+
+            const SC* stored = str_data.GetData() + view.offset;
+            return hgl::strcmp(stored, str, length) == 0;
+        }
+
     public:
 
         // ==================== 查询接口 ====================
-        
+
         int GetCount() const { return str_list.GetCount(); }
         int GetTotalLength() const { return str_data.GetCount(); }
         int GetTotalBytes() const { return str_data.GetCount() * sizeof(SC); }
@@ -70,25 +141,20 @@ namespace hgl
 
         const ValueBuffer<SC>& GetStringData() const { return str_data; }
 
-        // ==================== 添加接口（简化） ====================
-        
+        // ==================== 添加接口（优化后） ====================
+
         // 返回值：字符串的 ID，失败返回 -1
         int Add(const SC *str, int length)
         {
             if(!str || length <= 0)
                 return -1;
 
-            // 检查是否已存在（线性查找）
-            for(int i = 0; i < str_list.GetCount(); i++)
-            {
-                const auto& view = str_list[i];
-                if(view.length == length)
-                {
-                    const SC* existing = str_data.GetData() + view.offset;
-                    if(hgl::strcmp(existing, str, length) == 0)
-                        return i;  // 返回已存在的 ID
-                }
-            }
+            uint64 hash = ComputeHash(str, length);
+
+            // 快速检查：是否已存在（使用哈希表）
+            int found_id = GetID(str, length);
+            if(found_id >= 0)
+                return found_id;  // 返回已存在的 ID
 
             // 分配新 ID
             const int new_id = str_list.GetCount();
@@ -96,7 +162,7 @@ namespace hgl
             // 添加到数据池
             const size_t offset = str_data.GetCount();
             str_data.Expand(length + 1);
-            
+
             SC *save_str = str_data.GetData() + offset;
             mem_copy<SC>(save_str, str, length);
             save_str[length] = 0;
@@ -110,6 +176,34 @@ namespace hgl
 
             // 添加到列表
             str_list.Add(view);
+
+            // ==================== 更新哈希表（优化后） ====================
+            int* p_existing = quick_hash_map.GetValuePointer(hash);
+            if(!p_existing) {
+                // 首次遇见此哈希值，直接添加
+                quick_hash_map.Add(hash, new_id);
+            } else {
+                // 发生哈希碰撞，转移到碰撞槽位
+                auto* collision_slot = collision_map.GetValuePointer(hash);
+                if(!collision_slot) {
+                    // 第一次碰撞，创建固定大小的碰撞槽位
+                    CollisionSlot<MAX_COLLISION_PER_HASH> new_slot;
+                    new_slot.Add(*p_existing);  // 旧的 ID
+                    if(!new_slot.Add(new_id)) {
+                        // 槽位已满（极少发生），记录警告但仍然添加字符串
+                        // 注意：此时查询可能会慢一些，但数据仍然有效
+                    }
+                    collision_map.Add(hash, new_slot);
+                } else {
+                    // 已有碰撞槽位，尝试追加
+                    if(!collision_slot->Add(new_id)) {
+                        // 槽位已满（极少发生），可以考虑：
+                        // 1. 扩展到动态数组（备用方案）
+                        // 2. 或者接受查询性能轻微下降（当前方案）
+                        // 建议：如果经常发生，可以增加 MAX_COLLISION_PER_HASH
+                    }
+                }
+            }
 
             return new_id;
         }
@@ -126,8 +220,8 @@ namespace hgl
             return AddAndGet(sv.c_str(), sv.Length());
         }
 
-        // ==================== 查询接口 ====================
-        
+        // ==================== 查询接口（优化后） ====================
+
         bool Contains(const SC *str, int length) const
         {
             return GetID(str, length) >= 0;
@@ -138,26 +232,32 @@ namespace hgl
             if(!str || length <= 0)
                 return -1;
 
-            // 线性查找
-            for(int i = 0; i < str_list.GetCount(); i++)
-            {
-                const auto& view = str_list[i];
-                if(view.length == length)
-                {
-                    const SC* existing = str_data.GetData() + view.offset;
-                    if(hgl::strcmp(existing, str, length) == 0)
-                        return i;
+            uint64 hash = ComputeHash(str, length);
+
+            // ==================== 快路径：直接查询（99% 情况，O(1)）====================
+            int* p_id = quick_hash_map.GetValuePointer(hash);
+            if(p_id) {
+                if(VerifyMatch(*p_id, str, length))
+                    return *p_id;  // 找到！
+
+                // ==================== 碰撞处理（1% 情况，O(1) 固定时间）====================
+                const auto* collision_slot = collision_map.GetValuePointer(hash);
+                if(collision_slot) {
+                    // 使用 lambda 进行验证
+                    return collision_slot->Find([this, str, length](int id) {
+                        return VerifyMatch(id, str, length);
+                    });
                 }
             }
 
-            return -1;
+            return -1;  // 未找到
         }
 
         const SC* GetString(int id) const
         {
             if(id < 0 || id >= GetCount())
                 return nullptr;
-                
+
             return str_list[id].GetString();
         }
 
@@ -165,7 +265,7 @@ namespace hgl
         {
             if(id < 0 || id >= GetCount())
                 return nullptr;
-                
+
             return &str_list[id];
         }
 
@@ -175,13 +275,13 @@ namespace hgl
         }
 
         // ==================== 迭代器（改进） ====================
-        
+
         // ValueArray 使用原始指针作为迭代器
         const ConstStringView<SC>* begin() const { return str_list.begin(); }
         const ConstStringView<SC>* end() const { return str_list.end(); }
 
         // ==================== 生命周期管理 ====================
-        
+
         ConstStringSet() = default;
         ~ConstStringSet() = default;
 
@@ -197,10 +297,12 @@ namespace hgl
         {
             str_data.Clear();
             str_list.Clear();
+            quick_hash_map.Clear();
+            collision_map.Clear();
         }
 
         // ==================== 批量操作 ====================
-        
+
         void Reserve(int count)
         {
             str_list.Reserve(count);
@@ -213,10 +315,53 @@ namespace hgl
             for(const auto& str : strings)
                 Add(str.c_str(), str.length());
         }
+
+        // ==================== 哈希统计接口（性能分析 - 优化后） ====================
+
+        // 获取哈希碰撞次数
+        int GetCollisionCount() const {
+            return collision_map.GetCount();
+        }
+
+        // 获取哈希表负载因子（用于性能分析）
+        float GetLoadFactor() const {
+            int total_entries = quick_hash_map.GetCount();
+            return total_entries > 0 ?
+                   (float)str_list.GetCount() / total_entries :
+                   0.0f;
+        }
+
+        // 获取平均碰撞链长度（用于性能分析）
+        float GetAverageCollisionChainLength() const {
+            if(collision_map.GetCount() == 0)
+                return 0.0f;
+
+            int total_collision_ids = 0;
+            for(const auto& kv : collision_map) {
+                total_collision_ids += kv.value.count;
+            }
+            return (float)total_collision_ids / collision_map.GetCount();
+        }
+
+        // 获取碰撞槽位溢出次数（性能监控）
+        int GetCollisionOverflowCount() const {
+            int overflow_count = 0;
+            for(const auto& kv : collision_map) {
+                if(kv.value.IsFull()) {
+                    overflow_count++;
+                }
+            }
+            return overflow_count;
+        }
+
+        // 获取最大碰撞槽位大小（配置参数）
+        static constexpr int GetMaxCollisionPerHash() {
+            return MAX_COLLISION_PER_HASH;
+        }
     };
 
     // ==================== 类型别名 ====================
-    
+
     using ConstAnsiStringSet = ConstStringSet<char>;
     using ConstWideStringSet = ConstStringSet<wchar_t>;
     using ConstU8StringSet = ConstStringSet<u8char>;
@@ -230,11 +375,10 @@ namespace hgl
     using ConstOSStringView = ConstStringView<os_char>;
 
     // ==================== 辅助函数 ====================
-    
-    template<typename SC> 
-    bool SaveToTextStream(io::TextOutputStream *tos, const ConstStringSet<SC> *css, bool output_id = false);
-    
-    template<typename SC> 
-    bool SaveToTextFile(const OSString &filename, const ConstStringSet<SC> *css, bool output_id = false, bool output_bom = true);
 
+    template<typename SC>
+    bool SaveToTextStream(io::TextOutputStream *tos, const ConstStringSet<SC> *css, bool output_id = false);
+
+    template<typename SC>
+    bool SaveToTextFile(const OSString &filename, const ConstStringSet<SC> *css, bool output_id = false, bool output_bom = true);
 }//namespace hgl

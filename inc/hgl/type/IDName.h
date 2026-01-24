@@ -78,13 +78,13 @@ namespace hgl
     /**
     * 顺序ID+名称数据结构模板<br>
     * 按添加进来的名字先后顺序一个个产生连续的序号，所有数据只可读不可写
-    * 
+    *
     * 设计意图：
     * - 通过 ConstStringSet 统计所有不重复的字符串
     * - 比较时直接使用序列号（ID）进行比较以提升速度
     * - 保存时使用字符串
     */
-    template<typename SC, typename MANAGER> 
+    template<typename SC, typename MANAGER>
     class OrderedIDName
     {
     public:
