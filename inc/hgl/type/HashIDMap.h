@@ -4,55 +4,55 @@
 
 namespace hgl
 {
-    // ==================== 固定大小的碰撞槽位 ====================
-    template<int MAX_COLLISION = 4>
-    struct CollisionSlot
-    {
-        int ids[MAX_COLLISION];     // 固定大小的ID数组
-        int count;                  // 当前存储的ID数量
-
-        CollisionSlot() : count(0) 
-        {
-            for(int i = 0; i < MAX_COLLISION; i++)
-                ids[i] = -1;
-        }
-
-        bool IsFull() const { return count >= MAX_COLLISION; }
-        bool IsEmpty() const { return count == 0; }
-
-        bool Add(int id)
-        {
-            if(IsFull())
-                return false;
-            ids[count++] = id;
-            return true;
-        }
-
-        int Find(const auto& verify_func) const
-        {
-            for(int i = 0; i < count; i++)
-            {
-                if(verify_func(ids[i]))
-                    return ids[i];
-            }
-            return -1;
-        }
-
-        // 迭代器支持
-        const int* begin() const { return ids; }
-        const int* end() const { return ids + count; }
-    };
-
     // ==================== 哈希到ID的映射管理器 ====================
     template<int MAX_COLLISION = 4>
     class HashIDMap
     {
     private:
+        // ==================== 固定大小的碰撞槽位（内部类） ====================
+        struct CollisionSlot
+        {
+            int ids[MAX_COLLISION];     // 固定大小的ID数组
+            int count;                  // 当前存储的ID数量
+
+            CollisionSlot() : count(0) 
+            {
+                for(int i = 0; i < MAX_COLLISION; i++)
+                    ids[i] = -1;
+            }
+
+            bool IsFull() const { return count >= MAX_COLLISION; }
+            bool IsEmpty() const { return count == 0; }
+
+            bool Add(int id)
+            {
+                if(IsFull())
+                    return false;
+                ids[count++] = id;
+                return true;
+            }
+
+            template<typename VerifyFunc>
+            int Find(VerifyFunc verify_func) const
+            {
+                for(int i = 0; i < count; i++)
+                {
+                    if(verify_func(ids[i]))
+                        return ids[i];
+                }
+                return -1;
+            }
+
+            // 迭代器支持
+            const int* begin() const { return ids; }
+            const int* end() const { return ids + count; }
+        };
+
         // 快速查询：哈希值 → ID（99% 情况）
         ValueKVMap<uint64, int> quick_map;
 
         // 碰撞处理：哈希值 → 固定大小的ID槽位（哈希碰撞时使用）
-        ValueKVMap<uint64, CollisionSlot<MAX_COLLISION>> collision_map;
+        ValueKVMap<uint64, CollisionSlot> collision_map;
 
     public:
 
@@ -80,7 +80,7 @@ namespace hgl
             auto* collision_slot = collision_map.GetValuePointer(hash);
             if(!collision_slot) {
                 // 第一次碰撞，创建固定大小的碰撞槽位
-                CollisionSlot<MAX_COLLISION> new_slot;
+                CollisionSlot new_slot;
                 new_slot.Add(*p_existing);  // 旧的 ID
                 bool success = new_slot.Add(id);  // 新的 ID
                 collision_map.Add(hash, new_slot);
