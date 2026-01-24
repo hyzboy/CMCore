@@ -54,6 +54,102 @@ namespace hgl
 
     public:
 
+        // ==================== 迭代器支持 ====================
+
+        /**
+         * @brief CN:常量迭代器\nEN:Const iterator
+         */
+        class ConstIterator
+        {
+        private:
+            const UnorderedValueSet* set;
+            int index;
+
+        public:
+            ConstIterator(const UnorderedValueSet* s, int idx) : set(s), index(idx) {}
+
+            /**
+             * @brief CN:解引用运算符\nEN:Dereference operator
+             */
+            T operator*() const
+            {
+                T value;
+                set->Get(index, value);
+                return value;
+            }
+
+            /**
+             * @brief CN:前置递增\nEN:Pre-increment
+             */
+            ConstIterator& operator++()
+            {
+                ++index;
+                return *this;
+            }
+
+            /**
+             * @brief CN:后置递增\nEN:Post-increment
+             */
+            ConstIterator operator++(int)
+            {
+                ConstIterator temp = *this;
+                ++index;
+                return temp;
+            }
+
+            /**
+             * @brief CN:不等比较\nEN:Inequality comparison
+             */
+            bool operator!=(const ConstIterator& other) const
+            {
+                return index != other.index || set != other.set;
+            }
+
+            /**
+             * @brief CN:相等比较\nEN:Equality comparison
+             */
+            bool operator==(const ConstIterator& other) const
+            {
+                return index == other.index && set == other.set;
+            }
+        };
+
+        using const_iterator = ConstIterator;
+
+        /**
+         * @brief CN:获取开始迭代器\nEN:Get begin iterator
+         */
+        ConstIterator begin() const
+        {
+            return ConstIterator(this, 0);
+        }
+
+        /**
+         * @brief CN:获取结束迭代器\nEN:Get end iterator
+         */
+        ConstIterator end() const
+        {
+            return ConstIterator(this, GetCount());
+        }
+
+        /**
+         * @brief CN:获取常量开始迭代器\nEN:Get const begin iterator
+         */
+        ConstIterator cbegin() const
+        {
+            return begin();
+        }
+
+        /**
+         * @brief CN:获取常量结束迭代器\nEN:Get const end iterator
+         */
+        ConstIterator cend() const
+        {
+            return end();
+        }
+
+        // ==================== 基本方法 ====================
+
         UnorderedValueSet() = default;
         virtual ~UnorderedValueSet() = default;
 
@@ -220,7 +316,7 @@ namespace hgl
          */
         void Clear()
         {
-            data_manager.ReleaseAllActive();
+            data_manager.Clear();
             hash_map.Clear();
         }
 
@@ -229,10 +325,10 @@ namespace hgl
          */
         void Free()
         {
-            Clear();
             // ValueBuffer 的内存会在析构时自动释放
             // 这里显式清空以触发内存释放
-            data_manager = ActiveDataManager<T>();
+            data_manager.Free();
+            hash_map.Free();
         }
 
         // ==================== 获取数据 ====================
@@ -403,6 +499,40 @@ namespace hgl
         const T* At(int id) const
         {
             return const_cast<ThisClass*>(this)->data_manager.At(id);
+        }
+
+        // ==================== 哈希统计接口 ====================
+
+        /**
+         * @brief CN:获取哈希碰撞槽位数\nEN:Get collision slot count
+         */
+        int GetCollisionCount() const
+        {
+            return hash_map.GetCollisionCount();
+        }
+
+        /**
+         * @brief CN:获取负载因子\nEN:Get load factor
+         */
+        float GetLoadFactor() const
+        {
+            return hash_map.GetLoadFactor(GetCount());
+        }
+
+        /**
+         * @brief CN:获取平均碰撞链长度\nEN:Get average collision chain length
+         */
+        float GetAverageCollisionChainLength() const
+        {
+            return hash_map.GetAverageCollisionChainLength();
+        }
+
+        /**
+         * @brief CN:获取溢出槽位数\nEN:Get collision overflow count
+         */
+        int GetCollisionOverflowCount() const
+        {
+            return hash_map.GetCollisionOverflowCount();
         }
     };
 
