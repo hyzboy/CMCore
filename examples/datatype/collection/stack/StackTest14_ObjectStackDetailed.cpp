@@ -9,14 +9,14 @@ using namespace std;
 int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
-    cout << "TEST 14: ObjectStack Detailed Tests" << endl;
+    cout << "TEST 14: ManagedStack Detailed Tests" << endl;
     cout << "========================================" << endl;
 
     TrackedObject::ResetCounters();
     
     cout << "\n[14.1] Clear() without Free():" << endl;
     {
-        ObjectStack<TrackedObject> obj_stack;
+        ManagedStack<TrackedObject> obj_stack;
         
         for (int i = 0; i < 3; i++)
             obj_stack.Push(new TrackedObject(i * 100));

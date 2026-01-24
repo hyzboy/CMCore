@@ -11,7 +11,7 @@ int os_main(int, os_char**)
     cout << "TEST 8: Capacity Management" << endl;
     cout << "========================================" << endl;
 
-    Stack<int> stack;
+    ValueStack<int> stack;
 
     cout << "\n[8.1] Reserve capacity:" << endl;
     assert(stack.Reserve(1000));

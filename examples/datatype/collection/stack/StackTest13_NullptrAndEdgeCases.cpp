@@ -13,7 +13,7 @@ int os_main(int, os_char**)
     cout << "========================================" << endl;
 
     cout << "\n[13.1] Push nullptr array:" << endl;
-    Stack<int> stack;
+    ValueStack<int> stack;
     assert(!stack.Push(nullptr, 5));  // 应该失败
     assert(stack.GetCount() == 0);
     cout << "  ✓ Push(nullptr, count) correctly rejected" << endl;
@@ -25,11 +25,11 @@ int os_main(int, os_char**)
     assert(stack.GetCount() == 0);
     cout << "  ✓ Push with invalid count rejected" << endl;
     
-    cout << "\n[13.3] ObjectStack push nullptr:" << endl;
-    ObjectStack<TrackedObject> obj_stack;
+    cout << "\n[13.3] ManagedStack push nullptr:" << endl;
+    ManagedStack<TrackedObject> obj_stack;
     assert(!obj_stack.Push(nullptr));
     assert(obj_stack.GetCount() == 0);
-    cout << "  ✓ ObjectStack::Push(nullptr) correctly rejected" << endl;
+    cout << "  ✓ ManagedStack::Push(nullptr) correctly rejected" << endl;
     
     cout << "\n[13.4] Pop more elements than available:" << endl;
     stack.Push(10);
@@ -41,7 +41,7 @@ int os_main(int, os_char**)
     cout << "  ✓ Pop with insufficient elements rejected" << endl;
     
     cout << "\n[13.5] GetTotalBytes():" << endl;
-    Stack<int> byte_stack;
+    ValueStack<int> byte_stack;
     byte_stack.Push(1);
     byte_stack.Push(2);
     byte_stack.Push(3);

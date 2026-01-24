@@ -9,14 +9,14 @@ using namespace std;
 int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
-    cout << "TEST 4: Move Semantics with ObjectStack" << endl;
+    cout << "TEST 4: Move Semantics with ManagedStack" << endl;
     cout << "========================================" << endl;
 
     TrackedObject::ResetCounters();
 
-    cout << "\n[4.1] ObjectStack operations with dynamically allocated objects:" << endl;
+    cout << "\n[4.1] ManagedStack operations with dynamically allocated objects:" << endl;
     {
-        ObjectStack<TrackedObject> stack1;
+        ManagedStack<TrackedObject> stack1;
         stack1.Push(new TrackedObject(100));
         stack1.Push(new TrackedObject(200));
 
@@ -24,9 +24,9 @@ int os_main(int, os_char**)
         TrackedObject::PrintCounters();
         assert(stack1.GetCount() == 2);
 
-        cout << "\n  Stack contains 2 elements:" << endl;
+        cout << "\n  ValueStack contains 2 elements:" << endl;
         TrackedObject::PrintCounters();
-        cout << "  ✓ ObjectStack successfully holds " << stack1.GetCount() << " elements" << endl;
+        cout << "  ✓ ManagedStack successfully holds " << stack1.GetCount() << " elements" << endl;
     }
 
     cout << "\n[4.2] After scope exit:" << endl;

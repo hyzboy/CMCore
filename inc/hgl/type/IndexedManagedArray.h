@@ -23,7 +23,7 @@ namespace hgl
 
         PtrArray<T>   data_array;
         ValueBuffer<I>     data_index;
-        Stack<I>         free_index;
+        ValueStack<I>         free_index;
 
     public: //属性
 

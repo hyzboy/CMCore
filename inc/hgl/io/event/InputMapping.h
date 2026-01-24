@@ -276,7 +276,7 @@ namespace hgl::io
 
     private:
 
-        Stack<InputContext*>                context_stack;          ///< 上下文堆栈（栈顶优先）
+        ValueStack<InputContext*>                context_stack;          ///< 上下文堆栈（栈顶优先）
         Map<ActionID, ActionState>          action_states;          ///< 当前激活的动作状态
         ActionCallback                      action_callback;        ///< 动作事件回调
         double                              current_time;           ///< 当前时间（秒）

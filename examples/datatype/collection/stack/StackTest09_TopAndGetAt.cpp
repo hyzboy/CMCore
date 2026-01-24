@@ -11,7 +11,7 @@ int os_main(int, os_char**)
     cout << "TEST 9: Top() and GetAt() Methods" << endl;
     cout << "========================================" << endl;
 
-    Stack<int> stack;
+    ValueStack<int> stack;
     
     cout << "\n[9.1] Top() on non-empty stack:" << endl;
     for (int i = 0; i < 5; i++)

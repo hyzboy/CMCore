@@ -11,7 +11,7 @@ int os_main(int, os_char**)
     cout << "TEST 3: Batch Operations" << endl;
     cout << "========================================" << endl;
 
-    Stack<int> stack;
+    ValueStack<int> stack;
 
     cout << "\n[3.1] Batch push:" << endl;
     int batch_data[] = {10, 20, 30, 40, 50};

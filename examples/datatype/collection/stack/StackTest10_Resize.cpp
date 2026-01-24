@@ -16,7 +16,7 @@ int os_main(int, os_char**)
 
     cout << "\n[10.1] Resize to larger size:" << endl;
     {
-        ObjectStack<TrackedObject> stack;
+        ManagedStack<TrackedObject> stack;
         stack.Push(new TrackedObject(100));
         stack.Push(new TrackedObject(200));
 
@@ -33,7 +33,7 @@ int os_main(int, os_char**)
     cout << "\n[10.2] Resize to smaller size:" << endl;
     TrackedObject::ResetCounters();
     {
-        Stack<int> stack;
+        ValueStack<int> stack;
         for (int i = 0; i < 10; i++)
             stack.Push(i);
 

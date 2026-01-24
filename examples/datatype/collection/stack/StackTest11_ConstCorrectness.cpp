@@ -11,12 +11,12 @@ int os_main(int, os_char**)
     cout << "TEST 11: Const Correctness" << endl;
     cout << "========================================" << endl;
 
-    Stack<int> stack;
+    ValueStack<int> stack;
     for (int i = 0; i < 5; i++)
         stack.Push(i * 10);
     
-    cout << "\n[11.1] const Stack iterators:" << endl;
-    const Stack<int>& const_stack = stack;
+    cout << "\n[11.1] const ValueStack iterators:" << endl;
+    const ValueStack<int>& const_stack = stack;
     
     // const版本应返回const指针
     const int* const_begin = const_stack.begin();
@@ -32,7 +32,7 @@ int os_main(int, os_char**)
     assert(count == 5);
     cout << "  ✓ const iterators work correctly" << endl;
     
-    cout << "\n[11.2] Non-const Stack iterators (writable):" << endl;
+    cout << "\n[11.2] Non-const ValueStack iterators (writable):" << endl;
     int* mut_begin = stack.begin();
     int* mut_end = stack.end();
     

@@ -11,7 +11,7 @@ int os_main(int, os_char**)
     cout << "TEST 12: Implicit Conversion to ValueBuffer" << endl;
     cout << "========================================" << endl;
 
-    Stack<int> stack;
+    ValueStack<int> stack;
     for (int i = 0; i < 5; i++)
         stack.Push(i * 10);
     

@@ -15,7 +15,7 @@ int os_main(int, os_char**)
     cout << "    which can cause thread-safety and pollution issues" << endl;
 
     cout << "\n[17.1] Shared static empty value between instances:" << endl;
-    Stack<int> stack1, stack2, stack3;
+    ValueStack<int> stack1, stack2, stack3;
     
     // 所有空栈调用 Top() 应该返回相同的静态对象地址
     const int& ref1 = stack1.Top();
@@ -39,7 +39,7 @@ int os_main(int, os_char**)
     }
 
     cout << "\n[17.2] Non-const Top() pollution test:" << endl;
-    Stack<int> empty_stack1, empty_stack2;
+    ValueStack<int> empty_stack1, empty_stack2;
     
     // 通过非 const 版本修改静态空值
     int& mutable_ref = empty_stack1.Top();
@@ -65,7 +65,7 @@ int os_main(int, os_char**)
     mutable_ref = original_value;
 
     cout << "\n[17.3] GetAt() static empty value test:" << endl;
-    Stack<int> stack_a, stack_b;
+    ValueStack<int> stack_a, stack_b;
     
     // 越界访问应返回静态空值
     const int& get_a = stack_a.GetAt(-1);
@@ -85,19 +85,19 @@ int os_main(int, os_char**)
     }
 
     cout << "\n[17.4] Mixed usage scenario (realistic bug trigger):" << endl;
-    Stack<int> user_stack1, user_stack2;
+    ValueStack<int> user_stack1, user_stack2;
     
     // 用户 A 的栈正常使用
     user_stack1.Push(100);
     user_stack1.Push(200);
     
     // 用户 B 错误地调用空栈的 Top() 并修改
-    Stack<int> buggy_empty_stack;
+    ValueStack<int> buggy_empty_stack;
     int& buggy_ref = buggy_empty_stack.Top();
     buggy_ref = 99999;
     
     // 用户 C 使用新的空栈
-    Stack<int> innocent_stack;
+    ValueStack<int> innocent_stack;
     int& innocent_ref = innocent_stack.Top();
     
     if (innocent_ref == 99999)
@@ -133,7 +133,7 @@ int os_main(int, os_char**)
 
     cout << "\n⚠️  TEST 17 COMPLETED - BUG VERIFICATION DONE" << endl;
     cout << "    This test documents a known thread-safety issue" << endl;
-    cout << "    Action required: Fix Top() and GetAt() in Stack.h" << endl;
+    cout << "    Action required: Fix Top() and GetAt() in ValueStack.h" << endl;
     
     return 0;
 }

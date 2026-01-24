@@ -12,12 +12,12 @@ int os_main(int, os_char**)
     cout << "========================================" << endl;
 
     cout << "\n[16.1] operator== - Two empty stacks:" << endl;
-    Stack<int> empty1, empty2;
+    ValueStack<int> empty1, empty2;
     assert(empty1 == empty2);
     cout << "  ✓ Two empty stacks are equal" << endl;
 
     cout << "\n[16.2] operator== - Identical content:" << endl;
-    Stack<int> stack1, stack2;
+    ValueStack<int> stack1, stack2;
     
     for (int i = 0; i < 5; i++)
     {
@@ -29,7 +29,7 @@ int os_main(int, os_char**)
     cout << "  ✓ Two stacks with identical content are equal" << endl;
 
     cout << "\n[16.3] operator== - Different lengths:" << endl;
-    Stack<int> stack3, stack4;
+    ValueStack<int> stack3, stack4;
     
     stack3.Push(10);
     stack3.Push(20);
@@ -42,7 +42,7 @@ int os_main(int, os_char**)
     cout << "  ✓ Stacks with different lengths are not equal" << endl;
 
     cout << "\n[16.4] operator== - Same length, different content:" << endl;
-    Stack<int> stack5, stack6;
+    ValueStack<int> stack5, stack6;
     
     stack5.Push(10);
     stack5.Push(20);
@@ -56,15 +56,15 @@ int os_main(int, os_char**)
     cout << "  ✓ Stacks with same length but different content are not equal" << endl;
 
     cout << "\n[16.5] operator== - Self comparison:" << endl;
-    Stack<int> stack7;
+    ValueStack<int> stack7;
     stack7.Push(100);
     stack7.Push(200);
     
     assert(stack7 == stack7);
-    cout << "  ✓ Stack is equal to itself" << endl;
+    cout << "  ✓ ValueStack is equal to itself" << endl;
 
     cout << "\n[16.6] operator== - After modifications:" << endl;
-    Stack<int> stack8, stack9;
+    ValueStack<int> stack8, stack9;
     
     stack8.Push(10);
     stack8.Push(20);
@@ -84,7 +84,7 @@ int os_main(int, os_char**)
     cout << "  ✓ Equality changes correctly after modifications" << endl;
 
     cout << "\n[16.7] operator!= - Basic functionality:" << endl;
-    Stack<int> stack10, stack11;
+    ValueStack<int> stack10, stack11;
     
     stack10.Push(100);
     stack11.Push(200);
@@ -93,7 +93,7 @@ int os_main(int, os_char**)
     cout << "  ✓ operator!= returns true for different stacks" << endl;
 
     cout << "\n[16.8] operator!= - Consistency with operator==:" << endl;
-    Stack<int> stack12, stack13;
+    ValueStack<int> stack12, stack13;
     
     stack12.Push(10);
     stack12.Push(20);
@@ -112,7 +112,7 @@ int os_main(int, os_char**)
     cout << "  ✓ operator!= is consistent with operator==" << endl;
 
     cout << "\n[16.9] Large stack comparison (1000 elements):" << endl;
-    Stack<int> large1, large2;
+    ValueStack<int> large1, large2;
     large1.Reserve(1000);
     large2.Reserve(1000);
     
@@ -134,7 +134,7 @@ int os_main(int, os_char**)
     cout << "  ✓ Large stacks differ after single element change" << endl;
 
     cout << "\n[16.10] Empty vs non-empty:" << endl;
-    Stack<int> empty_test, non_empty_test;
+    ValueStack<int> empty_test, non_empty_test;
     non_empty_test.Push(42);
     
     assert(!(empty_test == non_empty_test));
@@ -142,7 +142,7 @@ int os_main(int, os_char**)
     cout << "  ✓ Empty stack is not equal to non-empty stack" << endl;
 
     cout << "\n[16.11] Order matters:" << endl;
-    Stack<int> order1, order2;
+    ValueStack<int> order1, order2;
     
     order1.Push(10);
     order1.Push(20);
@@ -156,7 +156,7 @@ int os_main(int, os_char**)
     cout << "  ✓ Stacks with same elements in different order are not equal" << endl;
 
     cout << "\n[16.12] After clear operations:" << endl;
-    Stack<int> clear1, clear2;
+    ValueStack<int> clear1, clear2;
     
     clear1.Push(10);
     clear1.Push(20);
@@ -172,7 +172,7 @@ int os_main(int, os_char**)
     cout << "  ✓ Both stacks are equal after clearing" << endl;
 
     cout << "\n[16.13] Stress test - Identical large datasets:" << endl;
-    Stack<int> stress1, stress2;
+    ValueStack<int> stress1, stress2;
     stress1.Reserve(10000);
     stress2.Reserve(10000);
     

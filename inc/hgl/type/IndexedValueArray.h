@@ -19,7 +19,7 @@ namespace hgl
 
         ValueBuffer<T> data_array;
         ValueBuffer<I> data_index;
-        Stack<I> free_index;
+        ValueStack<I> free_index;
 
     public: //属性
 
@@ -360,8 +360,8 @@ namespace hgl
             const int32 count=GetCount();
 
             ValueBuffer<int32> sorted_index(count);
-            Stack<int32> overflow_index;
-            Stack<int32> space_location;
+            ValueStack<int32> overflow_index;
+            ValueStack<int32> space_location;
 
             overflow_index.Reserve(count);
             space_location.Reserve(count);

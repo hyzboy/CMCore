@@ -12,7 +12,7 @@ int os_main(int, os_char**)
     cout << "========================================" << endl;
 
     cout << "\n[15.1] Contains() - Basic functionality:" << endl;
-    Stack<int> stack;
+    ValueStack<int> stack;
     
     for (int i = 0; i < 5; i++)
         stack.Push(i * 10);  // 0, 10, 20, 30, 40
@@ -25,13 +25,13 @@ int os_main(int, os_char**)
     cout << "  ✓ Contains() correctly identifies existing and non-existing elements" << endl;
 
     cout << "\n[15.2] Contains() - Empty stack:" << endl;
-    Stack<int> empty_stack;
+    ValueStack<int> empty_stack;
     assert(!empty_stack.Contains(0));
     assert(!empty_stack.Contains(42));
     cout << "  ✓ Contains() returns false for empty stack" << endl;
 
     cout << "\n[15.3] Contains() - Duplicate values:" << endl;
-    Stack<int> dup_stack;
+    ValueStack<int> dup_stack;
     dup_stack.Push(100);
     dup_stack.Push(200);
     dup_stack.Push(100);  // 重复值
@@ -84,7 +84,7 @@ int os_main(int, os_char**)
     cout << "  ✓ Find() correctly identifies bottom (0) and top (Count-1)" << endl;
 
     cout << "\n[15.8] Performance test (10000 elements):" << endl;
-    Stack<int> large_stack;
+    ValueStack<int> large_stack;
     large_stack.Reserve(10000);
     
     for (int i = 0; i < 10000; i++)
@@ -108,7 +108,7 @@ int os_main(int, os_char**)
     cout << "  ✓ Contains() and Find() work with 10000 elements" << endl;
 
     cout << "\n[15.9] Edge case - Single element:" << endl;
-    Stack<int> single_stack;
+    ValueStack<int> single_stack;
     single_stack.Push(42);
     
     assert(single_stack.Contains(42));
@@ -118,7 +118,7 @@ int os_main(int, os_char**)
     cout << "  ✓ Contains() and Find() work with single element" << endl;
 
     cout << "\n[15.10] Type test - Negative numbers:" << endl;
-    Stack<int> neg_stack;
+    ValueStack<int> neg_stack;
     neg_stack.Push(-10);
     neg_stack.Push(0);
     neg_stack.Push(10);

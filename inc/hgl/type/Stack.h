@@ -103,7 +103,7 @@ namespace hgl
         bool Resize(int count) { return data_array.Resize(count); }
 
     public:
-        // ===== 栈操作 / Stack Operations =====
+        // ===== 栈操作 / ValueStack Operations =====
 
         /**
          * @brief 压入多个数据
@@ -222,59 +222,54 @@ namespace hgl
      * EN: Standard stack container without virtual functions
      */
     template<typename T>
-    class Stack : public StackBase<T>
+    class ValueStack : public StackBase<T>
     {
     public:
-        // C++20: Ensure T is trivially copyable, otherwise use ObjectStack
+        // C++20: Ensure T is trivially copyable, otherwise use ManagedStack
         static_assert(std::is_trivially_copyable_v<T>,
-            "Stack only supports trivially copyable types (primitives, POD structures, etc.). "
-            "For non-trivial types with custom constructors/destructors, use ObjectStack<T> instead.");
+            "ValueStack only supports trivially copyable types (primitives, POD structures, etc.). "
+            "For non-trivial types with custom constructors/destructors, use ManagedStack<T> instead.");
 
-        Stack() = default;
-        virtual ~Stack() = default;
+        ValueStack() = default;
+        virtual ~ValueStack() = default;
 
         /**
-         * @brief 获取栈顶元素（只读）
-         * CN: 返回栈顶元素的常引用。如果栈为空，行为未定义（断言失败）
-         * EN: Get const reference to top element. Undefined behavior if empty (assertion fails)
+         * @brief 安全的随机访问
+         * CN: 用于遍历栈，从栈底索引 (0=bottom, Count-1=top)。越界返回 false
+         * EN: Safe random access; returns false if out of bounds
          */
-        const T& Top() const
+        bool GetAt(int index, T& out_data) const
         {
-            assert(this->data_array.GetCount() > 0 && "Stack::Top() called on empty stack");
-            return this->data_array[this->data_array.GetCount() - 1];
+            if (index < 0 || index >= this->data_array.GetCount())
+                return false;
+            out_data = this->data_array[index];
+            return true;
         }
 
         /**
-         * @brief 获取栈顶元素（可写）
-         * CN: 返回栈顶元素的可写引用。如果栈为空，行为未定义（断言失败）
-         * EN: Get mutable reference to top element. Undefined behavior if empty (assertion fails)
+         * @brief 获取栈顶元素
+         * CN: 查看栈顶但不弹出，失败返回 false
+         * EN: Peek top element, return false if empty
          */
-        T& Top()
+        bool Top(T& out_data) const
         {
-            assert(this->data_array.GetCount() > 0 && "Stack::Top() called on empty stack");
-            return this->data_array[this->data_array.GetCount() - 1];
+            if (this->data_array.GetCount() <= 0)
+                return false;
+            out_data = this->data_array[this->data_array.GetCount() - 1];
+            return true;
         }
 
         /**
-         * @brief 安全的随机访问（只读）
-         * CN: 用于遍历栈，从栈底索引 (0=bottom, Count-1=top)。越界访问断言失败
-         * EN: Safe random access from bottom (0=bottom, Count-1=top). Out-of-bounds asserts
+         * @brief 获取栈底元素
+         * CN: 查看栈底但不弹出，失败返回 false
+         * EN: Peek bottom element, return false if empty
          */
-        const T& GetAt(int index) const
+        bool Bottom(T& out_data) const
         {
-            assert(index >= 0 && index < this->data_array.GetCount() && "Stack::GetAt() index out of bounds");
-            return this->data_array[index];
-        }
-
-        /**
-         * @brief 安全的随机访问（可写）
-         * CN: 用于修改栈中的元素。越界访问断言失败
-         * EN: Safe random access (writable). Out-of-bounds asserts
-         */
-        T& GetAt(int index)
-        {
-            assert(index >= 0 && index < this->data_array.GetCount() && "Stack::GetAt() index out of bounds");
-            return this->data_array[index];
+            if (this->data_array.GetCount() <= 0)
+                return false;
+            out_data = this->data_array[0];
+            return true;
         }
 
         /**
@@ -355,7 +350,7 @@ namespace hgl
          * @param other 要比较的另一个栈
          * @return 如果两个栈的元素相同，返回 true；否则返回 false
          */
-        bool operator==(const Stack<T>& other) const
+        bool operator==(const ValueStack<T>& other) const
         {
             if (this->data_array.GetCount() != other.data_array.GetCount())
                 return false;
@@ -371,24 +366,24 @@ namespace hgl
          * @param other 要比较的另一个栈
          * @return 如果两个栈的元素不同，返回 true；否则返回 false
          */
-        bool operator!=(const Stack<T>& other) const
+        bool operator!=(const ValueStack<T>& other) const
         {
             return !(*this == other);
         }
 
-    };// class Stack
+    };// class ValueStack
 
     /**
      * @brief 对象栈（管理指针所有权）
      * CN: 专用于管理动态分配的对象指针，自动删除
-     * EN: Stack for managing pointer ownership with automatic cleanup
+     * EN: ValueStack for managing pointer ownership with automatic cleanup
      */
     template<typename T>
-    class ObjectStack : public StackBase<T*>
+    class ManagedStack : public StackBase<T*>
     {
     public:
-        ObjectStack() = default;
-        virtual ~ObjectStack() { Free(); }
+        ManagedStack() = default;
+        virtual ~ManagedStack() { Free(); }
 
         /**
          * @brief 压入对象指针
@@ -471,6 +466,6 @@ namespace hgl
             this->data_array.Free();
         }
 
-    }; // class ObjectStack
+    }; // class ManagedStack
 
 } // namespace hgl
