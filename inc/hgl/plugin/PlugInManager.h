@@ -19,7 +19,7 @@ namespace hgl
     /**
      * 插件管理
      */
-    class PlugInManager:public ObjectManager<OSString,PlugIn>
+    class PlugInManager:public ManagedObjectRegistry<OSString,PlugIn>
     {
         OSString name;                                                          ///<插件类目名称(必须符合代码名称规则)
 
@@ -48,7 +48,7 @@ namespace hgl
         PlugIn *LoadPlugin  (const OSString &,const OSString &);                ///<加载一个外部插件，明确指定全路径文件名
         PlugIn *LoadPlugin  (const OSString &);                                 ///<加载一个外部插件，自行查找
         bool    UnloadPlugin(const OSString &);                                 ///<释放一个外部插件
-    };//class PlugInManager:public ObjectManager<U16String,PlugIn>
+    };//class PlugInManager:public ManagedObjectRegistry<U16String,PlugIn>
 
     /**
      * 插件注册模板

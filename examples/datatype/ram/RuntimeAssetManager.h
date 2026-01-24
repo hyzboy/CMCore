@@ -4,7 +4,7 @@
 
 using namespace hgl;
 
-template<typename K,typename V> struct RuntimeAssetManager:public ObjectManager<K,V>
+template<typename K,typename V> struct RuntimeAssetManager:public ManagedObjectRegistry<K,V>
 {
 public:
 
@@ -12,7 +12,7 @@ public:
     {
         if(!v)return(false);
 
-        return ObjectManager<K,V>::Add(v->GetID(),v);
+        return ManagedObjectRegistry<K,V>::Add(v->GetID(),v);
     }
 };
 

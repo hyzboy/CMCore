@@ -9,7 +9,7 @@ namespace hgl
      * 数据堆栈池(一种简单的数据池结构，不支持动态调整大小)<br>
      * 仅用于一些只有申请和释放操作的情况，感觉没什么用处，但又经常需要。
      */
-    template<typename T> class DataStackPool
+    template<typename T> class SimpleValuePool
     {
     protected:
 
@@ -24,7 +24,7 @@ namespace hgl
 
     public:
 
-        DataStackPool()
+        SimpleValuePool()
         {
             data_array=nullptr;
             end=nullptr;
@@ -39,7 +39,7 @@ namespace hgl
             return series.Init(max_count);
         }
 
-        ~DataStackPool()
+        ~SimpleValuePool()
         {
             delete[] data_array;
         }
@@ -66,5 +66,5 @@ namespace hgl
 
             return series.Release(pos);
         }
-    };//template<typename T> class DataStackPool
+    };//template<typename T> class SimpleValuePool
 }//namespace

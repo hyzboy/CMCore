@@ -265,13 +265,13 @@ namespace hgl
     * @tparam V CN:值类型。EN:Value type.
     */
     template<typename K, typename V>
-    class ObjectManager : public ObjectManagerImpl<K, V>
+    class ManagedObjectRegistry : public ObjectManagerImpl<K, V>
     {
     public:
 
-        ObjectManager() = default;
+        ManagedObjectRegistry() = default;
 
-        virtual ~ObjectManager() = default;
+        virtual ~ManagedObjectRegistry() = default;
 
     };
 
@@ -281,7 +281,7 @@ namespace hgl
     * @tparam V CN:值类型。EN:Value type.
     */
     template<typename K, typename V>
-    class AutoIdObjectManager : public ObjectManager<K, V>
+    class AutoIdObjectManager : public ManagedObjectRegistry<K, V>
     {
     protected:
 
@@ -292,7 +292,7 @@ namespace hgl
 
     public:
 
-        using ObjectManager<K, V>::ObjectManager;
+        using ManagedObjectRegistry<K, V>::ManagedObjectRegistry;
 
         virtual ~AutoIdObjectManager() = default;
 
@@ -311,13 +311,13 @@ namespace hgl
             {
                 K key;
                 uint count;
-                if (ObjectManager<K, V>::GetKeyByValue(value, &key, &count, true))
+                if (ManagedObjectRegistry<K, V>::GetKeyByValue(value, &key, &count, true))
                 {
                     return key;
                 }
             }
 
-            if (!ObjectManager<K, V>::Add(id_count, value))
+            if (!ManagedObjectRegistry<K, V>::Add(id_count, value))
             {
                 return K(-1);
             }

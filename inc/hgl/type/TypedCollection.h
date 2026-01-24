@@ -7,7 +7,7 @@ namespace hgl
     /**
     * 元素合集模板是Collection类的一个模板化版本，它的数据计数和长度都是以模板类型为基准。
     */
-    template<typename T> class ElementCollection:public Collection
+    template<typename T> class TypedCollection:public Collection
     {
     public:
 
@@ -19,8 +19,8 @@ namespace hgl
 
     public:
 
-        ElementCollection(MemoryBlock *mb=new MemoryBlock):Collection(sizeof(T),mb){}
-        virtual ~ElementCollection()=default;
+        TypedCollection(MemoryBlock *mb=new MemoryBlock):Collection(sizeof(T),mb){}
+        virtual ~TypedCollection()=default;
 
         bool Add(const T &element){return Collection::Add(&element);}
 
@@ -38,5 +38,5 @@ namespace hgl
         {
             return Collection::RemoveValue(condition,max_count);
         }
-    };//class ElementCollection
+    };//class TypedCollection
 }//namespace hgl

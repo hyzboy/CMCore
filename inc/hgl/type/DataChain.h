@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/DataStackPool.h>
+#include<hgl/type/SimpleValuePool.h>
 #include<hgl/type/OrderedValueSet.h>
 
 namespace hgl
@@ -40,7 +40,7 @@ namespace hgl
 
     protected:
 
-        DataStackPool<UserNode> ud_pool;    ///<用户数据占用信息池
+        SimpleValuePool<UserNode> ud_pool;    ///<用户数据占用信息池
 
         OrderedValueSet<UserNode *> ud_set;      ///<用户数据占用合集
 
@@ -64,7 +64,7 @@ namespace hgl
 
     private:
 
-        DataStackPool<ChainNode> node_pool; ///<链表节点池
+        SimpleValuePool<ChainNode> node_pool; ///<链表节点池
 
         int free_count;                     ///<空闲数据块数量
 

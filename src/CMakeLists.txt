@@ -37,7 +37,7 @@ SOURCE_GROUP("DataType\\IDName\\Sources" FILES ${CMCORE_TYPE_IDNAME_SOURCES})
 
 ## Collection 集合
 SET(CMCORE_TYPE_COLLECTION_HEADERS  ${CMCORE_TYPE_INCLUDE_PATH}/Collection.h
-                                    ${CMCORE_TYPE_INCLUDE_PATH}/ElementCollection.h)
+                                    ${CMCORE_TYPE_INCLUDE_PATH}/TypedCollection.h)
 
 SET(CMCORE_TYPE_COLLECTION_SOURCES  Type/Collection.cpp)
 
