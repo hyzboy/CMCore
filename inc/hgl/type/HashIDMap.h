@@ -146,6 +146,12 @@ namespace hgl
             collision_map.Clear();
         }
 
+        void Free()
+        {
+            quick_map.Free();
+            collision_map.Free();
+        }
+
         bool IsEmpty() const
         {
             return quick_map.IsEmpty();

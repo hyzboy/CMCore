@@ -31,10 +31,7 @@ namespace hgl
 
     public:
 
-        ActiveDataManager()
-        {
-        }
-
+        ActiveDataManager()=default;
         virtual ~ActiveDataManager() = default;
 
         /**
@@ -281,6 +278,24 @@ namespace hgl
         int ReleaseAllActive()
         {
             return aim.ReleaseAllActive();
+        }
+
+        /**
+        * @brief CN:清空所有活跃数据（但不释放内存）。\nEN:Clear all active data (without freeing memory).
+        */
+        void Clear()
+        {
+            aim.ReleaseAllActive();
+            data_array.Clear();
+        }
+
+        /**
+        * @brief CN:清空所有数据并释放内存。\nEN:Clear all data and free memory.
+        */
+        void Free()
+        {
+            aim.Free();
+            data_array.Free();
         }
 
         /**

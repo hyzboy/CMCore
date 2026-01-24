@@ -139,6 +139,24 @@ namespace hgl
             }
         }
 
+        /**
+         * @brief CN:释放所有内存并重置所有计数器\nEN:Free all memory and reset all counters
+         * 
+         * CN:彻底释放内部容器的内存，并将所有计数器归零。\nEN:Completely frees internal container memory and resets all counters to zero.
+         * CN:适用于不再需要管理器时的彻底清理。\nEN:Suitable for thorough cleanup when the manager is no longer needed.
+         *
+         * 用法示例 / Usage example:
+         * idm.Free();  // CN:彻底释放所有资源 / EN:Completely free all resources
+         */
+        void Free()
+        {
+            active_list.Free();
+            idle_list.Free();
+            
+            id_count = 0;
+            released_count = 0;
+        }
+
         // ==================== 统计接口 ====================
 
         /**
