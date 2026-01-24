@@ -470,5 +470,39 @@ namespace hgl
         {
             return const_cast<ThisClass*>(this)->At(id);
         }
+
+        // ==================== 哈希统计接口 ====================
+
+        /**
+         * @brief CN:获取哈希碰撞槽位数\nEN:Get collision slot count
+         */
+        int GetCollisionCount() const
+        {
+            return hash_map.GetCollisionCount();
+        }
+
+        /**
+         * @brief CN:获取负载因子\nEN:Get load factor
+         */
+        float GetLoadFactor() const
+        {
+            return hash_map.GetLoadFactor(GetCount());
+        }
+
+        /**
+         * @brief CN:获取平均碰撞链长度\nEN:Get average collision chain length
+         */
+        float GetAverageCollisionChainLength() const
+        {
+            return hash_map.GetAverageCollisionChainLength();
+        }
+
+        /**
+         * @brief CN:获取溢出槽位数\nEN:Get collision overflow count
+         */
+        int GetCollisionOverflowCount() const
+        {
+            return hash_map.GetCollisionOverflowCount();
+        }
     };
 } // namespace hgl
