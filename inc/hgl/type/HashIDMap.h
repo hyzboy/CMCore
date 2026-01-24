@@ -4,6 +4,31 @@
 
 namespace hgl
 {
+    // ==================== 通用哈希函数（FNV-1a） ====================
+    /**
+     * 计算数据的哈希值（使用 FNV-1a 算法）
+     * @tparam T 数据类型
+     * @param value 要计算哈希的数据
+     * @return 64位哈希值
+     */
+    template<typename T>
+    inline uint64 ComputeFNV1aHash(const T& value)
+    {
+        // 对于基础类型，使用指针转换
+        const uint8* bytes = (const uint8*)&value;
+        const int size = sizeof(T);
+
+        uint64 hash = 14695981039346656037ULL;
+
+        for(int i = 0; i < size; i++)
+        {
+            hash ^= (uint64)bytes[i];
+            hash *= 1099511628211ULL;
+        }
+
+        return hash;
+    }
+
     // ==================== 哈希到ID的映射管理器 ====================
     template<int MAX_COLLISION = 4>
     class HashIDMap
@@ -15,7 +40,7 @@ namespace hgl
             int ids[MAX_COLLISION];     // 固定大小的ID数组
             int count;                  // 当前存储的ID数量
 
-            CollisionSlot() : count(0) 
+            CollisionSlot() : count(0)
             {
                 for(int i = 0; i < MAX_COLLISION; i++)
                     ids[i] = -1;

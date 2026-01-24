@@ -36,7 +36,7 @@ struct TestData {
 };
 
 // FNV-1a 哈希函数（与 ConstStringSet 一致）
-uint64 ComputeHash(const char* str, int length) {
+uint64 ComputeFNV1aHash(const char* str, int length) {
     uint64 hash = 14695981039346656037ULL;
     for(int i = 0; i < length; i++) {
         hash ^= (uint64)str[i];
@@ -59,7 +59,7 @@ bool TestBasicOperations()
     TEST_PASS("Empty map initialization");
 
     // 添加第一个映射
-    uint64 hash1 = ComputeHash("hello", 5);
+    uint64 hash1 = ComputeFNV1aHash("hello", 5);
     bool added1 = map.Add(hash1, 0);
     TEST_ASSERT(added1, "First add should succeed");
     TEST_ASSERT(!map.IsEmpty(), "Map should not be empty after adding");
@@ -79,7 +79,7 @@ bool TestBasicOperations()
     TEST_PASS("Find existing mapping");
 
     // 添加第二个不同哈希的映射
-    uint64 hash2 = ComputeHash("world", 5);
+    uint64 hash2 = ComputeFNV1aHash("world", 5);
     bool added2 = map.Add(hash2, 1);
     data.emplace_back(1, "world");
 
@@ -96,7 +96,7 @@ bool TestBasicOperations()
     TEST_PASS("Find multiple mappings");
 
     // 测试未找到的情况
-    uint64 hash_missing = ComputeHash("missing", 7);
+    uint64 hash_missing = ComputeFNV1aHash("missing", 7);
     int not_found = map.Find(hash_missing, [&](int id) { return false; });
     TEST_ASSERT(not_found == -1, "Should not find non-existent hash");
     TEST_PASS("Handle missing hash");
@@ -170,7 +170,7 @@ bool TestClearAndReset()
     // 添加一些映射
     for(int i = 0; i < 10; i++) {
         std::string str = "test" + std::to_string(i);
-        uint64 hash = ComputeHash(str.c_str(), str.length());
+        uint64 hash = ComputeFNV1aHash(str.c_str(), str.length());
         map.Add(hash, i);
     }
 
@@ -186,7 +186,7 @@ bool TestClearAndReset()
     TEST_PASS("Clear operation");
 
     // 清空后再添加
-    uint64 hash = ComputeHash("new", 3);
+    uint64 hash = ComputeFNV1aHash("new", 3);
     bool added = map.Add(hash, 100);
     TEST_ASSERT(added, "Should be able to add after clear");
     int found = map.Find(hash, [](int id) { return id == 100; });
@@ -207,7 +207,7 @@ bool TestStatistics()
     // 添加10个不同的哈希值
     for(int i = 0; i < 10; i++) {
         std::string str = "unique" + std::to_string(i);
-        uint64 hash = ComputeHash(str.c_str(), str.length());
+        uint64 hash = ComputeFNV1aHash(str.c_str(), str.length());
         map.Add(hash, i);
         entries.emplace_back(hash, i);
     }
@@ -245,21 +245,21 @@ bool TestBoundaryConditions()
     HashIDMap<4> map;
 
     // 测试负ID
-    uint64 hash1 = ComputeHash("negative", 8);
+    uint64 hash1 = ComputeFNV1aHash("negative", 8);
     map.Add(hash1, -1);
     int found_neg = map.Find(hash1, [](int id) { return id == -1; });
     TEST_ASSERT(found_neg == -1, "Should find negative ID");
     TEST_PASS("Handle negative ID");
 
     // 测试零ID
-    uint64 hash2 = ComputeHash("zero", 4);
+    uint64 hash2 = ComputeFNV1aHash("zero", 4);
     map.Add(hash2, 0);
     int found_zero = map.Find(hash2, [](int id) { return id == 0; });
     TEST_ASSERT(found_zero == 0, "Should find zero ID");
     TEST_PASS("Handle zero ID");
 
     // 测试大ID
-    uint64 hash3 = ComputeHash("large", 5);
+    uint64 hash3 = ComputeFNV1aHash("large", 5);
     map.Add(hash3, 1000000);
     int found_large = map.Find(hash3, [](int id) { return id == 1000000; });
     TEST_ASSERT(found_large == 1000000, "Should find large ID");
@@ -293,20 +293,20 @@ bool TestVerifyFunction()
     // 添加测试数据
     for(int i = 0; i < 5; i++) {
         std::string str = "item" + std::to_string(i);
-        uint64 hash = ComputeHash(str.c_str(), str.length());
+        uint64 hash = ComputeFNV1aHash(str.c_str(), str.length());
         map.Add(hash, i);
         data.emplace_back(i, str);
     }
 
     // 测试简单验证函数
-    uint64 hash0 = ComputeHash("item0", 5);
+    uint64 hash0 = ComputeFNV1aHash("item0", 5);
     int found0 = map.Find(hash0, [](int id) { return id == 0; });
     TEST_ASSERT(found0 == 0, "Simple lambda should work");
     TEST_PASS("Simple verify function");
 
     // 测试复杂验证函数（捕获外部变量）
     std::string target = "item2";
-    uint64 hash2 = ComputeHash("item2", 5);
+    uint64 hash2 = ComputeFNV1aHash("item2", 5);
     int found2 = map.Find(hash2, [&](int id) {
         return id >= 0 && id < (int)data.size() && data[id].value == target;
     });
@@ -319,7 +319,7 @@ bool TestVerifyFunction()
     TEST_PASS("Always-false verify function");
 
     // 测试多条件验证函数
-    uint64 hash3 = ComputeHash("item3", 5);
+    uint64 hash3 = ComputeFNV1aHash("item3", 5);
     int found3 = map.Find(hash3, [&](int id) {
         return id > 2 && id < 5 && data[id].value.find("item") == 0;
     });
@@ -343,7 +343,7 @@ bool TestPerformance()
     std::cout << "  Generating " << num_entries << " test entries..." << std::endl;
     for(int i = 0; i < num_entries; i++) {
         std::string str = "performance_test_string_" + std::to_string(i);
-        uint64 hash = ComputeHash(str.c_str(), str.length());
+        uint64 hash = ComputeFNV1aHash(str.c_str(), str.length());
         entries.emplace_back(hash, i);
     }
 
@@ -554,7 +554,7 @@ bool TestRealWorldScenario()
 
     // 添加到映射
     for(size_t i = 0; i < strings.size(); i++) {
-        uint64 hash = ComputeHash(strings[i].c_str(), strings[i].length());
+        uint64 hash = ComputeFNV1aHash(strings[i].c_str(), strings[i].length());
         map.Add(hash, (int)i);
     }
 
@@ -573,7 +573,7 @@ bool TestRealWorldScenario()
     for(int i = 0; i < num_lookups; i++) {
         size_t idx = dist(gen);
         const std::string& target = strings[idx];
-        uint64 hash = ComputeHash(target.c_str(), target.length());
+        uint64 hash = ComputeFNV1aHash(target.c_str(), target.length());
 
         int found = map.Find(hash, [&](int id) {
             return id >= 0 && id < (int)strings.size() && strings[id] == target;

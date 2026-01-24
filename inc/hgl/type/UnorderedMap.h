@@ -24,21 +24,6 @@ namespace hgl
         KVDataList data_list;
         HashIDMap<MAX_COLLISION> hash_map;
 
-        // 哈希函数（FNV-1a）
-        uint64 ComputeHash(const K& key) const
-        {
-            // 对于基础类型，使用指针转换
-            const uint8* bytes = (const uint8*)&key;
-            const int size = sizeof(K);
-
-            uint64 hash = 14695981039346656037ULL;
-            for(int i = 0; i < size; i++) {
-                hash ^= (uint64)bytes[i];
-                hash *= 1099511628211ULL;
-            }
-            return hash;
-        }
-
     public:
 
         KVData **begin() const { return data_list.begin(); }
@@ -55,8 +40,8 @@ namespace hgl
         // ==================== 添加 ====================
         KVData *Add(const K& key, const V& value)                              ///<添加一个数据，如果索引已存在，返回nullptr
         {
-            uint64 hash = ComputeHash(key);
-            
+            uint64 hash = ComputeFNV1aHash(key);
+
             // 检查是否已存在
             int existing_id = hash_map.Find(hash, [&](int id) {
                 return data_list[id]->key == key;
@@ -75,7 +60,7 @@ namespace hgl
 
             int new_id = data_list.GetCount();
             data_list.Add(new_data);
-            
+
             if(!hash_map.Add(hash, new_id)) {
                 // 哈希表满，但数据已添加
                 // 可以考虑记录警告日志
@@ -87,7 +72,7 @@ namespace hgl
         // ==================== 查找 ====================
         int Find(const K& key) const                                           ///<查找数据是否存在，返回-1表示数据不存在
         {
-            uint64 hash = ComputeHash(key);
+            uint64 hash = ComputeFNV1aHash(key);
             return hash_map.Find(hash, [&](int id) {
                 return data_list[id]->key == key;
             });
@@ -394,7 +379,7 @@ namespace hgl
             const int count = data_list.GetCount();
             for(int i = 0; i < count; i++)
             {
-                uint64 hash = ComputeHash(data_list[i]->key);
+                uint64 hash = ComputeFNV1aHash(data_list[i]->key);
                 hash_map.Add(hash, i);
             }
         }

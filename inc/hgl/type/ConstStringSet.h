@@ -65,7 +65,7 @@ namespace hgl
         HashIDMap<MAX_COLLISION_PER_HASH> hash_id_map;
 
         // 计算字符串的哈希值（FNV-1a 算法）
-        static uint64 ComputeHash(const SC *str, int length) {
+        static uint64 ComputeFNV1aHash(const SC *str, int length) {
             uint64 hash = 14695981039346656037ULL;  // FNV offset basis
             for(int i = 0; i < length; i++) {
                 hash ^= (uint64)str[i];
@@ -106,7 +106,7 @@ namespace hgl
             if(!str || length <= 0)
                 return -1;
 
-            uint64 hash = ComputeHash(str, length);
+            uint64 hash = ComputeFNV1aHash(str, length);
 
             // 快速检查：是否已存在（使用哈希表）
             int found_id = GetID(str, length);
@@ -164,7 +164,7 @@ namespace hgl
             if(!str || length <= 0)
                 return -1;
 
-            uint64 hash = ComputeHash(str, length);
+            uint64 hash = ComputeFNV1aHash(str, length);
 
             // 使用独立的哈希映射管理器查找
             return hash_id_map.Find(hash, [this, str, length](int id) {
