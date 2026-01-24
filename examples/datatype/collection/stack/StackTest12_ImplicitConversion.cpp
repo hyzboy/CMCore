@@ -27,7 +27,10 @@ int os_main(int, os_char**)
     
     // 警告：这会破坏栈的LIFO语义！
     arr_mut[0] = 888;
-    assert(stack.GetAt(0) == 888);
+    int result;
+
+    assert(stack.GetAt(0,result));
+    assert(result == 888);
     cout << "  ⚠️  Mutable conversion allows bypassing stack semantics" << endl;
     cout << "  Note: This is a design concern mentioned in detection report" << endl;
 

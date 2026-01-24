@@ -40,9 +40,13 @@ int os_main(int, os_char**)
         stack.Resize(5);
         assert(stack.GetCount() == 5);
 
+        int result;
         // 验证保留了前5个元素
         for (int i = 0; i < 5; i++)
-            assert(stack.GetAt(i) == i);
+        {
+            assert(stack.GetAt(i,result));
+            assert(result == i);
+        }
 
         cout << "  ✓ Resized down to 5 elements, data preserved" << endl;
     }

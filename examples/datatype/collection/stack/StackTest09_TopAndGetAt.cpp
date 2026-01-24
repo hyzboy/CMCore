@@ -17,15 +17,9 @@ int os_main(int, os_char**)
     for (int i = 0; i < 5; i++)
         stack.Push(i * 10);
     
-    const int& top_ref = stack.Top();
-    assert(top_ref == 40);  // 最后压入的是4*10
-    cout << "  ✓ Top() returned: " << top_ref << endl;
-    
-    // 测试非const版本
-    int& top_mut = stack.Top();
-    top_mut = 999;
-    assert(stack.Top() == 999);
-    cout << "  ✓ Top() writable reference works" << endl;
+    int top_val;
+    assert(stack.Top(top_val) && top_val == 40);  // 最后压入的是4*10
+    cout << "  ✓ Top() returned: " << top_val << endl;
     
     cout << "\n[9.2] GetAt() random access:" << endl;
     stack.Clear();
@@ -33,26 +27,33 @@ int os_main(int, os_char**)
         stack.Push(i * 10);
     
     // GetAt(0) = 底部, GetAt(4) = 顶部
-    assert(stack.GetAt(0) == 0);
-    assert(stack.GetAt(2) == 20);
-    assert(stack.GetAt(4) == 40);
-    cout << "  ✓ GetAt() bottom to top: " << stack.GetAt(0) << ", " 
-         << stack.GetAt(2) << ", " << stack.GetAt(4) << endl;
+    int val0, val2, val4;
+    assert(stack.GetAt(0, val0) && val0 == 0);
+    assert(stack.GetAt(2, val2) && val2 == 20);
+    assert(stack.GetAt(4, val4) && val4 == 40);
+    cout << "  ✓ GetAt() bottom to top: " << val0 << ", " 
+         << val2 << ", " << val4 << endl;
     
     cout << "\n[9.3] GetAt() out of bounds:" << endl;
-    const int& invalid = stack.GetAt(-1);
-    const int& invalid2 = stack.GetAt(100);
-    cout << "  ✓ GetAt() handles invalid indices (returns static empty)" << endl;
+    int dummy;
+    assert(!stack.GetAt(-1, dummy));
+    assert(!stack.GetAt(100, dummy));
+    cout << "  ✓ GetAt() handles invalid indices (returns false)" << endl;
     
-#ifdef NDEBUG  // 只在 Release 模式（assert 被禁用时）运行此测试
-    cout << "\n[9.4] Top() on empty stack (static empty value issue):" << endl;
-    Stack<int> empty_stack;
-    const int& empty_top = empty_stack.Top();
-    cout << "  ⚠️  Top() on empty returns static value: " << empty_top << endl;
-    cout << "  Note: This is a known design issue (not thread-safe)" << endl;
-#else
-    cout << "\n[9.4] Top() on empty stack test skipped in Debug mode (would trigger assert)" << endl;
-#endif
+    cout << "\n[9.4] Top() on empty stack:" << endl;
+    ValueStack<int> empty_stack;
+    int empty_val;
+    assert(!empty_stack.Top(empty_val));
+    cout << "  ✓ Top() on empty returns false" << endl;
+
+    cout << "\n[9.5] Bottom() access:" << endl;
+    stack.Clear();
+    for (int i = 0; i < 5; i++)
+        stack.Push(i * 10);
+    
+    int bottom_val;
+    assert(stack.Bottom(bottom_val) && bottom_val == 0);
+    cout << "  ✓ Bottom() returned: " << bottom_val << endl;
 
     cout << "\n✅ TEST 9 PASSED" << endl;
     return 0;
