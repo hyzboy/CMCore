@@ -1,4 +1,4 @@
-#include<hgl/type/HashMap.h>
+#include<hgl/type/UnorderedMap.h>
 #include<hgl/type/ManagedArray.h>
 #include<iostream>
 #include<string>
@@ -35,12 +35,12 @@ public:
     ~TestObject() {}
 };
 
-// ==================== 1. HashMap 基础功能测试 ====================
-bool TestHashMapBasics()
+// ==================== 1. UnorderedMap 基础功能测试 ====================
+bool TestUnorderedMapBasics()
 {
-    TEST_SECTION("Test 1: HashMap Basic Operations");
+    TEST_SECTION("Test 1: UnorderedMap Basic Operations");
 
-    ValueHashMap<int, std::string> map;
+    UnorderedValueMap<int, std::string> map;
 
     // 空映射测试
     TEST_ASSERT(map.IsEmpty(), "New map should be empty");
@@ -87,12 +87,12 @@ bool TestHashMapBasics()
     return true;
 }
 
-// ==================== 2. HashMap 修改操作测试 ====================
-bool TestHashMapModifications()
+// ==================== 2. UnorderedMap 修改操作测试 ====================
+bool TestUnorderedMapModifications()
 {
-    TEST_SECTION("Test 2: HashMap Modification Operations");
+    TEST_SECTION("Test 2: UnorderedMap Modification Operations");
 
-    ValueHashMap<int, std::string> map;
+    UnorderedValueMap<int, std::string> map;
 
     map.Add(1, "original");
     map.Add(2, "value2");
@@ -131,12 +131,12 @@ bool TestHashMapModifications()
     return true;
 }
 
-// ==================== 3. HashMap 删除操作测试 ====================
-bool TestHashMapDeletions()
+// ==================== 3. UnorderedMap 删除操作测试 ====================
+bool TestUnorderedMapDeletions()
 {
-    TEST_SECTION("Test 3: HashMap Deletion Operations");
+    TEST_SECTION("Test 3: UnorderedMap Deletion Operations");
 
-    ValueHashMap<int, std::string> map;
+    UnorderedValueMap<int, std::string> map;
 
     for(int i = 1; i <= 10; i++)
         map.Add(i, "value"s + std::to_string(i));
@@ -190,12 +190,12 @@ bool TestHashMapDeletions()
     return true;
 }
 
-// ==================== 4. HashMap 枚举操作测试 ====================
-bool TestHashMapEnumeration()
+// ==================== 4. UnorderedMap 枚举操作测试 ====================
+bool TestUnorderedMapEnumeration()
 {
-    TEST_SECTION("Test 4: HashMap Enumeration");
+    TEST_SECTION("Test 4: UnorderedMap Enumeration");
 
-    ValueHashMap<int, std::string> map;
+    UnorderedValueMap<int, std::string> map;
 
     for(int i = 1; i <= 5; i++)
         map.Add(i, "value"s + std::to_string(i));
@@ -234,12 +234,12 @@ bool TestHashMapEnumeration()
     return true;
 }
 
-// ==================== 5. ObjectHashMap 基础测试 ====================
-bool TestObjectHashMapBasics()
+// ==================== 5. ObjectUnorderedMap 基础测试 ====================
+bool TestObjectUnorderedMapBasics()
 {
-    TEST_SECTION("Test 5: ObjectHashMap Basic Operations");
+    TEST_SECTION("Test 5: ObjectUnorderedMap Basic Operations");
 
-    ManagedHashMap<int, TestObject> obj_map;
+    UnorderedMangedMap<int, TestObject> obj_map;
 
     // 添加对象
     obj_map.Add(1, new TestObject(1, "obj1"));
@@ -279,12 +279,12 @@ bool TestObjectHashMapBasics()
     return true;
 }
 
-// ==================== 6. ObjectHashMap Unlink 测试 ====================
-bool TestObjectHashMapUnlink()
+// ==================== 6. ObjectUnorderedMap Unlink 测试 ====================
+bool TestObjectUnorderedMapUnlink()
 {
-    TEST_SECTION("Test 6: ObjectHashMap Unlink Operations");
+    TEST_SECTION("Test 6: ObjectUnorderedMap Unlink Operations");
 
-    ManagedHashMap<int, TestObject> obj_map;
+    UnorderedMangedMap<int, TestObject> obj_map;
 
     TestObject* managed_obj = new TestObject(99, "managed");
     obj_map.Add(1, new TestObject(1, "obj1"));
@@ -321,12 +321,12 @@ bool TestObjectHashMapUnlink()
     return true;
 }
 
-// ==================== 7. HashMap 性能统计测试 ====================
-bool TestHashMapStatistics()
+// ==================== 7. UnorderedMap 性能统计测试 ====================
+bool TestUnorderedMapStatistics()
 {
-    TEST_SECTION("Test 7: HashMap Statistics");
+    TEST_SECTION("Test 7: UnorderedMap Statistics");
 
-    ValueHashMap<int, int> map;
+    UnorderedValueMap<int, int> map;
 
     const int num_entries = 1000;
 
@@ -368,12 +368,12 @@ bool TestHashMapStatistics()
     return true;
 }
 
-// ==================== 8. HashMap 边界条件测试 ====================
-bool TestHashMapBoundaries()
+// ==================== 8. UnorderedMap 边界条件测试 ====================
+bool TestUnorderedMapBoundaries()
 {
-    TEST_SECTION("Test 8: HashMap Boundary Conditions");
+    TEST_SECTION("Test 8: UnorderedMap Boundary Conditions");
 
-    ValueHashMap<int, int> map;
+    UnorderedValueMap<int, int> map;
 
     // 负数键
     map.Add(-1, 100);
@@ -402,12 +402,12 @@ bool TestHashMapBoundaries()
     return true;
 }
 
-// ==================== 9. HashMap 与 Map 接口兼容性测试 ====================
-bool TestHashMapCompatibility()
+// ==================== 9. UnorderedMap 与 Map 接口兼容性测试 ====================
+bool TestUnorderedMapCompatibility()
 {
-    TEST_SECTION("Test 9: HashMap API Compatibility with Map");
+    TEST_SECTION("Test 9: UnorderedMap API Compatibility with Map");
 
-    ValueHashMap<int, std::string> hash_map;
+    UnorderedValueMap<int, std::string> hash_map;
 
     // 测试所有与 Map 相同的接口
     hash_map.Add(1, "one");
@@ -444,20 +444,20 @@ bool TestHashMapCompatibility()
 int main(int argc, char* argv[])
 {
     std::cout << "========================================" << std::endl;
-    std::cout << "HashMap Comprehensive Test Suite" << std::endl;
+    std::cout << "UnorderedMap Comprehensive Test Suite" << std::endl;
     std::cout << "========================================" << std::endl;
 
     bool all_passed = true;
 
-    all_passed &= TestHashMapBasics();
-    all_passed &= TestHashMapModifications();
-    all_passed &= TestHashMapDeletions();
-    all_passed &= TestHashMapEnumeration();
-    all_passed &= TestObjectHashMapBasics();
-    all_passed &= TestObjectHashMapUnlink();
-    all_passed &= TestHashMapStatistics();
-    all_passed &= TestHashMapBoundaries();
-    all_passed &= TestHashMapCompatibility();
+    all_passed &= TestUnorderedMapBasics();
+    all_passed &= TestUnorderedMapModifications();
+    all_passed &= TestUnorderedMapDeletions();
+    all_passed &= TestUnorderedMapEnumeration();
+    all_passed &= TestObjectUnorderedMapBasics();
+    all_passed &= TestObjectUnorderedMapUnlink();
+    all_passed &= TestUnorderedMapStatistics();
+    all_passed &= TestUnorderedMapBoundaries();
+    all_passed &= TestUnorderedMapCompatibility();
 
     std::cout << "\n========================================" << std::endl;
     if(all_passed) {

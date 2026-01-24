@@ -11,11 +11,11 @@ namespace hgl
     * 基于哈希的索引数据模板（O(1) 平均查找时间）
     */
     template<typename K, typename V, typename KVData, int MAX_COLLISION = 4>
-    class ValueHashMapTemplate
+    class UnorderedMapTemplate
     {
     protected:
 
-        using ThisClass = ValueHashMapTemplate<K, V, KVData, MAX_COLLISION>;
+        using ThisClass = UnorderedMapTemplate<K, V, KVData, MAX_COLLISION>;
 
         using KVDataPool = ObjectPool<KVData>;
         using KVDataList = ValueArray<KVData *>;
@@ -46,8 +46,8 @@ namespace hgl
 
     public: // 方法
 
-        ValueHashMapTemplate() = default;
-        virtual ~ValueHashMapTemplate() = default;
+        UnorderedMapTemplate() = default;
+        virtual ~UnorderedMapTemplate() = default;
 
         const int   GetCount() const { return data_list.GetCount(); }           ///<取得数据总量
         const bool  IsEmpty() const { return data_list.IsEmpty(); }             ///<是否为空
@@ -400,13 +400,13 @@ namespace hgl
         }
 
         void operator=(const ThisClass&);  // 禁用赋值
-    };//class ValueHashMapTemplate
+    };//class UnorderedMapTemplate
 
     /**
     * 基于哈希的键值对映射（O(1) 平均查找时间）
     */
     template<typename K, typename V, int MAX_COLLISION = 4>
-    class ValueHashMap : public ValueHashMapTemplate<K, V, KeyValue<K, V>, MAX_COLLISION>
+    class UnorderedValueMap : public UnorderedMapTemplate<K, V, KeyValue<K, V>, MAX_COLLISION>
     {
     public:
 
@@ -414,23 +414,23 @@ namespace hgl
 
     public:
 
-        ValueHashMap() = default;
-        virtual ~ValueHashMap() = default;
+        UnorderedValueMap() = default;
+        virtual ~UnorderedValueMap() = default;
 
         V* operator[](const K& key) const
         {
             return this->GetValuePointer(key);
         }
-    };//class ValueHashMap
+    };//class UnorderedValueMap
 
     /**
     * 基于哈希的对象指针映射模板（O(1) 平均查找时间）
     */
     template<typename K, typename V, typename KVData, int MAX_COLLISION = 4>
-    class ManagedHashMapTemplate : public ValueHashMapTemplate<K, V*, KVData, MAX_COLLISION>
+    class UnorderedMangedMapTemplate : public UnorderedMapTemplate<K, V*, KVData, MAX_COLLISION>
     {
     protected:
-        typedef ValueHashMapTemplate<K, V*, KVData, MAX_COLLISION> SuperClass;
+        typedef UnorderedMapTemplate<K, V*, KVData, MAX_COLLISION> SuperClass;
 
         void DeleteObject(KVData* ds)
         {
@@ -446,8 +446,8 @@ namespace hgl
         }
 
     public:
-        ManagedHashMapTemplate() = default;
-        virtual ~ManagedHashMapTemplate() { Clear(); }
+        UnorderedMangedMapTemplate() = default;
+        virtual ~UnorderedMangedMapTemplate() { Clear(); }
 
         // ==================== Unlink（不删除对象） ====================
         bool UnlinkByKey(const K& flag) { return UnlinkBySerial(SuperClass::Find(flag)); }
@@ -524,11 +524,11 @@ namespace hgl
     * 基于哈希的对象指针映射（O(1) 平均查找时间）
     */
     template<typename K, typename V, int MAX_COLLISION = 4>
-    class ManagedHashMap : public ManagedHashMapTemplate<K, V, KeyValue<K, V*>, MAX_COLLISION>
+    class UnorderedMangedMap : public UnorderedMangedMapTemplate<K, V, KeyValue<K, V*>, MAX_COLLISION>
     {
     public:
-        ManagedHashMap() = default;
-        virtual ~ManagedHashMap() = default;
+        UnorderedMangedMap() = default;
+        virtual ~UnorderedMangedMap() = default;
     };
 
 }//namespace hgl
