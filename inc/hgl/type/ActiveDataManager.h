@@ -237,6 +237,37 @@ namespace hgl
         }
 
         /**
+        * @brief CN:获取或创建活跃ID。\nEN:Get or create active ID.
+        */
+        bool GetOrCreate(int *id, const int count = 1)
+        {
+            if (!id || count <= 0)
+                return false;
+
+            int idle_count = GetIdleCount();
+            int get_count = (idle_count < count) ? idle_count : count;
+
+            // Try to get IDs from idle pool first
+            if (get_count > 0)
+            {
+                if (!aim.Get(id, get_count))
+                    return false;
+                
+                id += get_count;
+            }
+
+            // Create new active IDs if needed
+            int create_count = count - get_count;
+            if (create_count > 0)
+            {
+                aim.CreateActive(id, create_count);
+                data_array.Expand(create_count);
+            }
+
+            return true;
+        }
+
+        /**
         * @brief CN:释放指定ID。\nEN:Release specified ID.
         */
         int Release(const int *id, const int count = 1)

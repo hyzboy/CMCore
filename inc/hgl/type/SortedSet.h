@@ -29,17 +29,19 @@ namespace hgl
 
     public: //属性
 
-                T *     GetData         ()const{return data_list.GetData();}                    ///<取得数据指针
+                T *     GetData         ()     {return data_list.GetData();}                    ///<取得数据指针
+        const   T *     GetData         ()const{return data_list.GetData();}                    ///<取得数据指针（只读）
                 int64   GetCount        ()const{return data_list.GetCount();}                   ///<取得数据总量
                 int64   GetAllocCount   ()const{return data_list.GetAllocCount();}              ///<取得已分配空间数量
 
         const   bool    IsEmpty         ()const{return data_list.IsEmpty();}                    ///<确认列表是否为空
 
-                T *     begin           ()const{return data_list.begin();}
-                T *     end             ()const{return data_list.end();}
-                T *     last            ()const{return data_list.last();}
-
-    public:
+                T *     begin           ()      {return data_list.begin();}                 
+                T *     end             ()      {return data_list.end();}                   
+                T *     last            ()      {return data_list.last();}                 
+        const   T *     begin           ()const{return data_list.begin();}                 
+        const   T *     end             ()const{return data_list.end();}                   
+        const   T *     last            ()const{return data_list.last();}
 
         operator        DataArray<T> & ()       {return data_list;}                             ///<取得原始数据阵列
         operator const  DataArray<T> & ()const  {return data_list;}                             ///<取得原始数据阵列
@@ -267,9 +269,8 @@ namespace hgl
 
     public: //属性
 
-                T *     GetData         ()const{return data_list.GetData();}                    ///<取得数据指针
-                int64   GetCount        ()const{return data_list.GetCount();}                   ///<取得数据总量
-                int64   GetAllocCount   ()const{return data_list.GetAllocCount();}              ///<取得已分配空间数量
+                T *     GetData         ()      {return data_list.GetData();}                    ///<取得数据指针
+        const   T *     GetData         ()const{return data_list.GetData();}                    ///<取得数据指针（只读）
 
         const   bool    IsEmpty         ()const{return data_list.IsEmpty();}                    ///<确认列表是否为空
 

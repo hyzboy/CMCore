@@ -40,18 +40,22 @@ namespace hgl
     {
         if(count<=0)return(0);
 
-        const int new_count=idle_list.GetCount()+count;
+        const int old_count=idle_list.GetCount();
+        const int new_count=old_count+count;
 
         idle_list.Reserve(new_count);
+        idle_list.Resize(new_count);
 
-        int *end=idle_list.end();
+        int *start=idle_list.begin()+old_count;
 
-        if(!Create(end,count))return(0);
+        if(!Create(start,count))
+        {
+            idle_list.Resize(old_count);
+            return(0);
+        }
 
         if(idp)
-            mem_copy(idp,end,count);
-
-        idle_list.Resize(new_count);
+            mem_copy(idp,start,count);
 
         return(count);
     }
@@ -99,7 +103,7 @@ namespace hgl
     */
     int ActiveIDManager::Release(const int *id,int count)
     {
-        if(!id||count<=0)return(-1);
+        if(!id||count<=0)return(0);
 
         int result=0;
 
@@ -109,6 +113,7 @@ namespace hgl
             {
                 idle_list.Push(*id);
                 ++result;
+                ++released_count;  // 统计已释放ID
             }
 
             ++id;
@@ -127,6 +132,7 @@ namespace hgl
         if(count>0)
         {
             idle_list.Push(active_list.GetData(),count);
+            released_count += count;  // 统计已释放ID
 
             active_list.Clear();
         }

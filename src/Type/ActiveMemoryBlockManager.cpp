@@ -4,7 +4,14 @@ namespace hgl
 {
     void ActiveMemoryBlockManager::ReallocDataBlock()
     {
-        data_mb->Reserve(aim.GetHistoryMaxId()*unit_size);
+        if(unit_size==0)
+            return;
+
+        const int max_id=aim.GetHistoryMaxId();
+        if(max_id<=0)
+            return;
+
+        data_mb->Reserve(max_id*unit_size);
     }
 
     ActiveMemoryBlockManager::ActiveMemoryBlockManager(const uint us,AbstractMemoryAllocator *ma)
@@ -21,6 +28,9 @@ namespace hgl
 
     bool ActiveMemoryBlockManager::SetUnitSize(const uint us)
     {
+        if(us==0)
+            return(false);
+
         if(unit_size>0)             //unit_size已经存在
             return(unit_size==us);
 
@@ -31,12 +41,16 @@ namespace hgl
     void ActiveMemoryBlockManager::Reserve(int c)
     {
         aim.Reserve(c);
+
+        if(unit_size==0||c<=0)
+            return;
+
         data_mb->Reserve(c*unit_size);
     }
 
     bool ActiveMemoryBlockManager::WriteData(void *d,const int id)
     {
-        if(!d||id<0||id>=aim.GetHistoryMaxId())
+        if(unit_size==0||!d||id<0||id>=aim.GetHistoryMaxId())
             return(false);
 
         return data_mb->Write(unit_size*id,d,unit_size);
@@ -44,7 +58,7 @@ namespace hgl
 
     int ActiveMemoryBlockManager::WriteDataArray(void **da,const int *idp,const int count)
     {
-        if(!da||!idp||count<=0)return(0);
+        if(unit_size==0||!da||!idp||count<=0)return(0);
 
         uint8 *sp=(uint8 *)(data_mb->Get());
         int result=0;
@@ -66,7 +80,7 @@ namespace hgl
 
     int ActiveMemoryBlockManager::WriteDataArray(void *da,const int *idp,const int count)const
     {
-        if(!da||!idp||count<=0)return(0);
+        if(unit_size==0||!da||!idp||count<=0)return(0);
 
         uint8 *sp=(uint8 *)da;
         uint8 *tp=(uint8 *)(data_mb->Get());
@@ -89,7 +103,7 @@ namespace hgl
 
     void *ActiveMemoryBlockManager::GetData(const int id)const
     {
-        if(id<0||id>=aim.GetHistoryMaxId())
+        if(unit_size==0||id<0||id>=aim.GetHistoryMaxId())
             return(nullptr);
 
         return (uint8 *)(data_mb->Get())+id*unit_size;
@@ -97,7 +111,7 @@ namespace hgl
     
     bool ActiveMemoryBlockManager::GetData(void *da,const int id)const
     {
-        if(id<0||id>=aim.GetHistoryMaxId())
+        if(!da||unit_size==0||id<0||id>=aim.GetHistoryMaxId())
             return(false);
 
         memcpy(da,(uint8 *)(data_mb->Get())+id*unit_size,unit_size);
@@ -110,7 +124,7 @@ namespace hgl
         */
     bool ActiveMemoryBlockManager::GetData(void **da,const int *idp,const int count)const
     {
-        if(!da||!idp||count<=0)return(false);
+        if(unit_size==0||!da||!idp||count<=0)return(false);
 
         uint8 *sp=(uint8 *)(data_mb->Get());
 
@@ -133,7 +147,7 @@ namespace hgl
     */
     bool ActiveMemoryBlockManager::GetData(void *da,const int *idp,const int count)const
     {
-        if(!da||!idp||count<=0)return(false);
+        if(unit_size==0||!da||!idp||count<=0)return(false);
 
         uint8 *sp=(uint8 *)(data_mb->Get());
         uint8 *tp=(uint8 *)da;
@@ -182,7 +196,7 @@ namespace hgl
     {
         if(!da||count<=0)return(false);
 
-        if(aim.Get(da,count)!=count)
+        if(!aim.Get(da,count))
             return(false);
 
         ReallocDataBlock();
@@ -204,6 +218,8 @@ namespace hgl
 
     int ActiveMemoryBlockManager::Release(int *id,const int count)
     {
+        if(!id||count<=0)return(0);
+        
         return aim.Release(id,count);
     }
     

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/DataArray.h>
+#include<cassert>
 namespace hgl
 {
     /**
@@ -234,53 +235,45 @@ namespace hgl
 
         /**
          * @brief 获取栈顶元素（只读）
-         * CN: 返回栈顶元素的常引用
-         * EN: Get const reference to top element
+         * CN: 返回栈顶元素的常引用。如果栈为空，行为未定义（断言失败）
+         * EN: Get const reference to top element. Undefined behavior if empty (assertion fails)
          */
         const T& Top() const
         {
-            static const T empty_value = T();
-            if (this->data_array.GetCount() <= 0)
-                return empty_value;
+            assert(this->data_array.GetCount() > 0 && "Stack::Top() called on empty stack");
             return this->data_array[this->data_array.GetCount() - 1];
         }
 
         /**
          * @brief 获取栈顶元素（可写）
-         * CN: 返回栈顶元素的可写引用
-         * EN: Get mutable reference to top element
+         * CN: 返回栈顶元素的可写引用。如果栈为空，行为未定义（断言失败）
+         * EN: Get mutable reference to top element. Undefined behavior if empty (assertion fails)
          */
         T& Top()
         {
-            static T empty_value = T();
-            if (this->data_array.GetCount() <= 0)
-                return empty_value;
+            assert(this->data_array.GetCount() > 0 && "Stack::Top() called on empty stack");
             return this->data_array[this->data_array.GetCount() - 1];
         }
 
         /**
          * @brief 安全的随机访问（只读）
-         * CN: 用于遍历栈，从栈底索引 (0=bottom, Count-1=top)
-         * EN: Safe random access from bottom (0=bottom, Count-1=top)
+         * CN: 用于遍历栈，从栈底索引 (0=bottom, Count-1=top)。越界访问断言失败
+         * EN: Safe random access from bottom (0=bottom, Count-1=top). Out-of-bounds asserts
          */
         const T& GetAt(int index) const
         {
-            static const T empty_value = T();
-            if (index < 0 || index >= this->data_array.GetCount())
-                return empty_value;
+            assert(index >= 0 && index < this->data_array.GetCount() && "Stack::GetAt() index out of bounds");
             return this->data_array[index];
         }
 
         /**
          * @brief 安全的随机访问（可写）
-         * CN: 用于修改栈中的元素
-         * EN: Safe random access (writable)
+         * CN: 用于修改栈中的元素。越界访问断言失败
+         * EN: Safe random access (writable). Out-of-bounds asserts
          */
         T& GetAt(int index)
         {
-            static T empty_value = T();
-            if (index < 0 || index >= this->data_array.GetCount())
-                return empty_value;
+            assert(index >= 0 && index < this->data_array.GetCount() && "Stack::GetAt() index out of bounds");
             return this->data_array[index];
         }
 

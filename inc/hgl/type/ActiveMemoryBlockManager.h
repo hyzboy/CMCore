@@ -36,6 +36,10 @@ namespace hgl
         const DataArray<int> &GetActiveArray()const{return aim.GetActiveArray();}
         const DataArray<int> &GetIdleArray  ()const{return aim.GetIdleArray();}
 
+        bool IsActive(const int id)const{return aim.IsActive(id);}  ///<确认指定ID是否处于活跃状态
+        bool IsIdle  (const int id)const{return aim.IsIdle(id);}    ///<确认指定ID是否处于闲置状态
+        bool IsValid (const int id)const{return aim.IsValid(id);}   ///<确认指定ID是否曾被创建过
+
     public:
 
         bool WriteData      (void *d,const int id);
