@@ -40,24 +40,35 @@ namespace hgl
     {
         if(count<=0)return(0);
 
-        const int old_count=idle_list.GetCount();
-        const int new_count=old_count+count;
+        int created_ids[512];  // 临时缓冲，支持一次性创建最多512个ID
+        int batch_size = (count > 512) ? 512 : count;
+        int total_created = 0;
 
-        idle_list.Reserve(new_count);
-        idle_list.Resize(new_count);
-
-        int *start=idle_list.begin()+old_count;
-
-        if(!Create(start,count))
+        while(total_created < count)
         {
-            idle_list.Resize(old_count);
-            return(0);
+            batch_size = (count - total_created > 512) ? 512 : (count - total_created);
+
+            if(!Create(created_ids, batch_size))
+            {
+                return total_created;
+            }
+
+            // 将创建的ID推入Queue
+            if(!idle_list.Push(created_ids, batch_size))
+            {
+                return total_created;
+            }
+
+            // 如果需要输出，拷贝到idp
+            if(idp)
+            {
+                mem_copy(idp + total_created, created_ids, batch_size);
+            }
+
+            total_created += batch_size;
         }
 
-        if(idp)
-            mem_copy(idp,start,count);
-
-        return(count);
+        return total_created;
     }
 
 
@@ -72,13 +83,20 @@ namespace hgl
 
     /**
         * 激活指定量的ID数据(优先从Idle中取,没有不会创建新的。激活后会被放入Active列表)
+        * 
+        * FIFO语义：从队列头部一次取出count个ID（先进先出）
+        * @return 是否全部成功取出
         */
     bool ActiveIDManager::Get(int *id,const int count)
     {
         if(!id||count<=0)return(false);
 
-        if(!idle_list.Pop(id,count))
-            return(false);
+        // Queue没有批量Pop，需要循环取出
+        for(int i=0;i<count;i++)
+        {
+            if(!idle_list.Pop(id[i]))
+                return(false);
+        }
 
         active_list.Add(id,count);
 
@@ -87,13 +105,20 @@ namespace hgl
 
     /**
     * 激活指定量的ID数据(优从从Idle中取，如果不够则创建新的。激活后会被放入Active列表)
+    * 
+    * FIFO语义：
+    * 1. 先从Queue头部取出全部可用的idle ID（不创建新ID）
+    * 2. 如果不足，创建新的idle ID后再一次性提取
+    * 这确保ID复用的公平性：最先释放的ID最先被重新使用
     */
     bool ActiveIDManager::GetOrCreate(int *id,const int count)
     {
         if(!id||count<=0)return(false);
 
         if(idle_list.GetCount()<count)
-            CreateIdle(count-idle_list.GetCount());
+        {
+            [[maybe_unused]] int created = CreateIdle(count-idle_list.GetCount());
+        }
 
         return Get(id,count);
     }

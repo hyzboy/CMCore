@@ -38,6 +38,91 @@ namespace hgl
             read_offset=0;
         }
 
+    public: //迭代器支持
+    
+        /**
+         * 只读迭代器，用于遍历 Queue 中的所有元素
+         * 自动处理两个内部数组的切换
+         */
+        class ConstIterator
+        {
+        private:
+            const QueueTemplate *queue;
+            int current_array;  // 0 = read_array, 1 = write_array
+            int current_pos;    // 当前数组中的位置
+            
+        public:
+            ConstIterator(const QueueTemplate *q, int array_idx, int pos)
+                : queue(q), current_array(array_idx), current_pos(pos)
+            {
+                // 如果起始位置在 read_array，需要从 read_offset 开始
+                if(current_array == 0 && pos < queue->read_offset)
+                    current_pos = queue->read_offset;
+                
+                // 跳过空的 read_array
+                AdvanceIfNeeded();
+            }
+            
+            bool operator!=(const ConstIterator &other) const
+            {
+                return current_array != other.current_array || current_pos != other.current_pos;
+            }
+            
+            bool operator==(const ConstIterator &other) const
+            {
+                return !(*this != other);
+            }
+            
+            const T& operator*() const
+            {
+                int array_index = (current_array == 0) ? queue->read_index : queue->write_index;
+                return queue->data_array[array_index][current_pos];
+            }
+            
+            ConstIterator& operator++()
+            {
+                ++current_pos;
+                AdvanceIfNeeded();
+                return *this;
+            }
+            
+        private:
+            void AdvanceIfNeeded()
+            {
+                // 检查是否需要切换到下一个数组
+                if(current_array == 0)
+                {
+                    int read_count = queue->data_array[queue->read_index].GetCount();
+                    if(current_pos >= read_count)
+                    {
+                        // 切换到 write_array
+                        current_array = 1;
+                        current_pos = 0;
+                    }
+                }
+            }
+        };
+        
+        /**
+         * 返回指向第一个元素的迭代器
+         */
+        ConstIterator begin() const
+        {
+            int read_count = data_array[read_index].GetCount();
+            if(read_offset < read_count)
+                return ConstIterator(this, 0, read_offset);  // 从 read_array 开始
+            else
+                return ConstIterator(this, 1, 0);  // 直接从 write_array 开始
+        }
+        
+        /**
+         * 返回指向末尾的迭代器
+         */
+        ConstIterator end() const
+        {
+            return ConstIterator(this, 1, data_array[write_index].GetCount());
+        }
+
     public: //兼容 Active 接口的简易 GetArray()
         ArrayT &GetArray(){ return data_array[write_index]; }
         const ArrayT &GetArray() const { return data_array[write_index]; }
@@ -207,6 +292,5 @@ namespace hgl
             ptr = new T(obj);
             return ptr != nullptr;
         }
-
     };//template<typename T> class ObjectQueue
 }//namespace hgl

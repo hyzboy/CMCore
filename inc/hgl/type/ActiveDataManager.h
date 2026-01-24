@@ -89,7 +89,7 @@ namespace hgl
         /**
         * @brief CN:获取闲置ID数组。\nEN:Get idle ID array.
         */
-        const DataArray<int> &GetIdleArray() const
+        const Queue<int> &GetIdleArray() const
         {
             return aim.GetIdleArray();
         }

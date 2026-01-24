@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/DataArray.h>
-#include<hgl/type/Stack.h>
+#include<hgl/type/Queue.h>
 #include<hgl/type/SortedSet.h>
 #include<compare>
 
@@ -13,7 +13,7 @@ namespace hgl
     * 设计说明：
     * - 管理一个ID池，支持创建、获取、释放操作
     * - 活跃ID存储在 SortedSet 中，支持快速查询
-    * - 闲置ID存储在 Stack 中，支持高效复用
+    * - 闲置ID存储在 Queue 中（FIFO），确保公平复用，避免ID碎片化
     * - 提供完整的验证和统计功能
     */
     class ActiveIDManager
@@ -25,7 +25,7 @@ namespace hgl
         };
 
         SortedSet<int> active_list;        ///<活跃ID列表
-        Stack<int> idle_list;               ///<闲置ID列表
+        Queue<int> idle_list;               ///<闲置ID列表（FIFO队列，确保公平复用）
 
         int id_count;                       ///<创建过的最大ID值+1
         int released_count;                 ///<已释放过的ID总数（用于统计）
@@ -61,17 +61,23 @@ namespace hgl
 
         [[deprecated("Use GetActiveView for read-only access to maintain invariants")]]
         const DataArray<int> &GetActiveArray()const{return active_list;}
-        [[deprecated("Use GetIdleView for read-only access to maintain invariants")]]
-        const DataArray<int> &GetIdleArray()const{return idle_list;}
+        [[deprecated("Use GetIdleView for read-only access to maintain invariants - Queue not directly compatible")]]
+        const Queue<int> &GetIdleArray()const{return idle_list;}
 
         IntView GetActiveView() const
         {
             return {active_list.GetData(), active_list.GetCount()};
         }
 
+        /**
+         * 获取闲置ID队列的只读视图（FIFO队列）
+         * @return IntView 结构体，包含指向底层数组的指针和元素计数
+         *
+         * 注：由于Queue内部实现使用双缓冲（data_array[2]），GetIdleView返回的指针和数据可能不完全连续
+         */
         IntView GetIdleView() const
         {
-            return {idle_list.GetData(), idle_list.GetCount()};
+            return {idle_list.GetArray().GetData(), idle_list.GetCount()};
         }
 
         // ==================== 创建接口 ====================
@@ -160,13 +166,15 @@ namespace hgl
 
         /**
          * 相等比较：检查两个管理器的状态是否完全相同
+         * 
+         * 注：Queue类型不支持==比较，仅比较计数器和active_list
          */
         bool operator==(const ActiveIDManager &other) const
         {
             return id_count == other.id_count
                 && released_count == other.released_count
-                && active_list == other.active_list
-                && idle_list == other.idle_list;
+                && GetIdleCount() == other.GetIdleCount()
+                && active_list == other.active_list;
         }
 
         /**

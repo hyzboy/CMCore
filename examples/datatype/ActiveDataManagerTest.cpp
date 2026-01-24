@@ -48,6 +48,27 @@ void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const Da
     DebugOutputArray(hint,adm,da.GetData(),da.GetCount());
 }
 
+void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const Queue<int> &queue)
+{
+    cout<<"("<<hint<<':'<<queue.GetCount()<<")";
+    if(queue.GetCount()<=0)return;
+    
+    cout<<'[';
+    bool first = true;
+    for(int id : queue)
+    {
+        if(!first)cout<<',';
+        first = false;
+        
+        UserInfo *ui = adm.At(id);
+        if(ui)
+            cout<<ui->name;
+        else
+            cout<<"null";
+    }
+    cout<<']';
+}
+
 void DebugADMOutput(const char *hint,ActiveDataManager<UserInfo> &adm)
 {
     cout<<hint<<' ';
