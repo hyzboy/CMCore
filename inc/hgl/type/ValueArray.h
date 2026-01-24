@@ -11,7 +11,7 @@ namespace hgl
     /**
     * ValueArray类用于保存数据列表。可以在列表中添加、删除、查找、访问和排序数据。<br>
     * ValueArray使用真实的数组保存数据，没有独立的索引，所以仅适用于不会变动的小数据的保存与访问。<br>
-    * 如果使用大块的数据，仅需要频繁的增删排序，建议使用IndexedList.
+    * 如果使用大块的数据，仅需要频繁的增删排序，建议使用IndexedValueArray.
     */
     template<typename T> class ValueArray                                                            ///阵列列表处理类
     {

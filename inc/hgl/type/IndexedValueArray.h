@@ -9,12 +9,12 @@ namespace hgl
 {
     /**
     * 索引数据列表<br>
-    * IndexedList与ValueArray功能类似，但它的区别是它使用索引来访问数据。
+    * IndexedValueArray与ValueArray功能类似，但它的区别是它使用索引来访问数据。
     * 当数据被移动、删除、排序时，数据本身的内存并不会变动，只会调整索引。
     */
-    template<typename T,typename I=int32> class IndexedList
+    template<typename T,typename I=int32> class IndexedValueArray
     {
-        static_assert(std::is_trivially_copyable_v<T>, "IndexedList only supports trivially copyable types; use ObjectIndexedList for non-trivial types.");
+        static_assert(std::is_trivially_copyable_v<T>, "IndexedValueArray only supports trivially copyable types; use ObjectIndexedList for non-trivial types.");
     protected:
 
         ValueBuffer<T> data_array;
@@ -65,7 +65,7 @@ namespace hgl
         {
         private:
 
-            IndexedList<T,I> *list;
+            IndexedValueArray<T,I> *list;
             int32 current_index;
 
         public:
@@ -81,7 +81,7 @@ namespace hgl
                 current_index=-1;
             }
 
-            Iterator(IndexedList<T, I>* lst, int32 idx):list(lst),current_index(idx){}
+            Iterator(IndexedValueArray<T, I>* lst, int32 idx):list(lst),current_index(idx){}
 
             T& operator*()
             {
@@ -118,7 +118,7 @@ namespace hgl
         {
         private:
 
-            const IndexedList<T,I> *list;
+            const IndexedValueArray<T,I> *list;
             int32 current_index;
 
         public:
@@ -128,7 +128,7 @@ namespace hgl
 
         public:
 
-            ConstIterator(const IndexedList<T, I>* lst, int32 idx):list(lst),current_index(idx){}
+            ConstIterator(const IndexedValueArray<T, I>* lst, int32 idx):list(lst),current_index(idx){}
 
             const T& operator*()const
             {
@@ -158,11 +158,11 @@ namespace hgl
 
     public:
 
-        IndexedList()=default;
-        IndexedList(const T *lt,const int n){Add(lt,n);}
-        IndexedList(const IndexedList<T,I> &lt){operator=(lt);}
-        IndexedList(const std::initializer_list<T> &lt){operator=(lt);}
-        virtual ~IndexedList(){Free();}
+        IndexedValueArray()=default;
+        IndexedValueArray(const T *lt,const int n){Add(lt,n);}
+        IndexedValueArray(const IndexedValueArray<T,I> &lt){operator=(lt);}
+        IndexedValueArray(const std::initializer_list<T> &lt){operator=(lt);}
+        virtual ~IndexedValueArray(){Free();}
 
         /**
          * 向列表中添加一个空数据
@@ -488,5 +488,5 @@ namespace hgl
                 data_index[i] = i;
             }
         }
-    };//template<typename T> class IndexedList
+    };//template<typename T> class IndexedValueArray
 }//namespace hgl

@@ -12,12 +12,12 @@ namespace hgl
 {
     /**
     * 索引数据列表（非平凡类型版本）
-    * 对应 IndexedList，但面向非平凡对象，显式调用构造/析构。
-    * 对于平凡类型请使用 IndexedList。
+    * 对应 IndexedValueArray，但面向非平凡对象，显式调用构造/析构。
+    * 对于平凡类型请使用 IndexedValueArray。
     */
     template<typename T, typename I = int32> class ObjectIndexedList
     {
-        static_assert(!std::is_trivially_copyable_v<T>, "ObjectIndexedList is for non-trivial types; use IndexedList for trivially copyable types.");
+        static_assert(!std::is_trivially_copyable_v<T>, "ObjectIndexedList is for non-trivial types; use IndexedValueArray for trivially copyable types.");
 
     protected:
 

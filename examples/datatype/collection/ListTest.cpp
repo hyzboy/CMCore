@@ -1,5 +1,5 @@
 ﻿#include<hgl/type/ValueArray.h>
-#include<hgl/type/IndexedList.h>
+#include<hgl/type/IndexedValueArray.h>
 #include<hgl/time/Time.h>
 #include<random>
 #include<iostream>
@@ -38,7 +38,7 @@ inline void out_faster(const double ar,const double ir)
     if(ar<ir)
         std::cout<<"ValueArray\t"<<((ir-ar)/ir)*100.0<<"%"<<std::endl;
     else
-        std::cout<<"IndexedList\t"<<((ar-ir)/ar)*100.0<<"%"<<std::endl;
+        std::cout<<"IndexedValueArray\t"<<((ar-ir)/ar)*100.0<<"%"<<std::endl;
 }
 
 template<typename T>
@@ -50,7 +50,7 @@ void TestListType(bool pre_alloc)
     std::mt19937 generator(device());
 
     ValueArray<T> al;
-    IndexedList<T> il;
+    IndexedValueArray<T> il;
 
     double ar,ir;
 
