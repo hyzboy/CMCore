@@ -87,7 +87,7 @@ namespace hgl
 
         for(std::size_t i=0;i<fp_count;i++)
         {
-            ArrayList<FileInfo> fi_list;
+            ValueArray<FileInfo> fi_list;
             if(GetFileInfoList(fi_list,findpath[i],false,true,false)<=0)
                 continue;
 

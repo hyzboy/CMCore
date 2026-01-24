@@ -2,7 +2,7 @@
 
 #include<hgl/type/IDName.h>
 #include<hgl/type/Map.h>
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 #include<hgl/type/Stack.h>
 #include<hgl/io/event/KeyboardEvent.h>
 #include<hgl/io/event/MouseEvent.h>
@@ -163,7 +163,7 @@ namespace hgl::io
     class InputContext
     {
         U8String                    name;
-        ArrayList<InputBinding>     bindings;
+        ValueArray<InputBinding>     bindings;
         Map<PhysicalInput, int>     physical_to_binding_index;  ///< 快速查找
 
     public:
@@ -245,7 +245,7 @@ namespace hgl::io
             physical_to_binding_index.Clear();
         }
 
-        const ArrayList<InputBinding>& GetBindings() const { return bindings; }
+        const ValueArray<InputBinding>& GetBindings() const { return bindings; }
     };
 
     /**

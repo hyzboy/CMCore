@@ -2,7 +2,7 @@
 
 #include<hgl/thread/ThreadMutex.h>
 #include<hgl/thread/Semaphore.h>
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 #include<hgl/type/Set.h>
 namespace hgl
 {
@@ -63,7 +63,7 @@ namespace hgl
         operator S<T> &(){return proc_list;}
     };//template<typename T> class SwapColl
 
-    template<typename T> using SwapList=SwapColl<T,ArrayList>;       ///<安全交换列表
+    template<typename T> using SwapList=SwapColl<T,ValueArray>;       ///<安全交换列表
     template<typename T> using SwapSet=SwapColl<T,Set>;         ///<安全交换集合
 
     /**
@@ -149,6 +149,6 @@ namespace hgl
         operator S<T> &(){return proc_list;}
     };//template<typename T> class SemSwapColl
 
-    template<typename T> using SemSwapList=SemSwapColl<T,ArrayList>;     ///<安全信号交换列表
+    template<typename T> using SemSwapList=SemSwapColl<T,ValueArray>;     ///<安全信号交换列表
     template<typename T> using SemSwapSet=SemSwapColl<T,Set>;       ///<安全信号交换集合
 }//namespace hgl

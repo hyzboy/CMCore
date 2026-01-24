@@ -1,5 +1,5 @@
 ﻿#include<hgl/type/DataChain.h>
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 #include<iostream>
 #include<iomanip>
 #include<random>
@@ -45,7 +45,7 @@ int os_main(int,os_char **)
     uniform_int_distribution<int> dis_un_count(BLOCK_SIZE/10,BLOCK_SIZE/4);
     uniform_int_distribution<int> dis_block_count(1,BLOCK_SIZE/10);
 
-    ArrayList<DataChain::UserNode *> user_node_list;
+    ValueArray<DataChain::UserNode *> user_node_list;
     int free_count=dc.GetFreeCount();
 
     do

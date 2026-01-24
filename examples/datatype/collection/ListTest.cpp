@@ -1,4 +1,4 @@
-﻿#include<hgl/type/ArrayList.h>
+﻿#include<hgl/type/ValueArray.h>
 #include<hgl/type/IndexedList.h>
 #include<hgl/time/Time.h>
 #include<random>
@@ -36,7 +36,7 @@ inline void out_faster(const double ar,const double ir)
     std::cout<<"\tFaster: ";
 
     if(ar<ir)
-        std::cout<<"ArrayList\t"<<((ir-ar)/ir)*100.0<<"%"<<std::endl;
+        std::cout<<"ValueArray\t"<<((ir-ar)/ir)*100.0<<"%"<<std::endl;
     else
         std::cout<<"IndexedList\t"<<((ar-ir)/ar)*100.0<<"%"<<std::endl;
 }
@@ -49,7 +49,7 @@ void TestListType(bool pre_alloc)
     std::random_device device;
     std::mt19937 generator(device());
 
-    ArrayList<T> al;
+    ValueArray<T> al;
     IndexedList<T> il;
 
     double ar,ir;

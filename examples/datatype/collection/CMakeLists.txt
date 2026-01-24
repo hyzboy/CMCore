@@ -1,6 +1,6 @@
 cm_example_project("DataType/Collection" CollectionTest         CollectionTest.cpp)
 cm_example_project("DataType/Collection" CollectionTestComprehensive CollectionTestComprehensive.cpp)
-cm_example_project("DataType/Collection" ArrayListTest          ArrayListTest.cpp)
+cm_example_project("DataType/Collection" ValueArrayTest          ValueArrayTest.cpp)
 cm_example_project("DataType/Collection" QuickTest              QuickTest.cpp)
 cm_example_project("DataType/Collection" MinimalTest            MinimalTest.cpp)
 cm_example_project("DataType/Collection" FixVerificationTest    FixVerificationTest.cpp)

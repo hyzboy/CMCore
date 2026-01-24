@@ -50,7 +50,7 @@ namespace hgl
         }
     };
 
-    using FontInfoList=ArrayList<FontInfo>;
+    using FontInfoList=ValueArray<FontInfo>;
 
     void EnumOSFonts(FontInfoList *);
 }//namespace hgl

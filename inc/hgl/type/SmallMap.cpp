@@ -225,7 +225,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    void SmallMap<K,V>::WithList(typename SmallMap<K,V>::KVDataList &with_list,const ArrayList<K> &in_list) const
+    void SmallMap<K,V>::WithList(typename SmallMap<K,V>::KVDataList &with_list,const ValueArray<K> &in_list) const
     {
         with_list.Clear();
         const int count = GetCount();
@@ -239,7 +239,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    void SmallMap<K,V>::WithoutList(typename SmallMap<K,V>::KVDataList &without_list,const ArrayList<K> &in_list) const
+    void SmallMap<K,V>::WithoutList(typename SmallMap<K,V>::KVDataList &without_list,const ValueArray<K> &in_list) const
     {
         without_list.Clear();
         const int count = GetCount();

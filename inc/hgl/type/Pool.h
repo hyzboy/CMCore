@@ -4,7 +4,7 @@
 */
 #pragma once
 
-#include <hgl/type/ArrayList.h>
+#include <hgl/type/ValueArray.h>
 #include <hgl/type/Queue.h>
 #include <type_traits>
 
@@ -283,7 +283,7 @@ namespace hgl
         */
         bool Release(T value)
         {
-            // 仅支持 Active 有 Find/Delete (ArrayList)。若不是此类容器，忽略操作
+            // 仅支持 Active 有 Find/Delete (ValueArray)。若不是此类容器，忽略操作
             if constexpr (has_get_array<AT>::value)
             {
                 int idx = Active.Find(value);
@@ -413,12 +413,12 @@ namespace hgl
     * @brief CN:对象池类型定义。\nEN:Object pool type definition.
     */
     template<typename T>
-    using Pool = PoolTemplate<T, ArrayList<T>, Queue<T>>;
+    using Pool = PoolTemplate<T, ValueArray<T>, Queue<T>>;
 
     /**
     * @brief CN:对象指针池类型定义。\nEN:Object pointer pool type definition.
     */
     template<typename T>
-    using ObjectPool = PoolTemplate<T *, ArrayList<T *>, Queue<T *>>;
+    using ObjectPool = PoolTemplate<T *, ValueArray<T *>, Queue<T *>>;
 
 } // namespace hgl

@@ -1,6 +1,6 @@
 ﻿/**
  * 快速测试脚本
- * 用于快速验证ArrayList和ValueBuffer的基本功能
+ * 用于快速验证ValueArray和ValueBuffer的基本功能
  */
 
 #include<hgl/type/ObjectList.h>
@@ -22,15 +22,15 @@ public:
 
 void TestArrayListBasic()
 {
-    std::cout << "=== ArrayList Basic Test ===" << std::endl;
+    std::cout << "=== ValueArray Basic Test ===" << std::endl;
 
     // 测试int类型
-    ArrayList<int> intList;
+    ValueArray<int> intList;
     intList.Add(10);
     intList.Add(20);
     intList.Add(30);
 
-    std::cout << "Int ArrayList: ";
+    std::cout << "Int ValueArray: ";
     for(int i = 0; i < intList.GetCount(); i++)
         std::cout << *intList.At(i) << " ";
     std::cout << std::endl;
@@ -157,7 +157,7 @@ void TestNonTrivialType()
 int main()
 {
     std::cout << "====================================" << std::endl;
-    std::cout << "Quick ArrayList/ValueBuffer Test" << std::endl;
+    std::cout << "Quick ValueArray/ValueBuffer Test" << std::endl;
     std::cout << "====================================" << std::endl;
 
     try

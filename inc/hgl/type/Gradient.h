@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/DataType.h>
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 #include<hgl/util/sort/Sort.h>
 
 namespace hgl
@@ -30,7 +30,7 @@ namespace hgl
     {
         using GS=GradientStop<P,T>;
 
-        ArrayList<GS> stop_list;
+        ValueArray<GS> stop_list;
 
         bool dirty;
 

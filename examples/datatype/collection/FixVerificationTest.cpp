@@ -4,7 +4,7 @@
 
 #include<hgl/type/ValueBuffer.h>
 #include<hgl/type/ObjectArray.h>
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 #include<iostream>
 #include<string>
 
@@ -83,7 +83,7 @@ void TestDataArray()
 
 void TestArrayList()
 {
-    std::cout << "\n=== ArrayList Test ===" << std::endl;
+    std::cout << "\n=== ValueArray Test ===" << std::endl;
 
     TestObject::aliveCount = 0;
 
@@ -104,7 +104,7 @@ void TestArrayList()
 int main()
 {
     std::cout << "====================================" << std::endl;
-    std::cout << "ValueBuffer/ArrayList Fix Verification" << std::endl;
+    std::cout << "ValueBuffer/ValueArray Fix Verification" << std::endl;
     std::cout << "====================================" << std::endl;
 
     try
@@ -120,7 +120,7 @@ int main()
 
         TestArrayList();
 
-        std::cout << "\nFinal aliveCount after ArrayList test: " << TestObject::aliveCount << std::endl;
+        std::cout << "\nFinal aliveCount after ValueArray test: " << TestObject::aliveCount << std::endl;
         if(TestObject::aliveCount != 0)
         {
             std::cout << "ERROR: Memory leak detected!" << std::endl;

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 #include<hgl/io/TextOutputStream.h>
 
 namespace hgl
@@ -57,7 +57,7 @@ namespace hgl
     private:
 
         ValueBuffer<SC> str_data;                         // 字符串数据池
-        ArrayList<ConstStringView<SC>> str_list;        // 按 ID 顺序存储（值，不是指针）
+        ValueArray<ConstStringView<SC>> str_list;        // 按 ID 顺序存储（值，不是指针）
 
     public:
 
@@ -176,7 +176,7 @@ namespace hgl
 
         // ==================== 迭代器（改进） ====================
         
-        // ArrayList 使用原始指针作为迭代器
+        // ValueArray 使用原始指针作为迭代器
         const ConstStringView<SC>* begin() const { return str_list.begin(); }
         const ConstStringView<SC>* end() const { return str_list.end(); }
 

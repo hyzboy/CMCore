@@ -1,4 +1,4 @@
-﻿#include<hgl/type/ArrayList.h>
+﻿#include<hgl/type/ValueArray.h>
 #include<hgl/type/ObjectList.h>
 #include<iostream>
 #include<string>
@@ -23,7 +23,7 @@ static int tests_failed = 0;
 
 // List 类型别名（代码库中常用）
 template<typename T>
-using List = ArrayList<T>;
+using List = ValueArray<T>;
 
 // 非平凡类型用于测试
 struct ComplexItem
@@ -129,7 +129,7 @@ void PrintList(const char* label, const List<T>& list)
     } else {
         for (int i = 0; i < list.GetCount() && i < 10; i++) {
             if (i > 0) std::cout << ", ";
-            std::cout << *list.At(i);  // ArrayList::At() returns T*
+            std::cout << *list.At(i);  // ValueArray::At() returns T*
         }
         if (list.GetCount() > 10) std::cout << " ... (" << (list.GetCount() - 10) << " more)";
     }
@@ -137,7 +137,7 @@ void PrintList(const char* label, const List<T>& list)
 }
 
 // ========================================
-// ArrayList/List Tests
+// ValueArray/List Tests
 // ========================================
 
 void test_list_basic_operations()
@@ -292,7 +292,7 @@ void test_list_sorting()
     PrintList("Before sort", list);
 
     std::cout << "\n[5.1] Manual sorting verification:" << std::endl;
-    std::cout << "  Note: ArrayList does not have built-in QSort" << std::endl;
+    std::cout << "  Note: ValueArray does not have built-in QSort" << std::endl;
     std::cout << "  Elements can be sorted using std::sort on data()" << std::endl;
     TEST_ASSERT(list.GetCount() == 5, "List has 5 elements");
 
@@ -627,7 +627,7 @@ int main()
     std::cout << "List and ObjectList Comprehensive Test Suite" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    // ArrayList/List tests
+    // ValueArray/List tests
     test_list_basic_operations();
     test_list_delete_operations();
     test_list_batch_operations();

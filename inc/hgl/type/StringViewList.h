@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/StringView.h>
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 #include<hgl/CharSet.h>
 
 namespace hgl
@@ -14,7 +14,7 @@ namespace hgl
     {
         String<CharT> text_string;                                              ///<完整原始文本保存区
 
-        ArrayList<StringView<CharT>> line_string;                              ///<行字符串共享指针列表类型
+        ValueArray<StringView<CharT>> line_string;                              ///<行字符串共享指针列表类型
 
         StringView<CharT> null_view;
 

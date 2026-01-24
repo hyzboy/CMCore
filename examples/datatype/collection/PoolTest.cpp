@@ -73,7 +73,7 @@ void ObjectPoolTest()
 {
     ObjectPool<UserInfoClass> pool;
 
-    ArrayList<UserInfoClass *> release_list;
+    ValueArray<UserInfoClass *> release_list;
 
     //添加所有的人物数据到池中
     {
@@ -295,7 +295,7 @@ void TestPoolBatchOperations()
     ShowUserInfoArray(pool.GetActiveArray());
 
     cout<<"\n[2] 准备批量释放..."<<endl;
-    ArrayList<UserInfo> release_arr;
+    ValueArray<UserInfo> release_arr;
     for(int i = 0; i < 3; ++i)
         release_arr.Add(user_info_array[i]);
 
@@ -482,7 +482,7 @@ void TestObjectPoolBatchOperations()
     ObjectPool<UserInfoClass> pool;
 
     cout<<"[1] 创建并添加 6 个对象..."<<endl;
-    ArrayList<UserInfoClass *> all_objs;
+    ValueArray<UserInfoClass *> all_objs;
     for(int i = 0; i < 6; ++i)
     {
         UserInfoClass *uic = new UserInfoClass;
@@ -538,7 +538,7 @@ void TestObjectPoolStress()
         cout<<"\n[2] 释放一半..."<<endl;
         const ValueBuffer<UserInfoClass *> &active = pool.GetActiveArray();
         int to_release = active.GetCount() / 2;
-        ArrayList<UserInfoClass *> release_list;
+        ValueArray<UserInfoClass *> release_list;
         for(int i = 0; i < to_release; ++i)
             release_list.Add(active[i]);
 

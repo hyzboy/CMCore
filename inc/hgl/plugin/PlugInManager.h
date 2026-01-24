@@ -3,7 +3,7 @@
 #include<hgl/plugin/ExternalPlugIn.h>
 #include<hgl/type/ObjectManager.h>
 #include<hgl/type/StringList.h>
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 
 namespace hgl
 {

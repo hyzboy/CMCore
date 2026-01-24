@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 
 namespace hgl
 {
@@ -77,7 +77,7 @@ namespace hgl
             }
         };
 
-        using VolumeInfoList=ArrayList<VolumeInfo>;
+        using VolumeInfoList=ValueArray<VolumeInfo>;
 
         /**
          * 枚举当前计算机所有卷

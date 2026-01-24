@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include <hgl/type/KeyValue.h>
-#include <hgl/type/ArrayList.h>
+#include <hgl/type/ValueArray.h>
 
 namespace hgl
 {
@@ -15,7 +15,7 @@ namespace hgl
     {
     public:
         using KVData = KeyValue<K, V>;
-        using KVDataList = ArrayList<KVData>;
+        using KVDataList = ValueArray<KVData>;
 
     private:
         KVDataList data_list; // 按值存储
@@ -157,8 +157,8 @@ namespace hgl
         void EnumValue (bool (*enum_func)(V &));
 
         // 集合运算（按 key）
-        void WithList (KVDataList &with_list, const ArrayList<K> &in_list) const;
-        void WithoutList (KVDataList &without_list, const ArrayList<K> &in_list) const;
+        void WithList (KVDataList &with_list, const ValueArray<K> &in_list) const;
+        void WithoutList (KVDataList &without_list, const ValueArray<K> &in_list) const;
     };
 }
 

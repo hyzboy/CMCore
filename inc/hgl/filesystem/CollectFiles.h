@@ -1,6 +1,6 @@
 #pragma once
 
-#include <hgl/type/ArrayList.h>
+#include <hgl/type/ValueArray.h>
 #include <hgl/filesystem/FileSystem.h>
 
 namespace hgl::filesystem
@@ -18,7 +18,7 @@ namespace hgl::filesystem
     * @pragma sub_folder   whether to traverse subfolders
     * Returns              number of files collected.
     */
-    int CollectFiles(ArrayList<FileInfo> &out,
+    int CollectFiles(ValueArray<FileInfo> &out,
                         const OSString &folder,
                         const OSString &pattern,
                         const bool use_regex = false,

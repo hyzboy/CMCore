@@ -1,5 +1,5 @@
 ﻿/**
- * ArrayList 严格测试用例
+ * ValueArray 严格测试用例
  * 
  * 测试目标：
  * 1. 测试 trivially copyable 类型 (int, double, POD struct)
@@ -8,7 +8,7 @@
  * 4. 边界条件和异常情况
  */
 
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 #include<hgl/type/ObjectArray.h>
 #include<iostream>
 #include<iomanip>
@@ -160,7 +160,7 @@ int NonTrivialClass::moveCount = 0;
 // ============================================================================
 
 template<typename T>
-void PrintArrayList(const ArrayList<T>& list, const char* label)
+void PrintArrayList(const ValueArray<T>& list, const char* label)
 {
     std::cout << std::setw(30) << label << " [" << std::setw(2) << list.GetCount() 
               << "/" << std::setw(2) << list.GetAllocCount() << "]: ";
@@ -247,10 +247,10 @@ void PrintCounters()
 void TestIntArrayList()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 1: ArrayList<int> (Trivially Copyable)" << std::endl;
+    std::cout << "TEST 1: ValueArray<int> (Trivially Copyable)" << std::endl;
     std::cout << "========================================" << std::endl;
 
-    ArrayList<int> list;
+    ValueArray<int> list;
     
     // 测试基本添加
     std::cout << "\n[1.1] Add single elements:" << std::endl;
@@ -309,10 +309,10 @@ void TestIntArrayList()
 void TestPODArrayList()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 2: ArrayList<SimplePOD> (POD Structure)" << std::endl;
+    std::cout << "TEST 2: ValueArray<SimplePOD> (POD Structure)" << std::endl;
     std::cout << "========================================" << std::endl;
 
-    ArrayList<SimplePOD> list;
+    ValueArray<SimplePOD> list;
 
     // 测试添加POD
     std::cout << "\n[2.1] Add POD objects:" << std::endl;
@@ -352,14 +352,14 @@ void TestPODArrayList()
 void TestNonTrivialArrayList()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 3: ArrayList<NonTrivialClass> (Non-Trivial Type)" << std::endl;
+    std::cout << "TEST 3: ValueArray<NonTrivialClass> (Non-Trivial Type)" << std::endl;
     std::cout << "========================================" << std::endl;
 
     ResetCounters();
 
-    std::cout << "\n[3.0] Creating ArrayList..." << std::endl;
+    std::cout << "\n[3.0] Creating ValueArray..." << std::endl;
     ObjectArray<NonTrivialClass> list;
-    std::cout << "  ArrayList created. Count=" << list.GetCount() 
+    std::cout << "  ValueArray created. Count=" << list.GetCount() 
               << ", AllocCount=" << list.GetAllocCount() << std::endl;
 
     // 测试添加非平凡对象 - 简化测试
@@ -395,7 +395,7 @@ void TestEdgeCases()
 
     // 测试空列表操作
     std::cout << "\n[4.1] Operations on empty list:" << std::endl;
-    ArrayList<int> emptyList;
+    ValueArray<int> emptyList;
     std::cout << "  IsEmpty: " << (emptyList.IsEmpty() ? "true" : "false") << std::endl;
     std::cout << "  GetCount: " << emptyList.GetCount() << std::endl;
     emptyList.Delete(0, 1);  // Should not crash
@@ -403,7 +403,7 @@ void TestEdgeCases()
 
     // 测试越界删除
     std::cout << "\n[4.2] Out-of-bounds delete:" << std::endl;
-    ArrayList<int> list;
+    ValueArray<int> list;
     for (int i = 0; i < 5; i++)
         list.Add(i);
     PrintArrayList(list, "Before delete");
@@ -414,7 +414,7 @@ void TestEdgeCases()
 
     // 测试Reserve和Resize
     std::cout << "\n[4.3] Reserve and Resize:" << std::endl;
-    ArrayList<int> reserveList;
+    ValueArray<int> reserveList;
     reserveList.Reserve(100);
     std::cout << "  After Reserve(100): Count=" << reserveList.GetCount() 
               << ", AllocCount=" << reserveList.GetAllocCount() << std::endl;
@@ -425,7 +425,7 @@ void TestEdgeCases()
 
     // 测试Move边界情况
     std::cout << "\n[4.4] Move edge cases:" << std::endl;
-    ArrayList<int> moveList;
+    ValueArray<int> moveList;
     for (int i = 0; i < 10; i++)
         moveList.Add(i);
     
@@ -481,7 +481,7 @@ void TestMemorySafety()
 int main(int, char**)
 {
     std::cout << "========================================"  << std::endl;
-    std::cout << "ArrayList Comprehensive Test Suite" << std::endl;
+    std::cout << "ValueArray Comprehensive Test Suite" << std::endl;
     std::cout << "========================================" << std::endl;
 
     try

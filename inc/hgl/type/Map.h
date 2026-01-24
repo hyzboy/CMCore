@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/KeyValue.h>
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 #include<hgl/type/Pair.h>
 #include<hgl/type/Pool.h>
 
@@ -17,7 +17,7 @@ namespace hgl
         using ThisClass=MapTemplate<K,V,KVData>;
 
         using KVDataPool=ObjectPool<KVData>;
-        using KVDataList=ArrayList<KVData *>;
+        using KVDataList=ValueArray<KVData *>;
 
         KVDataPool data_pool;
         KVDataList data_list;
@@ -171,8 +171,8 @@ namespace hgl
                     }
                 }
 
-                void    WithList(KVDataList &with_list,const ArrayList<K> &in_list);                     ///<统计出所有在in_list中出现的数据，产生的结果写入with_list
-                void    WithoutList(KVDataList &without_list,const ArrayList<K> &in_list);               ///<统计出所有没有出现在in_list中的数据，产生的结果写入without_list
+                void    WithList(KVDataList &with_list,const ValueArray<K> &in_list);                     ///<统计出所有在in_list中出现的数据，产生的结果写入with_list
+                void    WithoutList(KVDataList &without_list,const ValueArray<K> &in_list);               ///<统计出所有没有出现在in_list中的数据，产生的结果写入without_list
     };//class MapTemplate
 
     template<typename K,typename V> class Map:public MapTemplate<K,V,KeyValue<K,V> >

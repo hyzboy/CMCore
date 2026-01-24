@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 #include<hgl/type/ValueBuffer.h>
 
 namespace hgl
@@ -21,7 +21,7 @@ namespace hgl
 
     private:
 
-        ArrayList<Block>         block_list;                     ///<数据块列表
+        ValueArray<Block>         block_list;                     ///<数据块列表
         ValueBuffer<char>     data_array;                     ///<数据
 
     public:

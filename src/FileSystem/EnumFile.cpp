@@ -10,11 +10,11 @@ namespace hgl
             {
             protected:
 
-                ArrayList<FileInfo> *fi_list;
+                ValueArray<FileInfo> *fi_list;
 
             public:
 
-                OnlyFileEnum(ArrayList<FileInfo> *lfi)
+                OnlyFileEnum(ValueArray<FileInfo> *lfi)
                 {
                     fi_list=lfi;
                 }
@@ -26,7 +26,7 @@ namespace hgl
             };//class OnlyFileEnum:public EnumFile
         }//namespace
 
-        int GetFileInfoList(ArrayList<FileInfo> &fi_list,const OSString &folder_name,bool proc_folder,bool proc_file,bool sub_folder)
+        int GetFileInfoList(ValueArray<FileInfo> &fi_list,const OSString &folder_name,bool proc_folder,bool proc_file,bool sub_folder)
         {
             EnumFileConfig efc(folder_name);
 

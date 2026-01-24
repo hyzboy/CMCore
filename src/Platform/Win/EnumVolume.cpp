@@ -7,7 +7,7 @@ namespace hgl
 {
     namespace filesystem
     {
-        int EnumVolume(ArrayList<VolumeInfo> &vi_list,const VolumeCheckConfig &cfg)
+        int EnumVolume(ValueArray<VolumeInfo> &vi_list,const VolumeCheckConfig &cfg)
         {
             if(cfg.isErrorConfig())
                 return(-1);

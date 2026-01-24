@@ -9,7 +9,7 @@ namespace hgl
 {
     /**
     * 索引数据列表<br>
-    * IndexedList与ArrayList功能类似，但它的区别是它使用索引来访问数据。
+    * IndexedList与ValueArray功能类似，但它的区别是它使用索引来访问数据。
     * 当数据被移动、删除、排序时，数据本身的内存并不会变动，只会调整索引。
     */
     template<typename T,typename I=int32> class IndexedList

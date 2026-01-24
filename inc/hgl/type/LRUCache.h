@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 namespace hgl
 {
     template<typename F,typename T> struct LRUCacheItem

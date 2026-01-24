@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 #include<hgl/filesystem/Filename.h>
 
 namespace hgl
@@ -112,6 +112,6 @@ namespace hgl
 
         bool GetFileInfo(const os_char *filename,struct FileInfo &);    ///<取得文件信息
 
-        int GetFileInfoList(ArrayList<FileInfo> &, const OSString &folder_name, bool proc_folder, bool proc_file, bool sub_folder);
+        int GetFileInfoList(ValueArray<FileInfo> &, const OSString &folder_name, bool proc_folder, bool proc_file, bool sub_folder);
     }//namespace filesystem
 }//namespace hgl

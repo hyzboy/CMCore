@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 #include<hgl/type/MemoryUtil.h>
 
 namespace hgl
@@ -11,7 +11,7 @@ namespace hgl
      * 当调用 Clear()/Free()/Delete 系列函数时，会对所包含的元素执行 delete 操作
      *
      * 设计要点：
-     * - 继承自 ArrayList<T *>，保留其大部分接口；
+     * - 继承自 ValueArray<T *>，保留其大部分接口；
      * - 新增以 Own 命名的方法（如 DeleteAtOwn），用于先释放对象再从列表中移除；
      * - 提供 Unlink 系列方法仅断开关联（不 delete），以支持不同的内存管理策略；
      */
@@ -21,9 +21,9 @@ namespace hgl
 
         static_assert(!std::is_trivially_copyable_v<T>, 
                       "ObjectList<T> requires non-trivial types (std::string, custom classes with dynamic memory, etc). "
-                      "For trivially copyable types (int, float, POD structs), use ArrayList<T> instead for better performance.");
+                      "For trivially copyable types (int, float, POD structs), use ValueArray<T> instead for better performance.");
 
-        ArrayList<T *> items;   // composition: store pointers, manage ownership here
+        ValueArray<T *> items;   // composition: store pointers, manage ownership here
 
     public:
 
@@ -202,7 +202,7 @@ namespace hgl
 
     public:
         // 以下以 Own 结尾的方法会先 delete 对象（如果存在），再从列表中移除对应条目。
-        // 不使用 override 是为避免与 ArrayList 中 Delete/DeleteByValue 的签名冲突。
+        // 不使用 override 是为避免与 ValueArray 中 Delete/DeleteByValue 的签名冲突。
 
         // 删除指定索引并销毁该对象
         bool DeleteAtOwn(int index)

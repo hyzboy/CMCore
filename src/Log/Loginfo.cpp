@@ -3,7 +3,7 @@
 #include<hgl/log/Logger.h>
 #include<hgl/log/LogMessage.h>
 #include<hgl/time/DateTime.h>
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 #include<hgl/thread/RWLock.h>
 #include<hgl/filesystem/FileSystem.h>
 
@@ -13,7 +13,7 @@ namespace hgl
 {
     namespace logger
     {
-        RWLockObject<ArrayList<Logger *>> log_list;        //记录器列表
+        RWLockObject<ValueArray<Logger *>> log_list;        //记录器列表
 
         bool AddLogger(Logger *log)
         {

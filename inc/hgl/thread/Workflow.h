@@ -4,7 +4,7 @@
 #include<hgl/thread/ThreadMutex.h>
 #include<hgl/thread/SwapData.h>
 #include<hgl/thread/DataPost.h>
-#include<hgl/type/ArrayList.h>
+#include<hgl/type/ValueArray.h>
 namespace hgl
 {
     /**
@@ -53,7 +53,7 @@ namespace hgl
         {
         public:
 
-            using WorkList=ArrayList<W *>;
+            using WorkList=ValueArray<W *>;
 
         private:
 
@@ -213,7 +213,7 @@ namespace hgl
         {
         protected:
 
-            using WorkList=ArrayList<W *>;
+            using WorkList=ValueArray<W *>;
 
             WorkProc<W> *work_proc;
 

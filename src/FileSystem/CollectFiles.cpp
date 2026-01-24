@@ -45,12 +45,12 @@ namespace hgl
 
         class CollectEnum : public EnumFile
         {
-            ArrayList<FileInfo> &out;
+            ValueArray<FileInfo> &out;
             os_regex re;
             bool match_all = false;
 
         public:
-            CollectEnum(ArrayList<FileInfo> &o, const OSString &pattern, bool use_regex)
+            CollectEnum(ValueArray<FileInfo> &o, const OSString &pattern, bool use_regex)
                 : out(o)
             {
                 if (pattern.IsEmpty())
@@ -79,7 +79,7 @@ namespace hgl
             }
         };
 
-        int CollectFiles(ArrayList<FileInfo> &out,
+        int CollectFiles(ValueArray<FileInfo> &out,
                          const OSString &folder,
                          const OSString &pattern,
                          const bool use_regex,
