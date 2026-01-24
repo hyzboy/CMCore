@@ -286,7 +286,7 @@ namespace hgl
         void Clear()
         {
             aim.ReleaseAllActive();
-            data_array.Clear();
+            // 保留 data_array 的长度以便后续重用，不重置 count
         }
 
         /**
