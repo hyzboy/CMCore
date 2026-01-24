@@ -196,6 +196,26 @@ namespace hgl
         }
 
         /**
+         * @brief CN:根据索引删除元素\nEN:Delete element at index
+         * @param index CN:元素索引（从0开始）\nEN:Element index (0-based)
+         * @return CN:成功返回 true，索引无效返回 false\nEN:true if deleted, false if invalid index
+         */
+        bool DeleteAt(int index)
+        {
+            const ValueBuffer<int>& active_ids = data_manager.GetActiveArray();
+            if (index < 0 || index >= active_ids.GetCount())
+                return false;
+
+            int id = active_ids[index];
+            
+            // 注意：不从 hash_map 中删除（避免重建哈希表的开销）
+            // 查找时会通过 IsActive() 检查 ID 是否有效
+            
+            // 释放ID（移到闲置池）
+            return data_manager.Release(&id, 1) > 0;
+        }
+
+        /**
          * @brief CN:清空所有元素（但不释放内存）\nEN:Clear all elements (without freeing memory)
          */
         void Clear()
