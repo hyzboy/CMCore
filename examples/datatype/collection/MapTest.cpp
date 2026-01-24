@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include<time.h>
 #include<string>
-#include<hgl/type/SortedSet.h>
+#include<hgl/type/OrderedValueSet.h>
 #include<hgl/type/Map.h>
 #include<hgl/type/String.h>
 #include"UserInfo.h"

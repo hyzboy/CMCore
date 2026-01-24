@@ -1,4 +1,4 @@
-#include<hgl/type/SortedSet.h>
+#include<hgl/type/OrderedValueSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -8,10 +8,10 @@ using namespace std;
 int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
-    cout << "TEST 01: SortedSet Basic Operations" << endl;
+    cout << "TEST 01: OrderedValueSet Basic Operations" << endl;
     cout << "========================================" << endl;
 
-    SortedSet<int> set;
+    OrderedValueSet<int> set;
     assert(set.IsEmpty());
     assert(set.GetCount() == 0);
 

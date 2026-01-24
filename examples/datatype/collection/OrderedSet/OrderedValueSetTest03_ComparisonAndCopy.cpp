@@ -1,4 +1,4 @@
-#include<hgl/type/SortedSet.h>
+#include<hgl/type/OrderedValueSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -8,11 +8,11 @@ using namespace std;
 int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
-    cout << "TEST 03: SortedSet Comparison & Copy" << endl;
+    cout << "TEST 03: OrderedValueSet Comparison & Copy" << endl;
     cout << "========================================" << endl;
 
     cout << "\n[3.1] Equality for identical sets:" << endl;
-    SortedSet<int> a, b;
+    OrderedValueSet<int> a, b;
     int base[] = {1, 3, 5, 7};
     a.Add(base, 4);
     b.Add(base, 4);
@@ -32,7 +32,7 @@ int os_main(int, os_char**)
     cout << "  ✓ a != b with different tail element" << endl;
 
     cout << "\n[3.4] Copy assignment and self-assignment:" << endl;
-    SortedSet<int> c;
+    OrderedValueSet<int> c;
     c = a;
     assert(c == a);
     cout << "  ✓ Copy assignment produced equal set" << endl;

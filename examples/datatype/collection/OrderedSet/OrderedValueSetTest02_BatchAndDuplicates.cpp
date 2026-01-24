@@ -1,4 +1,4 @@
-#include<hgl/type/SortedSet.h>
+#include<hgl/type/OrderedValueSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -8,10 +8,10 @@ using namespace std;
 int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
-    cout << "TEST 02: SortedSet Batch Add / Delete" << endl;
+    cout << "TEST 02: OrderedValueSet Batch Add / Delete" << endl;
     cout << "========================================" << endl;
 
-    SortedSet<int> set;
+    OrderedValueSet<int> set;
 
     cout << "\n[2.1] Batch Add without duplicates:" << endl;
     int values1[] = {40, 10, 30, 20};

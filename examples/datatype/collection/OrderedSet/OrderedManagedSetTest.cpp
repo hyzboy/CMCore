@@ -1,4 +1,4 @@
-#include<hgl/type/SortedSet.h>
+#include<hgl/type/OrderedManagedSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -26,12 +26,12 @@ int Tracked::alive = 0;
 int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
-    cout << "TEST 05: SortedObjectSet Lifecycle & Ownership" << endl;
+    cout << "TEST 05: OrderedValueSet Lifecycle & Ownership" << endl;
     cout << "========================================" << endl;
 
     Tracked::alive = 0;
     {
-        SortedObjectSet<Tracked> set;
+        OrderedManagedSet<Tracked> set;
 
         cout << "\n[5.1] Add objects (auto-sorted, unique):" << endl;
         Tracked a(10), b(5), c(15);

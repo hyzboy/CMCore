@@ -1,4 +1,4 @@
-#include<hgl/type/SortedSet.h>
+#include<hgl/type/OrderedManagedSet.h>
 #include<iostream>
 #include<string>
 
@@ -51,11 +51,11 @@ struct SimpleData
 
 int main()
 {
-    std::cout << "=== Simple SortedSet Test ===" << std::endl;
+    std::cout << "=== Simple OrderedValueSet Test ===" << std::endl;
 
     {
-        std::cout << "\n[1] Creating SortedSet..." << std::endl;
-        SortedObjectSet<SimpleData> set;
+        std::cout << "\n[1] Creating OrderedValueSet..." << std::endl;
+        OrderedManagedSet<SimpleData> set;
 
         std::cout << "\n[2] Creating first object..." << std::endl;
         SimpleData obj1(10, "First");

@@ -1,4 +1,4 @@
-#include<hgl/type/SortedSet.h>
+#include<hgl/type/OrderedValueSet.h>
 #include<iostream>
 #include<cassert>
 #include<type_traits>
@@ -10,7 +10,7 @@ using namespace std;
 template<typename T>
 constexpr bool is_const_iterator()
 {
-    using SetType = SortedSet<T>;
+    using SetType = OrderedValueSet<T>;
     using ConstIter = decltype(std::declval<const SetType>().begin());
     using Pointee = std::remove_pointer_t<ConstIter>;
     return std::is_const_v<Pointee>;
@@ -19,10 +19,10 @@ constexpr bool is_const_iterator()
 int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
-    cout << "TEST 04: SortedSet Const-Correctness Detection" << endl;
+    cout << "TEST 04: OrderedValueSet Const-Correctness Detection" << endl;
     cout << "========================================" << endl;
 
-    SortedSet<int> set;
+    OrderedValueSet<int> set;
     set.Add(1);
     set.Add(2);
     set.Add(3);
@@ -32,7 +32,7 @@ int os_main(int, os_char**)
     cout << "\n[4.1] begin()/end() constness check:" << endl;
     cout << "  begin() const returns " << (begin_is_const ? "const T*" : "T* (mutable!)") << endl;
 
-    const SortedSet<int>& cset = set;
+    const OrderedValueSet<int>& cset = set;
 
     // Always treat const container begin() as const pointer
     const int* ptr = cset.begin();

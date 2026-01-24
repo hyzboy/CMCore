@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/DataStackPool.h>
-#include<hgl/type/SortedSet.h>
+#include<hgl/type/OrderedValueSet.h>
 
 namespace hgl
 {
@@ -42,7 +42,7 @@ namespace hgl
 
         DataStackPool<UserNode> ud_pool;    ///<用户数据占用信息池
 
-        SortedSet<UserNode *> ud_set;      ///<用户数据占用合集
+        OrderedValueSet<UserNode *> ud_set;      ///<用户数据占用合集
 
     public:
 
