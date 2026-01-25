@@ -9,9 +9,9 @@ void TestStackOrdered()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"ValueStack Ordered Test"<<endl<<endl;
+    cout<<"Stack Ordered Test"<<endl<<endl;
 
-    ValueStack<int> tab;
+    Stack<int> tab;
     int i;
 
     for(i=0;i<10;i++)
@@ -21,7 +21,7 @@ void TestStackOrdered()
         tab.Push(i);
     }
 
-    cout<<"ValueStack Count: "<<tab.GetCount()<<endl;
+    cout<<"Stack Count: "<<tab.GetCount()<<endl;
 
     for(i=0;i<10;i++)
     {
@@ -32,16 +32,16 @@ void TestStackOrdered()
         cout<<"pop "<<val<<endl;
     }
 
-    cout<<"ValueStack Count: "<<tab.GetCount()<<endl;
+    cout<<"Stack Count: "<<tab.GetCount()<<endl;
 }
 
 void TestStackUnordered()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"ValueStack Unordered Test"<<endl<<endl;
+    cout<<"Stack Unordered Test"<<endl<<endl;
 
-    ValueStack<int> tab;
+    Stack<int> tab;
     int i;
     int val;
 
@@ -67,14 +67,14 @@ void TestStackStruct()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"ValueStack Struct Test"<<endl<<endl;
+    cout<<"Stack Struct Test"<<endl<<endl;
 
-    ValueStack<UserInfo> ui_queue;
+    Stack<UserInfo> ui_queue;
 
     for(uint i=0;i<sizeof(user_info_array)/sizeof(UserInfo);i++)
         ui_queue.Push(user_info_array[i]);
 
-    cout<<"ValueStack Count: "<<ui_queue.GetCount()<<endl;
+    cout<<"Stack Count: "<<ui_queue.GetCount()<<endl;
 
     for(uint i=0;i<sizeof(user_info_array)/sizeof(UserInfo);i++)
     {
@@ -111,9 +111,9 @@ void TestObjectStack()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"ValueStack Object Test"<<endl<<endl;
+    cout<<"Stack Object Test"<<endl<<endl;
 
-    ManagedStack<StackTestObject> tab;
+    Stack<StackTestObject*> tab;
 
     int i;
 
@@ -126,17 +126,25 @@ void TestObjectStack()
         tab.Push(obj);
     }
 
-    cout<<"ValueStack Count: "<<tab.GetCount()<<endl;
+    cout<<"Stack Count: "<<tab.GetCount()<<endl;
 
-    for(i=0;i<5;i++)        //只取出5个,剩几个给自动清理处理
+    for(i=0;i<5;i++)        //取出5个
     {
-        StackTestObject *obj=tab.Pop();
-
-        if(obj)
+        StackTestObject *obj;
+        
+        if(tab.Pop(obj))
             delete obj;
     }
 
-    cout<<"ValueStack Count: "<<tab.GetCount()<<endl;
+    cout<<"Stack Count: "<<tab.GetCount()<<endl;
+    
+    // 手动清理剩余对象
+    while(tab.GetCount() > 0)
+    {
+        StackTestObject *obj;
+        tab.Pop(obj);
+        delete obj;
+    }
 }
 
 int os_main(int,os_char **)

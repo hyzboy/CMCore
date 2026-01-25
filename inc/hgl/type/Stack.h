@@ -5,13 +5,18 @@
 namespace hgl
 {
     /**
-     * @brief 基础栈容器（无虚函数）
-     * CN: 提供核心栈操作，无多态开销
-     * EN: Basic stack operations without virtual function overhead
+     * @brief 标准栈容器（无虚函数）
+     * CN: 用于大多数场景，高效无多态开销。支持任意平凡可复制类型，调用方管理生命周期。
+     *     对于复杂对象，使用指针形式：Stack<MyObject*>，由调用方管理new/delete
+     * EN: Standard stack container without virtual functions. Supports trivially copyable types only,
+     *     caller manages lifetime. For complex objects, use pointer form: Stack<MyObject*> with manual new/delete
      */
     template<typename T>
-    class StackBase
+    class Stack
     {
+        static_assert(std::is_trivially_copyable_v<T>,
+                      "Stack<T> requires T to be trivially copyable. For complex objects, use Stack<T*> instead.");
+
     protected:
 
         ValueBuffer<T> data_array;
@@ -21,7 +26,7 @@ namespace hgl
 
         int GetAllocCount() const { return data_array.GetAllocCount(); }      ///< 已分配容量 / Allocated capacity
         int GetCount() const { return data_array.GetCount(); }                ///< 当前元素数量 / Current element count
-        bool IsEmpty() const { return data_array.IsEmpty(); }                 ///< 是否为空 / Is empty
+        bool IsEmpty() const { return data_array.IsEmpty(); }                 ///< 是否\为空 / Is empty
 
         int GetTotalBytes() const { return data_array.GetTotalBytes(); }      ///< 总字节数 / Total bytes
 
@@ -51,8 +56,8 @@ namespace hgl
     public:
         // ===== 构造/析构 / Constructor/Destructor =====
 
-        StackBase() = default;
-        virtual ~StackBase() = default;
+        Stack() = default;
+        virtual ~Stack() = default;
 
         // ===== 隐式转换 / Implicit Conversion =====
 
@@ -72,13 +77,13 @@ namespace hgl
 
         // ===== 拷贝语义 / Copy Semantics =====
 
-        StackBase(const StackBase& rhs) : data_array(rhs.data_array) {}
+        Stack(const Stack& rhs) : data_array(rhs.data_array) {}
 
         // ===== 移动语义 / Move Semantics =====
 
-        StackBase(StackBase&& rhs) noexcept : data_array(std::move(rhs.data_array)) {}
+        Stack(Stack&& rhs) noexcept : data_array(std::move(rhs.data_array)) {}
 
-        StackBase& operator=(StackBase&& rhs) noexcept
+        Stack& operator=(Stack&& rhs) noexcept
         {
             if (this != &rhs)
                 data_array = std::move(rhs.data_array);
@@ -103,7 +108,7 @@ namespace hgl
         bool Resize(int count) { return data_array.Resize(count); }
 
     public:
-        // ===== 栈操作 / ValueStack Operations =====
+        // ===== 栈操作 / Stack Operations =====
 
         /**
          * @brief 压入多个数据
@@ -181,8 +186,8 @@ namespace hgl
 
         /**
          * @brief 清空所有数据
-         * CN: 移除所有元素但保留容量。由 ValueBuffer 处理对象生命周期
-         * EN: Clear all elements but keep capacity. ValueBuffer handles lifecycle
+         * CN: 移除所有元素但保留容量
+         * EN: Clear all elements but keep capacity
          */
         void Clear()
         {
@@ -203,7 +208,7 @@ namespace hgl
     public:
         // ===== 赋值 / Assignment =====
 
-        StackBase& operator=(const StackBase& rhs)
+        Stack& operator=(const Stack& rhs)
         {
             if (this != &rhs)
             {
@@ -214,24 +219,8 @@ namespace hgl
             return *this;
         }
 
-    }; // class StackBase
-
-    /**
-     * @brief 标准栈容器（无虚函数）
-     * CN: 用于大多数场景，高效无多态开销
-     * EN: Standard stack container without virtual functions
-     */
-    template<typename T>
-    class ValueStack : public StackBase<T>
-    {
     public:
-        // C++20: Ensure T is trivially copyable, otherwise use ManagedStack
-        static_assert(std::is_trivially_copyable_v<T>,
-            "ValueStack only supports trivially copyable types (primitives, POD structures, etc.). "
-            "For non-trivial types with custom constructors/destructors, use ManagedStack<T> instead.");
-
-        ValueStack() = default;
-        virtual ~ValueStack() = default;
+        // ===== 栈特殊操作 / Stack Special Operations =====
 
         /**
          * @brief 安全的随机访问
@@ -302,7 +291,7 @@ namespace hgl
          * @brief 检查栈中是否包含指定元素
          * CN: 线性搜索栈中的元素，返回是否找到
          * EN: Check if stack contains the specified element (linear search)
-         * 
+         *
          * @param value 要查找的值
          * @return 如果找到返回 true，否则返回 false
          */
@@ -310,13 +299,13 @@ namespace hgl
         {
             const T* data = this->data_array.GetData();
             int count = this->data_array.GetCount();
-            
+
             for (int i = 0; i < count; ++i)
             {
                 if (data[i] == value)
                     return true;
             }
-            
+
             return false;
         }
 
@@ -324,7 +313,7 @@ namespace hgl
          * @brief 查找栈中元素的索引
          * CN: 线性搜索栈中的元素，返回索引或-1
          * EN: Find index of element in stack (linear search)
-         * 
+         *
          * @param value 要查找的值
          * @return 找到的索引（0=栈底, Count-1=栈顶），未找到返回 -1
          */
@@ -332,13 +321,13 @@ namespace hgl
         {
             const T* data = this->data_array.GetData();
             int count = this->data_array.GetCount();
-            
+
             for (int i = 0; i < count; ++i)
             {
                 if (data[i] == value)
                     return i;
             }
-            
+
             return -1;
         }
 
@@ -346,15 +335,15 @@ namespace hgl
          * @brief 相等比较运算符
          * CN: 比较两个栈中的所有元素是否完全相同
          * EN: Check if two stacks have identical elements
-         * 
+         *
          * @param other 要比较的另一个栈
          * @return 如果两个栈的元素相同，返回 true；否则返回 false
          */
-        bool operator==(const ValueStack<T>& other) const
+        bool operator==(const Stack<T>& other) const
         {
             if (this->data_array.GetCount() != other.data_array.GetCount())
                 return false;
-            
+
             return hgl::mem_compare(this->data_array.GetData(), other.data_array.GetData(), this->data_array.GetCount()) == 0;
         }
 
@@ -362,110 +351,17 @@ namespace hgl
          * @brief 不相等比较运算符
          * CN: 检查两个栈中的元素是否不同
          * EN: Check if two stacks have different elements
-         * 
+         *
          * @param other 要比较的另一个栈
          * @return 如果两个栈的元素不同，返回 true；否则返回 false
          */
-        bool operator!=(const ValueStack<T>& other) const
+        bool operator!=(const Stack<T>& other) const
         {
             return !(*this == other);
         }
+    }; // class Stack
 
-    };// class ValueStack
-
-    /**
-     * @brief 对象栈（管理指针所有权）
-     * CN: 专用于管理动态分配的对象指针，自动删除
-     * EN: ValueStack for managing pointer ownership with automatic cleanup
-     */
-    template<typename T>
-    class ManagedStack : public StackBase<T*>
-    {
-    public:
-        ManagedStack() = default;
-        virtual ~ManagedStack() { Free(); }
-
-        /**
-         * @brief 压入对象指针
-         * CN: 压入对象指针并取得所有权
-         * EN: Push object pointer and take ownership
-         */
-        bool Push(T* obj)
-        {
-            if (!obj)
-                return false;
-            return StackBase<T*>::Push(obj);
-        }
-
-        /**
-         * @brief 弹出对象指针
-         * CN: 弹出对象指针并移交所有权
-         * EN: Pop object pointer and transfer ownership
-         */
-        T* Pop()
-        {
-            T* obj = nullptr;
-            if (!StackBase<T*>::Pop(obj))
-                return nullptr;
-            return obj;
-        }
-
-        /**
-         * @brief 调整栈大小
-         * CN: 改变栈中元素数量，新增位置初始化为nullptr
-         * EN: Resize stack with new positions initialized to nullptr
-         */
-        bool Resize(int count)
-        {
-            int old_count = this->GetCount();
-            if (!StackBase<T*>::Resize(count))
-                return false;
-
-            // 新增的位置必须初始化为 nullptr，否则 Clear() 时会删除垃圾指针
-            if (count > old_count)
-            {
-                T** ptr = const_cast<T**>(this->GetData());
-                for (int i = old_count; i < count; i++)
-                    ptr[i] = nullptr;
-            }
-            return true;
-        }
-
-        /**
-         * @brief 清空所有对象
-         * CN: 删除所有指向的对象，然后清空数组
-         * EN: Delete all pointed objects and clear array
-         */
-        void Clear()
-        {
-            T** ptr = const_cast<T**>(this->GetData());
-            int n = this->GetCount();
-            
-            // 手动删除所有指向的对象
-            for (int i = 0; i < n; ++i)
-            {
-                if (ptr[i])
-                {
-                    delete ptr[i];
-                    ptr[i] = nullptr;
-                }
-            }
-            
-            // 清空数组
-            this->data_array.Clear();
-        }
-
-        /**
-         * @brief 清空并释放内存
-         * CN: 删除所有对象并释放栈容量
-         * EN: Delete all objects and release stack capacity
-         */
-        void Free()
-        {
-            Clear();  // Clear() 已经完整处理了对象删除和数组清空
-            this->data_array.Free();
-        }
-
-    }; // class ManagedStack
-
+    // 向后兼容别名
+    template<typename T> using ValueStack = Stack<T>;
+    template<typename T> using ManagedStack = Stack<T*>;
 } // namespace hgl

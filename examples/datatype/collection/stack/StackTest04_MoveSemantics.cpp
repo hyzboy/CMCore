@@ -9,14 +9,14 @@ using namespace std;
 int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
-    cout << "TEST 4: Move Semantics with ManagedStack" << endl;
+    cout << "TEST 4: Stack with Pointer Management" << endl;
     cout << "========================================" << endl;
 
     TrackedObject::ResetCounters();
 
-    cout << "\n[4.1] ManagedStack operations with dynamically allocated objects:" << endl;
+    cout << "\n[4.1] Stack<TrackedObject*> operations (caller manages lifetime):" << endl;
     {
-        ManagedStack<TrackedObject> stack1;
+        Stack<TrackedObject*> stack1;
         stack1.Push(new TrackedObject(100));
         stack1.Push(new TrackedObject(200));
 
@@ -24,12 +24,18 @@ int os_main(int, os_char**)
         TrackedObject::PrintCounters();
         assert(stack1.GetCount() == 2);
 
-        cout << "\n  ValueStack contains 2 elements:" << endl;
+        cout << "\n  Stack contains 2 elements:" << endl;
         TrackedObject::PrintCounters();
-        cout << "  ✓ ManagedStack successfully holds " << stack1.GetCount() << " elements" << endl;
+        cout << "  ✓ Stack successfully holds " << stack1.GetCount() << " pointers" << endl;
+
+        // Manual cleanup - caller manages lifetime
+        TrackedObject* obj = nullptr;
+        while(stack1.Pop(obj)) {
+            delete obj;
+        }
     }
 
-    cout << "\n[4.2] After scope exit:" << endl;
+    cout << "\n[4.2] After manual cleanup:" << endl;
     TrackedObject::PrintCounters();
     assert(TrackedObject::VerifyBalance());
 

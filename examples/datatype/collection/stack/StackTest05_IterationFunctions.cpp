@@ -11,7 +11,7 @@ int os_main(int, os_char**)
     cout << "TEST 5: Iteration Functions" << endl;
     cout << "========================================" << endl;
 
-    ValueStack<int> stack;
+    Stack<int> stack;
     for (int i = 0; i < 5; i++)
         stack.Push(i);
 

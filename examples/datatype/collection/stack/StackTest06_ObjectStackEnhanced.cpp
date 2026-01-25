@@ -9,14 +9,14 @@ using namespace std;
 int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
-    cout << "TEST 6: ManagedStack (Enhanced)" << endl;
+    cout << "TEST 6: Stack with Pointers (Manual Management)" << endl;
     cout << "========================================" << endl;
 
     TrackedObject::ResetCounters();
 
     cout << "\n[6.1] Push objects:" << endl;
     {
-        ManagedStack<TrackedObject> obj_stack;
+        Stack<TrackedObject*> obj_stack;
 
         for (int i = 0; i < 5; i++)
         {
@@ -27,19 +27,26 @@ int os_main(int, os_char**)
         cout << "\n[6.2] Pop some objects manually:" << endl;
         for (int i = 0; i < 2; i++)
         {
-            TrackedObject* obj = obj_stack.Pop();
+            TrackedObject* obj;
+            assert(obj_stack.Pop(obj));
             assert(obj != nullptr);
             cout << "  Popped value: " << obj->GetValue() << endl;
             delete obj;
         }
 
-        cout << "\n[6.3] Remaining objects (auto-cleanup on destruction):" << endl;
-        cout << "  ValueStack count: " << obj_stack.GetCount() << endl;
+        cout << "\n[6.3] Remaining objects (manual cleanup):" << endl;
+        cout << "  Stack count: " << obj_stack.GetCount() << endl;
 
-        // ObjectStack析构时会自动删除剩余的3个对象
+        // 手动删除剩余对象
+        while (obj_stack.GetCount() > 0)
+        {
+            TrackedObject* obj;
+            obj_stack.Pop(obj);
+            delete obj;
+        }
     }
 
-    cout << "\n[6.4] After ManagedStack destruction:" << endl;
+    cout << "\n[6.4] After manual cleanup:" << endl;
     TrackedObject::PrintCounters();
     assert(TrackedObject::VerifyBalance());
 

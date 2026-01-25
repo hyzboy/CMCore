@@ -9,9 +9,9 @@ int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
     cout << "TEST 2: Peek Function" << endl;
-    cout << "========================================" << endl;
+    cout << "\n========================================" << endl;
 
-    ValueStack<int> stack;
+    Stack<int> stack;
 
     for (int i = 0; i < 5; i++)
         stack.Push(i * 10);
@@ -22,7 +22,7 @@ int os_main(int, os_char**)
     cout << "  ✓ Peeked top element: " << *peek_ptr << endl;
 
     assert(stack.GetCount() == 5);  // Peek不应改变栈
-    cout << "  ✓ ValueStack count unchanged after Peek" << endl;
+    cout << "  ✓ Stack count unchanged after Peek" << endl;
 
     int popped;
     stack.Pop(popped);

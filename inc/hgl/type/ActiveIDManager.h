@@ -18,14 +18,8 @@ namespace hgl
     */
     class ActiveIDManager
     {
-        struct IntView
-        {
-            const int *data;
-            int64 count;
-        };
-
-        OrderedValueSet<int> active_list;         ///<活跃ID列表
-        ValueQueue<int> idle_list;               ///<闲置ID列表（FIFO队列，确保公平复用）
+        OrderedValueSet<int> active_list;   ///<活跃ID列表
+        Queue<int> idle_list;               ///<闲置ID列表（FIFO队列，确保公平复用）
 
         int id_count;                       ///<创建过的最大ID值+1
         int released_count;                 ///<已释放过的ID总数（用于统计）
@@ -59,20 +53,18 @@ namespace hgl
         int GetHistoryMaxId ()const{return id_count;}
         int GetReleasedCount()const{return released_count;}        ///<已释放过的ID总数
 
-        IntView GetActiveView() const
+        const ValueBuffer<int> GetActiveView() const
         {
-            return {active_list.GetData(), active_list.GetCount()};
+            return active_list;
         }
 
         /**
-         * 获取闲置ID队列的只读视图（FIFO队列）
-         * @return IntView 结构体，包含指向底层数组的指针和元素计数
-         *
-         * 注：由于Queue内部实现使用双缓冲（data_array[2]），GetIdleView返回的指针和数据可能不完全连续
+         * 获取闲置ID队列的所有数据视图
+         * @return ValueBuffer<int> 包含所有已入队的闲置ID
          */
-        IntView GetIdleView() const
+        const ValueBuffer<int> GetIdleView() const
         {
-            return {idle_list.GetArray().GetData(), idle_list.GetCount()};
+            return idle_list.GetUnreadSnapshot();
         }
 
         // ==================== 创建接口 ====================

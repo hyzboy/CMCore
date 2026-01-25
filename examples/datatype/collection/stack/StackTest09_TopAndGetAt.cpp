@@ -11,7 +11,7 @@ int os_main(int, os_char**)
     cout << "TEST 9: Top() and GetAt() Methods" << endl;
     cout << "========================================" << endl;
 
-    ValueStack<int> stack;
+    Stack<int> stack;
     
     cout << "\n[9.1] Top() on non-empty stack:" << endl;
     for (int i = 0; i < 5; i++)
@@ -41,7 +41,7 @@ int os_main(int, os_char**)
     cout << "  ✓ GetAt() handles invalid indices (returns false)" << endl;
     
     cout << "\n[9.4] Top() on empty stack:" << endl;
-    ValueStack<int> empty_stack;
+    Stack<int> empty_stack;
     int empty_val;
     assert(!empty_stack.Top(empty_val));
     cout << "  ✓ Top() on empty returns false" << endl;

@@ -81,11 +81,15 @@ namespace hgl
     * Queue模板类用于保存一个先进先出、后进后出的数据队列
     * 支持不同的底层数组类型
     */
-    template<typename T, typename ArrayT = ValueBuffer<T>> class QueueTemplate           ///队列顺序数据访问类
+    template<typename T>
+    class Queue
     {
+        static_assert(std::is_trivially_copyable_v<T>, 
+                      "Queue<T> requires T to be trivially copyable. For complex objects, use Queue<T*> instead.");
+
     protected:
 
-        ArrayT data_array[2];
+        ValueBuffer<T> data_array[2];
 
         int read_index;
         int write_index;
@@ -119,12 +123,12 @@ namespace hgl
         class ConstIterator
         {
         private:
-            const QueueTemplate *queue;
+            const Queue *queue;
             int current_array;  // 0 = read_array, 1 = write_array
             int current_pos;    // 当前数组中的位置
 
         public:
-            ConstIterator(const QueueTemplate *q, int array_idx, int pos)
+            ConstIterator(const Queue *q, int array_idx, int pos)
                 : queue(q), current_array(array_idx), current_pos(pos)
             {
                 // 如果起始位置在 read_array，需要从 read_offset 开始
@@ -197,14 +201,16 @@ namespace hgl
 
     public: //兼容 Active 接口的简易 GetArray()
 
-        ArrayT &GetArray(){ return data_array[write_index]; }
-        const ArrayT &GetArray() const { return data_array[write_index]; }
+        ValueBuffer<T> &GetArray(){ return data_array[write_index]; }
+        const ValueBuffer<T> &GetArray() const { return data_array[write_index]; }
+
+    protected:
 
         /**
          * @brief 获取队列中所有未读取数据的完整视图（包括 read 和 write 两个数组）
-         * @return ValueBuffer<int> 合并后的所有队列数据
+         * @return ValueBuffer<T> 合并后的所有队列数据
          */
-        ValueBuffer<T> GetUnreadSnapshot() const
+        ValueBuffer<T> GetUnreadSnapshotData() const
         {
             ValueBuffer<T> result;
 
@@ -269,14 +275,14 @@ namespace hgl
 
     public: //方法
 
-        QueueTemplate()
+        Queue()
         {
             write_index=0;
             read_index=1;
             read_offset=0;
         }
 
-        virtual ~QueueTemplate()=default;
+        virtual ~Queue()=default;
 
         virtual bool Push(T *data,int count)                                      ///<压入一批数据
         {
@@ -339,70 +345,14 @@ namespace hgl
             data_array[0].Free();
             data_array[1].Free();
         }
-    };//template<typename T, typename ArrayT> class QueueTemplate
-
-    /**
-     * 用于平凡类型的队列 - 使用 ValueBuffer
-     */
-    template<typename T> class ValueQueue:public QueueTemplate<T, ValueBuffer<T>>
-    {
-    public:
-        static_assert(std::is_trivially_copyable_v<T>,
-            "ValueQueue<T> requires trivially copyable types (int, float, POD structs, etc). "
-            "For non-trivial types (std::string, custom classes with dynamic memory), use ManagedQueue<T> instead.");
-
-        ValueQueue():QueueTemplate<T, ValueBuffer<T>>(){}
-        virtual ~ValueQueue()=default;
-    };//template<typename T> class ValueQueue
-
-    /**
-     * 用于非平凡类型的队列 - 使用 ObjectArray
-     * PtrArray 自动管理对象的构造和析构
-     */
-    template<typename T> class ManagedQueue:public QueueTemplate<T, PtrArray<T>>
-    {
-    public:
-        static_assert(!std::is_trivially_copyable_v<T>,
-            "ManagedQueue<T> requires non-trivial types (std::string, custom classes with dynamic memory, etc). "
-            "For trivially copyable types (int, float, POD structs), use ValueQueue<T> instead for better performance.");
-
-        ManagedQueue():QueueTemplate<T, PtrArray<T>>(){}
-        virtual ~ManagedQueue() override { this->Free(); }
-
-        // 保留基类的方法
-        using QueueTemplate<T, PtrArray<T>>::Push;
-        using QueueTemplate<T, PtrArray<T>>::Pop;
-        using QueueTemplate<T, PtrArray<T>>::Peek;
 
         /**
-         * 压入一个指针（用于对象指针管理）
-         * 队列接管对象所有权，析构时自动 delete
+         * @brief 获取队列中所有未读取数据的完整视图（包括 read 和 write 两个数组）
+         * @return ValueBuffer<T> 合并后的所有队列数据
          */
-        virtual bool Push(T *ptr)
+        ValueBuffer<T> GetUnreadSnapshot() const
         {
-            if(!ptr) return false;
-            // 对于 ObjectArray，我们需要存储对象副本
-            // 这里传递对象引用
-            return QueueTemplate<T, PtrArray<T>>::Push(*ptr);
+            return GetUnreadSnapshotData();
         }
-
-        /**
-         * 弹出一个对象（返回指针版本）
-         * 返回新创建的堆对象副本
-         */
-        virtual bool Pop(T *&ptr)
-        {
-            // 从数组中读取对象
-            T obj;
-            if(!QueueTemplate<T, PtrArray<T>>::Pop(obj))
-            {
-                ptr = nullptr;
-                return false;
-            }
-
-            // 创建堆副本并返回指针
-            ptr = new T(obj);
-            return ptr != nullptr;
-        }
-    };//template<typename T> class ManagedQueue
+    }; // class Queue
 }//namespace hgl

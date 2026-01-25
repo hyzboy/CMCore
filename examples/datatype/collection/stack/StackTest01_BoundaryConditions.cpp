@@ -12,7 +12,7 @@ int os_main(int, os_char**)
     cout << "========================================" << endl;
 
     cout << "\n[1.1] Empty stack operations:" << endl;
-    ValueStack<int> empty_stack;
+    Stack<int> empty_stack;
 
     assert(empty_stack.IsEmpty());
     assert(empty_stack.GetCount() == 0);
@@ -26,7 +26,7 @@ int os_main(int, os_char**)
     cout << "  ✓ Peek from empty stack failed as expected" << endl;
 
     cout << "\n[1.2] Large stack test (10000 elements):" << endl;
-    ValueStack<int> large_stack;
+    Stack<int> large_stack;
     large_stack.Reserve(10000);  // 预分配
 
     for (int i = 0; i < 10000; i++)

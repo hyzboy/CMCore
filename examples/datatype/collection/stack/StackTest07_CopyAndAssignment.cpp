@@ -11,12 +11,12 @@ int os_main(int, os_char**)
     cout << "TEST 7: Copy and Assignment" << endl;
     cout << "========================================" << endl;
 
-    ValueStack<int> stack1;
+    Stack<int> stack1;
     for (int i = 0; i < 5; i++)
         stack1.Push(i * 10);
 
     cout << "\n[7.1] Copy assignment:" << endl;
-    ValueStack<int> stack2;
+    Stack<int> stack2;
     stack2 = stack1;
 
     assert(stack2.GetCount() == stack1.GetCount());

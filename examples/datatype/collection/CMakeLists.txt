@@ -9,6 +9,7 @@ add_subdirectory(ValueBuffer)
 add_subdirectory(OrderedSet)
 add_subdirectory(UnorderedSet)
 add_subdirectory(Array)
+add_subdirectory(Queue)
 
 cm_example_project("DataType/Collection" QueueTest                      QueueTest.cpp)
 cm_example_project("DataType/Collection" PoolTest                       PoolTest.cpp)
