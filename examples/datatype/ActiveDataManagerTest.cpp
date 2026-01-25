@@ -44,19 +44,11 @@ void DebugOutputArray(const char *hint,UserInfo **ui,const int count)
 
 void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const int *idp,const int count)
 {
-    cout<<"("<<hint<<" ids:"<<count<<")";
-    if(!idp||count<=0){ cout<<"[]"; return; }
-    cout<<"[";
-    bool first=true;
-    for(int i=0;i<count;i++)
-    {
-        if(!first) cout<<", ";
-        first=false;
-        int id=idp[i];
-        UserInfo *ui=adm.At(id);
-        cout<<"{id="<<id<<",ptr="<<ui<<",name="<<(ui?ui->name:"null")<<"}";
-    }
-    cout<<"]";
+    if(!idp||count<=0)return;
+    UserInfo **ui=new UserInfo *[count];
+    adm.GetData(ui,idp,count);
+    DebugOutputArray(hint,ui,count);
+    delete[] ui;        
 }
 
 void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const ValueBuffer<int> &da)
@@ -64,7 +56,7 @@ void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const Va
     DebugOutputArray(hint,adm,da.GetData(),da.GetCount());
 }
 
-void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const ValueQueue<int> &queue)
+void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const Queue<int> &queue)
 {
     cout<<"("<<hint<<':'<<queue.GetCount()<<")";
     if(queue.GetCount()<=0)return;

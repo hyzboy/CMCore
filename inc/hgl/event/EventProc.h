@@ -17,7 +17,7 @@ namespace hgl
         virtual bool Proc()=0;
     };//class EventProc
 
-    using EventProcQueue=ValueQueue<EventProc *>;
+    using EventProcQueue=Queue<EventProc *>;
 
     /**
         * 执行一个事件

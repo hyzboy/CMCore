@@ -29,7 +29,7 @@ static bool AllValid(const ActiveIDManager& aim, const int* ids, int n)
 int main()
 {
     cout << "========================================" << endl;
-    cout << "ActiveIDManager FIFO ValueQueue Test Suite" << endl;
+    cout << "ActiveIDManager FIFO Queue Test Suite" << endl;
     cout << "========================================" << endl << endl;
 
     ActiveIDManager aim;
@@ -71,9 +71,9 @@ int main()
     cout << "Test 3 passed." << endl << endl;
 
     // --- FIFO行为验证 ---
-    cout << "=== Test 4: Get from Idle (FIFO ValueQueue Order) ===" << endl;
+    cout << "=== Test 4: Get from Idle (FIFO Queue Order) ===" << endl;
     cout << "Testing: Get(3) should pop 3 IDs in FIFO order (first-in-first-out)" << endl;
-    cout << "  ValueQueue state: [" << idle_batch[0] << "(front), " << idle_batch[1] << ", " 
+    cout << "  Queue state: [" << idle_batch[0] << "(front), " << idle_batch[1] << ", " 
          << idle_batch[2] << ", " << idle_batch[3] << ", " << idle_batch[4] << "(rear)]" << endl;
     
     int userA[3];
@@ -259,7 +259,7 @@ int main()
 
     cout << "========================================" << endl;
     cout << "All Tests Passed!" << endl;
-    cout << "ValueQueue (FIFO) Implementation Verified" << endl;
+    cout << "Queue (FIFO) Implementation Verified" << endl;
     cout << "No ID fragmentation, fair reuse pattern" << endl;
     cout << "========================================" << endl;
 

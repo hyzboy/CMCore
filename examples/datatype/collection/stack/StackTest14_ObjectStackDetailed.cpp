@@ -24,7 +24,7 @@ int os_main(int, os_char**)
         int alloc_before = obj_stack.GetAllocCount();
         
         // 手动删除所有对象
-        obj_stack.ForEachFromTop([](TrackedObject* obj) { delete obj; });
+        obj_stack.ForEachFromTop([](int,const TrackedObject* obj) { delete obj; });
         
         obj_stack.Clear();
         assert(obj_stack.GetCount() == 0);

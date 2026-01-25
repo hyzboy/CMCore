@@ -215,7 +215,7 @@ namespace hgl
     /**
      * 使用范例
      *
-     * using EventQueue=ValueQueue<int>;
+     * using EventQueue=Queue<int>;
      * using MTEventQueue=SemSwapData<EventQueue>;
      * using MTEventPost=PostToSemSwapData<EventQueue>;
      *
