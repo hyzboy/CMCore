@@ -39,7 +39,7 @@ namespace hgl
         }
 
     public: //迭代器支持
-    
+
         /**
          * 只读迭代器，用于遍历 Queue 中的所有元素
          * 自动处理两个内部数组的切换
@@ -50,7 +50,7 @@ namespace hgl
             const QueueTemplate *queue;
             int current_array;  // 0 = read_array, 1 = write_array
             int current_pos;    // 当前数组中的位置
-            
+
         public:
             ConstIterator(const QueueTemplate *q, int array_idx, int pos)
                 : queue(q), current_array(array_idx), current_pos(pos)
@@ -58,34 +58,34 @@ namespace hgl
                 // 如果起始位置在 read_array，需要从 read_offset 开始
                 if(current_array == 0 && pos < queue->read_offset)
                     current_pos = queue->read_offset;
-                
+
                 // 跳过空的 read_array
                 AdvanceIfNeeded();
             }
-            
+
             bool operator!=(const ConstIterator &other) const
             {
                 return current_array != other.current_array || current_pos != other.current_pos;
             }
-            
+
             bool operator==(const ConstIterator &other) const
             {
                 return !(*this != other);
             }
-            
+
             const T& operator*() const
             {
                 int array_index = (current_array == 0) ? queue->read_index : queue->write_index;
                 return queue->data_array[array_index][current_pos];
             }
-            
+
             ConstIterator& operator++()
             {
                 ++current_pos;
                 AdvanceIfNeeded();
                 return *this;
             }
-            
+
         private:
             void AdvanceIfNeeded()
             {
@@ -102,7 +102,7 @@ namespace hgl
                 }
             }
         };
-        
+
         /**
          * 返回指向第一个元素的迭代器
          */
@@ -114,7 +114,7 @@ namespace hgl
             else
                 return ConstIterator(this, 1, 0);  // 直接从 write_array 开始
         }
-        
+
         /**
          * 返回指向末尾的迭代器
          */
@@ -124,8 +124,48 @@ namespace hgl
         }
 
     public: //兼容 Active 接口的简易 GetArray()
+
         ArrayT &GetArray(){ return data_array[write_index]; }
         const ArrayT &GetArray() const { return data_array[write_index]; }
+
+        /**
+         * @brief 获取队列中所有数据的完整视图（包括 read 和 write 两个数组）
+         * @return ValueBuffer<int> 合并后的所有队列数据
+         */
+        ValueBuffer<T> GetData() const
+        {
+            ValueBuffer<T> result;
+
+            // 获取 read_array 中的有效数据（从 read_offset 开始）
+            int read_count = data_array[read_index].GetCount();
+            int valid_read_count = (read_count > read_offset) ? (read_count - read_offset) : 0;
+
+            // 获取 write_array 中的数据
+            int write_count = data_array[write_index].GetCount();
+
+            // 总大小
+            int total_count = valid_read_count + write_count;
+
+            if(total_count <= 0)
+                return result;  // 返回空 buffer
+
+            // 分配空间
+            result.Resize(total_count);
+
+            // 复制 read_array 中的有效部分
+            if(valid_read_count > 0)
+            {
+                result.WriteAt(data_array[read_index].GetData() + read_offset, 0, valid_read_count);
+            }
+
+            // 复制 write_array 的全部数据
+            if(write_count > 0)
+            {
+                result.WriteAt(data_array[write_index].GetData(), valid_read_count, write_count);
+            }
+
+            return result;
+        }
 
     public: //属性
 
