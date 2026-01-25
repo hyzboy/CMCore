@@ -306,17 +306,10 @@ namespace hgl
             return !(*this == other);
         }
 
-        // ==================== 直接指针访问（高级用法）====================
-
-        void RefreshHashMap()
-        {
-            RebuildHashMap();
-        }
-
         /**
          * @brief CN:获取活跃ID数组\nEN:Get active ID array
          */
-        const ValueBuffer<int>& GetActiveView() const
+        const ValueBuffer<int> GetActiveView() const
         {
             return ptr_manager.GetActiveView();
         }
