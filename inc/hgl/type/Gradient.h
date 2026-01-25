@@ -1,75 +1,34 @@
 ﻿#pragma once
 
 #include<hgl/type/DataType.h>
-#include<hgl/type/ValueArray.h>
-#include<hgl/util/sort/Sort.h>
+#include<hgl/type/ValueKVMap.h>
 
 namespace hgl
 {
-    template<typename P,typename T> struct GradientStop
-    {
-        P pos;                          ///<进度数据
-        T data;                         ///<数据
-
-        // C++20 三路比较
-        std::strong_ordering operator<=>(const GradientStop &other) const
-        {
-            return pos <=> other.pos;  // 只比较 pos 字段
-        }
-
-        bool operator==(const GradientStop &other) const
-        {
-            return pos == other.pos;
-        }
-    };
-
     /**
     * 数据渐变类模板
     */
     template<typename P,typename T> class Gradient
     {
-        using GS=GradientStop<P,T>;
+        using KVData=KeyValue<P,T>;
 
-        ValueArray<GS> stop_list;
-
-        bool dirty;
-
-    protected:
-
-        void Sort()
-        {
-            if(!dirty || stop_list.GetCount() < 2)
-                return;
-
-            ::Sort(stop_list.GetArray());  // 直接使用 operator<=>
-            dirty = false;
-        }
+        ValueKVMap<P,T> stop_map;
 
     public:
 
-        Gradient()
-        {
-            dirty=true;
-        }
+        Gradient()=default;
 
         /**
         * 添加一个渐变点
         */
         void Add(const P &pos,const T &data)
         {
-            GS gs;
-
-            gs.pos=pos;
-            gs.data=data;
-
-            stop_list.Add(gs);
-            dirty=true;
+            stop_map.Add(pos,data);
         }
 
         void Clear()
         {
-            stop_list.Free();
-            dirty=true;
+            stop_map.Free();
         }
 
         /**
@@ -77,15 +36,11 @@ namespace hgl
         */
         const bool GetLowestPosition(P &pos)const
         {
-            GS gs;
+            if(stop_map.IsEmpty())
+                return false;
 
-            if(stop_list.GetFirst(gs))
-            {
-                pos=gs.pos;
-                return(true);
-            }
-
-            return false;
+            pos=stop_map.begin()->key;
+            return true;
         }
 
         /**
@@ -93,15 +48,12 @@ namespace hgl
         */
         const bool GetHighestPosition(P &pos)const
         {
-            GS gs;
+            if(stop_map.IsEmpty())
+                return false;
 
-            if(stop_list.GetLast(gs))
-            {
-                pos=gs.pos;
-                return(true);
-            }
-
-            return false;
+            const KVData *last=stop_map.end()-1;
+            pos=last->key;
+            return true;
         }
 
         /**
@@ -109,15 +61,11 @@ namespace hgl
         */
         const bool GetLowestData(T &data)const
         {
-            GS gs;
+            if(stop_map.IsEmpty())
+                return false;
 
-            if(stop_list.GetFirst(gs))
-            {
-                data=gs.data;
-                return(true);
-            }
-
-            return false;
+            data=stop_map.begin()->value;
+            return true;
         }
 
         /**
@@ -125,15 +73,12 @@ namespace hgl
         */
         const bool GetHighestData(T &data)const
         {
-            GS gs;
+            if(stop_map.IsEmpty())
+                return false;
 
-            if(stop_list.GetLast(gs))
-            {
-                data=gs.data;
-                return(true);
-            }
-
-            return false;
+            const KVData *last=stop_map.end()-1;
+            data=last->value;
+            return true;
         }
 
         virtual void Get(T &result,const T &start,const T &end,const float &pos)
@@ -148,35 +93,33 @@ namespace hgl
         */
         const void Get(T &result,const P &pos)
         {
-            const uint count=stop_list.GetCount();
+            const uint count=stop_map.GetCount();
 
             if(count<=0)
                 return;
 
-            Sort();
+            const KVData *cp=stop_map.begin();
 
-            GS *cp=stop_list.GetData();
-            GS *pp;
-
-            if(count<2||pos<=cp->pos)
+            if(count<2||pos<=cp->key)
             {
-                result=cp->data;
+                result=cp->value;
                 return;
             }
 
-            if(pos>=cp[count-1].pos)
+            const KVData *last=stop_map.end()-1;
+            if(pos>=last->key)
             {
-                result=cp[count-1].data;
+                result=last->value;
                 return;
             }
 
-            pp=cp;
+            const KVData *pp=cp;
             ++cp;
             for(uint i=1;i<count;i++)
             {
-                if(pos<=cp->pos)
+                if(pos<=cp->key)
                 {
-                    Get(result,pp->data,cp->data,float(pos-pp->pos)/float(cp->pos-pp->pos));
+                    Get(result,pp->value,cp->value,float(pos-pp->key)/float(cp->key-pp->key));
                     return;
                 }
 
@@ -187,7 +130,6 @@ namespace hgl
     };//class Gradient
 
     #define HGL_GRADIENT_DEFINE(name,P,T)   using name=Gradient<P,T>;  \
-                                            using name##Stop=GradientStop<P,T>; \
                                             template<> void name::Get(T &result,const T &start,const T &end,const float &pos)
 
     /*
