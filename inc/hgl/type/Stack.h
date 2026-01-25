@@ -271,7 +271,7 @@ namespace hgl
         {
             int count = this->data_array.GetCount();
             for (int i = count - 1; i >= 0; --i)
-                callback(this->data_array[i], i);
+                callback(i,this->data_array[i]);
         }
 
         /**
