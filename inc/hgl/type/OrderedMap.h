@@ -7,9 +7,16 @@
 
 namespace hgl
 {
+    // ==================== 通用排序数组查找函数 ====================
+    // 这些函数提供了通用的二分查找功能，可用于任何支持GetData()和GetCount()的有序容器
+    // 注意：
+    // 1. OrderedValueSet和OrderedManagedSet使用这些函数进行查找
+    // 2. OrderedMapTemplate使用自己的内部FindPos方法（因为需要处理指针数组）
+    // 3. 这些函数可供其他需要在排序数组中查找的代码使用
+
     /**
      * 在已排序的数组中查找指定元素的位置
-     * @param arr 已排序的数组
+     * @param arr 已排序的数组（必须支持GetData()和GetCount()方法）
      * @param value 要查找的值
      * @return 元素所在位置，如果不存在返回-1
      */
@@ -42,7 +49,7 @@ namespace hgl
     /**
      * 在已排序的数组中查找插入位置
      * @param pos 输出：如果元素存在，返回其位置；否则返回应该插入的位置
-     * @param arr 已排序的数组
+     * @param arr 已排序的数组（必须支持GetData()和GetCount()方法）
      * @param value 要查找的值
      * @return true表示元素已存在，false表示元素不存在
      */
