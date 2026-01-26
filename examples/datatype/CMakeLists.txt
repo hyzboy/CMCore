@@ -15,9 +15,13 @@ cm_example_project("DataType" IDNameTest            IDNameTest.cpp)
 cm_example_project("DataType" IDObjectManagerTest   IDObjectManagerTest.cpp)
 
 cm_example_project("DataType/ActiveManager" 1_ActiveIDManagerTest           ActiveIDManagerTest.cpp)
-cm_example_project("DataType/ActiveManager" 2_ActiveMemoryBlockManagerTest  ActiveMemoryBlockManagerTest.cpp)
-cm_example_project("DataType/ActiveManager" 3_ActiveDataManagerTest         ActiveDataManagerTest.cpp)
-cm_example_project("DataType/ActiveManager" 4_ActiveIDManagerEnhancedTest   ActiveIDManagerEnhancedTest.cpp)
+cm_example_project("DataType/ActiveManager" 2_ActiveIDManagerGetIdleViewTest ActiveIDManagerGetIdleViewTest.cpp)
+cm_example_project("DataType/ActiveManager" 3_ActiveMemoryBlockManagerTest  ActiveMemoryBlockManagerTest.cpp)
+cm_example_project("DataType/ActiveManager" 4_ActiveDataManagerTest2Staged  ActiveDataManagerTest2Staged.cpp)
+cm_example_project("DataType/ActiveManager" 5_ActiveDataManagerTest         ActiveDataManagerTest.cpp)
+cm_example_project("DataType/ActiveManager" 6_ActiveIDManagerEnhancedTest   ActiveIDManagerEnhancedTest.cpp)
+
+cm_example_project("DataType/ActiveManager" BugTest_ValueBufferShallowCopyDemo	ValueBufferShallowCopyDemo.cpp)
 
 add_subdirectory(ram)
 add_subdirectory(collection)

@@ -13,7 +13,7 @@ namespace hgl
     // ==================== 管理型无序对象集合（Managed Object Set）====================
 
     /**
-     * @brief CN:管理型无序对象集合（管理对象指针和生命周期）\nEN:Managed unordered object set (manages object pointers and lifetime)
+     * @brief CN:管理型无序对象集合（基于指针地址管理）\nEN:Managed unordered object set (pointer address-based management)
      * @tparam T CN:对象类型（非指针），必须支持 operator==\nEN:Object type (non-pointer), must support operator==
      * @tparam MAX_COLLISION CN:最大哈希冲突数\nEN:Maximum hash collision count
      * 
@@ -21,6 +21,7 @@ namespace hgl
      * - CN:自动管理对象生命周期（new/delete）\nEN:Automatic object lifetime management (new/delete)
      * - CN:支持带虚函数、动态内存的复杂对象\nEN:Supports complex objects with virtual functions, dynamic memory
      * - CN:使用连续内存存储指针，缓存友好\nEN:Uses contiguous memory for pointers, cache-friendly
+     * - CN:基于指针地址去重（零开销哈希）\nEN:Pointer address-based deduplication (zero-overhead hashing)
      */
     template<typename T, int MAX_COLLISION = 4>
     class UnorderedManagedSet
@@ -48,20 +49,23 @@ namespace hgl
         HashIDMap<MAX_COLLISION> hash_map;
 
         /**
-         * @brief CN:根据值查找ID\nEN:Find ID by value
+         * @brief CN:根据指针地址查找ID\nEN:Find ID by pointer address
          */
-        int FindID(const T& value) const
+        int FindIDByPtr(const T* ptr) const
         {
-            uint64 hash = ComputeFNV1aHash(value);
+            if (!ptr)
+                return -1;
+
+            uint64 hash = reinterpret_cast<uint64>(ptr);  // ✅ 零开销：直接用地址
             return hash_map.Find(hash, [&](int id) {
                 if (!ptr_manager.IsActive(id))
                     return false;
-                T* existing_ptr;
-                return ptr_manager.GetData(existing_ptr, id) && existing_ptr && *existing_ptr == value;
+                T* stored;
+                return ptr_manager.GetData(stored, id) && stored == ptr;  // ✅ 地址比较
             });
         }
 
-        // 重建哈希表：用于对象被就地修改后
+        // 重建哈希表：用于数据结构变化后
         void RebuildHashMap()
         {
             hash_map.Clear();
@@ -75,11 +79,11 @@ namespace hgl
                 if (!ptr_manager.IsActive(id))
                     continue;
 
-                T* obj = nullptr;
-                if (!ptr_manager.GetData(obj, id) || !obj)
+                T* ptr = nullptr;
+                if (!ptr_manager.GetData(ptr, id) || !ptr)
                     continue;
 
-                uint64 hash = ComputeFNV1aHash(*obj);
+                uint64 hash = reinterpret_cast<uint64>(ptr);  // ✅ 零开销：直接用地址
                 hash_map.Add(hash, id);
             }
         }
@@ -119,28 +123,29 @@ namespace hgl
         // ==================== 添加 ====================
 
         /**
-         * @brief CN:添加一个对象指针（推荐）\nEN:Add an object pointer (recommended)
+         * @brief CN:添加一个对象指针\nEN:Add an object pointer
          * @param ptr CN:对象指针，集合会管理其生命周期\nEN:Object pointer, set will manage its lifetime
-         * @return CN:成功返回 true，已存在或指针为空返回 false\nEN:true if added, false if already exists or nullptr
+         * @return CN:成功返回 true，已存在（地址重复）或指针为空返回 false\nEN:true if added, false if already exists (duplicate address) or nullptr
          * @warning CN:添加后不要在外部删除该指针\nEN:Don't delete the pointer externally after adding
+         * @note CN:基于指针地址去重，不比较对象内容\nEN:Deduplication based on pointer address, not object content
          */
         bool Add(T* ptr)
         {
             if (!ptr)
                 return false;
 
-            uint64 hash = ComputeFNV1aHash(*ptr);
+            uint64 hash = reinterpret_cast<uint64>(ptr);  // ✅ 零开销：直接用地址
 
-            // 检查是否已存在
+            // 检查指针是否已存在
             int existing_id = hash_map.Find(hash, [&](int id) {
                 if (!ptr_manager.IsActive(id))
                     return false;
-                T* existing_ptr;
-                return ptr_manager.GetData(existing_ptr, id) && existing_ptr && *existing_ptr == *ptr;
+                T* stored;
+                return ptr_manager.GetData(stored, id) && stored == ptr;  // ✅ 地址比较
             });
 
             if (existing_id != -1)
-                return false;  // 已存在
+                return false;  // 指针已存在
 
             // 获取或创建新ID
             int new_id;
@@ -192,13 +197,8 @@ namespace hgl
             if (!ptr)
                 return false;
 
-            int id = FindID(*ptr);
+            int id = FindIDByPtr(ptr);  // ✅ 使用地址查找
             if (id == -1)
-                return false;
-
-            // 验证指针一致
-            T* stored = nullptr;
-            if (!ptr_manager.GetData(stored, id) || stored != ptr)
                 return false;
 
             // 清空指针以防后续误用
@@ -234,7 +234,7 @@ namespace hgl
             if (!ptr)
                 return false;
 
-            int id = FindID(*ptr);
+            int id = FindIDByPtr(ptr);  // ✅ 使用地址查找
             if (id == -1)
                 return false;
 
@@ -272,17 +272,15 @@ namespace hgl
 
         // ==================== 查询和验证接口 ====================
 
+        /**
+         * @brief CN:检查指针是否在集合中\nEN:Check if pointer is in the set
+         * @param ptr CN:要检查的指针\nEN:Pointer to check
+         * @return CN:存在返回 true\nEN:true if exists
+         * @note CN:基于指针地址检查\nEN:Check based on pointer address
+         */
         bool Contains(const T* ptr) const
         {
-            if (!ptr)
-                return false;
-
-            int id = FindID(*ptr);
-            if (id == -1)
-                return false;
-
-            T* stored = nullptr;
-            return ptr_manager.GetData(stored, id) && stored == ptr;
+            return FindIDByPtr(ptr) != -1;  // ✅ 简化逻辑
         }
 
         bool Contains(const T& value) const = delete;                      ///<非指针查询禁用
@@ -454,8 +452,8 @@ namespace hgl
                     func(**ptr_ptr);
             }
 
-            // 对象内容已变更，重建哈希表以确保查找正确
-            RebuildHashMap();
+            // 注意：修改对象内容不影响指针地址，无需重建哈希表
+            // Note: Modifying object content doesn't affect pointer address, no need to rebuild hash map
         }
     };
 } // namespace hgl

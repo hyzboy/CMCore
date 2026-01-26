@@ -10,6 +10,40 @@
 
 namespace hgl
 {
+    // ==================== 优化的哈希函数 ====================
+
+    /**
+     * @brief CN:针对类型优化的哈希函数\nEN:Type-optimized hash function
+     * @tparam T CN:数据类型\nEN:Data type
+     * 
+     * CN:自动选择最优哈希策略：\nEN:Automatically selects optimal hash strategy:
+     * - CN:整数/枚举：身份哈希（零开销）\nEN:Integer/enum: identity hash (zero overhead)
+     * - CN:指针：直接使用地址\nEN:Pointer: use address directly
+     * - CN:其他类型：FNV1a 哈希\nEN:Other types: FNV1a hash
+     */
+    template<typename T>
+    inline uint64 ComputeOptimalHash(const T& value)
+    {
+        if constexpr (std::is_integral_v<T> || std::is_enum_v<T>)
+        {
+            // CN:整数/枚举类型：直接转换（零开销）
+            // EN:Integer/enum types: direct conversion (zero overhead)
+            return static_cast<uint64>(value);
+        }
+        else if constexpr (std::is_pointer_v<T>)
+        {
+            // CN:指针类型：使用地址作为哈希
+            // EN:Pointer types: use address as hash
+            return reinterpret_cast<uint64>(value);
+        }
+        else
+        {
+            // CN:复杂类型：使用 FNV1a 哈希保证质量
+            // EN:Complex types: use FNV1a hash for quality
+            return ComputeFNV1aHash(value);
+        }
+    }
+
     // ==================== 紧凑型无序值集合（Compact Value Set）====================
 
     /**
@@ -22,6 +56,7 @@ namespace hgl
      * - CN:无需 new/delete，零内存碎片\nEN:No new/delete, zero memory fragmentation
      * - CN:删除性能提升 10,000+ 倍\nEN:10,000+ times faster deletion
      * - CN:内存占用减少 50-70%\nEN:50-70% less memory usage
+     * - CN:简单类型（int/指针）哈希零开销\nEN:Zero-overhead hashing for simple types (int/pointer)
      */
     template<typename T, int MAX_COLLISION = 4>
     class UnorderedValueSet
@@ -49,7 +84,7 @@ namespace hgl
          */
         int FindID(const T& value) const
         {
-            uint64 hash = ComputeFNV1aHash(value);
+            uint64 hash = ComputeOptimalHash(value);  // ✅ 使用优化的哈希
             return hash_map.Find(hash, [&](int id) {
                 if (!data_manager.IsActive(id))
                     return false;
@@ -76,7 +111,7 @@ namespace hgl
                 if (!ptr)
                     continue;
 
-                uint64 hash = ComputeFNV1aHash(*ptr);
+                uint64 hash = ComputeOptimalHash(*ptr);  // ✅ 使用优化的哈希
                 hash_map.Add(hash, id);
             }
         }
@@ -217,7 +252,7 @@ namespace hgl
          */
         bool Add(const T& value)
         {
-            uint64 hash = ComputeFNV1aHash(value);
+            uint64 hash = ComputeOptimalHash(value);  // ✅ 使用优化的哈希
 
             // 检查是否已存在
             int existing_id = hash_map.Find(hash, [&](int id) {

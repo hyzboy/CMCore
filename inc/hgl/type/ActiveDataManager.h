@@ -78,7 +78,7 @@ namespace hgl
         /**
         * @brief CN:获取活跃ID数组引用。\nEN:Get active ID array reference (direct access to internal storage)
         */
-        const ValueBuffer<int> GetActiveView() const
+        const ValueBuffer<int> &GetActiveView() const
         {
             return aim.GetActiveView();
         }
@@ -86,7 +86,7 @@ namespace hgl
         /**
         * @brief CN:获取闲置ID队列引用。\nEN:Get idle ID queue reference (direct access to internal queue)
         */
-        const ValueBuffer<int> GetIdleView() const
+        const ValueBuffer<int> &GetIdleView() const
         {
             return aim.GetIdleView();
         }

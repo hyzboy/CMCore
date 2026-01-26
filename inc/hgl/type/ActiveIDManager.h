@@ -53,7 +53,7 @@ namespace hgl
         int GetHistoryMaxId ()const{return id_count;}
         int GetReleasedCount()const{return released_count;}        ///<已释放过的ID总数
 
-        const ValueBuffer<int> GetActiveView() const
+        const ValueBuffer<int> &GetActiveView() const
         {
             return active_list;
         }
@@ -62,9 +62,9 @@ namespace hgl
          * 获取闲置ID队列的所有数据视图
          * @return ValueBuffer<int> 包含所有已入队的闲置ID
          */
-        const ValueBuffer<int> GetIdleView() const
+        const ValueBuffer<int> &GetIdleView() const
         {
-            return idle_list.GetUnreadSnapshot();
+            return idle_list.GetUnreadSnapshotData();
         }
 
         // ==================== 创建接口 ====================

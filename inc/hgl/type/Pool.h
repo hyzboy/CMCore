@@ -200,7 +200,7 @@ namespace hgl
         {
             if (IsFull())
                 return false;
-            
+
             // 对于指针类型，创建新对象；对于非指针类型，使用默认构造
             if constexpr (std::is_pointer_v<T>)
             {
@@ -212,7 +212,7 @@ namespace hgl
             {
                 value = T();
             }
-            
+
             Active.Add(value);
             UpdateHistoryMax();
             return true;
@@ -227,7 +227,7 @@ namespace hgl
             {
                 if (IsFull())
                     return false;
-                
+
                 // 对于指针类型，创建新对象；对于非指针类型，使用默认构造
                 if constexpr (std::is_pointer_v<T>)
                 {
@@ -240,7 +240,7 @@ namespace hgl
                     value = T();
                 }
             }
-            
+
             Active.Add(value);
             UpdateHistoryMax();
             return true;
@@ -253,7 +253,7 @@ namespace hgl
         {
             if (!Idle.Pop(value))
                 return false;
-            
+
             Active.Add(value);
             return true;
         }

@@ -194,8 +194,6 @@ namespace hgl
         ValueBuffer<T> &GetArray(){ return data_array[write_index]; }
         const ValueBuffer<T> &GetArray() const { return data_array[write_index]; }
 
-    protected:
-
         /**
          * @brief 获取队列中所有未读取数据的完整视图（包括 read 和 write 两个数组）
          * @return ValueBuffer<T> 合并后的所有队列数据
@@ -334,15 +332,6 @@ namespace hgl
             Clear();
             data_array[0].Free();
             data_array[1].Free();
-        }
-
-        /**
-         * @brief 获取队列中所有未读取数据的完整视图（包括 read 和 write 两个数组）
-         * @return ValueBuffer<T> 合并后的所有队列数据
-         */
-        ValueBuffer<T> GetUnreadSnapshot() const
-        {
-            return GetUnreadSnapshotData();
         }
     }; // class Queue
 }//namespace hgl
