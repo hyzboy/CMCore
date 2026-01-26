@@ -5,6 +5,22 @@
 namespace hgl
 {
     // ==================== 通用哈希函数（FNV-1a） ====================
+    
+    // 计算字符串的哈希值（FNV-1a 算法）
+    template<typename T>
+    inline uint64 ComputeFNV1aHash(const T *str, int length)
+    {
+        uint64 hash = 14695981039346656037ULL;  // FNV offset basis
+
+        for(int i = 0; i < length; i++)
+        {
+            hash ^= (uint64)str[i];
+            hash *= 1099511628211ULL;  // FNV prime
+        }
+
+        return hash;
+    }
+
     /**
      * 计算数据的哈希值（使用 FNV-1a 算法）
      * @tparam T 数据类型
@@ -14,19 +30,7 @@ namespace hgl
     template<typename T>
     inline uint64 ComputeFNV1aHash(const T& value)
     {
-        // 对于基础类型，使用指针转换
-        const uint8* bytes = (const uint8*)&value;
-        const int size = sizeof(T);
-
-        uint64 hash = 14695981039346656037ULL;
-
-        for(int i = 0; i < size; i++)
-        {
-            hash ^= (uint64)bytes[i];
-            hash *= 1099511628211ULL;
-        }
-
-        return hash;
+        return ComputeFNV1aHash((const u8char *)&value,sizeof(T));
     }
 
     // ==================== 哈希到ID的映射管理器 ====================

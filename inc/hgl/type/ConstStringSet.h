@@ -64,16 +64,6 @@ namespace hgl
         static constexpr int MAX_COLLISION_PER_HASH = 4;  // 每个哈希值最多4个碰撞（可调整）
         HashIDMap<MAX_COLLISION_PER_HASH> hash_id_map;
 
-        // 计算字符串的哈希值（FNV-1a 算法）
-        static uint64 ComputeFNV1aHash(const SC *str, int length) {
-            uint64 hash = 14695981039346656037ULL;  // FNV offset basis
-            for(int i = 0; i < length; i++) {
-                hash ^= (uint64)str[i];
-                hash *= 1099511628211ULL;  // FNV prime
-            }
-            return hash;
-        }
-
         // 验证哈希碰撞时的真实字符串是否匹配
         bool VerifyMatch(int id, const SC *str, int length) const {
             if(id < 0 || id >= str_list.GetCount())
