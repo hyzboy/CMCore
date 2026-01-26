@@ -62,10 +62,98 @@ SET(CMCORE_TYPE_ACTIVEMANAGER_SOURCES   Type/ActiveIDManager.cpp
 SOURCE_GROUP("DataType\\ActiveManager\\Headers" FILES ${CMCORE_TYPE_ACTIVEMANAGER_HEADERS})
 SOURCE_GROUP("DataType\\ActiveManager\\Sources" FILES ${CMCORE_TYPE_ACTIVEMANAGER_SOURCES})
 
-## Template 模板类
-file(GLOB CMCORE_TYPE_TEMPLATE_HEADERS ${CMCORE_TYPE_INCLUDE_PATH}/*.h)
+## Template 模板类 - 智能指针和引用管理
+SET(CMCORE_TYPE_SMARTPTR_HEADERS ${CMCORE_TYPE_INCLUDE_PATH}/Smart.h
+                                 ${CMCORE_TYPE_INCLUDE_PATH}/RefObjectPool.h)
 
-SOURCE_GROUP("DataType\\Template" FILES ${CMCORE_TYPE_TEMPLATE_HEADERS})
+SOURCE_GROUP("DataType\\Template\\SmartPtr" FILES ${CMCORE_TYPE_SMARTPTR_HEADERS})
+
+## Template 模板类 - 内存管理
+SET(CMCORE_TYPE_MEMORY_MGR_HEADERS ${CMCORE_TYPE_INCLUDE_PATH}/AccumMemoryManager.h
+                                   ${CMCORE_TYPE_INCLUDE_PATH}/ActiveDataManager.h
+                                   ${CMCORE_TYPE_INCLUDE_PATH}/ActiveIDManager.h
+                                   ${CMCORE_TYPE_INCLUDE_PATH}/ActiveMemoryBlockManager.h
+                                   ${CMCORE_TYPE_INCLUDE_PATH}/ActiveObjectManager.h
+                                   ${CMCORE_TYPE_INCLUDE_PATH}/ObjectManager.h)
+
+SOURCE_GROUP("DataType\\Template\\MemoryMgr" FILES ${CMCORE_TYPE_MEMORY_MGR_HEADERS})
+
+## Template 模板类 - 容器集合
+SET(CMCORE_TYPE_CONTAINER_HEADERS ${CMCORE_TYPE_INCLUDE_PATH}/BitsArray.h
+                                  ${CMCORE_TYPE_INCLUDE_PATH}/BlockAllocator.h
+                                  ${CMCORE_TYPE_INCLUDE_PATH}/Collection.h
+                                  ${CMCORE_TYPE_INCLUDE_PATH}/TypedCollection.h
+                                  ${CMCORE_TYPE_INCLUDE_PATH}/PtrArray.h
+                                  ${CMCORE_TYPE_INCLUDE_PATH}/Queue.h
+                                  ${CMCORE_TYPE_INCLUDE_PATH}/Stack.h
+                                  ${CMCORE_TYPE_INCLUDE_PATH}/Pool.h
+                                  ${CMCORE_TYPE_INCLUDE_PATH}/SimpleValuePool.h
+                                  ${CMCORE_TYPE_INCLUDE_PATH}/SeriesPool.h
+                                  ${CMCORE_TYPE_INCLUDE_PATH}/ManagedArray.h)
+
+SOURCE_GROUP("DataType\\Template\\Container" FILES ${CMCORE_TYPE_CONTAINER_HEADERS})
+
+## Template 模板类 - 映射关键字
+SET(CMCORE_TYPE_MAP_HEADERS ${CMCORE_TYPE_INCLUDE_PATH}/Map.h
+                            ${CMCORE_TYPE_INCLUDE_PATH}/OrderedMap.h
+                            ${CMCORE_TYPE_INCLUDE_PATH}/UnorderedMap.h
+                            ${CMCORE_TYPE_INCLUDE_PATH}/HashIDMap.h
+                            ${CMCORE_TYPE_INCLUDE_PATH}/KeyValue.h
+                            ${CMCORE_TYPE_INCLUDE_PATH}/Pair.h
+                            ${CMCORE_TYPE_INCLUDE_PATH}/OrderedManagedSet.h
+                            ${CMCORE_TYPE_INCLUDE_PATH}/UnorderedManagedSet.h)
+
+SOURCE_GROUP("DataType\\Template\\Map" FILES ${CMCORE_TYPE_MAP_HEADERS})
+
+## Template 模板类 - 基本类型
+SET(CMCORE_TYPE_BASIC_HEADERS ${CMCORE_TYPE_INCLUDE_PATH}/Extent.h
+                              ${CMCORE_TYPE_INCLUDE_PATH}/Size2.h
+                              ${CMCORE_TYPE_INCLUDE_PATH}/Gradient.h
+                              ${CMCORE_TYPE_INCLUDE_PATH}/RectScope.h)
+
+SOURCE_GROUP("DataType\\Template\\Basic" FILES ${CMCORE_TYPE_BASIC_HEADERS})
+
+## Template 模板类 - 字符串处理
+SET(CMCORE_TYPE_STRING_HEADERS ${CMCORE_TYPE_INCLUDE_PATH}/String.h
+                               ${CMCORE_TYPE_INCLUDE_PATH}/StringView.h
+                               ${CMCORE_TYPE_INCLUDE_PATH}/StringViewList.h
+                               ${CMCORE_TYPE_INCLUDE_PATH}/StringList.h
+                               ${CMCORE_TYPE_INCLUDE_PATH}/MergeString.h
+                               ${CMCORE_TYPE_INCLUDE_PATH}/StdString.h
+                               ${CMCORE_TYPE_INCLUDE_PATH}/SplitString.h
+                               ${CMCORE_TYPE_INCLUDE_PATH}/ConstStringSet.h)
+
+SOURCE_GROUP("DataType\\Template\\String" FILES ${CMCORE_TYPE_STRING_HEADERS})
+
+## Template 模板类 - 索引与ID管理
+SET(CMCORE_TYPE_INDEX_HEADERS ${CMCORE_TYPE_INCLUDE_PATH}/IDName.h
+                              ${CMCORE_TYPE_INCLUDE_PATH}/MonotonicIDList.h
+                              ${CMCORE_TYPE_INCLUDE_PATH}/IndexedManagedArray.h
+                              ${CMCORE_TYPE_INCLUDE_PATH}/IndexedValueArray.h)
+
+SOURCE_GROUP("DataType\\Template\\Index" FILES ${CMCORE_TYPE_INDEX_HEADERS})
+
+## Template 模板类 - 缓存与优化
+SET(CMCORE_TYPE_CACHE_HEADERS ${CMCORE_TYPE_INCLUDE_PATH}/LRUCache.h
+                              ${CMCORE_TYPE_INCLUDE_PATH}/FlatTree.h
+                              ${CMCORE_TYPE_INCLUDE_PATH}/OrderedValueSet.h
+                              ${CMCORE_TYPE_INCLUDE_PATH}/UnorderedValueSet.h
+                              ${CMCORE_TYPE_INCLUDE_PATH}/ValueArray.h
+                              ${CMCORE_TYPE_INCLUDE_PATH}/ValueBuffer.h
+                              ${CMCORE_TYPE_INCLUDE_PATH}/ValueKVMap.h)
+
+SOURCE_GROUP("DataType\\Template\\Cache" FILES ${CMCORE_TYPE_CACHE_HEADERS})
+
+## Template 模板类 - 核心类型
+SET(CMCORE_TYPE_CORE_HEADERS ${CMCORE_TYPE_INCLUDE_PATH}/Inherit.h
+                             ${CMCORE_TYPE_INCLUDE_PATH}/TypeInfo.h
+                             ${CMCORE_TYPE_INCLUDE_PATH}/DataType.h
+                             ${CMCORE_TYPE_INCLUDE_PATH}/VersionData.h
+                             ${CMCORE_TYPE_INCLUDE_PATH}/TickObject.h
+                             ${CMCORE_TYPE_INCLUDE_PATH}/UnicodeBlocks.h
+                             ${CMCORE_TYPE_INCLUDE_PATH}/MemoryAllocator.h)
+
+SOURCE_GROUP("DataType\\Template\\Core" FILES ${CMCORE_TYPE_CORE_HEADERS})
 
 ## Memory 内存管理
 SET(CMCORE_TYPE_MEMORY_HEADERS  ${CMCORE_TYPE_INCLUDE_PATH}/MemoryBlock.h
@@ -293,7 +381,19 @@ SOURCE_GROUP("Time\\Sources" FILES ${CMCORE_TIME_SOURCES})
 ##==================================================================================================
 ## Thread 线程
 ##==================================================================================================
-FILE(GLOB CMCORE_THREAD_HEADERS ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/*.h)
+SET(CMCORE_THREAD_HEADERS   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Atomic.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/CondVar.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/DataPost.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Loader.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/RingBuffer.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/RWLock.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Semaphore.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/SemLock.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/SwapColl.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/SwapData.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Thread.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/ThreadMutex.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Workflow.h)
 SET(CMCORE_THREAD_SOURCES   Other/ThreadFunc.cpp)
 
 SOURCE_GROUP("Thread\\Headers" FILES ${CMCORE_THREAD_HEADERS})
@@ -302,15 +402,21 @@ SOURCE_GROUP("Thread\\Sources" FILES ${CMCORE_THREAD_SOURCES})
 ##==================================================================================================
 ## Event 事件
 ##==================================================================================================
-FILE(GLOB CMCORE_EVENT_HEADERS ${CMCORE_ROOT_INCLUDE_PATH}/hgl/event/*.*)
+SET(CMCORE_EVENT_HEADERS    ${CMCORE_ROOT_INCLUDE_PATH}/hgl/event/ASyncEvent.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/event/EventProc.h)
 
 SOURCE_GROUP("Event\\Headers" FILES ${CMCORE_EVENT_HEADERS})
 
 ##==================================================================================================
 ## PlugIn 插件
 ##==================================================================================================
-file(GLOB CMCORE_PLUGIN_HEADERS ${CMCORE_ROOT_INCLUDE_PATH}/hgl/plugin/*.h)
-file(GLOB CMCORE_PLUGIN_SOURCES PlugIn/*.cpp)
+SET(CMCORE_PLUGIN_HEADERS   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/plugin/ExternalPlugIn.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/plugin/PlugIn.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/plugin/PlugInInterface.h
+                            ${CMCORE_ROOT_INCLUDE_PATH}/hgl/plugin/PlugInManager.h)
+SET(CMCORE_PLUGIN_SOURCES   PlugIn/ExternalModule.cpp
+                            PlugIn/ExternalPlugIn.cpp
+                            PlugIn/PlugInManager.cpp)
 
 SOURCE_GROUP("PlugIn\\Headers" FILES ${CMCORE_PLUGIN_HEADERS})
 SOURCE_GROUP("PlugIn\\Sources" FILES ${CMCORE_PLUGIN_SOURCES})
@@ -318,8 +424,13 @@ SOURCE_GROUP("PlugIn\\Sources" FILES ${CMCORE_PLUGIN_SOURCES})
 ##==================================================================================================
 ## Log 日志
 ##==================================================================================================
-file(GLOB CMCORE_LOG_HEADERS ${CMCORE_ROOT_INCLUDE_PATH}/hgl/log/*.h)
-file(GLOB CMCORE_LOG_SOURCES Log/*.*)
+SET(CMCORE_LOG_HEADERS  ${CMCORE_ROOT_INCLUDE_PATH}/hgl/log/Log.h
+                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/log/Logger.h
+                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/log/LogLevel.h
+                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/log/LogMessage.h)
+SET(CMCORE_LOG_SOURCES  Log/LogFile.cpp
+                        Log/Loginfo.cpp
+                        Log/ObjectLogger.cpp)
 
 SOURCE_GROUP("Log\\Headers" FILES ${CMCORE_LOG_HEADERS})
 SOURCE_GROUP("Log\\Sources" FILES ${CMCORE_LOG_SOURCES})
@@ -344,7 +455,15 @@ add_cm_library(CMCore "CM"
                         ${CMCORE_TYPE_ACTIVEMANAGER_HEADERS}
                         ${CMCORE_TYPE_ACTIVEMANAGER_SOURCES}
 
-                        ${CMCORE_TYPE_TEMPLATE_HEADERS}
+                        ${CMCORE_TYPE_SMARTPTR_HEADERS}
+                        ${CMCORE_TYPE_MEMORY_MGR_HEADERS}
+                        ${CMCORE_TYPE_CONTAINER_HEADERS}
+                        ${CMCORE_TYPE_MAP_HEADERS}
+                        ${CMCORE_TYPE_BASIC_HEADERS}
+                        ${CMCORE_TYPE_STRING_HEADERS}
+                        ${CMCORE_TYPE_INDEX_HEADERS}
+                        ${CMCORE_TYPE_CACHE_HEADERS}
+                        ${CMCORE_TYPE_CORE_HEADERS}
 
                         ${CMCORE_TYPE_COLLECTION_HEADERS}
                         ${CMCORE_TYPE_COLLECTION_SOURCES}
@@ -364,10 +483,10 @@ add_cm_library(CMCore "CM"
 
                         ${CMCORE_TIME_HEADERS}
                         ${CMCORE_TIME_SOURCES}
-                        
+
                         ${CMCORE_THREAD_HEADERS}
                         ${CMCORE_THREAD_SOURCES}
-                        
+
                         ${CMCORE_EVENT_HEADERS}
 
                         ${CMCORE_PLUGIN_HEADERS}
