@@ -186,8 +186,8 @@ namespace hgl
                 }
                 collision_map.Add(hash, new_slot);
                 
-                // 检查是否需要增加溢出计数
-                if(new_slot.ids.size() > (size_t)MAX_COLLISION)
+                // 检查是否需要增加溢出计数（首次超过 MAX_COLLISION）
+                if(new_slot.ids.size() == (size_t)MAX_COLLISION + 1)
                 {
                     overflow_count_++;
                 }
@@ -202,7 +202,7 @@ namespace hgl
             
             // 检查是否刚好超过阈值（只在首次超过时增加计数）
             size_t new_size = collision_slot->ids.size();
-            if(old_size == (size_t)MAX_COLLISION && new_size > (size_t)MAX_COLLISION)
+            if(new_size == (size_t)MAX_COLLISION + 1)
             {
                 overflow_count_++;
             }
@@ -238,7 +238,12 @@ namespace hgl
                     // 提升碰撞槽位中的第一个ID到 quick_map
                     int promoted_id = collision_slot->GetFirstID();
                     *p_quick = promoted_id;
-                    collision_slot->ids.erase(collision_slot->ids.begin());
+                    
+                    // O(1) 移除：swap with last and pop_back
+                    if(collision_slot->ids.size() > 1) {
+                        collision_slot->ids[0] = collision_slot->ids.back();
+                    }
+                    collision_slot->ids.pop_back();
                     
                     // 如果碰撞槽位为空，删除它
                     if(collision_slot->IsEmpty())

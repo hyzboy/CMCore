@@ -64,7 +64,9 @@ namespace hgl
             if(!hash_map.Add(hash, new_id)) {
                 // 哈希表添加失败（重复ID，理论上不应发生）
                 // 回滚：删除刚添加的数据并释放池
-                data_list.Delete(new_id, 1);
+                // new_id 应该等于 data_list.GetCount() - 1（最后一个元素的索引）
+                const int last_idx = data_list.GetCount() - 1;
+                data_list.Delete(last_idx, 1);
                 data_pool.Release(new_data);
                 return nullptr;
             }
