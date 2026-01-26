@@ -149,7 +149,7 @@ namespace hgl
             return DeleteAt(FindByValue(value));
         }
 
-        virtual bool DeleteAt(int index)                                       ///<根据序号将指定数据从列表中移除（使用 swap-with-last 优化）
+        virtual bool DeleteAt(int index)                                       ///<根据序号将指定数据从列表中移除（使用 swap-with-last 优化，会改变元素顺序）
         {
             if(index < 0 || index >= data_list.GetCount())
                 return false;
