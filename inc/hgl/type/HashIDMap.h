@@ -120,7 +120,7 @@ namespace hgl
         // 快速查询：哈希值 → ID（99% 情况）
         ValueKVMap<uint64, int> quick_map;
 
-        // 碰撞处理：哈希值 → 固定大小的ID槽位（哈希碰撞时使用）
+        // 碰撞处理：哈希值 → 动态ID槽位（哈希碰撞时使用）
         ValueKVMap<uint64, CollisionSlot> collision_map;
 
     public:

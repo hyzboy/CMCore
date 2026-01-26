@@ -137,14 +137,16 @@ bool TestHashCollisions()
     TEST_ASSERT(added3 && added4, "Third and fourth adds should succeed");
     TEST_PASS("Add more IDs to collision slot");
 
-    // 第五个ID（应该失败，因为槽位满了）
+    // 第五个ID（现在应该成功，因为使用动态vector）
     bool added5 = map.Add(collision_hash, 4);
-    TEST_ASSERT(!added5, "Fifth add should fail (slot full)");
-    TEST_ASSERT(map.GetCollisionOverflowCount() == 1, "Should have 1 overflow");
-    TEST_PASS("Detect collision slot overflow");
+    data.emplace_back(4, "string4");
+    TEST_ASSERT(added5, "Fifth add should succeed (dynamic collision slot)");
+    // GetCollisionOverflowCount 现在返回超过 MAX_COLLISION 的碰撞链数量
+    TEST_ASSERT(map.GetCollisionOverflowCount() == 1, "Should have 1 overflow (chain > MAX_COLLISION)");
+    TEST_PASS("Dynamic collision slot allows unlimited IDs");
 
-    // 验证所有已添加的ID都能正确查找
-    for(int i = 0; i < 4; i++) {
+    // 验证所有已添加的ID都能正确查找（包括第五个）
+    for(int i = 0; i < 5; i++) {
         int found = map.Find(collision_hash, [&](int id) {
             return id == i && data[id].value == ("string" + std::to_string(i));
         });
@@ -152,10 +154,13 @@ bool TestHashCollisions()
     }
     TEST_PASS("Find all IDs in collision slot");
 
-    // 验证第五个ID确实没有被添加
-    int found5 = map.Find(collision_hash, [&](int id) { return id == 4; });
-    TEST_ASSERT(found5 == -1, "Should not find ID 4 (was not added)");
-    TEST_PASS("Verify overflow ID not added");
+    // 添加更多ID以进一步测试动态扩展
+    for(int i = 5; i < 10; i++) {
+        bool added = map.Add(collision_hash, i);
+        data.emplace_back(i, "string" + std::to_string(i));
+        TEST_ASSERT(added, ("Add ID " + std::to_string(i) + " should succeed").c_str());
+    }
+    TEST_PASS("Dynamic collision slot can hold many IDs");
 
     return true;
 }
