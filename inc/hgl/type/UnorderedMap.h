@@ -62,8 +62,11 @@ namespace hgl
             data_list.Add(new_data);
 
             if(!hash_map.Add(hash, new_id)) {
-                // 哈希表满，但数据已添加
-                // 可以考虑记录警告日志
+                // 哈希表添加失败（重复ID，理论上不应发生）
+                // 回滚：删除刚添加的数据并释放池
+                data_list.Delete(new_id, 1);
+                data_pool.Release(new_data);
+                return nullptr;
             }
 
             return new_data;
@@ -144,17 +147,50 @@ namespace hgl
             return DeleteAt(FindByValue(value));
         }
 
-        virtual bool DeleteAt(int index)                                       ///<根据序号将指定数据从列表中移除
+        virtual bool DeleteAt(int index)                                       ///<根据序号将指定数据从列表中移除（使用 swap-with-last 优化）
         {
             if(index < 0 || index >= data_list.GetCount())
                 return false;
 
-            KVData* item = data_list[index];
-            data_list.Delete(index, 1);
-            data_pool.Release(item);  // Release 从 Active 中移除，再放回 Idle
+            const int last_index = data_list.GetCount() - 1;
 
-            // 重建哈希映射（因为索引变化了）
-            RebuildHashMap();
+            // 情况1：删除的就是最后一个元素
+            if(index == last_index)
+            {
+                KVData* item = data_list[index];
+                uint64 hash = ComputeFNV1aHash(item->key);
+                
+                // 从哈希映射中移除
+                hash_map.Remove(hash, index);
+                
+                // 删除数据并释放池
+                data_list.Delete(index, 1);
+                data_pool.Release(item);
+                return true;
+            }
+
+            // 情况2：删除中间元素，使用 swap-with-last 优化
+            KVData* removed_item = data_list[index];
+            KVData* last_item = data_list[last_index];
+
+            uint64 removed_hash = ComputeFNV1aHash(removed_item->key);
+            uint64 last_hash = ComputeFNV1aHash(last_item->key);
+
+            // 1. 从哈希映射中移除被删除的元素
+            hash_map.Remove(removed_hash, index);
+
+            // 2. 将最后一个元素复制到当前位置
+            data_list[index] = last_item;
+
+            // 3. 更新哈希映射中最后元素的索引（从 last_index 改为 index）
+            hash_map.Update(last_hash, last_index, index);
+
+            // 4. 删除最后一个位置（现在是空的）
+            data_list.Delete(last_index, 1);
+
+            // 5. 释放被删除元素的池
+            data_pool.Release(removed_item);
+
             return true;
         }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include<hgl/type/ValueKVMap.h>
+#include<vector>
 
 namespace hgl
 {
@@ -30,58 +31,115 @@ namespace hgl
     }
 
     // ==================== 哈希到ID的映射管理器 ====================
+    /**
+     * HashIDMap: 哈希到ID的映射管理器，使用动态碰撞槽位
+     * 
+     * 功能特性：
+     * - 快速查询路径：quick_map 存储每个哈希的首次插入ID
+     * - 碰撞处理：collision_map 使用动态 std::vector 存储同一哈希的多个ID
+     * - MAX_COLLISION 作为软阈值，用于监控溢出
+     * - 支持 Remove/Update 操作，实现高效的索引管理
+     * 
+     * 测试建议：
+     * - 测试无碰撞场景（Add/Find）
+     * - 测试碰撞场景（多个ID相同哈希）
+     * - 测试 Remove 操作及提升逻辑
+     * - 测试 Update 操作及重复ID检测
+     * - 测试溢出计数器（GetCollisionOverflowCount）
+     * - 测试 Clear/Free 是否正确重置 overflow_count_
+     */
     template<int MAX_COLLISION = 4>
     class HashIDMap
     {
     private:
-        // ==================== 固定大小的碰撞槽位（内部类） ====================
+        // ==================== 动态大小的碰撞槽位（内部类） ====================
         struct CollisionSlot
         {
-            int ids[MAX_COLLISION];     // 固定大小的ID数组
-            int count;                  // 当前存储的ID数量
+            std::vector<int> ids;       // 动态大小的ID数组
 
-            CollisionSlot() : count(0)
-            {
-                for(int i = 0; i < MAX_COLLISION; i++)
-                    ids[i] = -1;
-            }
+            CollisionSlot() = default;
 
-            bool IsFull() const { return count >= MAX_COLLISION; }
-            bool IsEmpty() const { return count == 0; }
+            bool IsEmpty() const { return ids.empty(); }
 
             bool Add(int id)
             {
-                if(IsFull())
-                    return false;
-                ids[count++] = id;
+                // 检查是否已存在（防止重复）
+                for(int existing_id : ids)
+                {
+                    if(existing_id == id)
+                        return false;  // 重复ID，拒绝添加
+                }
+                ids.push_back(id);
                 return true;
+            }
+
+            bool Remove(int id)
+            {
+                for(auto it = ids.begin(); it != ids.end(); ++it)
+                {
+                    if(*it == id)
+                    {
+                        ids.erase(it);
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            bool Update(int old_id, int new_id)
+            {
+                // 检查 new_id 是否已存在
+                for(int existing_id : ids)
+                {
+                    if(existing_id == new_id)
+                        return false;
+                }
+
+                // 查找并替换 old_id
+                for(int& id : ids)
+                {
+                    if(id == old_id)
+                    {
+                        id = new_id;
+                        return true;
+                    }
+                }
+                return false;
             }
 
             template<typename VerifyFunc>
             int Find(VerifyFunc verify_func) const
             {
-                for(int i = 0; i < count; i++)
+                for(int id : ids)
                 {
-                    if(verify_func(ids[i]))
-                        return ids[i];
+                    if(verify_func(id))
+                        return id;
                 }
                 return -1;
             }
 
+            int GetFirstID() const
+            {
+                return ids.empty() ? -1 : ids[0];
+            }
+
             // 迭代器支持
-            const int* begin() const { return ids; }
-            const int* end() const { return ids + count; }
+            auto begin() const { return ids.begin(); }
+            auto end() const { return ids.end(); }
         };
 
         // 快速查询：哈希值 → ID（99% 情况）
         ValueKVMap<uint64, int> quick_map;
 
-        // 碰撞处理：哈希值 → 固定大小的ID槽位（哈希碰撞时使用）
+        // 碰撞处理：哈希值 → 动态大小的ID槽位（哈希碰撞时使用）
         ValueKVMap<uint64, CollisionSlot> collision_map;
+
+        // 溢出计数器：记录超过 MAX_COLLISION 的槽位数量
+        int overflow_count_;
 
     public:
 
-        HashIDMap() = default;
+        HashIDMap() : overflow_count_(0) {}
         ~HashIDMap() = default;
 
         HashIDMap(const HashIDMap&) = delete;
@@ -91,7 +149,19 @@ namespace hgl
         HashIDMap& operator=(HashIDMap&&) = default;
 
         // ==================== 添加映射 ====================
-        // 返回值：true = 新增成功，false = 槽位已满（但仍可查询）
+        /**
+         * 添加哈希到ID的映射
+         * @param hash 哈希值
+         * @param id ID值
+         * @return true = 新增成功，false = ID已存在（重复）
+         * 
+         * 行为说明：
+         * - 首次添加：直接添加到 quick_map
+         * - 碰撞时：将 quick_map 中的原ID移动到 collision_slot（保留首次插入的ID在 quick_map）
+         *   并将新ID也添加到 collision_slot
+         * - 拒绝重复ID：如果ID已存在于该哈希下，返回 false
+         * - 无容量限制：碰撞槽位动态增长，不会失败（除非重复ID）
+         */
         bool Add(uint64 hash, int id)
         {
             int* p_existing = quick_map.GetValuePointer(hash);
@@ -101,19 +171,154 @@ namespace hgl
                 return true;
             }
 
+            // 检查 quick_map 中的ID是否与新ID重复
+            if(*p_existing == id)
+                return false;  // 重复ID
+
             // 发生哈希碰撞，转移到碰撞槽位
             auto* collision_slot = collision_map.GetValuePointer(hash);
             if(!collision_slot) {
-                // 第一次碰撞，创建固定大小的碰撞槽位
+                // 第一次碰撞，创建动态碰撞槽位
                 CollisionSlot new_slot;
-                new_slot.Add(*p_existing);  // 旧的 ID
-                bool success = new_slot.Add(id);  // 新的 ID
+                new_slot.Add(*p_existing);  // 旧的 ID（quick_map中的）
+                if(!new_slot.Add(id)) {     // 新的 ID
+                    return false;  // 重复ID（理论上不会发生）
+                }
                 collision_map.Add(hash, new_slot);
-                return success;
+                
+                // 检查是否需要增加溢出计数
+                if(new_slot.ids.size() > (size_t)MAX_COLLISION)
+                {
+                    overflow_count_++;
+                }
+                return true;
             }
 
             // 已有碰撞槽位，尝试追加
-            return collision_slot->Add(id);
+            size_t old_size = collision_slot->ids.size();
+            if(!collision_slot->Add(id)) {
+                return false;  // 重复ID
+            }
+            
+            // 检查是否刚好超过阈值（只在首次超过时增加计数）
+            size_t new_size = collision_slot->ids.size();
+            if(old_size == (size_t)MAX_COLLISION && new_size > (size_t)MAX_COLLISION)
+            {
+                overflow_count_++;
+            }
+            
+            return true;
+        }
+
+        // ==================== 移除映射 ====================
+        /**
+         * 移除指定哈希下的指定ID
+         * @param hash 哈希值
+         * @param id 要移除的ID
+         * @return true = 移除成功，false = ID不存在
+         * 
+         * 行为说明：
+         * - 如果移除的是 quick_map 的代表ID，且碰撞槽位存在，则提升碰撞槽位中
+         *   最早插入的ID（第一个）到 quick_map
+         * - 如果碰撞槽位变空，则删除该槽位
+         */
+        bool Remove(uint64 hash, int id)
+        {
+            int* p_quick = quick_map.GetValuePointer(hash);
+            if(!p_quick)
+                return false;  // 哈希不存在
+
+            // 检查是否是 quick_map 中的ID
+            if(*p_quick == id)
+            {
+                // 检查是否有碰撞槽位
+                auto* collision_slot = collision_map.GetValuePointer(hash);
+                if(collision_slot && !collision_slot->IsEmpty())
+                {
+                    // 提升碰撞槽位中的第一个ID到 quick_map
+                    int promoted_id = collision_slot->GetFirstID();
+                    *p_quick = promoted_id;
+                    collision_slot->ids.erase(collision_slot->ids.begin());
+                    
+                    // 如果碰撞槽位为空，删除它
+                    if(collision_slot->IsEmpty())
+                    {
+                        collision_map.DeleteByKey(hash);
+                    }
+                }
+                else
+                {
+                    // 没有碰撞槽位，直接删除 quick_map 条目
+                    quick_map.DeleteByKey(hash);
+                }
+                return true;
+            }
+
+            // 检查碰撞槽位
+            auto* collision_slot = collision_map.GetValuePointer(hash);
+            if(collision_slot)
+            {
+                if(collision_slot->Remove(id))
+                {
+                    // 如果碰撞槽位为空，删除它
+                    if(collision_slot->IsEmpty())
+                    {
+                        collision_map.DeleteByKey(hash);
+                    }
+                    return true;
+                }
+            }
+
+            return false;  // ID不存在
+        }
+
+        // ==================== 更新映射 ====================
+        /**
+         * 更新指定哈希下的ID（将 old_id 替换为 new_id）
+         * @param hash 哈希值
+         * @param old_id 旧ID
+         * @param new_id 新ID
+         * @return true = 更新成功，false = old_id不存在或new_id已存在
+         * 
+         * 行为说明：
+         * - 如果 new_id 已存在于该哈希下，返回 false
+         * - 如果 old_id 不存在，返回 false
+         * - 否则，将 old_id 替换为 new_id
+         */
+        bool Update(uint64 hash, int old_id, int new_id)
+        {
+            int* p_quick = quick_map.GetValuePointer(hash);
+            if(!p_quick)
+                return false;  // 哈希不存在
+
+            // 检查 new_id 是否已存在
+            if(*p_quick == new_id)
+                return false;  // new_id 已经是 quick_map 的代表
+
+            auto* collision_slot = collision_map.GetValuePointer(hash);
+            if(collision_slot)
+            {
+                for(int existing_id : collision_slot->ids)
+                {
+                    if(existing_id == new_id)
+                        return false;  // new_id 已存在于碰撞槽位
+                }
+            }
+
+            // 检查并更新 quick_map
+            if(*p_quick == old_id)
+            {
+                *p_quick = new_id;
+                return true;
+            }
+
+            // 检查并更新碰撞槽位
+            if(collision_slot)
+            {
+                return collision_slot->Update(old_id, new_id);
+            }
+
+            return false;  // old_id 不存在
         }
 
         // ==================== 查找ID ====================
@@ -123,7 +328,7 @@ namespace hgl
         int Find(uint64 hash, VerifyFunc verify_func) const
         {
             // 快路径：直接查询（99% 情况，O(1)）
-            int* p_id = quick_map.GetValuePointer(hash);
+            const int* p_id = quick_map.GetValuePointer(hash);
             if(p_id) {
                 if(verify_func(*p_id))
                     return *p_id;  // 找到！
@@ -144,12 +349,14 @@ namespace hgl
         {
             quick_map.Clear();
             collision_map.Clear();
+            overflow_count_ = 0;
         }
 
         void Free()
         {
             quick_map.Free();
             collision_map.Free();
+            overflow_count_ = 0;
         }
 
         bool IsEmpty() const
@@ -184,23 +391,18 @@ namespace hgl
 
             int total_collision_ids = 0;
             for(const auto& kv : collision_map) {
-                total_collision_ids += kv.value.count;
+                total_collision_ids += kv.value.ids.size();
             }
             return (float)total_collision_ids / collision_map.GetCount();
         }
 
         // 获取碰撞槽位溢出次数（性能监控）
+        // 返回超过 MAX_COLLISION 的槽位数量（在首次超过时计数）
         int GetCollisionOverflowCount() const {
-            int overflow_count = 0;
-            for(const auto& kv : collision_map) {
-                if(kv.value.IsFull()) {
-                    overflow_count++;
-                }
-            }
-            return overflow_count;
+            return overflow_count_;
         }
 
-        // 获取最大碰撞槽位大小（配置参数）
+        // 获取最大碰撞槽位大小（配置参数，作为软阈值）
         static constexpr int GetMaxCollisionPerHash() {
             return MAX_COLLISION;
         }
