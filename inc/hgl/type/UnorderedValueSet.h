@@ -27,6 +27,7 @@ namespace hgl
     class UnorderedValueSet
     {
     protected:
+
         using ThisClass = UnorderedValueSet<T, MAX_COLLISION>;
 
         // 编译期检查：T 必须是平凡可复制类型，非平凡类型请使用 UnorderedManagedSet

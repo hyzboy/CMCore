@@ -4,6 +4,7 @@
 #include<hgl/type/ValueBuffer.h>
 #include<hgl/type/PtrArray.h>
 #include<hgl/type/Pool.h>
+#include<hgl/type/ArrayItemProcess.h>
 
 namespace hgl
 {
@@ -13,78 +14,6 @@ namespace hgl
     // 1. OrderedValueSet和OrderedManagedSet使用这些函数进行查找
     // 2. OrderedMapTemplate使用自己的内部FindPos方法（因为需要处理指针数组）
     // 3. 这些函数可供其他需要在排序数组中查找的代码使用
-
-    /**
-     * 在已排序的数组中查找指定元素的位置
-     * @param arr 已排序的数组（必须支持GetData()和GetCount()方法）
-     * @param value 要查找的值
-     * @return 元素所在位置，如果不存在返回-1
-     */
-    template<typename ArrayType, typename T>
-    inline int64 FindDataPositionInSortedArray(const ArrayType& arr, const T& value)
-    {
-        const int64 count = arr.GetCount();
-        if(count <= 0)
-            return -1;
-
-        const auto* data = arr.GetData();
-        int64 left = 0;
-        int64 right = count - 1;
-
-        while(left <= right)
-        {
-            int64 mid = left + (right - left) / 2;
-
-            if(data[mid] < value)
-                left = mid + 1;
-            else if(value < data[mid])
-                right = mid - 1;
-            else
-                return mid;  // 找到
-        }
-
-        return -1;  // 未找到
-    }
-
-    /**
-     * 在已排序的数组中查找插入位置
-     * @param pos 输出：如果元素存在，返回其位置；否则返回应该插入的位置
-     * @param arr 已排序的数组（必须支持GetData()和GetCount()方法）
-     * @param value 要查找的值
-     * @return true表示元素已存在，false表示元素不存在
-     */
-    template<typename ArrayType, typename T>
-    inline bool FindInsertPositionInSortedArray(int64* pos, const ArrayType& arr, const T& value)
-    {
-        const int64 count = arr.GetCount();
-        if(count <= 0)
-        {
-            *pos = 0;
-            return false;
-        }
-
-        const auto* data = arr.GetData();
-        int64 left = 0;
-        int64 right = count - 1;
-
-        while(left <= right)
-        {
-            int64 mid = left + (right - left) / 2;
-
-            if(data[mid] < value)
-                left = mid + 1;
-            else if(value < data[mid])
-                right = mid - 1;
-            else
-            {
-                *pos = mid;
-                return true;  // 找到
-            }
-        }
-
-        *pos = left;  // 应该插入的位置
-        return false;
-    }
 
     /**
      * 有序键值对映射模板（基于排序数组）
