@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<time.h>
 #include<string>
+#include<vector>
 #include<hgl/type/OrderedMap.h>
 #include<hgl/type/OrderedValueSet.h>
 #include<hgl/type/String.h>
@@ -189,7 +190,7 @@ void StressTest()
 
     // 2.1 随机顺序添加
     cout << "\n[2.1] Add " << LARGE_COUNT << " elements in random order:" << endl;
-    int* random_keys = new int[LARGE_COUNT];
+    std::vector<int> random_keys(LARGE_COUNT);
     for(int i = 0; i < LARGE_COUNT; i++)
         random_keys[i] = i;
 
@@ -207,8 +208,6 @@ void StressTest()
         map.Add(random_keys[i], random_keys[i] * 10);
     }
     TEST_ASSERT(map.GetCount() == LARGE_COUNT, "All elements added");
-
-    delete[] random_keys;
 
     // 2.2 验证所有元素有序
     cout << "\n[2.2] Verify all elements are ordered:" << endl;

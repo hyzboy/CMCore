@@ -169,7 +169,7 @@ namespace hgl
             new_data->value = value;
 
             // 插入到正确位置以保持排序
-            data_list.Insert(pos, &new_data, 1);
+            data_list.Insert(pos, new_data);
 
             return new_data;
         }
@@ -409,7 +409,7 @@ namespace hgl
             return true;
         }
 
-        bool SetValueBySerial(int index, V& value)                                 ///<根据序号设置数据
+        bool SetValueBySerial(int index, const V& value)                           ///<根据序号设置数据
         {
             if(index < 0 || index >= data_list.GetCount())
                 return false;
