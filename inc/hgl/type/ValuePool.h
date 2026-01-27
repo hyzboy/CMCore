@@ -1,53 +1,33 @@
 ﻿/**
-* @file Pool.h
+* @file ValuePool.h
 * @brief CN:对象池模板类，支持活跃与闲置对象管理。\nEN:Object pool template class, supports active and idle object management.
 */
 #pragma once
 
 #include <hgl/type/ValueArray.h>
 #include <hgl/type/Queue.h>
-#include <type_traits>
+#include <hgl/type/has_get_array.h>
 
 namespace hgl
 {
     /**
-    * @brief CN:检测容器是否提供 GetArray() 方法。\nEN:Detects if container provides GetArray() method.
-    * @tparam C CN:容器类型。EN:Container type.
-    */
-    template<typename C>
-    class has_get_array
-    {
-        template<typename X> static auto test(int) -> decltype(std::declval<X>().GetArray(), std::true_type());
-        template<typename>   static auto test(...) -> std::false_type;
-    public:
-
-        /**
-        * @brief CN:是否支持 GetArray()。\nEN:Whether GetArray() is supported.
-        */
-        static constexpr bool value = decltype(test<C>(0))::value;
-
-    };
-
-    /**
     * @brief CN:对象池模板类。\nEN:Object pool template class.
     * @tparam T CN:对象类型。EN:Object type.
-    * @tparam AT CN:活跃对象容器类型。EN:Active container type.
-    * @tparam IT CN:闲置对象容器类型。EN:Idle container type.
     */
-    template<typename T, typename AT, typename IT>
-    class PoolTemplate
+    template<typename T>
+    class ValuePool
     {
     protected:
 
         /**
         * @brief CN:活跃对象容器。\nEN:Active object container.
         */
-        AT Active;
+        ValueArray<T> Active;
 
         /**
         * @brief CN:闲置对象容器。\nEN:Idle object container.
         */
-        IT Idle;
+        Queue<T> Idle;
 
         /**
         * @brief CN:最大活跃对象数量。\nEN:Maximum active object count.
@@ -165,11 +145,11 @@ namespace hgl
             return max_active_count > 0 && Active.GetCount() >= max_active_count;
         }
 
-        PoolTemplate() : max_active_count(0), history_max(0)
+        ValuePool() : max_active_count(0), history_max(0)
         {
         }
 
-        virtual ~PoolTemplate()
+        virtual ~ValuePool()
         {
             Clear();
         }
@@ -201,17 +181,7 @@ namespace hgl
             if (IsFull())
                 return false;
 
-            // 对于指针类型，创建新对象；对于非指针类型，使用默认构造
-            if constexpr (std::is_pointer_v<T>)
-            {
-                value = new typename std::remove_pointer<T>::type();
-                if (!value)
-                    return false;
-            }
-            else
-            {
-                value = T();
-            }
+            value = T();
 
             Active.Add(value);
             UpdateHistoryMax();
@@ -228,17 +198,7 @@ namespace hgl
                 if (IsFull())
                     return false;
 
-                // 对于指针类型，创建新对象；对于非指针类型，使用默认构造
-                if constexpr (std::is_pointer_v<T>)
-                {
-                    value = new typename std::remove_pointer<T>::type();
-                    if (!value)
-                        return false;
-                }
-                else
-                {
-                    value = T();
-                }
+                value = T();
             }
 
             Active.Add(value);
@@ -284,7 +244,7 @@ namespace hgl
         bool Release(T value)
         {
             // 仅支持 Active 有 Find/Delete (ValueArray)。若不是此类容器，忽略操作
-            if constexpr (has_get_array<AT>::value)
+            if constexpr (has_get_array<ValueArray<T>>::value)
             {
                 int idx = Active.Find(value);
                 if (idx < 0)
@@ -317,7 +277,7 @@ namespace hgl
         */
         void ReleaseActive()
         {
-            if constexpr (has_get_array<AT>::value)
+            if constexpr (has_get_array<ValueArray<T>>::value)
             {
                 T *ptr = active_data_ptr(Active, 0);
                 int cnt = active_data_count(Active, 0);
@@ -344,22 +304,8 @@ namespace hgl
         */
         void ClearActive()
         {
-            if constexpr (has_get_array<AT>::value)
+            if constexpr (has_get_array<ValueArray<T>>::value)
             {
-                T *ptr = active_data_ptr(Active, 0);
-                int cnt = active_data_count(Active, 0);
-                if (ptr && cnt > 0)
-                {
-                    // 对于指针类型，手动删除；对于非指针类型，由容器处理
-                    if constexpr (std::is_pointer_v<T>)
-                    {
-                        for (int i = 0; i < cnt; ++i)
-                        {
-                            if (ptr[i])
-                                delete ptr[i];
-                        }
-                    }
-                }
                 Active.Clear();
             }
             else
@@ -368,11 +314,6 @@ namespace hgl
                 T v;
                 while (Active.Pop(v))
                 {
-                    if constexpr (std::is_pointer_v<T>)
-                    {
-                        if (v)
-                            delete v;
-                    }
                 }
             }
         }
@@ -382,21 +323,7 @@ namespace hgl
         */
         void ClearIdle()
         {
-            // 对于指针类型，需要手动删除
-            if constexpr (std::is_pointer_v<T>)
-            {
-                T v;
-                while (Idle.Pop(v))
-                {
-                    if (v)
-                        delete v;
-                }
-            }
-            else
-            {
-                // 对于非指针类型，容器会自动处理
-                Idle.Clear();
-            }
+            Idle.Clear();
         }
 
         /**
@@ -408,17 +335,4 @@ namespace hgl
             ClearIdle();
         }
     };
-
-    /**
-    * @brief CN:对象池类型定义。\nEN:Object pool type definition.
-    */
-    template<typename T>
-    using Pool = PoolTemplate<T, ValueArray<T>, Queue<T>>;
-
-    /**
-    * @brief CN:对象指针池类型定义。\nEN:Object pointer pool type definition.
-    */
-    template<typename T>
-    using ObjectPool = PoolTemplate<T *, ValueArray<T *>, Queue<T *>>;
-
 } // namespace hgl

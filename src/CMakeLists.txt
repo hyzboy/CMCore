@@ -67,7 +67,8 @@ SET(CMCORE_TYPE_CONTAINER_FILES ${CMCORE_TYPE_INCLUDE_PATH}/BitsArray.h
                                 ${CMCORE_TYPE_INCLUDE_PATH}/PtrArray.h
                                 ${CMCORE_TYPE_INCLUDE_PATH}/Queue.h
                                 ${CMCORE_TYPE_INCLUDE_PATH}/Stack.h
-                                ${CMCORE_TYPE_INCLUDE_PATH}/Pool.h
+                                ${CMCORE_TYPE_INCLUDE_PATH}/ValuePool.h
+                                ${CMCORE_TYPE_INCLUDE_PATH}/ManagedPool.h
                                 ${CMCORE_TYPE_INCLUDE_PATH}/SimpleValuePool.h
                                 ${CMCORE_TYPE_INCLUDE_PATH}/SeriesPool.h
                                 ${CMCORE_TYPE_INCLUDE_PATH}/ManagedArray.h)

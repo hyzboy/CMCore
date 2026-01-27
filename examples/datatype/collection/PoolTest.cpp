@@ -1,4 +1,5 @@
-﻿#include<hgl/type/Pool.h>
+﻿#include<hgl/type/ValuePool.h>
+#include<hgl/type/ManagedPool.h>
 #include<iostream>
 #include"UserInfo.h"
 
@@ -22,7 +23,7 @@ void ShowUserInfoArray(const ValueBuffer<UserInfo> &ua)
 
 void StructPoolTest()
 {
-    Pool<UserInfo> pool;
+    ValuePool<UserInfo> pool;
 
     //添加所有的人物数据到池中
     {
@@ -71,7 +72,7 @@ void ShowUserInfoArray(const ValueBuffer<UserInfoClass *> &ua)
 
 void ObjectPoolTest()
 {
-    ObjectPool<UserInfoClass> pool;
+    ManagedPool<UserInfoClass> pool;
 
     ValueArray<UserInfoClass *> release_list;
 
@@ -113,7 +114,7 @@ void ObjectPoolTest()
     cout<<"finished current function, and then auto release."<<endl;
 
     //原本是自动，我们这里手写调用一下，方便输出调试信息。
-    //以下代码等同ObjectPool::~ObjectPool()
+    //以下代码等同ManagedPool::~ManagedPool()
     {
         cout<<"clear active "<<pool.GetActiveCount()<<endl;
         pool.ClearActive();
@@ -126,15 +127,15 @@ void ObjectPoolTest()
 // ==================== 新增测试函数 ====================
 
 /**
- * 测试 Pool<T> 的 Create 方法
+ * 测试 ValuePool<T> 的 Create 方法
  */
 void TestPoolCreate()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"Pool Create Test"<<endl<<endl;
+    cout<<"ValuePool Create Test"<<endl<<endl;
 
-    Pool<int> pool;
+    ValuePool<int> pool;
 
     cout<<"[1] 创建 10 个新对象..."<<endl;
     for(int i = 0; i < 10; ++i)
@@ -160,15 +161,15 @@ void TestPoolCreate()
 }
 
 /**
- * 测试 Pool<T> 的 GetOrCreate 方法
+ * 测试 ValuePool<T> 的 GetOrCreate 方法
  */
 void TestPoolGetOrCreate()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"Pool GetOrCreate Test"<<endl<<endl;
+    cout<<"ValuePool GetOrCreate Test"<<endl<<endl;
 
-    Pool<int> pool;
+    ValuePool<int> pool;
 
     cout<<"[1] 第一次 GetOrCreate（应创建新对象）..."<<endl;
     int val1 = -1;
@@ -192,15 +193,15 @@ void TestPoolGetOrCreate()
 }
 
 /**
- * 测试 Pool<T> 的容量管理
+ * 测试 ValuePool<T> 的容量管理
  */
 void TestPoolCapacity()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"Pool Capacity Test"<<endl<<endl;
+    cout<<"ValuePool Capacity Test"<<endl<<endl;
 
-    Pool<int> pool;
+    ValuePool<int> pool;
 
     cout<<"[1] Reserve 预分配 100 个..."<<endl;
     pool.Reserve(100, true);  // true 表示设为最大活跃数
@@ -240,15 +241,15 @@ void TestPoolCapacity()
 }
 
 /**
- * 测试 Pool<T> 的对象查询
+ * 测试 ValuePool<T> 的对象查询
  */
 void TestPoolQuery()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"Pool Query Test"<<endl<<endl;
+    cout<<"ValuePool Query Test"<<endl<<endl;
 
-    Pool<UserInfo> pool;
+    ValuePool<UserInfo> pool;
 
     cout<<"[1] 添加用户信息到活跃池..."<<endl;
     UserInfo ui1 = user_info_array[0];
@@ -278,15 +279,15 @@ void TestPoolQuery()
 }
 
 /**
- * 测试 Pool<T> 的批量操作
+ * 测试 ValuePool<T> 的批量操作
  */
 void TestPoolBatchOperations()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"Pool Batch Operations Test"<<endl<<endl;
+    cout<<"ValuePool Batch Operations Test"<<endl<<endl;
 
-    Pool<UserInfo> pool;
+    ValuePool<UserInfo> pool;
 
     cout<<"[1] 添加 5 个用户信息..."<<endl;
     for(int i = 0; i < 5; ++i)
@@ -315,15 +316,15 @@ void TestPoolBatchOperations()
 }
 
 /**
- * 测试 Pool<T> 的边界条件
+ * 测试 ValuePool<T> 的边界条件
  */
 void TestPoolBoundaryConditions()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"Pool Boundary Conditions Test"<<endl<<endl;
+    cout<<"ValuePool Boundary Conditions Test"<<endl<<endl;
 
-    Pool<int> pool;
+    ValuePool<int> pool;
 
     cout<<"[1] 空池状态..."<<endl;
     cout<<"活跃: "<<pool.GetActiveCount()<<", 闲置: "<<pool.GetIdleCount()<<endl;
@@ -352,18 +353,18 @@ void TestPoolBoundaryConditions()
         cout<<"创建成功"<<endl;
 }
 
-// ==================== ObjectPool 新增测试 ====================
+// ==================== ManagedPool 新增测试 ====================
 
 /**
- * 测试 ObjectPool<T> 的 Create 方法
+ * 测试 ManagedPool<T> 的 Create 方法
  */
 void TestObjectPoolCreate()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"ObjectPool Create Test"<<endl<<endl;
+    cout<<"ManagedPool Create Test"<<endl<<endl;
 
-    ObjectPool<UserInfoClass> pool;
+    ManagedPool<UserInfoClass> pool;
 
     cout<<"[1] 创建 5 个新对象..."<<endl;
     for(int i = 0; i < 5; ++i)
@@ -395,15 +396,15 @@ void TestObjectPoolCreate()
 }
 
 /**
- * 测试 ObjectPool<T> 的 GetOrCreate 方法
+ * 测试 ManagedPool<T> 的 GetOrCreate 方法
  */
 void TestObjectPoolGetOrCreate()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"ObjectPool GetOrCreate Test"<<endl<<endl;
+    cout<<"ManagedPool GetOrCreate Test"<<endl<<endl;
 
-    ObjectPool<UserInfoClass> pool;
+    ManagedPool<UserInfoClass> pool;
 
     cout<<"[1] 第一次 GetOrCreate..."<<endl;
     UserInfoClass *uic1 = nullptr;
@@ -432,16 +433,16 @@ void TestObjectPoolGetOrCreate()
 }
 
 /**
- * 测试 ObjectPool<T> 的容量管理和内存安全
+ * 测试 ManagedPool<T> 的容量管理和内存安全
  */
 void TestObjectPoolCapacity()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"ObjectPool Capacity Test"<<endl<<endl;
+    cout<<"ManagedPool Capacity Test"<<endl<<endl;
 
     {
-        ObjectPool<UserInfoClass> pool;
+        ManagedPool<UserInfoClass> pool;
 
         cout<<"[1] Reserve 预分配..."<<endl;
         pool.Reserve(10, true);
@@ -471,15 +472,15 @@ void TestObjectPoolCapacity()
 }
 
 /**
- * 测试 ObjectPool<T> 的批量操作
+ * 测试 ManagedPool<T> 的批量操作
  */
 void TestObjectPoolBatchOperations()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"ObjectPool Batch Operations Test"<<endl<<endl;
+    cout<<"ManagedPool Batch Operations Test"<<endl<<endl;
 
-    ObjectPool<UserInfoClass> pool;
+    ManagedPool<UserInfoClass> pool;
 
     cout<<"[1] 创建并添加 6 个对象..."<<endl;
     ValueArray<UserInfoClass *> all_objs;
@@ -512,16 +513,16 @@ void TestObjectPoolBatchOperations()
 }
 
 /**
- * 测试 ObjectPool<T> 的压力测试
+ * 测试 ManagedPool<T> 的压力测试
  */
 void TestObjectPoolStress()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"ObjectPool Stress Test"<<endl<<endl;
+    cout<<"ManagedPool Stress Test"<<endl<<endl;
 
     {
-        ObjectPool<UserInfoClass> pool;
+        ManagedPool<UserInfoClass> pool;
 
         cout<<"[1] 创建 100 个对象..."<<endl;
         for(int i = 0; i < 100; ++i)
@@ -566,15 +567,15 @@ void TestObjectPoolStress()
 }
 
 /**
- * ObjectPool 的 Append 直接操作测试
+ * ManagedPool 的 Append 直接操作测试
  */
 void TestObjectPoolDirectAppend()
 {
     cout<<endl;
     cout<<"-----------------------------------------"<<endl;
-    cout<<"ObjectPool Direct Append Test"<<endl<<endl;
+    cout<<"ManagedPool Direct Append Test"<<endl<<endl;
 
-    ObjectPool<UserInfoClass> pool;
+    ManagedPool<UserInfoClass> pool;
 
     cout<<"[1] 直接添加到活跃..."<<endl;
     for(int i = 0; i < 3; ++i)
@@ -610,7 +611,7 @@ int main(int,char **)
     StructPoolTest();
     ObjectPoolTest();
 
-    // ========== 新增 Pool<T> 测试 ==========
+    // ========== 新增 ValuePool<T> 测试 ==========
     TestPoolCreate();
     TestPoolGetOrCreate();
     TestPoolCapacity();
@@ -618,7 +619,7 @@ int main(int,char **)
     TestPoolBatchOperations();
     TestPoolBoundaryConditions();
 
-    // ========== 新增 ObjectPool<T> 测试 ==========
+    // ========== 新增 ManagedPool<T> 测试 ==========
     TestObjectPoolCreate();
     TestObjectPoolGetOrCreate();
     TestObjectPoolCapacity();
@@ -628,7 +629,7 @@ int main(int,char **)
 
     cout<<endl;
     cout<<"========================================="<<endl;
-    cout<<"All Pool tests completed!"<<endl;
+    cout<<"All ValuePool tests completed!"<<endl;
     cout<<"========================================="<<endl;
 
     return 0;

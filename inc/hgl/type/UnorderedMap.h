@@ -3,7 +3,7 @@
 #include<hgl/type/HashIDMap.h>
 #include<hgl/type/KeyValue.h>
 #include<hgl/type/ValueArray.h>
-#include<hgl/type/Pool.h>
+#include<hgl/type/ManagedPool.h>
 
 namespace hgl
 {
@@ -17,7 +17,7 @@ namespace hgl
 
         using ThisClass = UnorderedMapTemplate<K, V, KVData, MAX_COLLISION>;
 
-        using KVDataPool = ObjectPool<KVData>;
+        using KVDataPool = ManagedPool<KVData>;
         using KVDataList = ValueArray<KVData *>;
 
         KVDataPool data_pool;

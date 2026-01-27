@@ -3,7 +3,7 @@
 #include<hgl/type/KeyValue.h>
 #include<hgl/type/ValueBuffer.h>
 #include<hgl/type/PtrArray.h>
-#include<hgl/type/Pool.h>
+#include<hgl/type/ManagedPool.h>
 #include<hgl/type/ArrayItemProcess.h>
 
 namespace hgl
@@ -28,7 +28,7 @@ namespace hgl
 
         using ThisClass = OrderedMapTemplate<K, V, KVData>;
 
-        using KVDataPool = ObjectPool<KVData>;
+        using KVDataPool = ManagedPool<KVData>;
         using KVDataList = ValueArray<KVData *>;
 
         KVDataPool data_pool;
