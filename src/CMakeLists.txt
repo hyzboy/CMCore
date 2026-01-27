@@ -367,7 +367,6 @@ SET(CMCORE_TIME_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/time)
 SET(CMCORE_TIME_HEADERS ${CMCORE_TIME_INCLUDE_PATH}/DateTime.h
                         ${CMCORE_TIME_INCLUDE_PATH}/Time.h
                         ${CMCORE_TIME_INCLUDE_PATH}/TimeID.h
-                        ${CMCORE_TIME_INCLUDE_PATH}/TimeConst.h
                         ${CMCORE_TIME_INCLUDE_PATH}/Timestamp.h
                         ${CMCORE_TIME_INCLUDE_PATH}/ChineseCalendar.h)
 
