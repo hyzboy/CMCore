@@ -194,6 +194,8 @@ namespace hgl
     
     EraNameManager* EraNameManager::GetInstance()
     {
+        // Note: 简化实现，非线程安全
+        // 实际应用中应使用互斥锁或std::call_once保证线程安全
         if (!instance)
         {
             instance = new EraNameManager();
@@ -282,8 +284,8 @@ namespace hgl
         AddEra(EmperorEra("洪熙", 1425, 1425, "朱高炽", "明"));
         AddEra(EmperorEra("宣德", 1426, 1435, "朱瞻基", "明"));
         AddEra(EmperorEra("正统", 1436, 1449, "朱祁镇", "明"));
-        AddEra(EmperorEra("景泰", 1450, 1457, "朱祁钰", "明"));
-        AddEra(EmperorEra("天顺", 1457, 1464, "朱祁镇", "明"));
+        AddEra(EmperorEra("景泰", 1450, 1456, "朱祁钰", "明"));
+        AddEra(EmperorEra("天顺", 1457, 1464, "朱祁镇", "明"));  // 英宗复辟
         AddEra(EmperorEra("成化", 1465, 1487, "朱见深", "明"));
         AddEra(EmperorEra("弘治", 1488, 1505, "朱祐樘", "明"));
         AddEra(EmperorEra("正德", 1506, 1521, "朱厚照", "明"));
