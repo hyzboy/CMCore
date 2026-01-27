@@ -12,9 +12,9 @@ int main(int, char**)
     
     // 创建一些测试日期和时间
     CalendarDate dates[] = {
-        CalendarDate(2024, 1, 1),   // 2024-01-01 Monday
-        CalendarDate(2024, 1, 7),   // 2024-01-07 Sunday
-        CalendarDate(2024, 6, 15),  // 2024-06-15 Saturday
+        CalendarDate(2024, 1, 1),   // 2024-01-01 (Monday, weekday=1)
+        CalendarDate(2024, 1, 7),   // 2024-01-07 (Sunday, weekday=0)
+        CalendarDate(2024, 6, 15),  // 2024-06-15 (Saturday, weekday=6)
     };
     
     TimeOfDay times[] = {
