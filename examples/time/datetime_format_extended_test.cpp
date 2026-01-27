@@ -18,12 +18,12 @@ int main(int, char**)
     };
     
     TimeOfDay times[] = {
-        TimeOfDay(0, 30, 0, 0),     // 00:30 子时二刻
+        TimeOfDay(0, 30, 0, 0),     // 00:30 子时六刻
         TimeOfDay(3, 0, 0, 0),      // 03:00 寅时初刻
         TimeOfDay(7, 30, 0, 0),     // 07:30 辰时二刻
         TimeOfDay(11, 0, 0, 0),     // 11:00 午时初刻
         TimeOfDay(11, 45, 0, 0),    // 11:45 午时三刻 (经典)
-        TimeOfDay(14, 30, 0, 0),    // 14:30 未时二刻
+        TimeOfDay(14, 30, 0, 0),    // 14:30 未时六刻
         TimeOfDay(18, 0, 0, 0),     // 18:00 酉时四刻
         TimeOfDay(23, 30, 0, 0),    // 23:30 子时二刻
     };
