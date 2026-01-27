@@ -90,7 +90,7 @@ namespace hgl
 
     /**
         * 激活指定量的ID数据(优先从Idle中取,没有不会创建新的。激活后会被放入Active列表)
-        * 
+        *
         * FIFO语义：从队列头部一次取出count个ID（先进先出）
         * @return 是否全部成功取出
         */
@@ -112,7 +112,7 @@ namespace hgl
 
     /**
     * 激活指定量的ID数据(优从从Idle中取，如果不够则创建新的。激活后会被放入Active列表)
-    * 
+    *
     * FIFO语义：
     * 1. 先从Queue头部取出全部可用的idle ID（不创建新ID）
     * 2. 如果不足，创建新的idle ID后再一次性提取
@@ -132,7 +132,7 @@ namespace hgl
 
     /**
     * 释放指定量的ID数据(会从Active列表中取出，放入Idle列表中)
-    * 
+    *
     * 优化：使用批缓冲减少Queue::Push调用次数，提高性能
     */
     int ActiveIDManager::Release(const int *id,int count)
@@ -151,7 +151,7 @@ namespace hgl
                 batch_buffer[batch_count++] = *id;
                 ++result;
                 ++released_count;  // 统计已释放ID
-                
+
                 // 当缓冲满时，一次性Push所有元素
                 if(batch_count == BATCH_SIZE)
                 {

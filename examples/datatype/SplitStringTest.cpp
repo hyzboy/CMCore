@@ -1,4 +1,4 @@
-#include<hgl/type/SplitString.h>
+﻿#include<hgl/type/SplitString.h>
 #include<iostream>
 
 using namespace hgl;

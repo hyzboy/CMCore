@@ -14,6 +14,9 @@ namespace hgl
      *
      * 仅适用于支持 memcpy/memmove/mem_zero 的类型（trivially copyable）。
      * 非平凡类型请使用具备构造/析构处理的完整版本。
+     *
+     * 注意：ValueBuffer 禁用拷贝操作（防止浅拷贝导致双重释放），
+     * 只允许移动语义。如需拷贝，请显式调用 CopyFrom() 方法。
      */
     template<typename T> class ValueBuffer
     {
@@ -30,31 +33,92 @@ namespace hgl
         /**
          * @brief 默认构造，初始化为空阵列。
          */
-                ValueBuffer()
-                {
-                    items=nullptr;
-                    count=0;
-                    alloc_count=0;
-                }
+        ValueBuffer()
+        {
+            items=nullptr;
+            count=0;
+            alloc_count=0;
+        }
 
         /**
          * @brief 预分配指定长度的阵列并置零。
          * @param size 预期元素数量（非字节数）。
          */
         explicit    ValueBuffer(int64 size)
-                {
-                    items=nullptr;
-                    count=0;
-                    alloc_count=0;
+        {
+            items=nullptr;
+            count=0;
+            alloc_count=0;
 
-                    if(size>0)
-                        Resize(size);
-                }
+            if(size>0)
+                Resize(size);
+        }
 
         /**
          * @brief 析构函数，释放内部缓冲。
          */
-                ~ValueBuffer(){ Free(); }
+        ~ValueBuffer(){ Free(); }
+
+        // ==================== 禁用拷贝，只允许移动 ====================
+        // 防止浅拷贝导致的双重释放问题
+
+        /**
+         * @brief 禁用拷贝构造
+         * 
+         * 为防止浅拷贝导致的双重释放，ValueBuffer 禁止复制。
+         * 如需深拷贝，请使用 CopyFrom() 方法。
+         * 如需转移所有权，请使用移动构造 (C++11 move semantics)。
+         */
+        ValueBuffer(const ValueBuffer &) = delete;
+
+        /**
+         * @brief 允许移动构造 (C++11 move semantics)
+         * 
+         * 高效地转移另一个 ValueBuffer 的所有权，原对象变为空状态。
+         */
+        ValueBuffer(ValueBuffer &&other) noexcept
+            : items(other.items), count(other.count), alloc_count(other.alloc_count)
+        {
+            other.items = nullptr;
+            other.count = 0;
+            other.alloc_count = 0;
+        }
+
+        /**
+         * @brief 禁用拷贝赋值
+         * 
+         * 为防止浅拷贝导致的双重释放，ValueBuffer 禁止赋值。
+         * 如需深拷贝，请显式调用此方法。
+         * 如需转移所有权，请使用移动赋值 (C++11 move assignment)。
+         */
+        [[deprecated("ValueBuffer assignment is deleted. Use CopyFrom(other) for deep copy or move semantics instead.")]]
+        ValueBuffer &operator=(const ValueBuffer &) = delete;
+
+        // 捕获所有其他类型的赋值尝试
+        template<typename U>
+        [[deprecated("ValueBuffer does not support assignment from other types. Use CopyFrom(other) or appropriate conversion instead.")]]
+        ValueBuffer &operator=(const U &) = delete;
+
+        /**
+         * @brief 允许移动赋值 (C++11 move assignment)
+         * 
+         * 高效地转移另一个 ValueBuffer 的所有权，原对象变为空状态。
+         */
+        ValueBuffer &operator=(ValueBuffer &&other) noexcept
+        {
+            if(this != &other)
+            {
+                Free();  // 释放当前数据
+                items = other.items;
+                count = other.count;
+                alloc_count = other.alloc_count;
+
+                other.items = nullptr;
+                other.count = 0;
+                other.alloc_count = 0;
+            }
+            return *this;
+        }
 
         // 基本属性
 
@@ -449,12 +513,16 @@ namespace hgl
             return true;
         }
 
-        // 赋值辅助
+        // 赋值辅助 - 深拷贝方法
         /**
-         * @brief 拷贝赋值，长度自动调整。
+         * @brief 深拷贝赋值，长度自动调整。
+         * 
+         * 注意：ValueBuffer 禁用拷贝运算符以防浅拷贝。
+         * 如需深拷贝，请显式调用此方法。
+         * 
          * @param da 源数组。
          */
-        void operator = (const ValueBuffer<T> &da)
+        void CopyFrom(const ValueBuffer<T> &da)
         {
             if(da.count<=0){ count=0; return; }
 

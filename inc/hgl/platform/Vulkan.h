@@ -5,6 +5,6 @@
 namespace hgl
 {
     class Window;
-    
+
     VkSurfaceKHR CreateVulkanSurface(VkInstance,Window *);
 }//namespace hgl

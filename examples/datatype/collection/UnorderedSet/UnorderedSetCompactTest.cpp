@@ -1,4 +1,4 @@
-/**
+﻿/**
  * UnorderedSetCompactTest.cpp
  * 测试新版高性能无序集合的功能和性能
  */
@@ -240,7 +240,7 @@ void TestBoundaryConditions()
     assert(set.IsEmpty());
     assert(!set.Contains(1));
     assert(!set.Delete(1));
-    
+
     int value;
     assert(!set.GetFirst(value));
     assert(!set.GetLast(value));

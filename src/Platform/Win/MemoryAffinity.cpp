@@ -74,7 +74,7 @@ namespace hgl
         if (!new_ptr) return false;
 
         memcpy(new_ptr, ptr, size);
-        
+
         // 注意：这会改变指针地址，调用者需要更新指针
         // 此实现仅复制数据，不自动更新引用
         NumaFree(ptr, size);

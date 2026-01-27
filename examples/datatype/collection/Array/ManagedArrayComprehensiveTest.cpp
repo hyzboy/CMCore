@@ -1,4 +1,4 @@
-#include<hgl/type/ManagedArray.h>
+﻿#include<hgl/type/ManagedArray.h>
 #include<iostream>
 #include<string>
 #include<cstring>

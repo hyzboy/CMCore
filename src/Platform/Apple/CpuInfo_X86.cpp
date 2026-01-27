@@ -1,4 +1,4 @@
-#include <hgl/platform/CpuInfo.h>
+﻿#include <hgl/platform/CpuInfo.h>
 #include <sys/types.h>
 #include <sys/sysctl.h>
 #include <string.h>

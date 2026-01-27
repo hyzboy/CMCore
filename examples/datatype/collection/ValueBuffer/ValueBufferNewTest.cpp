@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DataArrayNew 功能测试
  * 验证新架构的所有功能
  */
@@ -65,11 +65,6 @@ void test_trivial_types()
 
     arr.WriteAt(999, 0);
     std::cout << "After WriteAt(999, 0): " << arr[0] << std::endl;
-
-    // operator=
-    ValueBuffer<int> arr2;
-    arr2 = arr;
-    std::cout << "After arr2 = arr, arr2.count: " << arr2.GetCount() << std::endl;
 
     // initializer_list
     arr = {100, 200, 300};

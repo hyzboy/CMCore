@@ -59,7 +59,7 @@ public:
         // va_list based helpers used by variadic wrappers
         void LogPrintf(const std::source_location &,const LogLevel,const u8char *,va_list);
         void LogPrintf(const std::source_location &,const LogLevel,const u16char *,va_list);
-    
+
     #ifdef HGL_SUPPORT_CHAR8_T
         void LogString(const std::source_location &,const LogLevel,const char *,const size_t);
         void LogPrintf(const std::source_location &,const LogLevel,const char *,va_list);

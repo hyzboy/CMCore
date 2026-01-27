@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include"RuntimeAssetManager.h"
 #include<hgl/type/String.h>
 #include<hgl/type/OrderedValueSet.h>

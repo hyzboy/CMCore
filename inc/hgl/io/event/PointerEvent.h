@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/io/event/EventDispatcher.h>
 #include<hgl/math/Vector.h>
@@ -87,7 +87,7 @@ namespace hgl::io
             is_barrel_pressed = false;
         }
     };
-        
+
     class PointerEvent:public EventDispatcher
     {
         PointerEventData *ped=nullptr;

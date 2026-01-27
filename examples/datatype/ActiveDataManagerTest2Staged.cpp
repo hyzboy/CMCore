@@ -1,4 +1,4 @@
-#include<hgl/type/ActiveIDManager.h>
+﻿#include<hgl/type/ActiveIDManager.h>
 #include<hgl/type/ValueBuffer.h>
 #include<iostream>
 #include<cassert>
@@ -37,12 +37,12 @@ public:
     void Reserve(int c)
     {
         cout << "[ADM::Reserve] Start - reserving " << c << " items" << endl;
-        cout << "  Before: aim.GetTotalCount()=" << aim.GetTotalCount() 
+        cout << "  Before: aim.GetTotalCount()=" << aim.GetTotalCount()
              << ", data_array.GetAllocCount()=" << data_array.GetAllocCount() << endl;
-        
+
         aim.Reserve(c);
         data_array.Reserve(c);
-        
+
         cout << "  After: aim.GetTotalCount()=" << aim.GetTotalCount()
              << ", data_array.GetAllocCount()=" << data_array.GetAllocCount() << endl;
         cout << "[ADM::Reserve] End" << endl;
@@ -86,9 +86,9 @@ public:
         cout << "[ADM::WriteData] Writing to ID " << id << endl;
         cout << "  data_array state: count=" << data_array.GetCount()
              << ", alloc_count=" << data_array.GetAllocCount() << endl;
-        
+
         bool result = data_array.WriteAt(d, id);
-        
+
         cout << "  Result: " << (result ? "SUCCESS" : "FAILED") << endl;
         return result;
     }
@@ -99,13 +99,13 @@ public:
         cout << "[ADM::CreateActive] Start - creating " << count << " active IDs" << endl;
         cout << "  Before: aim.GetTotalCount()=" << aim.GetTotalCount()
              << ", data_array.GetCount()=" << data_array.GetCount() << endl;
-        
+
         aim.CreateActive(id, count);
-        
+
         cout << "  After CreateActive: aim.GetTotalCount()=" << aim.GetTotalCount() << endl;
         cout << "  Expanding data_array by " << count << " items..." << endl;
         data_array.Expand(count);
-        
+
         cout << "  After Expand: data_array.GetCount()=" << data_array.GetCount() << endl;
         cout << "[ADM::CreateActive] End" << endl;
     }
@@ -116,13 +116,13 @@ public:
         cout << "[ADM::CreateIdle] Start - creating " << count << " idle IDs" << endl;
         cout << "  Before: aim.GetTotalCount()=" << aim.GetTotalCount()
              << ", data_array.GetCount()=" << data_array.GetCount() << endl;
-        
+
         aim.CreateIdle(idp, count);
-        
+
         cout << "  After CreateIdle: aim.GetTotalCount()=" << aim.GetTotalCount() << endl;
         cout << "  Expanding data_array by " << count << " items..." << endl;
         data_array.Expand(count);
-        
+
         cout << "  After Expand: data_array.GetCount()=" << data_array.GetCount() << endl;
         if(idp)
         {
@@ -145,7 +145,7 @@ public:
     bool GetOrCreate(int *id, const int count = 1)
     {
         cout << "[ADM::GetOrCreate] Getting or creating " << count << " IDs" << endl;
-        
+
         if (!id || count <= 0)
         {
             cout << "  Invalid parameters, returning false" << endl;
@@ -277,13 +277,13 @@ void DebugADMDetailedState(const char *hint, ActiveDataManagerDebug<UserInfo> &a
     cout << "========================================" << endl;
     cout << hint << endl;
     cout << "========================================" << endl;
-    
+
     cout << "  Basic Counts:" << endl;
     cout << "    ActiveCount: " << adm.GetActiveCount() << endl;
     cout << "    IdleCount: " << adm.GetIdleCount() << endl;
     cout << "    TotalCount: " << adm.GetTotalCount() << endl;
     cout << "    HistoryMaxId: " << adm.GetHistoryMaxId() << endl;
-    
+
     cout << "\n  ActiveView:" << endl;
     const ValueBuffer<int> &active_view = adm.GetActiveView();
     cout << "    Count: " << active_view.GetCount() << endl;
@@ -295,7 +295,7 @@ void DebugADMDetailedState(const char *hint, ActiveDataManagerDebug<UserInfo> &a
         }
         cout << "]" << endl;
     }
-    
+
     cout << "========================================" << endl << endl;
 }
 
@@ -306,12 +306,12 @@ int os_main(int,os_char **)
     {
         cout << "  Creating ActiveDataManagerDebug..." << endl;
         ActiveDataManagerDebug<UserInfo> adm;
-        
+
         cout << "\n[BEFORE Reserve] =====" << endl;
 
         cout << "  Calling Reserve(20)..." << endl;
         adm.Reserve(20);
-        
+
         cout << "\n[AFTER Reserve] =====" << endl;
         DebugADMDetailedState("State after Reserve(20)", adm);
 
@@ -338,10 +338,10 @@ int os_main(int,os_char **)
 
         DebugADMOutput("  State:", adm);
         cout << "  Active: " << adm.GetActiveCount() << ", Idle: " << adm.GetIdleCount() << endl;
-        
+
         cout << "\n[BEFORE Destruction] =====" << endl;
         DebugADMDetailedState("Final state before scope ends", adm);
-        
+
         cout << "  Scope ending - triggering destruction..." << endl;
     }
     cout << "  Phase 4 destruction completed successfully." << endl << endl;

@@ -34,7 +34,7 @@ int os_main(int,os_char **)
     constexpr const int BLOCK_SIZE=100;
 
     BlockAllocator dc;
-    
+
     dc.Init(BLOCK_SIZE);                  ///数据链管理器
 
     cout<<"BlockAllocator Test"<<endl;
@@ -107,7 +107,7 @@ int os_main(int,os_char **)
             int pos=dis(gen)%user_node_list.GetCount();
 
             BlockAllocator::UserNode *un;
-            
+
             user_node_list.Get(pos,un);
 
             if(dc.Release(un))

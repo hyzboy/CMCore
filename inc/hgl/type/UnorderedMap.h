@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/type/HashIDMap.h>
 #include<hgl/type/KeyValue.h>

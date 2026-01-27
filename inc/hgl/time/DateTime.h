@@ -83,7 +83,7 @@ namespace hgl
 
         bool operator==(const TimeOfDay &other) const
         {
-            return hours == other.hours && minutes == other.minutes && 
+            return hours == other.hours && minutes == other.minutes &&
                    seconds == other.seconds && micro_seconds == other.micro_seconds;
         }
 
@@ -256,7 +256,7 @@ namespace hgl
      * @param format 日期时间格式选项
      * @return 转换后的字符串，如: "2024-01-15 14:30:45"
      */
-    AnsiString DateTimeToString(const CalendarDate &date, const TimeOfDay &time, 
+    AnsiString DateTimeToString(const CalendarDate &date, const TimeOfDay &time,
                                  const DateTimeFormat &format = DateTimeFormat());
 
     /**

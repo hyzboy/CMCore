@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/type/ObjectManager.h>
 
@@ -89,7 +89,7 @@ public:
     }
 };
 
-#define HGL_RUNTIME_ASSET_CLASS(RA_ID_TYPE,_RA_CLASS)   
+#define HGL_RUNTIME_ASSET_CLASS(RA_ID_TYPE,_RA_CLASS)
 
 #define HGL_RUNTIME_ASSET_DECLARATION(RA_ID_TYPE,RA_CLASS)  RuntimeAssetManager<RA_ID_TYPE,RA_CLASS> RuntimeAsset<RA_ID_TYPE,RA_CLASS>::RAM;
 
@@ -97,20 +97,20 @@ public:
  * Example:
  *
  * MyRuntimeAsset.h
- * 
+ *
  *      using MyAssetID=uint;
- * 
+ *
  *      struct MyRuntimeAsset:public RuntimeAsset<MyAssetID,MyRuntimeAsset>
  *      {
  *      public:
- * 
+ *
  *          using RuntimeAsset<MyAssetID,MyRuntimeAsset>::RuntimeAsset;
  *      };
- * 
+ *
  * MyRuntimeAsset.cpp
- * 
+ *
  *      #include"MyRuntimeAsset.h"
- * 
+ *
  *      HGL_RUNTIME_ASSET_DECLARATION(MyAssetID,MyRuntimeAsset);
- * 
+ *
  */

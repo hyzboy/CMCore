@@ -100,7 +100,7 @@ namespace hgl
                 if(input_stream)    //有input_stream证明是从流加载的，需要删除临时缓冲区
                 {
                     SAFE_CLEAR_ARRAY(buffer);
-                }                
+                }
             }
 
             void SetDefaultBOM(const ByteOrderMask &bo){default_bom=bo;}                            ///<设置缺省BOM头}

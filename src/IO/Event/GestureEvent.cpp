@@ -1,4 +1,4 @@
-#include<hgl/io/event/GestureEvent.h>
+﻿#include<hgl/io/event/GestureEvent.h>
 
 namespace hgl::io
 {

@@ -44,7 +44,7 @@ namespace hgl::io
     };
 
     constexpr size_t MouseEventDataBytes=sizeof(MouseEventData);
-        
+
     class MouseEvent:public EventDispatcher
     {
         MouseEventData *med=nullptr;

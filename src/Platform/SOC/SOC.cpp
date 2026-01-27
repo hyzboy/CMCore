@@ -32,7 +32,7 @@ namespace
         {
             hgl::strcpy(soc.model,sizeof(soc.model),p);
         }
-        
+
         return(true);
     }
 
@@ -67,7 +67,7 @@ namespace
         if(!p)
             return(false);
 
-        soc.vendor=SOCVendor::Unisoc;       
+        soc.vendor=SOCVendor::Unisoc;
 
         if(p==soc_name)     //就在最前面，"Unisoc ...."结构
         {
@@ -77,7 +77,7 @@ namespace
         {
             hgl::strcpy(soc.model,sizeof(soc.model),soc_name,p-soc_name-1);
         }
-        
+
         return(true);
     }
 

@@ -13,7 +13,7 @@ namespace hgl::logger
     class Logger
     {
     protected:
-        
+
         LogLevel min_level;                                                                     ///<最小输出级别
         Logger *parent;                                                                         ///<上级输出器
 

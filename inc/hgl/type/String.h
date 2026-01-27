@@ -54,11 +54,11 @@ namespace hgl
         String(std::initializer_list<T> il) { if (il.size()) buffer.assign(il.begin(), il.end()); }
         /// @brief CN: 禁止直接用单个数值类型构造字符串，防止误用 EN: Disable construction from single numeric types to prevent misuse
         String(T) = delete;
-        String(int) = delete; 
-        String(unsigned int) = delete; 
-        String(int64) = delete; 
-        String(uint64) = delete; 
-        String(float) = delete; 
+        String(int) = delete;
+        String(unsigned int) = delete;
+        String(int64) = delete;
+        String(uint64) = delete;
+        String(float) = delete;
         String(double) = delete;
         /** @brief CN: 移动构造（显式标记为 explicit） EN: Move constructor (explicit) */
         explicit String(SelfClass &&rhs) noexcept { buffer = std::move(rhs.buffer); }

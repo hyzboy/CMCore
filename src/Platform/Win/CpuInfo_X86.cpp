@@ -1,4 +1,4 @@
-#if defined(_M_AMD64) || defined(_M_X64) || defined(_M_IX86)
+﻿#if defined(_M_AMD64) || defined(_M_X64) || defined(_M_IX86)
 
 #include<hgl/platform/CpuInfo.h>
 #include<hgl/type/StrChar.h>

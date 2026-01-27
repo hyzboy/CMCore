@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file UnorderedSet.h
  * @brief CN:高性能无序集合模板（基于连续内存优化）\nEN:High-performance unordered set template (optimized with contiguous memory)
  */
@@ -15,7 +15,7 @@ namespace hgl
     /**
      * @brief CN:针对类型优化的哈希函数\nEN:Type-optimized hash function
      * @tparam T CN:数据类型\nEN:Data type
-     * 
+     *
      * CN:自动选择最优哈希策略：\nEN:Automatically selects optimal hash strategy:
      * - CN:整数/枚举：身份哈希（零开销）\nEN:Integer/enum: identity hash (zero overhead)
      * - CN:指针：直接使用地址\nEN:Pointer: use address directly
@@ -50,7 +50,7 @@ namespace hgl
      * @brief CN:紧凑型无序值集合（使用连续内存存储）\nEN:Compact unordered value set (uses contiguous memory)
      * @tparam T CN:数据类型，必须支持 operator== 用于比较，推荐平凡可复制类型\nEN:Data type, must support operator==, trivially copyable types recommended
      * @tparam MAX_COLLISION CN:最大哈希冲突数\nEN:Maximum hash collision count
-     * 
+     *
      * CN:相比传统实现的优势：\nEN:Advantages over traditional implementation:
      * - CN:使用连续内存存储，缓存友好\nEN:Uses contiguous memory, cache-friendly
      * - CN:无需 new/delete，零内存碎片\nEN:No new/delete, zero memory fragmentation
@@ -367,10 +367,10 @@ namespace hgl
                 return false;
 
             int id = active_ids[index];
-            
+
             // 注意：不从 hash_map 中删除（避免重建哈希表的开销）
             // 查找时会通过 IsActive() 检查 ID 是否有效
-            
+
             // 释放ID（移到闲置池）
             return data_manager.Release(&id, 1) > 0;
         }
@@ -489,7 +489,7 @@ namespace hgl
         int Intersect(const ThisClass& other)
         {
             int removed = 0;
-            
+
             ValueArray<T> to_remove;
             Enum([&](const T& value) {
                 if (!other.Contains(value))

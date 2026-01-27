@@ -1,4 +1,4 @@
-#include <hgl/filesystem/CollectFiles.h>
+﻿#include <hgl/filesystem/CollectFiles.h>
 #include <hgl/filesystem/EnumFile.h>
 #include <hgl/filesystem/Filename.h>
 #include <hgl/log/Log.h>

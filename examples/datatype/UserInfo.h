@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<string.h>
 #include<iostream>
@@ -14,7 +14,7 @@ public:
     bool operator == (const UserInfo &ui)const
     {
         return (strcmp(name,ui.name)==0)&&(sex==ui.sex)&&(age==ui.age);
-    }    
+    }
 };
 
 static UserInfo user_info_array[]=

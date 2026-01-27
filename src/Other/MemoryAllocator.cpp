@@ -64,7 +64,7 @@ namespace hgl
         data_size=size;
         return(true);
     }
-    
+
     MemoryAllocator::~MemoryAllocator()
     {
         Free();

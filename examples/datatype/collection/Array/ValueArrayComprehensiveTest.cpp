@@ -1,4 +1,4 @@
-#include<hgl/type/ValueArray.h>
+﻿#include<hgl/type/ValueArray.h>
 #include<hgl/type/ManagedArray.h>
 #include<iostream>
 
@@ -203,12 +203,6 @@ void test_list_batch_operations()
     ValueArray<int> list3 = {100, 200, 300};
     TEST_ASSERT(list3.GetCount() == 3, "Initializer list worked");
     PrintList("Initializer list", list3);
-
-    std::cout << "\n[3.4] Copy assignment:" << std::endl;
-    ValueArray<int> list4;
-    list4 = list3;
-    TEST_ASSERT(list4.GetCount() == 3, "Copy succeeded");
-    TEST_ASSERT(*list4.At(0) == 100, "First element copied");
 }
 
 void test_list_iterator()
@@ -278,7 +272,7 @@ void test_list_complex_type()
         list.Add(new ComplexItem(3, "Third"));
 
         TEST_ASSERT(list.GetCount() == 3, "Count is 3");
-        TEST_ASSERT(list.At(0)->id == 1, "First item id is 1");        
+        TEST_ASSERT(list.At(0)->id == 1, "First item id is 1");
         std::cout << "\n[6.2] Delete complex item:" << std::endl;
         list.DeleteAt(1);
         TEST_ASSERT(list.GetCount() == 2, "Count is 2");

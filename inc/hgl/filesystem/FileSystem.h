@@ -50,7 +50,7 @@ namespace hgl
         bool GetLocalAppdataPath(OSString &);                                                           ///<取得当前用户应用程序数据存放路径
 
         bool GetOSLibraryPath(OSString &);                                                             ///<取得操作系统共用动态库路径
-        
+
         /**
          * @param filename 要查找的文件名称
          * @param user_data 用户自定义数据
@@ -64,13 +64,13 @@ namespace hgl
 
         /**
         * 文件名长度限制
-        * 
+        *
         *   OS              | FILENAME | FILENAME+PATHNAME |
         * ------------------+----------+-------------------+
         * Windows               256         260
         * Windows 10(>1607)     32767       32767               // max length must get from lpMaximumComponentLength of GetVolumeInformation
         *                                                       // https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=powershell
-        * 
+        *
         * MacOS/Solaris/AIX     255         1024
         * Linux                 255         1024/4096
         */

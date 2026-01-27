@@ -1,4 +1,4 @@
-#include<hgl/type/Stack.h>
+﻿#include<hgl/type/Stack.h>
 #include<iostream>
 #include<cassert>
 

@@ -392,7 +392,7 @@ namespace hgl
     bool isLatin(const u32char ch)
     {
         if(ch>0xFFFF)return(false);
-        
+
         CHECK_UNICODE_BLOCKS(basic_latin)
         CHECK_UNICODE_BLOCKS(latin_1_supplement)
         CHECK_UNICODE_BLOCKS(latin_extended_a)

@@ -31,7 +31,7 @@ void out_data_chain(BlockAllocator *dc)
 int os_main(int,os_char **)
 {
     BlockAllocator dc;
-    
+
     dc.Init(100);         ///数据链管理器(预定100个块)
 
     cout<<"BlockAllocator Test"<<endl;

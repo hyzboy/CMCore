@@ -21,7 +21,7 @@ namespace hgl
 
     public: //属性
 
-        static_assert(std::is_trivially_copyable_v<T>, 
+        static_assert(std::is_trivially_copyable_v<T>,
                       "ValueArray<T> requires trivially copyable types (int, float, POD structs, etc). "
                       "For non-trivial types (std::string, custom classes with dynamic memory), use ManagedArray<T> instead.");
 
@@ -48,7 +48,7 @@ namespace hgl
             operator const  ValueBuffer<T> & ()const  {return data_array;}
                     T &     operator[](int index)             {return data_array[index];}
             const   T &     operator[](int index)const        {return data_array[index];}
- 
+
     public: //方法
 
         ValueArray()=default;                                                                             ///<本类构造函数
@@ -196,8 +196,12 @@ namespace hgl
             data_array.Move(new_pos,old_pos,move_count);
         }
 
-        virtual void operator = (const ValueBuffer<T> &da){data_array=da;}                            ///<操作符重载复制一个列表
-        virtual void operator = (const std::initializer_list<T> &l){data_array=l;}                  ///<操作符重载复制一个列表
+        virtual ValueArray<T>& operator = (const ValueBuffer<T> &da)
+        {
+            data_array.CopyFrom(da);  // ✅ 使用显式的深拷贝方法
+            return *this;
+        }
+        virtual ValueArray<T>& operator = (const std::initializer_list<T> &l){data_array=l;return *this;}                  ///<操作符重载复制一个列表
 
         virtual void operator += (T &obj){Add(obj);}                                                ///<操作符重载添加一个数据
         virtual void operator << (T &obj){Add(obj);}                                                ///<操作符重载添加一个数据

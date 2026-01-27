@@ -238,7 +238,7 @@ namespace hgl
 
         return LoadStringFromText(make_string,data,size,cs);
     }
-    
+
     int LoadStringFromTextFile(U8String &str,const OSString &filename,const CharSet &cs)
     {
         MakeU8String make_string(&str);

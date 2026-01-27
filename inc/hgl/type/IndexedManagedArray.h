@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <hgl/type/PtrArray.h>
 #include <hgl/type/ValueBuffer.h>

@@ -124,7 +124,7 @@ namespace hgl
             return(true);
         }
     };//template<typename T> class SeriesPool
-    
+
     using SeriesSize=SeriesPool<size_t>;
 
     using SeriesInt =SeriesPool<int>;

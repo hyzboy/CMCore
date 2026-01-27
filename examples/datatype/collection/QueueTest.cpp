@@ -98,7 +98,7 @@ void TestQueuePeek()
     cout<<"Queue Peek Test"<<endl<<endl;
 
     Queue<int> q;
-    
+
     // 空队列 Peek
     int val = -1;
     if(!q.Peek(val))
@@ -271,7 +271,7 @@ void TestObjectQueue()
     }
 
     cout<<"Queue Count: "<<tab.GetCount()<<endl;
-    
+
     // 手动清理剩余对象
     while(tab.GetCount() > 0)
     {
@@ -319,7 +319,7 @@ int os_main(int,os_char **)
     TestQueueStruct();
 
     // ========== 扩展功能测试 ==========
-    
+
     TestQueuePeek();
     TestQueueCircularBuffer();
     TestQueueCapacity();

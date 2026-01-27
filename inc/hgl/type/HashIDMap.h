@@ -1,11 +1,11 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/type/ValueKVMap.h>
 
 namespace hgl
 {
     // ==================== 通用哈希函数（FNV-1a） ====================
-    
+
     // 计算字符串的哈希值（FNV-1a 算法）
     template<typename T>
     inline uint64 ComputeFNV1aHash(const T *str, int length)

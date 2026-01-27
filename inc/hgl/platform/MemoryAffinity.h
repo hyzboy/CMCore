@@ -34,7 +34,7 @@ namespace hgl
     {
         void* ptr = NumaAlloc(sizeof(T), numa_node);
         if (!ptr) return nullptr;
-        
+
         return new (ptr) T(static_cast<Args&&>(args)...);
     }
 
@@ -47,7 +47,7 @@ namespace hgl
     void NumaDelete(T* ptr)
     {
         if (!ptr) return;
-        
+
         ptr->~T();
         NumaFree(ptr, sizeof(T));
     }
@@ -63,13 +63,13 @@ namespace hgl
     T* NumaNewArray(size_t count, int numa_node = -1)
     {
         if (count == 0) return nullptr;
-        
+
         size_t total_size = sizeof(T) * count;
         void* ptr = NumaAlloc(total_size, numa_node);
         if (!ptr) return nullptr;
-        
+
         T* array = static_cast<T*>(ptr);
-        
+
         // 对于非平凡类型，需要调用构造函数
         if (!std::is_trivially_constructible<T>::value)
         {
@@ -78,7 +78,7 @@ namespace hgl
                 new (&array[i]) T();
             }
         }
-        
+
         return array;
     }
 
@@ -92,7 +92,7 @@ namespace hgl
     void NumaDeleteArray(T* ptr, size_t count)
     {
         if (!ptr || count == 0) return;
-        
+
         // 对于非平凡类型，需要调用析构函数
         if (!std::is_trivially_destructible<T>::value)
         {
@@ -101,7 +101,7 @@ namespace hgl
                 ptr[i].~T();
             }
         }
-        
+
         NumaFree(ptr, sizeof(T) * count);
     }
 

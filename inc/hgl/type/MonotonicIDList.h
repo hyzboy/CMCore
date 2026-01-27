@@ -335,7 +335,7 @@ namespace hgl
             if(free_location.GetCount()>=total)
             {
                 Clear();
-                return original_total; 
+                return original_total;
             }
 
             int32 moved_count=0;

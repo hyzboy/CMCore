@@ -57,7 +57,7 @@ namespace hgl
         static const char* week_names_en[] = {
             "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
         };
-        
+
         // 星期中文名称
         static const char* week_names_cn[] = {
             "日", "一", "二", "三", "四", "五", "六"
@@ -144,19 +144,19 @@ namespace hgl
             "子时", "丑时", "寅时", "卯时", "辰时", "巳时",
             "午时", "未时", "申时", "酉时", "戌时", "亥时"
         };
-        
+
         // 刻的名称 (每个时辰8刻，每刻15分钟)
         static const char* ke_names[] = {
             "初刻", "一刻", "二刻", "三刻", "四刻", "五刻", "六刻", "七刻"
         };
-        
+
         // 计算时辰索引 (0-11)
         int shichen_index;
         if (hours == 23 || hours == 0)
             shichen_index = 0;  // 子时 (23:00-00:59)
         else
             shichen_index = (hours + 1) / 2;  // 其他时辰
-        
+
         // 计算刻 (0-7) - 计算从时辰开始的分钟数，然后除以15
         int minutes_in_shichen;
         if (shichen_index == 0) {  // 子时特殊处理: 23:00-00:59
@@ -170,7 +170,7 @@ namespace hgl
             int shichen_start_hour = (shichen_index * 2) - 1;
             minutes_in_shichen = (hours - shichen_start_hour) * 60 + minutes;
         }
-        
+
         int ke_index = minutes_in_shichen / 15;  // 每15分钟一刻
         if (ke_index > 7) ke_index = 7;          // 最多7刻（初刻到七刻）
 
@@ -195,7 +195,7 @@ namespace hgl
             result.Replace(pos, strlen("时辰"), shichen_name);  // "时辰"是6字节UTF-8
             pos += name_len;
         }
-        
+
         // 替换 KE (刻数字 0-7)
         pos = 0;
         while ((pos = result.FindString("KE", pos)) != -1)
@@ -270,7 +270,7 @@ namespace hgl
         return result;
     }
 
-    AnsiString DateTimeToString(const CalendarDate &date, const TimeOfDay &time, 
+    AnsiString DateTimeToString(const CalendarDate &date, const TimeOfDay &time,
                                  const DateTimeFormat &format)
     {
         AnsiString dateStr = DateToString(date, format.dateFormat);

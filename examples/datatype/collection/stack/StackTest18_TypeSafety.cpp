@@ -1,4 +1,4 @@
-#include<hgl/type/Stack.h>
+﻿#include<hgl/type/Stack.h>
 #include<iostream>
 #include<cassert>
 #include<string>
@@ -23,7 +23,7 @@ struct TestTriviallyCopyable
 {
     int value;
     float data;
-    
+
     // 默认构造/拷贝/析构，所以是 trivially copyable
 };
 
@@ -32,11 +32,11 @@ class NonTrivialClass
 {
     std::string name;  // std::string 不是 trivially copyable
     int value;
-    
+
 public:
     NonTrivialClass(const char* n = "default") : name(n), value(0) {}
     ~NonTrivialClass() {}  // 非平凡析构函数
-    
+
     const std::string& GetName() const { return name; }
 };
 
@@ -44,15 +44,15 @@ public:
 class CustomCopyClass
 {
     int* data;
-    
+
 public:
     CustomCopyClass() : data(new int(0)) {}
-    
+
     CustomCopyClass(const CustomCopyClass& other)
         : data(new int(*other.data)) {}
-    
+
     ~CustomCopyClass() { delete data; }
-    
+
     int GetValue() const { return *data; }
 };
 
@@ -64,26 +64,26 @@ int os_main(int, os_char**)
 
     cout << "\n[18.1] POD types (should work):" << endl;
     Stack<SimplePOD> pod_stack;
-    
+
     SimplePOD pod1 = {10, 20, 30.5};
     pod_stack.Push(pod1);
-    
+
     SimplePOD pod2;
     assert(pod_stack.Pop(pod2));
     assert(pod2.x == 10 && pod2.y == 20 && pod2.z == 30.5);
-    
+
     cout << "  ✓ POD struct works with Stack<T>" << endl;
 
     cout << "\n[18.2] Trivially copyable types (should work):" << endl;
     Stack<TestTriviallyCopyable> tc_stack;
-    
+
     TestTriviallyCopyable tc1 = {100, 3.14f};
     tc_stack.Push(tc1);
-    
+
     TestTriviallyCopyable tc2;
     assert(tc_stack.Pop(tc2));
     assert(tc2.value == 100);
-    
+
     cout << "  ✓ Trivially copyable struct works with Stack<T>" << endl;
 
     cout << "\n[18.3] Primitive types (should work):" << endl;
@@ -92,25 +92,25 @@ int os_main(int, os_char**)
     Stack<double> double_stack;
     Stack<char> char_stack;
     Stack<bool> bool_stack;
-    
+
     int_stack.Push(42);
     float_stack.Push(3.14f);
     double_stack.Push(2.718);
     char_stack.Push('A');
     bool_stack.Push(true);
-    
+
     cout << "  ✓ All primitive types work with Stack<T>" << endl;
 
     cout << "\n[18.4] Pointer types (manual management):" << endl;
     Stack<int*> ptr_stack;
     ptr_stack.Push(new int(100));
     ptr_stack.Push(new int(200));
-    
+
     int* val;
     assert(ptr_stack.Pop(val));
     assert(*val == 200);
     delete val;
-    
+
     // 手动清理剩余指针
     while (ptr_stack.GetCount() > 0)
     {
@@ -118,22 +118,22 @@ int os_main(int, os_char**)
         ptr_stack.Pop(p);
         delete p;
     }
-    
+
     cout << "  ✓ Stack<T*> requires manual pointer management" << endl;
     cout << "  ⚠️  Note: Caller must manage object lifetime explicitly" << endl;
 
     cout << "\n[18.5] Type traits verification:" << endl;
-    cout << "  SimplePOD is trivially copyable: " 
+    cout << "  SimplePOD is trivially copyable: "
          << (std::is_trivially_copyable_v<SimplePOD> ? "YES ✓" : "NO ✗") << endl;
-    cout << "  TestTriviallyCopyable is trivially copyable: " 
+    cout << "  TestTriviallyCopyable is trivially copyable: "
          << (std::is_trivially_copyable_v<TestTriviallyCopyable> ? "YES ✓" : "NO ✗") << endl;
-    cout << "  int is trivially copyable: " 
+    cout << "  int is trivially copyable: "
          << (std::is_trivially_copyable_v<int> ? "YES ✓" : "NO ✗") << endl;
-    cout << "  NonTrivialClass is trivially copyable: " 
+    cout << "  NonTrivialClass is trivially copyable: "
          << (std::is_trivially_copyable_v<NonTrivialClass> ? "YES ✗" : "NO ✓") << endl;
-    cout << "  CustomCopyClass is trivially copyable: " 
+    cout << "  CustomCopyClass is trivially copyable: "
          << (std::is_trivially_copyable_v<CustomCopyClass> ? "YES ✗" : "NO ✓") << endl;
-    cout << "  std::string is trivially copyable: " 
+    cout << "  std::string is trivially copyable: "
          << (std::is_trivially_copyable_v<std::string> ? "YES ✗" : "NO ✓") << endl;
 
     cout << "\n[18.6] Compile-time enforcement:" << endl;
@@ -154,44 +154,44 @@ int os_main(int, os_char**)
     cout << "\n[18.7] Stack<T*> for non-trivial types:" << endl;
     Stack<NonTrivialClass*> obj_nt_stack;
     Stack<CustomCopyClass*> obj_cc_stack;
-    
+
     obj_nt_stack.Push(new NonTrivialClass("test"));
     obj_cc_stack.Push(new CustomCopyClass());
-    
+
     NonTrivialClass* nt;
     assert(obj_nt_stack.Pop(nt));
     assert(nt->GetName() == "test");
     delete nt;
-    
+
     CustomCopyClass* cc;
     assert(obj_cc_stack.Pop(cc));
     delete cc;
-    
+
     cout << "  ✓ Stack<T*> correctly handles pointers to non-trivial types" << endl;
 
     cout << "\n[18.8] Array types (special case):" << endl;
     Stack<int[5]> array_stack;  // 数组是 trivially copyable
-    
+
     int arr[5] = {1, 2, 3, 4, 5};
     array_stack.Push(arr);
-    
+
     int result[5];
     assert(array_stack.Pop(result));
     assert(result[0] == 1 && result[4] == 5);
-    
+
     cout << "  ✓ Fixed-size arrays work with Stack<T>" << endl;
 
     cout << "\n[18.9] Enum types (should work):" << endl;
     enum class Color { Red, Green, Blue };
     Stack<Color> enum_stack;
-    
+
     enum_stack.Push(Color::Red);
     enum_stack.Push(Color::Blue);
-    
+
     Color c;
     assert(enum_stack.Pop(c));
     assert(c == Color::Blue);
-    
+
     cout << "  ✓ Enum types work with Stack<T>" << endl;
 
     cout << "\n[18.10] Design recommendations:" << endl;
@@ -213,6 +213,6 @@ int os_main(int, os_char**)
 
     cout << "\n✅ TEST 18 PASSED - Type safety mechanisms verified!" << endl;
     cout << "   static_assert ensures only trivially copyable types are used" << endl;
-    
+
     return 0;
 }

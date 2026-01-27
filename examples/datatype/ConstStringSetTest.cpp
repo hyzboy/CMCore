@@ -1,4 +1,4 @@
-#include<hgl/type/ConstStringSet.h>
+﻿#include<hgl/type/ConstStringSet.h>
 #include<iostream>
 #include<cassert>
 #include<vector>
@@ -23,18 +23,18 @@ using namespace std;
 bool TestBasicOperations()
 {
     std::cout << "\n========== Test 1: Basic Operations ==========" << std::endl;
-    
+
     ConstAnsiStringSet css;
-    
+
     // 测试空集合
     TEST_ASSERT(css.IsEmpty(), "New set should be empty");
     TEST_ASSERT(css.GetCount() == 0, "Empty set count should be 0");
     TEST_PASS("Empty set initialization");
-    
+
     // 添加第一个字符串
     int id1 = css.Add("hello", 5);
     TEST_ASSERT(id1 == 0, "First string ID should be 0");
-    
+
     const ConstAnsiStringView* view1 = css.GetStringView(id1);
     TEST_ASSERT(view1 != nullptr, "StringView should not be null");
     TEST_ASSERT(view1->id == 0, "StringView ID should be 0");
@@ -42,13 +42,13 @@ bool TestBasicOperations()
     TEST_ASSERT(!css.IsEmpty(), "Set should not be empty after adding");
     TEST_ASSERT(css.GetCount() == 1, "Set count should be 1");
     TEST_PASS("Add first string");
-    
+
     // 添加第二个字符串
     int id2 = css.Add("world", 5);
     TEST_ASSERT(id2 == 1, "Second string ID should be 1");
     TEST_ASSERT(css.GetCount() == 2, "Set count should be 2");
     TEST_PASS("Add second string");
-    
+
     // 验证字符串内容
     const char* str1 = css.GetString(0);
     const char* str2 = css.GetString(1);
@@ -57,7 +57,7 @@ bool TestBasicOperations()
     TEST_ASSERT(strcmp(str1, "hello") == 0, "String 0 should be 'hello'");
     TEST_ASSERT(strcmp(str2, "world") == 0, "String 1 should be 'world'");
     TEST_PASS("Retrieve strings by ID");
-    
+
     return true;
 }
 
@@ -65,24 +65,24 @@ bool TestBasicOperations()
 bool TestDeduplication()
 {
     std::cout << "\n========== Test 2: Deduplication ==========" << std::endl;
-    
+
     ConstAnsiStringSet css;
-    
+
     // 添加原始字符串
     int id1 = css.Add("duplicate", 9);
     TEST_ASSERT(id1 == 0, "First add should return ID 0");
-    
+
     // 重复添加相同字符串
     int id2 = css.Add("duplicate", 9);
     TEST_ASSERT(id2 == 0, "Duplicate string should return same ID");
     TEST_ASSERT(css.GetCount() == 1, "Count should remain 1 for duplicate");
     TEST_PASS("Duplicate detection - exact match");
-    
+
     // 添加不同字符串
     int id3 = css.Add("different", 9);
     TEST_ASSERT(id3 == 1, "Different string should get new ID");
     TEST_ASSERT(css.GetCount() == 2, "Count should be 2");
-    
+
     // 再次重复第一个
     int id4 = css.Add("duplicate", 9);
     if(id4 != 0) {
@@ -95,13 +95,13 @@ bool TestDeduplication()
     TEST_ASSERT(id4 == 0, "Should still return original ID");
     TEST_ASSERT(css.GetCount() == 2, "Count should remain 2");
     TEST_PASS("Multiple duplicate additions");
-    
+
     // 测试长度不同但前缀相同
     int id5 = css.Add("duplicates", 10);
     TEST_ASSERT(id5 == 2, "Longer string should get different ID");
     TEST_ASSERT(css.GetCount() == 3, "Count should be 3");
     TEST_PASS("Different length strings with same prefix");
-    
+
     return true;
 }
 
@@ -109,46 +109,46 @@ bool TestDeduplication()
 bool TestEdgeCases()
 {
     std::cout << "\n========== Test 3: Edge Cases ==========" << std::endl;
-    
+
     ConstAnsiStringSet css;
-    
+
     // 测试空指针
     int id_null = css.Add(nullptr, 5);
     TEST_ASSERT(id_null == -1, "Null pointer should return -1");
     TEST_PASS("Null pointer handling");
-    
+
     // 测试零长度
     int id_zero = css.Add("test", 0);
     TEST_ASSERT(id_zero == -1, "Zero length should return -1");
     TEST_PASS("Zero length handling");
-    
+
     // 测试负长度
     int id_neg = css.Add("test", -1);
     TEST_ASSERT(id_neg == -1, "Negative length should return -1");
     TEST_PASS("Negative length handling");
-    
+
     // 测试单字符
     int id_single = css.Add("a", 1);
     TEST_ASSERT(id_single == 0, "Single character should work");
     TEST_ASSERT(strcmp(css.GetString(0), "a") == 0, "Single char should be 'a'");
     TEST_PASS("Single character string");
-    
+
     // 测试长字符串
     char long_str[1000];
     for(int i = 0; i < 999; i++)
         long_str[i] = 'x';
     long_str[999] = '\0';
-    
+
     int id_long = css.Add(long_str, 999);
     TEST_ASSERT(id_long == 1, "Long string should work");
     TEST_ASSERT(strlen(css.GetString(1)) == 999, "Long string length should be 999");
     TEST_PASS("Long string (999 chars)");
-    
+
     // 测试特殊字符
     int id_special = css.Add("hello\nworld\t!", 13);
     TEST_ASSERT(id_special == 2, "Special characters should work");
     TEST_PASS("Special characters");
-    
+
     return true;
 }
 
@@ -156,14 +156,14 @@ bool TestEdgeCases()
 bool TestQueryFunctions()
 {
     std::cout << "\n========== Test 4: Query Functions ==========" << std::endl;
-    
+
     ConstAnsiStringSet css;
-    
+
     // 准备测试数据
     css.Add("apple", 5);
     css.Add("banana", 6);
     css.Add("cherry", 6);
-    
+
     // 测试 Contains
     TEST_ASSERT(css.Contains("apple", 5), "Should contain 'apple'");
     TEST_ASSERT(css.Contains("banana", 6), "Should contain 'banana'");
@@ -171,14 +171,14 @@ bool TestQueryFunctions()
     TEST_ASSERT(!css.Contains("orange", 6), "Should not contain 'orange'");
     TEST_ASSERT(!css.Contains("appl", 4), "Should not contain partial 'appl'");
     TEST_PASS("Contains() function");
-    
+
     // 测试 GetID
     TEST_ASSERT(css.GetID("apple", 5) == 0, "ID of 'apple' should be 0");
     TEST_ASSERT(css.GetID("banana", 6) == 1, "ID of 'banana' should be 1");
     TEST_ASSERT(css.GetID("cherry", 6) == 2, "ID of 'cherry' should be 2");
     TEST_ASSERT(css.GetID("orange", 6) == -1, "ID of non-existent should be -1");
     TEST_PASS("GetID() function");
-    
+
     // 测试 GetString
     TEST_ASSERT(strcmp(css.GetString(0), "apple") == 0, "String 0 should be 'apple'");
     TEST_ASSERT(strcmp(css.GetString(1), "banana") == 0, "String 1 should be 'banana'");
@@ -186,24 +186,24 @@ bool TestQueryFunctions()
     TEST_ASSERT(css.GetString(3) == nullptr, "Invalid ID should return nullptr");
     TEST_ASSERT(css.GetString(-1) == nullptr, "Negative ID should return nullptr");
     TEST_PASS("GetString() function");
-    
+
     // 测试 GetStringView
     const ConstAnsiStringView* view0 = css.GetStringView(0);
     TEST_ASSERT(view0 != nullptr, "GetStringView(0) should not be null");
     TEST_ASSERT(view0->id == 0, "View ID should be 0");
     TEST_ASSERT(view0->length == 5, "View length should be 5");
     TEST_ASSERT(strcmp(view0->GetString(), "apple") == 0, "View string should be 'apple'");
-    
+
     const ConstAnsiStringView* view_invalid = css.GetStringView(999);
     TEST_ASSERT(view_invalid == nullptr, "Invalid ID should return nullptr");
     TEST_PASS("GetStringView() function");
-    
+
     // 测试 operator[]
     const ConstAnsiStringView* view_op = css[1];
     TEST_ASSERT(view_op != nullptr, "operator[1] should not be null");
     TEST_ASSERT(strcmp(view_op->GetString(), "banana") == 0, "operator[1] should return 'banana'");
     TEST_PASS("operator[] function");
-    
+
     return true;
 }
 
@@ -211,16 +211,16 @@ bool TestQueryFunctions()
 bool TestIterators()
 {
     std::cout << "\n========== Test 5: Iterators ==========" << std::endl;
-    
+
     ConstAnsiStringSet css;
-    
+
     // 添加测试数据
     std::vector<std::string> test_strings = {"first", "second", "third", "fourth"};
     for(const auto& str : test_strings)
     {
         css.Add(str.c_str(), str.length());
     }
-    
+
     // 测试迭代器遍历
     int count = 0;
     for(auto it = css.begin(); it != css.end(); ++it)
@@ -233,7 +233,7 @@ bool TestIterators()
     }
     TEST_ASSERT(count == 4, "Should iterate over all 4 strings");
     TEST_PASS("Iterator traversal");
-    
+
     // 验证迭代器内容
     auto it = css.begin();
     TEST_ASSERT(strcmp(it->GetString(), "first") == 0, "First item should be 'first'");
@@ -244,7 +244,7 @@ bool TestIterators()
     ++it;
     TEST_ASSERT(strcmp(it->GetString(), "fourth") == 0, "Fourth item should be 'fourth'");
     TEST_PASS("Iterator content verification");
-    
+
     // 范围 for 循环测试
     count = 0;
     for(const auto& view : css)
@@ -254,7 +254,7 @@ bool TestIterators()
     }
     TEST_ASSERT(count == 4, "Range-for should iterate all items");
     TEST_PASS("Range-based for loop");
-    
+
     return true;
 }
 
@@ -262,31 +262,31 @@ bool TestIterators()
 bool TestClearAndState()
 {
     std::cout << "\n========== Test 6: Clear and State ==========" << std::endl;
-    
+
     ConstAnsiStringSet css;
-    
+
     // 添加数据
     css.Add("test1", 5);
     css.Add("test2", 5);
     css.Add("test3", 5);
-    
+
     TEST_ASSERT(css.GetCount() == 3, "Should have 3 strings");
     TEST_ASSERT(!css.IsEmpty(), "Should not be empty");
-    
+
     // 清空
     css.Clear();
     TEST_ASSERT(css.GetCount() == 0, "Count should be 0 after Clear");
     TEST_ASSERT(css.IsEmpty(), "Should be empty after Clear");
     TEST_ASSERT(css.GetTotalLength() == 0, "Total length should be 0");
     TEST_PASS("Clear() function");
-    
+
     // 清空后重新添加
     int id = css.Add("new_string", 10);
     TEST_ASSERT(id == 0, "First string after clear should get ID 0");
     TEST_ASSERT(css.GetCount() == 1, "Count should be 1");
     TEST_ASSERT(strcmp(css.GetString(0), "new_string") == 0, "Should get correct string");
     TEST_PASS("Re-add after clear");
-    
+
     return true;
 }
 
@@ -294,24 +294,24 @@ bool TestClearAndState()
 bool TestStatistics()
 {
     std::cout << "\n========== Test 7: Statistics ==========" << std::endl;
-    
+
     ConstAnsiStringSet css;
-    
+
     css.Add("a", 1);      // length: 1
     css.Add("ab", 2);     // length: 2
     css.Add("abc", 3);    // length: 3
-    
+
     TEST_ASSERT(css.GetCount() == 3, "Count should be 3");
-    
+
     // 总长度 = 1 + 1 + 2 + 1 + 3 + 1 = 9 (包括每个字符串末尾的 \0)
     int total_length = css.GetTotalLength();
     TEST_ASSERT(total_length == 9, "Total length should be 9");
     TEST_PASS("GetTotalLength()");
-    
+
     int total_bytes = css.GetTotalBytes();
     TEST_ASSERT(total_bytes == 9 * sizeof(char), "Total bytes calculation");
     TEST_PASS("GetTotalBytes()");
-    
+
     return true;
 }
 
@@ -319,11 +319,11 @@ bool TestStatistics()
 bool TestPerformance()
 {
     std::cout << "\n========== Test 8: Performance Test ==========" << std::endl;
-    
+
     ConstAnsiStringSet css;
-    
+
     const int NUM_STRINGS = 10000;
-    
+
     // 生成唯一字符串并添加
     std::cout << "Adding " << NUM_STRINGS << " unique strings..." << std::endl;
     for(int i = 0; i < NUM_STRINGS; i++)
@@ -333,10 +333,10 @@ bool TestPerformance()
         int id = css.Add(buffer, len);
         TEST_ASSERT(id == i, "ID should match index");
     }
-    
+
     TEST_ASSERT(css.GetCount() == NUM_STRINGS, "Should have all strings");
     TEST_PASS("Large scale addition");
-    
+
     // 测试查询性能
     std::cout << "Testing query performance..." << std::endl;
     bool all_found = true;
@@ -344,13 +344,13 @@ bool TestPerformance()
     {
         char buffer[32];
         int len = snprintf(buffer, sizeof(buffer), "string_%d", i);
-        
+
         if(!css.Contains(buffer, len))
         {
             all_found = false;
             break;
         }
-        
+
         int id = css.GetID(buffer, len);
         if(id != i)
         {
@@ -360,7 +360,7 @@ bool TestPerformance()
     }
     TEST_ASSERT(all_found, "All strings should be found");
     TEST_PASS("Large scale query");
-    
+
     // 测试去重性能
     std::cout << "Testing deduplication performance..." << std::endl;
     for(int i = 0; i < 1000; i++)
@@ -371,7 +371,7 @@ bool TestPerformance()
     }
     TEST_ASSERT(css.GetCount() == NUM_STRINGS, "Count should not increase for duplicates");
     TEST_PASS("Large scale deduplication");
-    
+
     return true;
 }
 
@@ -379,36 +379,36 @@ bool TestPerformance()
 bool TestUTF8()
 {
     std::cout << "\n========== Test 9: UTF-8 Support ==========" << std::endl;
-    
+
     ConstU8StringSet css;
-    
+
     // 中文字符串
     const u8char* chinese = reinterpret_cast<const u8char*>(u8"你好世界");
     int len_chinese = strlen(reinterpret_cast<const char*>(chinese));
     int id1 = css.Add(chinese, len_chinese);
     TEST_ASSERT(id1 == 0, "Chinese string should be added");
     TEST_PASS("Chinese characters");
-    
+
     // 日文字符串
     const u8char* japanese = reinterpret_cast<const u8char*>(u8"こんにちは");
     int len_japanese = strlen(reinterpret_cast<const char*>(japanese));
     int id2 = css.Add(japanese, len_japanese);
     TEST_ASSERT(id2 == 1, "Japanese string should be added");
     TEST_PASS("Japanese characters");
-    
+
     // Emoji
     const u8char* emoji = reinterpret_cast<const u8char*>(u8"😀🎉🚀");
     int len_emoji = strlen(reinterpret_cast<const char*>(emoji));
     int id3 = css.Add(emoji, len_emoji);
     TEST_ASSERT(id3 == 2, "Emoji string should be added");
     TEST_PASS("Emoji characters");
-    
+
     // 验证检索
     TEST_ASSERT(css.Contains(chinese, len_chinese), "Should find Chinese");
     TEST_ASSERT(css.Contains(japanese, len_japanese), "Should find Japanese");
     TEST_ASSERT(css.Contains(emoji, len_emoji), "Should find Emoji");
     TEST_PASS("UTF-8 query");
-    
+
     return true;
 }
 
@@ -416,26 +416,26 @@ bool TestUTF8()
 bool TestFileSave()
 {
     std::cout << "\n========== Test 10: File Save ==========" << std::endl;
-    
+
     ConstAnsiStringSet css;
-    
+
     css.Add("apple", 5);
     css.Add("banana", 6);
     css.Add("cherry", 6);
     css.Add("date", 4);
-    
+
     // 保存不带ID
     bool result1 = SaveToTextFile(OS_TEXT("test_output.txt"), &css, false, false);
     TEST_ASSERT(result1, "Save without ID should succeed");
     TEST_PASS("Save to file without ID");
-    
+
     // 保存带ID
     bool result2 = SaveToTextFile(OS_TEXT("test_output_id.txt"), &css, true, false);
     TEST_ASSERT(result2, "Save with ID should succeed");
     TEST_PASS("Save to file with ID");
-    
+
     std::cout << "Output files: test_output.txt, test_output_id.txt" << std::endl;
-    
+
     return true;
 }
 
@@ -445,15 +445,15 @@ int main(int, char**)
     std::cout << "╔═══════════════════════════════════════════╗" << std::endl;
     std::cout << "║  ConstStringSet Comprehensive Test Suite ║" << std::endl;
     std::cout << "╚═══════════════════════════════════════════╝" << std::endl;
-    
+
     int passed = 0;
     int failed = 0;
-    
+
     struct Test {
         const char* name;
         bool (*func)();
     };
-    
+
     Test tests[] = {
         {"Basic Operations", TestBasicOperations},
         {"Deduplication", TestDeduplication},
@@ -466,7 +466,7 @@ int main(int, char**)
         {"UTF-8 Support", TestUTF8},
         {"File Save", TestFileSave}
     };
-    
+
     for(const auto& test : tests)
     {
         try
@@ -488,7 +488,7 @@ int main(int, char**)
             std::cout << "✗ " << test.name << " - EXCEPTION: " << e.what() << std::endl;
         }
     }
-    
+
     std::cout << "\n╔═══════════════════════════════════════════╗" << std::endl;
     std::cout << "║             Test Summary                  ║" << std::endl;
     std::cout << "╠═══════════════════════════════════════════╣" << std::endl;
@@ -496,6 +496,6 @@ int main(int, char**)
     std::cout << "  Passed:       " << passed << " ✓" << std::endl;
     std::cout << "  Failed:       " << failed << " ✗" << std::endl;
     std::cout << "╚═══════════════════════════════════════════╝" << std::endl;
-    
+
     return (failed == 0) ? 0 : 1;
 }

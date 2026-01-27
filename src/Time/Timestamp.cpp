@@ -6,7 +6,7 @@ namespace hgl
     // ========================================================================
     // Unix Timestamp Functions - Unix时间戳函数
     // ========================================================================
-    
+
     /**
      * 获取当前Unix时间戳(秒)
      * @return Unix时间戳，单位：秒(自1970-01-01 00:00:00 UTC起)
@@ -15,7 +15,7 @@ namespace hgl
     {
         return GetTimeUs() / HGL_MICRO_SEC_PER_SEC;
     }
-    
+
     /**
      * 获取当前Unix时间戳(毫秒)
      * @return Unix时间戳，单位：毫秒(自1970-01-01 00:00:00 UTC起)
@@ -24,7 +24,7 @@ namespace hgl
     {
         return GetTimeMs();
     }
-    
+
     /**
      * 获取当前Unix时间戳(微秒)
      * @return Unix时间戳，单位：微秒(自1970-01-01 00:00:00 UTC起)
@@ -33,11 +33,11 @@ namespace hgl
     {
         return GetTimeUs();
     }
-    
+
     // ========================================================================
     // Windows Timestamp Functions - Windows时间戳函数
     // ========================================================================
-    
+
     /**
      * 将Unix时间戳(微秒)转换为Windows时间戳
      * @param unix_us Unix时间戳，单位：微秒
@@ -53,7 +53,7 @@ namespace hgl
         uint64 unix_us_from_win_epoch = unix_us + (HGL_WIN_TO_UNIX_EPOCH_SEC * HGL_MICRO_SEC_PER_SEC);
         return unix_us_from_win_epoch * 10; // 微秒 -> 100纳秒
     }
-    
+
     /**
      * 获取当前Windows FILETIME时间戳
      * @return Windows时间戳，单位：100纳秒间隔(自1601-01-01 00:00:00 UTC起)
@@ -63,7 +63,7 @@ namespace hgl
     {
         return UnixTimestampToWindows(GetTimeUs());
     }
-    
+
     /**
      * 将Windows时间戳转换为Unix时间戳(微秒)
      * @param win_timestamp Windows时间戳，单位：100纳秒间隔
@@ -79,11 +79,11 @@ namespace hgl
         uint64 epoch_diff_us = HGL_WIN_TO_UNIX_EPOCH_SEC * HGL_MICRO_SEC_PER_SEC;
         return us_from_win_epoch - epoch_diff_us;
     }
-    
+
     // ========================================================================
     // UUIDv7 Timestamp Functions - UUIDv7时间戳函数
     // ========================================================================
-    
+
     /**
      * 将Unix时间戳(毫秒)转换为UUIDv7时间戳
      * @param unix_ms Unix时间戳，单位：毫秒
@@ -96,7 +96,7 @@ namespace hgl
         // 48位可以表示从1970到约8925年的时间
         return unix_ms & HGL_UUID7_TIMESTAMP_MASK;
     }
-    
+
     /**
      * 获取当前UUIDv7时间戳
      * @return UUIDv7时间戳，单位：毫秒(自1970-01-01 00:00:00 UTC起，48位)
@@ -106,7 +106,7 @@ namespace hgl
     {
         return UnixTimestampToUUIDv7(GetTimeMs());
     }
-    
+
     /**
      * 将UUIDv7时间戳转换为Unix时间戳(毫秒)
      * @param uuid7_timestamp UUIDv7时间戳
@@ -119,11 +119,11 @@ namespace hgl
         // 为了保证安全，屏蔽高位(虽然按规范应该为0)
         return uuid7_timestamp & HGL_UUID7_TIMESTAMP_MASK;
     }
-    
+
     // ========================================================================
     // Cross-format Conversion Functions - 交叉格式转换函数
     // ========================================================================
-    
+
     /**
      * 将Windows时间戳转换为UUIDv7时间戳
      * @param win_timestamp Windows时间戳，单位：100纳秒间隔
@@ -136,7 +136,7 @@ namespace hgl
         uint64 unix_ms = unix_us / 1000; // 微秒 -> 毫秒
         return UnixTimestampToUUIDv7(unix_ms);
     }
-    
+
     /**
      * 将UUIDv7时间戳转换为Windows时间戳
      * @param uuid7_timestamp UUIDv7时间戳
@@ -149,5 +149,5 @@ namespace hgl
         uint64 unix_us = unix_ms * 1000; // 毫秒 -> 微秒
         return UnixTimestampToWindows(unix_us);
     }
-    
+
 }//namespace hgl

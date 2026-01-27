@@ -40,7 +40,7 @@ namespace hgl
         // 使用mmap以支持大页面和更好的控制
         void* ptr = mmap(nullptr, size, PROT_READ | PROT_WRITE,
                         MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-        
+
         if (ptr == MAP_FAILED)
             return nullptr;
 
@@ -74,9 +74,9 @@ namespace hgl
             struct bitmask *nodemask = numa_allocate_nodemask();
             numa_bitmask_clearall(nodemask);
             numa_bitmask_setbit(nodemask, numa_node);
-            
+
             numa_set_membind(nodemask);
-            
+
             numa_free_nodemask(nodemask);
             return true;
         }
@@ -127,17 +127,17 @@ namespace hgl
             // 创建节点掩码
             struct bitmask *from_nodes = numa_allocate_nodemask();
             struct bitmask *to_nodes = numa_allocate_nodemask();
-            
+
             numa_bitmask_setall(from_nodes);  // 从所有节点
             numa_bitmask_clearall(to_nodes);
             numa_bitmask_setbit(to_nodes, numa_node);  // 到指定节点
-            
+
             // 迁移内存页面
             numa_migrate_pages(0, from_nodes, to_nodes);
-            
+
             numa_free_nodemask(from_nodes);
             numa_free_nodemask(to_nodes);
-            
+
             return true;
         }
 #endif

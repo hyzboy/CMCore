@@ -1,4 +1,4 @@
-#include<hgl/type/Collection.h>
+﻿#include<hgl/type/Collection.h>
 //#include<hgl/type/ValueArray.h>
 #include<iostream>
 
@@ -63,13 +63,13 @@ int main(int,char **)
         out(cu);
 
         std::cout<<"indexOf(E) is "<<cu.indexOfValue('E')<<std::endl;
-        
+
         std::cout<<"remove second data."<<std::endl;
         cu.RemoveAt(1);out(cu);
 
         std::cout<<"remove all 'A'"<<std::endl;
         cu.RemoveValue('A');out(cu);
-         
+
         std::cout<<"remove 3 items from third"<<std::endl;
         cu.RemoveAt(2,3);out(cu);
 
@@ -87,7 +87,7 @@ int main(int,char **)
         std::cout<<"exchanged two elements, they at 0 and 2"<<std::endl;
         cu.Exchange(0,2);out(cu);
     }
-    
+
     std::cout<<std::endl;
     std::cout<<"test three bytes Collection."<<std::endl<<std::endl;
     {
@@ -108,13 +108,13 @@ int main(int,char **)
         cu3.Insert(0,0);out3(cu3);
 
         std::cout<<"indexOf(Ee4) is "<<cu3.indexOf("Ee4")<<std::endl;
-        
+
         std::cout<<"remove second data."<<std::endl;
         cu3.RemoveAt(1);out3(cu3);
 
         std::cout<<"remove all 'Aa0'"<<std::endl;
         cu3.Remove("Aa0");out3(cu3);
-         
+
         std::cout<<"remove 3 items from third"<<std::endl;
         cu3.RemoveAt(2,3);out3(cu3);
 

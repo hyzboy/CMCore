@@ -108,7 +108,7 @@ namespace hgl
 
         return (uint8 *)(data_mb->Get())+id*unit_size;
     }
-    
+
     bool ActiveMemoryBlockManager::GetData(void *da,const int id)const
     {
         if(!da||unit_size==0||id<0||id>=aim.GetHistoryMaxId())
@@ -219,10 +219,10 @@ namespace hgl
     int ActiveMemoryBlockManager::Release(int *id,const int count)
     {
         if(!id||count<=0)return(0);
-        
+
         return aim.Release(id,count);
     }
-    
+
     int ActiveMemoryBlockManager::ReleaseAllActive()
     {
         return aim.ReleaseAllActive();

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/io/event/EventDispatcher.h>
 #include<hgl/math/Vector.h>
@@ -54,12 +54,12 @@ namespace hgl::io
     {
         uint64 gesture_id;      // 手势ID
         uint32 timestamp;       // 时间戳
-        
+
         int32 distance;         // 距离（缩放时使用）
         int32 argument;         // 参数（旋转角度等）
-        
+
         uint32 sequence_id;     // 序列ID
-        
+
         GestureExtendedInfo()
         {
             gesture_id = 0;
@@ -69,7 +69,7 @@ namespace hgl::io
             sequence_id = 0;
         }
     };
-        
+
     class GestureEvent:public EventDispatcher
     {
         GestureEventData *ged=nullptr;

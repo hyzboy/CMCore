@@ -222,7 +222,7 @@ namespace hgl
             {
                 if(!RangeCheck(kb))return(EventProcResult::Continue);
 
-                press_states[(size_t)kb]=false;                
+                press_states[(size_t)kb]=false;
                 pressed_time[(size_t)kb]=0;
 
                 return(EventProcResult::Break);
@@ -249,10 +249,10 @@ namespace hgl
             }
 
             /**
-             * 获取按键按下的时间 
+             * 获取按键按下的时间
              */
             const double GetPressedTime(const KeyboardButton &kb)const
-            {   
+            {
                 if(!RangeCheck(kb))return(0);
 
                 return pressed_time[size_t(kb)];

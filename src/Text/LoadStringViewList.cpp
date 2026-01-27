@@ -15,8 +15,7 @@ namespace hgl
             return 0;
 
         sl.Clear();
-
-        sl = U8StringViewList(str);
+        sl.FromString(str);;
         return sl.GetCount();
     }
 
@@ -31,7 +30,7 @@ namespace hgl
             return 0;
 
         sl.FromString(str);
-        
+
         return sl.GetCount();
     }
 

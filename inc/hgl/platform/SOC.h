@@ -64,7 +64,7 @@ namespace hgl
         Unknow=0,
 
         ARMv7,          ///<ARMv7A
-        ARMv8, 
+        ARMv8,
         ARMv8_2,
         ARMv9,
         ARMv9_2,
@@ -111,7 +111,7 @@ namespace hgl
         Prime,
         Gold,
         Silver,
-        
+
         ENUM_CLASS_RANGE(Prime,Silver)
     };
 

@@ -1,4 +1,4 @@
-#include <hgl/filesystem/Path.h>
+﻿#include <hgl/filesystem/Path.h>
 
 namespace hgl::filesystem
 {

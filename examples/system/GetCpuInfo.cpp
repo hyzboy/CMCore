@@ -1,4 +1,4 @@
-#include<hgl/platform/CpuInfo.h>
+﻿#include<hgl/platform/CpuInfo.h>
 #include<hgl/platform/BigLittleDetector.h>
 #include<iostream>
 #include<iomanip>
@@ -17,7 +17,7 @@ void PrintCpuInfo(const CpuInfo& ci)
 int main()
 {
     CpuInfo ci{};
-    
+
     if(GetCpuInfo(&ci))
     {
         PrintCpuInfo(ci);

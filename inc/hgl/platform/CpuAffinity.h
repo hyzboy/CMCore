@@ -55,7 +55,7 @@ namespace hgl
     {
         uint total_cpus;                ///< 总CPU数量
         CpuDistribution* cpu_list;      ///< CPU分布列表
-        
+
         uint numa_node_count;           ///< NUMA节点数量
         uint ccd_count;                 ///< CCD数量
     };//struct NumaCcdDistribution
@@ -67,7 +67,7 @@ namespace hgl
     {
         uint numa_node_count;           ///< NUMA节点数量
         NumaNode *numa_nodes;           ///< NUMA节点数组
-        
+
         uint ccd_count;                 ///< CCD数量
         CCDInfo *ccds;                  ///< CCD信息数组
     };//struct CpuTopology
@@ -171,7 +171,7 @@ namespace hgl
     {
         uint total_cores;               ///< 总核心数
         ArmCoreInfo* core_list;         ///< 核心信息列表
-        
+
         uint big_core_count;            ///< 大核数量
         uint little_core_count;         ///< 小核数量
         uint* big_core_ids;             ///< 大核ID列表

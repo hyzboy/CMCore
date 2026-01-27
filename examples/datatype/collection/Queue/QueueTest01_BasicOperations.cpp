@@ -1,4 +1,4 @@
-#include<hgl/type/Queue.h>
+﻿#include<hgl/type/Queue.h>
 #include<iostream>
 #include<cassert>
 

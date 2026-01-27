@@ -62,9 +62,9 @@ namespace hgl
          * 获取闲置ID队列的所有数据视图
          * @return ValueBuffer<int> 包含所有已入队的闲置ID
          */
-        const ValueBuffer<int> &GetIdleView() const
+        ValueBuffer<int> GetIdleView() const
         {
-            return idle_list.GetUnreadSnapshotData();
+            return idle_list.GetUnreadSnapshot();  // ✅ 返回完整快照（读段+写段合并）
         }
 
         // ==================== 创建接口 ====================
@@ -128,7 +128,7 @@ namespace hgl
 
         /**
          * @brief CN:释放所有内存并重置所有计数器\nEN:Free all memory and reset all counters
-         * 
+         *
          * CN:彻底释放内部容器的内存，并将所有计数器归零。\nEN:Completely frees internal container memory and resets all counters to zero.
          * CN:适用于不再需要管理器时的彻底清理。\nEN:Suitable for thorough cleanup when the manager is no longer needed.
          *
@@ -139,7 +139,7 @@ namespace hgl
         {
             active_list.Free();
             idle_list.Free();
-            
+
             id_count = 0;
             released_count = 0;
         }
@@ -170,7 +170,7 @@ namespace hgl
         /**
          * 获取剩余可分配的ID容量
          * @return 剩余ID数（基于int范围限制）
-         * 
+         *
          * 注：ID使用int类型，最大值为INT_MAX（2,147,483,647）
          * 此方法返回还能分配多少个ID而不会溢出
          */
@@ -195,7 +195,7 @@ namespace hgl
 
         /**
          * 相等比较：检查两个管理器的状态是否完全相同
-         * 
+         *
          * 注：Queue类型不支持==比较，仅比较计数器和active_list
          */
         bool operator==(const ActiveIDManager &other) const

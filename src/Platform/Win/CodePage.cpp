@@ -162,7 +162,7 @@ namespace hgl
         if(len<=0)return len;
         return len;
     }
-    
+
     int to_utf16(const CharSet &cs,u16char **dst,const void *src,const int src_size)
     {
         const int src_str_size=(src_size==-1)?hgl::strlen((const char *)src):src_size;
@@ -173,7 +173,7 @@ namespace hgl
         (*dst)[len]=0;
         return len;
     }
-    
+
     int to_utf16(const CharSet &cs,u16char *dst,const int dst_size,const void *src,const int src_size)
     {
         if(dst_size<=0)return dst_size;
@@ -209,7 +209,7 @@ namespace hgl
     int utf8_to(const CharSet &cs,char **dst,const u8char *src,const int src_size)
     {
         int u16str_size; u16char *u16str=u8_to_u16(src,src_size,u16str_size); if(!u16str)return 0; int result=utf16_to(cs,dst,u16str,u16str_size); delete[] u16str; return result; }
-    
+
     AnsiString ToAnsiString(const CharSet &cs,const U16String &str)
     {
         const int len=WideCharToMultiByte((UINT)cs.codepage,0,str.c_str(),str.Length(),0,0,0,0);

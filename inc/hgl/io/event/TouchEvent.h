@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/io/event/EventDispatcher.h>
 #include<hgl/math/Vector.h>
@@ -18,7 +18,7 @@ namespace hgl::io
         uint32 flags;           // 触摸点标志
         uint32 mask;            // 有效字段掩码
         uint32 time;            // 时间戳
-        
+
         TouchPoint()
         {
             id = 0;
@@ -50,9 +50,9 @@ namespace hgl::io
     };
 
     constexpr const size_t TouchEventDataBytes=sizeof(TouchEventData);
-    
+
     constexpr const size_t MAX_TOUCH_POINTS = 16;
-        
+
     class TouchEvent:public EventDispatcher
     {
         TouchEventData *ted=nullptr;
@@ -78,7 +78,7 @@ namespace hgl::io
          * 获取触摸点数量
          */
         const uint16 GetTouchCount()const{return current_touch_count;}
-        
+
         /**
          * 获取触摸点信息
          */

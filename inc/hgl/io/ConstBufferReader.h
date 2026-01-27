@@ -48,7 +48,7 @@ namespace hgl
                 pointer+=sizeof(T1);
 
                 return(true);
-                
+
             }
 
             template<typename T> bool ReadArray(T *v,const int64 count)

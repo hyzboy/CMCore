@@ -177,7 +177,7 @@ namespace hgl::io
 
         bool WriteUTF16LEShortString(const U8String &str      ){return WriteUTF16LEShortString(to_u16(str));} ///<按utf16-le格式写入字符串(前置2字节字符串长度,再写入字符阵列)
         bool WriteUTF16BEShortString(const U8String &str      ){return WriteUTF16BEShortString(to_u16(str));} ///<按utf16-be格式写入字符串(前置2字节字符串长度,再写入字符阵列)
-            
+
         bool WriteAnsiShortString   (const char *str,uint length){return WriteUTF8ShortString((u8char *)str,length);}
         bool WriteAnsiShortString   (const char *str            ){return WriteUTF8ShortString((u8char *)str);}
         bool WriteAnsiShortString   (const AnsiString &str      ){return WriteUTF8ShortString((u8char *)str.c_str(),str.Length());}

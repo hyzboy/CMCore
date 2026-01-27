@@ -1,4 +1,4 @@
-#include<hgl/type/OrderedManagedSet.h>
+﻿#include<hgl/type/OrderedManagedSet.h>
 #include<iostream>
 #include<cassert>
 

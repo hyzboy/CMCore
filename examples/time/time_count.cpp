@@ -1,4 +1,4 @@
-#include<hgl/time/Time.h>
+﻿#include<hgl/time/Time.h>
 #include<hgl/time/DateTime.h>
 #include<hgl/type/String.h>
 #include<iostream>
@@ -56,7 +56,7 @@ int main(int,char **)
     PrintSeparator();
     cout << "Testing ToDateTime with cur_time == 0 (uses system now)" << endl;
 
-    CalendarDate d_now; 
+    CalendarDate d_now;
     TimeOfDay t_now;
     ToDateTime(d_now, t_now, 0);
     cout << "now: " << d_now.GetYear() << '-' << d_now.GetMonth() << '-' << d_now.GetDay()

@@ -57,7 +57,7 @@ namespace hgl
         }
 
         /**
-        * 取得最低渐变结果  
+        * 取得最低渐变结果
         */
         const bool GetLowestData(T &data)const
         {

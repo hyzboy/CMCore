@@ -7,7 +7,7 @@ namespace hgl
         max_count=0;
         free_count=0;
     }
-        
+
     bool BlockAllocator::Init(const int mc)
     {
         max_count=mc;

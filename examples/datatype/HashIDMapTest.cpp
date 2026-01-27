@@ -1,4 +1,4 @@
-#include<hgl/type/HashIDMap.h>
+﻿#include<hgl/type/HashIDMap.h>
 #include<iostream>
 #include<cassert>
 #include<vector>

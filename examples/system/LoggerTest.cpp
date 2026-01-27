@@ -1,4 +1,4 @@
-#include<hgl/log/log.h>
+﻿#include<hgl/log/log.h>
 
 using namespace hgl;
 

@@ -22,7 +22,7 @@ namespace hgl
         {
             std::ostringstream path;
             path << "/sys/devices/system/cpu/cpu" << cpu_id << "/cpufreq/cpuinfo_max_freq";
-            
+
             std::ifstream freq_file(path.str());
             if (freq_file.is_open())
             {
@@ -32,7 +32,7 @@ namespace hgl
                     return freq_khz / 1000; // 转换为MHz
                 }
             }
-            
+
             return 0;
         }
 
@@ -51,7 +51,7 @@ namespace hgl
         {
             std::ostringstream path;
             path << "/sys/devices/system/cpu/cpu" << cpu_id << "/topology/physical_package_id";
-            
+
             std::ifstream cluster_file(path.str());
             if (cluster_file.is_open())
             {
@@ -61,11 +61,11 @@ namespace hgl
                     return cluster_id;
                 }
             }
-            
+
             // 回退：尝试从core_id推断
             path.str("");
             path << "/sys/devices/system/cpu/cpu" << cpu_id << "/topology/core_id";
-            
+
             std::ifstream core_file(path.str());
             if (core_file.is_open())
             {
@@ -76,7 +76,7 @@ namespace hgl
                     return core_id / 4; // 粗略估计
                 }
             }
-            
+
             return 0;
         }
     }//namespace
@@ -108,7 +108,7 @@ namespace hgl
         // 找出频率的中位数作为区分大小核的阈值
         std::vector<uint> sorted_freqs = frequencies;
         std::sort(sorted_freqs.begin(), sorted_freqs.end());
-        
+
         uint threshold = 0;
         if (!sorted_freqs.empty())
         {
@@ -116,7 +116,7 @@ namespace hgl
             size_t mid = sorted_freqs.size() / 2;
             uint median = sorted_freqs[mid];
             uint max_freq = sorted_freqs.back();
-            
+
             // 如果最大频率和中位数差异超过20%，认为有大小核
             if (max_freq > median * 1.2)
             {

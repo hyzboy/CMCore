@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file UnorderedSet.h
  * @brief CN:高性能无序集合模板（基于连续内存优化）\nEN:High-performance unordered set template (optimized with contiguous memory)
  */
@@ -16,7 +16,7 @@ namespace hgl
      * @brief CN:管理型无序对象集合（基于指针地址管理）\nEN:Managed unordered object set (pointer address-based management)
      * @tparam T CN:对象类型（非指针），必须支持 operator==\nEN:Object type (non-pointer), must support operator==
      * @tparam MAX_COLLISION CN:最大哈希冲突数\nEN:Maximum hash collision count
-     * 
+     *
      * CN:本版本用于管理非平凡类型对象：\nEN:This version manages non-trivial type objects:
      * - CN:自动管理对象生命周期（new/delete）\nEN:Automatic object lifetime management (new/delete)
      * - CN:支持带虚函数、动态内存的复杂对象\nEN:Supports complex objects with virtual functions, dynamic memory
@@ -27,14 +27,14 @@ namespace hgl
     class UnorderedManagedSet
     {
         // 编译期检查：T 不能是指针类型
-        static_assert(!std::is_pointer_v<T>, 
+        static_assert(!std::is_pointer_v<T>,
             "UnorderedManagedSet does not accept pointer types directly. "
             "Use the object type itself (e.g., UnorderedManagedSet<MyClass>).");
 
         // 编译期检查：T 必须是非平凡类型，平凡类型请使用 UnorderedValueSet
         static_assert(!std::is_trivially_copyable_v<T>,
             "UnorderedManagedSet is for non-trivially-copyable types; use UnorderedValueSet for trivial types.");
-    
+
     protected:
         using ThisClass = UnorderedManagedSet<T, MAX_COLLISION>;
 
@@ -91,7 +91,7 @@ namespace hgl
     public:
 
         UnorderedManagedSet() = default;
-        
+
         virtual ~UnorderedManagedSet()
         {
             Free();
@@ -307,7 +307,7 @@ namespace hgl
         /**
          * @brief CN:获取活跃ID数组\nEN:Get active ID array
          */
-        const ValueBuffer<int> GetActiveView() const
+        const ValueBuffer<int> &GetActiveView() const
         {
             return ptr_manager.GetActiveView();
         }

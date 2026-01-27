@@ -80,7 +80,7 @@ namespace hgl
                 Get(source),
                 size);
     }
-    
+
     void MemoryBlock::Copy       (const uint64 target,const uint64 source,const uint64 size)
     {
         memcpy( Get(target),

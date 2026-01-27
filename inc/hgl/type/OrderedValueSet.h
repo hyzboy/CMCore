@@ -214,7 +214,7 @@ namespace hgl
             return(true);
         }
 
-        void    operator       =(const OrderedValueSet<T> &set){data_list=set.data_list;}        ///<等号操作符重载
+        void    operator       =(const OrderedValueSet<T> &set){data_list.CopyFrom(set);}        ///<等号操作符重载
 
         /**
          * @brief 相等比较运算符

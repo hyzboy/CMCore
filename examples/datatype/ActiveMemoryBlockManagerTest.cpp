@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <vector>
 #include <cassert>
 #include <hgl/type/ActiveMemoryBlockManager.h>
@@ -33,28 +33,28 @@ int main(int, char **)
         cout << "=== Test 1: unit_size==0 defense ===" << endl;
         ActiveMemoryBlockManager bad(0);
         int dummy = 0;
-        
+
         cout << "Calling SetUnitSize(0)..." << endl;
         bool result1 = bad.SetUnitSize(0);
         cout << "SetUnitSize(0) returned: " << result1 << " (expected: false)" << endl;
         assert(!result1);
-        
+
         cout << "Calling SetUnitSize(8)..." << endl;
         bool result2 = bad.SetUnitSize(8);
         cout << "SetUnitSize(8) returned: " << result2 << " (expected: true)" << endl;
         assert(result2);          // 首次设置为8
-        
+
         cout << "Calling SetUnitSize(4)..." << endl;
         bool result3 = bad.SetUnitSize(4);
         cout << "SetUnitSize(4) returned: " << result3 << " (expected: false)" << endl;
         assert(!result3);         // 已设置后拒绝不同值
-        
+
         cout << "Calling WriteData(&dummy, 0)..." << endl;
         bool result4 = bad.WriteData(&dummy, 0);
         cout << "WriteData(&dummy, 0) returned: " << result4 << " (expected: false)" << endl;
         cout << "dummy address: " << &dummy << ", id: 0" << endl;
         assert(!result4);   // unit_size为0时返回false
-        
+
         cout << "Test 1 passed." << endl << endl;
     }
 
@@ -100,7 +100,7 @@ int main(int, char **)
     cout << "  - idle_ids[2]=" << idle_ids[2] << " -> " << user_info_array[2].name << endl;
     cout << "  - idle_ids[3]=" << idle_ids[3] << " -> " << user_info_array[3].name << endl;
     cout << "  - idle_ids[4]=" << idle_ids[4] << " -> " << user_info_array[4].name << endl;
-    
+
     int user_ids[3];
     bool got = ambm.Get(user_ids, 3);
     cout << "Get(user_ids, 3) returned: " << got << endl;
@@ -108,7 +108,7 @@ int main(int, char **)
     for (int i = 0; i < 3; ++i) cout << user_ids[i] << (i < 2 ? ", " : "");
     cout << "]" << endl;
     cout << "After Get - Active: " << ambm.GetActiveCount() << ", Idle: " << ambm.GetIdleCount() << endl;
-    
+
     assert(got);
     assert(ambm.GetActiveCount() == 8); // 原有5活跃 + 3新取
     assert(ambm.GetIdleCount() == 2);
@@ -118,30 +118,30 @@ int main(int, char **)
     {
         vector<string> names;
         ReadUsername(ambm, user_ids, 3, names);
-        
+
         cout << "Data read from user_ids (Queue Get from front):" << endl;
         for (int i = 0; i < 3; ++i) {
-            cout << "  user_ids[" << i << "]=" << user_ids[i] 
+            cout << "  user_ids[" << i << "]=" << user_ids[i]
                  << " -> \"" << names[i] << "\"" << endl;
         }
-        
+
         cout << "Expected data (user_info_array[0-2], from idle list FRONT):" << endl;
         for (int i = 0; i < 3; ++i) {
-            cout << "  user_info_array[" << i << "].name = \"" 
+            cout << "  user_info_array[" << i << "].name = \""
                  << user_info_array[i].name << "\"" << endl;
         }
-        
+
         // 由于 idle_list 使用 Queue (FIFO)，Get() 从开头取出
         // 所以取出的应该是 user_info_array[0,1,2]
         for (int i = 0; i < 3; ++i) {
-            cout << "Checking: names[" << i << "]=\"" << names[i] 
-                 << "\" == user_info_array[" << i << "]=\"" 
+            cout << "Checking: names[" << i << "]=\"" << names[i]
+                 << "\" == user_info_array[" << i << "]=\""
                  << user_info_array[i].name << "\" -> "
                  << (names[i] == user_info_array[i].name ? "PASS" : "FAIL") << endl;
             assert(names[i] == user_info_array[i].name);
         }
     }
-    
+
     cout << "Test 4 passed." << endl << endl;
 
     // 5) GetOrCreate：先耗尽 idle，再创建新 ID
@@ -175,16 +175,16 @@ int main(int, char **)
         cout << "Reuse Get returned reuse_ids: [";
         for (int i = 0; i < 3; ++i) cout << reuse_ids[i] << (i < 2 ? ", " : "");
         cout << "]" << endl;
-        
+
         vector<string> names;
         ReadUsername(ambm, reuse_ids, 3, names);
-        
+
         cout << "Data in reuse_ids:" << endl;
         for (int i = 0; i < 3; ++i) {
-            cout << "  reuse_ids[" << i << "]=" << reuse_ids[i] 
+            cout << "  reuse_ids[" << i << "]=" << reuse_ids[i]
                  << " -> \"" << names[i] << "\"" << endl;
         }
-        
+
         // user_ids[0,1,2] 被 Release，以相同顺序推入 idle queue
         // Get(3) 会以 FIFO 顺序取出，所以顺序保持
         // 数据应该还是对应 user_info_array[0,1,2]
@@ -206,34 +206,34 @@ int main(int, char **)
         cout << "=== Test 8: Invalid input robustness ===" << endl;
         int ids[2] = { -1, 9999 };
         vector<string> names;
-        
+
         // GetData/WriteData 对无效 ID 返回 false
         cout << "Testing WriteData(nullptr, 0)..." << endl;
         bool result1 = ambm.WriteData(nullptr, 0);
         cout << "  Result: " << result1 << " (expected: false)" << endl;
         assert(!result1);
-        
+
         cout << "Testing WriteData(&ids, -1)..." << endl;
         bool result2 = ambm.WriteData(&ids, -1);
         cout << "  Result: " << result2 << " (expected: false)" << endl;
         assert(!result2);
-        
+
         cout << "Testing GetData(nullptr, 0)..." << endl;
         bool result3 = ambm.GetData(nullptr, 0);
         cout << "  Result: " << result3 << " (expected: false)" << endl;
         assert(!result3);
-        
+
         cout << "Testing GetData(ids, -1)..." << endl;
         bool result4 = ambm.GetData(ids, -1);
         cout << "  Result: " << result4 << " (expected: false)" << endl;
         assert(!result4);
-        
+
         // Release 空输入返回0
         cout << "Testing Release(nullptr, 0)..." << endl;
         int released = ambm.Release(nullptr, 0);
         cout << "  Result: " << released << " (expected: 0)" << endl;
         assert(released == 0);
-        
+
         cout << "Test 8 passed." << endl << endl;
     }
 

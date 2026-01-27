@@ -269,7 +269,7 @@ void test_ordered_id_name()
     TEST_ASSERT(name1 != name2, "Different names are not equal");
     TEST_ASSERT(name1 == name3, "Same names are equal");
     TEST_ASSERT((name1 <=> name2) != std::strong_ordering::equal, "Three-way comparison works");
-    
+
     std::cout << "\n[4.7] Ordering:" << std::endl;
     TEST_ASSERT(name1.GetID() < name2.GetID() ? (name1 < name2) : (name1 >= name2), "Operator< works");
 }
@@ -342,7 +342,7 @@ void test_edge_cases()
     std::cout << "\n[6.3] ConstStringSet empty string:" << std::endl;
     ConstStringSet<char> css;
     std::cout << "  ConstStringSet created" << std::endl;
-    
+
     int id = css.Add("", 0);
     std::cout << "  Add(\"\", 0) returned: " << id << std::endl;
     TEST_ASSERT(id == -1, "Empty string rejected");

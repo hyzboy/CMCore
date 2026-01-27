@@ -1,4 +1,4 @@
-#include<hgl/type/ActiveDataManager.h>
+﻿#include<hgl/type/ActiveDataManager.h>
 #include<iostream>
 #include<vector>
 #include<unordered_set>
@@ -48,7 +48,7 @@ void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const in
     UserInfo **ui=new UserInfo *[count];
     adm.GetData(ui,idp,count);
     DebugOutputArray(hint,ui,count);
-    delete[] ui;        
+    delete[] ui;
 }
 
 void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const ValueBuffer<int> &da)
@@ -60,14 +60,14 @@ void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const Qu
 {
     cout<<"("<<hint<<':'<<queue.GetCount()<<")";
     if(queue.GetCount()<=0)return;
-    
+
     cout<<'[';
     bool first = true;
     for(int id : queue)
     {
         if(!first)cout<<',';
         first = false;
-        
+
         UserInfo *ui = adm.At(id);
         if(ui)
             cout<<ui->name;
@@ -106,7 +106,7 @@ int os_main(int,os_char **)
         cout << "=== Test 1: Initial State ===" << endl;
         ActiveDataManager<UserInfo> adm;
         adm.Reserve(10);
-        cout << "  Active: " << adm.GetActiveCount() << ", Idle: " << adm.GetIdleCount() 
+        cout << "  Active: " << adm.GetActiveCount() << ", Idle: " << adm.GetIdleCount()
              << ", Total: " << adm.GetTotalCount() << endl;
         assert(adm.GetActiveCount() == 0);
         assert(adm.GetIdleCount() == 0);
@@ -204,16 +204,16 @@ int os_main(int,os_char **)
         adm.CreateActive(ids, 5);
         for (int i = 0; i < 5; ++i) adm.WriteData(user_info_array[i], ids[i]);
         cout << "  Written 5 records" << endl;
-        
+
         UserInfo info;
         bool ok = adm.GetData(info, ids[0]);
         cout << "  Read single: " << (ok ? info.name : "FAILED") << endl;
         assert(ok && string(info.name) == string(user_info_array[0].name));
-        
+
         UserInfo *ptr = adm.At(ids[1]);
         cout << "  At pointer: " << (ptr ? ptr->name : "nullptr") << endl;
         assert(ptr != nullptr);
-        
+
         UserInfo infos[5];
         ok = adm.GetData(infos, ids, 5);
         cout << "  Batch read: " << (ok ? "OK" : "FAILED") << endl;
@@ -234,11 +234,11 @@ int os_main(int,os_char **)
         cout << "  Released 2 IDs: " << released << endl;
         assert(released == 2 && adm.GetActiveCount() == 3 && adm.GetIdleCount() == 2);
         DebugADMOutput("  After Release:", adm);
-        
+
         bool got = adm.Get(reuse_ids, 2);
         cout << "  Reused: " << (got ? "OK" : "FAILED") << endl;
         assert(got && adm.GetActiveCount() == 5);
-        
+
         UserInfo info;
         adm.GetData(info, reuse_ids[0]);
         cout << "  Data preserved: " << info.name << endl;
@@ -273,18 +273,18 @@ int os_main(int,os_char **)
         adm.CreateActive(active_ids, 4);
         WriteUserinfoToADM(adm, active_ids, 4, 3);
         cout << "  Phase 1: Created 3 idle + 4 active" << endl;
-        
+
         adm.Get(user_ids, 2);
         cout << "  Phase 2: Got 2 from idle" << endl;
-        
+
         adm.GetOrCreate(new_ids, 5);
         WriteUserinfoToADM(adm, new_ids, 5, 7);
         cout << "  Phase 3: GetOrCreate 5" << endl;
-        
+
         int to_release[3] = {user_ids[0], active_ids[0], active_ids[1]};
         adm.Release(to_release, 3);
         cout << "  Phase 4: Released 3 IDs" << endl;
-        
+
         const ValueBuffer<int> &active_array = adm.GetActiveView();
         for (int i = 0; i < active_array.GetCount(); ++i) {
             int id = active_array[i];

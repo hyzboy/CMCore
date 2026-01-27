@@ -131,13 +131,13 @@ void TestObjectStack()
     for(i=0;i<5;i++)        //取出5个
     {
         StackTestObject *obj;
-        
+
         if(tab.Pop(obj))
             delete obj;
     }
 
     cout<<"Stack Count: "<<tab.GetCount()<<endl;
-    
+
     // 手动清理剩余对象
     while(tab.GetCount() > 0)
     {

@@ -21,23 +21,23 @@ namespace hgl
         {
             // Apple不直接提供per-core频率信息
             // 我们需要通过sysctl获取可用信息
-            
+
             int ncpu = 0;
             size_t size = sizeof(ncpu);
             if (sysctlbyname("hw.ncpu", &ncpu, &size, NULL, 0) != 0)
                 return false;
 
             frequencies.resize(ncpu);
-            
+
             // 尝试获取性能核心和效率核心的信息
             // Apple Silicon通常有P核(性能)和E核(效率)
             uint64_t perflevel0_count = 0;
             uint64_t perflevel1_count = 0;
-            
+
             size = sizeof(perflevel0_count);
             sysctlbyname("hw.perflevel0.physicalcpu", &perflevel0_count, &size, NULL, 0);
             sysctlbyname("hw.perflevel1.physicalcpu", &perflevel1_count, &size, NULL, 0);
-            
+
             // perflevel0通常是性能核，perflevel1是效率核
             // 为大核分配更高的频率标识
             for (int i = 0; i < ncpu; ++i)
@@ -47,7 +47,7 @@ namespace hgl
                 else
                     frequencies[i] = 2000; // 效率核 ~2.0GHz
             }
-            
+
             return true;
         }
     }//namespace
@@ -70,7 +70,7 @@ namespace hgl
         // 获取性能级别信息
         uint64_t perflevel0_count = 0;
         uint64_t perflevel1_count = 0;
-        
+
         size = sizeof(perflevel0_count);
         sysctlbyname("hw.perflevel0.physicalcpu", &perflevel0_count, &size, NULL, 0);
         sysctlbyname("hw.perflevel1.physicalcpu", &perflevel1_count, &size, NULL, 0);
@@ -83,7 +83,7 @@ namespace hgl
         {
             distribution->core_list[i].core_id = i;
             distribution->core_list[i].cluster_id = (i < perflevel0_count) ? 0 : 1;
-            
+
             if (i < perflevel0_count)
             {
                 // 性能核
@@ -153,7 +153,7 @@ namespace hgl
         // macOS/iOS使用QoS (Quality of Service)来影响线程调度
         // 设置为用户交互级别会优先使用性能核心
         pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
-        
+
         return true;
     }
 
@@ -161,7 +161,7 @@ namespace hgl
     {
         // 设置为后台级别会优先使用效率核心
         pthread_set_qos_class_self_np(QOS_CLASS_BACKGROUND, 0);
-        
+
         return true;
     }
 

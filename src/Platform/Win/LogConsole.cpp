@@ -40,7 +40,7 @@ namespace hgl
                     case LogLevel::Notice:  return "\033[32m";    // 绿色
                     case LogLevel::Info:    return "\033[36m";    // 青色
                     case LogLevel::Debug:   return "\033[34m";    // 蓝色
-                    case LogLevel::Verbose: 
+                    case LogLevel::Verbose:
                     default:                return "\033[37m";    // 白色
                 }
             }

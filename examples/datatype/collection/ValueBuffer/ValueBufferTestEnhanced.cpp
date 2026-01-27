@@ -1,6 +1,6 @@
-/**
+﻿/**
  * ValueBuffer 增强测试用例
- * 
+ *
  * 测试目标：
  * 1. 深度测试 mem_copy, mem_move, mem_fill_pattern 的正确性
  * 2. 测试 trivially copyable 和 non-trivial 类型
@@ -45,7 +45,7 @@ void PrintDataArray(const Array& arr, const char* label)
 {
     using Elem = std::remove_cv_t<std::remove_reference_t<decltype(arr[0])>>;
 
-    std::cout << "  " << std::setw(30) << label << " [" << std::setw(2) << arr.GetCount() 
+    std::cout << "  " << std::setw(30) << label << " [" << std::setw(2) << arr.GetCount()
               << "/" << std::setw(2) << arr.GetAllocCount() << "]: ";
 
     if constexpr (std::is_same_v<Elem, int>)
@@ -170,10 +170,10 @@ void TestDeleteOperations()
     {
         ValueBuffer<int> arr = createArray();
         PrintDataArray(arr, "Before");
-        
+
         arr.Delete(-2, 5);  // 负索引
         PrintDataArray(arr, "After Delete(-2,5)");
-        
+
         arr.Delete(5, 100);  // 超出范围
         PrintDataArray(arr, "After Delete(5,100)");
     }

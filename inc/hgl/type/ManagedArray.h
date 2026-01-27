@@ -19,7 +19,7 @@ namespace hgl
     {
     private:
 
-        static_assert(!std::is_trivially_copyable_v<T>, 
+        static_assert(!std::is_trivially_copyable_v<T>,
                       "ManagedArray<T> requires non-trivial types (std::string, custom classes with dynamic memory, etc). "
                       "For trivially copyable types (int, float, POD structs), use ValueArray<T> instead for better performance.");
 
@@ -97,7 +97,7 @@ namespace hgl
         {
             return items.Add(l.GetData(), l.GetCount());
         }
- 
+
         // ============ 查找 ============
         virtual int Find(const ItemPointer &data) const { return items.Find(data); }
 
@@ -217,7 +217,7 @@ namespace hgl
          * 删除指定索引的元素并保持顺序（先销毁对象，再将后续元素向前移动）
          * @param index 要删除的索引位置
          * @return 删除成功返回 true，失败返回 false
-         * 
+         *
          * 注意：此函数会先 delete 对应的对象，然后将后面的元素依次向前移动，
          *       保持列表的顺序。性能开销比 DeleteAt 略高，但可以保持元素顺序。
          */

@@ -165,7 +165,7 @@ namespace hgl
             int pos;
             ActiveItem *ai;
 
-            // GetValueAndSerial returns the index position if found (>=0), or -1 if not found  
+            // GetValueAndSerial returns the index position if found (>=0), or -1 if not found
             pos=active_items.GetValueAndSerial(key,ai);
 
             if(Found(pos))  //Fixed: was pos>0, now pos>=0 to handle index 0

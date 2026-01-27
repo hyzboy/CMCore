@@ -21,7 +21,5 @@ cm_example_project("DataType/ActiveManager" 4_ActiveDataManagerTest2Staged  Acti
 cm_example_project("DataType/ActiveManager" 5_ActiveDataManagerTest         ActiveDataManagerTest.cpp)
 cm_example_project("DataType/ActiveManager" 6_ActiveIDManagerEnhancedTest   ActiveIDManagerEnhancedTest.cpp)
 
-cm_example_project("DataType/ActiveManager" BugTest_ValueBufferShallowCopyDemo	ValueBufferShallowCopyDemo.cpp)
-
 add_subdirectory(ram)
 add_subdirectory(collection)

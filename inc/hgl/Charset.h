@@ -73,7 +73,7 @@ namespace hgl
     #else
         #define OSCharSet   UTF8CharSet
     #endif//
-    
+
     /**
      * 获取字符串转换到utf16字符串后的长度
      * @param charset   字符集
@@ -82,7 +82,7 @@ namespace hgl
      * @return 转换成功后的字符串字符数
      */
     int get_utf16_length(const CharSet &charset,const void *src,const int src_size=-1);
-    
+
     /**
      * 使用指定字符集转换字符串到utf16字符串
      * @param charset   字符集
@@ -92,7 +92,7 @@ namespace hgl
      * @return 转换成功后的字符串字符数
      */
     int to_utf16(const CharSet &charset,u16char **dst,const void *src,const int src_size=-1);
-    
+
     /**
      * 使用指定字符集转换字符串到utf16字符串
      * @param charset   字符集
@@ -124,6 +124,6 @@ namespace hgl
 
     AnsiString ToAnsiString(const CharSet &cs,const U16String &str);
 #endif//
-    
+
     bool BOM2CharSet(CharSet *cs,const BOMFileHeader *bom);
 }//namespace hgl

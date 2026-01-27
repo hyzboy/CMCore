@@ -1,4 +1,4 @@
-#include<hgl/type/UnorderedMap.h>
+﻿#include<hgl/type/UnorderedMap.h>
 #include<hgl/type/ManagedArray.h>
 #include<iostream>
 #include<string>
@@ -299,7 +299,7 @@ bool TestObjectUnorderedMapUnlink()
     TEST_ASSERT(unlinked, "Unlink should succeed");
     TEST_ASSERT(obj_map.GetCount() == 2, "Count should be 2");
     TEST_ASSERT(!obj_map.ContainsKey(2), "Key 2 should be unlinked");
-    
+
     // 对象仍然有效（未被删除）
     TEST_ASSERT(managed_obj->id == 99, "Unlinked object should still be valid");
     TEST_ASSERT(managed_obj->name == "managed", "Unlinked object data intact");

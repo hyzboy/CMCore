@@ -8,17 +8,17 @@ namespace hgl
     static const char* HEAVENLY_STEMS[] = {
         "甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"
     };
-    
+
     // 地支（12个）
     static const char* EARTHLY_BRANCHES[] = {
         "子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"
     };
-    
+
     // 生肖（12个，对应地支）
     static const char* ZODIAC_ANIMALS[] = {
         "鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"
     };
-    
+
     // 24节气
     static const char* SOLAR_TERMS[] = {
         "立春", "雨水", "惊蛰", "春分", "清明", "谷雨",
@@ -26,32 +26,32 @@ namespace hgl
         "立秋", "处暑", "白露", "秋分", "寒露", "霜降",
         "立冬", "小雪", "大雪", "冬至", "小寒", "大寒"
     };
-    
+
     // 月份名称
     static const char* MONTH_NAMES[] = {
         "", "正月", "二月", "三月", "四月", "五月", "六月",
         "七月", "八月", "九月", "十月", "冬月", "腊月"
     };
-    
+
     // 日期名称前缀
     static const char* DAY_PREFIX[] = {
         "初", "十", "廿"
     };
-    
+
     // 数字转中文
     static const char* DAY_NUMBERS[] = {
         "", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"
     };
-    
+
     // ====================
     // FakeChineseCalendarDate
     // ====================
-    
+
     FakeChineseCalendarDate::FakeChineseCalendarDate()
         : year(1900), month(1), day(1), reference_year(1900)
     {
     }
-    
+
     FakeChineseCalendarDate::FakeChineseCalendarDate(int y, int m, int d)
         : year(y), month(m), day(d), reference_year(y)
     {
@@ -61,44 +61,44 @@ namespace hgl
         if (day < 1) day = 1;
         if (day > 30) day = 30;
     }
-    
+
     AnsiString FakeChineseCalendarDate::GetHeavenlyStemEarthlyBranch() const
     {
         // 天干地支纪年
         // 以公元4年为甲子年（甲子年的年份 mod 60 = 4）
         int cycle_year = (year - 4) % 60;
         if (cycle_year < 0) cycle_year += 60;
-        
+
         int stem_index = cycle_year % 10;
         int branch_index = cycle_year % 12;
-        
+
         AnsiString result = HEAVENLY_STEMS[stem_index];
         result = result + EARTHLY_BRANCHES[branch_index];
-        
+
         return result;
     }
-    
+
     AnsiString FakeChineseCalendarDate::GetHeavenlyStem() const
     {
         int cycle_year = (year - 4) % 60;
         if (cycle_year < 0) cycle_year += 60;
         return HEAVENLY_STEMS[cycle_year % 10];
     }
-    
+
     AnsiString FakeChineseCalendarDate::GetEarthlyBranch() const
     {
         int cycle_year = (year - 4) % 60;
         if (cycle_year < 0) cycle_year += 60;
         return EARTHLY_BRANCHES[cycle_year % 12];
     }
-    
+
     AnsiString FakeChineseCalendarDate::GetZodiac() const
     {
         int cycle_year = (year - 4) % 60;
         if (cycle_year < 0) cycle_year += 60;
         return ZODIAC_ANIMALS[cycle_year % 12];
     }
-    
+
     AnsiString FakeChineseCalendarDate::GetSeason() const
     {
         // 简化的四季划分：每季度3个月
@@ -111,37 +111,37 @@ namespace hgl
         else
             return "冬";
     }
-    
+
     int FakeChineseCalendarDate::GetSolarTermIndex() const
     {
         // 简化计算：每个月2个节气，每个节气15天
         // 360天/年 ÷ 24节气 = 15天/节气
         int day_of_year = (month - 1) * 30 + day;  // 1-360
         int term_index = (day_of_year - 1) / 15;   // 0-23
-        
+
         if (term_index < 0) term_index = 0;
         if (term_index > 23) term_index = 23;
-        
+
         return term_index;
     }
-    
+
     AnsiString FakeChineseCalendarDate::GetSolarTermName() const
     {
         return SOLAR_TERMS[GetSolarTermIndex()];
     }
-    
+
     AnsiString FakeChineseCalendarDate::GetMonthName() const
     {
         if (month < 1 || month > 12)
             return "正月";
         return MONTH_NAMES[month];
     }
-    
+
     AnsiString FakeChineseCalendarDate::GetDayName() const
     {
         if (day < 1 || day > 30)
             return "初一";
-        
+
         if (day <= 10)
         {
             // 初一到初十
@@ -169,20 +169,20 @@ namespace hgl
             return "三十";
         }
     }
-    
+
     // ====================
     // EraNameManager
     // ====================
-    
+
     EraNameManager* EraNameManager::instance = nullptr;
-    
+
     EraNameManager::EraNameManager()
         : eras(nullptr), era_count(0), era_capacity(0)
     {
         era_capacity = 50;
         eras = new EmperorEra[era_capacity];
     }
-    
+
     EraNameManager::~EraNameManager()
     {
         if (eras)
@@ -191,7 +191,7 @@ namespace hgl
             eras = nullptr;
         }
     }
-    
+
     EraNameManager* EraNameManager::GetInstance()
     {
         // Note: 简化实现，非线程安全
@@ -203,7 +203,7 @@ namespace hgl
         }
         return instance;
     }
-    
+
     void EraNameManager::AddEra(const EmperorEra &era)
     {
         if (era_count >= era_capacity)
@@ -211,39 +211,39 @@ namespace hgl
             // 扩容
             int new_capacity = era_capacity * 2;
             EmperorEra *new_eras = new EmperorEra[new_capacity];
-            
+
             for (int i = 0; i < era_count; i++)
                 new_eras[i] = eras[i];
-            
+
             delete[] eras;
             eras = new_eras;
             era_capacity = new_capacity;
         }
-        
+
         eras[era_count++] = era;
     }
-    
+
     const EmperorEra* EraNameManager::FindEra(int year, int reference_year) const
     {
         // 如果没有设置参考年份，直接按年份查找
         if (reference_year == 0)
             reference_year = year;
-        
+
         // 从参考年份视角查找
         // 如果参考年份在年号有效期内，使用该年号
         // 如果参考年份在年号结束后，需要转换为后续年号
-        
+
         for (int i = 0; i < era_count; i++)
         {
             const EmperorEra &era = eras[i];
-            
+
             // 如果查询年份在此年号期间
             if (year >= era.start_year && year <= era.end_year)
             {
                 // 如果参考年份也在此年号期间，直接使用
                 if (reference_year >= era.start_year && reference_year <= era.end_year)
                     return &era;
-                
+
                 // 如果参考年份在此年号之后，查找参考年份对应的年号
                 if (reference_year > era.end_year)
                 {
@@ -254,27 +254,27 @@ namespace hgl
                             return &eras[j];
                     }
                 }
-                
+
                 // 默认返回原年号
                 return &era;
             }
         }
-        
+
         return nullptr;
     }
-    
+
     int EraNameManager::GetEraYear(int year, const EmperorEra *era) const
     {
         if (!era)
             return 1;
-        
+
         int era_year = year - era->start_year + 1;
         if (era_year < 1)
             era_year = 1;
-        
+
         return era_year;
     }
-    
+
     void EraNameManager::LoadDefaultEras()
     {
         // 明朝部分年号示例
@@ -295,7 +295,7 @@ namespace hgl
         AddEra(EmperorEra("泰昌", 1620, 1620, "朱常洛", "明"));
         AddEra(EmperorEra("天启", 1621, 1627, "朱由校", "明"));
         AddEra(EmperorEra("崇祯", 1628, 1644, "朱由检", "明"));
-        
+
         // 清朝部分年号示例
         AddEra(EmperorEra("顺治", 1644, 1661, "福临", "清"));
         AddEra(EmperorEra("康熙", 1662, 1722, "玄烨", "清"));
@@ -308,31 +308,31 @@ namespace hgl
         AddEra(EmperorEra("光绪", 1875, 1908, "载湉", "清"));
         AddEra(EmperorEra("宣统", 1909, 1911, "溥仪", "清"));
     }
-    
+
     // ====================
     // 格式化函数
     // ====================
-    
+
     AnsiString FormatChineseDate(const FakeChineseCalendarDate &date, bool use_era_name, int reference_year)
     {
         AnsiString result;
-        
+
         if (reference_year == 0)
             reference_year = date.GetReferenceYear();
-        
+
         if (use_era_name)
         {
             // 使用年号
             EraNameManager *mgr = EraNameManager::GetInstance();
             const EmperorEra *era = mgr->FindEra(date.GetYear(), reference_year);
-            
+
             if (era)
             {
                 // 计算年号年份
                 int era_year = mgr->GetEraYear(date.GetYear(), era);
-                
+
                 result = era->era_name;
-                
+
                 // 添加年份
                 if (era_year == 1)
                     result = result + "元年";
@@ -354,24 +354,24 @@ namespace hgl
             // 使用天干地支
             result = date.GetHeavenlyStemEarthlyBranch() + "年";
         }
-        
+
         // 添加月份和日期
         result = result + date.GetMonthName();
         result = result + date.GetDayName();
-        
+
         return result;
     }
-    
-    AnsiString FormatFakeChineseDateTime(const FakeChineseCalendarDate &date, const TimeOfDay &time, 
+
+    AnsiString FormatFakeChineseDateTime(const FakeChineseCalendarDate &date, const TimeOfDay &time,
                                      bool use_era_name, int reference_year)
     {
         AnsiString result = FormatChineseDate(date, use_era_name, reference_year);
-        
+
         // 添加时辰刻
         AnsiString time_str = TimeToString(time, TimeFormat("时辰刻"));
         result = result + time_str;
-        
+
         return result;
     }
-    
+
 } // namespace hgl

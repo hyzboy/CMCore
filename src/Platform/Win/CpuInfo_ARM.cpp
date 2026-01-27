@@ -1,4 +1,4 @@
-#if defined(_M_ARM) || defined(_M_ARM64)
+﻿#if defined(_M_ARM) || defined(_M_ARM64)
 #include<hgl/platform/CpuInfo.h>
 #include<hgl/type/StrChar.h>
 #include<sysinfoapi.h>

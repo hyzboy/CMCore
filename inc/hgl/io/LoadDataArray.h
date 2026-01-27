@@ -13,8 +13,8 @@ namespace hgl
 
         if(!fis.Open(filename))return(nullptr);
 
-        const size_t file_size	=fis.GetSize();
-        const size_t size		=(file_size+sizeof(T)-1)/sizeof(T);
+        const size_t file_size    =fis.GetSize();
+        const size_t size        =(file_size+sizeof(T)-1)/sizeof(T);
 
         ValueBuffer<T> *mb=new ValueBuffer<T>(size);
 

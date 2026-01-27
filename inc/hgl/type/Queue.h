@@ -74,7 +74,7 @@ namespace hgl
     template<typename T>
     class Queue
     {
-        static_assert(std::is_trivially_copyable_v<T>, 
+        static_assert(std::is_trivially_copyable_v<T>,
                       "Queue<T> requires T to be trivially copyable. For complex objects, use Queue<T*> instead.");
 
     protected:
@@ -198,7 +198,7 @@ namespace hgl
          * @brief 获取队列中所有未读取数据的完整视图（包括 read 和 write 两个数组）
          * @return ValueBuffer<T> 合并后的所有队列数据
          */
-        ValueBuffer<T> GetUnreadSnapshotData() const
+        ValueBuffer<T> GetUnreadSnapshot() const
         {
             ValueBuffer<T> result;
 

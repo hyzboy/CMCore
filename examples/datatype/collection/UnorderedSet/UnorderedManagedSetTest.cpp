@@ -1,7 +1,7 @@
-/**
+﻿/**
  * UnorderedManagedSetTest.cpp
  * UnorderedManagedSet 测试 - 测试非平凡类型的对象管理（基于指针地址）
- * 
+ *
  * 注意: UnorderedManagedSet 内部管理对象指针并负责delete
  */
 
@@ -27,7 +27,7 @@ public:
     // 默认构造函数
     ComplexTestObject() : id(0), value(0), name()
     {
-        std::cout << "    [Ctor] ComplexTestObject() at " << std::hex << (void*)this 
+        std::cout << "    [Ctor] ComplexTestObject() at " << std::hex << (void*)this
                   << std::dec << " (default)" << std::endl;
     }
 
@@ -35,7 +35,7 @@ public:
     ComplexTestObject(int id_, int value_, std::string name_)
         : id(id_), value(value_), name(std::move(name_))
     {
-        std::cout << "    [Ctor] ComplexTestObject(" << id << ", " << value << ", \"" << name 
+        std::cout << "    [Ctor] ComplexTestObject(" << id << ", " << value << ", \"" << name
                   << "\") at " << std::hex << (void*)this << std::dec << std::endl;
     }
 
@@ -43,8 +43,8 @@ public:
     ComplexTestObject(const ComplexTestObject& other)
         : id(other.id), value(other.value), name(other.name)
     {
-        std::cout << "    [Copy Ctor] ComplexTestObject at " << std::hex << (void*)this 
-                  << " from " << (void*)&other << std::dec 
+        std::cout << "    [Copy Ctor] ComplexTestObject at " << std::hex << (void*)this
+                  << " from " << (void*)&other << std::dec
                   << " (id=" << id << ")" << std::endl;
     }
 
@@ -52,15 +52,15 @@ public:
     ComplexTestObject(ComplexTestObject&& other) noexcept
         : id(other.id), value(other.value), name(std::move(other.name))
     {
-        std::cout << "    [Move Ctor] ComplexTestObject at " << std::hex << (void*)this 
-                  << " from " << (void*)&other << std::dec 
+        std::cout << "    [Move Ctor] ComplexTestObject at " << std::hex << (void*)this
+                  << " from " << (void*)&other << std::dec
                   << " (id=" << id << ")" << std::endl;
     }
 
     // 析构函数
     ~ComplexTestObject()
     {
-        std::cout << "    [Dtor] ~ComplexTestObject(" << id << ", " << value << ", \"" << name 
+        std::cout << "    [Dtor] ~ComplexTestObject(" << id << ", " << value << ", \"" << name
                   << "\") at " << std::hex << (void*)this << std::dec << std::endl;
     }
 
@@ -71,8 +71,8 @@ public:
             id = other.id;
             value = other.value;
             name = other.name;
-            std::cout << "    [Copy =] ComplexTestObject at " << std::hex << (void*)this 
-                      << " = " << (void*)&other << std::dec 
+            std::cout << "    [Copy =] ComplexTestObject at " << std::hex << (void*)this
+                      << " = " << (void*)&other << std::dec
                       << " (id=" << id << ")" << std::endl;
         }
         return *this;
@@ -85,8 +85,8 @@ public:
             id = other.id;
             value = other.value;
             name = std::move(other.name);
-            std::cout << "    [Move =] ComplexTestObject at " << std::hex << (void*)this 
-                      << " = " << (void*)&other << std::dec 
+            std::cout << "    [Move =] ComplexTestObject at " << std::hex << (void*)this
+                      << " = " << (void*)&other << std::dec
                       << " (id=" << id << ")" << std::endl;
         }
         return *this;
@@ -112,10 +112,10 @@ void TestBasicOperations()
 
     std::cout << "  Creating object A..." << std::endl;
     set.Add(new ComplexTestObject(1, 100, "A"));
-    
+
     std::cout << "  Creating object B..." << std::endl;
     set.Add(new ComplexTestObject(2, 200, "B"));
-    
+
     std::cout << "  Creating object C..." << std::endl;
     set.Add(new ComplexTestObject(3, 300, "C"));
 
@@ -126,7 +126,7 @@ void TestBasicOperations()
     int count = 0;
     set.Enum([&count](const ComplexTestObject& obj) {
         count++;
-        std::cout << "    - ID: " << obj.GetId() << ", Value: " << obj.GetValue() 
+        std::cout << "    - ID: " << obj.GetId() << ", Value: " << obj.GetValue()
                   << ", Name: " << obj.GetName() << std::endl;
     });
     assert(count == 3);
@@ -140,10 +140,10 @@ void TestPointerDeduplication()
     std::cout << "\n=== Test 2: Pointer Address Deduplication ===" << std::endl;
 
     UnorderedManagedSet<ComplexTestObject> set;
-    
+
     std::cout << "  Creating ptr1..." << std::endl;
     ComplexTestObject* ptr1 = new ComplexTestObject(10, 1000, "same");
-    
+
     std::cout << "  Creating ptr2..." << std::endl;
     ComplexTestObject* ptr2 = new ComplexTestObject(10, 1000, "same");
 
@@ -170,7 +170,7 @@ void TestDelete()
     std::cout << "\n=== Test 3: Delete Operations ===" << std::endl;
 
     UnorderedManagedSet<ComplexTestObject> set;
-    
+
     std::cout << "  Creating object..." << std::endl;
     ComplexTestObject* ptr = new ComplexTestObject(20, 2000, "obj20");
     std::cout << "  Object address: " << std::hex << (void*)ptr << std::dec << std::endl;
@@ -193,7 +193,7 @@ void TestUnlink()
     std::cout << "\n=== Test 4: Unlink Operations ===" << std::endl;
 
     UnorderedManagedSet<ComplexTestObject> set;
-    
+
     std::cout << "  Creating object..." << std::endl;
     ComplexTestObject* obj = new ComplexTestObject(30, 3000, "obj30");
     std::cout << "  Object address: " << std::hex << (void*)obj << std::dec << std::endl;
@@ -207,7 +207,7 @@ void TestUnlink()
     assert(unlinked == true);
     assert(set.GetCount() == 0);
     std::cout << "  ✓ Unlink successful" << std::endl;
-    
+
     std::cout << "  Manually deleting unlinked object..." << std::endl;
     delete obj;
 
@@ -224,17 +224,17 @@ void TestGetOperations()
     set.Add(new ComplexTestObject(222, 2222, "B"));
     set.Add(new ComplexTestObject(333, 3333, "C"));
 
-    const ValueBuffer<int>& ids = set.GetActiveView();
+    const ValueBuffer<int> &ids = set.GetActiveView();
     assert(ids.GetCount() == 3);
 
     const ComplexTestObject* first = set.At(ids[0]);
     assert(first);
-    std::cout << "  ✓ First: ID=" << first->GetId() << ", Value=" << first->GetValue() 
+    std::cout << "  ✓ First: ID=" << first->GetId() << ", Value=" << first->GetValue()
               << ", Name=" << first->GetName() << " at " << std::hex << (void*)first << std::dec << std::endl;
 
     const ComplexTestObject* last = set.At(ids[ids.GetCount() - 1]);
     assert(last);
-    std::cout << "  ✓ Last: ID=" << last->GetId() << ", Value=" << last->GetValue() 
+    std::cout << "  ✓ Last: ID=" << last->GetId() << ", Value=" << last->GetValue()
               << ", Name=" << last->GetName() << " at " << std::hex << (void*)last << std::dec << std::endl;
 
     std::cout << "  Destroying set..." << std::endl;
@@ -287,17 +287,17 @@ void TestContains()
     std::cout << "\n=== Test 8: Contains Check (by pointer address) ===" << std::endl;
 
     UnorderedManagedSet<ComplexTestObject> set;
-    
+
     std::cout << "  Creating ptr1..." << std::endl;
     ComplexTestObject* ptr1 = new ComplexTestObject(40, 4000, "test");
     std::cout << "  ptr1 address: " << std::hex << (void*)ptr1 << std::dec << std::endl;
-    
+
     std::cout << "  Creating ptr2..." << std::endl;
     ComplexTestObject* ptr2 = new ComplexTestObject(40, 4000, "test");
     std::cout << "  ptr2 address: " << std::hex << (void*)ptr2 << std::dec << std::endl;
 
     set.Add(ptr1);
-    
+
     assert(set.Contains(ptr1) == true);
     std::cout << "  ✓ Contains ptr1" << std::endl;
 

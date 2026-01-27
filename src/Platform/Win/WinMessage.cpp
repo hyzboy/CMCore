@@ -21,7 +21,7 @@ namespace hgl
 
         static KeyboardButton KeyConvert[256]{};
         static void (*WMProc[2048])(EventDispatcher *,uint32,uint32){};                 //消息处理队列
-        
+
         static TOUCHINPUT WinTouchInputBuffer[MAX_TOUCH_COUNT]{};
 
         /**
@@ -208,7 +208,7 @@ namespace hgl
 
             return KeyConvert[key];
         }
-        
+
         static EventHeader event_header;
         static WindowEventData window_event_data;
 
@@ -254,11 +254,11 @@ namespace hgl
                 mouse_event_data.x=LOWORD(lParam);
                 mouse_event_data.y=HIWORD(lParam);
                 mouse_event_data.button=0;
-                
-                event_header.type   =InputEventSource::Mouse; 
+
+                event_header.type   =InputEventSource::Mouse;
                 event_header.index  =0;
                 event_header.id     =(uint16)MouseEventID::Move;
-                
+
                 ie->OnEvent(event_header,mouse_event_data.data);
             }
         #undef WMEF_MOUSE
@@ -268,15 +268,15 @@ namespace hgl
             {
                 const int zDelta=GET_WHEEL_DELTA_WPARAM(wParam);
                 //const uint key=(uint)ConvertOSKey(GET_KEYSTATE_WPARAM(wParam));
-                
+
                 mouse_event_data.x=0;
                 mouse_event_data.y=zDelta;
                 mouse_event_data.button=0;
 
-                event_header.type   =InputEventSource::Mouse; 
-                event_header.index  =0;   
+                event_header.type   =InputEventSource::Mouse;
+                event_header.index  =0;
                 event_header.id     =(uint16)MouseEventID::Wheel;
-                
+
                 ie->OnEvent(event_header,mouse_event_data.data);
             }
 
@@ -284,15 +284,15 @@ namespace hgl
             {
                 const int zDelta=GET_WHEEL_DELTA_WPARAM(wParam);
                 //const uint key=(uint)ConvertOSKey(GET_KEYSTATE_WPARAM(wParam));
-                
+
                 mouse_event_data.x=zDelta;
                 mouse_event_data.y=0;
                 mouse_event_data.button=0;
 
-                event_header.type   =InputEventSource::Mouse; 
-                event_header.index  =0;   
+                event_header.type   =InputEventSource::Mouse;
+                event_header.index  =0;
                 event_header.id     =(uint16)MouseEventID::Wheel;
-                
+
                 ie->OnEvent(event_header,mouse_event_data.data);
             }
 
@@ -317,16 +317,16 @@ namespace hgl
             {
                 UINT32 pointerId = GET_POINTERID_WPARAM(wParam);
                 POINTER_INFO pointerInfo;
-                
+
                 if(GetPointerInfo(pointerId, &pointerInfo))
                 {
                     pointer_event_data.x = pointerInfo.ptPixelLocation.x;
                     pointer_event_data.y = pointerInfo.ptPixelLocation.y;
-                    
+
                     // 设置基本信息
                     pointer_extended_info.pointer_id = pointerId;
                     pointer_extended_info.timestamp = pointerInfo.dwTime;
-                    
+
                     // 设置设备类型
                     switch(pointerInfo.pointerType)
                     {
@@ -336,7 +336,7 @@ namespace hgl
                         case PT_MOUSE:      pointer_event_data.device_type = (uint8)PointerDeviceType::Mouse; break;
                         default:            pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
                     }
-                    
+
                     // 设置按钮状态
                     if(pointerInfo.pointerFlags & POINTER_FLAG_FIRSTBUTTON)
                         pointer_event_data.button = (uint8)PointerButton::Primary;
@@ -346,7 +346,7 @@ namespace hgl
                         pointer_event_data.button = (uint8)PointerButton::Tertiary;
                     else
                         pointer_event_data.button = (uint8)PointerButton::None;
-                    
+
                     // 如果是触控笔，获取详细信息
                     pointer_event_data.pressure = 0;
                     pointer_extended_info.tilt_x = 0;
@@ -355,7 +355,7 @@ namespace hgl
                     pointer_extended_info.is_eraser = false;
                     pointer_extended_info.is_inverted = false;
                     pointer_extended_info.is_barrel_pressed = false;
-                    
+
                     if(pointerInfo.pointerType == PT_PEN)
                     {
                         POINTER_PEN_INFO penInfo;
@@ -370,16 +370,16 @@ namespace hgl
                             pointer_extended_info.is_barrel_pressed = (penInfo.penFlags & PEN_FLAG_BARREL) != 0;
                         }
                     }
-                    
+
                     event_header.type   = InputEventSource::Pointer;
                     event_header.index  = 0;
                     event_header.id     = (uint16)PointerEventID::Down;
-                    
+
                     // 将扩展信息设置到事件分发器
                     PointerEvent* pointer_event = dynamic_cast<PointerEvent*>(ie);
                     if(pointer_event)
                         pointer_event->extended_info = pointer_extended_info;
-                    
+
                     ie->OnEvent(event_header, pointer_event_data.data);
                 }
             }
@@ -388,15 +388,15 @@ namespace hgl
             {
                 UINT32 pointerId = GET_POINTERID_WPARAM(wParam);
                 POINTER_INFO pointerInfo;
-                
+
                 if(GetPointerInfo(pointerId, &pointerInfo))
                 {
                     pointer_event_data.x = pointerInfo.ptPixelLocation.x;
                     pointer_event_data.y = pointerInfo.ptPixelLocation.y;
-                    
+
                     pointer_extended_info.pointer_id = pointerId;
                     pointer_extended_info.timestamp = pointerInfo.dwTime;
-                    
+
                     switch(pointerInfo.pointerType)
                     {
                         case PT_POINTER:    pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
@@ -405,7 +405,7 @@ namespace hgl
                         case PT_MOUSE:      pointer_event_data.device_type = (uint8)PointerDeviceType::Mouse; break;
                         default:            pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
                     }
-                    
+
                     if(pointerInfo.pointerFlags & POINTER_FLAG_FIRSTBUTTON)
                         pointer_event_data.button = (uint8)PointerButton::Primary;
                     else if(pointerInfo.pointerFlags & POINTER_FLAG_SECONDBUTTON)
@@ -414,7 +414,7 @@ namespace hgl
                         pointer_event_data.button = (uint8)PointerButton::Tertiary;
                     else
                         pointer_event_data.button = (uint8)PointerButton::None;
-                    
+
                     pointer_event_data.pressure = 0;
                     pointer_extended_info.tilt_x = 0;
                     pointer_extended_info.tilt_y = 0;
@@ -422,7 +422,7 @@ namespace hgl
                     pointer_extended_info.is_eraser = false;
                     pointer_extended_info.is_inverted = false;
                     pointer_extended_info.is_barrel_pressed = false;
-                    
+
                     if(pointerInfo.pointerType == PT_PEN)
                     {
                         POINTER_PEN_INFO penInfo;
@@ -437,15 +437,15 @@ namespace hgl
                             pointer_extended_info.is_barrel_pressed = (penInfo.penFlags & PEN_FLAG_BARREL) != 0;
                         }
                     }
-                    
+
                     event_header.type   = InputEventSource::Pointer;
                     event_header.index  = 0;
                     event_header.id     = (uint16)PointerEventID::Up;
-                    
+
                     PointerEvent* pointer_event = dynamic_cast<PointerEvent*>(ie);
                     if(pointer_event)
                         pointer_event->extended_info = pointer_extended_info;
-                    
+
                     ie->OnEvent(event_header, pointer_event_data.data);
                 }
             }
@@ -454,15 +454,15 @@ namespace hgl
             {
                 UINT32 pointerId = GET_POINTERID_WPARAM(wParam);
                 POINTER_INFO pointerInfo;
-                
+
                 if(GetPointerInfo(pointerId, &pointerInfo))
                 {
                     pointer_event_data.x = pointerInfo.ptPixelLocation.x;
                     pointer_event_data.y = pointerInfo.ptPixelLocation.y;
-                    
+
                     pointer_extended_info.pointer_id = pointerId;
                     pointer_extended_info.timestamp = pointerInfo.dwTime;
-                    
+
                     switch(pointerInfo.pointerType)
                     {
                         case PT_POINTER:    pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
@@ -471,7 +471,7 @@ namespace hgl
                         case PT_MOUSE:      pointer_event_data.device_type = (uint8)PointerDeviceType::Mouse; break;
                         default:            pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
                     }
-                    
+
                     if(pointerInfo.pointerFlags & POINTER_FLAG_FIRSTBUTTON)
                         pointer_event_data.button = (uint8)PointerButton::Primary;
                     else if(pointerInfo.pointerFlags & POINTER_FLAG_SECONDBUTTON)
@@ -480,7 +480,7 @@ namespace hgl
                         pointer_event_data.button = (uint8)PointerButton::Tertiary;
                     else
                         pointer_event_data.button = (uint8)PointerButton::None;
-                    
+
                     pointer_event_data.pressure = 0;
                     pointer_extended_info.tilt_x = 0;
                     pointer_extended_info.tilt_y = 0;
@@ -488,7 +488,7 @@ namespace hgl
                     pointer_extended_info.is_eraser = false;
                     pointer_extended_info.is_inverted = false;
                     pointer_extended_info.is_barrel_pressed = false;
-                    
+
                     if(pointerInfo.pointerType == PT_PEN)
                     {
                         POINTER_PEN_INFO penInfo;
@@ -503,15 +503,15 @@ namespace hgl
                             pointer_extended_info.is_barrel_pressed = (penInfo.penFlags & PEN_FLAG_BARREL) != 0;
                         }
                     }
-                    
+
                     event_header.type   = InputEventSource::Pointer;
                     event_header.index  = 0;
                     event_header.id     = (uint16)PointerEventID::Update;
-                    
+
                     PointerEvent* pointer_event = dynamic_cast<PointerEvent*>(ie);
                     if(pointer_event)
                         pointer_event->extended_info = pointer_extended_info;
-                    
+
                     ie->OnEvent(event_header, pointer_event_data.data);
                 }
             }
@@ -520,15 +520,15 @@ namespace hgl
             {
                 UINT32 pointerId = GET_POINTERID_WPARAM(wParam);
                 POINTER_INFO pointerInfo;
-                
+
                 if(GetPointerInfo(pointerId, &pointerInfo))
                 {
                     pointer_event_data.x = pointerInfo.ptPixelLocation.x;
                     pointer_event_data.y = pointerInfo.ptPixelLocation.y;
-                    
+
                     pointer_extended_info.pointer_id = pointerId;
                     pointer_extended_info.timestamp = pointerInfo.dwTime;
-                    
+
                     switch(pointerInfo.pointerType)
                     {
                         case PT_POINTER:    pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
@@ -537,7 +537,7 @@ namespace hgl
                         case PT_MOUSE:      pointer_event_data.device_type = (uint8)PointerDeviceType::Mouse; break;
                         default:            pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
                     }
-                    
+
                     pointer_event_data.button = (uint8)PointerButton::None;
                     pointer_event_data.pressure = 0;
                     pointer_extended_info.tilt_x = 0;
@@ -546,15 +546,15 @@ namespace hgl
                     pointer_extended_info.is_eraser = false;
                     pointer_extended_info.is_inverted = false;
                     pointer_extended_info.is_barrel_pressed = false;
-                    
+
                     event_header.type   = InputEventSource::Pointer;
                     event_header.index  = 0;
                     event_header.id     = (uint16)PointerEventID::Enter;
-                    
+
                     PointerEvent* pointer_event = dynamic_cast<PointerEvent*>(ie);
                     if(pointer_event)
                         pointer_event->extended_info = pointer_extended_info;
-                    
+
                     ie->OnEvent(event_header, pointer_event_data.data);
                 }
             }
@@ -563,15 +563,15 @@ namespace hgl
             {
                 UINT32 pointerId = GET_POINTERID_WPARAM(wParam);
                 POINTER_INFO pointerInfo;
-                
+
                 if(GetPointerInfo(pointerId, &pointerInfo))
                 {
                     pointer_event_data.x = pointerInfo.ptPixelLocation.x;
                     pointer_event_data.y = pointerInfo.ptPixelLocation.y;
-                    
+
                     pointer_extended_info.pointer_id = pointerId;
                     pointer_extended_info.timestamp = pointerInfo.dwTime;
-                    
+
                     switch(pointerInfo.pointerType)
                     {
                         case PT_POINTER:    pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
@@ -580,7 +580,7 @@ namespace hgl
                         case PT_MOUSE:      pointer_event_data.device_type = (uint8)PointerDeviceType::Mouse; break;
                         default:            pointer_event_data.device_type = (uint8)PointerDeviceType::None; break;
                     }
-                    
+
                     pointer_event_data.button = (uint8)PointerButton::None;
                     pointer_event_data.pressure = 0;
                     pointer_extended_info.tilt_x = 0;
@@ -589,15 +589,15 @@ namespace hgl
                     pointer_extended_info.is_eraser = false;
                     pointer_extended_info.is_inverted = false;
                     pointer_extended_info.is_barrel_pressed = false;
-                    
+
                     event_header.type   = InputEventSource::Pointer;
                     event_header.index  = 0;
                     event_header.id     = (uint16)PointerEventID::Leave;
-                    
+
                     PointerEvent* pointer_event = dynamic_cast<PointerEvent*>(ie);
                     if(pointer_event)
                         pointer_event->extended_info = pointer_extended_info;
-                    
+
                     ie->OnEvent(event_header, pointer_event_data.data);
                 }
             }
@@ -610,26 +610,26 @@ namespace hgl
             {
                 UINT cInputs = LOWORD(wParam);
                 HTOUCHINPUT hTouchInput = reinterpret_cast<HTOUCHINPUT>(static_cast<UINT_PTR>(lParam));
-                
+
                 if(cInputs > 0)
-                {                    
+                {
                     if(GetTouchInputInfo(hTouchInput, cInputs, WinTouchInputBuffer, sizeof(TOUCHINPUT)))
                     {
                         TouchEvent* touch_event = dynamic_cast<TouchEvent*>(ie);
-                        
+
                         if(touch_event && cInputs <= MAX_TOUCH_POINTS)
                         {
                             // Use the Windows-specific function to update touch event
                             UpdateTouchEventFromWindowsTouch_Windows(touch_event, cInputs, WinTouchInputBuffer);
-                            
+
                             // Use the first touch point for event data
                             touch_event_data.x = WinTouchInputBuffer[0].x / 100;
                             touch_event_data.y = WinTouchInputBuffer[0].y / 100;
                             touch_event_data.touch_count = cInputs;
-                            
+
                             event_header.type = InputEventSource::Touch;
                             event_header.index = 0;
-                            
+
                             // Determine event type based on flags
                             if(WinTouchInputBuffer[0].dwFlags & TOUCHEVENTF_DOWN)
                                 event_header.id = (uint16)TouchEventID::Down;
@@ -637,10 +637,10 @@ namespace hgl
                                 event_header.id = (uint16)TouchEventID::Up;
                             else if(WinTouchInputBuffer[0].dwFlags & TOUCHEVENTF_MOVE)
                                 event_header.id = (uint16)TouchEventID::Move;
-                            
+
                             ie->OnEvent(event_header, touch_event_data.data);
                         }
-                        
+
                         CloseTouchInputHandle(hTouchInput);
                     }
                 }
@@ -656,19 +656,19 @@ namespace hgl
                 GESTUREINFO gi;
                 ZeroMemory(&gi, sizeof(GESTUREINFO));
                 gi.cbSize = sizeof(GESTUREINFO);
-                
+
                 HGESTUREINFO hGestureInfo = reinterpret_cast<HGESTUREINFO>(static_cast<UINT_PTR>(lParam));
-                
+
                 if(GetGestureInfo(hGestureInfo, &gi))
                 {
                     gesture_event_data.x = gi.ptsLocation.x;
                     gesture_event_data.y = gi.ptsLocation.y;
                     gesture_event_data.flags = gi.dwFlags;
-                    
+
                     gesture_extended_info.gesture_id = gi.ullArguments;
                     gesture_extended_info.timestamp = gi.dwID;
                     gesture_extended_info.sequence_id = gi.dwSequenceID;
-                    
+
                     // 判断手势类型
                     switch(gi.dwID)
                     {
@@ -707,16 +707,16 @@ namespace hgl
                             event_header.id = (uint16)GestureEventID::Update;
                             break;
                     }
-                    
+
                     event_header.type = InputEventSource::Gesture;
                     event_header.index = 0;
-                    
+
                     GestureEvent* gesture_event = dynamic_cast<GestureEvent*>(ie);
                     if(gesture_event)
                         gesture_event->extended_info = gesture_extended_info;
-                    
+
                     ie->OnEvent(event_header, gesture_event_data.data);
-                    
+
                     CloseGestureInfoHandle(hGestureInfo);
                 }
             }
@@ -728,7 +728,7 @@ namespace hgl
             WMEF1(WMProcKeyDown)
             {
                 event_header.type   =InputEventSource::Keyboard;
-                event_header.index  =0;   
+                event_header.index  =0;
                 event_header.id     =(uint16)KeyboardEventID::Pressed;
 
                 keyboard_event_data.key=(uint32)ConvertOSKey(wParam);
@@ -739,7 +739,7 @@ namespace hgl
             WMEF1(WMProcKeyUp)
             {
                 event_header.type   =InputEventSource::Keyboard;
-                event_header.index  =0;   
+                event_header.index  =0;
                 event_header.id     =(uint16)KeyboardEventID::Released;
 
                 keyboard_event_data.key=(uint32)ConvertOSKey(wParam);
@@ -750,7 +750,7 @@ namespace hgl
             WMEF1(WMProcChar)
             {
                 event_header.type   =InputEventSource::Keyboard;
-                event_header.index  =0;   
+                event_header.index  =0;
                 event_header.id     =(uint16)KeyboardEventID::Char;
 
                 keyboard_event_data.ch=(wchar_t)wParam;

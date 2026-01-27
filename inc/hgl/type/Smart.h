@@ -852,7 +852,7 @@ namespace hgl
 
         AutoFree(){ obj=nullptr; }
         explicit AutoFree(T *o){ obj=o; }
-        ~AutoFree(){ if(obj) free(obj); }        
+        ~AutoFree(){ if(obj) free(obj); }
 
         void operator = (T *o)
         {

@@ -38,7 +38,7 @@ namespace hgl
             // 读取CPU列表
             std::ostringstream path;
             path << "/sys/devices/system/node/node" << node_id << "/cpulist";
-            
+
             std::ifstream cpulist(path.str());
             if (cpulist.is_open())
             {
@@ -49,7 +49,7 @@ namespace hgl
                     std::istringstream iss(line);
                     std::string token;
                     std::set<int> cpus;
-                    
+
                     while (std::getline(iss, token, ','))
                     {
                         size_t dash = token.find('-');
@@ -72,7 +72,7 @@ namespace hgl
             // 读取内存信息
             path.str("");
             path << "/sys/devices/system/node/node" << node_id << "/meminfo";
-            
+
             std::ifstream meminfo(path.str());
             if (meminfo.is_open())
             {
@@ -125,7 +125,7 @@ namespace hgl
 
                 topology->ccd_count = 0;
                 topology->ccds = nullptr;
-                
+
                 return true;
             }
         }
@@ -133,13 +133,13 @@ namespace hgl
 
         // 回退到从/sys读取
         topology->numa_node_count = 0;
-        
+
         // 检测有多少个NUMA节点
         for (uint i = 0; i < 256; ++i)
         {
             std::ostringstream path;
             path << "/sys/devices/system/node/node" << i;
-            
+
             std::ifstream test(path.str());
             if (test.good())
                 topology->numa_node_count = i + 1;
@@ -317,9 +317,9 @@ namespace hgl
             struct bitmask *nodemask = numa_allocate_nodemask();
             numa_bitmask_clearall(nodemask);
             numa_bitmask_setbit(nodemask, numa_node);
-            
+
             numa_bind(nodemask);
-            
+
             numa_free_nodemask(nodemask);
             return true;
         }
@@ -333,7 +333,7 @@ namespace hgl
         // 读取该节点的CPU列表并设置亲合性
         std::ostringstream path;
         path << "/sys/devices/system/node/node" << numa_node << "/cpulist";
-        
+
         std::ifstream cpulist(path.str());
         if (!cpulist.is_open())
             return false;
@@ -346,7 +346,7 @@ namespace hgl
         {
             std::istringstream iss(line);
             std::string token;
-            
+
             while (std::getline(iss, token, ','))
             {
                 size_t dash = token.find('-');
@@ -375,9 +375,9 @@ namespace hgl
             struct bitmask *nodemask = numa_allocate_nodemask();
             numa_bitmask_clearall(nodemask);
             numa_bitmask_setbit(nodemask, numa_node);
-            
+
             numa_run_on_node_mask(nodemask);
-            
+
             numa_free_nodemask(nodemask);
             return true;
         }
@@ -386,7 +386,7 @@ namespace hgl
         // 如果没有libnuma，尝试手动设置CPU亲合性
         std::ostringstream path;
         path << "/sys/devices/system/node/node" << numa_node << "/cpulist";
-        
+
         std::ifstream cpulist(path.str());
         if (!cpulist.is_open())
             return false;
@@ -399,7 +399,7 @@ namespace hgl
         {
             std::istringstream iss(line);
             std::string token;
-            
+
             while (std::getline(iss, token, ','))
             {
                 size_t dash = token.find('-');
@@ -452,7 +452,7 @@ namespace hgl
             // 读取NUMA节点
             std::ostringstream numa_path;
             numa_path << "/sys/devices/system/cpu/cpu" << cpu_id << "/node";
-            
+
             std::ifstream numa_file(numa_path.str());
             if (numa_file.is_open())
             {
@@ -473,7 +473,7 @@ namespace hgl
             // 读取物理核心ID
             std::ostringstream core_path;
             core_path << "/sys/devices/system/cpu/cpu" << cpu_id << "/topology/core_id";
-            
+
             std::ifstream core_file(core_path.str());
             if (core_file.is_open())
             {
@@ -498,7 +498,7 @@ namespace hgl
             // 检查 /sys/devices/system/cpu/cpu*/cache/index3/id 来推断CCD
             std::ostringstream cache_path;
             cache_path << "/sys/devices/system/cpu/cpu" << cpu_id << "/cache/index3/id";
-            
+
             std::ifstream cache_file(cache_path.str());
             if (cache_file.is_open())
             {
@@ -512,7 +512,7 @@ namespace hgl
         }
 
         distribution->numa_node_count = numa_nodes.empty() ? 1 : numa_nodes.size();
-        
+
         // 计算唯一的CCD数量
         std::set<uint> unique_ccds;
         for (uint i = 0; i < distribution->total_cpus; ++i)

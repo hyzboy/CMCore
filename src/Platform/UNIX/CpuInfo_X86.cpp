@@ -1,4 +1,4 @@
-#include<hgl/platform/CpuInfo.h>
+﻿#include<hgl/platform/CpuInfo.h>
 #include<hgl/type/StrChar.h>
 #include<string.h>
 #include<iostream>
