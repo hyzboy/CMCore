@@ -44,15 +44,15 @@ namespace hgl
     };
     
     // ====================
-    // ChineseCalendarDate
+    // FakeChineseCalendarDate
     // ====================
     
-    ChineseCalendarDate::ChineseCalendarDate()
+    FakeChineseCalendarDate::FakeChineseCalendarDate()
         : year(1900), month(1), day(1), reference_year(1900)
     {
     }
     
-    ChineseCalendarDate::ChineseCalendarDate(int y, int m, int d)
+    FakeChineseCalendarDate::FakeChineseCalendarDate(int y, int m, int d)
         : year(y), month(m), day(d), reference_year(y)
     {
         // 简单验证
@@ -62,7 +62,7 @@ namespace hgl
         if (day > 30) day = 30;
     }
     
-    AnsiString ChineseCalendarDate::GetHeavenlyStemEarthlyBranch() const
+    AnsiString FakeChineseCalendarDate::GetHeavenlyStemEarthlyBranch() const
     {
         // 天干地支纪年
         // 以公元4年为甲子年（甲子年的年份 mod 60 = 4）
@@ -78,28 +78,28 @@ namespace hgl
         return result;
     }
     
-    AnsiString ChineseCalendarDate::GetHeavenlyStem() const
+    AnsiString FakeChineseCalendarDate::GetHeavenlyStem() const
     {
         int cycle_year = (year - 4) % 60;
         if (cycle_year < 0) cycle_year += 60;
         return HEAVENLY_STEMS[cycle_year % 10];
     }
     
-    AnsiString ChineseCalendarDate::GetEarthlyBranch() const
+    AnsiString FakeChineseCalendarDate::GetEarthlyBranch() const
     {
         int cycle_year = (year - 4) % 60;
         if (cycle_year < 0) cycle_year += 60;
         return EARTHLY_BRANCHES[cycle_year % 12];
     }
     
-    AnsiString ChineseCalendarDate::GetZodiac() const
+    AnsiString FakeChineseCalendarDate::GetZodiac() const
     {
         int cycle_year = (year - 4) % 60;
         if (cycle_year < 0) cycle_year += 60;
         return ZODIAC_ANIMALS[cycle_year % 12];
     }
     
-    AnsiString ChineseCalendarDate::GetSeason() const
+    AnsiString FakeChineseCalendarDate::GetSeason() const
     {
         // 简化的四季划分：每季度3个月
         if (month >= 1 && month <= 3)
@@ -112,7 +112,7 @@ namespace hgl
             return "冬";
     }
     
-    int ChineseCalendarDate::GetSolarTermIndex() const
+    int FakeChineseCalendarDate::GetSolarTermIndex() const
     {
         // 简化计算：每个月2个节气，每个节气15天
         // 360天/年 ÷ 24节气 = 15天/节气
@@ -125,19 +125,19 @@ namespace hgl
         return term_index;
     }
     
-    AnsiString ChineseCalendarDate::GetSolarTermName() const
+    AnsiString FakeChineseCalendarDate::GetSolarTermName() const
     {
         return SOLAR_TERMS[GetSolarTermIndex()];
     }
     
-    AnsiString ChineseCalendarDate::GetMonthName() const
+    AnsiString FakeChineseCalendarDate::GetMonthName() const
     {
         if (month < 1 || month > 12)
             return "正月";
         return MONTH_NAMES[month];
     }
     
-    AnsiString ChineseCalendarDate::GetDayName() const
+    AnsiString FakeChineseCalendarDate::GetDayName() const
     {
         if (day < 1 || day > 30)
             return "初一";
@@ -313,7 +313,7 @@ namespace hgl
     // 格式化函数
     // ====================
     
-    AnsiString FormatChineseDate(const ChineseCalendarDate &date, bool use_era_name, int reference_year)
+    AnsiString FormatChineseDate(const FakeChineseCalendarDate &date, bool use_era_name, int reference_year)
     {
         AnsiString result;
         
@@ -362,7 +362,7 @@ namespace hgl
         return result;
     }
     
-    AnsiString FormatChineseDateTime(const ChineseCalendarDate &date, const TimeOfDay &time, 
+    AnsiString FormatFakeChineseDateTime(const FakeChineseCalendarDate &date, const TimeOfDay &time, 
                                      bool use_era_name, int reference_year)
     {
         AnsiString result = FormatChineseDate(date, use_era_name, reference_year);

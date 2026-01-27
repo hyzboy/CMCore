@@ -7,15 +7,22 @@
 namespace hgl
 {
     /**
-     * 简化的中国古代历法类
+     * 虚假的简化中国古代历法类
      * 
-     * 特点：
-     * - 固定一年360天，12个月，每月30天
-     * - 支持天干地支纪年
-     * - 支持24节气
-     * - 支持四季
-     * - 支持皇帝年号（可配置表）
-     * - 年号随时间变化（历史视角）
+     * ⚠️ 警告：这是一个虚构的简化历法系统，与真实的中国历法完全不同！
+     * 
+     * 本类采用简化规则用于演示和游戏场景：
+     * - 固定一年360天，12个月，每月30天（真实历法有闰月和大小月）
+     * - 天干地支采用简化计算（真实历法需考虑立春等因素）
+     * - 24节气均匀分布（真实节气基于太阳黄经）
+     * - 皇帝年号简化处理（真实历史更复杂）
+     * 
+     * 本类仅用于：
+     * - 游戏开发中的古代时间表示
+     * - 教学演示
+     * - 不需要精确历史对应的应用
+     * 
+     * 请勿用于需要真实历史准确性的场合！
      */
     
     /**
@@ -35,9 +42,11 @@ namespace hgl
     };
     
     /**
-     * 简化的中国古代历法日期类
+     * 虚假的简化中国古代历法日期类
+     * 
+     * ⚠️ 注意：这不是真实的中国历法！这是一个简化的虚构系统。
      */
-    class ChineseCalendarDate
+    class FakeChineseCalendarDate
     {
     private:
         int year;          ///< 年份（公历年份）
@@ -48,8 +57,8 @@ namespace hgl
         int reference_year; ///< 参考年份（当前时间点），用于年号转换
         
     public:
-        ChineseCalendarDate();
-        ChineseCalendarDate(int y, int m, int d);
+        FakeChineseCalendarDate();
+        FakeChineseCalendarDate(int y, int m, int d);
         
         int GetYear() const { return year; }
         int GetMonth() const { return month; }
@@ -119,23 +128,27 @@ namespace hgl
     };
     
     /**
-     * 格式化中国古代历法日期和时间
+     * 格式化虚假的中国古代历法日期和时间
+     * 
+     * ⚠️ 注意：这是虚构的简化格式，与真实历史不符！
      * 
      * 示例：
      * - "永乐元年腊月初八午时三刻"
      * - "甲子年冬月十五申时初刻"
      */
-    AnsiString FormatChineseDateTime(const ChineseCalendarDate &date, const TimeOfDay &time, 
-                                     bool use_era_name = true, int reference_year = 0);
+    AnsiString FormatFakeChineseDateTime(const FakeChineseCalendarDate &date, const TimeOfDay &time, 
+                                         bool use_era_name = true, int reference_year = 0);
     
     /**
-     * 仅格式化中国古代历法日期
+     * 仅格式化虚假的中国古代历法日期
+     * 
+     * ⚠️ 注意：这是虚构的简化格式，与真实历史不符！
      * 
      * 示例：
      * - "永乐元年腊月初八"
      * - "甲子年冬月十五"
      */
-    AnsiString FormatChineseDate(const ChineseCalendarDate &date, bool use_era_name = true, int reference_year = 0);
+    AnsiString FormatFakeChineseDate(const FakeChineseCalendarDate &date, bool use_era_name = true, int reference_year = 0);
     
 } // namespace hgl
 
