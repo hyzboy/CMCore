@@ -145,14 +145,46 @@ namespace hgl
             "午时", "未时", "申时", "酉时", "戌时", "亥时"
         };
         
+        // 刻的名称 (每个时辰8刻，每刻15分钟)
+        static const char* ke_names[] = {
+            "初刻", "一刻", "二刻", "三刻", "四刻", "五刻", "六刻", "七刻"
+        };
+        
         // 计算时辰索引 (0-11)
         int shichen_index;
         if (hours == 23 || hours == 0)
             shichen_index = 0;  // 子时 (23:00-00:59)
         else
             shichen_index = (hours + 1) / 2;  // 其他时辰
+        
+        // 计算刻 (0-7) - 计算从时辰开始的分钟数，然后除以15
+        int minutes_in_shichen;
+        if (shichen_index == 0) {  // 子时特殊处理: 23:00-00:59
+            if (hours == 23)
+                minutes_in_shichen = minutes;           // 23:00-23:59 = 0-59分钟
+            else  // hours == 0
+                minutes_in_shichen = 60 + minutes;      // 00:00-00:59 = 60-119分钟
+        } else {
+            // 其他时辰的开始小时 = (索引 × 2) - 1
+            // 例如: 午时(索引6) 开始于 11点, 未时(索引7) 开始于 13点
+            int shichen_start_hour = (shichen_index * 2) - 1;
+            minutes_in_shichen = (hours - shichen_start_hour) * 60 + minutes;
+        }
+        
+        int ke_index = minutes_in_shichen / 15;  // 每15分钟一刻
+        if (ke_index > 7) ke_index = 7;          // 最多7刻（初刻到七刻）
 
         size_t pos = 0;
+
+        // 替换 刻 (刻名称，如"初刻"、"三刻") - 必须在其他替换之前处理
+        pos = 0;
+        while ((pos = result.FindString("刻", pos)) != -1)
+        {
+            const char* ke_name = ke_names[ke_index];
+            size_t name_len = strlen(ke_name);
+            result.Replace(pos, strlen("刻"), ke_name);  // "刻"是3字节UTF-8
+            pos += name_len;
+        }
 
         // 替换 时辰 (中文时辰名称) - 必须在 HH 之前处理
         pos = 0;
@@ -162,6 +194,16 @@ namespace hgl
             size_t name_len = strlen(shichen_name);
             result.Replace(pos, strlen("时辰"), shichen_name);  // "时辰"是6字节UTF-8
             pos += name_len;
+        }
+        
+        // 替换 KE (刻数字 0-7)
+        pos = 0;
+        while ((pos = result.FindString("KE", pos)) != -1)
+        {
+            char buffer[2];
+            snprintf(buffer, sizeof(buffer), "%d", ke_index);
+            result.Replace(pos, 2, buffer);
+            pos += 1;
         }
 
         // 替换 SC (时辰数字 0-11)

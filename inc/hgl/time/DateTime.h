@@ -212,8 +212,8 @@ namespace hgl
      */
     struct TimeFormat
     {
-        AnsiString pattern;    ///< 格式模式，支持: HH(时), MM(分), SS(秒), ms(毫秒), us(微秒), SC(时辰数字0-11), 时辰(时辰中文)
-                                ///< 示例: "HH:MM:SS", "HH:MM:SS.ms", "HH时MM分SS秒 时辰"
+        AnsiString pattern;    ///< 格式模式，支持: HH(时), MM(分), SS(秒), ms(毫秒), us(微秒), SC(时辰数字0-11), 时辰(时辰中文), KE(刻数字0-7), 刻(刻名称)
+                                ///< 示例: "HH:MM:SS", "HH:MM:SS.ms", "HH时MM分SS秒 时辰", "时辰刻"
 
         TimeFormat(const AnsiString &p = "HH:MM:SS") : pattern(p) {}
     };
