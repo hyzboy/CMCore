@@ -2,6 +2,7 @@
 
 #include<hgl/time/Time.h>
 #include<hgl/time/TimeConst.h>
+#include<compare>
 
 namespace hgl
 {
@@ -23,7 +24,7 @@ namespace hgl
         // ========================================================================
         
         Timestamp();                                                                ///<默认构造，使用当前时间
-        explicit Timestamp(uint64 value, bool is_unix_us = true);                  ///<从时间戳构造(默认Unix微秒)
+        explicit Timestamp(uint64 unix_microseconds);                          ///<从Unix微秒时间戳构造
         Timestamp(const Timestamp &other);                                          ///<拷贝构造
         
         // ========================================================================

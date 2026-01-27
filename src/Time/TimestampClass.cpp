@@ -1,4 +1,5 @@
 ﻿#include <hgl/time/Timestamp.h>
+#include <compare>
 
 namespace hgl
 {
@@ -11,12 +12,9 @@ namespace hgl
         unix_us = GetTimeUs();
     }
     
-    Timestamp::Timestamp(uint64 value, bool is_unix_us)
+    Timestamp::Timestamp(uint64 unix_microseconds)
     {
-        if (is_unix_us)
-            unix_us = value;
-        else
-            unix_us = value; // 如果需要其他格式，通过静态工厂方法创建
+        unix_us = unix_microseconds;
     }
     
     Timestamp::Timestamp(const Timestamp &other)
@@ -30,33 +28,33 @@ namespace hgl
     
     Timestamp Timestamp::Now()
     {
-        return Timestamp(GetTimeUs(), true);
+        return Timestamp(GetTimeUs());
     }
     
     Timestamp Timestamp::FromUnixSeconds(uint64 seconds)
     {
-        return Timestamp(seconds * HGL_MICRO_SEC_PER_SEC, true);
+        return Timestamp(seconds * HGL_MICRO_SEC_PER_SEC);
     }
     
     Timestamp Timestamp::FromUnixMilliseconds(uint64 milliseconds)
     {
-        return Timestamp(milliseconds * 1000, true);
+        return Timestamp(milliseconds * 1000);
     }
     
     Timestamp Timestamp::FromUnixMicroseconds(uint64 microseconds)
     {
-        return Timestamp(microseconds, true);
+        return Timestamp(microseconds);
     }
     
     Timestamp Timestamp::FromWindows(uint64 windows_timestamp)
     {
-        return Timestamp(WindowsTimestampToUnix(windows_timestamp), true);
+        return Timestamp(WindowsTimestampToUnix(windows_timestamp));
     }
     
     Timestamp Timestamp::FromUUIDv7(uint64 uuid7_timestamp)
     {
         uint64 unix_ms = UUIDv7TimestampToUnix(uuid7_timestamp);
-        return Timestamp(unix_ms * 1000, true);
+        return Timestamp(unix_ms * 1000);
     }
     
     // ========================================================================
@@ -100,22 +98,22 @@ namespace hgl
     
     Timestamp Timestamp::AddSeconds(int64 seconds) const
     {
-        return Timestamp(unix_us + seconds * HGL_MICRO_SEC_PER_SEC, true);
+        return Timestamp(unix_us + seconds * HGL_MICRO_SEC_PER_SEC);
     }
     
     Timestamp Timestamp::AddMinutes(int64 minutes) const
     {
-        return Timestamp(unix_us + minutes * HGL_TIME_ONE_MINUTE * HGL_MICRO_SEC_PER_SEC, true);
+        return Timestamp(unix_us + minutes * HGL_TIME_ONE_MINUTE * HGL_MICRO_SEC_PER_SEC);
     }
     
     Timestamp Timestamp::AddHours(int64 hours) const
     {
-        return Timestamp(unix_us + hours * HGL_TIME_ONE_HOUR * HGL_MICRO_SEC_PER_SEC, true);
+        return Timestamp(unix_us + hours * HGL_TIME_ONE_HOUR * HGL_MICRO_SEC_PER_SEC);
     }
     
     Timestamp Timestamp::AddDays(int64 days) const
     {
-        return Timestamp(unix_us + days * HGL_TIME_ONE_DAY * HGL_MICRO_SEC_PER_SEC, true);
+        return Timestamp(unix_us + days * HGL_TIME_ONE_DAY * HGL_MICRO_SEC_PER_SEC);
     }
     
     Timestamp Timestamp::AddWeeks(int64 weeks) const
