@@ -64,7 +64,7 @@ namespace hgl
 
         /**
          * @brief 禁用拷贝构造
-         * 
+         *
          * 为防止浅拷贝导致的双重释放，ValueBuffer 禁止复制。
          * 如需深拷贝，请使用 CopyFrom() 方法。
          * 如需转移所有权，请使用移动构造 (C++11 move semantics)。
@@ -73,7 +73,7 @@ namespace hgl
 
         /**
          * @brief 允许移动构造 (C++11 move semantics)
-         * 
+         *
          * 高效地转移另一个 ValueBuffer 的所有权，原对象变为空状态。
          */
         ValueBuffer(ValueBuffer &&other) noexcept
@@ -86,7 +86,7 @@ namespace hgl
 
         /**
          * @brief 禁用拷贝赋值
-         * 
+         *
          * 为防止浅拷贝导致的双重释放，ValueBuffer 禁止赋值。
          * 如需深拷贝，请显式调用此方法。
          * 如需转移所有权，请使用移动赋值 (C++11 move assignment)。
@@ -101,7 +101,7 @@ namespace hgl
 
         /**
          * @brief 允许移动赋值 (C++11 move assignment)
-         * 
+         *
          * 高效地转移另一个 ValueBuffer 的所有权，原对象变为空状态。
          */
         ValueBuffer &operator=(ValueBuffer &&other) noexcept
@@ -516,10 +516,10 @@ namespace hgl
         // 赋值辅助 - 深拷贝方法
         /**
          * @brief 深拷贝赋值，长度自动调整。
-         * 
+         *
          * 注意：ValueBuffer 禁用拷贝运算符以防浅拷贝。
          * 如需深拷贝，请显式调用此方法。
-         * 
+         *
          * @param da 源数组。
          */
         void CopyFrom(const ValueBuffer<T> &da)

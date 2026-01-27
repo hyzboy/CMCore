@@ -85,7 +85,7 @@ namespace hgl
 
         /**
         * @brief CN:获取闲置ID队列的快照。\nEN:Get idle ID queue snapshot (copy, not reference).
-        * 
+        *
         * CN:返回所有闲置ID的完整快照（深拷贝）。\nEN:Returns a complete snapshot (deep copy) of all idle IDs.
         * CN:快照包含读段+写段的所有数据。\nEN:Snapshot contains all data from both read and write segments.
         * CN:可以安全地长期保存。\nEN:Safe to keep for long periods.
