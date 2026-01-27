@@ -29,7 +29,8 @@ AnsiString NumberToChinese(int num, bool use_zero_ling = true)
     num_str = buffer;
     
     // 逐位转换为中文
-    for (size_t i = 0; i < strlen(num_str.c_str()); i++)
+    size_t len = strlen(num_str.c_str());
+    for (size_t i = 0; i < len; i++)
     {
         int digit = num_str.c_str()[i] - '0';
         result = result + digits[digit];
@@ -48,11 +49,16 @@ AnsiString GenerateExecutionSentence(const CalendarDate &date, const TimeOfDay &
     // 年份 - 每位数字单独转换
     AnsiString year_str = NumberToChinese(year, true);
     
-    // 月份 - 使用中文数字
+    // 月份 - 使用中文数字 (1-12)
     const char* month_chinese[] = {
         "", "一", "二", "三", "四", "五", "六",
         "七", "八", "九", "十", "十一", "十二"
     };
+    
+    // 确保月份在有效范围内
+    if (month < 1 || month > 12)
+        month = 1;  // 默认值
+    
     AnsiString month_str = month_chinese[month];
     
     // 日期 - 使用中文数字
