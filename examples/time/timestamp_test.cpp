@@ -1,8 +1,8 @@
-﻿#include<hgl/time/Time.h>
-#include<hgl/type/String.h>
-#include<iostream>
-#include<iomanip>
-#include<cmath>
+﻿#include <hgl/time/Time.h>
+#include <hgl/type/String.h>
+#include <iostream>
+#include <iomanip>
+#include <cmath>
 
 using namespace hgl;
 using namespace std;

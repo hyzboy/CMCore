@@ -50,8 +50,8 @@ namespace hgl
         // 转换步骤:
         // 1. 将Unix微秒时间戳转换为从Windows纪元开始的微秒数
         // 2. 将微秒转换为100纳秒单位(乘以10)
-        uint64 unix_from_win_epoch_us = unix_us + (HGL_WIN_TO_UNIX_EPOCH_SEC * HGL_MICRO_SEC_PER_SEC);
-        return unix_from_win_epoch_us * 10; // 微秒 -> 100纳秒
+        uint64 unix_us_from_win_epoch = unix_us + (HGL_WIN_TO_UNIX_EPOCH_SEC * HGL_MICRO_SEC_PER_SEC);
+        return unix_us_from_win_epoch * 10; // 微秒 -> 100纳秒
     }
     
     /**
@@ -94,8 +94,7 @@ namespace hgl
     {
         // UUIDv7的时间戳就是Unix毫秒时间戳的低48位
         // 48位可以表示从1970到约8925年的时间
-        constexpr uint64 MASK_48BIT = 0x0000FFFFFFFFFFFFULL;
-        return unix_ms & MASK_48BIT;
+        return unix_ms & HGL_UUID7_TIMESTAMP_MASK;
     }
     
     /**
@@ -118,8 +117,7 @@ namespace hgl
     {
         // UUIDv7时间戳本身就是Unix毫秒时间戳
         // 为了保证安全，屏蔽高位(虽然按规范应该为0)
-        constexpr uint64 MASK_48BIT = 0x0000FFFFFFFFFFFFULL;
-        return uuid7_timestamp & MASK_48BIT;
+        return uuid7_timestamp & HGL_UUID7_TIMESTAMP_MASK;
     }
     
     // ========================================================================

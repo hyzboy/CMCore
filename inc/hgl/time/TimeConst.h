@@ -31,9 +31,11 @@ namespace hgl
     // Windows FILETIME: 100-nanosecond intervals since January 1, 1601 00:00:00 UTC
     constexpr int64  HGL_WIN_TICKS_PER_SEC      = 10000000;         ///<Windows时间刻度每秒 (100ns ticks per second)
     constexpr int64  HGL_WIN_TO_UNIX_EPOCH_SEC  = 11644473600LL;    ///<Windows纪元到Unix纪元的秒数差 (1601->1970)
+                                                                     ///<计算方法: 369年 × 365.2425天/年 × 86400秒/天
     
     // UUIDv7 时间戳常量 (UUIDv7 Timestamp Constants)  
     // UUIDv7: 毫秒时间戳，从Unix纪元开始
     // UUIDv7: millisecond timestamp since Unix epoch
     constexpr int    HGL_UUID7_TIMESTAMP_BITS   = 48;               ///<UUIDv7时间戳位数 (timestamp bits in UUIDv7)
+    constexpr uint64 HGL_UUID7_TIMESTAMP_MASK   = 0x0000FFFFFFFFFFFFULL; ///<UUIDv7时间戳掩码 (48-bit mask)
 }//namespace hgl
