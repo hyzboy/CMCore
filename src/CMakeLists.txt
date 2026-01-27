@@ -366,14 +366,16 @@ SET(CMCORE_TIME_INCLUDE_PATH ${CMCORE_ROOT_INCLUDE_PATH}/hgl/time)
 
 SET(CMCORE_TIME_HEADERS ${CMCORE_TIME_INCLUDE_PATH}/DateTime.h
                         ${CMCORE_TIME_INCLUDE_PATH}/Time.h
-                        ${CMCORE_TIME_INCLUDE_PATH}/TimeID.h)
+                        ${CMCORE_TIME_INCLUDE_PATH}/TimeID.h
+                        ${CMCORE_TIME_INCLUDE_PATH}/TimeConst.h)
 
 SET(CMCORE_TIME_SOURCES Time/DateTime.cpp
                         Time/TimeCount.cpp
                         Time/TimeVal.cpp
                         Time/TimeOfDay.cpp
                         Time/CalendarDate.cpp
-                        Time/TimeID.cpp)
+                        Time/TimeID.cpp
+                        Time/Timestamp.cpp)
 
 SOURCE_GROUP("Time\\Headers" FILES ${CMCORE_TIME_HEADERS})
 SOURCE_GROUP("Time\\Sources" FILES ${CMCORE_TIME_SOURCES})
