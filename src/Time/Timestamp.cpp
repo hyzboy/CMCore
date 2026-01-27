@@ -39,16 +39,6 @@ namespace hgl
     // ========================================================================
     
     /**
-     * 获取当前Windows FILETIME时间戳
-     * @return Windows时间戳，单位：100纳秒间隔(自1601-01-01 00:00:00 UTC起)
-     * @note Windows FILETIME是从1601年1月1日开始的100纳秒间隔数
-     */
-    uint64 GetWindowsTimestamp()
-    {
-        return UnixTimestampToWindows(GetTimeUs());
-    }
-    
-    /**
      * 将Unix时间戳(微秒)转换为Windows时间戳
      * @param unix_us Unix时间戳，单位：微秒
      * @return Windows时间戳，单位：100纳秒间隔
@@ -62,6 +52,16 @@ namespace hgl
         // 2. 将微秒转换为100纳秒单位(乘以10)
         uint64 unix_from_win_epoch_us = unix_us + (HGL_WIN_TO_UNIX_EPOCH_SEC * HGL_MICRO_SEC_PER_SEC);
         return unix_from_win_epoch_us * 10; // 微秒 -> 100纳秒
+    }
+    
+    /**
+     * 获取当前Windows FILETIME时间戳
+     * @return Windows时间戳，单位：100纳秒间隔(自1601-01-01 00:00:00 UTC起)
+     * @note Windows FILETIME是从1601年1月1日开始的100纳秒间隔数
+     */
+    uint64 GetWindowsTimestamp()
+    {
+        return UnixTimestampToWindows(GetTimeUs());
     }
     
     /**
@@ -85,16 +85,6 @@ namespace hgl
     // ========================================================================
     
     /**
-     * 获取当前UUIDv7时间戳
-     * @return UUIDv7时间戳，单位：毫秒(自1970-01-01 00:00:00 UTC起，48位)
-     * @note UUIDv7使用48位存储毫秒时间戳，可表示约8925年的时间范围
-     */
-    uint64 GetUUIDv7Timestamp()
-    {
-        return UnixTimestampToUUIDv7(GetTimeMs());
-    }
-    
-    /**
      * 将Unix时间戳(毫秒)转换为UUIDv7时间戳
      * @param unix_ms Unix时间戳，单位：毫秒
      * @return UUIDv7时间戳(48位有效)
@@ -106,6 +96,16 @@ namespace hgl
         // 48位可以表示从1970到约8925年的时间
         constexpr uint64 MASK_48BIT = 0x0000FFFFFFFFFFFFULL;
         return unix_ms & MASK_48BIT;
+    }
+    
+    /**
+     * 获取当前UUIDv7时间戳
+     * @return UUIDv7时间戳，单位：毫秒(自1970-01-01 00:00:00 UTC起，48位)
+     * @note UUIDv7使用48位存储毫秒时间戳，可表示约8925年的时间范围
+     */
+    uint64 GetUUIDv7Timestamp()
+    {
+        return UnixTimestampToUUIDv7(GetTimeMs());
     }
     
     /**
