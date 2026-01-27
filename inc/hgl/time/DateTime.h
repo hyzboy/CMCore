@@ -201,8 +201,8 @@ namespace hgl
      */
     struct DateFormat
     {
-        AnsiString pattern;    ///< 格式模式，支持: YYYY(年), MM(月), DD(日)
-                                ///< 示例: "YYYY-MM-DD", "DD/MM/YYYY", "YYYY/MM/DD"
+        AnsiString pattern;    ///< 格式模式，支持: YYYY(年), MM(月), DD(日), WD(星期数字0-6), WEEK(星期英文), 周(星期中文)
+                                ///< 示例: "YYYY-MM-DD", "DD/MM/YYYY WEEK", "YYYY年MM月DD日 周"
 
         DateFormat(const AnsiString &p = "YYYY-MM-DD") : pattern(p) {}
     };
@@ -212,8 +212,8 @@ namespace hgl
      */
     struct TimeFormat
     {
-        AnsiString pattern;    ///< 格式模式，支持: HH(时), MM(分), SS(秒), ms(毫秒), us(微秒)
-                                ///< 示例: "HH:MM:SS", "HH:MM:SS.ms", "HH:MM:SS.us"
+        AnsiString pattern;    ///< 格式模式，支持: HH(时), MM(分), SS(秒), ms(毫秒), us(微秒), SC(时辰数字0-11), 时辰(时辰中文)
+                                ///< 示例: "HH:MM:SS", "HH:MM:SS.ms", "HH时MM分SS秒 时辰"
 
         TimeFormat(const AnsiString &p = "HH:MM:SS") : pattern(p) {}
     };
