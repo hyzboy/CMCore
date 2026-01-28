@@ -9,10 +9,20 @@ namespace hgl
     /**
     * @brief CN:对象指针池模板类。\nEN:Object pointer pool template class.
     * @tparam T CN:对象类型。EN:Object type.
+    * @note CN:ManagedPool 负责管理指针对象的生命周期，自动 delete。对于简单值类型，请使用 ValuePool。\nEN:ManagedPool manages pointer object lifecycle with automatic deletion. For simple value types, use ValuePool instead.
     */
     template<typename T>
     class ManagedPool
     {
+        // CN:确保 T 不是平凡可销毁类型，否则应使用 ValuePool<T> 而非 ManagedPool<T>。\nEN:Ensure T is not trivially destructible, otherwise use ValuePool<T> instead of ManagedPool<T>.
+        static_assert(
+            !std::is_trivially_destructible_v<T>,
+            "ManagedPool<T> is for complex objects requiring explicit cleanup (RAII types, custom classes). "
+            "For trivially destructible types (int, float, POD struct, pointers), "
+            "use ValuePool<T> instead, which is more efficient and doesn't perform unnecessary heap allocations. "
+            "Example: Use ValuePool<int> not ManagedPool<int>; Use ValuePool<MyStruct*> for pointer management."
+        );
+
     protected:
 
         /**
@@ -43,36 +53,6 @@ namespace hgl
             int cur = Active.GetCount() + Idle.GetCount();
             if (cur > history_max)
                 history_max = cur;
-        }
-
-        /**
-        * @brief CN:获取活跃对象数据指针（仅支持 GetArray()）。\nEN:Get active object data pointer (only supports GetArray()).
-        */
-        template<typename C>
-        static auto active_data_ptr(C &c, int) -> decltype(c.GetArray().GetData())
-        {
-            return c.GetArray().GetData();
-        }
-
-        template<typename C>
-        static T **active_data_ptr(C &, ...)
-        {
-            return nullptr;
-        }
-
-        /**
-        * @brief CN:获取活跃对象数量（仅支持 GetArray()）。\nEN:Get active object count (only supports GetArray()).
-        */
-        template<typename C>
-        static auto active_data_count(C &c, int) -> decltype(c.GetArray().GetCount())
-        {
-            return c.GetArray().GetCount();
-        }
-
-        template<typename C>
-        static int active_data_count(C &, ...)
-        {
-            return 0;
         }
 
     public:
@@ -240,22 +220,17 @@ namespace hgl
 
         /**
         * @brief CN:释放对象到闲置池。\nEN:Release object to idle pool.
+        * @complexity CN:时间复杂度 O(n)，使用线性查找。\nEN:O(n) time complexity with linear search.
         */
         bool Release(T *value)
         {
-            // 仅支持 Active 有 Find/Delete (ValueArray)。若不是此类容器，忽略操作
-            if constexpr (has_get_array<ValueArray<T *>>::value)
-            {
-                int idx = Active.Find(value);
-                if (idx < 0)
-                    return false;
-                Active.Delete(idx);
-                if (!Idle.Push(value))
-                    return false;
-                return true;
-            }
-            else
+            int idx = Active.Find(value);
+            if (idx < 0)
                 return false;
+            Active.Delete(idx);
+            if (!Idle.Push(value))
+                return false;
+            return true;
         }
 
         /**
@@ -277,26 +252,13 @@ namespace hgl
         */
         void ReleaseActive()
         {
-            if constexpr (has_get_array<ValueArray<T *>>::value)
+            T **ptr = Active.GetData();
+            int cnt = Active.GetCount();
+            if (ptr && cnt > 0)
             {
-                T **ptr = active_data_ptr(Active, 0);
-                int cnt = active_data_count(Active, 0);
-                if (ptr && cnt > 0)
-                {
-                    Idle.Push(ptr, cnt);
-                }
-                Active.Clear();
+                Idle.Push(ptr, cnt);
             }
-            else
-            {
-                // 逐个转移 (Active 视为队列)
-                T *v;
-                // 假定 Active 提供 Pop
-                while (Active.Pop(v))
-                {
-                    Idle.Push(v);
-                }
-            }
+            Active.Clear();
         }
 
         /**
@@ -304,30 +266,17 @@ namespace hgl
         */
         void ClearActive()
         {
-            if constexpr (has_get_array<ValueArray<T *>>::value)
+            T **ptr = Active.GetData();
+            int cnt = Active.GetCount();
+            if (ptr && cnt > 0)
             {
-                T **ptr = active_data_ptr(Active, 0);
-                int cnt = active_data_count(Active, 0);
-                if (ptr && cnt > 0)
+                for (int i = 0; i < cnt; ++i)
                 {
-                    for (int i = 0; i < cnt; ++i)
-                    {
-                        if (ptr[i])
-                            delete ptr[i];
-                    }
-                }
-                Active.Clear();
-            }
-            else
-            {
-                // 逐个清理
-                T *v;
-                while (Active.Pop(v))
-                {
-                    if (v)
-                        delete v;
+                    if (ptr[i])
+                        delete ptr[i];
                 }
             }
+            Active.Clear();
         }
 
         /**

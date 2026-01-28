@@ -61,36 +61,6 @@ namespace hgl
                 history_max = cur;
         }
 
-        /**
-        * @brief CN:获取活跃对象数据指针（仅支持 GetArray()）。\nEN:Get active object data pointer (only supports GetArray()).
-        */
-        template<typename C>
-        static auto active_data_ptr(C &c, int) -> decltype(c.GetArray().GetData())
-        {
-            return c.GetArray().GetData();
-        }
-
-        template<typename C>
-        static T *active_data_ptr(C &, ...)
-        {
-            return nullptr;
-        }
-
-        /**
-        * @brief CN:获取活跃对象数量（仅支持 GetArray()）。\nEN:Get active object count (only supports GetArray()).
-        */
-        template<typename C>
-        static auto active_data_count(C &c, int) -> decltype(c.GetArray().GetCount())
-        {
-            return c.GetArray().GetCount();
-        }
-
-        template<typename C>
-        static int active_data_count(C &, ...)
-        {
-            return 0;
-        }
-
     public:
 
         /**
@@ -252,22 +222,17 @@ namespace hgl
 
         /**
         * @brief CN:释放对象到闲置池。\nEN:Release object to idle pool.
+        * @complexity CN:时间复杂度 O(n)，使用线性查找。\nEN:O(n) time complexity with linear search.
         */
         bool Release(T value)
         {
-            // 仅支持 Active 有 Find/Delete (ValueArray)。若不是此类容器，忽略操作
-            if constexpr (has_get_array<ValueArray<T>>::value)
-            {
-                int idx = Active.Find(value);
-                if (idx < 0)
-                    return false;
-                Active.Delete(idx);
-                if (!Idle.Push(value))
-                    return false;
-                return true;
-            }
-            else
+            int idx = Active.Find(value);
+            if (idx < 0)
                 return false;
+            Active.Delete(idx);
+            if (!Idle.Push(value))
+                return false;
+            return true;
         }
 
         /**
@@ -289,26 +254,13 @@ namespace hgl
         */
         void ReleaseActive()
         {
-            if constexpr (has_get_array<ValueArray<T>>::value)
+            T *ptr = Active.GetData();
+            int cnt = Active.GetCount();
+            if (ptr && cnt > 0)
             {
-                T *ptr = active_data_ptr(Active, 0);
-                int cnt = active_data_count(Active, 0);
-                if (ptr && cnt > 0)
-                {
-                    Idle.Push(ptr, cnt);
-                }
-                Active.Clear();
+                Idle.Push(ptr, cnt);
             }
-            else
-            {
-                // 逐个转移 (Active 视为队列)
-                T v;
-                // 假定 Active 提供 Pop
-                while (Active.Pop(v))
-                {
-                    Idle.Push(v);
-                }
-            }
+            Active.Clear();
         }
 
         /**
@@ -316,18 +268,7 @@ namespace hgl
         */
         void ClearActive()
         {
-            if constexpr (has_get_array<ValueArray<T>>::value)
-            {
-                Active.Clear();
-            }
-            else
-            {
-                // 逐个清理
-                T v;
-                while (Active.Pop(v))
-                {
-                }
-            }
+            Active.Clear();
         }
 
         /**
