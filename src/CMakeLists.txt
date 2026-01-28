@@ -363,7 +363,7 @@ SOURCE_GROUP("Log" FILES ${CMCORE_LOG_FILES})
 ##==================================================================================================
 ## Library 库定义
 ##==================================================================================================
-add_cm_library(CMCore "CM"
+add_cm_library(CMCore "CM" ${CMCORE_ROOT_INCLUDE_PATH}
 #                        ${SYSTEM_INFO_SOURCE}
 
                         ${CMCORE_TYPE_INFO_FILES}

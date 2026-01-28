@@ -223,6 +223,6 @@ SET(CMCORE_PLATFORM_ALL_SOURCES ${CMCORE_PLATFORM_ALL_SOURCES}
                                 ${CMCORE_PLATFORM_SOC_SOURCES}
 )
 
-add_cm_library(CMPlatform "CM" ${CMCORE_PLATFORM_ALL_SOURCES})
+add_cm_library(CMPlatform "CM" ${CMCORE_ROOT_INCLUDE_PATH} ${CMCORE_PLATFORM_ALL_SOURCES})
 
 target_link_libraries(CMCore PUBLIC CMPlatform)
