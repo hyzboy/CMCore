@@ -19,6 +19,7 @@ namespace hgl
 
     private:
         KVDataList data_list; // 按值存储
+        mutable int cache_idx = -1; // 上次查找的位置，加速重复查找
 
     public:
         ValueKVMap() = default;

@@ -1,3 +1,6 @@
+
+cm_example_project("DataType/Collection" MapBenchmark                 MapBenchmark.cpp)
+
 cm_example_project("DataType/Collection" CollectionTest                 CollectionTest.cpp)
 cm_example_project("DataType/Collection" CollectionTestComprehensive    CollectionTestComprehensive.cpp)
 cm_example_project("DataType/Collection" QuickTest                      QuickTest.cpp)

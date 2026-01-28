@@ -7,16 +7,38 @@ namespace hgl
     template<typename K,typename V>
     int ValueKVMap<K,V>::Find(const K &key) const
     {
-        int left = 0,right = data_list.GetCount() - 1;
-        if(right < 0) return -1;
+        const int count = data_list.GetCount();
+        if(count <= 0) return -1;
+        
         const KVData *arr = data_list.GetData();
+        
+        // 检查缓存位置
+        if(cache_idx >= 0 && cache_idx < count && arr[cache_idx].key == key)
+        {
+            return cache_idx;
+        }
+        
+        // 预计算查询键的哈希值
+        const uint64_t key_hash = std::hash<K>{}(key);
+        
+        // 二分查找，加入哈希值预过滤
+        int left = 0, right = count - 1;
         while(left <= right)
         {
             int mid = left + (right - left) / 2;
-            const K &mk = arr[mid].key;
-            if(mk == key) return mid;
-            if(mk < key) left = mid + 1; else right = mid - 1;
+            const KVData &mkv = arr[mid];
+            
+            // 先比较哈希，哈希不等则键肯定不等
+            if(mkv.hash == key_hash && mkv.key == key)
+            {
+                cache_idx = mid; // 更新缓存
+                return mid;
+            }
+            
+            if(mkv.key < key) left = mid + 1; 
+            else right = mid - 1;
         }
+        
         return -1;
     }
 
@@ -25,14 +47,25 @@ namespace hgl
     {
         const int count = data_list.GetCount();
         if(count == 0) { pos = 0; return false; }
+        
         const KVData *arr = data_list.GetData();
+        const uint64_t key_hash = std::hash<K>{}(key);
+        
         int left = 0,right = count - 1;
         while(left <= right)
         {
             int mid = left + (right - left) / 2;
-            const K &mk = arr[mid].key;
-            if(mk == key) { pos = mid; return true; }
-            if(mk < key) left = mid + 1; else right = mid - 1;
+            const KVData &mkv = arr[mid];
+            
+            // 先比较哈希，哈希不等则键肯定不等
+            if(mkv.hash == key_hash && mkv.key == key) 
+            { 
+                pos = mid; 
+                cache_idx = mid; // 更新缓存
+                return true; 
+            }
+            
+            if(mkv.key < key) left = mid + 1; else right = mid - 1;
         }
         pos = left; // lower_bound
         return false;
@@ -65,8 +98,9 @@ namespace hgl
     {
         int pos;
         if(FindPos(key,pos)) return nullptr; // 已存在
-        KVData kv{ key,value };
+        KVData kv{ key, value, std::hash<K>{}(key) }; // 预计算哈希
         data_list.Insert(pos,kv);
+        cache_idx = pos; // 更新缓存位置
         return data_list.At(pos);
     }
 
@@ -77,6 +111,7 @@ namespace hgl
         if(idx < 0) return false;
         out_value = data_list.At(idx)->value;
         data_list.DeleteShift(idx);
+        cache_idx = -1; // 删除后失效缓存
         return true;
     }
 
@@ -97,13 +132,16 @@ namespace hgl
     {
         if(index < 0 || index >= data_list.GetCount()) return false;
         data_list.DeleteShift(index);
+        cache_idx = -1; // 删除后失效缓存
         return true;
     }
 
     template<typename K,typename V>
     bool ValueKVMap<K,V>::DeleteAt(int start,int number)
     {
-        return data_list.Delete(start,number);
+        bool result = data_list.Delete(start,number);
+        if(result) cache_idx = -1; // 删除后失效缓存
+        return result;
     }
 
     template<typename K,typename V>
@@ -113,10 +151,12 @@ namespace hgl
         if(FindPos(key,pos))
         {
             data_list.At(pos)->value = value;
+            cache_idx = pos; // 更新缓存
             return true;
         }
-        KVData kv{ key,value };
+        KVData kv{ key, value, std::hash<K>{}(key) }; // 预计算哈希
         data_list.Insert(pos,kv);
+        cache_idx = pos; // 更新缓存位置
         return true;
     }
 
