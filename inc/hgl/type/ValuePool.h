@@ -13,10 +13,22 @@ namespace hgl
     /**
     * @brief CN:对象池模板类。\nEN:Object pool template class.
     * @tparam T CN:对象类型。EN:Object type.
+    * @note CN:仅支持平凡可销毁类型或指针类型。复杂对象使用ManagedPool。EN:Only supports trivially destructible or pointer types. Use ManagedPool for complex objects.
     */
     template<typename T>
     class ValuePool
     {
+        // CN:确保 T 是平凡可销毁或指针类型。EN:Ensure T is trivially destructible or pointer type.
+        static_assert(
+            std::is_trivially_destructible_v<T>,
+            "ValuePool<T> only supports trivially destructible types (int, float, POD struct) "
+            "or pointer types (T*). "
+            "For objects that require complex cleanup (RAII types, STL containers, etc.), "
+            "use ManagedPool<T> instead. "
+            "Note: Pointers stored in ValuePool<T*> are NOT automatically deleted; "
+            "you must manage pointer lifecycle elsewhere (e.g., in ManagedPool for automatic deletion)."
+        );
+
     protected:
 
         /**
