@@ -1,7 +1,9 @@
 ﻿#pragma once
 
+#include<vector>
 #include<hgl/type/ValueArray.h>
-#include<hgl/type/HashIDMap.h>
+#include<hgl/type/FNV1aHash.h>
+#include<absl/container/flat_hash_map.h>
 #include<hgl/io/TextOutputStream.h>
 
 namespace hgl
@@ -60,9 +62,8 @@ namespace hgl
         ValueBuffer<SC> str_data;                         // 字符串数据池
         ValueArray<ConstStringView<SC>> str_list;        // 按 ID 顺序存储（值，不是指针）
 
-        // ==================== 哈希优化（使用独立的哈希映射管理器） ====================
-        static constexpr int MAX_COLLISION_PER_HASH = 4;  // 每个哈希值最多4个碰撞（可调整）
-        HashIDMap<MAX_COLLISION_PER_HASH> hash_id_map;
+        // ==================== 哈希优化（使用absl::flat_hash_map） ====================
+        absl::flat_hash_map<uint64, std::vector<int>> hash_id_map;
 
         // 验证哈希碰撞时的真实字符串是否匹配
         bool VerifyMatch(int id, const SC *str, int length) const {
@@ -125,7 +126,7 @@ namespace hgl
             str_list.Add(view);
 
             // 添加到哈希映射（使用独立的管理器）
-            hash_id_map.Add(hash, new_id);
+            hash_id_map[hash].push_back(new_id);
 
             return new_id;
         }
@@ -156,10 +157,15 @@ namespace hgl
 
             uint64 hash = ComputeFNV1aHash(str, length);
 
-            // 使用独立的哈希映射管理器查找
-            return hash_id_map.Find(hash, [this, str, length](int id) {
-                return VerifyMatch(id, str, length);
-            });
+            auto it = hash_id_map.find(hash);
+            if (it == hash_id_map.end())
+                return -1;
+            
+            for (int id : it->second) {
+                if (VerifyMatch(id, str, length))
+                    return id;
+            }
+            return -1;
         }
 
         const SC* GetString(int id) const
@@ -206,7 +212,7 @@ namespace hgl
         {
             str_data.Clear();
             str_list.Clear();
-            hash_id_map.Clear();
+            hash_id_map.clear();
         }
 
         // ==================== 批量操作 ====================
@@ -242,14 +248,6 @@ namespace hgl
         }
 
         // 获取碰撞槽位溢出次数（性能监控）
-        int GetCollisionOverflowCount() const {
-            return hash_id_map.GetCollisionOverflowCount();
-        }
-
-        // 获取最大碰撞槽位大小（配置参数）
-        static constexpr int GetMaxCollisionPerHash() {
-            return MAX_COLLISION_PER_HASH;
-        }
     };
 
     // ==================== 类型别名 ====================

@@ -78,7 +78,7 @@ SOURCE_GROUP("DataType\\Template\\Container" FILES ${CMCORE_TYPE_CONTAINER_FILES
 SET(CMCORE_TYPE_MAP_FILES ${CMCORE_TYPE_INCLUDE_PATH}/Map.h
                           ${CMCORE_TYPE_INCLUDE_PATH}/OrderedMap.h
                           ${CMCORE_TYPE_INCLUDE_PATH}/UnorderedMap.h
-                          ${CMCORE_TYPE_INCLUDE_PATH}/HashIDMap.h
+                          ${CMCORE_TYPE_INCLUDE_PATH}/FNV1aHash.h
                           ${CMCORE_TYPE_INCLUDE_PATH}/KeyValue.h
                           ${CMCORE_TYPE_INCLUDE_PATH}/Pair.h
                           ${CMCORE_TYPE_INCLUDE_PATH}/OrderedManagedSet.h
@@ -394,7 +394,7 @@ add_cm_library(CMCore "CM" ${CMCORE_ROOT_INCLUDE_PATH}
                         ${CMCORE_LOG_FILES}
                         )
 
-target_link_libraries(CMCore PRIVATE CMCoreType)
+target_link_libraries(CMCore PRIVATE CMCoreType absl::flat_hash_map absl::node_hash_map absl::btree)
 
 ##==================================================================================================
 ## Platform 平台相关（从CMPlatform合并）

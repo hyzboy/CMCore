@@ -321,53 +321,6 @@ bool TestObjectUnorderedMapUnlink()
     return true;
 }
 
-// ==================== 7. UnorderedMap 性能统计测试 ====================
-bool TestUnorderedMapStatistics()
-{
-    TEST_SECTION("Test 7: UnorderedMap Statistics");
-
-    UnorderedValueMap<int, int> map;
-
-    const int num_entries = 1000;
-
-    for(int i = 0; i < num_entries; i++)
-        map.Add(i, i * 10);
-
-    TEST_ASSERT(map.GetCount() == num_entries, "Should have 1000 entries");
-    TEST_PASS("Add 1000 entries");
-
-    // 统计信息
-    int collision_count = map.GetCollisionCount();
-    float load_factor = map.GetLoadFactor();
-    float avg_chain = map.GetAverageCollisionChainLength();
-    int overflow_count = map.GetCollisionOverflowCount();
-
-    std::cout << "  Statistics:" << std::endl;
-    std::cout << "    Entries: " << map.GetCount() << std::endl;
-    std::cout << "    Collisions: " << collision_count << std::endl;
-    std::cout << "    Load factor: " << load_factor << std::endl;
-    std::cout << "    Avg collision chain: " << avg_chain << std::endl;
-    std::cout << "    Overflow count: " << overflow_count << std::endl;
-
-    TEST_ASSERT(collision_count >= 0, "Collision count should be non-negative");
-    TEST_ASSERT(load_factor > 0, "Load factor should be positive");
-    TEST_PASS("Statistics reporting");
-
-    // 验证查找性能
-    int found_count = 0;
-    for(int i = 0; i < num_entries; i++)
-    {
-        int value;
-        if(map.Get(i, value) && value == i * 10)
-            found_count++;
-    }
-
-    TEST_ASSERT(found_count == num_entries, "All entries should be found");
-    TEST_PASS("Fast lookups verified");
-
-    return true;
-}
-
 // ==================== 8. UnorderedMap 边界条件测试 ====================
 bool TestUnorderedMapBoundaries()
 {
@@ -455,7 +408,6 @@ int main(int argc, char* argv[])
     all_passed &= TestUnorderedMapEnumeration();
     all_passed &= TestObjectUnorderedMapBasics();
     all_passed &= TestObjectUnorderedMapUnlink();
-    all_passed &= TestUnorderedMapStatistics();
     all_passed &= TestUnorderedMapBoundaries();
     all_passed &= TestUnorderedMapCompatibility();
 

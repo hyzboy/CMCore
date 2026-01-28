@@ -1,4 +1,0 @@
-﻿#include"RAM_TestClass.h"
-
-HGL_RUNTIME_ASSET_DECLARATION(InstanceID,Instance)
-HGL_RUNTIME_ASSET_DECLARATION(PhysicalDeviceID,PhysicalDevice)

@@ -9,7 +9,6 @@ cm_example_project("DataType" MemcmpTest            MemcmpTest.cpp)
 cm_example_project("DataType" Uint2HexStrTest       Uint2HexStrTest.cpp)
 cm_example_project("DataType" ConstStringSetTest    ConstStringSetTest.cpp)
 cm_example_project("DataType" ConstStringSetDebug   ConstStringSetDebug.cpp)
-cm_example_project("DataType" HashIDMapTest         HashIDMapTest.cpp)
 cm_example_project("DataType" UnorderedMapTest      UnorderedMapTest.cpp)
 cm_example_project("DataType" IDNameTest            IDNameTest.cpp)
 cm_example_project("DataType" IDObjectManagerTest   IDObjectManagerTest.cpp)
@@ -21,5 +20,4 @@ cm_example_project("DataType/ActiveManager" 4_ActiveDataManagerTest2Staged  Acti
 cm_example_project("DataType/ActiveManager" 5_ActiveDataManagerTest         ActiveDataManagerTest.cpp)
 cm_example_project("DataType/ActiveManager" 6_ActiveIDManagerEnhancedTest   ActiveIDManagerEnhancedTest.cpp)
 
-add_subdirectory(ram)
 add_subdirectory(collection)

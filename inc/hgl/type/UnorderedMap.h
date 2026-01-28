@@ -1,6 +1,8 @@
 ﻿#pragma once
 
-#include<hgl/type/HashIDMap.h>
+#include<vector>
+#include<hgl/type/FNV1aHash.h>
+#include<absl/container/flat_hash_map.h>
 #include<hgl/type/KeyValue.h>
 #include<hgl/type/ValueArray.h>
 #include<hgl/type/ManagedPool.h>
@@ -10,19 +12,19 @@ namespace hgl
     /**
     * 基于哈希的索引数据模板（O(1) 平均查找时间）
     */
-    template<typename K, typename V, typename KVData, int MAX_COLLISION = 4>
+    template<typename K, typename V, typename KVData>
     class UnorderedMapTemplate
     {
     protected:
 
-        using ThisClass = UnorderedMapTemplate<K, V, KVData, MAX_COLLISION>;
+        using ThisClass = UnorderedMapTemplate<K, V, KVData>;
 
         using KVDataPool = ManagedPool<KVData>;
         using KVDataList = ValueArray<KVData *>;
 
         KVDataPool data_pool;
         KVDataList data_list;
-        HashIDMap<MAX_COLLISION> hash_map;
+        absl::flat_hash_map<uint64, std::vector<int>> hash_map;
 
     public:
 
@@ -43,12 +45,13 @@ namespace hgl
             uint64 hash = ComputeFNV1aHash(key);
 
             // 检查是否已存在
-            int existing_id = hash_map.Find(hash, [&](int id) {
-                return data_list[id]->key == key;
-            });
-
-            if(existing_id != -1)
-                return nullptr;  // 已存在
+            auto it = hash_map.find(hash);
+            if (it != hash_map.end()) {
+                for (int id : it->second) {
+                    if (data_list[id]->key == key)
+                        return nullptr;  // 已存在
+                }
+            }
 
             // 从池中获取或创建新数据
             KVData* new_data = nullptr;
@@ -61,10 +64,7 @@ namespace hgl
             int new_id = data_list.GetCount();
             data_list.Add(new_data);
 
-            if(!hash_map.Add(hash, new_id)) {
-                // 哈希表满，但数据已添加
-                // 可以考虑记录警告日志
-            }
+            hash_map[hash].push_back(new_id);
 
             return new_data;
         }
@@ -73,9 +73,15 @@ namespace hgl
         int Find(const K& key) const                                           ///<查找数据是否存在，返回-1表示数据不存在
         {
             uint64 hash = ComputeFNV1aHash(key);
-            return hash_map.Find(hash, [&](int id) {
-                return data_list[id]->key == key;
-            });
+            auto it = hash_map.find(hash);
+            if (it == hash_map.end())
+                return -1;
+            
+            for (int id : it->second) {
+                if (data_list[id]->key == key)
+                    return id;
+            }
+            return -1;
         }
 
         int FindByValue(const V& value) const                                  ///<查找数据是否存在，返回-1表示数据不存在
@@ -208,7 +214,7 @@ namespace hgl
             }
 
             data_list.Free();
-            hash_map.Clear();
+            hash_map.clear();
         }
 
         virtual void Clear()                                                   ///<清除所有数据，但不释放内存
@@ -223,7 +229,7 @@ namespace hgl
             }
 
             data_list.Clear();
-            hash_map.Clear();
+            hash_map.clear();
         }
 
         // ==================== 列表操作 ====================
@@ -363,24 +369,18 @@ namespace hgl
             }
         }
 
-        // ==================== 哈希统计接口 ====================
-        int GetCollisionCount() const { return hash_map.GetCollisionCount(); }
-        float GetLoadFactor() const { return hash_map.GetLoadFactor(data_list.GetCount()); }
-        float GetAverageCollisionChainLength() const { return hash_map.GetAverageCollisionChainLength(); }
-        int GetCollisionOverflowCount() const { return hash_map.GetCollisionOverflowCount(); }
-
     protected:
 
         // 重建哈希映射（在删除后使用）
         void RebuildHashMap()
         {
-            hash_map.Clear();
+            hash_map.clear();
 
             const int count = data_list.GetCount();
             for(int i = 0; i < count; i++)
             {
                 uint64 hash = ComputeFNV1aHash(data_list[i]->key);
-                hash_map.Add(hash, i);
+                hash_map[hash].push_back(i);
             }
         }
 
@@ -390,8 +390,8 @@ namespace hgl
     /**
     * 基于哈希的键值对映射（O(1) 平均查找时间）
     */
-    template<typename K, typename V, int MAX_COLLISION = 4>
-    class UnorderedValueMap : public UnorderedMapTemplate<K, V, KeyValue<K, V>, MAX_COLLISION>
+    template<typename K, typename V>
+    class UnorderedValueMap : public UnorderedMapTemplate<K, V, KeyValue<K, V>>
     {
     public:
 
@@ -411,11 +411,11 @@ namespace hgl
     /**
     * 基于哈希的对象指针映射模板（O(1) 平均查找时间）
     */
-    template<typename K, typename V, typename KVData, int MAX_COLLISION = 4>
-    class UnorderedMangedMapTemplate : public UnorderedMapTemplate<K, V*, KVData, MAX_COLLISION>
+    template<typename K, typename V, typename KVData>
+    class UnorderedMangedMapTemplate : public UnorderedMapTemplate<K, V*, KVData>
     {
     protected:
-        typedef UnorderedMapTemplate<K, V*, KVData, MAX_COLLISION> SuperClass;
+        typedef UnorderedMapTemplate<K, V*, KVData> SuperClass;
 
         void DeleteObject(KVData* ds)
         {
@@ -508,8 +508,8 @@ namespace hgl
     /**
     * 基于哈希的对象指针映射（O(1) 平均查找时间）
     */
-    template<typename K, typename V, int MAX_COLLISION = 4>
-    class UnorderedMangedMap : public UnorderedMangedMapTemplate<K, V, KeyValue<K, V*>, MAX_COLLISION>
+    template<typename K, typename V>
+    class UnorderedMangedMap : public UnorderedMangedMapTemplate<K, V, KeyValue<K, V*>>
     {
     public:
         UnorderedMangedMap() = default;

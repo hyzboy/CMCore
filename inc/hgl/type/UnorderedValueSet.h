@@ -5,51 +5,19 @@
 #pragma once
 
 #include <type_traits>
+#include <vector>
+#include <hgl/type/FNV1aHash.h>
 #include <hgl/type/ActiveDataManager.h>
-#include <hgl/type/HashIDMap.h>
+#include <hgl/type/ValueArray.h>
+#include <absl/container/flat_hash_map.h>
 
 namespace hgl
 {
-    // ==================== 优化的哈希函数 ====================
-
-    /**
-     * @brief CN:针对类型优化的哈希函数\nEN:Type-optimized hash function
-     * @tparam T CN:数据类型\nEN:Data type
-     *
-     * CN:自动选择最优哈希策略：\nEN:Automatically selects optimal hash strategy:
-     * - CN:整数/枚举：身份哈希（零开销）\nEN:Integer/enum: identity hash (zero overhead)
-     * - CN:指针：直接使用地址\nEN:Pointer: use address directly
-     * - CN:其他类型：FNV1a 哈希\nEN:Other types: FNV1a hash
-     */
-    template<typename T>
-    inline uint64 ComputeOptimalHash(const T& value)
-    {
-        if constexpr (std::is_integral_v<T> || std::is_enum_v<T>)
-        {
-            // CN:整数/枚举类型：直接转换（零开销）
-            // EN:Integer/enum types: direct conversion (zero overhead)
-            return static_cast<uint64>(value);
-        }
-        else if constexpr (std::is_pointer_v<T>)
-        {
-            // CN:指针类型：使用地址作为哈希
-            // EN:Pointer types: use address as hash
-            return reinterpret_cast<uint64>(value);
-        }
-        else
-        {
-            // CN:复杂类型：使用 FNV1a 哈希保证质量
-            // EN:Complex types: use FNV1a hash for quality
-            return ComputeFNV1aHash(value);
-        }
-    }
-
     // ==================== 紧凑型无序值集合（Compact Value Set）====================
 
     /**
      * @brief CN:紧凑型无序值集合（使用连续内存存储）\nEN:Compact unordered value set (uses contiguous memory)
      * @tparam T CN:数据类型，必须支持 operator== 用于比较，推荐平凡可复制类型\nEN:Data type, must support operator==, trivially copyable types recommended
-     * @tparam MAX_COLLISION CN:最大哈希冲突数\nEN:Maximum hash collision count
      *
      * CN:相比传统实现的优势：\nEN:Advantages over traditional implementation:
      * - CN:使用连续内存存储，缓存友好\nEN:Uses contiguous memory, cache-friendly
@@ -58,12 +26,12 @@ namespace hgl
      * - CN:内存占用减少 50-70%\nEN:50-70% less memory usage
      * - CN:简单类型（int/指针）哈希零开销\nEN:Zero-overhead hashing for simple types (int/pointer)
      */
-    template<typename T, int MAX_COLLISION = 4>
+    template<typename T>
     class UnorderedValueSet
     {
     protected:
 
-        using ThisClass = UnorderedValueSet<T, MAX_COLLISION>;
+        using ThisClass = UnorderedValueSet<T>;
 
         // 编译期检查：T 必须是平凡可复制类型，非平凡类型请使用 UnorderedManagedSet
         static_assert(std::is_trivially_copyable_v<T>,
@@ -77,7 +45,7 @@ namespace hgl
         /**
          * @brief CN:哈希到ID的映射表\nEN:Hash to ID mapping table
          */
-        HashIDMap<MAX_COLLISION> hash_map;
+        absl::flat_hash_map<uint64, std::vector<int>> hash_map;
 
         /**
          * @brief CN:根据值查找ID\nEN:Find ID by value
@@ -85,18 +53,24 @@ namespace hgl
         int FindID(const T& value) const
         {
             uint64 hash = ComputeOptimalHash(value);  // ✅ 使用优化的哈希
-            return hash_map.Find(hash, [&](int id) {
+            auto it = hash_map.find(hash);
+            if (it == hash_map.end())
+                return -1;
+            
+            for (int id : it->second) {
                 if (!data_manager.IsActive(id))
-                    return false;
+                    continue;
                 T existing;
-                return data_manager.GetData(existing, id) && existing == value;
-            });
+                if (data_manager.GetData(existing, id) && existing == value)
+                    return id;
+            }
+            return -1;
         }
 
         // 重建哈希表：用于数据被就地修改后
         void RebuildHashMap()
         {
-            hash_map.Clear();
+            hash_map.clear();
 
             const ValueBuffer<int>& active_ids = data_manager.GetActiveView();
             const int count = active_ids.GetCount();
@@ -112,7 +86,7 @@ namespace hgl
                     continue;
 
                 uint64 hash = ComputeOptimalHash(*ptr);  // ✅ 使用优化的哈希
-                hash_map.Add(hash, id);
+                hash_map[hash].push_back(id);
             }
         }
 
@@ -255,15 +229,16 @@ namespace hgl
             uint64 hash = ComputeOptimalHash(value);  // ✅ 使用优化的哈希
 
             // 检查是否已存在
-            int existing_id = hash_map.Find(hash, [&](int id) {
-                if (!data_manager.IsActive(id))
-                    return false;
-                T existing;
-                return data_manager.GetData(existing, id) && existing == value;
-            });
-
-            if (existing_id != -1)
-                return false;  // 已存在
+            auto it = hash_map.find(hash);
+            if (it != hash_map.end()) {
+                for (int id : it->second) {
+                    if (!data_manager.IsActive(id))
+                        continue;
+                    T existing;
+                    if (data_manager.GetData(existing, id) && existing == value)
+                        return false;  // 已存在
+                }
+            }
 
             // 获取或创建新ID
             int new_id;
@@ -278,7 +253,7 @@ namespace hgl
             }
 
             // 添加到哈希表
-            hash_map.Add(hash, new_id);
+            hash_map[hash].push_back(new_id);
 
             return true;
         }
@@ -381,7 +356,7 @@ namespace hgl
         void Clear()
         {
             data_manager.Clear();
-            hash_map.Clear();
+            hash_map.clear();
         }
 
         /**
@@ -392,7 +367,7 @@ namespace hgl
             // ValueBuffer 的内存会在析构时自动释放
             // 这里显式清空以触发内存释放
             data_manager.Free();
-            hash_map.Free();
+            hash_map.clear();
         }
 
         // ==================== 获取数据 ====================
@@ -571,40 +546,6 @@ namespace hgl
         const T* At(int id) const
         {
             return const_cast<ThisClass*>(this)->data_manager.At(id);
-        }
-
-        // ==================== 哈希统计接口 ====================
-
-        /**
-         * @brief CN:获取哈希碰撞槽位数\nEN:Get collision slot count
-         */
-        int GetCollisionCount() const
-        {
-            return hash_map.GetCollisionCount();
-        }
-
-        /**
-         * @brief CN:获取负载因子\nEN:Get load factor
-         */
-        float GetLoadFactor() const
-        {
-            return hash_map.GetLoadFactor(GetCount());
-        }
-
-        /**
-         * @brief CN:获取平均碰撞链长度\nEN:Get average collision chain length
-         */
-        float GetAverageCollisionChainLength() const
-        {
-            return hash_map.GetAverageCollisionChainLength();
-        }
-
-        /**
-         * @brief CN:获取溢出槽位数\nEN:Get collision overflow count
-         */
-        int GetCollisionOverflowCount() const
-        {
-            return hash_map.GetCollisionOverflowCount();
         }
     };
 

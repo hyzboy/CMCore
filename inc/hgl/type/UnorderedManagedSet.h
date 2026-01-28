@@ -5,8 +5,10 @@
 #pragma once
 
 #include <type_traits>
+#include <vector>
+#include <hgl/type/FNV1aHash.h>
 #include <hgl/type/ActiveDataManager.h>
-#include <hgl/type/HashIDMap.h>
+#include <absl/container/flat_hash_map.h>
 
 namespace hgl
 {
@@ -15,7 +17,6 @@ namespace hgl
     /**
      * @brief CN:管理型无序对象集合（基于指针地址管理）\nEN:Managed unordered object set (pointer address-based management)
      * @tparam T CN:对象类型（非指针），必须支持 operator==\nEN:Object type (non-pointer), must support operator==
-     * @tparam MAX_COLLISION CN:最大哈希冲突数\nEN:Maximum hash collision count
      *
      * CN:本版本用于管理非平凡类型对象：\nEN:This version manages non-trivial type objects:
      * - CN:自动管理对象生命周期（new/delete）\nEN:Automatic object lifetime management (new/delete)
@@ -23,7 +24,7 @@ namespace hgl
      * - CN:使用连续内存存储指针，缓存友好\nEN:Uses contiguous memory for pointers, cache-friendly
      * - CN:基于指针地址去重（零开销哈希）\nEN:Pointer address-based deduplication (zero-overhead hashing)
      */
-    template<typename T, int MAX_COLLISION = 4>
+    template<typename T>
     class UnorderedManagedSet
     {
         // 编译期检查：T 不能是指针类型
@@ -36,7 +37,7 @@ namespace hgl
             "UnorderedManagedSet is for non-trivially-copyable types; use UnorderedValueSet for trivial types.");
 
     protected:
-        using ThisClass = UnorderedManagedSet<T, MAX_COLLISION>;
+        using ThisClass = UnorderedManagedSet<T>;
 
         /**
          * @brief CN:指针管理器（连续内存存储指针）\nEN:Pointer manager (contiguous memory for pointers)
@@ -46,7 +47,7 @@ namespace hgl
         /**
          * @brief CN:哈希到ID的映射表\nEN:Hash to ID mapping table
          */
-        HashIDMap<MAX_COLLISION> hash_map;
+        absl::flat_hash_map<uint64, std::vector<int>> hash_map;
 
         /**
          * @brief CN:根据指针地址查找ID\nEN:Find ID by pointer address
@@ -57,18 +58,24 @@ namespace hgl
                 return -1;
 
             uint64 hash = reinterpret_cast<uint64>(ptr);  // ✅ 零开销：直接用地址
-            return hash_map.Find(hash, [&](int id) {
+            auto it = hash_map.find(hash);
+            if (it == hash_map.end())
+                return -1;
+            
+            for (int id : it->second) {
                 if (!ptr_manager.IsActive(id))
-                    return false;
+                    continue;
                 T* stored;
-                return ptr_manager.GetData(stored, id) && stored == ptr;  // ✅ 地址比较
-            });
+                if (ptr_manager.GetData(stored, id) && stored == ptr)
+                    return id;  // ✅ 地址比较
+            }
+            return -1;
         }
 
         // 重建哈希表：用于数据结构变化后
         void RebuildHashMap()
         {
-            hash_map.Clear();
+            hash_map.clear();
 
             const ValueBuffer<int>& active_ids = ptr_manager.GetActiveView();
             const int count = active_ids.GetCount();
@@ -84,7 +91,7 @@ namespace hgl
                     continue;
 
                 uint64 hash = reinterpret_cast<uint64>(ptr);  // ✅ 零开销：直接用地址
-                hash_map.Add(hash, id);
+                hash_map[hash].push_back(id);
             }
         }
 
@@ -107,7 +114,7 @@ namespace hgl
         void Free()
         {
             ptr_manager.Free();
-            hash_map.Free();
+            hash_map.clear();
         }
 
         int GetCount() const
@@ -137,15 +144,16 @@ namespace hgl
             uint64 hash = reinterpret_cast<uint64>(ptr);  // ✅ 零开销：直接用地址
 
             // 检查指针是否已存在
-            int existing_id = hash_map.Find(hash, [&](int id) {
-                if (!ptr_manager.IsActive(id))
-                    return false;
-                T* stored;
-                return ptr_manager.GetData(stored, id) && stored == ptr;  // ✅ 地址比较
-            });
-
-            if (existing_id != -1)
-                return false;  // 指针已存在
+            auto it = hash_map.find(hash);
+            if (it != hash_map.end()) {
+                for (int id : it->second) {
+                    if (!ptr_manager.IsActive(id))
+                        continue;
+                    T* stored;
+                    if (ptr_manager.GetData(stored, id) && stored == ptr)
+                        return false;  // 指针已存在
+                }
+            }
 
             // 获取或创建新ID
             int new_id;
@@ -160,7 +168,7 @@ namespace hgl
             }
 
             // 添加到哈希表
-            hash_map.Add(hash, new_id);
+            hash_map[hash].push_back(new_id);
 
             return true;
         }
