@@ -1,5 +1,10 @@
 
-cm_example_project("DataType/Collection" MapBenchmark                 MapBenchmark.cpp)
+cm_example_project_base(
+    PROJECT_NAME MapBenchmark
+    FOLDER_PATH "Examples/CMCore/DataType/Collection"
+    SOURCES MapBenchmark.cpp
+    PRIVATE_LIBRARIES CMCore absl::flat_hash_map absl::node_hash_map absl::btree
+)
 
 cm_example_project("DataType/Collection" CollectionTest                 CollectionTest.cpp)
 cm_example_project("DataType/Collection" CollectionTestComprehensive    CollectionTestComprehensive.cpp)
