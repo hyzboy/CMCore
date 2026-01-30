@@ -188,7 +188,7 @@ namespace hgl
          */
         void Clear()
         {
-            data_array.Clear();
+            data_array.clear();
         }
 
         /**
@@ -340,7 +340,7 @@ namespace hgl
             if ((int)this->data_array.size() != (int)other.data_array.size())
                 return false;
 
-            return hgl::mem_compare(this->data_array.data(), other.data_array.data(), this->data_array.size() * sizeof(T)) == 0;
+            return this->data_array==other.data_array;
         }
 
         /**

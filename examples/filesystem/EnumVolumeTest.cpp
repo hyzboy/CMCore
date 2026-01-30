@@ -1,4 +1,5 @@
 ﻿#include<hgl/filesystem/EnumVolume.h>
+#include<hgl/type/Str.Number.h>
 #include<iostream>
 
 using namespace hgl;

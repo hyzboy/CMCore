@@ -11,7 +11,7 @@ namespace hgl
     // ==================== 通用排序数组查找函数 ====================
     // 这些函数提供了通用的二分查找功能，可用于任何支持GetData()和GetCount()的有序容器
     // 注意：
-    // 1. OrderedValueSet和OrderedManagedSet使用这些函数进行查找
+    // 1. FlatOrderedValueSet和OrderedManagedSet使用这些函数进行查找
     // 2. OrderedMapTemplate使用自己的内部FindPos方法（因为需要处理指针数组）
     // 3. 这些函数可供其他需要在排序数组中查找的代码使用
 

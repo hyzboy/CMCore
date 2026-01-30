@@ -1,4 +1,4 @@
-﻿#include<hgl/type/OrderedValueSet.h>
+﻿#include<hgl/type/FlatOrderedValueSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -8,10 +8,10 @@ using namespace std;
 int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
-    cout << "TEST 01: OrderedValueSet Basic Operations" << endl;
+    cout << "TEST 01: FlatOrderedValueSet Basic Operations" << endl;
     cout << "========================================" << endl;
 
-    OrderedValueSet<int> set;
+    FlatOrderedValueSet<int> set;
     assert(set.IsEmpty());
     assert(set.GetCount() == 0);
 
@@ -39,9 +39,9 @@ int os_main(int, os_char**)
     assert(set.Contains(1));
     assert(set.Contains(3));
     assert(!set.Contains(4));
-    assert(set.Find(1) == 0);
-    assert(set.Find(5) == 2);
-    assert(set.Find(4) == -1);
+    assert(set.FindIndex(1) == 0);
+    assert(set.FindIndex(5) == 2);
+    assert(set.FindIndex(4) == -1);
     cout << "  ✓ Contains/Find behave correctly" << endl;
 
     cout << "\n[1.4] GetFirst / GetLast:" << endl;

@@ -6,7 +6,7 @@
 
 #include <type_traits>
 #include <vector>
-#include <hgl/type/QuickHash.h>
+#include <hgl/util/hash/QuickHash.h>
 #include <hgl/type/ActiveDataManager.h>
 #include <absl/container/flat_hash_map.h>
 

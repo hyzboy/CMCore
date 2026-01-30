@@ -293,7 +293,8 @@ namespace hgl
             if (!_DeleteRange(index, 1))
                 return false;
 
-            return items.Delete(index);
+            items.erase(items.begin() + index);
+            return true;
         }
 
         /**
@@ -309,7 +310,8 @@ namespace hgl
             if (!_DeleteRange(index, 1))
                 return false;
 
-            return items.DeleteShift(index);
+            items.erase(items.begin() + index);
+            return true;
         }
 
         // 删除一段范围并销毁这些对象
@@ -318,7 +320,8 @@ namespace hgl
             if (!_DeleteRange(index, number))
                 return false;
 
-            return items.Delete(index, number);
+            items.erase(items.begin() + index, items.begin() + index + number);
+            return true;
         }
 
         // 通过值查找并销毁，然后从列表移除（单个）
@@ -408,9 +411,9 @@ namespace hgl
             }
         };//class Iterator
 
-        Iterator begin  () { return Iterator(items.GetData(), 0); }
-        Iterator end    () { return Iterator(items.GetData(), items.GetCount()); }
-        Iterator last   () { int c = items.GetCount(); return (c == 0) ? end() : Iterator(items.GetData(), c - 1); }
+        Iterator begin  () { return Iterator(items.data(), 0); }
+        Iterator end    () { return Iterator(items.data(), (int)items.size()); }
+        Iterator last   () { int c = (int)items.size(); return (c == 0) ? end() : Iterator(items.data(), c - 1); }
 
     public: // 迭代器
 

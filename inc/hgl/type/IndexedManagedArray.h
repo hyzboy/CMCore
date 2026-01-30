@@ -4,6 +4,7 @@
 #include <vector>
 #include <hgl/type/Stack.h>
 #include <hgl/type/ObjectUtil.h>
+#include <hgl/type/CompareUtil.h>
 #include <initializer_list>
 #include <algorithm>
 #include <type_traits>
@@ -31,7 +32,7 @@ namespace hgl
         const int32     GetCount        ()const{return (int32)data_index.size();}
         const int32     GetFreeCount    ()const{return free_index.GetCount();}
 
-        const size_t    GetTotalBytes   ()const{return static_cast<size_t>(data_index.GetCount())*sizeof(T);}
+        const size_t    GetTotalBytes   ()const{return static_cast<size_t>(data_index.size())*sizeof(T);}
 
         const bool      IsEmpty         ()const{return data_index.empty();}
 
@@ -58,7 +59,7 @@ namespace hgl
 
         const T &operator[](int32 index)const
         {
-            if ( index<0||index>=data_index.GetCount() )
+            if ( index<0||index>=(int32)data_index.size() )
                 return data_array[0];
             return data_array[data_index[index]];
         }
@@ -113,8 +114,8 @@ namespace hgl
         };//class Iterator
 
         Iterator begin  (){return Iterator(this,0);}
-        Iterator end    (){return Iterator(this,data_index.GetCount());}
-        Iterator last   (){return Iterator(this,data_index.GetCount()-1);}
+        Iterator end    (){return Iterator(this,(int32)data_index.size());}
+        Iterator last   (){return Iterator(this,(int32)data_index.size()-1);}
 
     public: // 只读迭代器
 
@@ -157,8 +158,8 @@ namespace hgl
         };//class ConstIterator
 
         ConstIterator begin ()const{return ConstIterator(this,0);}
-        ConstIterator end   ()const{return ConstIterator(this,data_index.GetCount());}
-        ConstIterator last  ()const{return ConstIterator(this,data_index.GetCount()-1);}
+        ConstIterator end   ()const{return ConstIterator(this,(int32)data_index.size());}
+        ConstIterator last  ()const{return ConstIterator(this,(int32)data_index.size()-1);}
 
     public:
 
@@ -181,7 +182,7 @@ namespace hgl
             {
                 int32 index=data_array.GetCount();
                 data_array.Expand(1);
-                data_index.Append(index);
+                data_index.push_back(index);
                 return data_array.last();
             }
             else
@@ -189,7 +190,7 @@ namespace hgl
                 int32 index;
 
                 free_index.Pop(index);
-                data_index.Append(index);
+                data_index.push_back(index);
 
                 T *slot=data_array.At(index);
                 destroy_at(slot);
@@ -212,12 +213,12 @@ namespace hgl
                 index=data_array.GetCount();
 
                 data_array.Expand(1);
-                data_index.Append(index);
+                data_index.push_back(index);
             }
             else
             {
                 free_index.Pop(index);
-                data_index.Append(index);
+                data_index.push_back(index);
             }
 
             T *slot=data_array.At(index);
@@ -250,7 +251,7 @@ namespace hgl
                 for(int32 i=0;i<mc;i++)
                 {
                     free_index.Pop(index);
-                    data_index.Append(index);
+                    data_index.push_back(index);
 
                     T *slot=data_array.At(index);
                     destroy_at(slot);
@@ -273,7 +274,7 @@ namespace hgl
 
                 for(int32 i=0;i<n;i++)
                 {
-                    data_index.Append(index+i);
+                    data_index.push_back(index+i);
                     T *slot=data_array.At(index+i);
                     destroy_at(slot);
                     construct_at_copy(slot,data[i]);
@@ -288,7 +289,7 @@ namespace hgl
         virtual void Clear()
         {
             // 调用析构以释放资源，然后重新默认构造占位，保持 slots 始终处于已构造状态
-            const int32 count=data_index.GetCount();
+            const int32 count=(int32)data_index.size();
             for(int32 i=0;i<count;i++)
             {
                 const int32 idx=data_index[i];
@@ -297,7 +298,7 @@ namespace hgl
                 construct_at(slot);
             }
 
-            data_index.Clear();
+            data_index.clear();
             free_index.Clear();
         }
 
@@ -305,20 +306,20 @@ namespace hgl
         {
             Clear();
             data_array.Free();
-            data_index.Free();
+            data_index.clear();
             free_index.Free();
         }
 
         const bool IsValidIndex(const int32 index)const
         {
-            return !(index<0||index>=data_index.GetCount());
+            return !(index<0||index>=(int32)data_index.size());
         }
 
         virtual bool Insert(int32 pos,const T &value)
         {
             if(pos<0)return(false);
-            if(pos>data_index.GetCount())return(false);
-            if(pos==data_index.GetCount())
+            if(pos>(int32)data_index.size())return(false);
+            if(pos==(int32)data_index.size())
             {
                 return Add(value)>=0;
             }
@@ -329,12 +330,12 @@ namespace hgl
             {
                 index=data_array.GetCount();
                 data_array.Expand(1);
-                data_index.Insert(pos,&index,1);
+                data_index.insert(data_index.begin() + pos, index);
             }
             else
             {
                 free_index.Pop(index);
-                data_index.Insert(pos,&index,1);
+                data_index.insert(data_index.begin() + pos, index);
             }
 
             T *slot=data_array.At(index);
@@ -354,8 +355,8 @@ namespace hgl
             if(!IsValidIndex(start))return(-1);
             if(count<=0)return(count);
 
-            if(start+count>data_index.GetCount())
-                count=data_index.GetCount()-start;
+            if(start+count>(int32)data_index.size())
+                count=(int32)data_index.size()-start;
 
             if(count<=0)return(0);
 
@@ -368,7 +369,7 @@ namespace hgl
                 free_index.Push(idx);
             }
 
-            data_index.Delete(start,count);
+            data_index.erase(data_index.begin()+start, data_index.begin()+start+count);
             return count;
         }
 
@@ -388,7 +389,7 @@ namespace hgl
         */
         virtual bool Shrink()
         {
-            if(data_index.IsEmpty())
+            if(data_index.empty())
                 return(false);
 
             const int32 count=GetCount();
@@ -415,8 +416,8 @@ namespace hgl
         */
         const bool IsOrdered()const
         {
-            const int count=data_index.GetCount();
-            const int32 *p=data_index.GetData();
+            const int count=(int32)data_index.size();
+            const int32 *p=data_index.data();
 
             for(int i=0;i<count;i++)
             {
@@ -433,7 +434,7 @@ namespace hgl
 
         virtual void Reorder()
         {
-            const int count=data_index.GetCount();
+            const int count=data_index.size();
 
             if(count<=0)return;
 

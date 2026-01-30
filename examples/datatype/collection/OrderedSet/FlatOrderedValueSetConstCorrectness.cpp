@@ -1,4 +1,4 @@
-#include<hgl/type/OrderedValueSet.h>
+#include<hgl/type/FlatOrderedValueSet.h>
 #include<iostream>
 #include<cassert>
 #include<type_traits>
@@ -10,7 +10,7 @@ using namespace std;
 template<typename T>
 constexpr bool is_const_iterator()
 {
-    using SetType = OrderedValueSet<T>;
+    using SetType = FlatOrderedValueSet<T>;
     using ConstIter = decltype(std::declval<const SetType>().begin());
     using Pointee = std::remove_pointer_t<ConstIter>;
     return std::is_const_v<Pointee>;
@@ -19,10 +19,10 @@ constexpr bool is_const_iterator()
 int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
-    cout << "TEST 04: OrderedValueSet Const-Correctness Detection" << endl;
+    cout << "TEST 04: FlatOrderedValueSet Const-Correctness Detection" << endl;
     cout << "========================================" << endl;
 
-    OrderedValueSet<int> set;
+    FlatOrderedValueSet<int> set;
     set.Add(1);
     set.Add(2);
     set.Add(3);
@@ -32,11 +32,11 @@ int os_main(int, os_char**)
     cout << "\n[4.1] begin()/end() constness check:" << endl;
     cout << "  begin() const returns " << (begin_is_const ? "const T*" : "T* (mutable!)") << endl;
 
-    const OrderedValueSet<int>& cset = set;
+    const FlatOrderedValueSet<int>& cset = set;
 
-    // Always treat const container begin() as const pointer
-    const int* ptr = cset.begin();
-    assert(ptr);
+    // Always treat const container begin() as const iterator
+    auto ptr = cset.begin();
+    assert(ptr != cset.end());
     cout << "  ✓ Const iterator is read-only (mutation blocked)" << endl;
 
     cout << "\n[4.2] GetData() constness check:" << endl;

@@ -1,7 +1,13 @@
-# OrderedValueSet / OrderedManagedSet tests
-cm_example_project("DataType/Collection/OrderedValueSet" OrderedValueSetTest00_Simple                  OrderedValueSetTest00_Simple.cpp)
-cm_example_project("DataType/Collection/OrderedValueSet" OrderedValueSetTest01_BasicOperations         OrderedValueSetTest01_BasicOperations.cpp)
-cm_example_project("DataType/Collection/OrderedValueSet" OrderedValueSetTest02_BatchAndDuplicates      OrderedValueSetTest02_BatchAndDuplicates.cpp)
-cm_example_project("DataType/Collection/OrderedValueSet" OrderedValueSetTest03_ComparisonAndCopy       OrderedValueSetTest03_ComparisonAndCopy.cpp)
-cm_example_project("DataType/Collection/OrderedValueSet" OrderedValueSetTest04_ConstCorrectnessDetection OrderedValueSetTest04_ConstCorrectnessDetection.cpp)
-cm_example_project("DataType/Collection/OrderedValueSet" OrderedManagedSetTest               OrderedManagedSetTest.cpp)
+# OrderedManagedSet tests (non-trivial types with lifecycle management)
+cm_example_project("DataType/Collection/OrderedSet" OrderedManagedSetSimpleExample		OrderedManagedSetSimpleExample.cpp)
+cm_example_project("DataType/Collection/OrderedSet" OrderedManagedSetLifecycleOwnership	OrderedManagedSetLifecycleOwnership.cpp)
+
+# FlatOrderedValueSet tests (trivial types, contiguous memory, serialization-friendly)
+cm_example_project("DataType/Collection/OrderedSet" FlatOrderedValueSetBasicOperations		FlatOrderedValueSetBasicOperations.cpp)
+cm_example_project("DataType/Collection/OrderedSet" FlatOrderedValueSetBatchAndDuplicates	FlatOrderedValueSetBatchAndDuplicates.cpp)
+cm_example_project("DataType/Collection/OrderedSet" FlatOrderedValueSetComparisonAndCopy	FlatOrderedValueSetComparisonAndCopy.cpp)
+cm_example_project("DataType/Collection/OrderedSet" FlatOrderedValueSetConstCorrectness	FlatOrderedValueSetConstCorrectness.cpp)
+
+# Performance comparison between OrderedValueSet (BTree) and FlatOrderedValueSet (Vector)
+cm_example_project("DataType/Collection/OrderedSet" OrderedSetPerformanceComparison OrderedSetPerformanceComparison.cpp)
+

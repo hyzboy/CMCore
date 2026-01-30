@@ -5,6 +5,7 @@
 #include<type_traits>
 #include<vector>
 #include<algorithm>
+#include<cstring>
 #include<hgl/type/MemoryUtil.h>
 
 namespace hgl
@@ -65,7 +66,8 @@ namespace hgl
          */
         virtual T *  Add()
         {
-            data_array.push_back(T());
+            const int index=(int)data_array.size();
+            data_array.resize(index+1);
             return &data_array.back();
         }
 
@@ -77,7 +79,15 @@ namespace hgl
         virtual int  Add(const T &data)
         {
             const int index=(int)data_array.size();
-            data_array.push_back(data);
+            if constexpr (std::is_array_v<T>)
+            {
+                data_array.resize(index+1);
+                std::memcpy(&data_array[index], &data, sizeof(T));
+            }
+            else
+            {
+                data_array.push_back(data);
+            }
             return index;
         }
 
@@ -93,7 +103,16 @@ namespace hgl
             if(n<=0)return(-1);
 
             const int ec=(int)data_array.size();
-            data_array.insert(data_array.end(), n, data);
+            if constexpr (std::is_array_v<T>)
+            {
+                data_array.resize(ec + n);
+                for(int i=0;i<n;i++)
+                    std::memcpy(&data_array[ec+i], &data, sizeof(T));
+            }
+            else
+            {
+                data_array.insert(data_array.end(), n, data);
+            }
             return(ec);
         }
 
@@ -109,19 +128,48 @@ namespace hgl
                 return(-1);
 
             const int ec=(int)data_array.size();
-            data_array.insert(data_array.end(), data, data+n);
+            if constexpr (std::is_array_v<T>)
+            {
+                data_array.resize(ec + n);
+                for(int i=0;i<n;i++)
+                    std::memcpy(&data_array[ec+i], &data[i], sizeof(T));
+            }
+            else
+            {
+                data_array.insert(data_array.end(), data, data+n);
+            }
             return(ec);
         }
 
                 int  Add(const ValueArray<T> &l){return Add(l.GetData(),l.GetCount());}                            ///<增加一批数据
 
-        virtual void Free(){data_array.clear(); data_array.shrink_to_fit();}                                                     ///<清除所有数据，并释放内存
+        virtual void Free()
+        {
+            data_array.clear();
+            if constexpr (!std::is_array_v<T>)
+            {
+                data_array.shrink_to_fit();
+            }
+        }                                                     ///<清除所有数据，并释放内存
         virtual void Clear(){data_array.clear();}                                                   ///<清除所有数据，但不清空缓冲区
 
         virtual int  Find(const T &data)const
         {
-            auto it = std::find(data_array.begin(), data_array.end(), data);
-            return (it == data_array.end()) ? -1 : (int)std::distance(data_array.begin(), it);
+            if constexpr (std::is_array_v<T>)
+            {
+                // 对数组类型使用 memcmp 比较
+                for(size_t i=0; i<data_array.size(); ++i)
+                {
+                    if(std::memcmp(&data_array[i], &data, sizeof(T)) == 0)
+                        return (int)i;
+                }
+                return -1;
+            }
+            else
+            {
+                auto it = std::find(data_array.begin(), data_array.end(), data);
+                return (it == data_array.end()) ? -1 : (int)std::distance(data_array.begin(), it);
+            }
         }                        ///<查找指定数据的索引
 
         virtual bool Contains(const T &flag)const{return Find(flag)>=0;}                            ///<确认数据项是否存在
@@ -129,7 +177,22 @@ namespace hgl
         virtual bool Delete(int start,int num=1)
         {
             if(start<0 || start+num>(int)data_array.size()) return false;
-            data_array.erase(data_array.begin()+start, data_array.begin()+start+num);
+            
+            if constexpr (std::is_array_v<T>)
+            {
+                // 对数组类型手动删除并移动元素
+                int tail_count = (int)data_array.size() - start - num;
+                if(tail_count > 0)
+                {
+                    for(int i=0; i<tail_count; ++i)
+                        std::memcpy(&data_array[start+i], &data_array[start+num+i], sizeof(T));
+                }
+                data_array.resize(data_array.size() - num);
+            }
+            else
+            {
+                data_array.erase(data_array.begin()+start, data_array.begin()+start+num);
+            }
             return true;
         }              ///<删除指定索引的数据
 
@@ -177,13 +240,38 @@ namespace hgl
         virtual void Exchange(int a,int b)
         {
             if(a>=0 && a<(int)data_array.size() && b>=0 && b<(int)data_array.size())
-                std::swap(data_array[a], data_array[b]);
+            {
+                if constexpr (std::is_array_v<T>)
+                {
+                    T temp;
+                    std::memcpy(&temp, &data_array[a], sizeof(T));
+                    std::memcpy(&data_array[a], &data_array[b], sizeof(T));
+                    std::memcpy(&data_array[b], &temp, sizeof(T));
+                }
+                else
+                {
+                    std::swap(data_array[a], data_array[b]);
+                }
+            }
         }                               ///<根据索引交换两个数据
 
         virtual bool Insert(int pos,const T &data)
         {
             if(pos<0 || pos>(int)data_array.size()) return false;
-            data_array.insert(data_array.begin()+pos, data);
+            
+            if constexpr (std::is_array_v<T>)
+            {
+                data_array.resize(data_array.size() + 1);
+                // 向后移动元素
+                for(int i=(int)data_array.size()-1; i>pos; --i)
+                    std::memcpy(&data_array[i], &data_array[i-1], sizeof(T));
+                // 插入新元素
+                std::memcpy(&data_array[pos], &data, sizeof(T));
+            }
+            else
+            {
+                data_array.insert(data_array.begin()+pos, data);
+            }
             return true;
         }          ///<在指定索引处插入一个数据
 
@@ -196,7 +284,22 @@ namespace hgl
         virtual bool Insert(int pos,const T *data,const int number)
         {
             if(!data || number<=0 || pos<0 || pos>(int)data_array.size()) return false;
-            data_array.insert(data_array.begin()+pos, data, data+number);
+            
+            if constexpr (std::is_array_v<T>)
+            {
+                int old_size = (int)data_array.size();
+                data_array.resize(old_size + number);
+                // 向后移动元素
+                for(int i=old_size-1; i>=pos; --i)
+                    std::memcpy(&data_array[i+number], &data_array[i], sizeof(T));
+                // 插入新元素
+                for(int i=0; i<number; ++i)
+                    std::memcpy(&data_array[pos+i], &data[i], sizeof(T));
+            }
+            else
+            {
+                data_array.insert(data_array.begin()+pos, data, data+number);
+            }
             return true;
         }
 
@@ -215,25 +318,77 @@ namespace hgl
             // 如果目标位置在源范围内，不处理
             if(new_pos>=old_pos && new_pos<=old_pos+move_count) return;
 
-            std::vector<T> temp(data_array.begin()+old_pos, data_array.begin()+old_pos+move_count);
-            data_array.erase(data_array.begin()+old_pos, data_array.begin()+old_pos+move_count);
+            if constexpr (std::is_array_v<T>)
+            {
+                // 对数组类型使用 memcpy 进行移动
+                std::vector<T> temp(move_count);
+                for(int i=0; i<move_count; ++i)
+                    std::memcpy(&temp[i], &data_array[old_pos+i], sizeof(T));
+                
+                // 手动移除元素（避免调用erase）
+                int actual_new_pos = new_pos;
+                if(new_pos > old_pos)
+                {
+                    actual_new_pos -= move_count;
+                    // 向前移动元素
+                    for(int i=old_pos; i<actual_new_pos; ++i)
+                        std::memcpy(&data_array[i], &data_array[i+move_count], sizeof(T));
+                }
+                else
+                {
+                    // 向后移动元素
+                    for(int i=old_pos-1; i>=actual_new_pos; --i)
+                        std::memcpy(&data_array[i+move_count], &data_array[i], sizeof(T));
+                }
+                
+                // 复制临时元素到目标位置
+                for(int i=0; i<move_count; ++i)
+                    std::memcpy(&data_array[actual_new_pos+i], &temp[i], sizeof(T));
+            }
+            else
+            {
+                std::vector<T> temp(data_array.begin()+old_pos, data_array.begin()+old_pos+move_count);
+                data_array.erase(data_array.begin()+old_pos, data_array.begin()+old_pos+move_count);
 
-            int actual_new_pos = new_pos;
-            if(new_pos > old_pos)
-                actual_new_pos -= move_count;
+                int actual_new_pos = new_pos;
+                if(new_pos > old_pos)
+                    actual_new_pos -= move_count;
 
-            data_array.insert(data_array.begin()+actual_new_pos, temp.begin(), temp.end());
+                data_array.insert(data_array.begin()+actual_new_pos, temp.begin(), temp.end());
+            }
         }
 
         virtual ValueArray<T>& operator = (const ValueArray<T> &da)
         {
-            data_array = da.data_array;
+            if constexpr (std::is_array_v<T>)
+            {
+                data_array.resize(da.data_array.size());
+                for(size_t i=0;i<da.data_array.size();++i)
+                    std::memcpy(&data_array[i], &da.data_array[i], sizeof(T));
+            }
+            else
+            {
+                data_array = da.data_array;
+            }
             return *this;
         }
 
         virtual ValueArray<T>& operator = (const std::initializer_list<T> &l)
         {
-            data_array.assign(l.begin(), l.end());
+            if constexpr (std::is_array_v<T>)
+            {
+                data_array.resize(l.size());
+                size_t i=0;
+                for(const auto &item : l)
+                {
+                    std::memcpy(&data_array[i], &item, sizeof(T));
+                    ++i;
+                }
+            }
+            else
+            {
+                data_array.assign(l.begin(), l.end());
+            }
             return *this;
         }                  ///<操作符重载复制一个列表
 
@@ -256,14 +411,28 @@ namespace hgl
                 bool Get(int index,      T &data)const
         {
             if(index<0 || index>=(int)data_array.size()) return false;
-            data = data_array[index];
+            if constexpr (std::is_array_v<T>)
+            {
+                std::memcpy(&data, &data_array[index], sizeof(T));
+            }
+            else
+            {
+                data = data_array[index];
+            }
             return true;
         }    ///<取得指定索引处的数据
 
         virtual bool Set(int index,const T &data)
         {
             if(index<0 || index>=(int)data_array.size()) return false;
-            data_array[index] = data;
+            if constexpr (std::is_array_v<T>)
+            {
+                std::memcpy(&data_array[index], &data, sizeof(T));
+            }
+            else
+            {
+                data_array[index] = data;
+            }
             return true;
         }    ///<设置指定索引处的数据
 

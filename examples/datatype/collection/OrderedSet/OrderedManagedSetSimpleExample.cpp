@@ -49,12 +49,12 @@ struct SimpleData
     bool operator==(const SimpleData& other) const { return id == other.id; }
 };
 
-int main()
+int os_main(int, os_char**)
 {
-    std::cout << "=== Simple OrderedValueSet Test ===" << std::endl;
+    std::cout << "=== Simple OrderedManagedSet Test ===" << std::endl;
 
     {
-        std::cout << "\n[1] Creating OrderedValueSet..." << std::endl;
+        std::cout << "\n[1] Creating FlatOrderedValueSet..." << std::endl;
         OrderedManagedSet<SimpleData> set;
 
         std::cout << "\n[2] Creating first object..." << std::endl;

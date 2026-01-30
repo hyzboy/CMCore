@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/OrderedValueSet.h>
+#include<hgl/type/FlatOrderedValueSet.h>
 #include<hgl/io/event/InputEventSource.h>
 
 /*
@@ -41,7 +41,7 @@ namespace hgl::io
 
         EventDispatcher *               parent_input_event=nullptr;
 
-        OrderedValueSet<EventDispatcher *>    child_dispatchers;                      ///<子事件分发器列表
+        FlatOrderedValueSet<EventDispatcher *>    child_dispatchers;                      ///<子事件分发器列表
 
         EventDispatcher *               exclusive_dispatcher=nullptr;           ///<独占事件分发器,如果有则只处理这个分发器的事件
 

@@ -1,13 +1,13 @@
-﻿#include<hgl/type/OrderedValueSet.h>
+﻿#include<hgl/type/FlatOrderedValueSet.h>
 #include<iostream>
 
 using namespace hgl;
 
 int main()
 {
-    std::cout << "Testing empty OrderedValueSet GetLast..." << std::endl;
+    std::cout << "Testing empty FlatOrderedValueSet GetLast..." << std::endl;
 
-    OrderedValueSet<int> set;
+    FlatOrderedValueSet<int> set;
     int val = 999;
 
     std::cout << "Set count: " << set.GetCount() << std::endl;

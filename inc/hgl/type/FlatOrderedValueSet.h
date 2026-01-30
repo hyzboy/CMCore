@@ -1,6 +1,7 @@
 ﻿#pragma once
 
-#include<absl/container/btree_set.h>
+#include<vector>
+#include<algorithm>
 #include<hgl/type/DataType.h>
 
 namespace hgl
@@ -8,36 +9,35 @@ namespace hgl
     /**
      * 有序合集（平凡类型专用版本）</br>
      * 集合数据列表中不允许数据出现重复性，同时它会将数据排序</br>
-     * 使用 absl::btree_set 实现，提供 O(log n) 插入/删除/查找性能</br>
+     * 使用 std::vector 实现，支持连续内存布局，适合序列化场景</br>
      * <b>重要限制：</b>仅支持平凡可复制类型（trivially copyable types）。
      * 非平凡类型（包含虚函数、动态内存、自定义构造/析构等）请使用 OrderedManagedSet</br>
      *
      * <b>设计目标：</b>
-     * - 频繁插入和删除操作的场景
-     * - 查找 O(log n)，插入/删除 O(log n)
-     * - 如需序列化支持，请使用 FlatOrderedValueSet
+     * - 连续内存布局，支持零拷贝序列化/反序列化
+     * - 批量加载后频繁查询的场景（配置文件、静态资源索引）
+     * - 查找 O(log n)，插入/删除 O(n)
      *
      * @tparam T 必须支持 operator< 用于排序，且必须是平凡可复制类型（trivially copyable）
      * @see OrderedManagedSet 非平凡类型版本
-     * @see FlatOrderedValueSet 序列化友好的连续内存版本
      */
     template<typename T>
-    class OrderedValueSet
+    class FlatOrderedValueSet
     {
     protected:
-        using ThisClass = OrderedValueSet<T>;
+        using ThisClass = FlatOrderedValueSet<T>;
 
         static_assert(std::is_trivially_copyable_v<T>,
-                      "OrderedValueSet requires trivially copyable types. For non-trivial types (with custom copy/move semantics, virtual functions, dynamic memory), use OrderedManagedSet instead.");
+                      "FlatOrderedValueSet requires trivially copyable types. For non-trivial types (with custom copy/move semantics, virtual functions, dynamic memory), use OrderedManagedSet instead.");
 
         /**
-         * @brief CN:有序集合（B树实现）\nEN:Ordered set (B-tree implementation)
+         * @brief CN:有序集合（连续数组实现，支持序列化）\nEN:Ordered set (contiguous array, serialization-friendly)
          */
-        absl::btree_set<T> data;
+        std::vector<T> data;
 
     public:
-        using iterator = typename absl::btree_set<T>::iterator;
-        using const_iterator = typename absl::btree_set<T>::const_iterator;
+        using iterator = typename std::vector<T>::iterator;
+        using const_iterator = typename std::vector<T>::const_iterator;
 
         /**
          * @brief CN:获取开始迭代器\nEN:Get begin iterator
@@ -68,20 +68,60 @@ namespace hgl
         auto crend() const { return data.crend(); }
 
     public:
-        OrderedValueSet() = default;
-        virtual ~OrderedValueSet() = default;
+        FlatOrderedValueSet() = default;
+        virtual ~FlatOrderedValueSet() = default;
+
+        // ==================== 序列化支持 ====================
+
+        /**
+         * @brief CN:获取原始数据指针（用于序列化）\nEN:Get raw data pointer (for serialization)
+         */
+        T* GetData() { return data.empty() ? nullptr : data.data(); }
+        const T* GetData() const { return data.empty() ? nullptr : data.data(); }
+
+        /**
+         * @brief CN:批量加载（从序列化数据）\nEN:Bulk load (from serialized data)
+         * @param buffer 数据缓冲区
+         * @param count 元素个数
+         * @param is_sorted 数据是否已排序（默认 true）
+         */
+        void LoadFromBuffer(const T* buffer, int64 count, bool is_sorted = true)
+        {
+            if (!buffer || count <= 0)
+                return;
+
+            data.assign(buffer, buffer + count);
+
+            if (!is_sorted)
+            {
+                std::sort(data.begin(), data.end());
+                // 去重
+                auto last = std::unique(data.begin(), data.end());
+                data.erase(last, data.end());
+            }
+        }
 
         // ==================== 容量管理 ====================
 
         /**
          * @brief CN:获取元素数量\nEN:Get element count
          */
-        int64 GetCount() const { return static_cast<int64>(data.size()); }
+        int64 GetCount() const { return (int64)data.size(); }
+
+        /**
+         * @brief CN:获取已分配容量\nEN:Get allocated capacity
+         */
+        int64 GetAllocCount() const { return (int64)data.capacity(); }
 
         /**
          * @brief CN:是否为空\nEN:Check if empty
          */
         bool IsEmpty() const { return data.empty(); }
+
+        /**
+         * @brief CN:预留容量\nEN:Reserve capacity
+         */
+        void Reserve(int64 count) { if (count > 0) data.reserve(count); }
 
         // ==================== 查找 ====================
 
@@ -92,12 +132,14 @@ namespace hgl
          */
         const_iterator Find(const T& flag) const
         {
-            return data.find(flag);
+            auto it = std::lower_bound(data.begin(), data.end(), flag);
+            return (it != data.end() && *it == flag) ? it : data.end();
         }
 
         iterator Find(const T& flag)
         {
-            return data.find(flag);
+            auto it = std::lower_bound(data.begin(), data.end(), flag);
+            return (it != data.end() && *it == flag) ? it : data.end();
         }
 
         /**
@@ -107,8 +149,8 @@ namespace hgl
          */
         int64 FindIndex(const T& flag) const
         {
-            auto it = data.find(flag);
-            if (it == data.end())
+            auto it = std::lower_bound(data.begin(), data.end(), flag);
+            if (it == data.end() || *it != flag)
                 return -1;
             return std::distance(data.begin(), it);
         }
@@ -118,7 +160,8 @@ namespace hgl
          */
         bool Contains(const T& v) const
         {
-            return data.contains(v);
+            auto it = std::lower_bound(data.begin(), data.end(), v);
+            return (it != data.end() && *it == v);
         }
 
         // ==================== 添加 ====================
@@ -130,11 +173,14 @@ namespace hgl
          */
         int64 Add(const T& value)
         {
-            auto result = data.insert(value);
-            if (!result.second)
-                return -1;  // 已存在
-            
-            return std::distance(data.begin(), result.first);
+            auto it = std::lower_bound(data.begin(), data.end(), value);
+
+            // 已存在
+            if (it != data.end() && *it == value)
+                return -1;
+
+            auto result_it = data.insert(it, value);
+            return std::distance(data.begin(), result_it);
         }
 
         /**
@@ -151,8 +197,12 @@ namespace hgl
             int64 added = 0;
             for (int64 i = 0; i < count; i++)
             {
-                if (data.insert(dl[i]).second)
+                auto it = std::lower_bound(data.begin(), data.end(), dl[i]);
+                if (it == data.end() || *it != dl[i])
+                {
+                    data.insert(it, dl[i]);
                     ++added;
+                }
             }
             return added;
         }
@@ -166,12 +216,10 @@ namespace hgl
          */
         bool DeleteAt(int64 pos)
         {
-            if (pos < 0 || pos >= static_cast<int64>(data.size()))
+            if (pos < 0 || pos >= (int64)data.size())
                 return false;
 
-            auto it = data.begin();
-            std::advance(it, pos);
-            data.erase(it);
+            data.erase(data.begin() + pos);
             return true;
         }
 
@@ -182,7 +230,12 @@ namespace hgl
          */
         bool Delete(const T& value)
         {
-            return data.erase(value) > 0;
+            auto it = std::lower_bound(data.begin(), data.end(), value);
+            if (it == data.end() || *it != value)
+                return false;
+
+            data.erase(it);
+            return true;
         }
 
         /**
@@ -199,8 +252,12 @@ namespace hgl
             int64 deleted = 0;
             for (int64 i = 0; i < count; i++)
             {
-                if (data.erase(dp[i]) > 0)
+                auto it = std::lower_bound(data.begin(), data.end(), dp[i]);
+                if (it != data.end() && *it == dp[i])
+                {
+                    data.erase(it);
                     ++deleted;
+                }
             }
             return deleted;
         }
@@ -208,7 +265,11 @@ namespace hgl
         /**
          * @brief CN:清空所有元素并释放内存\nEN:Clear all elements and free memory
          */
-        void Free() { data.clear(); }
+        void Free()
+        {
+            data.clear();
+            data.shrink_to_fit();
+        }
 
         /**
          * @brief CN:清空所有元素\nEN:Clear all elements
@@ -225,14 +286,18 @@ namespace hgl
          */
         bool Get(int64 index, T& value) const
         {
-            if (index < 0 || index >= static_cast<int64>(data.size()))
+            if (index < 0 || index >= (int64)data.size())
                 return false;
 
-            auto it = data.begin();
-            std::advance(it, index);
-            value = *it;
+            value = data[index];
             return true;
         }
+
+        /**
+         * @brief CN:根据索引直接访问元素\nEN:Direct element access by index
+         * @param index 索引位置
+         */
+        const T& operator[](int64 index) const { return data[index]; }
 
         /**
          * @brief CN:获取第一个元素\nEN:Get first element
@@ -241,7 +306,7 @@ namespace hgl
         {
             if (data.empty())
                 return false;
-            value = *data.begin();
+            value = data.front();
             return true;
         }
 
@@ -252,7 +317,7 @@ namespace hgl
         {
             if (data.empty())
                 return false;
-            value = *data.rbegin();
+            value = data.back();
             return true;
         }
 
@@ -263,7 +328,7 @@ namespace hgl
          */
         const_iterator lower_bound(const T& value) const
         {
-            return data.lower_bound(value);
+            return std::lower_bound(data.begin(), data.end(), value);
         }
 
         /**
@@ -271,7 +336,7 @@ namespace hgl
          */
         const_iterator upper_bound(const T& value) const
         {
-            return data.upper_bound(value);
+            return std::upper_bound(data.begin(), data.end(), value);
         }
 
         // ==================== 运算符 ====================
@@ -279,7 +344,7 @@ namespace hgl
         /**
          * @brief CN:赋值运算符\nEN:Assignment operator
          */
-        void operator=(const OrderedValueSet<T>& other)
+        void operator=(const FlatOrderedValueSet<T>& other)
         {
             data = other.data;
         }
@@ -287,7 +352,7 @@ namespace hgl
         /**
          * @brief CN:相等比较运算符\nEN:Equality comparison operator
          */
-        bool operator==(const OrderedValueSet<T>& other) const
+        bool operator==(const FlatOrderedValueSet<T>& other) const
         {
             return data == other.data;
         }
@@ -295,9 +360,9 @@ namespace hgl
         /**
          * @brief CN:不等比较运算符\nEN:Inequality comparison operator
          */
-        bool operator!=(const OrderedValueSet<T>& other) const
+        bool operator!=(const FlatOrderedValueSet<T>& other) const
         {
             return data != other.data;
         }
-    };//template<typename T> class OrderedValueSet
+    };//template<typename T> class FlatOrderedValueSet
 }//namespace hgl

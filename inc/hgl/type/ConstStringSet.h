@@ -27,7 +27,7 @@ namespace hgl
 
         size_t GetLength() const { return length; }
 
-        // 用于 OrderedValueSet 的比较（只比较字符串内容）
+        // 用于 FlatOrderedValueSet 的比较（只比较字符串内容）
         std::strong_ordering operator<=>(const ConstStringView<SC> &other) const
         {
             if(length != other.length)
@@ -60,21 +60,21 @@ namespace hgl
     private:
 
         std::vector<SC> str_data;                         // 字符串数据池
-        ValueArray<ConstStringView<SC>> str_list;        // 按 ID 顺序存储（值，不是指针）
+        std::vector<ConstStringView<SC>> str_list;       // 按 ID 顺序存储（值，不是指针）
 
         // ==================== 哈希优化（使用absl::flat_hash_map） ====================
         absl::flat_hash_map<uint64, std::vector<int>> hash_id_map;
 
         // 验证哈希碰撞时的真实字符串是否匹配
         bool VerifyMatch(int id, const SC *str, int length) const {
-            if(id < 0 || id >= str_list.GetCount())
+            if(id < 0 || id >= (int)str_list.size())
                 return false;
 
             const auto& view = str_list[id];
             if(view.length != length)
                 return false;
 
-            const SC* stored = str_data.GetData() + view.offset;
+            const SC* stored = str_data.data() + view.offset;
             return hgl::strcmp(stored, str, length) == 0;
         }
 
@@ -82,7 +82,7 @@ namespace hgl
 
         // ==================== 查询接口 ====================
 
-        int GetCount() const { return str_list.GetCount(); }
+        int GetCount() const { return (int)str_list.size(); }
         int GetTotalLength() const { return (int)str_data.size(); }
         int GetTotalBytes() const { return (int)(str_data.size() * sizeof(SC)); }
         bool IsEmpty() const { return str_data.empty(); }
@@ -97,7 +97,7 @@ namespace hgl
             if(!str || length <= 0)
                 return -1;
 
-            uint64 hash = ComputeWYHash(str, length);
+            uint64 hash = ComputeOptimalHash(str, length);
 
             // 快速检查：是否已存在（使用哈希表）
             int found_id = GetID(str, length);
@@ -105,7 +105,7 @@ namespace hgl
                 return found_id;  // 返回已存在的 ID
 
             // 分配新 ID
-            const int new_id = str_list.GetCount();
+            const int new_id = (int)str_list.size();
 
             // 添加到数据池
             const size_t offset = str_data.size();
@@ -123,7 +123,7 @@ namespace hgl
             view.offset = offset;
 
             // 添加到列表
-            str_list.Add(view);
+            str_list.push_back(view);
 
             // 添加到哈希映射（使用独立的管理器）
             hash_id_map[hash].push_back(new_id);
@@ -155,12 +155,12 @@ namespace hgl
             if(!str || length <= 0)
                 return -1;
 
-            uint64 hash = ComputeWYHash(str, length);
+            uint64 hash = ComputeOptimalHash(str, length);
 
             auto it = hash_id_map.find(hash);
             if (it == hash_id_map.end())
                 return -1;
-            
+
             for (int id : it->second) {
                 if (VerifyMatch(id, str, length))
                     return id;
@@ -170,7 +170,7 @@ namespace hgl
 
         const SC* GetString(int id) const
         {
-            if(id < 0 || id >= GetCount())
+            if(id < 0 || id >= (int)GetCount())
                 return nullptr;
 
             return str_list[id].GetString();
@@ -178,7 +178,7 @@ namespace hgl
 
         const ConstStringView<SC>* GetStringView(int id) const
         {
-            if(id < 0 || id >= GetCount())
+            if(id < 0 || id >= (int)GetCount())
                 return nullptr;
 
             return &str_list[id];
@@ -191,9 +191,9 @@ namespace hgl
 
         // ==================== 迭代器（改进） ====================
 
-        // ValueArray 使用原始指针作为迭代器
-        const ConstStringView<SC>* begin() const { return str_list.begin(); }
-        const ConstStringView<SC>* end() const { return str_list.end(); }
+        // 返回 std::vector 的迭代器
+        auto begin() const { return str_list.begin(); }
+        auto end() const { return str_list.end(); }
 
         // ==================== 生命周期管理 ====================
 
@@ -211,7 +211,7 @@ namespace hgl
         void Clear()
         {
             str_data.clear();
-            str_list.Clear();
+            str_list.clear();
             hash_id_map.clear();
         }
 
@@ -219,7 +219,7 @@ namespace hgl
 
         void Reserve(int count)
         {
-            str_list.Reserve(count);
+            str_list.reserve(count);
         }
 
         // 批量添加
@@ -239,7 +239,7 @@ namespace hgl
 
         // 获取哈希表负载因子（用于性能分析）
         float GetLoadFactor() const {
-            return hash_id_map.GetLoadFactor(str_list.GetCount());
+            return hash_id_map.GetLoadFactor((int)str_list.size());
         }
 
         // 获取平均碰撞链长度（用于性能分析）

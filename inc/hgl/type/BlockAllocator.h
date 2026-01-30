@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/SimpleValuePool.h>
-#include<hgl/type/OrderedValueSet.h>
+#include<hgl/type/FlatOrderedValueSet.h>
 
 namespace hgl
 {
@@ -42,7 +42,7 @@ namespace hgl
 
         SimpleValuePool<UserNode> ud_pool;    ///<用户数据占用信息池
 
-        OrderedValueSet<UserNode *> ud_set;      ///<用户数据占用合集
+        FlatOrderedValueSet<UserNode *> ud_set;      ///<用户数据占用合集
 
     public:
 

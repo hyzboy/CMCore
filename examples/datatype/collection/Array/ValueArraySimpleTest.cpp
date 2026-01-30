@@ -1,5 +1,6 @@
 ﻿#include<hgl/type/ValueArray.h>
 #include<hgl/type/IndexedValueArray.h>
+#include<hgl/type/Smart.h>
 #include<hgl/time/Time.h>
 #include<random>
 #include<iostream>

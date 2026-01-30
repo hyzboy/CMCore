@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include<hgl/type/OrderedValueSet.h>
+#include<hgl/type/FlatOrderedValueSet.h>
 #include<random>
 
 namespace hgl
@@ -79,7 +79,7 @@ namespace hgl
             if(min_value==0&&max_value==0)
                 max_value=max_count-1;
 
-            OrderedValueSet<T> ss;           //使用排序集合用来储存随机序号
+            FlatOrderedValueSet<T> ss;           //使用排序集合用来储存随机序号
             std::random_device rd;
             std::mt19937 gen(rd());
             std::uniform_int_distribution<T> dis(min_value,max_value);

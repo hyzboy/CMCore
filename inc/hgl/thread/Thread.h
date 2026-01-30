@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/DataType.h>
-#include<hgl/type/OrderedValueSet.h>
+#include<hgl/type/FlatOrderedValueSet.h>
 #include<hgl/type/String.h>
 #include<hgl/thread/ThreadMutex.h>
 #include<hgl/log/Log.h>
@@ -122,7 +122,7 @@ namespace hgl
     {
     protected:
 
-        OrderedValueSet<THREAD *> thread_set;
+        FlatOrderedValueSet<THREAD *> thread_set;
 
     public:
 

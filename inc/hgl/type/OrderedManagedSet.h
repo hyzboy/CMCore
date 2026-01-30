@@ -1,7 +1,10 @@
 #pragma once
 
 #include<vector>
+#include<hgl/platform/Platform.h>
 #include<hgl/type/PtrArray.h>
+#include<hgl/type/ArrayItemProcess.h>
+
 namespace hgl
 {
     /**
@@ -16,7 +19,7 @@ namespace hgl
     protected:
 
         static_assert(!std::is_trivially_copyable_v<T>,
-                      "OrderedManagedSet requires non-trivial types; use OrderedValueSet for trivially copyable types.");
+                      "OrderedManagedSet requires non-trivial types; use FlatOrderedValueSet for trivially copyable types.");
 
         PtrArray<T> data_list;
 

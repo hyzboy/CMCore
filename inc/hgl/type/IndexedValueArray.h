@@ -1,5 +1,7 @@
 #pragma once
 
+#include<hgl/platform/Platform.h>
+#include<hgl/type/CompareUtil.h>
 #include<hgl/type/Stack.h>
 #include<initializer_list>
 #include<algorithm>
@@ -279,7 +281,10 @@ namespace hgl
         virtual void Free()
         {
             data_array.clear();
-            data_array.shrink_to_fit();
+            if constexpr (!std::is_array_v<T>)
+            {
+                data_array.shrink_to_fit();
+            }
             data_index.clear();
             data_index.shrink_to_fit();
             free_index.Free();
@@ -459,7 +464,7 @@ namespace hgl
             if(IsOrdered())         //顺序没问题
                 return;
 
-            T *temp_array=hgl_align_malloc<T>(count);
+            std::vector<T> temp_array(count);
 
             int i = 0;
             while (i < count)
@@ -475,22 +480,20 @@ namespace hgl
 
                 // 批量复制连续块的数据
                 int length = end - start + 1;
-                memcpy(temp_array+start, data_array.data() + data_index[start], length * sizeof(T));
+                memcpy(temp_array.data()+start, data_array.data() + data_index[start], length * sizeof(T));
 
                 // 更新索引
                 i = end + 1;
             }
 
             // 将临时数组的数据复制回 data_array
-            memcpy(data_array.data(), temp_array, count * sizeof(T));
+            memcpy(data_array.data(), temp_array.data(), count * sizeof(T));
 
             // 更新 data_index，使其与 data_array 的顺序一致
             for (int i = 0; i < count; ++i)
             {
                 data_index[i] = i;
             }
-
-            hgl_align_free(temp_array);
         }
     };//template<typename T> class IndexedValueArray
 }//namespace hgl
