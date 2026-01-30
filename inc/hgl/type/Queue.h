@@ -63,7 +63,6 @@
 #pragma once
 
 #include<vector>
-#include<hgl/type/PtrArray.h>
 #include<type_traits>
 #include<algorithm>
 #include<cstring>
