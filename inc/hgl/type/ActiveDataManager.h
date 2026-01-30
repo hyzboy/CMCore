@@ -4,7 +4,8 @@
 */
 #pragma once
 
-#include <hgl/type/ActiveMemoryBlockManager.h>
+#include<hgl/type/ActiveMemoryBlockManager.h>
+#include<vector>
 
 namespace hgl
 {
@@ -27,7 +28,7 @@ namespace hgl
         /**
         * @brief CN:数据数组。\nEN:Data array.
         */
-        ValueBuffer<T> data_array;
+        std::vector<T> data_array;
 
     public:
 
@@ -40,7 +41,7 @@ namespace hgl
         void Reserve(int c)
         {
             aim.Reserve(c);
-            data_array.Reserve(c);
+            data_array.reserve(c);
         }
 
         /**
@@ -76,9 +77,9 @@ namespace hgl
         }
 
         /**
-        * @brief CN:获取活跃ID数组引用。\nEN:Get active ID array reference (direct access to internal storage)
+        * @brief CN:获取活跃ID列表快照。\nEN:Get snapshot of active ID list
         */
-        const ValueBuffer<int> &GetActiveView() const
+        std::vector<int> GetActiveView() const
         {
             return aim.GetActiveView();
         }
@@ -90,7 +91,7 @@ namespace hgl
         * CN:快照包含读段+写段的所有数据。\nEN:Snapshot contains all data from both read and write segments.
         * CN:可以安全地长期保存。\nEN:Safe to keep for long periods.
         */
-        ValueBuffer<int> GetIdleView() const
+        std::vector<int> GetIdleView() const
         {
             return aim.GetIdleView();
         }
@@ -102,7 +103,9 @@ namespace hgl
         */
         bool WriteData(const T &d, const int id)
         {
-            return data_array.WriteAt(d, id);
+            if(id < 0 || id >= (int)data_array.size()) return false;
+            data_array[id] = d;
+            return true;
         }
 
         /**
@@ -114,8 +117,11 @@ namespace hgl
 
             for (int i = 0; i < count; i++)
             {
-                if (data_array.WriteAt(**da, *idp))
+                if (*idp >= 0 && *idp < (int)data_array.size())
+                {
+                    data_array[*idp] = **da;
                     ++result;
+                }
 
                 ++da;
                 ++idp;
@@ -133,8 +139,11 @@ namespace hgl
 
             for (int i = 0; i < count; i++)
             {
-                if (data_array.WriteAt(*da, *idp))
+                if (*idp >= 0 && *idp < (int)data_array.size())
+                {
+                    data_array[*idp] = *da;
                     ++result;
+                }
 
                 ++da;
                 ++idp;
@@ -148,7 +157,8 @@ namespace hgl
         */
         T *At(const int id)
         {
-            return data_array.At(id);
+            if(id < 0 || id >= (int)data_array.size()) return nullptr;
+            return &data_array[id];
         }
 
         /**
@@ -156,7 +166,9 @@ namespace hgl
         */
         bool GetData(T &d, const int id) const
         {
-            return data_array.ReadAt(d, id);
+            if(id < 0 || id >= (int)data_array.size()) return false;
+            d = data_array[id];
+            return true;
         }
 
         /**
@@ -168,10 +180,15 @@ namespace hgl
 
             for (int i = 0; i < count; i++)
             {
-                *da = data_array.At(*idp);
-
-                if (*da)
+                if (*idp >= 0 && *idp < (int)data_array.size())
+                {
+                    *da = const_cast<T*>(&data_array[*idp]);
                     ++result;
+                }
+                else
+                {
+                    *da = nullptr;
+                }
 
                 ++da;
                 ++idp;
@@ -189,8 +206,11 @@ namespace hgl
 
             for (int i = 0; i < count; i++)
             {
-                if (data_array.ReadAt(*da, *idp))
+                if (*idp >= 0 && *idp < (int)data_array.size())
+                {
+                    *da = data_array[*idp];
                     ++result;
+                }
 
                 ++da;
                 ++idp;
@@ -208,7 +228,7 @@ namespace hgl
         {
             aim.CreateActive(id, count);
 
-            data_array.Expand(count);
+            data_array.resize(data_array.size() + count);
         }
 
         /**
@@ -218,7 +238,7 @@ namespace hgl
         {
             aim.CreateIdle(idp, count);
 
-            data_array.Expand(count);
+            data_array.resize(data_array.size() + count);
         }
 
         /**
@@ -262,7 +282,7 @@ namespace hgl
             if (create_count > 0)
             {
                 aim.CreateActive(id, create_count);
-                data_array.Expand(create_count);
+                data_array.resize(data_array.size() + create_count);
             }
 
             return true;
@@ -299,7 +319,8 @@ namespace hgl
         void Free()
         {
             aim.Free();
-            data_array.Free();
+            data_array.clear();
+            data_array.shrink_to_fit();
         }
 
         /**
@@ -312,7 +333,9 @@ namespace hgl
             if (!aim.Get(&id))
                 return nullptr;
 
-            return data_array.At(id);
+            if (id < 0 || id >= (int)data_array.size())
+                return nullptr;
+            return &data_array[id];
         }
 
         /**

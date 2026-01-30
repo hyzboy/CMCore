@@ -10,16 +10,13 @@ cm_example_project("DataType/Collection" CollectionTest                 Collecti
 cm_example_project("DataType/Collection" CollectionTestComprehensive    CollectionTestComprehensive.cpp)
 cm_example_project("DataType/Collection" QuickTest                      QuickTest.cpp)
 cm_example_project("DataType/Collection" MinimalTest                    MinimalTest.cpp)
-cm_example_project("DataType/Collection" FixVerificationTest            FixVerificationTest.cpp)
 
 add_subdirectory(stack)
-add_subdirectory(ValueBuffer)
 add_subdirectory(OrderedSet)
 add_subdirectory(UnorderedSet)
 add_subdirectory(Array)
 add_subdirectory(Queue)
 
-cm_example_project("DataType/Collection" QueueTest              QueueTest.cpp)
 cm_example_project("DataType/Collection" ValuePoolTest          ValuePoolTest.cpp)
 cm_example_project("DataType/Collection" ManagedPoolTest        ManagedPoolTest.cpp)
 cm_example_project("DataType/Collection" MapTest                MapTest.cpp)

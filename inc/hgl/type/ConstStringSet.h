@@ -2,7 +2,7 @@
 
 #include<vector>
 #include<hgl/type/ValueArray.h>
-#include<hgl/type/FNV1aHash.h>
+#include<hgl/util/hash/QuickHash.h>
 #include<absl/container/flat_hash_map.h>
 #include<hgl/io/TextOutputStream.h>
 
@@ -11,7 +11,7 @@ namespace hgl
     // ==================== 改进版 ConstStringView ====================
     template<typename SC> struct ConstStringView
     {
-        ValueBuffer<SC> *str_data;    // 指向字符串数据池
+        std::vector<SC> *str_data;    // 指向字符串数据池
         int id;                      // 顺序号
         int length;                  // 字符串长度
         size_t offset;              // 在数据池中的偏移
@@ -22,7 +22,7 @@ namespace hgl
 
         const SC *GetString() const
         {
-            return str_data ? str_data->GetData() + offset : nullptr;
+            return str_data ? str_data->data() + offset : nullptr;
         }
 
         size_t GetLength() const { return length; }
@@ -59,7 +59,7 @@ namespace hgl
     {
     private:
 
-        ValueBuffer<SC> str_data;                         // 字符串数据池
+        std::vector<SC> str_data;                         // 字符串数据池
         ValueArray<ConstStringView<SC>> str_list;        // 按 ID 顺序存储（值，不是指针）
 
         // ==================== 哈希优化（使用absl::flat_hash_map） ====================
@@ -83,11 +83,11 @@ namespace hgl
         // ==================== 查询接口 ====================
 
         int GetCount() const { return str_list.GetCount(); }
-        int GetTotalLength() const { return str_data.GetCount(); }
-        int GetTotalBytes() const { return str_data.GetCount() * sizeof(SC); }
-        bool IsEmpty() const { return str_data.IsEmpty(); }
+        int GetTotalLength() const { return (int)str_data.size(); }
+        int GetTotalBytes() const { return (int)(str_data.size() * sizeof(SC)); }
+        bool IsEmpty() const { return str_data.empty(); }
 
-        const ValueBuffer<SC>& GetStringData() const { return str_data; }
+        const std::vector<SC>& GetStringData() const { return str_data; }
 
         // ==================== 添加接口（优化后） ====================
 
@@ -97,7 +97,7 @@ namespace hgl
             if(!str || length <= 0)
                 return -1;
 
-            uint64 hash = ComputeFNV1aHash(str, length);
+            uint64 hash = ComputeWYHash(str, length);
 
             // 快速检查：是否已存在（使用哈希表）
             int found_id = GetID(str, length);
@@ -108,10 +108,10 @@ namespace hgl
             const int new_id = str_list.GetCount();
 
             // 添加到数据池
-            const size_t offset = str_data.GetCount();
-            str_data.Expand(length + 1);
+            const size_t offset = str_data.size();
+            str_data.resize(offset + length + 1);
 
-            SC *save_str = str_data.GetData() + offset;
+            SC *save_str = str_data.data() + offset;
             mem_copy<SC>(save_str, str, length);
             save_str[length] = 0;
 
@@ -155,7 +155,7 @@ namespace hgl
             if(!str || length <= 0)
                 return -1;
 
-            uint64 hash = ComputeFNV1aHash(str, length);
+            uint64 hash = ComputeWYHash(str, length);
 
             auto it = hash_id_map.find(hash);
             if (it == hash_id_map.end())
@@ -210,7 +210,7 @@ namespace hgl
 
         void Clear()
         {
-            str_data.Clear();
+            str_data.clear();
             str_list.Clear();
             hash_id_map.clear();
         }

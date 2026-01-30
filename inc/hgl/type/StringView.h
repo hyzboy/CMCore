@@ -1489,60 +1489,6 @@ namespace hgl
         }
 
         /**
-         * @brief CN: 与另一个 StringView 的比较运算符 (==)。
-         *        EN: Equality operator for StringView.
-         */
-        friend bool operator==(const SelfClass &a, const SelfClass &b)
-        {
-            return a.Comp(b) == 0;
-        }
-
-        friend bool operator!=(const SelfClass &a, const SelfClass &b)
-        {
-            return a.Comp(b) != 0;
-        }
-
-        friend bool operator<(const SelfClass &a, const SelfClass &b)
-        {
-            return a.Comp(b) < 0;
-        }
-
-        friend bool operator<=(const SelfClass &a, const SelfClass &b)
-        {
-            return a.Comp(b) <= 0;
-        }
-
-        friend bool operator>(const SelfClass &a, const SelfClass &b)
-        {
-            return a.Comp(b) > 0;
-        }
-
-        friend bool operator>=(const SelfClass &a, const SelfClass &b)
-        {
-            return a.Comp(b) >= 0;
-        }
-
-        friend bool operator==(const SelfClass &a, const T *b)
-        {
-            return a.Comp(b) == 0;
-        }
-
-        friend bool operator!=(const SelfClass &a, const T *b)
-        {
-            return a.Comp(b) != 0;
-        }
-
-        friend bool operator==(const T *a, const SelfClass &b)
-        {
-            return b.Comp(a) == 0;
-        }
-
-        friend bool operator!=(const T *a, const SelfClass &b)
-        {
-            return b.Comp(a) != 0;
-        }
-
-        /**
          * @brief CN: 布尔转换：非空视图为 true。
          *        EN: Boolean conversion: non-empty view is true.
          *

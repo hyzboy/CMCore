@@ -45,9 +45,9 @@ void ShowPoolStats(const ValuePool<T> &pool, const char *title = nullptr)
          << ", HitRate=" << (stats.GetHitRate() * 100.0f) << "%" << endl;
 }
 
-void ShowUserInfoArray(const ValueBuffer<UserInfo> &ua)
+void ShowUserInfoArray(const std::vector<UserInfo> &ua)
 {
-    cout << "  User array [" << ua.GetCount() << "]: ";
+    cout << "  User array [" << ua.size() << "]: ";
 
     int shown = 0;
     for (auto &ui : ua)

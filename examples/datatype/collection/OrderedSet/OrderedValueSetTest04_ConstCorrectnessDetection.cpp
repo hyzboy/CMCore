@@ -1,4 +1,4 @@
-﻿#include<hgl/type/OrderedValueSet.h>
+#include<hgl/type/OrderedValueSet.h>
 #include<iostream>
 #include<cassert>
 #include<type_traits>
@@ -51,7 +51,7 @@ int os_main(int, os_char**)
 
     cout << "\n[4.3] Recommendations:" << endl;
     cout << "  - begin()/end()/last()/GetData() should return const T* in const methods" << endl;
-    cout << "  - Consider removing implicit ValueBuffer conversions to protect invariants" << endl;
+    cout << "  - Consider removing implicit std::vector<> conversions to protect invariants" << endl;
 
     cout << "\n✅ TEST 04 COMPLETED (diagnostic)" << endl;
     return 0;

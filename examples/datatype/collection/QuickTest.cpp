@@ -1,6 +1,6 @@
-﻿/**
+/**
  * 快速测试脚本
- * 用于快速验证ValueArray和ValueBuffer的基本功能
+ * 用于快速验证ValueArray和std::vector<>的基本功能
  */
 
 #include<hgl/type/ManagedArray.h>
@@ -52,39 +52,40 @@ void TestArrayListBasic()
 
 void TestDataArrayBasic()
 {
-    std::cout << "\n=== ValueBuffer Basic Test ===" << std::endl;
+    std::cout << "\n=== std::vector Basic Test ===" << std::endl;
 
-    ValueBuffer<int> arr;
-    arr.Resize(5);
+    std::vector<int> arr;
+    arr.resize(5);
 
     for(int64 i = 0; i < 5; i++)
         arr[i] = i * 10;
 
     std::cout << "Initial: ";
-    for(int64 i = 0; i < arr.GetCount(); i++)
+    for(int64 i = 0; i < (int)arr.size(); i++)
         std::cout << arr[i] << " ";
     std::cout << std::endl;
 
     // 测试Delete
-    arr.Delete(1, 2);
+    arr.erase(arr.begin() + 1, arr.begin() + 3);
     std::cout << "After Delete(1, 2): ";
-    for(int64 i = 0; i < arr.GetCount(); i++)
+    for(int64 i = 0; i < (int)arr.size(); i++)
         std::cout << arr[i] << " ";
     std::cout << std::endl;
 
     // 测试Move
-    arr.Resize(8);
+    arr.resize(8);
     for(int64 i = 3; i < 8; i++)
         arr[i] = i * 10;
 
     std::cout << "Before Move: ";
-    for(int64 i = 0; i < arr.GetCount(); i++)
+    for(int64 i = 0; i < (int)arr.size(); i++)
         std::cout << arr[i] << " ";
     std::cout << std::endl;
 
-    arr.Move(0, 5, 2);
+    // Move(0, 5, 2) means move 2 elements from position 0 to position 5
+    std::rotate(arr.begin(), arr.begin() + 2, arr.begin() + 5);
     std::cout << "After Move(0, 5, 2): ";
-    for(int64 i = 0; i < arr.GetCount(); i++)
+    for(int64 i = 0; i < (int)arr.size(); i++)
         std::cout << arr[i] << " ";
     std::cout << std::endl;
 }

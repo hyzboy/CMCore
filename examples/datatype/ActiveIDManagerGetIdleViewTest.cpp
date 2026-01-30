@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ActiveIDManagerGetIdleViewTest.cpp
  * 专门测试 ActiveIDManager::GetIdleView() 的崩溃问题
  *
@@ -6,7 +6,7 @@
  * 1. Reserve
  * 2. CreateIdle
  * 3. 多次调用 GetIdleView()
- * 4. 观察 ValueBuffer 临时对象的析构行为
+ * 4. 观察 std::vector<> 临时对象的析构行为
  */
 
 #include<hgl/type/ActiveIDManager.h>
@@ -29,20 +29,17 @@ void DebugOutputIdleView(const char *hint, ActiveIDManager &aim)
 
     cout << "\n  Calling GetIdleView()..." << endl;
 
-    // ❌ 关键测试点：用引用接收 GetIdleView() 的返回值
-    const ValueBuffer<int> &idle_view = aim.GetIdleView();
+    // ✅ 使用 auto 接收返回值（std::vector<int>）
+    auto idle_view = aim.GetIdleView();
 
-    cout << "  idle_view Count: " << idle_view.GetCount() << endl;
-    cout << "  idle_view AllocCount: " << idle_view.GetAllocCount() << endl;
-    cout << "  idle_view Data pointer: " << (void*)idle_view.GetData() << endl;
+    cout << "  idle_view Count: " << idle_view.size() << endl;
+    cout << "  idle_view Data pointer: " << (void*)idle_view.data() << endl;
 
-    if (idle_view.GetCount() > 0) {
+    if (!idle_view.empty()) {
         cout << "  Idle IDs: [";
-        for (int i = 0; i < idle_view.GetCount(); i++) {
+        for (size_t i = 0; i < idle_view.size(); i++) {
             if (i > 0) cout << ", ";
-            int id;
-            idle_view.ReadAt(id, i);
-            cout << id;
+            cout << idle_view[i];
         }
         cout << "]" << endl;
     } else {
@@ -113,16 +110,16 @@ int main()
 
         cout << "  Outer scope - Calling GetIdleView()..." << endl;
         {
-            const ValueBuffer<int> &view1 = aim.GetIdleView();
-            cout << "    view1 count: " << view1.GetCount() << endl;
+            auto view1 = aim.GetIdleView();
+            cout << "    view1 count: " << view1.size() << endl;
 
             {
-                const ValueBuffer<int> &view2 = aim.GetIdleView();
-                cout << "    view2 count: " << view2.GetCount() << endl;
+                auto view2 = aim.GetIdleView();
+                cout << "    view2 count: " << view2.size() << endl;
 
                 {
-                    const ValueBuffer<int> &view3 = aim.GetIdleView();
-                    cout << "    view3 count: " << view3.GetCount() << endl;
+                    auto view3 = aim.GetIdleView();
+                    cout << "    view3 count: " << view3.size() << endl;
 
                     cout << "    Destroying view3..." << endl;
                 }
@@ -169,9 +166,9 @@ int main()
 
         cout << "  Calling GetIdleView() 100 times..." << endl;
         for (int i = 0; i < 100; i++) {
-            const ValueBuffer<int> &view = aim.GetIdleView();
+            auto view = aim.GetIdleView();
             if (i % 20 == 0) {
-                cout << "    Iteration " << i << ": count = " << view.GetCount() << endl;
+                cout << "    Iteration " << i << ": count = " << view.size() << endl;
             }
         }
 

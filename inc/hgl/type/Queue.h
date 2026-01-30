@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Queue.h 实现详解（设计与原理概述）
  *
  * 1) 设计目标
@@ -7,7 +7,7 @@
  * - 对于非平凡类型，请使用指针形式 `Queue<T*>`，由调用方显式管理对象生命周期。
  *
  * 2) 核心数据结构
- * - `ValueBuffer<T> data_array[2]`：读段(read)与写段(write)的双缓冲结构。
+ * - `std::vector<T> data_array[2]`：读段(read)与写段(write)的双缓冲结构。
  *   - `read_index` 指向当前读段，`write_index` 指向当前写段。
  *   - `read_offset` 标记读段的起始读取位置（避免每次 Pop 都整体搬移数据）。
  * - 初始化：`write_index=0, read_index=1, read_offset=0`。
@@ -19,7 +19,7 @@
  *   - 保证顺序弹出的成本近似 O(1)，避免整体数据拼接/搬移。
  *
  * 4) Push / Pop / Peek 的语义与复杂度
- * - `Push(const T &)` / `Push(T *data,int count)` 始终追加到写段尾部，扩容由 `ValueBuffer<T>` 负责，摊销近 O(1)。
+ * - `Push(const T &)` / `Push(T *data,int count)` 始终追加到写段尾部，扩容由 `std::vector<T>` 负责，摊销近 O(1)。
  * - `Peek(T &)`：只读不前进。若读段可读则从 `read_offset` 读取，否则若写段非空则读取写段首元素；两段皆空返回 false。
  * - `Pop(T &)`：顺序弹出并前进 `read_offset`。读段耗尽且写段非空时会先段切换；两段皆空返回 false。
  * - 复杂度：Push/Peek/Pop 在多数情形下均为 O(1) 摊销；段切换为 O(1)。
@@ -38,7 +38,7 @@
  *
  * 7) GetArray 与未读快照（Unread Snapshot）
  * - `GetArray()`：返回当前“写段”的引用（便于与 Active 接口兼容的场景）。
- * - `GetUnreadSnapshot()`：返回队列的稳定快照（`ValueBuffer<T>`），按顺序合并“读段的未读部分”与“写段的全部数据”。
+ * - `GetUnreadSnapshot()`：返回队列的稳定快照（`std::vector<T>`），按顺序合并“读段的未读部分”与“写段的全部数据”。
  *   - 快照不会改变队列内部状态（不影响 `read_offset`、读写段内容）。
  *   - 若使用指针类型 `Queue<U*>`，快照包含的是指针序列；对象的生命周期仍由调用方管理，容器不负责 delete。
  *
@@ -62,9 +62,11 @@
  */
 #pragma once
 
-#include<hgl/type/ValueBuffer.h>
+#include<vector>
 #include<hgl/type/PtrArray.h>
 #include<type_traits>
+#include<algorithm>
+#include<cstring>
 namespace hgl
 {
     /**
@@ -79,7 +81,7 @@ namespace hgl
 
     protected:
 
-        ValueBuffer<T> data_array[2];
+        std::vector<T> data_array[2];
 
         int read_index;
         int write_index;
@@ -158,7 +160,7 @@ namespace hgl
                 // 检查是否需要切换到下一个数组
                 if(current_array == 0)
                 {
-                    int read_count = queue->data_array[queue->read_index].GetCount();
+                    int read_count = (int)queue->data_array[queue->read_index].size();
                     if(current_pos >= read_count)
                     {
                         // 切换到 write_array
@@ -174,7 +176,7 @@ namespace hgl
          */
         ConstIterator begin() const
         {
-            int read_count = data_array[read_index].GetCount();
+            int read_count = (int)data_array[read_index].size();
             if(read_offset < read_count)
                 return ConstIterator(this, 0, read_offset);  // 从 read_array 开始
             else
@@ -186,28 +188,28 @@ namespace hgl
          */
         ConstIterator end() const
         {
-            return ConstIterator(this, 1, data_array[write_index].GetCount());
+            return ConstIterator(this, 1, (int)data_array[write_index].size());
         }
 
     public: //兼容 Active 接口的简易 GetArray()
 
-        ValueBuffer<T> &GetArray(){ return data_array[write_index]; }
-        const ValueBuffer<T> &GetArray() const { return data_array[write_index]; }
+        std::vector<T> &GetArray(){ return data_array[write_index]; }
+        const std::vector<T> &GetArray() const { return data_array[write_index]; }
 
         /**
-         * @brief 获取队列中所有未读取数据的完整视图（包括 read 和 write 两个数组）
-         * @return ValueBuffer<T> 合并后的所有队列数据
+         * @brief 获取队列中所有未读数据的完整视图（包括 read 和 write 两个数组）
+         * @return std::vector<T> 合并后的所有队列数据
          */
-        ValueBuffer<T> GetUnreadSnapshot() const
+        std::vector<T> GetUnreadSnapshot() const
         {
-            ValueBuffer<T> result;
+            std::vector<T> result;
 
             // 获取 read_array 中的有效数据（从 read_offset 开始）
-            int read_count = data_array[read_index].GetCount();
+            int read_count = (int)data_array[read_index].size();
             int valid_read_count = (read_count > read_offset) ? (read_count - read_offset) : 0;
 
             // 获取 write_array 中的数据
-            int write_count = data_array[write_index].GetCount();
+            int write_count = (int)data_array[write_index].size();
 
             // 总大小
             int total_count = valid_read_count + write_count;
@@ -216,18 +218,18 @@ namespace hgl
                 return result;  // 返回空 buffer
 
             // 分配空间
-            result.Resize(total_count);
+            result.resize(total_count);
 
             // 复制 read_array 中的有效部分
             if(valid_read_count > 0)
             {
-                result.WriteAt(data_array[read_index].GetData() + read_offset, 0, valid_read_count);
+                memcpy(result.data(), data_array[read_index].data() + read_offset, valid_read_count * sizeof(T));
             }
 
             // 复制 write_array 的全部数据
             if(write_count > 0)
             {
-                result.WriteAt(data_array[write_index].GetData(), valid_read_count, write_count);
+                memcpy(result.data() + valid_read_count, data_array[write_index].data(), write_count * sizeof(T));
             }
 
             return result;
@@ -237,18 +239,18 @@ namespace hgl
 
         const int GetAllocCount() const
         {
-            return data_array[0].GetAllocCount()+data_array[1].GetAllocCount();
+            return (int)(data_array[0].capacity()+data_array[1].capacity());
         }
 
         const int GetCount() const
         {
-            return data_array[0].GetCount()+data_array[1].GetCount()-read_offset;
+            return (int)(data_array[0].size()+data_array[1].size()-read_offset);
         }
 
         virtual bool Reserve(int count)                                          ///<预分配数据空间
         {
-            if(!data_array[0].Reserve(count))return(false);
-            if(!data_array[1].Reserve(count))return(false);
+            data_array[0].reserve(count);
+            data_array[1].reserve(count);
             return true;
         }
 
@@ -256,9 +258,9 @@ namespace hgl
 
         const bool Contains(const T &data)const
         {
-            if(data_array[read_index].Find(data,read_offset)!=-1)
+            if(std::find(data_array[read_index].begin() + read_offset, data_array[read_index].end(), data) != data_array[read_index].end())
                 return true;
-            return data_array[write_index].Find(data)!=-1;
+            return std::find(data_array[write_index].begin(), data_array[write_index].end(), data) != data_array[write_index].end();
         }
 
     public: //方法
@@ -276,12 +278,11 @@ namespace hgl
         {
             if(!data||count<=0)return false;
 
-            int offset=data_array[write_index].GetCount();
+            int offset=(int)data_array[write_index].size();
 
-            if(!data_array[write_index].Expand(count))
-                return false;
+            data_array[write_index].resize(offset + count);
 
-            data_array[write_index].WriteAt(data,offset,count);
+            memcpy(data_array[write_index].data() + offset, data, count * sizeof(T));
 
             return true;
         }
@@ -290,30 +291,30 @@ namespace hgl
 
         virtual bool Peek(T &data)                                                ///<尝试访问一个数据
         {
-            if(read_offset >= data_array[read_index].GetCount())
+            if(read_offset >= (int)data_array[read_index].size())
             {
-                if(data_array[write_index].GetCount()<=0)
+                if((int)data_array[write_index].size()<=0)
                    return false;
-                data_array[write_index].ReadAt(data,0);
+                data = data_array[write_index][0];
             }
             else
             {
-                data_array[read_index].ReadAt(data,read_offset);
+                data = data_array[read_index][read_offset];
             }
             return true;
         }
 
         virtual bool Pop(T &data)                                                 ///<弹出一个数据
         {
-            if(data_array[read_index].GetCount()<=read_offset)
+            if((int)data_array[read_index].size()<=read_offset)
             {
-                if(data_array[write_index].GetCount()<=0)
+                if((int)data_array[write_index].size()<=0)
                    return false;
-                data_array[read_index].Clear();
+                data_array[read_index].clear();
                 SwapIndex();
             }
 
-            data_array[read_index].ReadAt(data,read_offset);
+            data = data_array[read_index][read_offset];
             ++read_offset;
             return true;
         }
@@ -322,16 +323,18 @@ namespace hgl
 
         virtual void Clear()                                                      ///<清除所有数据
         {
-            data_array[0].Clear();
-            data_array[1].Clear();
+            data_array[0].clear();
+            data_array[1].clear();
             read_offset=0;
         }
 
         virtual void Free()                                                       ///<清除所有数据并释放内存
         {
             Clear();
-            data_array[0].Free();
-            data_array[1].Free();
+            data_array[0].clear();
+            data_array[0].shrink_to_fit();
+            data_array[1].clear();
+            data_array[1].shrink_to_fit();
         }
     }; // class Queue
 }//namespace hgl

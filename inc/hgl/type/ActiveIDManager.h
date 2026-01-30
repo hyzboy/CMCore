@@ -1,9 +1,8 @@
 ﻿#pragma once
 
-#include<hgl/type/ValueBuffer.h>
-#include<hgl/type/Queue.h>
-#include<hgl/type/OrderedValueSet.h>
-#include<compare>
+#include<absl/container/btree_set.h>
+#include<deque>
+#include<vector>
 
 namespace hgl
 {
@@ -12,14 +11,14 @@ namespace hgl
     *
     * 设计说明：
     * - 管理一个ID池，支持创建、获取、释放操作
-    * - 活跃ID存储在 OrderedValueSet 中，支持快速查询
-    * - 闲置ID存储在 Queue 中（FIFO），确保公平复用，避免ID碎片化
+    * - 活跃ID存储在 absl::btree_set 中，支持快速有序查询 O(log n)
+    * - 闲置ID存储在 std::deque 中（FIFO），确保公平复用，避免ID碎片化
     * - 提供完整的验证和统计功能
     */
     class ActiveIDManager
     {
-        OrderedValueSet<int> active_list;   ///<活跃ID列表
-        Queue<int> idle_list;               ///<闲置ID列表（FIFO队列，确保公平复用）
+        absl::btree_set<int> active_list;   ///<活跃ID列表（有序集合）
+        std::deque<int> idle_list;          ///<闲置ID列表（FIFO队列，确保公平复用）
 
         int id_count;                       ///<创建过的最大ID值+1
         int released_count;                 ///<已释放过的ID总数（用于统计）
@@ -47,24 +46,37 @@ namespace hgl
 
         // ==================== 查询接口 ====================
 
-        int GetActiveCount  ()const{return active_list.GetCount();}
-        int GetIdleCount    ()const{return idle_list.GetCount();}
-        int GetTotalCount   ()const{return active_list.GetCount()+idle_list.GetCount();}
+        int GetActiveCount  ()const{return static_cast<int>(active_list.size());}
+        int GetIdleCount    ()const{return static_cast<int>(idle_list.size());}
+        int GetTotalCount   ()const{return GetActiveCount() + GetIdleCount();}
         int GetHistoryMaxId ()const{return id_count;}
         int GetReleasedCount()const{return released_count;}        ///<已释放过的ID总数
 
-        const ValueBuffer<int> &GetActiveView() const
+        /**
+         * @brief CN:获取活跃ID集合的只读访问\nEN:Get read-only access to active ID set
+         * @return btree_set 的 const 引用，支持有序遍历
+         */
+        const absl::btree_set<int>& GetActiveSet() const
         {
             return active_list;
         }
 
         /**
-         * 获取闲置ID队列的所有数据视图
-         * @return ValueBuffer<int> 包含所有已入队的闲置ID
+         * @brief CN:获取活跃ID列表快照\nEN:Get snapshot of active ID list
+         * @return 包含所有活跃ID的 vector
          */
-        ValueBuffer<int> GetIdleView() const
+        std::vector<int> GetActiveView() const
         {
-            return idle_list.GetUnreadSnapshot();  // ✅ 返回完整快照（读段+写段合并）
+            return std::vector<int>(active_list.begin(), active_list.end());
+        }
+
+        /**
+         * @brief CN:获取闲置ID队列的快照\nEN:Get snapshot of idle ID queue
+         * @return 包含所有闲置ID的 vector
+         */
+        std::vector<int> GetIdleView() const
+        {
+            return std::vector<int>(idle_list.begin(), idle_list.end());
         }
 
         // ==================== 创建接口 ====================
@@ -98,8 +110,11 @@ namespace hgl
 
         // ==================== 查询和验证接口 ====================
 
-        bool IsActive(const int id)const{return active_list.Contains(id);}  ///<确认指定ID是否处于活跃状态
-        bool IsIdle  (const int id)const{return idle_list.Contains(id);}    ///<确认指定ID是否处于闲置状态
+        bool IsActive(const int id)const{return active_list.contains(id);}  ///<确认指定ID是否处于活跃状态
+        bool IsIdle  (const int id)const
+        {
+            return std::find(idle_list.begin(), idle_list.end(), id) != idle_list.end();
+        }
         bool IsValid (const int id)const{return id>=0 && id<id_count;}      ///<确认指定ID是否曾被创建过
 
         // ==================== 内存管理接口 ====================
@@ -116,8 +131,8 @@ namespace hgl
          */
         void Clear(bool reset_counter=false)
         {
-            active_list.Clear();
-            idle_list.Clear();
+            active_list.clear();
+            idle_list.clear();
 
             if(reset_counter)
             {
@@ -137,8 +152,9 @@ namespace hgl
          */
         void Free()
         {
-            active_list.Free();
-            idle_list.Free();
+            active_list.clear();
+            idle_list.clear();
+            idle_list.shrink_to_fit();  // 释放 deque 的内存
 
             id_count = 0;
             released_count = 0;
@@ -165,7 +181,7 @@ namespace hgl
         /**
          * 检查是否有闲置ID可复用
          */
-        bool HasIdleID() const { return idle_list.GetCount() > 0; }
+        bool HasIdleID() const { return !idle_list.empty(); }
 
         /**
          * 获取剩余可分配的ID容量

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file UnorderedSet.h
  * @brief CN:高性能无序集合模板（基于连续内存优化）\nEN:High-performance unordered set template (optimized with contiguous memory)
  */
@@ -6,7 +6,7 @@
 
 #include <type_traits>
 #include <vector>
-#include <hgl/type/FNV1aHash.h>
+#include <hgl/type/QuickHash.h>
 #include <hgl/type/ActiveDataManager.h>
 #include <absl/container/flat_hash_map.h>
 
@@ -77,8 +77,8 @@ namespace hgl
         {
             hash_map.clear();
 
-            const ValueBuffer<int>& active_ids = ptr_manager.GetActiveView();
-            const int count = active_ids.GetCount();
+            auto active_ids = ptr_manager.GetActiveView();
+            const int count = (int)active_ids.size();
 
             for (int i = 0; i < count; i++)
             {
@@ -315,7 +315,7 @@ namespace hgl
         /**
          * @brief CN:获取活跃ID数组\nEN:Get active ID array
          */
-        const ValueBuffer<int> &GetActiveView() const
+        std::vector<int> GetActiveView() const
         {
             return ptr_manager.GetActiveView();
         }
@@ -382,7 +382,7 @@ namespace hgl
 
             const T& operator*() const
             {
-                const ValueBuffer<int>& active_ids = set->ptr_manager.GetActiveView();
+                auto active_ids = set->ptr_manager.GetActiveView();
                 int id = active_ids[index];
                 T* obj = nullptr;
                 set->ptr_manager.GetData(obj, id);
@@ -391,7 +391,7 @@ namespace hgl
 
             const T* operator->() const
             {
-                const ValueBuffer<int>& active_ids = set->ptr_manager.GetActiveView();
+                auto active_ids = set->ptr_manager.GetActiveView();
                 int id = active_ids[index];
                 T* obj = nullptr;
                 set->ptr_manager.GetData(obj, id);
@@ -434,8 +434,8 @@ namespace hgl
         template<typename F>
         void Enum(F&& func) const
         {
-            const ValueBuffer<int>& active_ids = ptr_manager.GetActiveView();
-            const int count = active_ids.GetCount();
+            auto active_ids = ptr_manager.GetActiveView();
+            const int count = (int)active_ids.size();
 
             for (int i = 0; i < count; i++)
             {
@@ -449,8 +449,8 @@ namespace hgl
         template<typename F>
         void EnumMutable(F&& func)
         {
-            const ValueBuffer<int>& active_ids = ptr_manager.GetActiveView();
-            const int count = active_ids.GetCount();
+            auto active_ids = ptr_manager.GetActiveView();
+            const int count = (int)active_ids.size();
 
             for (int i = 0; i < count; i++)
             {

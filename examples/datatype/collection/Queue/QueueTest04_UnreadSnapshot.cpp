@@ -1,4 +1,4 @@
-﻿/**
+/**
  * QueueTest04_UnreadSnapshot.cpp
  * 测试 Queue::GetUnreadSnapshot() 功能
  *
@@ -9,7 +9,7 @@
  * 4. snapshot 是独立副本（不影响原队列）
  * 5. snapshot 的析构是否正常（无 double free）
  */
-
+#include<hgl/type/DataType.h>
 #include<hgl/type/Queue.h>
 #include<iostream>
 #include<cassert>
@@ -24,13 +24,13 @@ void TestEmptySnapshot()
     Queue<int> queue;
 
     {
-        ValueBuffer<int> snapshot = queue.GetUnreadSnapshot();
+        std::vector<int> snapshot = queue.GetUnreadSnapshot();
 
         cout << "  Queue count: " << queue.GetCount() << endl;
-        cout << "  Snapshot count: " << snapshot.GetCount() << endl;
+        cout << "  Snapshot count: " << snapshot.size() << endl;
 
         assert(queue.GetCount() == 0);
-        assert(snapshot.GetCount() == 0);
+        assert(snapshot.size() == 0);
 
         cout << "  ✓ Empty snapshot correct" << endl;
     }
@@ -52,15 +52,14 @@ void TestWriteOnlySnapshot()
     cout << "  Queue count: " << queue.GetCount() << endl;
 
     {
-        ValueBuffer<int> snapshot = queue.GetUnreadSnapshot();
+        std::vector<int> snapshot = queue.GetUnreadSnapshot();
 
-        cout << "  Snapshot count: " << snapshot.GetCount() << endl;
-        assert(snapshot.GetCount() == 5);
+        cout << "  Snapshot count: " << snapshot.size() << endl;
+        assert(snapshot.size() == 5);
 
         cout << "  Snapshot data: ";
-        for (int i = 0; i < snapshot.GetCount(); i++) {
-            int value;
-            snapshot.ReadAt(value, i);
+        for (int i = 0; i < (int)snapshot.size(); i++) {
+            int value = snapshot[i];
             cout << value << " ";
             assert(value == (i + 1) * 10);
         }
@@ -109,16 +108,15 @@ void TestReadWriteSnapshot()
 
     // 获取 snapshot
     {
-        ValueBuffer<int> snapshot = queue.GetUnreadSnapshot();
+        std::vector<int> snapshot = queue.GetUnreadSnapshot();
 
-        cout << "  Snapshot count: " << snapshot.GetCount() << endl;
-        assert(snapshot.GetCount() == 6);
+        cout << "  Snapshot count: " << snapshot.size() << endl;
+        assert(snapshot.size() == 6);
 
         cout << "  Snapshot data: ";
         int expected[] = {30, 40, 50, 60, 70, 80};
-        for (int i = 0; i < snapshot.GetCount(); i++) {
-            int value;
-            snapshot.ReadAt(value, i);
+        for (int i = 0; i < (int)snapshot.size(); i++) {
+            int value = snapshot[i];
             cout << value << " ";
             assert(value == expected[i]);
         }
@@ -140,15 +138,15 @@ void TestSnapshotIndependence()
         queue.Push(i * 10);
     }
 
-    ValueBuffer<int> snapshot = queue.GetUnreadSnapshot();
+    std::vector<int> snapshot = queue.GetUnreadSnapshot();
 
-    cout << "  Original snapshot count: " << snapshot.GetCount() << endl;
-    assert(snapshot.GetCount() == 5);
+    cout << "  Original snapshot count: " << snapshot.size() << endl;
+    assert(snapshot.size() == 5);
 
     // 修改 snapshot 数据
     cout << "  Modifying snapshot data..." << endl;
-    for (int i = 0; i < snapshot.GetCount(); i++) {
-        snapshot.WriteAt(999, i);
+    for (int i = 0; i < (int)snapshot.size(); i++) {
+        snapshot[i] = 999;
     }
 
     // 验证原队列未受影响
@@ -177,19 +175,19 @@ void TestMultipleSnapshots()
     cout << "  Creating 3 snapshots in nested scopes..." << endl;
 
     {
-        ValueBuffer<int> snap1 = queue.GetUnreadSnapshot();
-        cout << "    Snapshot 1 created (count: " << snap1.GetCount() << ")" << endl;
-        assert(snap1.GetCount() == 3);
+        std::vector<int> snap1 = queue.GetUnreadSnapshot();
+        cout << "    Snapshot 1 created (count: " << snap1.size() << ")" << endl;
+        assert(snap1.size() == 3);
 
         {
-            ValueBuffer<int> snap2 = queue.GetUnreadSnapshot();
-            cout << "    Snapshot 2 created (count: " << snap2.GetCount() << ")" << endl;
-            assert(snap2.GetCount() == 3);
+            std::vector<int> snap2 = queue.GetUnreadSnapshot();
+            cout << "    Snapshot 2 created (count: " << snap2.size() << ")" << endl;
+            assert(snap2.size() == 3);
 
             {
-                ValueBuffer<int> snap3 = queue.GetUnreadSnapshot();
-                cout << "    Snapshot 3 created (count: " << snap3.GetCount() << ")" << endl;
-                assert(snap3.GetCount() == 3);
+                std::vector<int> snap3 = queue.GetUnreadSnapshot();
+                cout << "    Snapshot 3 created (count: " << snap3.size() << ")" << endl;
+                assert(snap3.size() == 3);
 
                 cout << "    Destroying snapshot 3..." << endl;
             }
@@ -226,9 +224,9 @@ void TestComplexScenario()
 
     // Step 3: 获取 snapshot 1
     cout << "  Step 3: Take snapshot 1" << endl;
-    ValueBuffer<int> snap1 = queue.GetUnreadSnapshot();
-    cout << "    Snapshot 1 count: " << snap1.GetCount() << endl;
-    assert(snap1.GetCount() == 5);
+    std::vector<int> snap1 = queue.GetUnreadSnapshot();
+    cout << "    Snapshot 1 count: " << snap1.size() << endl;
+    assert(snap1.size() == 5);
 
     // Step 4: 再添加3个数据
     cout << "  Step 4: Push 3 more items" << endl;
@@ -239,17 +237,16 @@ void TestComplexScenario()
 
     // Step 5: 获取 snapshot 2
     cout << "  Step 5: Take snapshot 2" << endl;
-    ValueBuffer<int> snap2 = queue.GetUnreadSnapshot();
-    cout << "    Snapshot 2 count: " << snap2.GetCount() << endl;
-    assert(snap2.GetCount() == 8);
+    std::vector<int> snap2 = queue.GetUnreadSnapshot();
+    cout << "    Snapshot 2 count: " << snap2.size() << endl;
+    assert(snap2.size() == 8);
 
     // Step 6: 验证两个 snapshot 的内容
     cout << "  Step 6: Verify snapshots" << endl;
 
     cout << "    Snapshot 1: ";
-    for (int i = 0; i < snap1.GetCount(); i++) {
-        int value;
-        snap1.ReadAt(value, i);
+    for (int i = 0; i < (int)snap1.size(); i++) {
+        int value = snap1[i];
         cout << value << " ";
         assert(value == i + 6);
     }
@@ -257,14 +254,12 @@ void TestComplexScenario()
 
     cout << "    Snapshot 2: ";
     for (int i = 0; i < 5; i++) {
-        int value;
-        snap2.ReadAt(value, i);
+        int value = snap2[i];
         cout << value << " ";
         assert(value == i + 6);
     }
     for (int i = 5; i < 8; i++) {
-        int value;
-        snap2.ReadAt(value, i);
+        int value = snap2[i];
         cout << value << " ";
         assert(value == i + 6);
     }

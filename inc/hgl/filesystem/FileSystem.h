@@ -110,6 +110,10 @@ namespace hgl
             uint64 mtime;                           ///<最后修改日期(这个值在win/unix下不通用)
         };//struct FileInfo
 
+        inline bool operator==(const FileInfo& lhs, const FileInfo& rhs) {
+            return memcmp(&lhs, &rhs, sizeof(FileInfo)) == 0;
+        }
+
         bool GetFileInfo(const os_char *filename,struct FileInfo &);    ///<取得文件信息
 
         int GetFileInfoList(ValueArray<FileInfo> &, const OSString &folder_name, bool proc_folder, bool proc_file, bool sub_folder);

@@ -1,7 +1,7 @@
-﻿#pragma once
+#pragma once
 
 #include<hgl/type/KeyValue.h>
-#include<hgl/type/ValueBuffer.h>
+#include<vector>
 #include<hgl/type/PtrArray.h>
 #include<hgl/type/ManagedPool.h>
 #include<hgl/type/ArrayItemProcess.h>

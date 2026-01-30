@@ -1,6 +1,6 @@
-﻿#include<cstring>
+#include<cstring>
 #include<iostream>
-#include<hgl/type/ValueBuffer.h>
+#include<vector>
 
 int main(int,char **)
 {

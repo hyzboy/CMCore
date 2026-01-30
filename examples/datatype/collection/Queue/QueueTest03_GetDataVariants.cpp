@@ -1,4 +1,5 @@
-﻿#include<hgl/type/Queue.h>
+﻿#include<hgl/type/DataType.h>
+#include<hgl/type/Queue.h>
 #include<iostream>
 #include<cassert>
 #include<vector>
@@ -51,7 +52,7 @@ int os_main(int, os_char **)
     vq.Push(50);
 
     auto value_snapshot = vq.GetUnreadSnapshot();
-    assert(value_snapshot.GetCount() == 4);
+    assert(value_snapshot.size() == 4);
     assert(value_snapshot[0] == 20);
     assert(value_snapshot[1] == 30);
     assert(value_snapshot[2] == 40);
@@ -74,10 +75,10 @@ int os_main(int, os_char **)
     auto ptr_snapshot = pq.GetUnreadSnapshot();
     const int copies_from_snapshot = Tracked::copy_ctor_count - baseline_copies;
 
-    assert(ptr_snapshot.GetCount() == 3);
+    assert(ptr_snapshot.size() == 3);
 
     vector<int> ids;
-    for(int i = 0; i < ptr_snapshot.GetCount(); ++i)
+    for(int i = 0; i < (int)ptr_snapshot.size(); ++i)
         ids.push_back(ptr_snapshot[i]->id);
 
     assert(ids.size() == 3);
@@ -85,7 +86,7 @@ int os_main(int, os_char **)
     assert(pq.GetCount() == 3);
 
     // cleanup
-    for(int i = 0; i < ptr_snapshot.GetCount(); ++i)
+    for(int i = 0; i < (int)ptr_snapshot.size(); ++i)
         delete ptr_snapshot[i];
 
     cout << "GetUnreadSnapshot assertions passed." << endl;

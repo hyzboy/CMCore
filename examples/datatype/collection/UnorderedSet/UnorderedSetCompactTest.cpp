@@ -1,4 +1,4 @@
-﻿/**
+/**
  * UnorderedSetCompactTest.cpp
  * 测试新版高性能无序集合的功能和性能
  */
@@ -277,9 +277,9 @@ void TestDirectAccess()
     };
 
     // 通过 ID 直接访问
-    const ValueBuffer<int>& ids = set.GetActiveView();
+    const std::vector<int>& ids = set.GetActiveView();
     cout << "  Active IDs: [";
-    for (int i = 0; i < ids.GetCount(); i++)
+    for (int i = 0; i < (int)ids.size(); i++)
     {
         int id = ids[i];
         int* ptr = set.At(id);

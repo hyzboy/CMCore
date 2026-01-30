@@ -1,7 +1,7 @@
-﻿#pragma once
+#pragma once
 
 #include<hgl/type/String.h>
-#include<hgl/type/ValueBuffer.h>
+#include<vector>
 #include<hgl/log/LogLevel.h>
 #include<hgl/Charset.h>
 #include<typeinfo>
@@ -21,8 +21,8 @@ namespace hgl::logger
         OSString object_type_name;
         OSString object_instance_name;
 
-        ValueBuffer<u8char> log_buffer_u8;
-        ValueBuffer<u16char> log_buffer_u16;
+        std::vector<u8char> log_buffer_u8;
+        std::vector<u16char> log_buffer_u16;
 
     public:
 

@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 
-#include<hgl/type/ValueBuffer.h>
+#include<vector>
 #include<hgl/type/Stack.h>
 #include<hgl/type/ValueKVMap.h>
 #include<type_traits>
@@ -33,10 +33,10 @@ namespace hgl
         I id_base=1;                            ///< CN: ID 起始值(默认1) / EN: ID base (default 1)
         I next_id=1;                            ///< CN: 下一个可用的ID / EN: Next available ID
 
-        ValueBuffer<T>  data_array;               ///< CN: 实际数据存储数组 / EN: Actual data storage array
-        ValueBuffer<I>  location_to_id;           ///< CN: 位置到ID的并行数组 / EN: Parallel array: location -> ID
+        std::vector<T>  data_array;               ///< CN: 实际数据存储数组 / EN: Actual data storage array
+        std::vector<I>  location_to_id;           ///< CN: 位置到ID的并行数组 / EN: Parallel array: location -> ID
         ValueKVMap<I,int32> id_to_location_map;   ///< CN: ID到位置映射 / EN: Map: ID -> location
-        ValueStack<int32>  free_location;            ///< CN: 空闲位置栈 / EN: ValueStack of free locations
+        ValueStack<int32>  free_location;         ///< CN: 空闲位置栈 / EN: ValueStack of free locations
 
     public:
 
@@ -76,22 +76,22 @@ namespace hgl
 
             if(free_location.IsEmpty())
             {
-                location=data_array.GetCount();
-                data_array.Expand(1);
+                location=(int)data_array.size();
+                data_array.resize(location + 1);
                 // keep parallel location_to_id in sync
-                if(location_to_id.GetCount()<=location)
-                    location_to_id.Resize(location+1);
+                if((int)location_to_id.size()<=location)
+                    location_to_id.resize(location+1);
             }
             else
             {
                 free_location.Pop(location);
             }
 
-            T *p=data_array.At(location);
+            T *p=&data_array[location];
 
             id_to_location_map.Add(next_id,location);
             // mark location -> id
-            *location_to_id.At(location)=next_id;
+            location_to_id[location]=next_id;
 
             ++next_id;
 
@@ -175,9 +175,9 @@ namespace hgl
                 return(false);
 
             // mark location as free
-            if(location>=0 && location<location_to_id.GetCount())
+            if(location>=0 && location<(int)location_to_id.size())
             {
-                *location_to_id.At(location)=InvalidID();
+                location_to_id[location]=InvalidID();
             }
 
             free_location.Push(location);
@@ -218,7 +218,7 @@ namespace hgl
             if(!id_to_location_map.Get(id,location))
                 return(nullptr);
 
-            return data_array.At(location);
+            return &data_array[location];
         }
 
         const T *Get(const I &id) const
@@ -226,7 +226,7 @@ namespace hgl
             int32 location;
             if(!id_to_location_map.Get(id,location))
                 return nullptr;
-            return data_array.At(location);
+            return &data_array[location];
         }
 
         bool TryGet(const I &id, T *&out)
@@ -237,7 +237,7 @@ namespace hgl
                 out=nullptr;
                 return false;
             }
-            out=data_array.At(location);
+            out=&data_array[location];
             return true;
         }
 
@@ -249,7 +249,7 @@ namespace hgl
                 out=nullptr;
                 return false;
             }
-            out=data_array.At(location);
+            out=&data_array[location];
             return true;
         }
 
@@ -282,7 +282,7 @@ namespace hgl
 
         int StorageSize() const
         {
-            return data_array.GetCount();
+            return (int)data_array.size();
         }
 
         bool Empty() const
@@ -292,8 +292,8 @@ namespace hgl
 
         void Clear()
         {
-            data_array.Clear();
-            location_to_id.Clear();
+            data_array.clear();
+            location_to_id.clear();
             id_to_location_map.Clear();
             free_location.Clear();
             next_id=id_base;
@@ -327,7 +327,7 @@ namespace hgl
                 return 0;
 
             // CN/EN: 当前存储大小
-            int32 total=data_array.GetCount();
+            int32 total=(int32)data_array.size();
             const int32 original_total=total;
 
             // CN: 如果空洞覆盖全部，直接清空
@@ -348,7 +348,7 @@ namespace hgl
                 // 跳过尾部连续空洞
                 while(total>0)
                 {
-                    const I tail_id = *location_to_id.At(total-1);
+                    const I tail_id = location_to_id[total-1];
                     if(tail_id==InvalidID())
                     {
                         --total;
@@ -368,23 +368,23 @@ namespace hgl
 
                 // 将尾部有效元素搬到空洞
                 const int32 tail_loc = total-1;
-                const I tail_id = *location_to_id.At(tail_loc);
+                const I tail_id = location_to_id[tail_loc];
 
-                T *src = data_array.At(tail_loc);
-                T *dst = data_array.At(hole);
-                *dst = *src;
+                T &src = data_array[tail_loc];
+                T &dst = data_array[hole];
+                dst = src;
 
                 // 更新映射
                 id_to_location_map.Change(tail_id, hole);
-                *location_to_id.At(hole)=tail_id;
-                *location_to_id.At(tail_loc)=InvalidID();
+                location_to_id[hole]=tail_id;
+                location_to_id[tail_loc]=InvalidID();
 
                 --total;
                 ++moved_count;
             }
 
-            data_array.Resize(total);
-            location_to_id.Resize(total);
+            data_array.resize(total);
+            location_to_id.resize(total);
             free_location.Clear();
 
             return original_total-total;
@@ -430,13 +430,13 @@ namespace hgl
         * @return   CN: 重新编号的数据数量
         *           EN: The number of data items reindexed
         */
-        int Reindex(ValueBuffer<IDRemap> &remap_list)
+        int Reindex(std::vector<IDRemap> &remap_list)
         {
             // CN: 先执行 Shrink，确保数据紧密排列
             // EN: Execute Shrink first to ensure data is densely packed
             Shrink();
 
-            const int32 count=data_array.GetCount();
+            const int32 count=(int32)data_array.size();
             if(count<=0)
             {
                 remap_list.Clear();
@@ -445,8 +445,8 @@ namespace hgl
 
             // CN: 清空并预分配映射列表
             // EN: Clear and preallocate the mapping list
-            remap_list.Clear();
-            remap_list.Resize(count);
+            remap_list.clear();
+            remap_list.resize(count);
 
             // CN/EN: 构建旧ID到新ID的映射，新ID从 id_base 开始
             for(int32 i=0; i<count; ++i)
@@ -471,24 +471,6 @@ namespace hgl
             next_id=static_cast<I>(id_base + count);
 
             return count;
-        }
-
-        /**
-        * CN: 重新编号的简化版本，不返回映射表
-        * EN: Simplified version of reindexing without returning the mapping table
-        *
-        * CN: 该方法执行与Reindex(ValueBuffer<IDRemap>&)相同的重编号操作，
-        *     但不返回旧ID到新ID的映射关系，适用于不需要跟踪ID变化的场景。
-        * EN: This method performs the same reindexing operation as Reindex(ValueBuffer<IDRemap>&),
-        *     but does not return the mapping from old IDs to new IDs, suitable for scenarios where tracking ID changes is not needed.
-        *
-        * @return   CN: 重新编号的数据数量
-        *           EN: The number of data items reindexed
-        */
-        int Reindex()
-        {
-            ValueBuffer<IDRemap> temp_list;
-            return Reindex(temp_list);
         }
     };//template<typename T,typename I = MonotonicID> class MonotonicIDList
 }//namespace hgl

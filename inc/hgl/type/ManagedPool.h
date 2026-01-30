@@ -1,6 +1,7 @@
-﻿#pragma once
+#pragma once
 
-#include <hgl/type/ValueArray.h>
+#include <vector>
+#include <algorithm>
 #include <hgl/type/Queue.h>
 #include <hgl/type/has_get_array.h>
 
@@ -28,7 +29,7 @@ namespace hgl
         /**
         * @brief CN:活跃对象容器。\nEN:Active object container.
         */
-        ValueArray<T *> Active;
+        std::vector<T *> Active;
 
         /**
         * @brief CN:闲置对象容器。\nEN:Idle object container.
@@ -50,7 +51,7 @@ namespace hgl
         */
         void UpdateHistoryMax()
         {
-            int cur = Active.GetCount() + Idle.GetCount();
+            int cur = (int)Active.size() + Idle.GetCount();
             if (cur > history_max)
                 history_max = cur;
         }
@@ -62,7 +63,7 @@ namespace hgl
         */
         int GetActiveCount() const
         {
-            return Active.GetCount();
+            return (int)Active.size();
         }
 
         /**
@@ -84,17 +85,17 @@ namespace hgl
         /**
         * @brief CN:获取活跃对象数组。\nEN:Get active object array.
         */
-        ValueBuffer<T *> &GetActiveView()
+        std::vector<T *> &GetActiveView()
         {
-            return Active.GetArray();
+            return Active;
         }
 
         /**
         * @brief CN:获取活跃对象数组（常量）。\nEN:Get active object array (const).
         */
-        const ValueBuffer<T *> &GetActiveView() const
+        const std::vector<T *> &GetActiveView() const
         {
-            return Active.GetArray();
+            return Active;
         }
 
         /**
@@ -102,7 +103,7 @@ namespace hgl
         */
         bool IsActive(T *v) const
         {
-            return Active.Contains(v);
+            return std::find(Active.begin(), Active.end(), v) != Active.end();
         }
 
         /**
@@ -118,7 +119,7 @@ namespace hgl
         */
         bool IsFull() const
         {
-            return max_active_count > 0 && Active.GetCount() >= max_active_count;
+            return max_active_count > 0 && (int)Active.size() >= max_active_count;
         }
 
         ManagedPool() : max_active_count(0), history_max(0)
@@ -135,7 +136,7 @@ namespace hgl
         */
         void Reserve(int count, bool set_to_max = false)
         {
-            Active.Reserve(count);
+            Active.reserve(count);
             Idle.Reserve(count);
             if (set_to_max)
                 max_active_count = count;
@@ -161,7 +162,7 @@ namespace hgl
             if (!value)
                 return false;
 
-            Active.Add(value);
+            Active.push_back(value);
             UpdateHistoryMax();
             return true;
         }
@@ -181,7 +182,7 @@ namespace hgl
                     return false;
             }
 
-            Active.Add(value);
+            Active.push_back(value);
             UpdateHistoryMax();
             return true;
         }
@@ -194,7 +195,7 @@ namespace hgl
             if (!Idle.Pop(value))
                 return false;
 
-            Active.Add(value);
+            Active.push_back(value);
             return true;
         }
 
@@ -205,7 +206,7 @@ namespace hgl
         {
             if (IsFull())
                 return false;
-            Active.Add(value);
+            Active.push_back(value);
             UpdateHistoryMax();
             return true;
         }
@@ -224,10 +225,10 @@ namespace hgl
         */
         bool Release(T *value)
         {
-            int idx = Active.Find(value);
-            if (idx < 0)
+            auto it = std::find(Active.begin(), Active.end(), value);
+            if (it == Active.end())
                 return false;
-            Active.Delete(idx);
+            Active.erase(it);
             if (!Idle.Push(value))
                 return false;
             return true;
@@ -252,13 +253,13 @@ namespace hgl
         */
         void ReleaseActive()
         {
-            T **ptr = Active.GetData();
-            int cnt = Active.GetCount();
+            T **ptr = Active.data();
+            int cnt = (int)Active.size();
             if (ptr && cnt > 0)
             {
                 Idle.Push(ptr, cnt);
             }
-            Active.Clear();
+            Active.clear();
         }
 
         /**
@@ -266,8 +267,8 @@ namespace hgl
         */
         void ClearActive()
         {
-            T **ptr = Active.GetData();
-            int cnt = Active.GetCount();
+            T **ptr = Active.data();
+            int cnt = (int)Active.size();
             if (ptr && cnt > 0)
             {
                 for (int i = 0; i < cnt; ++i)
@@ -276,7 +277,7 @@ namespace hgl
                         delete ptr[i];
                 }
             }
-            Active.Clear();
+            Active.clear();
         }
 
         /**

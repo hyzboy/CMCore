@@ -1,5 +1,6 @@
-﻿#include<hgl/type/ActiveIDManager.h>
-#include<hgl/type/ValueBuffer.h>
+#include<hgl/CoreType.h>
+#include<hgl/type/ActiveIDManager.h>
+#include<vector>
 #include<iostream>
 #include<cassert>
 #include"UserInfo.h"
@@ -18,7 +19,7 @@ class ActiveDataManagerDebug
 {
 protected:
     ActiveIDManager aim;
-    ValueBuffer<T> data_array;
+    std::vector<T> data_array;
 
 public:
     ActiveDataManagerDebug()
@@ -38,13 +39,13 @@ public:
     {
         cout << "[ADM::Reserve] Start - reserving " << c << " items" << endl;
         cout << "  Before: aim.GetTotalCount()=" << aim.GetTotalCount()
-             << ", data_array.GetAllocCount()=" << data_array.GetAllocCount() << endl;
+             << ", data_array.capacity()=" << data_array.capacity() << endl;
 
         aim.Reserve(c);
-        data_array.Reserve(c);
+        data_array.reserve(c);
 
         cout << "  After: aim.GetTotalCount()=" << aim.GetTotalCount()
-             << ", data_array.GetAllocCount()=" << data_array.GetAllocCount() << endl;
+             << ", data_array.capacity()=" << data_array.capacity() << endl;
         cout << "[ADM::Reserve] End" << endl;
     }
 
@@ -70,27 +71,33 @@ public:
     }
 
     // 修复：返回 const 引用而不是值，避免浅拷贝导致的双重释放
-    const ValueBuffer<int> &GetActiveView() const
+    const auto& GetActiveSet() const
     {
-        return aim.GetActiveView();
+        return aim.GetActiveSet();
     }
 
-    const ValueBuffer<int> &GetIdleView() const
+    const auto& GetIdleSet() const
     {
-        return aim.GetIdleView();
+        return aim.GetIdleSet();
     }
 
     // WriteData - 写入指定ID的数据
     bool WriteData(const T &d, const int id)
     {
         cout << "[ADM::WriteData] Writing to ID " << id << endl;
-        cout << "  data_array state: count=" << data_array.GetCount()
-             << ", alloc_count=" << data_array.GetAllocCount() << endl;
+        cout << "  data_array state: count=" << data_array.size()
+             << ", capacity=" << data_array.capacity() << endl;
 
-        bool result = data_array.WriteAt(d, id);
+        if (id < 0 || id >= (int)data_array.size())
+        {
+            cout << "  Result: FAILED (out of range)" << endl;
+            return false;
+        }
 
-        cout << "  Result: " << (result ? "SUCCESS" : "FAILED") << endl;
-        return result;
+        data_array[id] = d;
+
+        cout << "  Result: SUCCESS" << endl;
+        return true;
     }
 
     // CreateActive - 创建活跃ID
@@ -98,15 +105,15 @@ public:
     {
         cout << "[ADM::CreateActive] Start - creating " << count << " active IDs" << endl;
         cout << "  Before: aim.GetTotalCount()=" << aim.GetTotalCount()
-             << ", data_array.GetCount()=" << data_array.GetCount() << endl;
+             << ", data_array.size()=" << data_array.size() << endl;
 
         aim.CreateActive(id, count);
 
         cout << "  After CreateActive: aim.GetTotalCount()=" << aim.GetTotalCount() << endl;
         cout << "  Expanding data_array by " << count << " items..." << endl;
-        data_array.Expand(count);
+        data_array.resize(data_array.size() + count);
 
-        cout << "  After Expand: data_array.GetCount()=" << data_array.GetCount() << endl;
+        cout << "  After Expand: data_array.size()=" << data_array.size() << endl;
         cout << "[ADM::CreateActive] End" << endl;
     }
 
@@ -115,15 +122,15 @@ public:
     {
         cout << "[ADM::CreateIdle] Start - creating " << count << " idle IDs" << endl;
         cout << "  Before: aim.GetTotalCount()=" << aim.GetTotalCount()
-             << ", data_array.GetCount()=" << data_array.GetCount() << endl;
+             << ", data_array.size()=" << data_array.size() << endl;
 
         aim.CreateIdle(idp, count);
 
         cout << "  After CreateIdle: aim.GetTotalCount()=" << aim.GetTotalCount() << endl;
         cout << "  Expanding data_array by " << count << " items..." << endl;
-        data_array.Expand(count);
+        data_array.resize(data_array.size() + count);
 
-        cout << "  After Expand: data_array.GetCount()=" << data_array.GetCount() << endl;
+        cout << "  After Expand: data_array.size()=" << data_array.size() << endl;
         if(idp)
         {
             cout << "  Created idle IDs: ";
@@ -173,7 +180,7 @@ public:
         {
             cout << "  Creating " << create_count << " new active IDs" << endl;
             aim.CreateActive(id, create_count);
-            data_array.Expand(create_count);
+            data_array.resize(data_array.size() + create_count);
         }
 
         cout << "[ADM::GetOrCreate] Successfully completed" << endl;
@@ -208,14 +215,17 @@ public:
         cout << "  Calling aim.Free()..." << endl;
         aim.Free();
         cout << "  Calling data_array.Free()..." << endl;
-        data_array.Free();
+        data_array.clear();
+        data_array.shrink_to_fit();
         cout << "[ADM::Free] End" << endl;
     }
 
     // GetData - 获取指定ID的数据指针
     T *At(const int id)
     {
-        return data_array.At(id);
+        if (id < 0 || id >= (int)data_array.size())
+            return nullptr;
+        return &data_array[id];
     }
 
     // 批量获取数据
@@ -225,7 +235,10 @@ public:
 
         for (int i = 0; i < count; i++)
         {
-            *da = data_array.At(*idp);
+            if (*idp >= 0 && *idp < (int)data_array.size())
+                *da = (T*)&data_array[*idp];
+            else
+                *da = nullptr;
 
             if (*da)
                 ++result;
@@ -240,34 +253,31 @@ public:
 
 // ==================== 调试输出函数 ====================
 
-void DebugOutputArray(const char *hint, ActiveDataManagerDebug<UserInfo> &adm, const ValueBuffer<int> &da)
+template<typename Container>
+void DebugOutputArray(const char *hint, ActiveDataManagerDebug<UserInfo> &adm, const Container &active_ids)
 {
-    cout<<"("<<hint<<":"<<da.GetCount()<<")";
-    if(da.GetCount()<=0)return;
-
-    UserInfo **ui=new UserInfo *[da.GetCount()];
-    adm.GetData(ui,da.GetData(),da.GetCount());
+    cout<<"("<<hint<<":"<<active_ids.size()<<")";
+    if(active_ids.empty())return;
 
     cout<<"[";
     bool first=true;
-    for(int i=0;i<(int)da.GetCount();i++)
+    for(int id : active_ids)
     {
         if(!first) cout<<", ";
         first=false;
-        UserInfo *cur=ui[i];
+        UserInfo *cur=adm.At(id);
         if(cur)
             cout<<cur->name;
         else
             cout<<"null";
     }
     cout<<"]";
-    delete[] ui;
 }
 
 void DebugADMOutput(const char *hint,ActiveDataManagerDebug<UserInfo> &adm)
 {
     cout<<hint<<' ';
-    DebugOutputArray("Active",adm,adm.GetActiveView());
+    DebugOutputArray("Active",adm,adm.GetActiveSet());
     cout<<' ';
     cout<<endl;
 }
@@ -284,14 +294,17 @@ void DebugADMDetailedState(const char *hint, ActiveDataManagerDebug<UserInfo> &a
     cout << "    TotalCount: " << adm.GetTotalCount() << endl;
     cout << "    HistoryMaxId: " << adm.GetHistoryMaxId() << endl;
 
-    cout << "\n  ActiveView:" << endl;
-    const ValueBuffer<int> &active_view = adm.GetActiveView();
-    cout << "    Count: " << active_view.GetCount() << endl;
-    if (active_view.GetCount() > 0) {
+    cout << "\n  ActiveSet:" << endl;
+    auto &active_view = adm.GetActiveSet();
+    int count = active_view.size();
+    cout << "    Count: " << count << endl;
+    if (count > 0) {
         cout << "    Active IDs: [";
-        for (int i = 0; i < (int)active_view.GetCount(); i++) {
-            if (i > 0) cout << ", ";
-            cout << active_view[i];
+        bool first = true;
+        for (int id : active_view) {
+            if (!first) cout << ", ";
+            first = false;
+            cout << id;
         }
         cout << "]" << endl;
     }
@@ -299,7 +312,7 @@ void DebugADMDetailedState(const char *hint, ActiveDataManagerDebug<UserInfo> &a
     cout << "========================================" << endl << endl;
 }
 
-int os_main(int,os_char **)
+int main(int,char **)
 {
     // Phase 4: Reserve + CreateIdle + WriteData (all 5 items)
     cout << "=== Phase 4: Reserve + CreateIdle + WriteData (all 5 items) ===" << endl;

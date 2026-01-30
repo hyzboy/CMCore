@@ -1,4 +1,4 @@
-﻿#include<hgl/type/ActiveDataManager.h>
+#include<hgl/type/ActiveDataManager.h>
 #include<iostream>
 #include<vector>
 #include<unordered_set>
@@ -51,19 +51,19 @@ void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const in
     delete[] ui;
 }
 
-void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const ValueBuffer<int> &da)
+void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const std::vector<int> &da)
 {
-    DebugOutputArray(hint,adm,da.GetData(),da.GetCount());
+    DebugOutputArray(hint,adm,da.data(),(int)da.size());
 }
 
-void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const Queue<int> &queue)
+void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const auto &container)
 {
-    cout<<"("<<hint<<':'<<queue.GetCount()<<")";
-    if(queue.GetCount()<=0)return;
+    cout<<"("<<hint<<":"<<std::distance(container.begin(), container.end())<<")";
+    if(container.begin()==container.end())return;
 
     cout<<'[';
     bool first = true;
-    for(int id : queue)
+    for(int id : container)
     {
         if(!first)cout<<',';
         first = false;
@@ -80,9 +80,11 @@ void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const Qu
 void DebugADMOutput(const char *hint,ActiveDataManager<UserInfo> &adm)
 {
     cout<<hint<<' ';
-    DebugOutputArray("Active",adm,adm.GetActiveView());
+    auto active_view = adm.GetActiveView();
+    DebugOutputArray("Active",adm,active_view);
     cout<<' ';
-    DebugOutputArray("Idle",adm,adm.GetIdleView());
+    auto idle_view = adm.GetIdleView();
+    DebugOutputArray("Idle",adm,idle_view);
     cout<<endl;
 }
 
@@ -285,8 +287,8 @@ int os_main(int,os_char **)
         adm.Release(to_release, 3);
         cout << "  Phase 4: Released 3 IDs" << endl;
 
-        const ValueBuffer<int> &active_array = adm.GetActiveView();
-        for (int i = 0; i < active_array.GetCount(); ++i) {
+        auto active_array = adm.GetActiveView();
+        for (int i = 0; i < (int)active_array.size(); ++i) {
             int id = active_array[i];
             UserInfo *ptr = adm.At(id);
             assert(ptr != nullptr);

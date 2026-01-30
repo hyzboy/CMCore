@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 
-#include<hgl/type/ValueBuffer.h>
+#include<vector>
 #include<cassert>
 namespace hgl
 {
@@ -19,39 +19,39 @@ namespace hgl
 
     protected:
 
-        ValueBuffer<T> data_array;
+        std::vector<T> data_array;
 
     public:
         // ===== 属性 / Properties =====
 
-        int GetAllocCount() const { return data_array.GetAllocCount(); }      ///< 已分配容量 / Allocated capacity
-        int GetCount() const { return data_array.GetCount(); }                ///< 当前元素数量 / Current element count
-        bool IsEmpty() const { return data_array.IsEmpty(); }                 ///< 是否\为空 / Is empty
+        int GetAllocCount() const { return (int)data_array.capacity(); }      ///< 已分配容量 / Allocated capacity
+        int GetCount() const { return (int)data_array.size(); }                ///< 当前元素数量 / Current element count
+        bool IsEmpty() const { return data_array.empty(); }                 ///< 是否\为空 / Is empty
 
-        int GetTotalBytes() const { return data_array.GetTotalBytes(); }      ///< 总字节数 / Total bytes
+        int GetTotalBytes() const { return (int)(data_array.size() * sizeof(T)); }      ///< 总字节数 / Total bytes
 
         /**
          * @brief 获取常数据指针（Const 正确）
          * CN: 只读访问内部数据
          * EN: Read-only access to internal data
          */
-        const T* GetData() const { return data_array.GetData(); }
+        const T* GetData() const { return data_array.data(); }
 
         /**
          * @brief 获取迭代器（开始）
          * CN: 用于范围遍历，提供const和非const两个版本
          * EN: Iterator begin, provides both const and non-const versions
          */
-        const T* begin() const { return data_array.begin(); }
-        T* begin() { return data_array.begin(); }
+        const T* begin() const { return data_array.data(); }
+        T* begin() { return data_array.data(); }
 
         /**
          * @brief 获取迭代器（结束）
          * CN: 用于范围遍历，提供const和非const两个版本
          * EN: Iterator end, provides both const and non-const versions
          */
-        const T* end() const { return data_array.end(); }
-        T* end() { return data_array.end(); }
+        const T* end() const { return data_array.data() + data_array.size(); }
+        T* end() { return data_array.data() + data_array.size(); }
 
     public:
         // ===== 构造/析构 / Constructor/Destructor =====
@@ -62,18 +62,18 @@ namespace hgl
         // ===== 隐式转换 / Implicit Conversion =====
 
         /**
-         * @brief 隐式转换为 const ValueBuffer<T>&
-         * CN: 方便与需要 ValueBuffer 的代码兼容
-         * EN: Implicit conversion to const ValueBuffer for compatibility
+         * @brief 隐式转换为 const std::vector<T>&
+         * CN: 方便与需要 std::vector 的代码兼容
+         * EN: Implicit conversion to const std::vector for compatibility
          */
-        operator const ValueBuffer<T>&() const { return data_array; }
+        operator const std::vector<T>&() const { return data_array; }
 
         /**
-         * @brief 隐式转换为 ValueBuffer<T>&
+         * @brief 隐式转换为 std::vector<T>&
          * CN: 用于获取可写的底层数组访问
-         * EN: Get mutable ValueBuffer for direct access
+         * EN: Get mutable std::vector for direct access
          */
-        operator ValueBuffer<T>&() { return data_array; }
+        operator std::vector<T>&() { return data_array; }
 
         // ===== 拷贝语义 / Copy Semantics =====
 
@@ -98,14 +98,14 @@ namespace hgl
          * CN: 为栈预先分配足够的内存以减少重新分配
          * EN: Reserve capacity to reduce reallocations
          */
-        bool Reserve(int count) { return data_array.Reserve(count); }
+        bool Reserve(int count) { data_array.reserve(count); return true; }
 
         /**
          * @brief 调整大小
          * CN: 改变栈中元素的数量
          * EN: Resize the stack
          */
-        bool Resize(int count) { return data_array.Resize(count); }
+        bool Resize(int count) { data_array.resize(count); return true; }
 
     public:
         // ===== 栈操作 / Stack Operations =====
@@ -120,9 +120,9 @@ namespace hgl
             if (!data || count <= 0)
                 return false;
 
-            int offset = data_array.GetCount();
-            data_array.Expand(count);
-            data_array.WriteAt(data, offset, count);
+            int offset = (int)data_array.size();
+            data_array.resize(offset + count);
+            memcpy(data_array.data() + offset, data, count * sizeof(T));
             return true;
         }
 
@@ -140,10 +140,10 @@ namespace hgl
          */
         bool Peek(const T*& out_data) const
         {
-            if (data_array.GetCount() <= 0)
+            if ((int)data_array.size() <= 0)
                 return false;
 
-            out_data = &data_array[data_array.GetCount() - 1];
+            out_data = &data_array[data_array.size() - 1];
             return true;
         }
 
@@ -154,13 +154,11 @@ namespace hgl
          */
         bool Pop(T& out_data)
         {
-            if (data_array.GetCount() <= 0)
+            if ((int)data_array.size() <= 0)
                 return false;
 
-            if (!data_array.ReadAt(out_data, data_array.GetCount() - 1))
-                return false;
-
-            data_array.Expand(-1);
+            out_data = data_array[data_array.size() - 1];
+            data_array.pop_back();
             return true;
         }
 
@@ -171,13 +169,12 @@ namespace hgl
          */
         bool Pop(T* out_data, int count)
         {
-            if (data_array.GetCount() < count)
+            if ((int)data_array.size() < count)
                 return false;
 
-            if (!data_array.ReadAt(out_data, data_array.GetCount() - count, count))
-                return false;
-
-            data_array.Expand(-count);
+            int start_idx = (int)data_array.size() - count;
+            memcpy(out_data, data_array.data() + start_idx, count * sizeof(T));
+            data_array.resize(start_idx);
             return true;
         }
 
@@ -202,7 +199,8 @@ namespace hgl
         void Free()
         {
             Clear();
-            data_array.Free();
+            data_array.clear();
+            data_array.shrink_to_fit();
         }
 
     public:
@@ -212,9 +210,7 @@ namespace hgl
         {
             if (this != &rhs)
             {
-                Clear();
-                data_array.Resize(rhs.data_array.GetCount());
-                data_array.WriteAt(rhs.data_array.GetData(), 0, rhs.data_array.GetCount());
+                data_array = rhs.data_array;
             }
             return *this;
         }
@@ -229,7 +225,7 @@ namespace hgl
          */
         bool GetAt(int index, T& out_data) const
         {
-            if (index < 0 || index >= this->data_array.GetCount())
+            if (index < 0 || index >= (int)this->data_array.size())
                 return false;
             out_data = this->data_array[index];
             return true;
@@ -242,9 +238,9 @@ namespace hgl
          */
         bool Top(T& out_data) const
         {
-            if (this->data_array.GetCount() <= 0)
+            if ((int)this->data_array.size() <= 0)
                 return false;
-            out_data = this->data_array[this->data_array.GetCount() - 1];
+            out_data = this->data_array[this->data_array.size() - 1];
             return true;
         }
 
@@ -255,7 +251,7 @@ namespace hgl
          */
         bool Bottom(T& out_data) const
         {
-            if (this->data_array.GetCount() <= 0)
+            if ((int)this->data_array.size() <= 0)
                 return false;
             out_data = this->data_array[0];
             return true;
@@ -269,7 +265,7 @@ namespace hgl
         template<typename Func>
         void ForEachFromTop(Func callback) const
         {
-            int count = this->data_array.GetCount();
+            int count = (int)this->data_array.size();
             for (int i = count - 1; i >= 0; --i)
                 callback(i,this->data_array[i]);
         }
@@ -282,7 +278,7 @@ namespace hgl
         template<typename Func>
         void ForEachFromBottom(Func callback) const
         {
-            int count = this->data_array.GetCount();
+            int count = (int)this->data_array.size();
             for (int i = 0; i < count; ++i)
                 callback(this->data_array[i], i);
         }
@@ -297,8 +293,8 @@ namespace hgl
          */
         bool Contains(const T& value) const
         {
-            const T* data = this->data_array.GetData();
-            int count = this->data_array.GetCount();
+            const T* data = this->data_array.data();
+            int count = (int)this->data_array.size();
 
             for (int i = 0; i < count; ++i)
             {
@@ -319,8 +315,8 @@ namespace hgl
          */
         int Find(const T& value) const
         {
-            const T* data = this->data_array.GetData();
-            int count = this->data_array.GetCount();
+            const T* data = this->data_array.data();
+            int count = (int)this->data_array.size();
 
             for (int i = 0; i < count; ++i)
             {
@@ -341,10 +337,10 @@ namespace hgl
          */
         bool operator==(const Stack<T>& other) const
         {
-            if (this->data_array.GetCount() != other.data_array.GetCount())
+            if ((int)this->data_array.size() != (int)other.data_array.size())
                 return false;
 
-            return hgl::mem_compare(this->data_array.GetData(), other.data_array.GetData(), this->data_array.GetCount()) == 0;
+            return hgl::mem_compare(this->data_array.data(), other.data_array.data(), this->data_array.size() * sizeof(T)) == 0;
         }
 
         /**

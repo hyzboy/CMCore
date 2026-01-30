@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 
-#include<hgl/type/ValueBuffer.h>
+#include<vector>
 #include<hgl/type/SeriesPool.h>
 
 namespace hgl

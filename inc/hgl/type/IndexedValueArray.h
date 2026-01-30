@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include<hgl/type/Stack.h>
 #include<initializer_list>
@@ -17,44 +17,44 @@ namespace hgl
         static_assert(std::is_trivially_copyable_v<T>, "IndexedValueArray only supports trivially copyable types; use IndexedManagedArray for non-trivial types.");
     protected:
 
-        ValueBuffer<T> data_array;
-        ValueBuffer<I> data_index;
+        std::vector<T> data_array;
+        std::vector<I> data_index;
         ValueStack<I> free_index;
 
     public: //属性
 
-        const int32     GetAllocCount   ()const{return data_array.GetAllocCount();}
-        const int32     GetCount        ()const{return data_index.GetCount();}
+        const int32     GetAllocCount   ()const{return (int32)data_array.capacity();}
+        const int32     GetCount        ()const{return (int32)data_index.size();}
         const int32     GetFreeCount    ()const{return free_index.GetCount();}
 
-        const size_t    GetTotalBytes   ()const{return data_index.GetCount()*sizeof(T);}
+        const size_t    GetTotalBytes   ()const{return data_index.size()*sizeof(T);}
 
-        const bool      IsEmpty         ()const{return data_index.IsEmpty();}
+        const bool      IsEmpty         ()const{return data_index.empty();}
 
         bool Reserve(int32 count)
         {
             if(count<=0)return(false);
 
-            data_array.Reserve(count);
-            data_index.Reserve(count);
+            data_array.reserve(count);
+            data_index.reserve(count);
             free_index.Reserve(count);
 
             return(true);
         }
 
-        const ValueBuffer<T> &GetRawData()const{return data_array;}
-        const ValueBuffer<I> &GetRawIndex()const{return data_index;}
+        const std::vector<T> &GetRawData()const{return data_array;}
+        const std::vector<I> &GetRawIndex()const{return data_index;}
 
         T &operator[](int32 index)
         {
-            if ( index<0||index>=data_index.GetCount() )
+            if ( index<0||index>=(int32)data_index.size() )
                 return data_array[0];
             return data_array[data_index[index]];
         }
 
         const T &operator[](int32 index)const
         {
-            if ( index<0||index>=data_index.GetCount() )
+            if ( index<0||index>=(int32)data_index.size() )
                 return data_array[0];
             return data_array[data_index[index]];
         }
@@ -109,8 +109,8 @@ namespace hgl
         };//class Iterator
 
         Iterator begin  (){return Iterator(this,0);}
-        Iterator end    (){return Iterator(this,data_index.GetCount());}
-        Iterator last   (){return Iterator(this,data_index.GetCount()-1);}
+        Iterator end    (){return Iterator(this,(int32)data_index.size());}
+        Iterator last   (){return Iterator(this,(int32)data_index.size()-1);}
 
     public: // 只读迭代器
 
@@ -153,8 +153,8 @@ namespace hgl
         };//class ConstIterator
 
         ConstIterator begin ()const{return ConstIterator(this,0);}
-        ConstIterator end   ()const{return ConstIterator(this,data_index.GetCount());}
-        ConstIterator last  ()const{return ConstIterator(this,data_index.GetCount()-1);}
+        ConstIterator end   ()const{return ConstIterator(this,(int32)data_index.size());}
+        ConstIterator last  ()const{return ConstIterator(this,(int32)data_index.size()-1);}
 
     public:
 
@@ -172,19 +172,19 @@ namespace hgl
         {
             if(free_index.IsEmpty())
             {
-                int32 index=data_array.GetCount();
-                data_array.Expand(1);
-                data_index.Append(index);
-                return data_array.last();
+                int32 index=(int32)data_array.size();
+                data_array.resize(index + 1);
+                data_index.push_back(index);
+                return &data_array.back();
             }
             else
             {
                 int32 index;
 
                 free_index.Pop(index);
-                data_index.Append(index);
+                data_index.push_back(index);
 
-                return data_array.At(index);
+                return &data_array[index];
             }
         }
 
@@ -199,15 +199,15 @@ namespace hgl
 
             if(free_index.IsEmpty())
             {
-                index=data_array.GetCount();
+                index=(int32)data_array.size();
 
-                data_array.Expand(1);
-                data_index.Append(index);
+                data_array.resize(index + 1);
+                data_index.push_back(index);
             }
             else
             {
                 free_index.Pop(index);
-                data_index.Append(index);
+                data_index.push_back(index);
             }
 
             memcpy(&data_array[index], &data, sizeof(T));
@@ -238,7 +238,7 @@ namespace hgl
                 for(int32 i=0;i<mc;i++)
                 {
                     free_index.Pop(index);
-                    data_index.Append(index);
+                    data_index.push_back(index);
 
                     memcpy(&data_array[index], &data[i], sizeof(T));
                 }
@@ -253,13 +253,13 @@ namespace hgl
 
             if(n>0) //如果还有，那就整段添加吧
             {
-                int32 index=data_array.GetCount();
+                int32 index=(int32)data_array.size();
 
-                data_array.Expand(n);
+                data_array.resize(index + n);
 
                 for(int32 i=0;i<n;i++)
                 {
-                    data_index.Append(index+i);
+                    data_index.push_back(index+i);
                     memcpy(&data_array[index+i], &data[i], sizeof(T));
                 }
 
@@ -271,28 +271,30 @@ namespace hgl
 
         virtual void Clear()
         {
-            data_array.Clear();
-            data_index.Clear();
+            data_array.clear();
+            data_index.clear();
             free_index.Clear();
         }
 
         virtual void Free()
         {
-            data_array.Free();
-            data_index.Free();
+            data_array.clear();
+            data_array.shrink_to_fit();
+            data_index.clear();
+            data_index.shrink_to_fit();
             free_index.Free();
         }
 
         const bool IsValidIndex(const int32 index)const
         {
-            return !(index<0||index>=data_index.GetCount());
+            return !(index<0||index>=(int32)data_index.size());
         }
 
         virtual bool Insert(int32 pos,const T &value)
         {
             if(pos<0)return(false);
-            if(pos>data_index.GetCount())return(false);
-            if(pos==data_index.GetCount())
+            if(pos>(int32)data_index.size())return(false);
+            if(pos==(int32)data_index.size())
             {
                 return Add(value)>=0;
             }
@@ -301,14 +303,14 @@ namespace hgl
 
             if(free_index.IsEmpty())
             {
-                index=data_array.GetCount();
-                data_array.Expand(1);
-                data_index.Insert(pos,&index,1);
+                index=(int32)data_array.size();
+                data_array.resize(index + 1);
+                data_index.insert(data_index.begin() + pos, index);
             }
             else
             {
                 free_index.Pop(index);
-                data_index.Insert(pos,&index,1);
+                data_index.insert(data_index.begin() + pos, index);
             }
 
             memcpy(&data_array[index], &value, sizeof(T));
@@ -326,15 +328,15 @@ namespace hgl
             if(!IsValidIndex(start))return(-1);
             if(count<=0)return(count);
 
-            if(start+count>data_index.GetCount())
-                count=data_index.GetCount()-start;
+            if(start+count>(int32)data_index.size())
+                count=(int32)data_index.size()-start;
 
             if(count<=0)return(0);
 
             for(int32 i=start;i<start+count;i++)
                 free_index.Push(data_index[i]);
 
-            data_index.Delete(start,count);
+            data_index.erase(data_index.begin() + start, data_index.begin() + start + count);
             return count;
         }
 
@@ -354,25 +356,25 @@ namespace hgl
         */
         virtual bool Shrink()
         {
-            if(data_index.IsEmpty())
+            if(data_index.empty())
                 return(false);
 
             const int32 count=GetCount();
 
-            ValueBuffer<int32> sorted_index(count);
+            std::vector<int32> sorted_index(count);
             ValueStack<int32> overflow_index;
             ValueStack<int32> space_location;
 
             overflow_index.Reserve(count);
             space_location.Reserve(count);
 
-            mem_copy(sorted_index.GetData(),data_index.GetData(),count);
+            memcpy(sorted_index.data(),data_index.data(),count * sizeof(int32));
 
             std::sort(sorted_index.begin(),sorted_index.end(),std::less<int>());
 
             //查找空的位置
             {
-                int32 *p=sorted_index.GetData();
+                int32 *p=sorted_index.data();
 
                 for(int i=0;i<count;i++)
                 {
@@ -389,7 +391,7 @@ namespace hgl
 
             //查找超出边界的索引
             {
-                int32 *p=data_index.GetData();
+                int32 *p=data_index.data();
 
                 for(int i=0;i<count;i++)
                 {
@@ -432,8 +434,8 @@ namespace hgl
         */
         const bool IsOrdered()const
         {
-            const int count=data_index.GetCount();
-            const int32 *p=data_index.GetData();
+            const int count=(int)data_index.size();
+            const int32 *p=data_index.data();
 
             for(int i=0;i<count;i++)
             {
@@ -450,7 +452,7 @@ namespace hgl
 
         virtual void Reorder()
         {
-            const int count=data_index.GetCount();
+            const int count=(int)data_index.size();
 
             if(count<=0)return;
 
@@ -473,20 +475,22 @@ namespace hgl
 
                 // 批量复制连续块的数据
                 int length = end - start + 1;
-                memcpy(temp_array+start, data_array.GetData() + data_index[start], length * sizeof(T));
+                memcpy(temp_array+start, data_array.data() + data_index[start], length * sizeof(T));
 
                 // 更新索引
                 i = end + 1;
             }
 
             // 将临时数组的数据复制回 data_array
-            data_array.SetData(temp_array,count);
+            memcpy(data_array.data(), temp_array, count * sizeof(T));
 
             // 更新 data_index，使其与 data_array 的顺序一致
             for (int i = 0; i < count; ++i)
             {
                 data_index[i] = i;
             }
+
+            hgl_align_free(temp_array);
         }
     };//template<typename T> class IndexedValueArray
 }//namespace hgl

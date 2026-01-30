@@ -1,4 +1,4 @@
-﻿/**
+/**
  * UnorderedManagedSetTest.cpp
  * UnorderedManagedSet 测试 - 测试非平凡类型的对象管理（基于指针地址）
  *
@@ -224,15 +224,15 @@ void TestGetOperations()
     set.Add(new ComplexTestObject(222, 2222, "B"));
     set.Add(new ComplexTestObject(333, 3333, "C"));
 
-    const ValueBuffer<int> &ids = set.GetActiveView();
-    assert(ids.GetCount() == 3);
+    const std::vector<int> &ids = set.GetActiveView();
+    assert((int)ids.size() == 3);
 
     const ComplexTestObject* first = set.At(ids[0]);
     assert(first);
     std::cout << "  ✓ First: ID=" << first->GetId() << ", Value=" << first->GetValue()
               << ", Name=" << first->GetName() << " at " << std::hex << (void*)first << std::dec << std::endl;
 
-    const ComplexTestObject* last = set.At(ids[ids.GetCount() - 1]);
+    const ComplexTestObject* last = set.At(ids[(int)ids.size() - 1]);
     assert(last);
     std::cout << "  ✓ Last: ID=" << last->GetId() << ", Value=" << last->GetValue()
               << ", Name=" << last->GetName() << " at " << std::hex << (void*)last << std::dec << std::endl;

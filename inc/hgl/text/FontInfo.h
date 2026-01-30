@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/Map.h>
+#include<hgl/type/ValueArray.h>
 
 namespace hgl
 {
@@ -47,6 +47,11 @@ namespace hgl
         FontInfo()
         {
             mem_zero(*this);
+        }
+
+        bool operator==(const FontInfo& other) const
+        {
+            return memcmp(this, &other, sizeof(FontInfo)) == 0;
         }
     };
 

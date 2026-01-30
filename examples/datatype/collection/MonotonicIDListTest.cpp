@@ -1,4 +1,4 @@
-﻿#include<hgl/type/MonotonicIDList.h>
+#include<hgl/type/MonotonicIDList.h>
 
 #include<iostream>
 #include<random>
@@ -64,15 +64,15 @@ int main(int,char **)
 
     cout<<"\n========== Testing Reindex ==========\n";
 
-    // 使用 ValueBuffer<IDRemap> 存储旧ID到新ID的映射
-    ValueBuffer<IDRemap> remap_list;
+    // 使用 std::vector<IDRemap> 存储旧ID到新ID的映射
+    std::vector<IDRemap> remap_list;
     int reindexed_count=list.Reindex(remap_list);
 
     cout<<"Reindexed "<<reindexed_count<<" items\n\n";
 
     // 显示所有的ID映射
     cout<<"=== ID Remapping (old_id -> new_id) ===\n";
-    for(int i=0; i<remap_list.GetCount(); ++i)
+    for(int i=0; i<remap_list.size(); ++i)
     {
         const IDRemap &remap=remap_list[i];
         int *value=list.Get(remap.new_id);  // 通过新ID获取数据
@@ -189,7 +189,7 @@ int main(int,char **)
         cout<<"  After shrink storage: "<<stress_list.StorageSize()<<"\n";
 
         // 执行Reindex
-        ValueBuffer<IDRemap> remap;
+        std::vector<IDRemap> remap;
         int reindex_result = stress_list.Reindex(remap);
         auto after_reindex = chrono::high_resolution_clock::now();
 

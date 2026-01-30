@@ -1,13 +1,13 @@
-﻿/**
+/**
 * @file ValuePool.h
 * @brief CN:对象池模板类，支持活跃与闲置对象管理。\nEN:Object pool template class, supports active and idle object management.
 */
 #pragma once
 
-#include <hgl/type/ValueArray.h>
 #include <hgl/type/Queue.h>
 #include <hgl/type/has_get_array.h>
 #include <tsl/robin_map.h>
+#include <vector>
 
 namespace hgl
 {
@@ -51,7 +51,7 @@ namespace hgl
         // 成员变量
         // ============================================================
 
-        ValueArray<T>                   Active;                 // CN:活跃对象容器。EN:Active object container.
+        std::vector<T>                  Active;                 // CN:活跃对象容器。EN:Active object container.
         Queue<T>                        Idle;                   // CN:闲置对象容器。EN:Idle object container.
         tsl::robin_map<const T*, int>   ActiveIndex;            // CN:活跃对象指针索引映射（内存高效）。EN:Active object pointer index map (memory efficient).
         int                             max_active_count;       // CN:最大活跃对象数量。EN:Maximum active object count.
@@ -65,14 +65,14 @@ namespace hgl
 
         void UpdateHistoryMax()
         {
-            int cur = Active.GetCount() + Idle.GetCount();
+            int cur = (int)Active.size() + Idle.GetCount();
             if (cur > history_max)
                 history_max = cur;
         }
 
         void UpdatePeakActive()
         {
-            int active = Active.GetCount();
+            int active = (int)Active.size();
             if (active > stats.peak_active)
                 stats.peak_active = active;
         }
@@ -92,24 +92,24 @@ namespace hgl
         // 获取类方法
         // ============================================================
 
-        int                     GetActiveCount()            const { return Active.GetCount();                   }   // CN:获取活跃对象数量。EN:Get active object count.
+        int                     GetActiveCount()            const { return (int)Active.size();                  }   // CN:获取活跃对象数量。EN:Get active object count.
         int                     GetIdleCount()              const { return Idle.GetCount();                     }   // CN:获取闲置对象数量。EN:Get idle object count.
-        int                     GetTotalCount()             const { return Active.GetCount() + Idle.GetCount(); }   // CN:获取总对象数量。EN:Get total object count.
+        int                     GetTotalCount()             const { return (int)Active.size() + Idle.GetCount(); }   // CN:获取总对象数量。EN:Get total object count.
         int                     GetHistoryMaxCount()        const { return history_max;                         }   // CN:获取历史最大对象数量。EN:Get history maximum object count.
         const Stats             &GetStats()                 const { return stats;                               }   // CN:获取统计信息。EN:Get statistics.
-        ValueBuffer<T>          &GetActiveView()                  { return Active.GetArray();                   }   // CN:获取活跃对象数组。EN:Get active object array.
-        const ValueBuffer<T>    &GetActiveView()            const { return Active.GetArray();                   }   // CN:获取活跃对象数组（常量）。EN:Get active object array (const).
+        std::vector<T>          &GetActiveView()                  { return Active;                             }   // CN:获取活跃对象数组。EN:Get active object array.
+        const std::vector<T>    &GetActiveView()            const { return Active;                             }   // CN:获取活跃对象数组（常量）。EN:Get active object array (const).
 
         // ============================================================
         // 状态检查
         // ============================================================
 
-        bool IsFull()               const { return max_active_count > 0 && Active.GetCount() >= max_active_count; }  // CN:判断池是否已满。EN:Check if pool is full.
-        bool IsEmpty()              const { return Active.GetCount() == 0 && Idle.GetCount() == 0;               }  // CN:判断池是否为空。EN:Check if pool is empty.
+        bool IsFull()               const { return max_active_count > 0 && (int)Active.size() >= max_active_count; }  // CN:判断池是否已满。EN:Check if pool is full.
+        bool IsEmpty()              const { return Active.empty() && Idle.GetCount() == 0;                        }  // CN:判断池是否为空。EN:Check if pool is empty.
         bool IsActive(const T &v)   const   // CN:判断对象是否活跃（O(n)）。EN:Check if object is active (O(n)).
         {
-            const T *arr = Active.GetData();
-            int count = Active.GetCount();
+            const T *arr = Active.data();
+            int count = (int)Active.size();
             for (int i = 0; i < count; ++i)
             {
                 if (arr[i] == v)
@@ -133,7 +133,7 @@ namespace hgl
 
         void Reserve(int count, bool set_to_max = false)   // CN:预分配容量。EN:Reserve capacity.
         {
-            Active.Reserve(count);
+            Active.reserve(count);
             Idle.Reserve(count);
             ActiveIndex.reserve(count);
             if (set_to_max)
@@ -164,8 +164,8 @@ namespace hgl
 
             value = T();
 
-            int idx = Active.GetCount();
-            Active.Add(value);
+            int idx = (int)Active.size();
+            Active.push_back(value);
             ActiveIndex[&Active[idx]] = idx;
 
             ++stats.total_creates;
@@ -190,8 +190,8 @@ namespace hgl
                 ++stats.total_creates;
             }
 
-            int idx = Active.GetCount();
-            Active.Add(value);
+            int idx = (int)Active.size();
+            Active.push_back(value);
             ActiveIndex[&Active[idx]] = idx;
 
             UpdateHistoryMax();
@@ -216,8 +216,8 @@ namespace hgl
                 ++stats.total_creates;
             }
 
-            int idx = Active.GetCount();
-            Active.Add(value);
+            int idx = (int)Active.size();
+            Active.push_back(value);
             ActiveIndex[&Active[idx]] = idx;
 
             UpdateHistoryMax();
@@ -230,8 +230,8 @@ namespace hgl
             if (!Idle.Pop(value))
                 return false;
 
-            int idx = Active.GetCount();
-            Active.Add(value);
+            int idx = (int)Active.size();
+            Active.push_back(value);
             ActiveIndex[&Active[idx]] = idx;
 
             ++stats.total_reuses;
@@ -278,8 +278,8 @@ namespace hgl
             if (IsFull())
                 return false;
 
-            int idx = Active.GetCount();
-            Active.Add(value);
+            int idx = (int)Active.size();
+            Active.push_back(value);
             ActiveIndex[&Active[idx]] = idx;
 
             UpdateHistoryMax();
@@ -302,8 +302,8 @@ namespace hgl
         bool Release(const T &value)   // CN:释放对象到闲置池，O(n)查找+O(1)删除。EN:Release object to idle pool, O(n) search + O(1) deletion.
         {
             // CN:先在Active数组中找到值的位置。EN:First find the value's position in Active array.
-            T *arr = Active.GetData();
-            int count = Active.GetCount();
+            T *arr = Active.data();
+            int count = (int)Active.size();
             int idx = -1;
             
             for (int i = 0; i < count; ++i)
@@ -336,7 +336,7 @@ namespace hgl
                 ActiveIndex[&Active[idx]] = idx;
             }
 
-            Active.Delete(last_idx, 1);
+            Active.pop_back();
 
             if (!Idle.Push(value))
                 return false;
@@ -366,21 +366,19 @@ namespace hgl
 
         void ReleaseActive()   // CN:释放所有活跃对象到闲置池。EN:Release all active objects to idle pool.
         {
-            T *ptr = Active.GetData();
-            int cnt = Active.GetCount();
-            if (ptr && cnt > 0)
+            for(auto &item : Active)
             {
-                Idle.Push(ptr, cnt);
-                stats.total_releases += cnt;
+                Idle.Push(item);
             }
+            stats.total_releases += (int)Active.size();
             ActiveIndex.clear();
-            Active.Clear();
+            Active.clear();
             MaintainMinIdle();
         }
 
         void ClearActive()   // CN:清空所有活跃对象。EN:Clear all active objects.
         {
-            Active.Clear();
+            Active.clear();
             ActiveIndex.clear();
         }
 
@@ -394,7 +392,7 @@ namespace hgl
 
         void Shrink()   // CN:缩减容量到实际使用大小。EN:Shrink capacity to actual size.
         {
-            Active.Shrink();
+            Active.shrink_to_fit();
             Idle.Shrink();
         }
 
@@ -421,10 +419,8 @@ namespace hgl
         template<typename Func>
         void ForEachActive(Func fn)   // CN:遍历所有活跃对象。EN:Iterate all active objects.
         {
-            T *ptr = Active.GetData();
-            int cnt = Active.GetCount();
-            for (int i = 0; i < cnt; ++i)
-                fn(ptr[i]);
+            for(auto &it:Active)
+                fn(it);
         }
 
         // ============================================================
@@ -434,11 +430,11 @@ namespace hgl
         bool Validate() const   // CN:验证池的完整性。EN:Validate pool integrity.
         {
             // CN:检查活跃对象指针索引一致性。EN:Check active object pointer index consistency.
-            if (ActiveIndex.size() != (size_t)Active.GetCount())
+            if (ActiveIndex.size() != (size_t)Active.size())
                 return false;
 
-            T *ptr = Active.GetData();
-            int cnt = Active.GetCount();
+            const T *ptr = Active.data();
+            int cnt = (int)Active.size();
             for (int i = 0; i < cnt; ++i)
             {
                 auto it = ActiveIndex.find(&ptr[i]);
@@ -447,7 +443,7 @@ namespace hgl
             }
 
             // CN:检查总数不超过限制。EN:Check total count doesn't exceed limit.
-            if (max_active_count > 0 && Active.GetCount() > max_active_count)
+            if (max_active_count > 0 && (int)Active.size() > max_active_count)
                 return false;
 
             return true;

@@ -1,6 +1,7 @@
-﻿#pragma once
+#pragma once
 
-#include<hgl/type/ValueArray.h>
+#include<vector>
+#include<algorithm>
 #include<hgl/type/MemoryUtil.h>
 
 namespace hgl
@@ -11,7 +12,7 @@ namespace hgl
      * 当调用 Clear()/Free()/Delete 系列函数时，会对所包含的元素执行 delete 操作
      *
      * 设计要点：
-     * - 继承自 ValueArray<T *>，保留其大部分接口；
+     * - 内部使用 std::vector<T *> 存储指针；
      * - 新增以 Own 命名的方法（如 DeleteAt），用于先释放对象再从列表中移除；
      * - 提供 Unlink 系列方法仅断开关联（不 delete），以支持不同的内存管理策略；
      */
@@ -23,37 +24,41 @@ namespace hgl
                       "ManagedArray<T> requires non-trivial types (std::string, custom classes with dynamic memory, etc). "
                       "For trivially copyable types (int, float, POD structs), use ValueArray<T> instead for better performance.");
 
-        ValueArray<T *> items;   // composition: store pointers, manage ownership here
+        std::vector<T *> items;   // composition: store pointers, manage ownership here
 
     public:
 
         using ItemPointer = T *;
 
-                ItemPointer operator[](int idx)const{return items.GetData()[idx];}
+                ItemPointer operator[](int idx)const{return items.data()[idx];}
 
     public: //属性
 
-                const   int     GetAllocCount   ()const{return items.GetAllocCount();}         ///<取得已分配容量
-                const   int     GetCount        ()const{return items.GetCount();}              ///<取得列表内数据数量
-        virtual         bool    Resize          (int count){return items.Resize(count);}       ///<设置列表内数据数量
-        virtual         bool    Reserve         (int count){return items.Reserve(count);}      ///<预分配指定数量的数据空间
+                const   int     GetAllocCount   ()const{return (int)items.capacity();}         ///<取得已分配容量
+                const   int     GetCount        ()const{return (int)items.size();}              ///<取得列表内数据数量
+        virtual         bool    Resize          (int count){items.resize(count); return true;}       ///<设置列表内数据数量
+        virtual         bool    Reserve         (int count){items.reserve(count); return true;}      ///<预分配指定数量的数据空间
 
-                const   bool    IsEmpty         ()const{return items.IsEmpty();}               ///<确认列表是否为空
+                const   bool    IsEmpty         ()const{return items.empty();}               ///<确认列表是否为空
 
-                        ItemPointer *GetData    ()const{return items.GetData();}               ///<提供原始数据项
-                        int     GetTotalBytes   ()const{return items.GetTotalBytes();}         ///<取得原始数据总字节数
+                        ItemPointer *GetData    (){return items.empty()?nullptr:items.data();}               ///<提供原始数据项
+                const   ItemPointer *GetData    ()const{return items.empty()?nullptr:items.data();}               ///<提供原始数据项（const 版本）
+                        int     GetTotalBytes   ()const{return (int)(items.size()*sizeof(ItemPointer));}         ///<取得原始数据总字节数
 
-                        ItemPointer *DataBegin  ()const{return items.begin();}
-                        ItemPointer *DataEnd    ()const{return items.end();}
-                        ItemPointer *DataLast   ()const{return items.last();}
+                        ItemPointer *DataBegin  (){return items.empty()?nullptr:items.data();}
+                const   ItemPointer *DataBegin  ()const{return items.empty()?nullptr:items.data();}
+                        ItemPointer *DataEnd    (){return items.empty()?nullptr:items.data()+items.size();}
+                const   ItemPointer *DataEnd    ()const{return items.empty()?nullptr:items.data()+items.size();}
+                        ItemPointer *DataLast   (){return items.empty()?nullptr:items.data()+items.size()-1;}
+                const   ItemPointer *DataLast   ()const{return items.empty()?nullptr:items.data()+items.size()-1;}
 
     public:
 
-                    ValueBuffer<ItemPointer> &GetArray ()     {return items.GetArray();}
-            const   ValueBuffer<ItemPointer> &GetArray ()const{return items.GetArray();}
+                    std::vector<ItemPointer> &GetArray ()     {return items;}
+            const   std::vector<ItemPointer> &GetArray ()const{return items;}
 
-            operator        ValueBuffer<ItemPointer> & ()     {return items.GetArray();}
-            operator const  ValueBuffer<ItemPointer> & ()const{return items.GetArray();}
+            operator        std::vector<ItemPointer> & ()     {return items;}
+            operator const  std::vector<ItemPointer> & ()const{return items;}
 
     public: //方法
 
@@ -67,85 +72,131 @@ namespace hgl
 
             if (!obj) return nullptr;
 
-            if (items.Add(obj) < 0)  // Add returns index, -1 on failure
-            {
-                delete obj;
-                return nullptr;
-            }
-
+            items.push_back(obj);
             return obj;
         }
 
         // ============ Add 系列方法 ============
         virtual T *Add()
         {
-            items.Add();
-            return *items.last();
+            items.push_back(nullptr);
+            return items.back();
         }
 
         virtual int Add(const ItemPointer &obj)
         {
-            return items.Add(obj);
+            const int index=(int)items.size();
+            items.push_back(obj);
+            return index;
         }
 
         virtual int Add(const ItemPointer *data, int n)
         {
-            return items.Add(data, n);
+            if(!data||n<=0)
+                return(-1);
+
+            const int ec=(int)items.size();
+            items.insert(items.end(), data, data+n);
+            return(ec);
         }
 
         virtual int Add(const ManagedArray<T> &l)
         {
-            return items.Add(l.GetData(), l.GetCount());
+            return Add(l.GetData(), l.GetCount());
         }
 
         // ============ 查找 ============
-        virtual int Find(const ItemPointer &data) const { return items.Find(data); }
+        virtual int Find(const ItemPointer &data) const 
+        { 
+            auto it = std::find(items.begin(), items.end(), data);
+            return (it == items.end()) ? -1 : (int)std::distance(items.begin(), it);
+        }
 
         // ============ 判断是否包含 ============
-        virtual bool Contains(const ItemPointer &flag) const { return items.Find((T *)flag) != -1; }
+        virtual bool Contains(const ItemPointer &flag) const { return Find(flag) >= 0; }
 
         // ============ 插入元素 ============
-        virtual bool Insert(int index, const ItemPointer &obj) { return items.Insert(index, obj); }
+        virtual bool Insert(int index, const ItemPointer &obj) 
+        { 
+            if(index<0 || index>(int)items.size()) return false;
+            items.insert(items.begin()+index, obj);
+            return true;
+        }
 
         virtual bool Insert(int index, const ItemPointer *data, int number)
         {
-            return items.Insert(index, data, number);
+            if(!data || number<=0 || index<0 || index>(int)items.size()) return false;
+            items.insert(items.begin()+index, data, data+number);
+            return true;
         }
 
         // ============ 交换与移动 ============
-        virtual void Exchange(int a, int b) { items.Exchange(a, b); }
+        virtual void Exchange(int a, int b) 
+        { 
+            if(a>=0 && a<(int)items.size() && b>=0 && b<(int)items.size())
+                std::swap(items[a], items[b]);
+        }
 
         virtual void Move(int new_pos, int old_pos, int move_count)
         {
-            items.Move(new_pos, old_pos, move_count);
+            if(old_pos<0 || old_pos+move_count>(int)items.size()) return;
+            if(new_pos<0 || new_pos>(int)items.size()) return;
+            if(move_count<=0) return;
+
+            if(new_pos>=old_pos && new_pos<=old_pos+move_count) return;
+
+            std::vector<ItemPointer> temp(items.begin()+old_pos, items.begin()+old_pos+move_count);
+            items.erase(items.begin()+old_pos, items.begin()+old_pos+move_count);
+
+            int actual_new_pos = new_pos;
+            if(new_pos > old_pos)
+                actual_new_pos -= move_count;
+
+            items.insert(items.begin()+actual_new_pos, temp.begin(), temp.end());
         }
 
         // ============ 数据读写 ============
-        ItemPointer At(int index) { return *items.At(index); }
-        const ItemPointer At(int index) const { return *items.At(index); }
+        ItemPointer At(int index) 
+        { 
+            if(index<0 || index>=(int)items.size()) return nullptr;
+            return items[index];
+        }
+        const ItemPointer At(int index) const 
+        { 
+            if(index<0 || index>=(int)items.size()) return nullptr;
+            return items[index];
+        }
 
         virtual bool Get(int index, ItemPointer &data) const
         {
-            return items.Get(index, data);
+            if(index<0 || index>=(int)items.size()) return false;
+            data = items[index];
+            return true;
         }
 
         virtual bool Set(int index, const ItemPointer &data)
         {
-            return items.Set(index, data);
+            if(index<0 || index>=(int)items.size()) return false;
+            items[index] = data;
+            return true;
         }
 
         virtual bool GetFirst(ItemPointer &data) const
         {
-            return items.GetFirst(data);
+            if(items.empty()) return false;
+            data = items.front();
+            return true;
         }
 
         virtual bool GetLast(ItemPointer &data) const
         {
-            return items.GetLast(data);
+            if(items.empty()) return false;
+            data = items.back();
+            return true;
         }
 
         // ============ 赋值操作符 ============
-        virtual void operator=(const ValueBuffer<ItemPointer> &da)
+        virtual void operator=(const std::vector<ItemPointer> &da)
         {
             items = da;
         }
@@ -154,8 +205,7 @@ namespace hgl
         {
             if (this != &ol)
             {
-                Clear();
-                Add(ol.GetData(), ol.GetCount());
+                items = ol.items;
             }
         }
 
@@ -165,37 +215,70 @@ namespace hgl
         virtual void operator-=(ItemPointer &obj) { DeleteByValue(obj); }
 
         // ============ 释放与清理 ============
-        // Free: 先 Clear（对元素 delete），再调用基类 Free
-        virtual void Free() { Clear(); items.Free(); }
+        // Free: 先 Clear（对元素 delete），再调用 shrink_to_fit
+        virtual void Free() 
+        { 
+            Clear(); 
+            items.shrink_to_fit();
+        }
 
         // Clear: 对内部所有指针执行销毁（delete），然后清空数组
         virtual void Clear()
         {
-            T **ptr = items.GetData();
-            int n = items.GetCount();
+            T **ptr = items.data();
+            int n = (int)items.size();
             for(int i = 0; i < n; ++i)
-                delete ptr[i];
-            items.Clear();
+                if(ptr[i]) delete ptr[i];
+            items.clear();
         }
 
         // ============ Unlink 系列：仅断开关联（不 delete） ============
-        virtual bool Unlink(int index)                    { return items.Delete(index); }          ///< 断开指定索引
-        virtual bool UnlinkMove(int index)                { return items.DeleteShift(index); }     ///< 断开并前移其后的元素
-        virtual bool Unlink(int start, int number)        { return items.Delete(start, number); }  ///< 断开一段范围
-        virtual bool UnlinkByValue(ItemPointer &ip)       { return items.DeleteByValue(ip); }      ///< 通过值断开（单个）
-        virtual void UnlinkByValue(ItemPointer *ip, int n){ items.DeleteByValue(ip, n); }          ///< 通过数组断开
-        virtual void UnlinkAll()                          { items.Clear(); }                       ///< 断开所有（不 delete ）
+        virtual bool Unlink(int index)                    
+        { 
+            if(index<0 || index>=(int)items.size()) return false;
+            items.erase(items.begin()+index);
+            return true;
+        }          ///< 断开指定索引
+        virtual bool UnlinkMove(int index)                
+        { 
+            if(index<0 || index>=(int)items.size()) return false;
+            items.erase(items.begin()+index);
+            return true;
+        }     ///< 断开并前移其后的元素
+        virtual bool Unlink(int start, int number)        
+        { 
+            if(start<0 || number<=0 || start+number>(int)items.size()) return false;
+            items.erase(items.begin()+start, items.begin()+start+number);
+            return true;
+        }  ///< 断开一段范围
+        virtual bool UnlinkByValue(ItemPointer &ip)       
+        { 
+            auto it = std::find(items.begin(), items.end(), ip);
+            if(it == items.end()) return false;
+            items.erase(it);
+            return true;
+        }      ///< 通过值断开（单个）
+        virtual void UnlinkByValue(ItemPointer *ip, int n)
+        { 
+            if(!ip || n<=0) return;
+            for(int i = 0; i < n; ++i)
+            {
+                auto it = std::find(items.begin(), items.end(), ip[i]);
+                if(it != items.end()) items.erase(it);
+            }
+        }          ///< 通过数组断开
+        virtual void UnlinkAll()                          { items.clear(); }                       ///< 断开所有（不 delete ）
 
     private:
         // 内部辅助：删除范围的元素并先行销毁这些指针
         bool _DeleteRange(int index, int num)
         {
-            if (index < 0 || num <= 0 || index + num > items.GetCount())
+            if (index < 0 || num <= 0 || index + num > (int)items.size())
                 return false;
 
-            T **ptr = items.GetData() + index;
+            T **ptr = items.data() + index;
             for(int i = 0; i < num; ++i)
-                delete ptr[i];
+                if(ptr[i]) delete ptr[i];
 
             return true;
         }
@@ -241,11 +324,13 @@ namespace hgl
         // 通过值查找并销毁，然后从列表移除（单个）
         bool DeleteByValue(ItemPointer &ip)
         {
-            int idx = items.Find(ip);
-            if (idx == -1) return false;
-
+            auto it = std::find(items.begin(), items.end(), ip);
+            if (it == items.end()) return false;
+            
+            int idx = std::distance(items.begin(), it);
             _DeleteRange(idx, 1);
-            return items.Delete(idx);
+            items.erase(items.begin() + idx);
+            return true;
         }
 
         // 通过数组的值逐个销毁并移除
@@ -393,8 +478,8 @@ namespace hgl
             }
         };//class ConstIterator
 
-        ConstIterator begin ()const { return ConstIterator(items.GetData(), 0); }
-        ConstIterator end   ()const { return ConstIterator(items.GetData(), items.GetCount()); }
-        ConstIterator last  ()const { int c = items.GetCount(); return (c == 0) ? end() : ConstIterator(items.GetData(), c - 1); }
+        ConstIterator begin ()const { return ConstIterator(items.empty()?nullptr:items.data(), 0); }
+        ConstIterator end   ()const { return ConstIterator(items.empty()?nullptr:items.data(), (int)items.size()); }
+        ConstIterator last  ()const { int c = (int)items.size(); return (c == 0) ? end() : ConstIterator(items.empty()?nullptr:items.data(), c - 1); }
     };// class ManagedArray
 }// namespace hgl

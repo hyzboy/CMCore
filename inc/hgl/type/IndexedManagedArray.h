@@ -1,7 +1,7 @@
-﻿#pragma once
+#pragma once
 
 #include <hgl/type/PtrArray.h>
-#include <hgl/type/ValueBuffer.h>
+#include <vector>
 #include <hgl/type/Stack.h>
 #include <hgl/type/ObjectUtil.h>
 #include <initializer_list>
@@ -22,36 +22,36 @@ namespace hgl
     protected:
 
         PtrArray<T>   data_array;
-        ValueBuffer<I>     data_index;
+        std::vector<I>     data_index;
         ValueStack<I>         free_index;
 
     public: //属性
 
         const int32     GetAllocCount   ()const{return data_array.GetAllocCount();}
-        const int32     GetCount        ()const{return data_index.GetCount();}
+        const int32     GetCount        ()const{return (int32)data_index.size();}
         const int32     GetFreeCount    ()const{return free_index.GetCount();}
 
         const size_t    GetTotalBytes   ()const{return static_cast<size_t>(data_index.GetCount())*sizeof(T);}
 
-        const bool      IsEmpty         ()const{return data_index.IsEmpty();}
+        const bool      IsEmpty         ()const{return data_index.empty();}
 
         bool Reserve(int32 count)
         {
             if(count<=0)return(false);
 
             data_array.Reserve(count);
-            data_index.Reserve(count);
+            data_index.reserve(count);
             free_index.Reserve(count);
 
             return(true);
         }
 
         const PtrArray<T> &GetRawData()const{return data_array;}
-        const ValueBuffer<I> &GetRawIndex()const{return data_index;}
+        const std::vector<I> &GetRawIndex()const{return data_index;}
 
         T &operator[](int32 index)
         {
-            if ( index<0||index>=data_index.GetCount() )
+            if ( index<0||index>=(int32)data_index.size() )
                 return data_array[0];
             return data_array[data_index[index]];
         }

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file UnorderedSet.h
  * @brief CN:高性能无序集合模板（基于连续内存优化）\nEN:High-performance unordered set template (optimized with contiguous memory)
  */
@@ -6,10 +6,10 @@
 
 #include <type_traits>
 #include <vector>
-#include <hgl/type/FNV1aHash.h>
+#include <hgl/util/hash/QuickHash.h>
 #include <hgl/type/ActiveDataManager.h>
 #include <hgl/type/ValueArray.h>
-#include <absl/container/flat_hash_map.h>
+#include <ankerl/unordered_dense.h>
 
 namespace hgl
 {
@@ -45,7 +45,7 @@ namespace hgl
         /**
          * @brief CN:哈希到ID的映射表\nEN:Hash to ID mapping table
          */
-        absl::flat_hash_map<uint64, std::vector<int>> hash_map;
+        ankerl::unordered_dense::map<uint64, std::vector<int>> hash_map;
 
         /**
          * @brief CN:根据值查找ID\nEN:Find ID by value
@@ -56,7 +56,7 @@ namespace hgl
             auto it = hash_map.find(hash);
             if (it == hash_map.end())
                 return -1;
-            
+
             for (int id : it->second) {
                 if (!data_manager.IsActive(id))
                     continue;
@@ -72,8 +72,8 @@ namespace hgl
         {
             hash_map.clear();
 
-            const ValueBuffer<int>& active_ids = data_manager.GetActiveView();
-            const int count = active_ids.GetCount();
+            auto active_ids = data_manager.GetActiveView();
+            const int count = (int)active_ids.size();
 
             for (int i = 0; i < count; i++)
             {
@@ -337,8 +337,8 @@ namespace hgl
          */
         bool DeleteAt(int index)
         {
-            const ValueBuffer<int>& active_ids = data_manager.GetActiveView();
-            if (index < 0 || index >= active_ids.GetCount())
+            auto active_ids = data_manager.GetActiveView();
+            if (index < 0 || index >= (int)active_ids.size())
                 return false;
 
             int id = active_ids[index];
@@ -364,7 +364,7 @@ namespace hgl
          */
         void Free()
         {
-            // ValueBuffer 的内存会在析构时自动释放
+            // std::vector 的内存会在析构时自动释放
             // 这里显式清空以触发内存释放
             data_manager.Free();
             hash_map.clear();
@@ -377,8 +377,8 @@ namespace hgl
          */
         bool Get(int index, T& value) const
         {
-            const ValueBuffer<int>& active_ids = data_manager.GetActiveView();
-            if (index < 0 || index >= active_ids.GetCount())
+            auto active_ids = data_manager.GetActiveView();
+            if (index < 0 || index >= (int)active_ids.size())
                 return false;
 
             int id = active_ids[index];
@@ -410,8 +410,8 @@ namespace hgl
         template<typename F>
         void Enum(F&& func) const
         {
-            const ValueBuffer<int>& active_ids = data_manager.GetActiveView();
-            const int count = active_ids.GetCount();
+            auto active_ids = data_manager.GetActiveView();
+            const int count = (int)active_ids.size();
 
             for (int i = 0; i < count; i++)
             {
@@ -428,8 +428,8 @@ namespace hgl
         template<typename F>
         void EnumMutable(F&& func)
         {
-            const ValueBuffer<int>& active_ids = data_manager.GetActiveView();
-            const int count = active_ids.GetCount();
+            auto active_ids = data_manager.GetActiveView();
+            const int count = (int)active_ids.size();
 
             for (int i = 0; i < count; i++)
             {
@@ -530,7 +530,7 @@ namespace hgl
         /**
          * @brief CN:获取活跃ID数组\nEN:Get active ID array
          */
-        const ValueBuffer<int>& GetActiveView() const
+        std::vector<int> GetActiveView() const
         {
             return data_manager.GetActiveView();
         }

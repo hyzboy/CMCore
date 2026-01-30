@@ -78,7 +78,6 @@ SOURCE_GROUP("DataType\\Template\\Container" FILES ${CMCORE_TYPE_CONTAINER_FILES
 SET(CMCORE_TYPE_MAP_FILES ${CMCORE_TYPE_INCLUDE_PATH}/Map.h
                           ${CMCORE_TYPE_INCLUDE_PATH}/OrderedMap.h
                           ${CMCORE_TYPE_INCLUDE_PATH}/UnorderedMap.h
-                          ${CMCORE_TYPE_INCLUDE_PATH}/FNV1aHash.h
                           ${CMCORE_TYPE_INCLUDE_PATH}/KeyValue.h
                           ${CMCORE_TYPE_INCLUDE_PATH}/Pair.h
                           ${CMCORE_TYPE_INCLUDE_PATH}/OrderedManagedSet.h
@@ -116,7 +115,6 @@ SET(CMCORE_TYPE_CACHE_FILES ${CMCORE_TYPE_INCLUDE_PATH}/LRUCache.h
                             ${CMCORE_TYPE_INCLUDE_PATH}/OrderedValueSet.h
                             ${CMCORE_TYPE_INCLUDE_PATH}/UnorderedValueSet.h
                             ${CMCORE_TYPE_INCLUDE_PATH}/ValueArray.h
-                            ${CMCORE_TYPE_INCLUDE_PATH}/ValueBuffer.h
                             ${CMCORE_TYPE_INCLUDE_PATH}/ValueKVMap.h)
 SOURCE_GROUP("DataType\\Template\\Cache" FILES ${CMCORE_TYPE_CACHE_FILES})
 
@@ -193,7 +191,7 @@ SOURCE_GROUP("IO\\MemoryStream" FILES ${CMCORE_IO_MEMORYSTREAM_FILES})
 ## IO ValueBuffer 数据数组
 SET(CMCORE_IO_DATAARRAY_FILES ${CMCORE_IO_INCLUDE_PATH}/LoadDataArray.h
                               ${CMCORE_IO_INCLUDE_PATH}/SaveDataArray.h)
-SOURCE_GROUP("IO\\ValueBuffer" FILES ${CMCORE_IO_DATAARRAY_FILES})
+SOURCE_GROUP("IO\\DataArray" FILES ${CMCORE_IO_DATAARRAY_FILES})
 
 ## IO File 文件访问
 SET(CMCORE_IO_FILE_FILES ${CMCORE_IO_INCLUDE_PATH}/FileAccess.h

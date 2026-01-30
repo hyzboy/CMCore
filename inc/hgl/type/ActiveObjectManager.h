@@ -4,7 +4,7 @@
 */
 #pragma once
 
-#include <unordered_map>
+#include <absl/container/flat_hash_map.h>
 
 namespace hgl
 {
@@ -77,12 +77,12 @@ namespace hgl
         /**
         * @brief CN:活跃对象映射表。\nEN:Active object map.
         */
-        std::unordered_map<ID, ObjectItem *> active_object_map;
+        absl::flat_hash_map<ID, ObjectItem *> active_object_map;
 
         /**
         * @brief CN:闲置对象映射表。\nEN:Idle object map.
         */
-        std::unordered_map<ID, ObjectItem *> idle_object_map;
+        absl::flat_hash_map<ID, ObjectItem *> idle_object_map;
 
         ActiveObjectManager() {}
 
@@ -106,7 +106,7 @@ namespace hgl
         /**
         * @brief CN:清理对象映射表。\nEN:Clear object map.
         */
-        void Clear(std::unordered_map<ID, ObjectItem *> &m)
+        void Clear(absl::flat_hash_map<ID, ObjectItem *> &m)
         {
             for (auto &pair : m)
             {

@@ -83,7 +83,7 @@ namespace hgl::logger
 
         if(len>0)
         {
-            log_buffer_u8.Reserve(len+1);
+            log_buffer_u8.resize(len+1);
 
             std::vsnprintf((char *)log_buffer_u8.data(),len+1,(const char *)fmt,args);
 
@@ -91,7 +91,7 @@ namespace hgl::logger
 
             int u16len=get_utf16_length(UTF8CharSet,(const char *)log_buffer_u8.data(),len)+1;
 
-            log_buffer_u16.Reserve(u16len);
+            log_buffer_u16.resize(u16len);
 
             u16len=u8_to_u16(log_buffer_u16.data(),u16len,log_buffer_u8.data(),len);
 
@@ -119,7 +119,7 @@ namespace hgl::logger
 
         if(len>0)
         {
-            log_buffer_u16.Reserve(len+1);
+            log_buffer_u16.resize(len+1);
             std::vswprintf(log_buffer_u16.data(),len+1,fmt,args);
 
         #if HGL_OS == HGL_OS_Windows
@@ -128,7 +128,7 @@ namespace hgl::logger
 
             int u8len=get_utf8_length(UTF16LECharSet,log_buffer_u16.data(),len)+1;
 
-            log_buffer_u8.Reserve(u8len);
+            log_buffer_u8.resize(u8len);
 
             u8len=u16_to_u8(log_buffer_u8.data(),u8len,log_buffer_u16.data(),len);
 

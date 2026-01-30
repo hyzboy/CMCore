@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<vector>
-#include<hgl/type/FNV1aHash.h>
+#include<hgl/util/hash/QuickHash.h>
 #include<absl/container/flat_hash_map.h>
 #include<hgl/type/KeyValue.h>
 #include<hgl/type/ValueArray.h>
@@ -42,7 +42,7 @@ namespace hgl
         // ==================== 添加 ====================
         KVData *Add(const K& key, const V& value)                              ///<添加一个数据，如果索引已存在，返回nullptr
         {
-            uint64 hash = ComputeFNV1aHash(key);
+            uint64 hash = ComputeWYHash(key);
 
             // 检查是否已存在
             auto it = hash_map.find(hash);
@@ -72,7 +72,7 @@ namespace hgl
         // ==================== 查找 ====================
         int Find(const K& key) const                                           ///<查找数据是否存在，返回-1表示数据不存在
         {
-            uint64 hash = ComputeFNV1aHash(key);
+            uint64 hash = ComputeWYHash(key);
             auto it = hash_map.find(hash);
             if (it == hash_map.end())
                 return -1;
@@ -379,7 +379,7 @@ namespace hgl
             const int count = data_list.GetCount();
             for(int i = 0; i < count; i++)
             {
-                uint64 hash = ComputeFNV1aHash(data_list[i]->key);
+                uint64 hash = ComputeWYHash(data_list[i]->key);
                 hash_map[hash].push_back(i);
             }
         }

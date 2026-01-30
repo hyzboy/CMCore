@@ -1,4 +1,4 @@
-﻿#include<hgl/type/ConstStringSet.h>
+#include<hgl/type/ConstStringSet.h>
 #include<hgl/io/TextOutputStream.h>
 #include<hgl/io/FileOutputStream.h>
 
@@ -32,13 +32,13 @@ namespace hgl
         }
         else
         {
-            const ValueBuffer<SC> &data_array=css->GetStringData();
+            const std::vector<SC> &data_array=css->GetStringData();
 
-            int length=data_array.GetCount();
+            int length=(int)data_array.size();
 
             AutoDeleteArray<SC> text(length);
 
-            mem_copy<SC>(text,data_array.data(),length);
+            memcpy(text,data_array.data(),length * sizeof(SC));
 
             for(int i=0;i<length;i++)
             {

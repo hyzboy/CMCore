@@ -1,9 +1,10 @@
-﻿#pragma once
+#pragma once
 
 #include<stdlib.h>
 #include<initializer_list>
 #include<type_traits>
-#include<hgl/type/ValueBuffer.h>
+#include<vector>
+#include<algorithm>
 #include<hgl/type/MemoryUtil.h>
 
 namespace hgl
@@ -17,7 +18,7 @@ namespace hgl
     {
     protected:
 
-        ValueBuffer<T> data_array;
+        std::vector<T> data_array;
 
     public: //属性
 
@@ -25,27 +26,27 @@ namespace hgl
                       "ValueArray<T> requires trivially copyable types (int, float, POD structs, etc). "
                       "For non-trivial types (std::string, custom classes with dynamic memory), use ManagedArray<T> instead.");
 
-                const   int     GetAllocCount   ()const{return data_array.GetAllocCount();}         ///<取得已分配容量
-                const   int     GetCount        ()const{return data_array.GetCount();}              ///<取得列表内数据数量
-        virtual         bool    Resize          (int count){return data_array.Resize(count);}       ///<设置列表内数据数量
-        virtual         bool    Reserve         (int count){return data_array.Reserve(count);}      ///<预分配指定数量的数据空间
+                const   int     GetAllocCount   ()const{return (int)data_array.capacity();}         ///<取得已分配容量
+                const   int     GetCount        ()const{return (int)data_array.size();}              ///<取得列表内数据数量
+        virtual         bool    Resize          (int count){data_array.resize(count); return true;}       ///<设置列表内数据数量
+        virtual         bool    Reserve         (int count){data_array.reserve(count); return true;}      ///<预分配指定数量的数据空间
 
-                const   bool    IsEmpty         ()const{return data_array.IsEmpty();}               ///<确认列表是否为空
+                const   bool    IsEmpty         ()const{return data_array.empty();}               ///<确认列表是否为空
 
-                        T *     GetData         ()const{return data_array.GetData();}               ///<提供原始数据项
-                        int     GetTotalBytes   ()const{return data_array.GetTotalBytes();}         ///<取得原始数据总字节数
+                        T *     GetData         ()const{return data_array.empty()?nullptr:const_cast<T*>(data_array.data());}               ///<提供原始数据项
+                        int     GetTotalBytes   ()const{return (int)(data_array.size()*sizeof(T));}         ///<取得原始数据总字节数
 
-                        T *     begin           ()const{return data_array.begin();}
-                        T *     end             ()const{return data_array.end();}
-                        T *     last            ()const{return data_array.last();}
+                        T *     begin           ()const{return data_array.empty()?nullptr:const_cast<T*>(data_array.data());}
+                        T *     end             ()const{return data_array.empty()?nullptr:const_cast<T*>(data_array.data())+data_array.size();}
+                        T *     last            ()const{return data_array.empty()?nullptr:const_cast<T*>(data_array.data())+data_array.size()-1;}
 
     public:
 
-            ValueBuffer<T> &      GetArray()          {return data_array;}
-            const ValueBuffer<T> &GetArray()const     {return data_array;}
+            std::vector<T> &      GetArray()          {return data_array;}
+            const std::vector<T> &GetArray()const     {return data_array;}
 
-            operator        ValueBuffer<T> & ()       {return data_array;}
-            operator const  ValueBuffer<T> & ()const  {return data_array;}
+            operator        std::vector<T> & ()       {return data_array;}
+            operator const  std::vector<T> & ()const  {return data_array;}
                     T &     operator[](int index)             {return data_array[index];}
             const   T &     operator[](int index)const        {return data_array[index];}
 
@@ -64,8 +65,8 @@ namespace hgl
          */
         virtual T *  Add()
         {
-            data_array.Expand(1);
-            return data_array.last();
+            data_array.push_back(T());
+            return &data_array.back();
         }
 
         /**
@@ -75,12 +76,8 @@ namespace hgl
         */
         virtual int  Add(const T &data)
         {
-            const int index=GetCount();
-
-            data_array.Expand(1);
-
-            data_array.WriteAt(data,index);
-
+            const int index=(int)data_array.size();
+            data_array.push_back(data);
             return index;
         }
 
@@ -95,12 +92,8 @@ namespace hgl
         {
             if(n<=0)return(-1);
 
-            const int ec=data_array.GetCount();
-
-            data_array.Expand(n);
-
-            mem_fill_pattern(data_array.data()+ec,&data,n);
-
+            const int ec=(int)data_array.size();
+            data_array.insert(data_array.end(), n, data);
             return(ec);
         }
 
@@ -115,25 +108,35 @@ namespace hgl
             if(!data||n<=0)
                 return(-1);
 
-            const int ec=data_array.GetCount();
-
-            data_array.Expand(n);
-
-            data_array.WriteAt(data,ec,n);
-
+            const int ec=(int)data_array.size();
+            data_array.insert(data_array.end(), data, data+n);
             return(ec);
         }
 
                 int  Add(const ValueArray<T> &l){return Add(l.GetData(),l.GetCount());}                            ///<增加一批数据
 
-        virtual void Free(){data_array.Free();}                                                     ///<清除所有数据，并释放内存
-        virtual void Clear(){data_array.Clear();}                                                   ///<清除所有数据，但不清空缓冲区
+        virtual void Free(){data_array.clear(); data_array.shrink_to_fit();}                                                     ///<清除所有数据，并释放内存
+        virtual void Clear(){data_array.clear();}                                                   ///<清除所有数据，但不清空缓冲区
 
-        virtual int  Find(const T &data)const{return data_array.Find(data);}                        ///<查找指定数据的索引
+        virtual int  Find(const T &data)const
+        {
+            auto it = std::find(data_array.begin(), data_array.end(), data);
+            return (it == data_array.end()) ? -1 : (int)std::distance(data_array.begin(), it);
+        }                        ///<查找指定数据的索引
+
         virtual bool Contains(const T &flag)const{return Find(flag)>=0;}                            ///<确认数据项是否存在
 
-        virtual bool Delete(int start,int num=1){return data_array.Delete(start,num);}              ///<删除指定索引的数据
-        virtual bool DeleteShift(int start,int num=1){return data_array.DeleteShift(start,num);}      ///<删除指定索引的数据,将后面紧邻的数据前移
+        virtual bool Delete(int start,int num=1)
+        {
+            if(start<0 || start+num>(int)data_array.size()) return false;
+            data_array.erase(data_array.begin()+start, data_array.begin()+start+num);
+            return true;
+        }              ///<删除指定索引的数据
+
+        virtual bool DeleteShift(int start,int num=1)
+        {
+            return Delete(start, num);
+        }      ///<删除指定索引的数据,将后面紧邻的数据前移
 
         /**
         * 删除列表中的指定项
@@ -144,7 +147,7 @@ namespace hgl
         {
             const int pos=Find(data);
 
-            return(pos>=0?Delete(pos,1):pos);
+            return(pos>=0?Delete(pos,1):false);
         }
 
         /**
@@ -171,8 +174,18 @@ namespace hgl
             return result;
         }
 
-        virtual void Exchange(int a,int b){data_array.Exchange(a,b);}                               ///<根据索引交换两个数据
-        virtual bool Insert(int pos,const T &data){return data_array.Insert(pos,&data,1);}          ///<在指定索引处插入一个数据
+        virtual void Exchange(int a,int b)
+        {
+            if(a>=0 && a<(int)data_array.size() && b>=0 && b<(int)data_array.size())
+                std::swap(data_array[a], data_array[b]);
+        }                               ///<根据索引交换两个数据
+
+        virtual bool Insert(int pos,const T &data)
+        {
+            if(pos<0 || pos>(int)data_array.size()) return false;
+            data_array.insert(data_array.begin()+pos, data);
+            return true;
+        }          ///<在指定索引处插入一个数据
 
         /**
         * 在指定索引处插入一批数据
@@ -182,7 +195,9 @@ namespace hgl
         */
         virtual bool Insert(int pos,const T *data,const int number)
         {
-            return data_array.Insert(pos,data,number);
+            if(!data || number<=0 || pos<0 || pos>(int)data_array.size()) return false;
+            data_array.insert(data_array.begin()+pos, data, data+number);
+            return true;
         }
 
         /**
@@ -193,28 +208,67 @@ namespace hgl
         */
         virtual void Move(const int new_pos,const int old_pos,const int move_count)
         {
-            data_array.Move(new_pos,old_pos,move_count);
+            if(old_pos<0 || old_pos+move_count>(int)data_array.size()) return;
+            if(new_pos<0 || new_pos>(int)data_array.size()) return;
+            if(move_count<=0) return;
+
+            // 如果目标位置在源范围内，不处理
+            if(new_pos>=old_pos && new_pos<=old_pos+move_count) return;
+
+            std::vector<T> temp(data_array.begin()+old_pos, data_array.begin()+old_pos+move_count);
+            data_array.erase(data_array.begin()+old_pos, data_array.begin()+old_pos+move_count);
+
+            int actual_new_pos = new_pos;
+            if(new_pos > old_pos)
+                actual_new_pos -= move_count;
+
+            data_array.insert(data_array.begin()+actual_new_pos, temp.begin(), temp.end());
         }
 
-        virtual ValueArray<T>& operator = (const ValueBuffer<T> &da)
+        virtual ValueArray<T>& operator = (const ValueArray<T> &da)
         {
-            data_array.CopyFrom(da);  // ✅ 使用显式的深拷贝方法
+            data_array = da.data_array;
             return *this;
         }
-        virtual ValueArray<T>& operator = (const std::initializer_list<T> &l){data_array=l;return *this;}                  ///<操作符重载复制一个列表
+
+        virtual ValueArray<T>& operator = (const std::initializer_list<T> &l)
+        {
+            data_array.assign(l.begin(), l.end());
+            return *this;
+        }                  ///<操作符重载复制一个列表
 
         virtual void operator += (T &obj){Add(obj);}                                                ///<操作符重载添加一个数据
         virtual void operator << (T &obj){Add(obj);}                                                ///<操作符重载添加一个数据
         virtual void operator -= (T &obj){DeleteByValue(obj);}                                      ///<操作符重载删除一个数据
 
-                T *  At(const int index)     {return data_array.At(index);}                         ///<取得指定序列号数据的索引
-        const   T *  At(const int index)const{return data_array.At(index);}                         ///<取得指定序列号数据的索引
+                T *  At(const int index)
+        {
+            if(index<0 || index>=(int)data_array.size()) return nullptr;
+            return &data_array[index];
+        }                         ///<取得指定序列号数据的索引
 
-                bool Get(int index,      T &data)const  {return data_array.ReadAt (data,index);}    ///<取得指定索引处的数据
-        virtual bool Set(int index,const T &data)       {return data_array.WriteAt(data,index);}    ///<设置指定索引处的数据
+        const   T *  At(const int index)const
+        {
+            if(index<0 || index>=(int)data_array.size()) return nullptr;
+            return &data_array[index];
+        }                         ///<取得指定序列号数据的索引
 
-        virtual bool GetFirst   (T &data)const{return data_array.ReadAt(data,0);}                   ///<取第一个数据
-        virtual bool GetLast    (T &data)const{return data_array.ReadAt(data,GetCount()-1);}        ///<取最后一个数据
+                bool Get(int index,      T &data)const
+        {
+            if(index<0 || index>=(int)data_array.size()) return false;
+            data = data_array[index];
+            return true;
+        }    ///<取得指定索引处的数据
+
+        virtual bool Set(int index,const T &data)
+        {
+            if(index<0 || index>=(int)data_array.size()) return false;
+            data_array[index] = data;
+            return true;
+        }    ///<设置指定索引处的数据
+
+        virtual bool GetFirst   (T &data)const{return Get(0, data);}                   ///<取第一个数据
+        virtual bool GetLast    (T &data)const{return Get((int)data_array.size()-1, data);}        ///<取最后一个数据
     };//template <typename T> class ValueArray
 
     template<typename T> T *GetObjectFromMap(const ValueArray<T *> &list,const int index)

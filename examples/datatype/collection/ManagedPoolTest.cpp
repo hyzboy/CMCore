@@ -5,9 +5,9 @@
 using namespace hgl;
 using namespace std;
 
-void ShowUserInfoArray(const ValueBuffer<UserInfoClass *> &ua)
+void ShowUserInfoArray(const std::vector<UserInfoClass *> &ua)
 {
-    cout<<"user info array "<<ua.GetCount()<<" [";
+    cout<<"user info array "<<ua.size()<<" [";
 
     bool first=true;
 
@@ -44,7 +44,7 @@ void ObjectPoolTest()
     ShowUserInfoArray(pool.GetActiveView());
 
     // Release the recorded ones (idle only, not freeing memory)
-    pool.Release(release_list.GetData(),release_list.GetCount());
+    pool.Release(release_list.data(),release_list.size());
 
     ShowUserInfoArray(pool.GetActiveView());
 
@@ -55,7 +55,7 @@ void ObjectPoolTest()
         int i=0;
         UserInfoClass *uic;
 
-        for(int i=0;i<release_list.GetCount()/2;i++)        // Get half of idle list
+        for(int i=0;i<release_list.size()/2;i++)        // Get half of idle list
             if(pool.Get(uic))
                 cout<<i<<": get "<<uic->GetName()<<" from idle."<<endl;
     }
@@ -99,8 +99,8 @@ void TestObjectPoolCreate()
     cout<<"\n[2] Active: "<<pool.GetActiveCount()<<", Idle: "<<pool.GetIdleCount()<<endl;
 
     cout<<"\n[3] Release 2 to idle..."<<endl;
-    const ValueBuffer<UserInfoClass *> &active = pool.GetActiveView();
-    for(int i = 0; i < 2 && i < active.GetCount(); ++i)
+    const std::vector<UserInfoClass *> &active = pool.GetActiveView();
+    for(int i = 0; i < 2 && i < active.size(); ++i)
     {
         pool.Release(active[i]);
         cout<<"Released: "<<active[i]->GetName()<<endl;
@@ -164,7 +164,7 @@ void TestObjectPoolCapacity()
         ManagedPool<UserInfoClass> pool;
 
         cout<<"[1] Reserve pre-allocate..."<<endl;
-        pool.Reserve(10, true);
+        pool.reserve(10, true);
 
         cout<<"\n[2] Create 5 objects..."<<endl;
         for(int i = 0; i < 5; ++i)
@@ -215,7 +215,7 @@ void TestObjectPoolBatchOperations()
     ShowUserInfoArray(pool.GetActiveView());
 
     cout<<"\n[2] Release first 3 in batch..."<<endl;
-    int released = pool.Release(all_objs.GetData(), 3);
+    int released = pool.Release(all_objs.data(), 3);
     cout<<"Successfully released: "<<released<<" objects"<<endl;
 
     cout<<"\n[3] Current status..."<<endl;
@@ -256,13 +256,13 @@ void TestObjectPoolStress()
         cout<<"Active: "<<pool.GetActiveCount()<<", Idle: "<<pool.GetIdleCount()<<endl;
 
         cout<<"\n[2] Release half..."<<endl;
-        const ValueBuffer<UserInfoClass *> &active = pool.GetActiveView();
-        int to_release = active.GetCount() / 2;
+        const std::vector<UserInfoClass *> &active = pool.GetActiveView();
+        int to_release = active.size() / 2;
         ValueArray<UserInfoClass *> release_list;
         for(int i = 0; i < to_release; ++i)
             release_list.Add(active[i]);
 
-        int released = pool.Release(release_list.GetData(), release_list.GetCount());
+        int released = pool.Release(release_list.data(), release_list.size());
         cout<<"Released: "<<released<<" objects"<<endl;
         cout<<"Active: "<<pool.GetActiveCount()<<", Idle: "<<pool.GetIdleCount()<<endl;
 

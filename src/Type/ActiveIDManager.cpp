@@ -26,8 +26,8 @@ namespace hgl
 
     void ActiveIDManager::Reserve(int c)
     {
-        active_list.Reserve(c);
-        idle_list.Reserve(c);
+        // btree_set 无需手动预留容量
+        // deque 自动扩展，无需预留
     }
 
     int ActiveIDManager::CreateActive(int *id,const int count)
@@ -36,7 +36,14 @@ namespace hgl
 
         if(!Create(id,count))return(0);
 
-        return active_list.Add(id,count);
+        // 批量插入到 btree_set
+        int added = 0;
+        for(int i = 0; i < count; i++)
+        {
+            if(active_list.insert(id[i]).second)
+                ++added;
+        }
+        return added;
     }
 
     /**
@@ -60,16 +67,19 @@ namespace hgl
                 return total_created;
             }
 
-            // 将创建的ID推入Queue
-            if(!idle_list.Push(created_ids, batch_size))
+            // 将创建的ID推入 deque（直接插入到尾部）
+            for(int i = 0; i < batch_size; i++)
             {
-                return total_created;
+                idle_list.push_back(created_ids[i]);
             }
 
             // 如果需要输出，拷贝到idp
             if(idp)
             {
-                mem_copy(idp + total_created, created_ids, batch_size);
+                for(int i = 0; i < batch_size; i++)
+                {
+                    idp[total_created + i] = created_ids[i];
+                }
             }
 
             total_created += batch_size;
@@ -98,16 +108,24 @@ namespace hgl
     {
         if(!id||count<=0)return(false);
 
-        // 循环使用Pop，保证安全性（尽管性能略低）
-        // 双缓冲的复杂性使得批量Pop实现困难，单个Pop已足够快
-        for(int i=0;i<count;i++)
+        // 检查是否有足够的闲置ID
+        if(static_cast<int>(idle_list.size()) < count)
+            return false;
+
+        // 从 deque 头部取出 count 个ID（FIFO）
+        for(int i = 0; i < count; i++)
         {
-            if(!idle_list.Pop(id[i]))
-                return(false);
+            id[i] = idle_list.front();
+            idle_list.pop_front();
         }
 
-        active_list.Add(id, count);
-        return(true);
+        // 批量加入到 active_list
+        for(int i = 0; i < count; i++)
+        {
+            active_list.insert(id[i]);
+        }
+
+        return true;
     }
 
     /**
@@ -122,9 +140,9 @@ namespace hgl
     {
         if(!id||count<=0)return(false);
 
-        if(idle_list.GetCount()<count)
+        if(static_cast<int>(idle_list.size()) < count)
         {
-            [[maybe_unused]] int created = CreateIdle(count-idle_list.GetCount());
+            [[maybe_unused]] int created = CreateIdle(count - static_cast<int>(idle_list.size()));
         }
 
         return Get(id,count);
@@ -133,38 +151,25 @@ namespace hgl
     /**
     * 释放指定量的ID数据(会从Active列表中取出，放入Idle列表中)
     *
-    * 优化：使用批缓冲减少Queue::Push调用次数，提高性能
+    * 优化：使用批缓冲减少 deque::push_back 调用次数
     */
     int ActiveIDManager::Release(const int *id,int count)
     {
         if(!id||count<=0)return(0);
 
         int result = 0;
-        const int BATCH_SIZE = 512;  // 批处理缓冲大小
-        int batch_buffer[BATCH_SIZE];
-        int batch_count = 0;
 
-        while(count--)
+        for(int i = 0; i < count; i++)
         {
-            if(active_list.Delete(*id))
+            // 从 active_list 删除
+            if(active_list.erase(id[i]) > 0)
             {
-                batch_buffer[batch_count++] = *id;
+                // 添加到 idle_list 尾部（FIFO）
+                idle_list.push_back(id[i]);
                 ++result;
                 ++released_count;  // 统计已释放ID
-
-                // 当缓冲满时，一次性Push所有元素
-                if(batch_count == BATCH_SIZE)
-                {
-                    idle_list.Push(batch_buffer, batch_count);
-                    batch_count = 0;
-                }
             }
-            ++id;
         }
-
-        // Push剩余的ID
-        if(batch_count > 0)
-            idle_list.Push(batch_buffer, batch_count);
 
         return result;
     }
@@ -174,14 +179,19 @@ namespace hgl
     */
     int ActiveIDManager::ReleaseAllActive()
     {
-        const int count=active_list.GetCount();
+        const int count = static_cast<int>(active_list.size());
 
-        if(count>0)
+        if(count > 0)
         {
-            idle_list.Push(active_list.GetData(),count);
+            // 将所有活跃ID移到闲置队列尾部
+            for(int id : active_list)
+            {
+                idle_list.push_back(id);
+            }
+
             released_count += count;  // 统计已释放ID
 
-            active_list.Clear();
+            active_list.clear();
         }
 
         return count;
