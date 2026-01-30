@@ -105,7 +105,6 @@ SOURCE_GROUP("DataType\\Template\\String" FILES ${CMCORE_TYPE_STRING_FILES})
 ## Template 模板类 - 索引与ID管理
 SET(CMCORE_TYPE_INDEX_FILES ${CMCORE_TYPE_INCLUDE_PATH}/IDName.h
                             ${CMCORE_TYPE_INCLUDE_PATH}/MonotonicIDList.h
-                            ${CMCORE_TYPE_INCLUDE_PATH}/IndexedManagedArray.h
                             ${CMCORE_TYPE_INCLUDE_PATH}/IndexedValueArray.h)
 SOURCE_GROUP("DataType\\Template\\Index" FILES ${CMCORE_TYPE_INDEX_FILES})
 

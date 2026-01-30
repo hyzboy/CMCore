@@ -1,5 +1,4 @@
 ﻿#include<hgl/type/IndexedValueArray.h>
-#include<hgl/type/IndexedManagedArray.h>
 #include<iostream>
 #include<string>
 #include<cstring>
@@ -324,57 +323,6 @@ void test_shrink_reorder()
     }
 }
 
-void test_complex_type()
-{
-    std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 7: Non-Trivial Type (ComplexItem)" << std::endl;
-    std::cout << "========================================\n" << std::endl;
-
-    ComplexItem::construct_count = 0;
-    ComplexItem::destruct_count = 0;
-
-    {
-        std::cout << "[7.1] Add complex items:" << std::endl;
-        IndexedManagedArray<ComplexItem> list;
-
-        ComplexItem item1(1, "First");
-        ComplexItem item2(2, "Second");
-        ComplexItem item3(3, "Third");
-
-        list.Add(item1);
-        list.Add(item2);
-        list.Add(item3);
-
-        TEST_ASSERT(list.GetCount() == 3, "Count is 3");
-        TEST_ASSERT(list[0].id == 1, "First item id is 1");
-        TEST_ASSERT(list[1].name == "Second", "Second item name correct");
-
-        std::cout << "\n[7.2] Delete complex item:" << std::endl;
-        list.Delete(1, 1);
-        TEST_ASSERT(list.GetCount() == 2, "Count is 2 after delete");
-        TEST_ASSERT(list[1].id == 3, "Third item moved up");
-
-        std::cout << "\n[7.3] Insert complex item:" << std::endl;
-        ComplexItem item4(4, "Fourth");
-        list.Insert(1, item4);
-        TEST_ASSERT(list.GetCount() == 3, "Count is 3 after insert");
-        TEST_ASSERT(list[1].id == 4, "Inserted item at position 1");
-
-        std::cout << "\n[7.4] Exchange complex items:" << std::endl;
-        list.Exchange(0, 2);
-        TEST_ASSERT(list[0].id == 3, "First position has item 3");
-        TEST_ASSERT(list[2].id == 1, "Last position has item 1");
-
-        std::cout << "\n[7.5] Cleanup..." << std::endl;
-    }
-
-    std::cout << "\n[7.6] Memory safety check:" << std::endl;
-    TEST_ASSERT(ComplexItem::construct_count == ComplexItem::destruct_count,
-                "All constructed items were destructed");
-    std::cout << "    Constructs: " << ComplexItem::construct_count
-              << ", Destructs: " << ComplexItem::destruct_count << std::endl;
-}
-
 void test_edge_cases()
 {
     std::cout << "\n========================================" << std::endl;
@@ -476,7 +424,6 @@ int main()
     test_exchange_operations();
     test_iterator();
     test_shrink_reorder();
-    test_complex_type();
     test_edge_cases();
     test_stress();
 
