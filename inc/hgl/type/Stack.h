@@ -356,8 +356,4 @@ namespace hgl
             return !(*this == other);
         }
     }; // class Stack
-
-    // 向后兼容别名
-    template<typename T> using ValueStack = Stack<T>;
-    template<typename T> using ManagedStack = Stack<T*>;
 } // namespace hgl

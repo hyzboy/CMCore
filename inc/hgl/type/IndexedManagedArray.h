@@ -24,7 +24,7 @@ namespace hgl
 
         PtrArray<T>   data_array;
         std::vector<I>     data_index;
-        ValueStack<I>         free_index;
+        Stack<I>         free_index;
 
     public: //属性
 

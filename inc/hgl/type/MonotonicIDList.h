@@ -36,7 +36,7 @@ namespace hgl
         std::vector<T>  data_array;               ///< CN: 实际数据存储数组 / EN: Actual data storage array
         std::vector<I>  location_to_id;           ///< CN: 位置到ID的并行数组 / EN: Parallel array: location -> ID
         ValueKVMap<I,int32> id_to_location_map;   ///< CN: ID到位置映射 / EN: Map: ID -> location
-        ValueStack<int32>  free_location;         ///< CN: 空闲位置栈 / EN: ValueStack of free locations
+        Stack<int32>  free_location;         ///< CN: 空闲位置栈 / EN: Stack of free locations
 
     public:
 

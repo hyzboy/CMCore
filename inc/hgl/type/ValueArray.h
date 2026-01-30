@@ -440,6 +440,142 @@ namespace hgl
         virtual bool GetLast    (T &data)const{return Get((int)data_array.size()-1, data);}        ///<取最后一个数据
     };//template <typename T> class ValueArray
 
+    /**
+     * @brief Specialization for array types (e.g., uint64[256])
+     * Uses byte-level storage to avoid std::vector's array type construction issues
+     */
+    template<typename ElementType, size_t ArraySize>
+    class ValueArray<ElementType[ArraySize]>
+    {
+    protected:
+        using ArrayType = ElementType[ArraySize];
+        std::vector<uint8_t> byte_storage;
+        
+        int GetElementCount() const { return (int)(byte_storage.size() / sizeof(ArrayType)); }
+        ArrayType* GetElementPtr(int idx) { return reinterpret_cast<ArrayType*>(byte_storage.data() + idx * sizeof(ArrayType)); }
+        const ArrayType* GetElementPtr(int idx) const { return reinterpret_cast<const ArrayType*>(byte_storage.data() + idx * sizeof(ArrayType)); }
+
+    public:
+        int GetAllocCount() const { return (int)(byte_storage.capacity() / sizeof(ArrayType)); }
+        int GetCount() const { return GetElementCount(); }
+        bool IsEmpty() const { return byte_storage.empty(); }
+        
+        bool Resize(int count) 
+        { 
+            if (count < 0) return false;
+            byte_storage.resize((size_t)count * sizeof(ArrayType));
+            return true;
+        }
+        
+        bool Reserve(int count)
+        {
+            if (count < 0) return false;
+            byte_storage.reserve((size_t)count * sizeof(ArrayType));
+            return true;
+        }
+
+        int GetTotalBytes() const { return (int)byte_storage.size(); }
+        
+        ArrayType* GetData() const 
+        { 
+            return byte_storage.empty() ? nullptr : const_cast<ArrayType*>(reinterpret_cast<const ArrayType*>(byte_storage.data()));
+        }
+        
+        ArrayType* begin() const { return GetData(); }
+        ArrayType* end() const { return GetData() + GetElementCount(); }
+        ArrayType* last() const { return GetElementCount() == 0 ? nullptr : GetData() + GetElementCount() - 1; }
+
+        bool Clear() { byte_storage.clear(); return true; }
+        bool Free() { std::vector<uint8_t>().swap(byte_storage); return true; }
+
+        bool Add(const ArrayType& data)
+        {
+            size_t offset = byte_storage.size();
+            byte_storage.resize(offset + sizeof(ArrayType));
+            std::memcpy(byte_storage.data() + offset, &data, sizeof(ArrayType));
+            return true;
+        }
+
+        bool Insert(int index, const ArrayType& data)
+        {
+            int count = GetElementCount();
+            if (index < 0 || index > count) return false;
+
+            byte_storage.insert(
+                byte_storage.begin() + (ptrdiff_t)index * sizeof(ArrayType),
+                reinterpret_cast<const uint8_t*>(&data),
+                reinterpret_cast<const uint8_t*>(&data) + sizeof(ArrayType)
+            );
+            return true;
+        }
+
+        bool Get(int index, ArrayType& data) const
+        {
+            int count = GetElementCount();
+            if (index < 0 || index >= count) return false;
+            std::memcpy(&data, byte_storage.data() + (size_t)index * sizeof(ArrayType), sizeof(ArrayType));
+            return true;
+        }
+
+        bool Set(int index, const ArrayType& data)
+        {
+            int count = GetElementCount();
+            if (index < 0 || index >= count) return false;
+            std::memcpy(byte_storage.data() + (size_t)index * sizeof(ArrayType), &data, sizeof(ArrayType));
+            return true;
+        }
+
+        int Find(const ArrayType& data) const
+        {
+            int count = GetElementCount();
+            const uint8_t* search_bytes = reinterpret_cast<const uint8_t*>(&data);
+            
+            for (int i = 0; i < count; ++i)
+            {
+                if (std::memcmp(byte_storage.data() + (size_t)i * sizeof(ArrayType), search_bytes, sizeof(ArrayType)) == 0)
+                    return i;
+            }
+            return -1;
+        }
+
+        bool Delete(int index)
+        {
+            int count = GetElementCount();
+            if (index < 0 || index >= count) return false;
+            byte_storage.erase(
+                byte_storage.begin() + (ptrdiff_t)index * sizeof(ArrayType),
+                byte_storage.begin() + (ptrdiff_t)(index + 1) * sizeof(ArrayType)
+            );
+            return true;
+        }
+
+        bool Delete(const ArrayType& data)
+        {
+            int index = Find(data);
+            return index >= 0 ? Delete(index) : false;
+        }
+
+        bool operator==(const ValueArray<ArrayType>& other) const
+        {
+            return byte_storage == other.byte_storage;
+        }
+
+        bool operator!=(const ValueArray<ArrayType>& other) const
+        {
+            return !(*this == other);
+        }
+
+        ValueArray() = default;
+        ~ValueArray() = default;
+        ValueArray(const ValueArray& rhs) : byte_storage(rhs.byte_storage) {}
+        ValueArray& operator=(const ValueArray& rhs)
+        {
+            if (this != &rhs)
+                byte_storage = rhs.byte_storage;
+            return *this;
+        }
+    };
+
     template<typename T> T *GetObjectFromMap(const ValueArray<T *> &list,const int index)
     {
         T *obj;
