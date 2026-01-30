@@ -2,8 +2,7 @@
 #include<hgl/type/DataType.h>
 #include<hgl/type/object/ObjectBaseInfo.h>
 #include<source_location>
-
-#include<tsl/robin_map.h>
+#include<ankerl/unordered_dense.h>
 
 namespace hgl
 {
@@ -16,7 +15,7 @@ namespace hgl
 
     protected:
 
-        tsl::robin_map<size_t,void *> inherit_class_map;        ///<继承类的hash值与this指针的映射表
+        ankerl::unordered_dense::map<size_t,void *> inherit_class_map;              ///<继承类的hash值与this指针的映射表
 
         bool RegisterInheritClass(const size_t &hash_code,void *class_this)noexcept
         {

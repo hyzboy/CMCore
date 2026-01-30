@@ -3,14 +3,14 @@
  * 
  * 测试目标：
  * 1. 验证 ValueArray 对 C 数组类型的支持 (e.g., uint64[256])
- * 2. 验证 IndexedValueArray 对 C 数组类型的支持
+ * 2. 验证 IndexedList 对 C 数组类型的支持
  * 3. 测试大对象的内存操作正确性
  * 4. 性能对比：数组类型 vs 标量类型
  * 5. 字节级数据完整性验证
  */
 
 #include<hgl/type/ValueArray.h>
-#include<hgl/type/IndexedValueArray.h>
+#include<hgl/type/IndexedList.h>
 #include<iostream>
 #include<iomanip>
 #include<cstring>
@@ -172,16 +172,16 @@ void test_valuearray_uint16k_large()
 }
 
 // ============================================================================
-// TEST 3: IndexedValueArray<uint256> 索引操作
+// TEST 3: IndexedList<uint256> 索引操作
 // ============================================================================
 
 void test_indexedvaluearray_uint256_index()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 3: IndexedValueArray<uint256> 索引操作" << std::endl;
+    std::cout << "TEST 3: IndexedList<uint256> 索引操作" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    IndexedValueArray<uint256> indexed;
+    IndexedList<uint256> indexed;
     
     std::cout << "\n[3.1] 基础索引添加:" << std::endl;
     uint256 data1, data2, data3;
@@ -226,16 +226,16 @@ void test_indexedvaluearray_uint256_index()
 }
 
 // ============================================================================
-// TEST 4: IndexedValueArray<uint16k> 大对象索引管理
+// TEST 4: IndexedList<uint16k> 大对象索引管理
 // ============================================================================
 
 void test_indexedvaluearray_uint16k_management()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 4: IndexedValueArray<uint16k> 大对象索引管理" << std::endl;
+    std::cout << "TEST 4: IndexedList<uint16k> 大对象索引管理" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    IndexedValueArray<uint16k> large_indexed;
+    IndexedList<uint16k> large_indexed;
     large_indexed.Reserve(50);
     
     std::cout << "\n[4.1] 添加大对象:" << std::endl;

@@ -1,14 +1,14 @@
 /**
- * IndexedValueArray vs std::list 性能对比测试
+ * IndexedList vs std::list 性能对比测试
  * 
  * 测试目标：
- * 1. 对比 IndexedValueArray 和 std::list 的性能
+ * 1. 对比 IndexedList 和 std::list 的性能
  * 2. 分析不同操作下的性能特征
  * 3. 评估内存使用情况
  * 4. 提供容器选择建议
  */
 
-#include<hgl/type/IndexedValueArray.h>
+#include<hgl/type/IndexedList.h>
 #include<iostream>
 #include<iomanip>
 #include<chrono>
@@ -52,10 +52,10 @@ void test_sequential_add()
 
     const int TEST_COUNT = 100000;
 
-    // IndexedValueArray 添加测试
-    std::cout << "[1.1] IndexedValueArray 顺序添加:" << std::endl;
+    // IndexedList 添加测试
+    std::cout << "[1.1] IndexedList 顺序添加:" << std::endl;
     {
-        IndexedValueArray<int> ia;
+        IndexedList<int> ia;
         ia.Reserve(TEST_COUNT);
         
         TIMER_START;
@@ -100,10 +100,10 @@ void test_random_access()
     const int DATA_SIZE = 50000;
     const int ACCESS_COUNT = 1000000;
 
-    // IndexedValueArray 随机访问
-    std::cout << "[2.1] IndexedValueArray 随机访问:" << std::endl;
+    // IndexedList 随机访问
+    std::cout << "[2.1] IndexedList 随机访问:" << std::endl;
     {
-        IndexedValueArray<int> ia;
+        IndexedList<int> ia;
         ia.Reserve(DATA_SIZE);
         for (int i = 0; i < DATA_SIZE; ++i)
             ia.Add(i * 2);
@@ -154,10 +154,10 @@ void test_middle_insert()
     const int INSERT_COUNT = 1000;
     const int INSERT_POS = INITIAL_SIZE / 2;
 
-    // IndexedValueArray 中间插入
-    std::cout << "[3.1] IndexedValueArray 中间位置插入:" << std::endl;
+    // IndexedList 中间插入
+    std::cout << "[3.1] IndexedList 中间位置插入:" << std::endl;
     {
-        IndexedValueArray<int> ia;
+        IndexedList<int> ia;
         ia.Reserve(INITIAL_SIZE * 2);
         for (int i = 0; i < INITIAL_SIZE; ++i)
             ia.Add(i);
@@ -204,10 +204,10 @@ void test_delete_operations()
     const int INITIAL_SIZE = 10000;
     const int DELETE_COUNT = 5000;
 
-    // IndexedValueArray 删除
-    std::cout << "[4.1] IndexedValueArray 删除 (使用 Delete):" << std::endl;
+    // IndexedList 删除
+    std::cout << "[4.1] IndexedList 删除 (使用 Delete):" << std::endl;
     {
-        IndexedValueArray<int> ia;
+        IndexedList<int> ia;
         ia.Reserve(INITIAL_SIZE);
         for (int i = 0; i < INITIAL_SIZE; ++i)
             ia.Add(i);
@@ -254,10 +254,10 @@ void test_sequential_traversal()
     const int DATA_SIZE = 100000;
     const int TRAVERSE_COUNT = 100;
 
-    // IndexedValueArray 遍历
-    std::cout << "[5.1] IndexedValueArray 顺序遍历:" << std::endl;
+    // IndexedList 遍历
+    std::cout << "[5.1] IndexedList 顺序遍历:" << std::endl;
     {
-        IndexedValueArray<int> ia;
+        IndexedList<int> ia;
         ia.Reserve(DATA_SIZE);
         for (int i = 0; i < DATA_SIZE; ++i)
             ia.Add(i);
@@ -304,14 +304,14 @@ void test_memory_efficiency()
     
     std::cout << "\n[6.1] 各容量下的内存占用对比:\n" << std::endl;
     std::cout << std::left << std::setw(15) << "元素个数" 
-              << std::setw(25) << "IndexedValueArray(KB)" 
+              << std::setw(25) << "IndexedList(KB)" 
               << std::setw(25) << "std::list(估计KB)" 
               << std::setw(15) << "比率" << std::endl;
     std::cout << std::string(80, '-') << std::endl;
 
     for (int size : TEST_SIZES)
     {
-        IndexedValueArray<int> ia;
+        IndexedList<int> ia;
         ia.Reserve(size);
         for (int i = 0; i < size; ++i)
             ia.Add(i);
@@ -337,9 +337,9 @@ void test_mixed_operations()
     std::cout << "TEST 7: 混合操作性能对比 (真实场景)" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    std::cout << "[7.1] IndexedValueArray 混合操作:" << std::endl;
+    std::cout << "[7.1] IndexedList 混合操作:" << std::endl;
     {
-        IndexedValueArray<int> ia;
+        IndexedList<int> ia;
         
         TIMER_START;
         
@@ -424,7 +424,7 @@ void print_analysis()
     std::cout << "性能分析与选择建议" << std::endl;
     std::cout << std::string(80, '=') << std::endl;
 
-    std::cout << "\n【IndexedValueArray 的优势】\n" << std::endl;
+    std::cout << "\n【IndexedList 的优势】\n" << std::endl;
     
     std::cout << "1. 随机访问性能: O(1) 时间复杂度\n"
               << "   - 数组连续存储，CPU 缓存友好\n"
@@ -458,18 +458,18 @@ void print_analysis()
 
     std::cout << "\n【性能对比结论】\n" << std::endl;
     
-    std::cout << "操作类型              | IndexedValueArray | std::list | 胜者" << std::endl;
+    std::cout << "操作类型              | IndexedList | std::list | 胜者" << std::endl;
     std::cout << std::string(70, '-') << std::endl;
     std::cout << "顺序添加              |    极快(O(1))     | 快(O(1)) | ≈(IndexedVA内存优)" << std::endl;
-    std::cout << "随机访问              |    极快(O(1))     | 极慢(O(n))| ★IndexedValueArray" << std::endl;
+    std::cout << "随机访问              |    极快(O(1))     | 极慢(O(n))| ★IndexedList" << std::endl;
     std::cout << "中间位置插入          |    慢(O(n))       | 快(O(1)) | ★std::list" << std::endl;
     std::cout << "中间位置删除          |    慢(O(n))       | 快(O(1)) | ★std::list" << std::endl;
-    std::cout << "顺序遍历              |    非常快         | 快       | ★IndexedValueArray" << std::endl;
-    std::cout << "内存占用              |    少             | 多       | ★IndexedValueArray" << std::endl;
+    std::cout << "顺序遍历              |    非常快         | 快       | ★IndexedList" << std::endl;
+    std::cout << "内存占用              |    少             | 多       | ★IndexedList" << std::endl;
 
     std::cout << "\n【使用建议】\n" << std::endl;
     
-    std::cout << "【选择 IndexedValueArray】\n"
+    std::cout << "【选择 IndexedList】\n"
               << "  ✓ 需要频繁随机访问的场景（如数组、矩阵）\n"
               << "  ✓ 需要高效遍历的场景\n"
               << "  ✓ 内存受限的场景\n"
@@ -485,18 +485,18 @@ void print_analysis()
     std::cout << "\n【性能原因分析】\n" << std::endl;
     
     std::cout << "1. 随机访问差异巨大（100+倍）的原因：\n"
-              << "   - IndexedValueArray: 直接计算内存地址 arr[i]\n"
+              << "   - IndexedList: 直接计算内存地址 arr[i]\n"
               << "   - std::list: 需从头遍历 i 次，O(n) 时间\n"
               << "   - 缓存局部性差异（缓存命中率相差10倍以上）\n\n" << std::endl;
     
     std::cout << "2. 内存占用差异大（4-5倍）的原因：\n"
               << "   - std::list 每个节点需要两个指针（前驱、后继）= 16 字节\n"
               << "   - 加上数据、对齐 = 每个 int 需 40+ 字节\n"
-              << "   - IndexedValueArray 仅需 4 字节/int\n\n" << std::endl;
+              << "   - IndexedList 仅需 4 字节/int\n\n" << std::endl;
     
     std::cout << "3. 中间操作（插入/删除）对比：\n"
               << "   - std::list 理论上 O(1)，但定位 O(n)，总体仍然较慢\n"
-              << "   - IndexedValueArray 需移动元素 O(n)，但缓存友好\n"
+              << "   - IndexedList 需移动元素 O(n)，但缓存友好\n"
               << "   - 实际性能取决于数据大小和操作频率\n" << std::endl;
 
     std::cout << std::string(80, '=') << std::endl;
@@ -509,7 +509,7 @@ void print_analysis()
 int main()
 {
     std::cout << "\n╔════════════════════════════════════════════════════════════════╗" << std::endl;
-    std::cout << "║      IndexedValueArray vs std::list 性能对比测试              ║" << std::endl;
+    std::cout << "║      IndexedList vs std::list 性能对比测试              ║" << std::endl;
     std::cout << "╚════════════════════════════════════════════════════════════════╝" << std::endl;
 
     try

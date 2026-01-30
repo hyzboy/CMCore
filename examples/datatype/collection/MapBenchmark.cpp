@@ -5,7 +5,6 @@
 #include<unordered_map>
 #include<map>
 #include<hgl/type/ValueKVMap.h>
-#include<tsl/robin_map.h>
 #include<absl/container/flat_hash_map.h>
 #include<absl/container/node_hash_map.h>
 #include<absl/container/btree_map.h>
@@ -170,58 +169,6 @@ BenchmarkResult BenchmarkMap(const vector<TestObject> &objects,
 
     result.total_time = result.insert_time + result.find_time + result.erase_time;
     result.memory_used = map_obj.size() * 40 + 1024 * objects.size();  // 粗估（平衡树节点更大）
-
-    return result;
-}
-
-// ============================================================================
-// 测试 tsl::robin_map<const TestObject*, int>
-// ============================================================================
-
-BenchmarkResult BenchmarkRobinMap(const vector<TestObject> &objects,
-                                  const vector<int> &find_indices,
-                                  const vector<int> &erase_indices)
-{
-    BenchmarkResult result;
-    result.name = "tsl::robin_map";
-
-    tsl::robin_map<const TestObject*, int> map;
-
-    // 插入
-    {
-        Timer timer;
-        for (size_t i = 0; i < objects.size(); ++i)
-        {
-            map[&objects[i]] = (int)i;
-        }
-        result.insert_time = timer.ElapsedMs();
-    }
-
-    // 查找
-    {
-        Timer timer;
-        int found = 0;
-        for (int idx : find_indices)
-        {
-            auto it = map.find(&objects[idx]);
-            if (it != map.end())
-                ++found;
-        }
-        result.find_time = timer.ElapsedMs();
-    }
-
-    // 删除
-    {
-        Timer timer;
-        for (int idx : erase_indices)
-        {
-            map.erase(&objects[idx]);
-        }
-        result.erase_time = timer.ElapsedMs();
-    }
-
-    result.total_time = result.insert_time + result.find_time + result.erase_time;
-    result.memory_used = map.size() * 16 + 1024 * objects.size();
 
     return result;
 }
@@ -560,9 +507,6 @@ int main(int, char **)
     cout << "[2/4] Testing std::map..." << endl;
     results.push_back(BenchmarkMap(objects, find_indices, erase_indices));
 
-    cout << "[3/4] Testing tsl::robin_map..." << endl;
-    results.push_back(BenchmarkRobinMap(objects, find_indices, erase_indices));
-
     cout << "[4/7] Testing ValueKVMap..." << endl;
     results.push_back(BenchmarkValueKVMap(objects, find_indices, erase_indices));
 
@@ -622,7 +566,6 @@ int main(int, char **)
     // 预先构建所有容器
     unordered_map<const TestObject*, int> umap;
     map<const TestObject*, int> stdmap;
-    tsl::robin_map<const TestObject*, int> rmap;
     absl::flat_hash_map<const TestObject*, int> fmap;
     absl::node_hash_map<const TestObject*, int> nmap;
     
@@ -657,17 +600,6 @@ int main(int, char **)
             if (it != stdmap.end()) ++found;
         }
         cout << "std::map:             " << timer.ElapsedMs() << " ms" << endl;
-    }
-
-    // 测试 tsl::robin_map
-    {
-        Timer timer;
-        volatile int found = 0;
-        for (int idx : pure_find_indices) {
-            auto it = rmap.find(&objects[idx]);
-            if (it != rmap.end()) ++found;
-        }
-        cout << "tsl::robin_map:       " << timer.ElapsedMs() << " ms" << endl;
     }
 
     // 测试 absl::flat_hash_map
@@ -709,14 +641,12 @@ int main(int, char **)
     {
         // 预先构建容器
         unordered_map<const TestObject*, int> umap1;
-        tsl::robin_map<const TestObject*, int> rmap1;
         absl::flat_hash_map<const TestObject*, int> fmap1;
         absl::node_hash_map<const TestObject*, int> nmap1;
         
         for (size_t i = 0; i < objects.size(); ++i) {
             const TestObject* ptr = &objects[i];
             umap1[ptr] = (int)i;
-            rmap1[ptr] = (int)i;
             fmap1[ptr] = (int)i;
             nmap1[ptr] = (int)i;
         }
@@ -725,7 +655,6 @@ int main(int, char **)
         for (size_t i = 0; i < objects.size(); i += 2) {
             const TestObject* ptr = &objects[i];
             umap1.erase(ptr);
-            rmap1.erase(ptr);
             fmap1.erase(ptr);
             nmap1.erase(ptr);
         }
@@ -742,16 +671,6 @@ int main(int, char **)
                 if (it != umap1.end()) ++found;
             }
             cout << "std::unordered_map:   " << timer.ElapsedMs() << " ms (found: " << found << ")" << endl;
-        }
-        
-        {
-            Timer timer;
-            volatile int found = 0;
-            for (int i = 0; i < STRESS_OPERATIONS; ++i) {
-                auto it = rmap1.find(&objects[i % objects.size()]);
-                if (it != rmap1.end()) ++found;
-            }
-            cout << "tsl::robin_map:       " << timer.ElapsedMs() << " ms (found: " << found << ")" << endl;
         }
         
         {
@@ -808,33 +727,6 @@ int main(int, char **)
                 }
             }
             cout << "std::unordered_map:   " << timer.ElapsedMs() << " ms "
-                 << "(I:" << inserts << " D:" << deletes << " F:" << finds 
-                 << " Final:" << map.size() << ")" << endl;
-        }
-        
-        // tsl::robin_map
-        {
-            tsl::robin_map<const TestObject*, int> map;
-            Timer timer;
-            int inserts = 0, deletes = 0, finds = 0;
-            
-            for (int i = 0; i < STRESS_OPERATIONS; ++i) {
-                int op = op_dist(gen);
-                int idx = idx_dist(gen);
-                const TestObject* ptr = &objects[idx];
-                
-                if (op < 4) {
-                    map[ptr] = idx;
-                    ++inserts;
-                } else if (op < 7) {
-                    map.erase(ptr);
-                    ++deletes;
-                } else {
-                    auto it = map.find(ptr);
-                    ++finds;
-                }
-            }
-            cout << "tsl::robin_map:       " << timer.ElapsedMs() << " ms "
                  << "(I:" << inserts << " D:" << deletes << " F:" << finds 
                  << " Final:" << map.size() << ")" << endl;
         }
@@ -910,15 +802,6 @@ int main(int, char **)
         
         {
             Timer timer;
-            tsl::robin_map<const TestObject*, int> map;
-            for (size_t i = 0; i < objects.size(); ++i) {
-                map[&objects[i]] = (int)i;
-            }
-            cout << "tsl::robin_map:       " << timer.ElapsedMs() << " ms" << endl;
-        }
-        
-        {
-            Timer timer;
             absl::flat_hash_map<const TestObject*, int> map;
             for (size_t i = 0; i < objects.size(); ++i) {
                 map[&objects[i]] = (int)i;
@@ -958,17 +841,7 @@ int main(int, char **)
             }
             cout << "std::unordered_map:   " << timer.ElapsedMs() << " ms (found: " << found << ")" << endl;
         }
-        
-        {
-            Timer timer;
-            volatile int found = 0;
-            for (int i = 0; i < 100000; ++i) {
-                auto it = rmap.find(&miss_objects[i % 1000]);
-                if (it != rmap.end()) ++found;
-            }
-            cout << "tsl::robin_map:       " << timer.ElapsedMs() << " ms (found: " << found << ")" << endl;
-        }
-        
+                
         {
             Timer timer;
             volatile int found = 0;

@@ -2,7 +2,7 @@
  * 容器互操作性测试
  * 
  * 测试目标：
- * 1. ValueArray 和 IndexedValueArray 的数据转换
+ * 1. ValueArray 和 IndexedList 的数据转换
  * 2. ManagedArray 和 ValueArray<T*> 的兼容性
  * 3. 容器的移动语义
  * 4. 深层拷贝验证
@@ -10,7 +10,7 @@
  */
 
 #include<hgl/type/ValueArray.h>
-#include<hgl/type/IndexedValueArray.h>
+#include<hgl/type/IndexedList.h>
 #include<hgl/type/ManagedArray.h>
 #include<iostream>
 #include<cassert>
@@ -53,13 +53,13 @@ struct TestData
 };
 
 // ============================================================================
-// TEST 1: ValueArray → IndexedValueArray 转换
+// TEST 1: ValueArray → IndexedList 转换
 // ============================================================================
 
 void test_valuearray_to_indexedvaluearray()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 1: ValueArray → IndexedValueArray 转换" << std::endl;
+    std::cout << "TEST 1: ValueArray → IndexedList 转换" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     // 创建并填充 ValueArray
@@ -70,9 +70,9 @@ void test_valuearray_to_indexedvaluearray()
     
     TEST_ASSERT(va.GetCount() == 5, "ValueArray 包含 5 个元素");
 
-    // 转换到 IndexedValueArray
-    std::cout << "\n[1.2] 转换到 IndexedValueArray:" << std::endl;
-    IndexedValueArray<int> ia;
+    // 转换到 IndexedList
+    std::cout << "\n[1.2] 转换到 IndexedList:" << std::endl;
+    IndexedList<int> ia;
     ia.Reserve(va.GetCount());
     
     for (int i = 0; i < va.GetCount(); ++i)
@@ -97,18 +97,18 @@ void test_valuearray_to_indexedvaluearray()
 }
 
 // ============================================================================
-// TEST 2: IndexedValueArray → ValueArray 转换
+// TEST 2: IndexedList → ValueArray 转换
 // ============================================================================
 
 void test_indexedvaluearray_to_valuearray()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 2: IndexedValueArray → ValueArray 转换" << std::endl;
+    std::cout << "TEST 2: IndexedList → ValueArray 转换" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    // 创建 IndexedValueArray 并添加删除操作，产生碎片
-    std::cout << "\n[2.1] 创建含碎片的 IndexedValueArray:" << std::endl;
-    IndexedValueArray<double> ia;
+    // 创建 IndexedList 并添加删除操作，产生碎片
+    std::cout << "\n[2.1] 创建含碎片的 IndexedList:" << std::endl;
+    IndexedList<double> ia;
     ia.Reserve(10);
     
     for (int i = 0; i < 10; ++i)
@@ -118,7 +118,7 @@ void test_indexedvaluearray_to_valuearray()
     for (int i = 1; i < ia.GetCount(); i += 2)
         ia.Delete(i);
     
-    std::cout << "  原始 IndexedValueArray: count=" << ia.GetCount() 
+    std::cout << "  原始 IndexedList: count=" << ia.GetCount() 
               << ", free=" << ia.GetFreeCount() << std::endl;
 
     // 整理后转换
@@ -231,17 +231,17 @@ void test_container_move_semantics()
         TEST_ASSERT(value == 10, "移动后数据正确");
     }
 
-    // IndexedValueArray 移动
-    std::cout << "\n[4.2] IndexedValueArray 移动赋值:" << std::endl;
+    // IndexedList 移动
+    std::cout << "\n[4.2] IndexedList 移动赋值:" << std::endl;
     {
-        IndexedValueArray<double> source;
+        IndexedList<double> source;
         source.Add(1.5);
         source.Add(2.5);
         source.Add(3.5);
         
         int source_count = source.GetCount();
         
-        IndexedValueArray<double> dest;
+        IndexedList<double> dest;
         dest = std::move(source);
         
         TEST_ASSERT(dest.GetCount() == source_count, "移动赋值后元素个数正确");
@@ -283,14 +283,14 @@ void test_deep_copy_semantics()
         TEST_ASSERT(copy_value == 100, "拷贝不受原容器修改影响");
     }
 
-    // IndexedValueArray 拷贝
-    std::cout << "\n[5.2] IndexedValueArray 拷贝独立性:" << std::endl;
+    // IndexedList 拷贝
+    std::cout << "\n[5.2] IndexedList 拷贝独立性:" << std::endl;
     {
-        IndexedValueArray<TestData> original;
+        IndexedList<TestData> original;
         original.Add(TestData(1, 1.1, "Original"));
         original.Add(TestData(2, 2.2, "Copy"));
         
-        IndexedValueArray<TestData> copy = original;
+        IndexedList<TestData> copy = original;
         
         // 修改原容器
         TestData new_data(99, 99.9, "Modified");
@@ -315,15 +315,15 @@ void test_combined_operations()
     std::cout << "TEST 6: 容器操作的组合使用" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    std::cout << "\n[6.1] ValueArray + IndexedValueArray 混合操作:" << std::endl;
+    std::cout << "\n[6.1] ValueArray + IndexedList 混合操作:" << std::endl;
     
     // 步骤1: 用 ValueArray 积累数据
     ValueArray<int> va;
     for (int i = 0; i < 10; ++i)
         va.Add(i);
     
-    // 步骤2: 转换到 IndexedValueArray
-    IndexedValueArray<int> ia;
+    // 步骤2: 转换到 IndexedList
+    IndexedList<int> ia;
     ia.Reserve(va.GetCount());
     for (int i = 0; i < va.GetCount(); ++i)
     {
@@ -332,11 +332,11 @@ void test_combined_operations()
         ia.Add(value);
     }
     
-    // 步骤3: 在 IndexedValueArray 中删除
+    // 步骤3: 在 IndexedList 中删除
     for (int i = 0; i < 5; ++i)
         ia.Delete(0);
     
-    TEST_ASSERT(ia.GetCount() == 5, "删除后 IndexedValueArray 包含 5 个元素");
+    TEST_ASSERT(ia.GetCount() == 5, "删除后 IndexedList 包含 5 个元素");
     
     // 步骤4: 转换回 ValueArray
     ValueArray<int> va_final;
@@ -380,10 +380,10 @@ void test_container_conversion_efficiency()
     
     std::cout << "  源 ValueArray: " << va_source.GetTotalBytes() / 1024 << " KB" << std::endl;
     
-    // 转换到 IndexedValueArray
+    // 转换到 IndexedList
     auto start = std::chrono::high_resolution_clock::now();
     
-    IndexedValueArray<int> ia;
+    IndexedList<int> ia;
     ia.Reserve(LARGE_SIZE);
     for (int i = 0; i < va_source.GetCount(); ++i)
     {
@@ -394,7 +394,7 @@ void test_container_conversion_efficiency()
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     
-    std::cout << "  目标 IndexedValueArray: " << ia.GetTotalBytes() / 1024 << " KB" << std::endl;
+    std::cout << "  目标 IndexedList: " << ia.GetTotalBytes() / 1024 << " KB" << std::endl;
     std::cout << "  转换耗时: " << duration.count() << " ms" << std::endl;
     
     TEST_ASSERT(ia.GetCount() == LARGE_SIZE, "转换后元素个数正确");

@@ -1,12 +1,12 @@
 ﻿#include<hgl/type/object/ObjectBaseInfo.h>
-#include<tsl/robin_map.h>
+#include<ankerl/unordered_dense.h>
 #include<typeinfo>
 
 namespace hgl
 {
     namespace
     {
-        tsl::robin_map<size_t,ObjectTypeInfo *> type_info_map;
+        ankerl::unordered_dense::map<size_t,ObjectTypeInfo *> type_info_map;
     }//namespace
 
     void RegisterObjectTypeInfo(const size_t &hash_code,const std::type_info *info)

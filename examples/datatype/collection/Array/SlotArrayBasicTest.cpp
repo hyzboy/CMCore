@@ -1,4 +1,4 @@
-﻿#include<hgl/type/IndexedValueArray.h>
+﻿#include<hgl/type/IndexedList.h>
 #include<iostream>
 #include<string>
 #include<cstring>
@@ -75,7 +75,7 @@ int ComplexItem::destruct_count = 0;
 
 // 辅助函数：打印列表内容
 template<typename T>
-void PrintList(const char* label, const IndexedValueArray<T>& list)
+void PrintList(const char* label, const IndexedList<T>& list)
 {
     std::cout << "    " << label << " [count=" << list.GetCount()
               << ", alloc=" << list.GetAllocCount()
@@ -99,7 +99,7 @@ void test_basic_operations()
     std::cout << "========================================\n" << std::endl;
 
     std::cout << "[1.1] Create empty list:" << std::endl;
-    IndexedValueArray<int> list;
+    IndexedList<int> list;
     TEST_ASSERT(list.IsEmpty(), "New list is empty");
     TEST_ASSERT(list.GetCount() == 0, "Count is 0");
     TEST_ASSERT(list.GetFreeCount() == 0, "Free count is 0");
@@ -134,7 +134,7 @@ void test_delete_operations()
     std::cout << "TEST 2: Delete Operations" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    IndexedValueArray<int> list;
+    IndexedList<int> list;
     for (int i = 0; i < 10; i++) {
         list.Add(i * 10);
     }
@@ -176,7 +176,7 @@ void test_insert_operations()
     std::cout << "TEST 3: Insert Operations" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    IndexedValueArray<int> list;
+    IndexedList<int> list;
     list.Add(10);
     list.Add(30);
     list.Add(50);
@@ -214,7 +214,7 @@ void test_exchange_operations()
     std::cout << "TEST 4: Exchange Operations" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    IndexedValueArray<int> list;
+    IndexedList<int> list;
     for (int i = 0; i < 5; i++) {
         list.Add(i * 10);
     }
@@ -243,7 +243,7 @@ void test_iterator()
     std::cout << "TEST 5: Iterator Operations" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    IndexedValueArray<int> list;
+    IndexedList<int> list;
     for (int i = 1; i <= 5; i++) {
         list.Add(i * 10);
     }
@@ -269,7 +269,7 @@ void test_iterator()
     TEST_ASSERT(sum == 150, "Range-for sum is correct");
 
     std::cout << "\n[5.3] Const iterator:" << std::endl;
-    const IndexedValueArray<int>& const_list = list;
+    const IndexedList<int>& const_list = list;
     sum = 0;
     for (auto it = const_list.begin(); it != const_list.end(); ++it) {
         sum += *it;
@@ -290,7 +290,7 @@ void test_shrink_reorder()
     std::cout << "TEST 6: Shrink and Reorder" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    IndexedValueArray<int> list;
+    IndexedList<int> list;
     for (int i = 0; i < 10; i++) {
         list.Add(i * 10);
     }
@@ -330,7 +330,7 @@ void test_edge_cases()
     std::cout << "========================================\n" << std::endl;
 
     std::cout << "[8.1] Empty list operations:" << std::endl;
-    IndexedValueArray<int> empty;
+    IndexedList<int> empty;
     TEST_ASSERT(empty.IsEmpty(), "Empty list is empty");
     TEST_ASSERT(empty.GetCount() == 0, "Empty count is 0");
     TEST_ASSERT(empty.Delete(0, 1) == -1, "Delete from empty fails");
@@ -343,7 +343,7 @@ void test_edge_cases()
     TEST_ASSERT(empty.IsOrdered(), "Single element is ordered");
 
     std::cout << "\n[8.3] Large batch add:" << std::endl;
-    IndexedValueArray<int> large;
+    IndexedList<int> large;
     int batch[100];
     for (int i = 0; i < 100; i++) batch[i] = i;
     large.Add(batch, 100);
@@ -362,7 +362,7 @@ void test_edge_cases()
     TEST_ASSERT(large[0] == 999, "Reused slot correctly");
 
     std::cout << "\n[8.6] Out of bounds access:" << std::endl;
-    IndexedValueArray<int> list;
+    IndexedList<int> list;
     list.Add(10);
     list.Add(20);
     // Note: operator[] returns first element for out of bounds
@@ -379,7 +379,7 @@ void test_stress()
     std::cout << "========================================\n" << std::endl;
 
     std::cout << "[9.1] Add/Delete cycle:" << std::endl;
-    IndexedValueArray<int> list;
+    IndexedList<int> list;
 
     for (int cycle = 0; cycle < 10; cycle++) {
         // Add 50 elements
@@ -415,7 +415,7 @@ void test_stress()
 int main()
 {
     std::cout << "========================================" << std::endl;
-    std::cout << "IndexedValueArray Comprehensive Test Suite" << std::endl;
+    std::cout << "IndexedList Comprehensive Test Suite" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     test_basic_operations();

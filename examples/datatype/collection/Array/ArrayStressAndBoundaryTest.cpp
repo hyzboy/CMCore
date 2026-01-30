@@ -11,7 +11,7 @@
  */
 
 #include<hgl/type/ValueArray.h>
-#include<hgl/type/IndexedValueArray.h>
+#include<hgl/type/IndexedList.h>
 #include<hgl/type/ManagedArray.h>
 #include<iostream>
 #include<iomanip>
@@ -113,20 +113,20 @@ void test_extreme_scale_valuearray()
 }
 
 // ============================================================================
-// TEST 2: 极端规模测试 - IndexedValueArray
+// TEST 2: 极端规模测试 - IndexedList
 // ============================================================================
 
 void test_extreme_scale_indexedvaluearray()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 2: 极端规模测试 - IndexedValueArray" << std::endl;
+    std::cout << "TEST 2: 极端规模测试 - IndexedList" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     const int HALF_MILLION = 500000;
     
     std::cout << "\n[2.1] 添加 500K 个元素:" << std::endl;
     
-    IndexedValueArray<int> large_ia;
+    IndexedList<int> large_ia;
     
     TIME_OPERATION(
     {
@@ -246,7 +246,7 @@ void test_boundary_conditions()
 
     std::cout << "\n[3.5] 满容量边界:" << std::endl;
     {
-        IndexedValueArray<int> ia;
+        IndexedList<int> ia;
         ia.Reserve(10);
         
         for (int i = 0; i < 10; ++i)
@@ -324,7 +324,7 @@ void test_fragmentation_scenario()
 
     std::cout << "\n[5.1] 索引数组碎片化:" << std::endl;
     
-    IndexedValueArray<int> fragmented;
+    IndexedList<int> fragmented;
     fragmented.Reserve(100);
     
     // 填充
@@ -453,9 +453,9 @@ void test_container_reuse_pattern()
         TEST_ASSERT(reusable.IsEmpty(), "Clear 后为空");
     }
 
-    std::cout << "\n[7.2] IndexedValueArray 空间重用:" << std::endl;
+    std::cout << "\n[7.2] IndexedList 空间重用:" << std::endl;
     
-    IndexedValueArray<int> reusable_indexed;
+    IndexedList<int> reusable_indexed;
     reusable_indexed.Reserve(1000);
     
     for (int cycle = 0; cycle < 5; ++cycle)

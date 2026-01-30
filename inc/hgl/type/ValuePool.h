@@ -6,7 +6,7 @@
 
 #include <hgl/type/Queue.h>
 #include <hgl/type/has_get_array.h>
-#include <tsl/robin_map.h>
+#include <ankerl/unordered_dense.h>
 #include <vector>
 
 namespace hgl
@@ -51,10 +51,10 @@ namespace hgl
         // 成员变量
         // ============================================================
 
-        std::vector<T>                  Active;                 // CN:活跃对象容器。EN:Active object container.
-        Queue<T>                        Idle;                   // CN:闲置对象容器。EN:Idle object container.
-        tsl::robin_map<const T*, int>   ActiveIndex;            // CN:活跃对象指针索引映射（内存高效）。EN:Active object pointer index map (memory efficient).
-        int                             max_active_count;       // CN:最大活跃对象数量。EN:Maximum active object count.
+        std::vector<T>                          Active;                 // CN:活跃对象容器。EN:Active object container.
+        Queue<T>                                Idle;                   // CN:闲置对象容器。EN:Idle object container.
+        ankerl::unordered_dense::map<const T*, int>   ActiveIndex;      // CN:活跃对象指针→索引映射（O(1)查找）。EN:Active object pointer to index map (O(1) lookup).
+        int                                     max_active_count;       // CN:最大活跃对象数量。EN:Maximum active object count.
         int                             min_idle_count;         // CN:最小闲置对象数量。EN:Minimum idle object count.
         int                             history_max;            // CN:历史最大对象数量。EN:History maximum object count.
         Stats                           stats;                  // CN:统计信息。EN:Statistics.
@@ -299,13 +299,14 @@ namespace hgl
         // 对象释放
         // ============================================================
 
-        bool Release(const T &value)   // CN:释放对象到闲置池，O(n)查找+O(1)删除。EN:Release object to idle pool, O(n) search + O(1) deletion.
+        bool Release(const T &value)   // CN:释放对象到闲置池，O(1)查找+O(1)删除（优化版）。EN:Release object to idle pool, O(1) search + O(1) deletion (optimized).
         {
-            // CN:先在Active数组中找到值的位置。EN:First find the value's position in Active array.
+            // CN:使用值比较在Active中查找（无法使用指针地址，因为传入的是值拷贝）。EN:Find by value comparison in Active (cannot use pointer address as input is a copy).
             T *arr = Active.data();
             int count = (int)Active.size();
             int idx = -1;
             
+            // CN:遍历查找匹配的值（不可避免，因为外部传入的是值而非池中指针）。EN:Iterate to find matching value (unavoidable, as input is value not pool pointer).
             for (int i = 0; i < count; ++i)
             {
                 if (arr[i] == value)
@@ -322,6 +323,49 @@ namespace hgl
 
             // CN:从ActiveIndex中删除当前元素（使用当前位置的地址）。EN:Remove current element from ActiveIndex (use current position's address).
             ActiveIndex.erase(&arr[idx]);
+
+            // CN:与最后一个元素交换（避免O(n)删除）。EN:Swap with last element (avoid O(n) deletion).
+            if (idx != last_idx)
+            {
+                // CN:先删除最后一个元素的索引。EN:First remove last element's index.
+                ActiveIndex.erase(&arr[last_idx]);
+                
+                // CN:复制最后一个元素到当前位置。EN:Copy last element to current position.
+                Active[idx] = arr[last_idx];
+                
+                // CN:重新添加索引（使用新位置的地址）。EN:Re-add index (use new position's address).
+                ActiveIndex[&Active[idx]] = idx;
+            }
+
+            Active.pop_back();
+
+            if (!Idle.Push(value))
+                return false;
+
+            ++stats.total_releases;
+            MaintainMinIdle();
+            return true;
+        }
+
+        bool ReleaseByPointer(const T *ptr)   // CN:通过指针释放对象（O(1)查找）。EN:Release object by pointer (O(1) lookup).
+        {
+            if (!ptr)
+                return false;
+
+            // CN:使用ActiveIndex进行O(1)查找。EN:Use ActiveIndex for O(1) lookup.
+            auto it = ActiveIndex.find(ptr);
+            if (it == ActiveIndex.end())
+                return false;  // CN:不是活跃对象。EN:Not an active object.
+
+            int idx = it->second;
+            T *arr = Active.data();
+            int last_idx = (int)Active.size() - 1;
+
+            // CN:保存要释放的值。EN:Save the value to release.
+            T value = arr[idx];
+
+            // CN:从ActiveIndex中删除当前元素。EN:Remove current element from ActiveIndex.
+            ActiveIndex.erase(it);
 
             // CN:与最后一个元素交换（避免O(n)删除）。EN:Swap with last element (avoid O(n) deletion).
             if (idx != last_idx)

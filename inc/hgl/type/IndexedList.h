@@ -11,12 +11,12 @@ namespace hgl
 {
     /**
     * 索引数据列表<br>
-    * IndexedValueArray与ValueArray功能类似，但它的区别是它使用索引来访问数据。
+    * IndexedList与ValueArray功能类似，但它的区别是它使用索引来访问数据。
     * 当数据被移动、删除、排序时，数据本身的内存并不会变动，只会调整索引。
     */
-    template<typename T,typename I=int32> class IndexedValueArray
+    template<typename T,typename I=int32> class IndexedList
     {
-        static_assert(std::is_trivially_copyable_v<T>, "IndexedValueArray only supports trivially copyable types; use std::vector for non-trivial types.");
+        static_assert(std::is_trivially_copyable_v<T>, "IndexedList only supports trivially copyable types; use std::vector for non-trivial types.");
     protected:
 
         std::vector<T> data_array;
@@ -67,7 +67,7 @@ namespace hgl
         {
         private:
 
-            IndexedValueArray<T,I> *list;
+            IndexedList<T,I> *list;
             int32 current_index;
 
         public:
@@ -83,7 +83,7 @@ namespace hgl
                 current_index=-1;
             }
 
-            Iterator(IndexedValueArray<T, I>* lst, int32 idx):list(lst),current_index(idx){}
+            Iterator(IndexedList<T, I>* lst, int32 idx):list(lst),current_index(idx){}
 
             T& operator*()
             {
@@ -120,7 +120,7 @@ namespace hgl
         {
         private:
 
-            const IndexedValueArray<T,I> *list;
+            const IndexedList<T,I> *list;
             int32 current_index;
 
         public:
@@ -130,7 +130,7 @@ namespace hgl
 
         public:
 
-            ConstIterator(const IndexedValueArray<T, I>* lst, int32 idx):list(lst),current_index(idx){}
+            ConstIterator(const IndexedList<T, I>* lst, int32 idx):list(lst),current_index(idx){}
 
             const T& operator*()const
             {
@@ -160,11 +160,11 @@ namespace hgl
 
     public:
 
-        IndexedValueArray()=default;
-        IndexedValueArray(const T *lt,const int n){Add(lt,n);}
-        IndexedValueArray(const IndexedValueArray<T,I> &lt){operator=(lt);}
-        IndexedValueArray(const std::initializer_list<T> &lt){operator=(lt);}
-        virtual ~IndexedValueArray(){Free();}
+        IndexedList()=default;
+        IndexedList(const T *lt,const int n){Add(lt,n);}
+        IndexedList(const IndexedList<T,I> &lt){operator=(lt);}
+        IndexedList(const std::initializer_list<T> &lt){operator=(lt);}
+        virtual ~IndexedList(){Free();}
 
         /**
          * 向列表中添加一个空数据
@@ -495,14 +495,14 @@ namespace hgl
                 data_index[i] = i;
             }
         }
-    };//template<typename T> class IndexedValueArray
+    };//template<typename T> class IndexedList
 
     /**
-     * @brief Specialization of IndexedValueArray for array types (e.g., uint64[256])
+     * @brief Specialization of IndexedList for array types (e.g., uint64[256])
      * Uses byte-level storage to avoid std::vector's array type construction issues
      */
     template<typename ElementType, size_t ArraySize, typename I>
-    class IndexedValueArray<ElementType[ArraySize], I>
+    class IndexedList<ElementType[ArraySize], I>
     {
     protected:
         using ArrayType = ElementType[ArraySize];
@@ -851,7 +851,7 @@ namespace hgl
         class Iterator
         {
         private:
-            IndexedValueArray<ArrayType, I>* list;
+            IndexedList<ArrayType, I>* list;
             int32 current_index;
 
         public:
@@ -859,7 +859,7 @@ namespace hgl
             using reference = ArrayType&;
 
             Iterator() : list(nullptr), current_index(0) {}
-            Iterator(IndexedValueArray<ArrayType, I>* lst, int32 idx) : list(lst), current_index(idx) {}
+            Iterator(IndexedList<ArrayType, I>* lst, int32 idx) : list(lst), current_index(idx) {}
 
             ArrayType& operator*() { return (*list)[current_index]; }
             
@@ -883,14 +883,14 @@ namespace hgl
         class ConstIterator
         {
         private:
-            const IndexedValueArray<ArrayType, I>* list;
+            const IndexedList<ArrayType, I>* list;
             int32 current_index;
 
         public:
             using pointer = const ArrayType*;
             using reference = const ArrayType&;
 
-            ConstIterator(const IndexedValueArray<ArrayType, I>* lst, int32 idx) : list(lst), current_index(idx) {}
+            ConstIterator(const IndexedList<ArrayType, I>* lst, int32 idx) : list(lst), current_index(idx) {}
 
             const ArrayType& operator*() const { return (*list)[current_index]; }
             
@@ -908,17 +908,17 @@ namespace hgl
         ConstIterator end() const { return ConstIterator(this, (int32)data_index.size()); }
         ConstIterator last() const { return ConstIterator(this, (int32)data_index.size() - 1); }
 
-        IndexedValueArray() = default;
-        ~IndexedValueArray() = default;
+        IndexedList() = default;
+        ~IndexedList() = default;
         
-        IndexedValueArray(const ArrayType* lt, const int n) { Add(lt, n); }
+        IndexedList(const ArrayType* lt, const int n) { Add(lt, n); }
         
-        IndexedValueArray(const IndexedValueArray& rhs) 
+        IndexedList(const IndexedList& rhs) 
             : byte_storage(rhs.byte_storage), data_index(rhs.data_index), free_index(rhs.free_index) {}
         
-        IndexedValueArray(const std::initializer_list<ArrayType>& lt) { operator=(lt); }
+        IndexedList(const std::initializer_list<ArrayType>& lt) { operator=(lt); }
         
-        IndexedValueArray& operator=(const IndexedValueArray& rhs)
+        IndexedList& operator=(const IndexedList& rhs)
         {
             if (this != &rhs)
             {
@@ -929,7 +929,7 @@ namespace hgl
             return *this;
         }
 
-        IndexedValueArray& operator=(const std::initializer_list<ArrayType>& lt)
+        IndexedList& operator=(const std::initializer_list<ArrayType>& lt)
         {
             Clear();
             for (const ArrayType& item : lt)
