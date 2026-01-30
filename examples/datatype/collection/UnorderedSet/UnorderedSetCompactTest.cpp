@@ -284,7 +284,7 @@ void TestDirectAccess()
         int id = ids[i];
         int* ptr = set.At(id);
         if (ptr)
-            cout << *ptr << (i < ids.GetCount() - 1 ? ", " : "");
+            cout << *ptr << (i < ids.size() - 1 ? ", " : "");
     }
     cout << "]" << endl;
     dump("before modify");
