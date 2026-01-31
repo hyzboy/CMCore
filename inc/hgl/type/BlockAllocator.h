@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/SimpleValuePool.h>
-#include<hgl/type/FlatOrderedValueSet.h>
+#include<hgl/type/FlatOrderedSet.h>
 
 namespace hgl
 {

@@ -1,6 +1,6 @@
 ﻿#include<hgl/type/ConstStringSet.h>
 #include<hgl/type/IDName.h>
-#include<hgl/type/FlatOrderedValueSet.h>
+#include<hgl/type/FlatOrderedSet.h>
 #include<hgl/type/String.h>
 #include<iostream>
 #include<cstring>

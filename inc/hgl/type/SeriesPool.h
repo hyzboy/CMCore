@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include<hgl/type/FlatOrderedValueSet.h>
+#include<hgl/type/FlatOrderedSet.h>
 #include<random>
 
 namespace hgl

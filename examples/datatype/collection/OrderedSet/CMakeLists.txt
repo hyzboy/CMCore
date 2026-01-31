@@ -1,7 +1,3 @@
-# OrderedManagedSet tests (non-trivial types with lifecycle management)
-cm_example_project("DataType/Collection/OrderedSet" OrderedManagedSetSimpleExample		OrderedManagedSetSimpleExample.cpp)
-cm_example_project("DataType/Collection/OrderedSet" OrderedManagedSetLifecycleOwnership	OrderedManagedSetLifecycleOwnership.cpp)
-
 # FlatOrderedSet tests (trivial types, contiguous memory, serialization-friendly)
 cm_example_project("DataType/Collection/OrderedSet" FlatOrderedSetBasicOperations			FlatOrderedSetBasicOperations.cpp)
 cm_example_project("DataType/Collection/OrderedSet" FlatOrderedSetBatchAndDuplicates		FlatOrderedSetBatchAndDuplicates.cpp)

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/FlatOrderedValueSet.h>
+#include<hgl/type/FlatOrderedSet.h>
 #include<hgl/io/event/InputEventSource.h>
 
 /*

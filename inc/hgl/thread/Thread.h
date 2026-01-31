@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/DataType.h>
-#include<hgl/type/FlatOrderedValueSet.h>
+#include<hgl/type/FlatOrderedSet.h>
 #include<hgl/type/String.h>
 #include<hgl/thread/ThreadMutex.h>
 #include<hgl/log/Log.h>
