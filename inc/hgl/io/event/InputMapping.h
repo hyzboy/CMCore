@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/type/IDName.h>
-#include<hgl/type/Map.h>
+#include<hgl/type/UnorderedMap.h>
 #include<hgl/type/ValueArray.h>
 #include<hgl/type/Stack.h>
 #include<hgl/io/event/KeyboardEvent.h>
@@ -164,7 +164,7 @@ namespace hgl::io
     {
         U8String                    name;
         ValueArray<InputBinding>     bindings;
-        Map<PhysicalInput, int>     physical_to_binding_index;  ///< 快速查找
+        UnorderedMap<PhysicalInput, int>     physical_to_binding_index;  ///< 快速查找
 
     public:
 
@@ -277,7 +277,7 @@ namespace hgl::io
     private:
 
         Stack<InputContext*>                context_stack;          ///< 上下文堆栈（栈顶优先）
-        Map<ActionID, ActionState>          action_states;          ///< 当前激活的动作状态
+        UnorderedMap<ActionID, ActionState>          action_states;          ///< 当前激活的动作状态
         ActionCallback                      action_callback;        ///< 动作事件回调
         double                              current_time;           ///< 当前时间（秒）
 

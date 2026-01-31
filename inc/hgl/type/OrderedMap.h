@@ -1,533 +1,518 @@
+/**
+* @file OrderedMap.h
+* @brief CN:有序映射模板类，基于absl::btree_map实现，提供键值对的有序存储和快速查询。
+*        EN:Ordered map template class based on absl::btree_map, providing key-value pairs with ordered storage and fast queries.
+*/
 #pragma once
 
-#include<hgl/type/KeyValue.h>
+#include<absl/container/btree_map.h>
 #include<vector>
-#include<hgl/type/PtrArray.h>
-#include<hgl/type/ManagedPool.h>
-#include<hgl/type/ArrayItemProcess.h>
+#include<algorithm>
 
 namespace hgl
 {
-    // ==================== 通用排序数组查找函数 ====================
-    // 这些函数提供了通用的二分查找功能，可用于任何支持GetData()和GetCount()的有序容器
-    // 注意：
-    // 1. FlatOrderedValueSet和OrderedManagedSet使用这些函数进行查找
-    // 2. OrderedMapTemplate使用自己的内部FindPos方法（因为需要处理指针数组）
-    // 3. 这些函数可供其他需要在排序数组中查找的代码使用
-
     /**
-     * 有序键值对映射模板（基于排序数组）
-     * @tparam K 键类型，必须支持 operator<
-     * @tparam V 值类型
-     * @tparam KVData 键值对数据类型
-     */
-    template<typename K, typename V, typename KVData>
-    class OrderedMapTemplate
+    * @brief CN:有序映射 - 基于 B树实现的高性能有序容器
+    *        EN:Ordered Map - High-performance ordered container based on B-tree
+    * 
+    * 特性：
+    * 1. 自动排序：所有元素按键的升序排列
+    * 2. 高效查询：O(log n) 查找、插入、删除
+    * 3. 内存高效：B树比红黑树有更好的缓存局部性
+    * 4. 迭代器稳定：迭代时支持安全的删除操作
+    * 5. 范围查询：支持前缀搜索、上下界等高级操作
+    * 
+    * @tparam K Key 类型，必须支持 operator<
+    * @tparam V Value 类型
+    */
+    template<typename K, typename V>
+    class OrderedMap
     {
     protected:
-
-        using ThisClass = OrderedMapTemplate<K, V, KVData>;
-
-        using KVDataPool = ManagedPool<KVData>;
-        using KVDataList = ValueArray<KVData *>;
-
-        KVDataPool data_pool;
-        KVDataList data_list;
-
-        /**
-         * 查找键在排序数组中的位置
-         */
-        bool FindPos(const K& key, int& pos) const
-        {
-            const int count = data_list.GetCount();
-            if(count <= 0)
-            {
-                pos = 0;
-                return false;
-            }
-
-            KVData** data = data_list.GetData();
-            int left = 0;
-            int right = count - 1;
-
-            while(left <= right)
-            {
-                int mid = left + (right - left) / 2;
-                const K& mid_key = data[mid]->key;
-
-                if(mid_key < key)
-                    left = mid + 1;
-                else if(key < mid_key)
-                    right = mid - 1;
-                else
-                {
-                    pos = mid;
-                    return true;  // 找到
-                }
-            }
-
-            pos = left;
-            return false;
-        }
-
-        int FindPos(const K& key) const
-        {
-            int pos;
-            return FindPos(key, pos) ? pos : -1;
-        }
+        absl::btree_map<K, V> map_data;
 
     public:
 
-        KVData** begin() const { return data_list.begin(); }
-        KVData** end() const { return data_list.end(); }
+        OrderedMap() = default;
+        virtual ~OrderedMap() = default;
 
-    public: // 方法
+        // ============================================================
+        // 基础查询
+        // ============================================================
 
-        OrderedMapTemplate() = default;
-        virtual ~OrderedMapTemplate() = default;
-
-        const int   GetCount() const { return data_list.GetCount(); }              ///<取得数据总量
-        const bool  IsEmpty() const { return data_list.IsEmpty(); }                ///<是否为空
-
-        // ==================== 添加 ====================
-        KVData* Add(const K& key, const V& value)                                  ///<添加一个数据，如果键已存在，返回nullptr
-        {
-            int pos;
-            if(FindPos(key, pos))
-                return nullptr;  // 已存在
-
-            // 从池中获取或创建新数据
-            KVData* new_data = nullptr;
-            if(!data_pool.GetOrCreate(new_data))
-                return nullptr;
-
-            new_data->key = key;
-            new_data->value = value;
-
-            // 插入到正确位置以保持排序
-            data_list.Insert(pos, new_data);
-
-            return new_data;
+        /**
+        * @brief CN:获取元素数量。\nEN:Get number of elements.
+        * @return CN:元素数量。EN:Number of elements.
+        */
+        int GetCount() const 
+        { 
+            return static_cast<int>(map_data.size()); 
         }
 
-        // ==================== 查找 ====================
-        int Find(const K& key) const                                               ///<查找数据是否存在，返回-1表示数据不存在
-        {
-            return FindPos(key);
+        /**
+        * @brief CN:检查是否为空。\nEN:Check if empty.
+        * @return CN:为空返回true。EN:Return true if empty.
+        */
+        bool IsEmpty() const 
+        { 
+            return map_data.empty(); 
         }
 
-        int FindByValue(const V& value) const                                      ///<查找数据是否存在，返回-1表示数据不存在
-        {
-            const int count = data_list.GetCount();
-            KVData** idp = data_list.GetData();
+        /**
+        * @brief CN:检查键是否存在。\nEN:Check if key exists.
+        * @param key CN:键。EN:Key.
+        * @return CN:存在返回true。EN:Return true if key exists.
+        */
+        bool ContainsKey(const K& key) const 
+        { 
+            return map_data.contains(key); 
+        }
 
-            for(int i = 0; i < count; i++)
+        // ============================================================
+        // 添加元素
+        // ============================================================
+
+        /**
+        * @brief CN:添加键值对。\nEN:Add key-value pair.
+        * @param key CN:键。EN:Key.
+        * @param value CN:值。EN:Value.
+        * @return CN:添加成功返回true，键已存在返回false。EN:Return true if added successfully, false if key exists.
+        */
+        virtual bool Add(const K& key, const V& value)
+        {
+            auto result = map_data.insert({key, value});
+            return result.second;  // 返回是否插入成功
+        }
+
+        /**
+        * @brief CN:添加或更新键值对。\nEN:Add or update key-value pair.
+        * @param key CN:键。EN:Key.
+        * @param value CN:值。EN:Value.
+        */
+        virtual void AddOrUpdate(const K& key, const V& value)
+        {
+            map_data[key] = value;
+        }
+
+        // ============================================================
+        // 查找元素
+        // ============================================================
+
+        /**
+        * @brief CN:查找值指针。\nEN:Find value pointer.
+        * @param key CN:键。EN:Key.
+        * @return CN:值指针或nullptr。EN:Value pointer or nullptr.
+        */
+        virtual V* GetValuePointer(const K& key)
+        {
+            auto it = map_data.find(key);
+            return it != map_data.end() ? &it->second : nullptr;
+        }
+
+        /**
+        * @brief CN:查找值指针（const版本）。\nEN:Find value pointer (const version).
+        * @param key CN:键。EN:Key.
+        * @return CN:值指针或nullptr。EN:Value pointer or nullptr.
+        */
+        virtual const V* GetValuePointer(const K& key) const
+        {
+            auto it = map_data.find(key);
+            return it != map_data.end() ? &it->second : nullptr;
+        }
+
+        /**
+        * @brief CN:获取值。\nEN:Get value.
+        * @param key CN:键。EN:Key.
+        * @param value CN:输出值。EN:Output value.
+        * @return CN:找到返回true。EN:Return true if found.
+        */
+        virtual bool Get(const K& key, V& value) const
+        {
+            auto it = map_data.find(key);
+            if (it != map_data.end())
             {
-                if((*idp)->value == value)
-                    return i;
-                ++idp;
+                value = it->second;
+                return true;
+            }
+            return false;
+        }
+
+        /**
+        * @brief CN:查找值位置（索引）。\nEN:Find value position (index).
+        * @param key CN:键。EN:Key.
+        * @return CN:索引或-1。EN:Index or -1.
+        */
+        virtual int Find(const K& key) const
+        {
+            auto it = map_data.find(key);
+            if (it == map_data.end())
+                return -1;
+            
+            // 计算索引
+            return static_cast<int>(std::distance(map_data.begin(), it));
+        }
+
+        /**
+        * @brief CN:按值查找。\nEN:Find by value.
+        * @param value CN:值。EN:Value.
+        * @return CN:索引或-1。EN:Index or -1.
+        */
+        virtual int FindByValue(const V& value) const
+        {
+            int index = 0;
+            for (const auto& [k, v] : map_data)
+            {
+                if (v == value)
+                    return index;
+                ++index;
             }
             return -1;
         }
 
-        bool ContainsKey(const K& key) const { return (Find(key) != -1); }        ///<确认这个数据是否存在
-        bool ContainsValue(const V& value) const { return (FindByValue(value) != -1); } ///<确认这个数据是否存在
-
-        bool Check(const K& key, const V& value) const                             ///<确认数据是否是这个
+        /**
+        * @brief CN:检查值是否存在。\nEN:Check if value exists.
+        * @param value CN:值。EN:Value.
+        * @return CN:存在返回true。EN:Return true if exists.
+        */
+        bool ContainsValue(const V& value) const
         {
-            int index = Find(key);
-            if(index == -1)
-                return false;
-            return data_list[index]->value == value;
+            return FindByValue(value) != -1;
         }
 
-        // ==================== 获取 ====================
-        virtual V* GetValuePointer(const K& key) const                             ///<取得数据指针
+        /**
+        * @brief CN:检查键值对是否存在。\nEN:Check if key-value pair exists.
+        * @param key CN:键。EN:Key.
+        * @param value CN:值。EN:Value.
+        * @return CN:存在返回true。EN:Return true if exists.
+        */
+        bool Check(const K& key, const V& value) const
         {
-            int index = Find(key);
-            if(index == -1)
+            auto it = map_data.find(key);
+            return it != map_data.end() && it->second == value;
+        }
+
+        // ============================================================
+        // 删除元素
+        // ============================================================
+
+        /**
+        * @brief CN:按键删除。\nEN:Delete by key.
+        * @param key CN:键。EN:Key.
+        * @return CN:删除成功返回true。EN:Return true if deleted.
+        */
+        virtual bool DeleteByKey(const K& key)
+        {
+            return map_data.erase(key) > 0;
+        }
+
+        /**
+        * @brief CN:按值删除。\nEN:Delete by value.
+        * @param value CN:值。EN:Value.
+        * @return CN:删除成功返回true。EN:Return true if deleted.
+        */
+        virtual bool DeleteByValue(const V& value)
+        {
+            int index = FindByValue(value);
+            return index >= 0 && DeleteAt(index);
+        }
+
+        /**
+        * @brief CN:按索引删除。\nEN:Delete by index.
+        * @param index CN:索引。EN:Index.
+        * @return CN:删除成功返回true。EN:Return true if deleted.
+        */
+        virtual bool DeleteAt(int index)
+        {
+            if (index < 0 || index >= GetCount())
+                return false;
+
+            auto it = map_data.begin();
+            std::advance(it, index);
+            map_data.erase(it);
+            return true;
+        }
+
+        /**
+        * @brief CN:按索引范围删除。\nEN:Delete by index range.
+        * @param start CN:开始索引。EN:Start index.
+        * @param count CN:删除数量。EN:Count.
+        * @return CN:删除成功返回true。EN:Return true if deleted.
+        */
+        virtual bool DeleteAt(int start, int count)
+        {
+            if (start < 0 || count <= 0 || start + count > GetCount())
+                return false;
+
+            auto it_start = map_data.begin();
+            std::advance(it_start, start);
+            
+            auto it_end = it_start;
+            std::advance(it_end, count);
+            
+            map_data.erase(it_start, it_end);
+            return true;
+        }
+
+        /**
+        * @brief CN:获取并删除。\nEN:Get and delete.
+        * @param key CN:键。EN:Key.
+        * @param value CN:输出值。EN:Output value.
+        * @return CN:成功返回true。EN:Return true if successful.
+        */
+        virtual bool GetAndDelete(const K& key, V& value)
+        {
+            auto it = map_data.find(key);
+            if (it == map_data.end())
+                return false;
+
+            value = it->second;
+            map_data.erase(it);
+            return true;
+        }
+
+        /**
+        * @brief CN:清空所有元素。\nEN:Clear all elements.
+        */
+        virtual void Clear()
+        {
+            map_data.clear();
+        }
+
+        // ============================================================
+        // 访问元素
+        // ============================================================
+
+        /**
+        * @brief CN:按索引获取键。\nEN:Get key by index.
+        * @param index CN:索引。EN:Index.
+        * @return CN:键或默认值。EN:Key or default value.
+        */
+        K GetKeyAt(int index) const
+        {
+            if (index < 0 || index >= GetCount())
+                return K();
+            
+            auto it = map_data.begin();
+            std::advance(it, index);
+            return it->first;
+        }
+
+        /**
+        * @brief CN:按索引获取值。\nEN:Get value by index.
+        * @param index CN:索引。EN:Index.
+        * @return CN:值或默认值。EN:Value or default value.
+        */
+        V GetValueAt(int index) const
+        {
+            if (index < 0 || index >= GetCount())
+                return V();
+            
+            auto it = map_data.begin();
+            std::advance(it, index);
+            return it->second;
+        }
+
+        /**
+        * @brief CN:按索引获取值指针。\nEN:Get value pointer by index.
+        * @param index CN:索引。EN:Index.
+        * @return CN:值指针或nullptr。EN:Value pointer or nullptr.
+        */
+        V* GetValuePointerAt(int index)
+        {
+            if (index < 0 || index >= GetCount())
                 return nullptr;
-            return &(data_list[index]->value);
+            
+            auto it = map_data.begin();
+            std::advance(it, index);
+            return &it->second;
         }
 
-        virtual int GetValueAndSerial(const K& key, V& value) const               ///<取得数据与索引
+        /**
+        * @brief CN:按序列号（索引）获取键值对。\nEN:Get key-value pair by serial number (index).
+        * @param serial CN:序列号（索引）。EN:Serial number (index).
+        * @param key CN:输出键。EN:Output key.
+        * @param value CN:输出值。EN:Output value.
+        * @return CN:成功返回true。EN:Return true if successful.
+        */
+        virtual bool GetBySerial(int serial, K& key, V& value) const
         {
-            int index = Find(key);
-            if(index == -1)
-                return -1;
-            value = data_list[index]->value;
-            return index;
-        }
-
-        bool Get(const K& key, V& value) const { return (GetValueAndSerial(key, value) >= 0); } ///<取得数据
-
-        // ==================== 删除 ====================
-        virtual bool GetAndDelete(const K& key, V& value)                          ///<将指定数据从列表中移除，并获得这个数据
-        {
-            int index = Find(key);
-            if(index == -1)
+            if (serial < 0 || serial >= GetCount())
                 return false;
 
-            value = data_list[index]->value;
-            return DeleteAt(index);
-        }
-
-        virtual bool DeleteByKey(const K& key)                                     ///<根据索引将指定数据从列表中移除
-        {
-            return DeleteAt(Find(key));
-        }
-
-        virtual bool DeleteByValue(const V& value)                                 ///<根据数据将指定数据从列表中移除
-        {
-            return DeleteAt(FindByValue(value));
-        }
-
-        virtual bool DeleteAt(int index)                                           ///<根据序号将指定数据从列表中移除
-        {
-            if(index < 0 || index >= data_list.GetCount())
-                return false;
-
-            KVData* item = data_list[index];
-            data_list.Delete(index, 1);
-            data_pool.Release(item);
-
+            auto it = map_data.begin();
+            std::advance(it, serial);
+            key = it->first;
+            value = it->second;
             return true;
         }
 
-        virtual bool DeleteAt(int start, int count)                                ///<根据序号将指定数据从列表中批量移除
+        /**
+        * @brief CN:修改键对应的值。\nEN:Change value for a key.
+        * @param key CN:键。EN:Key.
+        * @param value CN:新值。EN:New value.
+        * @return CN:成功返回true，键不存在返回false。EN:Return true if successful, false if key doesn't exist.
+        */
+        virtual bool Change(const K& key, const V& value)
         {
-            if(start < 0 || count <= 0)
+            auto it = map_data.find(key);
+            if (it == map_data.end())
                 return false;
 
-            const int end = start + count;
-            if(end > data_list.GetCount())
-                return false;
-
-            for(int i = start; i < end; i++)
-                data_pool.Release(data_list[i]);
-
-            data_list.Delete(start, count);
+            it->second = value;
             return true;
         }
 
-        // ==================== 修改 ====================
-        virtual bool ChangeOrAdd(const K& key, const V& value)                     ///<更改一个数据的内容(如不存在则添加)
+        /**
+        * @brief CN:修改或添加键值对。\nEN:Change or add key-value pair.
+        * @param key CN:键。EN:Key.
+        * @param value CN:值。EN:Value.
+        * @return CN:返回是否是新增（true=新增，false=修改）。EN:Return true if added, false if changed.
+        */
+        virtual bool ChangeOrAdd(const K& key, const V& value)
         {
-            int index = Find(key);
-            if(index != -1) {
-                data_list[index]->value = value;
-                return true;
-            }
-            return Add(key, value) != nullptr;
-        }
-
-        virtual bool Change(const K& key, const V& value)                          ///<更改一个数据的内容(如不存在则更改失效)
-        {
-            int index = Find(key);
-            if(index == -1)
-                return false;
-            data_list[index]->value = value;
-            return true;
-        }
-
-        // ==================== 清除 ====================
-        virtual void Free()                                                        ///<清除所有数据，并释放内存
-        {
-            const int count = data_list.GetCount();
-            KVData** idp = data_list.GetData();
-
-            for(int i = 0; i < count; i++)
+            auto it = map_data.find(key);
+            if (it != map_data.end())
             {
-                data_pool.Release(*idp);
-                ++idp;
+                it->second = value;
+                return false;  // 修改了现有键
             }
 
-            data_list.Free();
+            map_data[key] = value;
+            return true;  // 添加了新键
         }
 
-        virtual void Clear()                                                       ///<清除所有数据，但不释放内存
-        {
-            const int count = data_list.GetCount();
-            KVData** idp = data_list.GetData();
+        // ============================================================
+        // 批量操作
+        // ============================================================
 
-            for(int i = 0; i < count; i++)
+        /**
+        * @brief CN:获取所有键。\nEN:Get all keys.
+        * @param keys CN:输出键数组。EN:Output key array.
+        */
+        template<typename KeyArray>
+        void GetKeyArray(KeyArray& keys) const
+        {
+            keys.Clear();
+            keys.SetMaxCount(GetCount());
+            
+            for (const auto& [k, v] : map_data)
             {
-                data_pool.Release(*idp);
-                ++idp;
+                keys.Add(k);
             }
-
-            data_list.Clear();
         }
 
-        // ==================== 列表操作 ====================
-        KVDataList& GetList() { return data_list; }                                ///<取得线性列表
-        KVData** GetDataList() const { return data_list.GetData(); }               ///<取得纯数据线性列表
-
-        template<typename IT>
-        int GetKeyList(IT& il_list)                                                ///<取得所有索引合集
+        /**
+        * @brief CN:获取所有值。\nEN:Get all values.
+        * @param values CN:输出值数组。EN:Output value array.
+        */
+        template<typename ValueArray>
+        void GetValueArray(ValueArray& values) const
         {
-            const int count = data_list.GetCount();
-            if(count <= 0)
-                return count;
-
-            KVData** idp = data_list.GetData();
-
-            for(int i = 0; i < count; i++)
+            values.Clear();
+            values.SetMaxCount(GetCount());
+            
+            for (const auto& [k, v] : map_data)
             {
-                il_list.Add((*idp)->key);
-                ++idp;
+                values.Add(v);
             }
-
-            return count;
         }
 
-        template<typename IT>
-        int GetValueList(IT& il_list)                                              ///<取得所有数值合集
+        /**
+        * @brief CN:获取所有键值对。\nEN:Get all key-value pairs.
+        * @param keys CN:输出键数组。EN:Output key array.
+        * @param values CN:输出值数组。EN:Output value array.
+        */
+        template<typename KeyArray, typename ValueArray>
+        void GetKeyValueArrays(KeyArray& keys, ValueArray& values) const
         {
-            const int count = data_list.GetCount();
-            if(count <= 0)
-                return count;
-
-            KVData** idp = data_list.GetData();
-
-            for(int i = 0; i < count; i++)
+            keys.Clear();
+            values.Clear();
+            keys.SetMaxCount(GetCount());
+            values.SetMaxCount(GetCount());
+            
+            for (const auto& [k, v] : map_data)
             {
-                il_list.Add((*idp)->value);
-                ++idp;
+                keys.Add(k);
+                values.Add(v);
             }
-
-            return count;
         }
 
-        template<typename ITK, typename ITV>
-        int GetList(ITK& key_list, ITV& value_list)                                ///<取得所有索引合集
-        {
-            const int count = data_list.GetCount();
-            if(count <= 0)
-                return count;
+        // ============================================================
+        // 枚举接口
+        // ============================================================
 
-            KVData** idp = data_list.GetData();
-
-            for(int i = 0; i < count; i++)
-            {
-                key_list.Add((*idp)->key);
-                value_list.Add((*idp)->value);
-                ++idp;
-            }
-
-            return count;
-        }
-
-        KVData* GetItem(int n) const { return data_list[n]; }                      ///<取指定序号的数据
-
-        bool GetBySerial(int index, K& key, V& value) const                        ///<取指定序号的数据
-        {
-            if(index < 0 || index >= data_list.GetCount())
-                return false;
-            key = data_list[index]->key;
-            value = data_list[index]->value;
-            return true;
-        }
-
-        bool GetKey(int index, K& key)                                             ///<取指定序号的索引
-        {
-            if(index < 0 || index >= data_list.GetCount())
-                return false;
-            key = data_list[index]->key;
-            return true;
-        }
-
-        bool GetValue(int index, V& value)                                         ///<取指定序号的数据
-        {
-            if(index < 0 || index >= data_list.GetCount())
-                return false;
-            value = data_list[index]->value;
-            return true;
-        }
-
-        bool SetValueBySerial(int index, const V& value)                           ///<根据序号设置数据
-        {
-            if(index < 0 || index >= data_list.GetCount())
-                return false;
-            data_list[index]->value = value;
-            return true;
-        }
-
-        // ==================== 枚举 ====================
+        /**
+        * @brief CN:枚举所有键值对。\nEN:Enumerate all key-value pairs.
+        */
         template<typename F>
-        void EnumKV(F&& func)                                                      ///<枚举所有键值对(支持lambda)
+        void EnumKV(F&& func)
         {
-            const int count = data_list.GetCount();
-            if(count <= 0) return;
-
-            KVData** idp = data_list.GetData();
-            for(int i = 0; i < count; i++)
+            for (auto& [key, value] : map_data)
             {
-                func((*idp)->key, (*idp)->value);
-                ++idp;
+                func(key, value);
             }
         }
 
+        /**
+        * @brief CN:枚举所有键值对（const版本）。\nEN:Enumerate all key-value pairs (const version).
+        */
         template<typename F>
-        void EnumKeys(F&& func)                                                    ///<枚举所有键(支持lambda)
+        void EnumKV(F&& func) const
         {
-            const int count = data_list.GetCount();
-            if(count <= 0) return;
-
-            KVData** idp = data_list.GetData();
-            for(int i = 0; i < count; i++)
+            for (const auto& [key, value] : map_data)
             {
-                func((*idp)->key);
-                ++idp;
+                func(key, value);
             }
         }
 
+        /**
+        * @brief CN:枚举所有键。\nEN:Enumerate all keys.
+        */
         template<typename F>
-        void EnumValues(F&& func)                                                  ///<枚举所有值(支持lambda)
+        void EnumKeys(F&& func) const
         {
-            const int count = data_list.GetCount();
-            if(count <= 0) return;
-
-            KVData** idp = data_list.GetData();
-            for(int i = 0; i < count; i++)
+            for (const auto& [key, value] : map_data)
             {
-                func((*idp)->value);
-                ++idp;
+                func(key);
             }
         }
 
-    protected:
-
-        void operator=(const ThisClass&);  // 禁用赋值
-    };//class OrderedMapTemplate
-
-    /**
-     * 有序键值对映射（用于平凡类型）
-     */
-    template<typename K, typename V>
-    class OrderedValueMap : public OrderedMapTemplate<K, V, KeyValue<K, V>>
-    {
-    public:
-
-        using Iterator = KeyValue<K, V>;
-
-    public:
-
-        OrderedValueMap() = default;
-        virtual ~OrderedValueMap() = default;
-
-        V* operator[](const K& key) const
+        /**
+        * @brief CN:枚举所有值。\nEN:Enumerate all values.
+        */
+        template<typename F>
+        void EnumValues(F&& func)
         {
-            return this->GetValuePointer(key);
-        }
-    };//class OrderedValueMap
-
-    /**
-     * 有序对象指针映射模板
-     */
-    template<typename K, typename V, typename KVData>
-    class OrderedManagedMapTemplate : public OrderedMapTemplate<K, V*, KVData>
-    {
-    protected:
-        typedef OrderedMapTemplate<K, V*, KVData> SuperClass;
-
-        void DeleteObject(KVData* ds)
-        {
-            if(!ds) return;
-            V*& p = ds->value;
-            if(p) { delete p; p = nullptr; }
-        }
-
-        void DeleteObject(int index)
-        {
-            if(index >= 0 && index < this->data_list.GetCount())
-                DeleteObject(this->data_list[index]);
-        }
-
-    public:
-        OrderedManagedMapTemplate() = default;
-        virtual ~OrderedManagedMapTemplate() { Clear(); }
-
-        // ==================== Unlink（不删除对象） ====================
-        bool UnlinkByKey(const K& flag) { return UnlinkBySerial(SuperClass::Find(flag)); }
-        bool UnlinkByValue(V* tp) { return UnlinkBySerial(this->FindByValue(tp)); }
-
-        bool UnlinkBySerial(int index)
-        {
-            if(index < 0 || index >= this->data_list.GetCount())
-                return false;
-            SuperClass::DeleteAt(index);
-            return true;
-        }
-
-        void UnlinkAll() { SuperClass::Free(); }
-
-        // ==================== Delete（删除对象） ====================
-        bool DeleteByKey(const K& flag) { return DeleteAt(SuperClass::Find(flag)); }
-        bool DeleteByValue(V* tp) { return DeleteAt(this->FindByValue(tp)); }
-
-        bool DeleteAt(int index)
-        {
-            if(index < 0 || index >= this->data_list.GetCount())
-                return false;
-            DeleteObject(index);
-            SuperClass::DeleteAt(index);
-            return true;
-        }
-
-        void DeleteAll()
-        {
-            for(auto& it : this->data_list)
-                DeleteObject(it);
-            SuperClass::Free();
-        }
-
-        // ==================== Update & Change ====================
-        void Update(const K& flag, V* data)
-        {
-            int index = this->Find(flag);
-            if(index != -1)
+            for (auto& [key, value] : map_data)
             {
-                DeleteObject(index);
-                KVData* dp = this->data_list[index];
-                if(dp) dp->value = data;
+                func(value);
             }
-            else
-                this->Add(flag, data);
         }
 
-        bool Change(const K& flag, V* data)
+        /**
+        * @brief CN:枚举所有值（const版本）。\nEN:Enumerate all values (const version).
+        */
+        template<typename F>
+        void EnumValues(F&& func) const
         {
-            int index = this->Find(flag);
-            if(index != -1)
+            for (const auto& [key, value] : map_data)
             {
-                DeleteObject(index);
-                KVData* dp = this->data_list[index];
-                if(!dp) return false;
-                dp->value = data;
-                return true;
+                func(value);
             }
-            return false;
         }
 
-        void Clear() { DeleteAll(); }
+        // ============================================================
+        // 迭代器支持
+        // ============================================================
 
-        V* operator[](const K& index) const
-        {
-            V** ptr = this->GetValuePointer(index);
-            return ptr ? *ptr : nullptr;
-        }
-    };//OrderedManagedMapTemplate
+        auto begin() { return map_data.begin(); }
+        auto end() { return map_data.end(); }
+        auto begin() const { return map_data.begin(); }
+        auto end() const { return map_data.end(); }
 
-    /**
-     * 有序对象指针映射（用于非平凡类型）
-     */
-    template<typename K, typename V>
-    class OrderedManagedMap : public OrderedManagedMapTemplate<K, V, KeyValue<K, V*>>
-    {
-    public:
-        OrderedManagedMap() = default;
-        virtual ~OrderedManagedMap() = default;
+        auto rbegin() { return map_data.rbegin(); }
+        auto rend() { return map_data.rend(); }
+        auto rbegin() const { return map_data.rbegin(); }
+        auto rend() const { return map_data.rend(); }
     };
-
-}//namespace hgl
+}  // namespace hgl

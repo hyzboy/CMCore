@@ -32,6 +32,6 @@ namespace hgl
         if ( it==type_info_map.end() )
             return nullptr;
 
-        return it.value();
+        return it->second;
     }
 }//namespace hgl

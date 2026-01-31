@@ -6,7 +6,7 @@
 分析一下inc/hgl/type/HashIDMap.h和inc/hgl/type/UnorderedMap.h这两个的实现，然后再创建一套基于红黑树的OrderedMap以及OrderedSet，同时包括针对Trivially类型的OrderedValueMap/Set和针对非Trivially数据的OrderedManagedMap/Set。
 
 **Translation:**
-Analyze the implementation of inc/hgl/type/HashIDMap.h and inc/hgl/type/UnorderedMap.h, then create a set of red-black tree-based OrderedMap and OrderedSet, including OrderedValueMap/Set for Trivially types and OrderedManagedMap/Set for non-Trivially data.
+Analyze the implementation of inc/hgl/type/HashIDMap.h and inc/hgl/type/UnorderedMap.h, then create a set of red-black tree-based OrderedMap and OrderedSet, including OrderedMap/Set for Trivially types and OrderedManagedMap/Set for non-Trivially data.
 
 ## What Was Implemented
 
@@ -16,7 +16,7 @@ Analyze the implementation of inc/hgl/type/HashIDMap.h and inc/hgl/type/Unordere
    - `FindDataPositionInSortedArray<>` - Binary search in sorted arrays
    - `FindInsertPositionInSortedArray<>` - Find insertion position with existence check
    - `OrderedMapTemplate<K,V,KVData>` - Base template class for ordered maps
-   - `OrderedValueMap<K,V>` - For trivially copyable types
+   - `OrderedMap<K,V>` - For trivially copyable types
    - `OrderedManagedMapTemplate<K,V,KVData>` - Template for managed object pointers
    - `OrderedManagedMap<K,V>` - For non-trivial types with automatic memory management
 
@@ -63,7 +63,7 @@ Although the task mentioned "基于红黑树" (based on red-black trees), the im
 
 ### Memory Management
 
-- **OrderedValueMap**: Uses ObjectPool for KeyValue structs
+- **OrderedMap**: Uses ObjectPool for KeyValue structs
 - **OrderedManagedMap**: Manages both KeyValue structs AND pointed-to objects
 - Automatic cleanup on destruction
 - Explicit Clear() and Free() methods available
@@ -75,7 +75,7 @@ After this implementation, CMCore now has a complete set of ordered containers:
 | Container Type | Key-Value | Trivial Types | Non-Trivial Types |
 |----------------|-----------|---------------|-------------------|
 | **Set** | No | FlatOrderedValueSet ✅ | OrderedManagedSet ✅ |
-| **Map** | Yes | OrderedValueMap ✅ | OrderedManagedMap ✅ |
+| **Map** | Yes | OrderedMap ✅ | OrderedManagedMap ✅ |
 
 ## Code Quality
 
@@ -111,9 +111,9 @@ Key differences:
 
 ## Usage Examples
 
-### OrderedValueMap
+### OrderedMap
 ```cpp
-OrderedValueMap<int, std::string> map;
+OrderedMap<int, std::string> map;
 map.Add(3, "three");
 map.Add(1, "one");
 map.Add(2, "two");

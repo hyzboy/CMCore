@@ -1113,3 +1113,31 @@ namespace hgl
     }
 
 } // namespace hgl
+
+// ==================== std::hash specialization for hgl::String ====================
+namespace std
+{
+    /**
+     * @brief std::hash specialization to support hgl::String as key in std::unordered_map
+     *        CN: std::hash 特化，支持 hgl::String 作为 std::unordered_map 的键
+     */
+    template<typename T>
+    struct hash<hgl::String<T>>
+    {
+        size_t operator()(const hgl::String<T>& str) const noexcept
+        {
+            // FNV-1a hash algorithm
+            const T* data = str.c_str();
+            int len = str.Length();
+            size_t result = 14695981039346656037ULL; // FNV offset basis
+            
+            for (int i = 0; i < len; ++i)
+            {
+                result ^= static_cast<size_t>(data[i]);
+                result *= 1099511628211ULL; // FNV prime
+            }
+            
+            return result;
+        }
+    };
+}

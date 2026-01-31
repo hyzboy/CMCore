@@ -67,21 +67,16 @@ SET(CMCORE_TYPE_CONTAINER_FILES ${CMCORE_TYPE_INCLUDE_PATH}/BitsArray.h
                                 ${CMCORE_TYPE_INCLUDE_PATH}/PtrArray.h
                                 ${CMCORE_TYPE_INCLUDE_PATH}/Queue.h
                                 ${CMCORE_TYPE_INCLUDE_PATH}/Stack.h
-                                ${CMCORE_TYPE_INCLUDE_PATH}/ValuePool.h
-                                ${CMCORE_TYPE_INCLUDE_PATH}/ManagedPool.h
                                 ${CMCORE_TYPE_INCLUDE_PATH}/SimpleValuePool.h
                                 ${CMCORE_TYPE_INCLUDE_PATH}/SeriesPool.h
                                 ${CMCORE_TYPE_INCLUDE_PATH}/ManagedArray.h)
 SOURCE_GROUP("DataType\\Template\\Container" FILES ${CMCORE_TYPE_CONTAINER_FILES})
 
 ## Template 模板类 - 映射关键字
-SET(CMCORE_TYPE_MAP_FILES ${CMCORE_TYPE_INCLUDE_PATH}/Map.h
-                          ${CMCORE_TYPE_INCLUDE_PATH}/OrderedMap.h
-                          ${CMCORE_TYPE_INCLUDE_PATH}/UnorderedMap.h
-                          ${CMCORE_TYPE_INCLUDE_PATH}/KeyValue.h
+SET(CMCORE_TYPE_MAP_FILES ${CMCORE_TYPE_INCLUDE_PATH}/KeyValue.h
                           ${CMCORE_TYPE_INCLUDE_PATH}/Pair.h
-                          ${CMCORE_TYPE_INCLUDE_PATH}/OrderedManagedSet.h
-                          ${CMCORE_TYPE_INCLUDE_PATH}/UnorderedManagedSet.h)
+                          ${CMCORE_TYPE_INCLUDE_PATH}/UnorderedMap.h
+                          )
 SOURCE_GROUP("DataType\\Template\\Map" FILES ${CMCORE_TYPE_MAP_FILES})
 
 ## Template 模板类 - 基本类型

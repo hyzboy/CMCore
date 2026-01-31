@@ -3,7 +3,7 @@
 #include<time.h>
 #include<string>
 #include<hgl/type/FlatOrderedValueSet.h>
-#include<hgl/type/Map.h>
+#include<hgl/type/UnorderedMap.h>
 #include<hgl/type/String.h>
 #include"UserInfo.h"
 
@@ -87,7 +87,7 @@ int ComplexValue::construct_count = 0;
 int ComplexValue::destruct_count = 0;
 int ComplexValue::copy_count = 0;
 
-void out_id(Map<int,int> &int_map)
+void out_id(UnorderedMap<int,int> &int_map)
 {
     const int count=int_map.GetCount();
     cout<<"count:"<<count<<" ";
@@ -107,7 +107,7 @@ void BasicOperationTest()
     cout << "TEST 1: Basic Operations" << endl;
     cout << "========================================" << endl;
 
-    Map<int,int> map;
+    UnorderedMap<int,int> map;
 
     // 1.1 空Map测试
     cout << "\n[1.1] Empty map tests:" << endl;
@@ -157,7 +157,7 @@ void StressTest()
     cout << "TEST 2: Stress Test with Large Data" << endl;
     cout << "========================================" << endl;
 
-    Map<int,int> map;
+    UnorderedMap<int,int> map;
     constexpr int LARGE_COUNT = 1000;
 
     // 2.1 大量添加
@@ -227,7 +227,7 @@ void NonTrivialTypeTest()
     ComplexValue::ResetCounters();
 
     {
-        Map<int, ComplexValue> complex_map;
+        UnorderedMap<int, ComplexValue> complex_map;
 
         // 3.1 添加非平凡对象
         cout << "\n[3.1] Add complex objects:" << endl;
@@ -270,7 +270,7 @@ void EdgeCaseTest()
     cout << "TEST 4: Edge Cases and Error Handling" << endl;
     cout << "========================================" << endl;
 
-    Map<int,int> map;
+    UnorderedMap<int,int> map;
 
     // 4.1 空键值测试
     cout << "\n[4.1] Empty/zero key tests:" << endl;
@@ -337,7 +337,7 @@ void StringKeyTest()
     cout << "TEST 5: String Key Tests" << endl;
     cout << "========================================" << endl;
 
-    Map<AnsiString,UserInfo> ui_map;
+    UnorderedMap<AnsiString,UserInfo> ui_map;
 
     // 5.1 添加所有用户
     cout << "\n[5.1] Add all users:" << endl;
@@ -460,7 +460,7 @@ void ConcurrentModificationTest()
     cout << "TEST 7: Concurrent Modification Test" << endl;
     cout << "========================================" << endl;
 
-    Map<int,int> map;
+    UnorderedMap<int,int> map;
 
     // 7.1 在枚举中修改值
     cout << "\n[7.1] Modify values during enumeration:" << endl;
@@ -487,7 +487,7 @@ void PerformanceAndBatchTest()
     cout << "TEST 8: Performance & Batch Operations" << endl;
     cout << "========================================" << endl;
 
-    Map<int,int> map;
+    UnorderedMap<int,int> map;
     constexpr int PERF_COUNT = 10000;
 
     // 8.1 顺序添加
@@ -548,7 +548,7 @@ void ExtremeCaseTest()
     cout << "TEST 9: Extreme Boundary Tests" << endl;
     cout << "========================================" << endl;
 
-    Map<int,int> map;
+    UnorderedMap<int,int> map;
 
     // 9.1 单元素操作
     cout << "\n[9.1] Single element operations:" << endl;

@@ -5,7 +5,7 @@ This document summarizes the implementation of ordered map data structures for t
 
 ## Problem Statement
 Create a set of ordered (sorted) map and set data structures, including:
-- OrderedValueMap/Set for trivially copyable types
+- OrderedMap/Set for trivially copyable types
 - OrderedManagedMap/Set for non-trivial types
 
 ## Implementation Approach
@@ -42,7 +42,7 @@ Main implementation file containing:
 - Maintains sorted order by key
 - Provides O(log n) lookups via binary search
 
-**OrderedValueMap<K, V>**
+**OrderedMap<K, V>**
 - For trivially copyable key and value types
 - Inherits from OrderedMapTemplate
 - Uses KeyValue<K, V> for storage
@@ -72,7 +72,7 @@ Main implementation file containing:
 - **Iterate**: O(n) - sequential access
 
 ### Memory Management
-- **OrderedValueMap**: Uses object pool for KeyValue structs
+- **OrderedMap**: Uses object pool for KeyValue structs
 - **OrderedManagedMap**: Manages both KeyValue structs and pointed-to objects
 - Clear() and Free() methods for explicit cleanup
 
@@ -114,9 +114,9 @@ Key differences:
 
 ## Usage Examples
 
-### OrderedValueMap Example
+### OrderedMap Example
 ```cpp
-OrderedValueMap<int, std::string> map;
+OrderedMap<int, std::string> map;
 map.Add(3, "three");
 map.Add(1, "one");
 map.Add(2, "two");
@@ -138,7 +138,7 @@ objMap.Add(1, new MyClass("one"));
 ```
 
 ## Summary
-✅ Created OrderedValueMap for trivially copyable types
+✅ Created OrderedMap for trivially copyable types
 ✅ Created OrderedManagedMap for non-trivial types with pointer management
 ✅ Implemented using sorted arrays with binary search (consistent with existing code)
 ✅ Comprehensive test suite covering all scenarios

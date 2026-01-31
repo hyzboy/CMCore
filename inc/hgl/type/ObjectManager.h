@@ -4,25 +4,28 @@
 */
 #pragma once
 
-#include <hgl/type/Map.h>
+#include <hgl/type/UnorderedMap.h>
 
 namespace hgl
 {
     /**
-    * @brief CN:带引用计数的键值对结构。\nEN:Key-value pair structure with reference counting.
+    * @brief CN:带引用计数的管理对象。\nEN:Managed object with reference counting.
     */
-    template<typename K, typename V>
-    struct RefCountedKeyValue : public KeyValue<K, V *>
+    template<typename V>
+    struct ManagedObject
     {
+        /**
+        * @brief CN:对象指针。\nEN:Object pointer.
+        */
+        V* value;
+
         /**
         * @brief CN:引用计数。\nEN:Reference count.
         */
         int ref_count;
 
-        RefCountedKeyValue()
-            : KeyValue<K, V *>(), ref_count(1)
-        {
-        }
+        ManagedObject() : value(nullptr), ref_count(1) {}
+        ManagedObject(V* v) : value(v), ref_count(1) {}
     };
 
     /**
@@ -36,16 +39,16 @@ namespace hgl
     public:
 
         /**
-        * @brief CN:键值对象类型。\nEN:Key-value object type.
+        * @brief CN:管理对象类型。\nEN:Managed object type.
         */
-        using KVObject = RefCountedKeyValue<K, V>;
+        using ManagedObj = ManagedObject<V>;
 
     protected:
 
         /**
         * @brief CN:对象映射表。\nEN:Object map table.
         */
-        MapTemplate<K, V *, KVObject> items;
+        UnorderedMap<K, ManagedObj> items;
 
     public:
 
@@ -61,17 +64,13 @@ namespace hgl
         */
         virtual void Clear()
         {
-            int n = items.GetCount();
-
-            while (n--)
-            {
-                KVObject *obj = items.GetItem(n);
-
-                if (obj && obj->value)
+            items.EnumValues([](ManagedObj& obj) {
+                if (obj.value)
                 {
-                    delete obj->value;
+                    delete obj.value;
+                    obj.value = nullptr;
                 }
-            }
+            });
 
             items.Clear();
         }
@@ -81,21 +80,25 @@ namespace hgl
         */
         virtual void ClearFree()
         {
-            int n = items.GetCount();
-
-            while (n--)
-            {
-                KVObject *obj = items.GetItem(n);
-
-                if (obj->ref_count <= 0)
+            // 收集需要删除的键
+            std::vector<K> keys_to_delete;
+            
+            items.EnumKV([&keys_to_delete](const K& key, ManagedObj& obj) {
+                if (obj.ref_count <= 0)
                 {
-                    if (obj->value)
+                    if (obj.value)
                     {
-                        delete obj->value;
+                        delete obj.value;
+                        obj.value = nullptr;
                     }
-
-                    items.DeleteAt(n);
+                    keys_to_delete.push_back(key);
                 }
+            });
+
+            // 删除收集到的键
+            for (const K& key : keys_to_delete)
+            {
+                items.DeleteByKey(key);
             }
         }
 
@@ -135,17 +138,10 @@ namespace hgl
         * @param key CN:键。EN:Key.
         * @return CN:对象指针或nullptr。EN:Object pointer or nullptr.
         */
-        virtual V *Find(const K &key)const
+        virtual V *Find(const K &key) const
         {
-            int index = items.Find(key);
-
-            if (index == -1)
-            {
-                return nullptr;
-            }
-
-            KVObject *obj = items.GetItem(index);
-            return obj->value;
+            const ManagedObj* obj = items.GetValuePointer(key);
+            return obj ? obj->value : nullptr;
         }
 
         /**
@@ -155,11 +151,9 @@ namespace hgl
         */
         virtual V *Get(const K &key)
         {
-            int index = items.Find(key);
-
-            if (index != -1)
+            ManagedObj* obj = items.GetValuePointer(key);
+            if (obj)
             {
-                KVObject *obj = items.GetItem(index);
                 ++obj->ref_count;
                 return obj->value;
             }
@@ -177,63 +171,63 @@ namespace hgl
         */
         virtual bool GetKeyByValue(V *value, K *key = nullptr, uint *count = nullptr, bool add_ref = false)
         {
-            int idx = items.FindByValue(value);
+            bool found = false;
+            
+            items.EnumKV([&](const K& k, ManagedObj& obj) {
+                if (obj.value == value)
+                {
+                    if (key)
+                    {
+                        *key = k;
+                    }
 
-            if (idx == -1)
-            {
-                return false;
-            }
+                    if (count)
+                    {
+                        *count = obj.ref_count;
+                    }
 
-            KVObject *obj = items.GetItem(idx);
+                    if (add_ref)
+                    {
+                        ++obj.ref_count;
+                    }
 
-            if (key)
-            {
-                *key = obj->key;
-            }
+                    found = true;
+                    return; // 找到后退出枚举
+                }
+            });
 
-            if (count)
-            {
-                *count = obj->ref_count;
-            }
-
-            if (add_ref)
-            {
-                ++obj->ref_count;
-            }
-
-            return true;
+            return found;
         }
 
         /**
-        * @brief CN:通过序号释放对象。\nEN:Release object by index.
-        * @param index CN:对象序号。EN:Object index.
-        * @param zero_clear CN:为true时引用计数为0则删除对象。EN:If true, delete object when ref_count is zero.
-        * @return CN:剩余引用计数。EN:Remaining reference count.
+        * @brief CN:根据键获取引用计数。\nEN:Get reference count by key.
+        * @param key CN:对象键。EN:Object key.
+        * @return CN:引用计数，键不存在返回-1。EN:Reference count, or -1 if key not found.
         */
-        virtual int ReleaseBySerial(int index, bool zero_clear = false)
+        virtual int GetRefCount(const K &key) const
         {
-            if (index < 0 || index >= items.GetCount())
-            {
-                return -1;
-            }
+            const ManagedObj* obj = items.GetValuePointer(key);
+            return obj ? obj->ref_count : -1;
+        }
 
-            KVObject *obj = items.GetItem(index);
-            --obj->ref_count;
-
-            if (obj->ref_count <= 0)
-            {
-                if (zero_clear && obj->value)
+        /**
+        * @brief CN:根据对象指针获取引用计数。\nEN:Get reference count by object pointer.
+        * @param value CN:对象指针。EN:Object pointer.
+        * @return CN:引用计数，对象不存在返回-1。EN:Reference count, or -1 if object not found.
+        */
+        virtual int GetRefCount(V *value) const
+        {
+            int result = -1;
+            
+            items.EnumKV([&](const K& k, const ManagedObj& obj) {
+                if (obj.value == value)
                 {
-                    delete obj->value;
+                    result = obj.ref_count;
+                    return; // 找到后退出枚举
                 }
+            });
 
-                if (zero_clear)
-                {
-                    items.DeleteAt(index);
-                }
-            }
-
-            return obj->ref_count;
+            return result;
         }
 
         /**
@@ -244,18 +238,55 @@ namespace hgl
         */
         virtual int Release(const K &key, bool zero_clear = false)
         {
-            return ReleaseBySerial(items.Find(key), zero_clear);
+            ManagedObj* obj = items.GetValuePointer(key);
+            if (!obj)
+            {
+                return -1;
+            }
+
+            --obj->ref_count;
+            int remaining_count = obj->ref_count;  // 保存值，因为后面 DeleteByKey 会使 obj 指针失效
+
+            if (remaining_count <= 0 && zero_clear)
+            {
+                if (obj->value)
+                {
+                    delete obj->value;
+                    obj->value = nullptr;
+                }
+                items.DeleteByKey(key);
+            }
+
+            return remaining_count;
         }
 
         /**
         * @brief CN:通过对象指针释放对象。\nEN:Release object by pointer.
-        * @param td CN:对象指针。EN:Object pointer.
+        * @param value CN:对象指针。EN:Object pointer.
         * @param zero_clear CN:为true时引用计数为0则删除对象。EN:If true, delete object when ref_count is zero.
         * @return CN:剩余引用计数。EN:Remaining reference count.
         */
-        int Release(V *td, bool zero_clear = false)
+        int Release(V *value, bool zero_clear = false)
         {
-            return ReleaseBySerial(items.FindByValue(td), zero_clear);
+            K found_key;
+            bool found = false;
+            int remaining_count = -1;
+
+            items.EnumKV([&](const K& k, ManagedObj& obj) {
+                if (obj.value == value)
+                {
+                    found_key = k;
+                    found = true;
+                    return; // 退出枚举
+                }
+            });
+
+            if (found)
+            {
+                remaining_count = Release(found_key, zero_clear);
+            }
+
+            return remaining_count;
         }
     };
 

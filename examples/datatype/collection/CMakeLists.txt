@@ -6,6 +6,13 @@ cm_example_project_base(
     PRIVATE_LIBRARIES CMCore
 )
 
+cm_example_project_base(
+    PROJECT_NAME UnorderedMapTest
+    FOLDER_PATH "Examples/CMCore/DataType/Collection"
+    SOURCES UnorderedMapTest.cpp
+    PRIVATE_LIBRARIES CMCore
+)
+
 cm_example_project("DataType/Collection" CollectionTest                 CollectionTest.cpp)
 cm_example_project("DataType/Collection" CollectionTestComprehensive    CollectionTestComprehensive.cpp)
 cm_example_project("DataType/Collection" QuickTest                      QuickTest.cpp)
@@ -29,3 +36,5 @@ cm_example_project("DataType/Collection" BlockAllocatorTest     BlockAllocatorTe
 cm_example_project("DataType/Collection" BlockAllocatorTest2    BlockAllocatorTest2.cpp)
 cm_example_project("DataType/Collection" MonotonicIDListTest    MonotonicIDListTest.cpp)
 cm_example_project("DataType/Collection" FlatTreeTest           FlatTreeTest.cpp)
+
+cm_example_project("DataType/Collection" ObjectManagerTest     ObjectManagerTest.cpp)

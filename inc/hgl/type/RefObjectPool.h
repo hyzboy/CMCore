@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/Map.h>
+#include<hgl/type/UnorderedMap.h>
 namespace hgl
 {
     template<typename T> struct RefData
@@ -35,7 +35,7 @@ namespace hgl
         using ActiveItem=RefData<V>;
 
         ObjectMap<K,ActiveItem> active_items;               ///<活跃的数据
-        Map<K,V> idle_items;                                ///<引用计数为0的
+        UnorderedMap<K,V> idle_items;                                ///<引用计数为0的
 
         /**
          * Helper function to check if a position is valid (>= 0)
