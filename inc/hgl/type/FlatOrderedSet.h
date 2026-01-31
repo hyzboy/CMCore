@@ -7,31 +7,30 @@
 namespace hgl
 {
     /**
-     * 有序合集（平凡类型专用版本）</br>
+     * 有序集合</br>
      * 集合数据列表中不允许数据出现重复性，同时它会将数据排序</br>
-     * 使用 std::vector 实现，支持连续内存布局，适合序列化场景</br>
-     * <b>重要限制：</b>仅支持平凡可复制类型（trivially copyable types）。
-     * 非平凡类型（包含虚函数、动态内存、自定义构造/析构等）请使用 OrderedManagedSet</br>
-     *
-     * <b>设计目标：</b>
-     * - 连续内存布局，支持零拷贝序列化/反序列化
-     * - 批量加载后频繁查询的场景（配置文件、静态资源索引）
+     * 使用 std::vector 实现，支持连续内存布局</br>
+     * 
+     * <b>特性：</b>
+     * - 支持任意类型（需要支持 operator< 和 operator==）
+     * - 自动去重和排序
      * - 查找 O(log n)，插入/删除 O(n)
+     * 
+     * <b>重要提示：</b>
+     * - 零拷贝序列化方法（GetData/LoadFromBuffer）仅适用于平凡类型（trivially copyable）
+     * - 非平凡类型可以使用其他方法（Add/Delete/Find等）
      *
-     * @tparam T 必须支持 operator< 用于排序，且必须是平凡可复制类型（trivially copyable）
-     * @see OrderedManagedSet 非平凡类型版本
+     * @tparam T 必须支持 operator< 用于排序，operator== 用于去重
+     * @see OrderedManagedSet 提供对象管理的版本
      */
     template<typename T>
-    class FlatOrderedValueSet
+    class FlatOrderedSet
     {
     protected:
-        using ThisClass = FlatOrderedValueSet<T>;
-
-        static_assert(std::is_trivially_copyable_v<T>,
-                      "FlatOrderedValueSet requires trivially copyable types. For non-trivial types (with custom copy/move semantics, virtual functions, dynamic memory), use OrderedManagedSet instead.");
+        using ThisClass = FlatOrderedSet<T>;
 
         /**
-         * @brief CN:有序集合（连续数组实现，支持序列化）\nEN:Ordered set (contiguous array, serialization-friendly)
+         * @brief CN:有序集合（连续数组实现）\nEN:Ordered set (contiguous array implementation)
          */
         std::vector<T> data;
 
@@ -68,25 +67,43 @@ namespace hgl
         auto crend() const { return data.crend(); }
 
     public:
-        FlatOrderedValueSet() = default;
-        virtual ~FlatOrderedValueSet() = default;
+        FlatOrderedSet() = default;
+        virtual ~FlatOrderedSet() = default;
 
-        // ==================== 序列化支持 ====================
+        // ==================== 序列化支持（仅限平凡类型）====================
 
         /**
-         * @brief CN:获取原始数据指针（用于序列化）\nEN:Get raw data pointer (for serialization)
+         * @brief CN:获取原始数据指针（仅限平凡类型用于零拷贝序列化）\nEN:Get raw data pointer (for trivially copyable types only)
+         * @warning 此方法仅适用于平凡可复制类型，非平凡类型需使用对象级序列化
          */
-        T* GetData() { return data.empty() ? nullptr : data.data(); }
-        const T* GetData() const { return data.empty() ? nullptr : data.data(); }
+        T* GetData() 
+        { 
+            static_assert(std::is_trivially_copyable_v<T>,
+                          "GetData() for binary serialization requires trivially copyable types. "
+                          "For non-trivial types, iterate and serialize each element separately.");
+            return data.empty() ? nullptr : data.data(); 
+        }
+        const T* GetData() const 
+        { 
+            static_assert(std::is_trivially_copyable_v<T>,
+                          "GetData() for binary serialization requires trivially copyable types. "
+                          "For non-trivial types, iterate and serialize each element separately.");
+            return data.empty() ? nullptr : data.data(); 
+        }
 
         /**
-         * @brief CN:批量加载（从序列化数据）\nEN:Bulk load (from serialized data)
+         * @brief CN:批量加载（从二进制序列化数据，仅限平凡类型）\nEN:Bulk load (from binary serialized data, trivially copyable types only)
          * @param buffer 数据缓冲区
          * @param count 元素个数
          * @param is_sorted 数据是否已排序（默认 true）
+         * @warning 此方法假设buffer是二进制数据，仅适用于平凡类型。非平凡类型请逐个反序列化后Add
          */
         void LoadFromBuffer(const T* buffer, int64 count, bool is_sorted = true)
         {
+            static_assert(std::is_trivially_copyable_v<T>,
+                          "LoadFromBuffer() for binary deserialization requires trivially copyable types. "
+                          "For non-trivial types, deserialize each element and use Add() instead.");
+            
             if (!buffer || count <= 0)
                 return;
 
@@ -339,12 +356,7 @@ namespace hgl
             return std::upper_bound(data.begin(), data.end(), value);
         }
 
-        // ==================== 运算符 ====================
-
-        /**
-         * @brief CN:赋值运算符\nEN:Assignment operator
-         */
-        void operator=(const FlatOrderedValueSet<T>& other)
+        // ==================== 运算符 ====Set<T>& other)
         {
             data = other.data;
         }
@@ -352,7 +364,7 @@ namespace hgl
         /**
          * @brief CN:相等比较运算符\nEN:Equality comparison operator
          */
-        bool operator==(const FlatOrderedValueSet<T>& other) const
+        bool operator==(const FlatOrderedSet<T>& other) const
         {
             return data == other.data;
         }
@@ -360,9 +372,9 @@ namespace hgl
         /**
          * @brief CN:不等比较运算符\nEN:Inequality comparison operator
          */
-        bool operator!=(const FlatOrderedValueSet<T>& other) const
+        bool operator!=(const FlatOrderedSet<T>& other) const
         {
             return data != other.data;
         }
-    };//template<typename T> class FlatOrderedValueSet
+    };//template<typename T> class FlatOrderedSet
 }//namespace hgl
