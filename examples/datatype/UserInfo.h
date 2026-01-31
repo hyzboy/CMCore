@@ -75,6 +75,11 @@ public:
     const char *GetName ()const{return info.name;}
     const bool  GetSex  ()const{return info.sex;}
     const int   GetAge  ()const{return info.age;}
+
+    void SetAge(int age)
+    {
+        info.age=age;
+    }
 };
 
 inline void out_userinfo(const UserInfo *ui)
