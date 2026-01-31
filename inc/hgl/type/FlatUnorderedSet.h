@@ -33,10 +33,6 @@ namespace hgl
 
         using ThisClass = FlatUnorderedSet<T>;
 
-        // 编译期检查：T 必须是平凡可复制类型，非平凡类型请使用 UnorderedManagedSet
-        static_assert(std::is_trivially_copyable_v<T>,
-            "FlatUnorderedSet requires trivially copyable types; use UnorderedManagedSet for non-trivial types.");
-
         /**
          * @brief CN:数据管理器（连续内存存储）\nEN:Data manager (contiguous memory storage)
          */
@@ -52,6 +48,8 @@ namespace hgl
          */
         int FindID(const T& value) const
         {
+            static_assert(std::is_trivially_copyable_v<T>,
+                "FindID() requires trivially copyable types for optimal hashing.");
             uint64 hash = ComputeOptimalHash(value);  // ✅ 使用优化的哈希
             auto it = hash_map.find(hash);
             if (it == hash_map.end())
@@ -70,6 +68,8 @@ namespace hgl
         // 重建哈希表：用于数据被就地修改后
         void RebuildHashMap()
         {
+            static_assert(std::is_trivially_copyable_v<T>,
+                "RebuildHashMap() requires trivially copyable types for optimal hashing.");
             hash_map.clear();
 
             auto active_ids = data_manager.GetActiveView();
@@ -226,6 +226,8 @@ namespace hgl
          */
         bool Add(const T& value)
         {
+            static_assert(std::is_trivially_copyable_v<T>,
+                "Add() requires trivially copyable types for optimal hashing.");
             uint64 hash = ComputeOptimalHash(value);  // ✅ 使用优化的哈希
 
             // 检查是否已存在
