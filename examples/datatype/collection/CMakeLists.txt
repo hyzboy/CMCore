@@ -1,17 +1,4 @@
 
-cm_example_project_base(
-    PROJECT_NAME MapBenchmark
-    FOLDER_PATH "Examples/CMCore/DataType/Collection"
-    SOURCES MapBenchmark.cpp
-    PRIVATE_LIBRARIES CMCore
-)
-
-cm_example_project_base(
-    PROJECT_NAME UnorderedMapTest
-    FOLDER_PATH "Examples/CMCore/DataType/Collection"
-    SOURCES UnorderedMapTest.cpp
-    PRIVATE_LIBRARIES CMCore
-)
 
 cm_example_project("DataType/Collection" CollectionTest                 CollectionTest.cpp)
 cm_example_project("DataType/Collection" CollectionTestComprehensive    CollectionTestComprehensive.cpp)
@@ -23,12 +10,10 @@ add_subdirectory(OrderedSet)
 add_subdirectory(UnorderedSet)
 add_subdirectory(Array)
 add_subdirectory(Queue)
+add_subdirectory(Map)
 
 cm_example_project("DataType/Collection" ValuePoolTest                ValuePoolTest.cpp)
 cm_example_project("DataType/Collection" ValuePoolPerformanceTest      ValuePoolPerformanceTest.cpp)
-cm_example_project("DataType/Collection" ManagedPoolTest               ManagedPoolTest.cpp)
-cm_example_project("DataType/Collection" MapTest                MapTest.cpp)
-cm_example_project("DataType/Collection" OrderedMapTest         OrderedMapTest.cpp)
 cm_example_project("DataType/Collection" StringSetTest          StringSetTest.cpp)
 cm_example_project("DataType/Collection" StringListTest         StringListTest.cpp)
 cm_example_project("DataType/Collection" GetLastTest            GetLastTest.cpp)
