@@ -1,4 +1,4 @@
-﻿## UnorderedValueSet / UnorderedManagedSet tests (aligned with other examples)
+﻿## FlatUnorderedValueSet / UnorderedManagedSet tests (aligned with other examples)
 
 cm_example_project("DataType/Collection/UnorderedSet" UnOrderedValueSetTest00_Simple                 UnorderedValueSetTest00_Simple.cpp)
 cm_example_project("DataType/Collection/UnorderedSet" UnOrderedValueSetTest01_BasicOperations        UnorderedValueSetTest01_BasicOperations.cpp)

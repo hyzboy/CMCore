@@ -106,9 +106,9 @@ SOURCE_GROUP("DataType\\Template\\Index" FILES ${CMCORE_TYPE_INDEX_FILES})
 ## Template 模板类 - 缓存与优化
 SET(CMCORE_TYPE_CACHE_FILES ${CMCORE_TYPE_INCLUDE_PATH}/LRUCache.h
                             ${CMCORE_TYPE_INCLUDE_PATH}/FlatTree.h
-                            ${CMCORE_TYPE_INCLUDE_PATH}/OrderedValueSet.h
+                            ${CMCORE_TYPE_INCLUDE_PATH}/OrderedSet.h
                             ${CMCORE_TYPE_INCLUDE_PATH}/FlatOrderedSet.h
-                            ${CMCORE_TYPE_INCLUDE_PATH}/UnorderedValueSet.h
+                            ${CMCORE_TYPE_INCLUDE_PATH}/FlatUnorderedValueSet.h
                             ${CMCORE_TYPE_INCLUDE_PATH}/ValueArray.h
                             ${CMCORE_TYPE_INCLUDE_PATH}/ValueKVMap.h)
 SOURCE_GROUP("DataType\\Template\\Cache" FILES ${CMCORE_TYPE_CACHE_FILES})

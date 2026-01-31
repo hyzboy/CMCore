@@ -6,29 +6,24 @@
 namespace hgl
 {
     /**
-     * 有序合集（平凡类型专用版本）</br>
+     * 有序合集</br>
      * 集合数据列表中不允许数据出现重复性，同时它会将数据排序</br>
      * 使用 absl::btree_set 实现，提供 O(log n) 插入/删除/查找性能</br>
-     * <b>重要限制：</b>仅支持平凡可复制类型（trivially copyable types）。
-     * 非平凡类型（包含虚函数、动态内存、自定义构造/析构等）请使用 OrderedManagedSet</br>
      *
      * <b>设计目标：</b>
      * - 频繁插入和删除操作的场景
      * - 查找 O(log n)，插入/删除 O(log n)
-     * - 如需序列化支持，请使用 FlatOrderedValueSet
+     * - 如需连续内存序列化支持，请使用 FlatOrderedSet
      *
-     * @tparam T 必须支持 operator< 用于排序，且必须是平凡可复制类型（trivially copyable）
-     * @see OrderedManagedSet 非平凡类型版本
-     * @see FlatOrderedValueSet 序列化友好的连续内存版本
+     * @tparam T 必须支持 operator< 用于排序
+     * @see OrderedManagedSet 对象管理版本
+     * @see FlatOrderedSet 序列化友好的连续内存版本
      */
     template<typename T>
-    class OrderedValueSet
+    class OrderedSet
     {
     protected:
-        using ThisClass = OrderedValueSet<T>;
-
-        static_assert(std::is_trivially_copyable_v<T>,
-                      "OrderedValueSet requires trivially copyable types. For non-trivial types (with custom copy/move semantics, virtual functions, dynamic memory), use OrderedManagedSet instead.");
+        using ThisClass = OrderedSet<T>;
 
         /**
          * @brief CN:有序集合（B树实现）\nEN:Ordered set (B-tree implementation)
@@ -68,8 +63,8 @@ namespace hgl
         auto crend() const { return data.crend(); }
 
     public:
-        OrderedValueSet() = default;
-        virtual ~OrderedValueSet() = default;
+        OrderedSet() = default;
+        virtual ~OrderedSet() = default;
 
         // ==================== 容量管理 ====================
 
@@ -133,7 +128,7 @@ namespace hgl
             auto result = data.insert(value);
             if (!result.second)
                 return -1;  // 已存在
-            
+
             return std::distance(data.begin(), result.first);
         }
 
@@ -279,7 +274,7 @@ namespace hgl
         /**
          * @brief CN:赋值运算符\nEN:Assignment operator
          */
-        void operator=(const OrderedValueSet<T>& other)
+        void operator=(const OrderedSet<T>& other)
         {
             data = other.data;
         }
@@ -287,7 +282,7 @@ namespace hgl
         /**
          * @brief CN:相等比较运算符\nEN:Equality comparison operator
          */
-        bool operator==(const OrderedValueSet<T>& other) const
+        bool operator==(const OrderedSet<T>& other) const
         {
             return data == other.data;
         }
@@ -295,9 +290,9 @@ namespace hgl
         /**
          * @brief CN:不等比较运算符\nEN:Inequality comparison operator
          */
-        bool operator!=(const OrderedValueSet<T>& other) const
+        bool operator!=(const OrderedSet<T>& other) const
         {
             return data != other.data;
         }
-    };//template<typename T> class OrderedValueSet
+    };//template<typename T> class OrderedSet
 }//namespace hgl

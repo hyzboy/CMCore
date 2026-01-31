@@ -8,6 +8,6 @@ cm_example_project("DataType/Collection/OrderedSet" FlatOrderedValueSetBatchAndD
 cm_example_project("DataType/Collection/OrderedSet" FlatOrderedValueSetComparisonAndCopy	FlatOrderedValueSetComparisonAndCopy.cpp)
 cm_example_project("DataType/Collection/OrderedSet" FlatOrderedValueSetConstCorrectness	FlatOrderedValueSetConstCorrectness.cpp)
 
-# Performance comparison between OrderedValueSet (BTree) and FlatOrderedValueSet (Vector)
+# Performance comparison between OrderedSet (BTree) and FlatOrderedValueSet (Vector)
 cm_example_project("DataType/Collection/OrderedSet" OrderedSetPerformanceComparison OrderedSetPerformanceComparison.cpp)
 

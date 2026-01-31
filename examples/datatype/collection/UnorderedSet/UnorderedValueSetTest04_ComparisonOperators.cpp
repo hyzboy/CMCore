@@ -3,7 +3,7 @@
  * 比较运算符测试 - 测试 operator== 和 operator!=
  */
 
-#include<hgl/type/UnorderedValueSet.h>
+#include<hgl/type/FlatUnorderedValueSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -13,7 +13,7 @@ void TestEqualityBasic()
 {
     std::cout << "\n=== 测试基础相等比较 ===" << std::endl;
 
-    UnorderedValueSet<int> set1, set2;
+    FlatUnorderedValueSet<int> set1, set2;
 
     // 两个空集合应该相等
     assert(set1 == set2);
@@ -28,7 +28,7 @@ void TestEqualityBasic()
     std::cout << "  ✓ 相同元素集合相等" << std::endl;
 
     // 添加顺序不影响相等性（无序集合特性）
-    UnorderedValueSet<int> set3, set4;
+    FlatUnorderedValueSet<int> set3, set4;
     set3.Add(1); set3.Add(2); set3.Add(3);
     set4.Add(3); set4.Add(1); set4.Add(2);  // 不同顺序
     assert(set3 == set4);
@@ -39,7 +39,7 @@ void TestInequalityBasic()
 {
     std::cout << "\n=== 测试基础不等比较 ===" << std::endl;
 
-    UnorderedValueSet<int> set1, set2;
+    FlatUnorderedValueSet<int> set1, set2;
 
     // 不同大小的集合
     set1.Add(1); set1.Add(2); set1.Add(3);
@@ -49,14 +49,14 @@ void TestInequalityBasic()
     std::cout << "  ✓ 不同大小集合不相等" << std::endl;
 
     // 相同大小但不同元素
-    UnorderedValueSet<int> set3, set4;
+    FlatUnorderedValueSet<int> set3, set4;
     set3.Add(1); set3.Add(2); set3.Add(3);
     set4.Add(1); set4.Add(2); set4.Add(4);
     assert(set3 != set4);
     std::cout << "  ✓ 相同大小但不同元素不相等" << std::endl;
 
     // 完全不同的元素
-    UnorderedValueSet<int> set5, set6;
+    FlatUnorderedValueSet<int> set5, set6;
     set5.Add(1); set5.Add(2); set5.Add(3);
     set6.Add(7); set6.Add(8); set6.Add(9);
     assert(set5 != set6);
@@ -67,8 +67,8 @@ void TestEmptyVsNonEmpty()
 {
     std::cout << "\n=== 测试空集合与非空集合 ===" << std::endl;
 
-    UnorderedValueSet<int> empty_set;
-    UnorderedValueSet<int> non_empty_set;
+    FlatUnorderedValueSet<int> empty_set;
+    FlatUnorderedValueSet<int> non_empty_set;
     non_empty_set.Add(1);
 
     assert(empty_set != non_empty_set);
@@ -80,7 +80,7 @@ void TestSelfComparison()
 {
     std::cout << "\n=== 测试自我比较 ===" << std::endl;
 
-    UnorderedValueSet<int> set;
+    FlatUnorderedValueSet<int> set;
     set.Add(1); set.Add(2); set.Add(3);
 
     // 自己与自己比较应该相等
@@ -93,7 +93,7 @@ void TestLargeSetComparison()
 {
     std::cout << "\n=== 测试大集合比较 ===" << std::endl;
 
-    UnorderedValueSet<int> set1, set2;
+    FlatUnorderedValueSet<int> set1, set2;
 
     // 添加大量相同元素
     const int COUNT = 10000;
@@ -116,7 +116,7 @@ void TestComparisonAfterOperations()
 {
     std::cout << "\n=== 测试操作后的比较 ===" << std::endl;
 
-    UnorderedValueSet<int> set1, set2, set3;
+    FlatUnorderedValueSet<int> set1, set2, set3;
 
     // 初始化 set1 和 set2
     for(int i = 1; i <= 5; i++) {
@@ -153,7 +153,7 @@ void TestDifferentTypes()
     std::cout << "\n=== 测试不同数据类型的比较 ===" << std::endl;
 
     // uint64 类型
-    UnorderedValueSet<uint64> set1, set2;
+    FlatUnorderedValueSet<uint64> set1, set2;
     set1.Add(1000000000ULL);
     set1.Add(2000000000ULL);
     set2.Add(1000000000ULL);
@@ -162,7 +162,7 @@ void TestDifferentTypes()
     std::cout << "  ✓ uint64 类型比较正确" << std::endl;
 
     // float 类型
-    UnorderedValueSet<float> fset1, fset2;
+    FlatUnorderedValueSet<float> fset1, fset2;
     fset1.Add(1.5f);
     fset1.Add(2.5f);
     fset2.Add(1.5f);
@@ -171,7 +171,7 @@ void TestDifferentTypes()
     std::cout << "  ✓ float 类型比较正确" << std::endl;
 
     // char 类型
-    UnorderedValueSet<char> cset1, cset2;
+    FlatUnorderedValueSet<char> cset1, cset2;
     cset1.Add('a'); cset1.Add('b'); cset1.Add('c');
     cset2.Add('a'); cset2.Add('b'); cset2.Add('c');
     assert(cset1 == cset2);
@@ -182,7 +182,7 @@ void TestSubsetRelation()
 {
     std::cout << "\n=== 测试子集关系（非标准功能，用比较运算符检测）===" << std::endl;
 
-    UnorderedValueSet<int> subset, superset;
+    FlatUnorderedValueSet<int> subset, superset;
 
     // subset: {1, 2, 3}
     subset.Add(1); subset.Add(2); subset.Add(3);
@@ -209,7 +209,7 @@ void TestSubsetRelation()
 
 int main()
 {
-    std::cout << "=== UnorderedValueSet 比较运算符测试 ===" << std::endl;
+    std::cout << "=== FlatUnorderedValueSet 比较运算符测试 ===" << std::endl;
 
     TestEqualityBasic();
     TestInequalityBasic();

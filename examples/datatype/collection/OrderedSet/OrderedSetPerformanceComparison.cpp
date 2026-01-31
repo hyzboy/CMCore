@@ -1,4 +1,4 @@
-#include<hgl/type/OrderedValueSet.h>
+#include<hgl/type/OrderedSet.h>
 #include<hgl/type/FlatOrderedValueSet.h>
 #include<iostream>
 #include<chrono>
@@ -55,7 +55,7 @@ void Test01_SequentialInsert(int64 count)
 {
     PrintHeader("测试 01: 顺序插入 (" + to_string(count) + " 个元素)");
     
-    OrderedValueSet<int> btree_set;
+    OrderedSet<int> btree_set;
     FlatOrderedValueSet<int> flat_set;
     
     // BTree插入
@@ -82,7 +82,7 @@ void Test02_RandomInsert(int64 count)
     
     auto random_data = GenerateRandomData(count);
     
-    OrderedValueSet<int> btree_set;
+    OrderedSet<int> btree_set;
     FlatOrderedValueSet<int> flat_set;
     
     // BTree插入
@@ -113,7 +113,7 @@ void Test03_BulkInsertThenLookup(int64 count, int64 lookup_count)
     auto insert_data = GenerateRandomData(count);
     auto lookup_data = GenerateRandomData(lookup_count, count * 2);
     
-    OrderedValueSet<int> btree_set;
+    OrderedSet<int> btree_set;
     FlatOrderedValueSet<int> flat_set;
     
     // BTree - 插入
@@ -162,7 +162,7 @@ void Test04_MixedOperations(int64 count)
     
     auto data = GenerateRandomData(count);
     
-    OrderedValueSet<int> btree_set;
+    OrderedSet<int> btree_set;
     FlatOrderedValueSet<int> flat_set;
     
     // BTree - 混合操作
@@ -208,7 +208,7 @@ void Test05_BulkLoadScenario(int64 count)
     cout << "  去重后的唯一元素: " << sorted_data.size() << endl;
     
     FlatOrderedValueSet<int> flat_set;
-    OrderedValueSet<int> btree_set;
+    OrderedSet<int> btree_set;
     
     // Flat - 使用LoadFromBuffer（零拷贝加载）
     double flat_load = MeasureTime([&]() {
@@ -237,7 +237,7 @@ void Test06_MemoryFootprint(int64 count)
     
     auto data = GenerateRandomData(count);
     
-    OrderedValueSet<int> btree_set;
+    OrderedSet<int> btree_set;
     FlatOrderedValueSet<int> flat_set;
     
     for (auto val : data)
@@ -265,7 +265,7 @@ void Test06_MemoryFootprint(int64 count)
 int os_main(int, os_char**)
 {
     cout << "\n╔════════════════════════════════════════════════════════════╗" << endl;
-    cout << "║  OrderedValueSet vs FlatOrderedValueSet 性能测试       ║" << endl;
+    cout << "║  OrderedSet vs FlatOrderedValueSet 性能测试       ║" << endl;
     cout << "╚════════════════════════════════════════════════════════════╝" << endl;
     
     // 小规模测试
@@ -291,7 +291,7 @@ int os_main(int, os_char**)
     Test02_RandomInsert(1000000);
     
     PrintHeader("总结");
-    cout << "  OrderedValueSet (BTree):" << endl;
+    cout << "  OrderedSet (BTree):" << endl;
     cout << "    ✓ O(log n) 插入/删除 - 高效处理频繁修改" << endl;
     cout << "    ✓ 无重新分配开销" << endl;
     cout << "    ✗ 不支持零拷贝序列化" << endl;
@@ -304,7 +304,7 @@ int os_main(int, os_char**)
     cout << "    ✗ O(n) 插入/删除 - 频繁修改时较慢" << endl;
     
     cout << "\n  使用场景指南:" << endl;
-    cout << "    • OrderedValueSet: 频繁插入/删除操作" << endl;
+    cout << "    • OrderedSet: 频繁插入/删除操作" << endl;
     cout << "    • FlatOrderedValueSet: 批量加载+频繁查询, 序列化" << endl;
     
     cout << "\n✅ 所有性能测试完成" << endl;

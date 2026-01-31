@@ -1,9 +1,9 @@
 ﻿/**
  * UnOrderedValueSetTest01_BasicOperations.cpp
- * 基础操作测试 - 全面测试 UnorderedValueSet 的增删改查
+ * 基础操作测试 - 全面测试 FlatUnorderedValueSet 的增删改查
  */
 
-#include<hgl/type/UnorderedValueSet.h>
+#include<hgl/type/FlatUnorderedValueSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -13,7 +13,7 @@ void TestAddOperations()
 {
     std::cout << "\n=== 测试添加操作 ===" << std::endl;
 
-    UnorderedValueSet<int> set;
+    FlatUnorderedValueSet<int> set;
 
     // 单个添加
     assert(set.Add(100) == true);
@@ -48,7 +48,7 @@ void TestFindOperations()
 {
     std::cout << "\n=== 测试查找操作 ===" << std::endl;
 
-    UnorderedValueSet<int> set;
+    FlatUnorderedValueSet<int> set;
     set.Add(10);
     set.Add(20);
     set.Add(30);
@@ -91,7 +91,7 @@ void TestDeleteOperations()
 {
     std::cout << "\n=== 测试删除操作 ===" << std::endl;
 
-    UnorderedValueSet<int> set;
+    FlatUnorderedValueSet<int> set;
     for(int i = 1; i <= 10; i++) {
         set.Add(i * 10);
     }
@@ -129,7 +129,7 @@ void TestGetOperations()
 {
     std::cout << "\n=== 测试获取操作 ===" << std::endl;
 
-    UnorderedValueSet<int> set;
+    FlatUnorderedValueSet<int> set;
     set.Add(111);
     set.Add(222);
     set.Add(333);
@@ -147,7 +147,7 @@ void TestGetOperations()
     std::cout << "✓ GetLast 成功: " << last << std::endl;
 
     // 空集合测试
-    UnorderedValueSet<int> empty_set;
+    FlatUnorderedValueSet<int> empty_set;
     assert(empty_set.GetFirst(first) == false);
     assert(empty_set.GetLast(last) == false);
     std::cout << "✓ 空集合 GetFirst/GetLast 正确返回 false" << std::endl;
@@ -157,7 +157,7 @@ void TestIteratorOperations()
 {
     std::cout << "\n=== 测试迭代器操作 ===" << std::endl;
 
-    UnorderedValueSet<int> set;
+    FlatUnorderedValueSet<int> set;
     set.Add(10);
     set.Add(20);
     set.Add(30);
@@ -214,7 +214,7 @@ void TestClearOperations()
 {
     std::cout << "\n=== 测试清空操作 ===" << std::endl;
 
-    UnorderedValueSet<int> set;
+    FlatUnorderedValueSet<int> set;
     for(int i = 1; i <= 100; i++) {
         set.Add(i);
     }
@@ -241,7 +241,7 @@ void TestClearOperations()
 
 int main()
 {
-    std::cout << "=== UnorderedValueSet 基础操作测试 ===" << std::endl;
+    std::cout << "=== FlatUnorderedValueSet 基础操作测试 ===" << std::endl;
 
     TestAddOperations();
     TestFindOperations();

@@ -27,15 +27,15 @@ namespace hgl
      * - CN:简单类型（int/指针）哈希零开销\nEN:Zero-overhead hashing for simple types (int/pointer)
      */
     template<typename T>
-    class UnorderedValueSet
+    class FlatUnorderedValueSet
     {
     protected:
 
-        using ThisClass = UnorderedValueSet<T>;
+        using ThisClass = FlatUnorderedValueSet<T>;
 
         // 编译期检查：T 必须是平凡可复制类型，非平凡类型请使用 UnorderedManagedSet
         static_assert(std::is_trivially_copyable_v<T>,
-            "UnorderedValueSet requires trivially copyable types; use UnorderedManagedSet for non-trivial types.");
+            "FlatUnorderedValueSet requires trivially copyable types; use UnorderedManagedSet for non-trivial types.");
 
         /**
          * @brief CN:数据管理器（连续内存存储）\nEN:Data manager (contiguous memory storage)
@@ -100,11 +100,11 @@ namespace hgl
         class ConstIterator
         {
         private:
-            const UnorderedValueSet* set;
+            const FlatUnorderedValueSet* set;
             int index;
 
         public:
-            ConstIterator(const UnorderedValueSet* s, int idx) : set(s), index(idx) {}
+            ConstIterator(const FlatUnorderedValueSet* s, int idx) : set(s), index(idx) {}
 
             /**
              * @brief CN:解引用运算符\nEN:Dereference operator
@@ -188,8 +188,8 @@ namespace hgl
 
         // ==================== 基本方法 ====================
 
-        UnorderedValueSet() = default;
-        virtual ~UnorderedValueSet() = default;
+        FlatUnorderedValueSet() = default;
+        virtual ~FlatUnorderedValueSet() = default;
 
         // ==================== 容量管理 ====================
 
@@ -554,11 +554,11 @@ namespace hgl
     /**
      * @brief CN:整数集合\nEN:Integer set
      */
-    using IntSet = UnorderedValueSet<int>;
+    using IntSet = FlatUnorderedValueSet<int>;
 
     /**
      * @brief CN:无符号整数集合\nEN:Unsigned integer set
      */
-    using UintSet = UnorderedValueSet<uint>;
+    using UintSet = FlatUnorderedValueSet<uint>;
 
 } // namespace hgl

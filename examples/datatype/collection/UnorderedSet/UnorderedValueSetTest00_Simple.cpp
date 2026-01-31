@@ -1,18 +1,18 @@
 ﻿/**
  * UnOrderedValueSetTest00_Simple.cpp
- * 简单快速测试 - 验证 UnorderedValueSet 基本功能
+ * 简单快速测试 - 验证 FlatUnorderedValueSet 基本功能
  */
 
-#include<hgl/type/UnorderedValueSet.h>
+#include<hgl/type/FlatUnorderedValueSet.h>
 #include<iostream>
 
 using namespace hgl;
 
 int main()
 {
-    std::cout << "=== UnorderedValueSet 简单测试 ===" << std::endl;
+    std::cout << "=== FlatUnorderedValueSet 简单测试 ===" << std::endl;
 
-    UnorderedValueSet<int> set;
+    FlatUnorderedValueSet<int> set;
 
     // 测试添加
     std::cout << "\n1. 测试添加元素:" << std::endl;

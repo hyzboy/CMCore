@@ -26,7 +26,7 @@ int Tracked::alive = 0;
 int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
-    cout << "TEST 05: OrderedValueSet Lifecycle & Ownership" << endl;
+    cout << "TEST 05: OrderedSet Lifecycle & Ownership" << endl;
     cout << "========================================" << endl;
 
     Tracked::alive = 0;

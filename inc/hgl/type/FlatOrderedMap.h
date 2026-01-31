@@ -129,8 +129,8 @@ namespace hgl
                 // 按Key排序，同时维持Value对齐
                 std::vector<int64> indices(count);
                 std::iota(indices.begin(), indices.end(), 0);
-                
-                std::sort(indices.begin(), indices.end(), 
+
+                std::sort(indices.begin(), indices.end(),
                     [this](int64 i, int64 j) { return keys[i] < keys[j]; });
 
                 // 应用排列
@@ -551,7 +551,7 @@ namespace hgl
         {
             key_array.Clear();
             key_array.SetMaxCount((int)keys.size());
-            
+
             for (const auto& key : keys)
             {
                 key_array.Add(key);
@@ -567,7 +567,7 @@ namespace hgl
         {
             value_array.Clear();
             value_array.SetMaxCount((int)values.size());
-            
+
             for (const auto& value : values)
             {
                 value_array.Add(value);
@@ -586,12 +586,12 @@ namespace hgl
             value_array.Clear();
             key_array.SetMaxCount((int)keys.size());
             value_array.SetMaxCount((int)values.size());
-            
+
             for (const auto& key : keys)
             {
                 key_array.Add(key);
             }
-            
+
             for (const auto& value : values)
             {
                 value_array.Add(value);

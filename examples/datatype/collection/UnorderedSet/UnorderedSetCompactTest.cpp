@@ -3,7 +3,7 @@
  * 测试新版高性能无序集合的功能和性能
  */
 
-#include <hgl/type/UnorderedValueSet.h>
+#include <hgl/type/FlatUnorderedValueSet.h>
 #include <hgl/type/UnorderedManagedSet.h>
 #include <iostream>
 #include <cassert>
@@ -36,7 +36,7 @@ void TestBasicOperations()
 {
     cout << "\n=== Test 1: Basic Operations ===" << endl;
 
-    UnorderedValueSet<int> set;
+    FlatUnorderedValueSet<int> set;
 
     // 添加元素
     assert(set.Add(10));
@@ -73,7 +73,7 @@ void TestBatchOperations()
 {
     cout << "\n=== Test 2: Batch Operations ===" << endl;
 
-    UnorderedValueSet<int> set;
+    FlatUnorderedValueSet<int> set;
 
     int values[] = {1, 2, 3, 4, 5, 2, 3};  // 包含重复
     int added = set.Add(values, 7);
@@ -92,13 +92,13 @@ void TestSetOperations()
 {
     cout << "\n=== Test 3: Set Operations ===" << endl;
 
-    UnorderedValueSet<int> set1, set2;
+    FlatUnorderedValueSet<int> set1, set2;
 
     set1.Add(1); set1.Add(2); set1.Add(3);
     set2.Add(2); set2.Add(3); set2.Add(4);
 
     // 并集
-    UnorderedValueSet<int> union_set;
+    FlatUnorderedValueSet<int> union_set;
     union_set.Add(1); union_set.Add(2); union_set.Add(3);  // 复制 set1 的内容
     int added = union_set.Union(set2);
     assert(union_set.GetCount() == 4);  // {1, 2, 3, 4}
@@ -106,7 +106,7 @@ void TestSetOperations()
     cout << "  ✓ Union operation works correctly" << endl;
 
     // 交集
-    UnorderedValueSet<int> intersect_set;
+    FlatUnorderedValueSet<int> intersect_set;
     intersect_set.Add(1); intersect_set.Add(2); intersect_set.Add(3);  // 复制 set1 的内容
     int removed = intersect_set.Intersect(set2);
     assert(intersect_set.GetCount() == 2);  // {2, 3}
@@ -114,7 +114,7 @@ void TestSetOperations()
     cout << "  ✓ Intersection operation works correctly" << endl;
 
     // 差集
-    UnorderedValueSet<int> diff_set;
+    FlatUnorderedValueSet<int> diff_set;
     diff_set.Add(1); diff_set.Add(2); diff_set.Add(3);  // 复制 set1 的内容
     removed = diff_set.Difference(set2);
     assert(diff_set.GetCount() == 1);  // {1}
@@ -126,7 +126,7 @@ void TestComparison()
 {
     cout << "\n=== Test 4: Comparison Operators ===" << endl;
 
-    UnorderedValueSet<int> set1, set2, set3;
+    FlatUnorderedValueSet<int> set1, set2, set3;
 
     set1.Add(1); set1.Add(2); set1.Add(3);
     set2.Add(3); set2.Add(2); set2.Add(1);  // 顺序不同但内容相同
@@ -141,7 +141,7 @@ void TestMutableEnum()
 {
     cout << "\n=== Test 5: Mutable Enumeration ===" << endl;
 
-    UnorderedValueSet<int> set;
+    FlatUnorderedValueSet<int> set;
     auto dump = [&](const char* tag)
     {
         cout << "  [" << tag << "] count=" << set.GetCount() << " values={";
@@ -191,7 +191,7 @@ void TestPerformance()
 
     const int N = 10000;
 
-    UnorderedValueSet<int> set;
+    FlatUnorderedValueSet<int> set;
     set.Reserve(N);
 
     {
@@ -234,7 +234,7 @@ void TestBoundaryConditions()
 {
     cout << "\n=== Test 7: Boundary Conditions ===" << endl;
 
-    UnorderedValueSet<int> set;
+    FlatUnorderedValueSet<int> set;
 
     // 空集合操作
     assert(set.IsEmpty());
@@ -264,7 +264,7 @@ void TestDirectAccess()
 {
     cout << "\n=== Test 8: Direct Data Access (High Performance) ===" << endl;
 
-    UnorderedValueSet<int> set;
+    FlatUnorderedValueSet<int> set;
     set.Add(10); set.Add(20); set.Add(30);
 
     auto dump = [&](const char* tag)
@@ -358,9 +358,9 @@ void TestManagedSet()
 {
     cout << "\n=== Test 9: UnorderedManagedSet (Non-trivial Objects) ===" << endl;
 
-    // 对于平凡类型，使用 UnorderedValueSet
+    // 对于平凡类型，使用 FlatUnorderedValueSet
     {
-        UnorderedValueSet<TestObject> value_set;
+        FlatUnorderedValueSet<TestObject> value_set;
 
         value_set.Add(TestObject(1, 100));
         value_set.Add(TestObject(2, 200));

@@ -3,7 +3,7 @@
  * 集合运算测试 - 测试 Union（并集）、Intersect（交集）、Difference（差集）
  */
 
-#include<hgl/type/UnorderedValueSet.h>
+#include<hgl/type/FlatUnorderedValueSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -13,8 +13,8 @@ void TestUnion()
 {
     std::cout << "\n=== 测试并集（Union）===" << std::endl;
 
-    UnorderedValueSet<int> set1;
-    UnorderedValueSet<int> set2;
+    FlatUnorderedValueSet<int> set1;
+    FlatUnorderedValueSet<int> set2;
 
     // set1: {1, 2, 3, 4, 5}
     for(int i = 1; i <= 5; i++) {
@@ -49,7 +49,7 @@ void TestUnion()
     std::cout << "   ✓ 原集合未被修改" << std::endl;
 
     // 测试与空集合的并集
-    UnorderedValueSet<int> empty_set;
+    FlatUnorderedValueSet<int> empty_set;
     int added_from_empty = set1.Union(empty_set);
     assert(added_from_empty == 0);
     assert(set1.GetCount() == 8);
@@ -60,8 +60,8 @@ void TestIntersect()
 {
     std::cout << "\n=== 测试交集（Intersect）===" << std::endl;
 
-    UnorderedValueSet<int> set1;
-    UnorderedValueSet<int> set2;
+    FlatUnorderedValueSet<int> set1;
+    FlatUnorderedValueSet<int> set2;
 
     // set1: {1, 2, 3, 4, 5, 6}
     for(int i = 1; i <= 6; i++) {
@@ -95,18 +95,18 @@ void TestIntersect()
     std::cout << "   ✓ 交集元素验证通过" << std::endl;
 
     // 测试与空集合的交集
-    UnorderedValueSet<int> set3;
+    FlatUnorderedValueSet<int> set3;
     for(int i = 10; i <= 15; i++) {
         set3.Add(i);
     }
-    UnorderedValueSet<int> empty_set;
+    FlatUnorderedValueSet<int> empty_set;
     int deleted_all = set3.Intersect(empty_set);
     assert(deleted_all == 6);  // 所有元素都被删除
     assert(set3.GetCount() == 0);
     std::cout << "   ✓ 与空集合交集正确（结果为空）" << std::endl;
 
     // 测试无交集的情况
-    UnorderedValueSet<int> set4, set5;
+    FlatUnorderedValueSet<int> set4, set5;
     set4.Add(1); set4.Add(2); set4.Add(3);
     set5.Add(7); set5.Add(8); set5.Add(9);
     int del = set4.Intersect(set5);
@@ -119,8 +119,8 @@ void TestDifference()
 {
     std::cout << "\n=== 测试差集（Difference）===" << std::endl;
 
-    UnorderedValueSet<int> set1;
-    UnorderedValueSet<int> set2;
+    FlatUnorderedValueSet<int> set1;
+    FlatUnorderedValueSet<int> set2;
 
     // set1: {1, 2, 3, 4, 5, 6}
     for(int i = 1; i <= 6; i++) {
@@ -154,18 +154,18 @@ void TestDifference()
     std::cout << "   ✓ 差集元素验证通过" << std::endl;
 
     // 测试与空集合的差集
-    UnorderedValueSet<int> set3;
+    FlatUnorderedValueSet<int> set3;
     for(int i = 10; i <= 15; i++) {
         set3.Add(i);
     }
-    UnorderedValueSet<int> empty_set;
+    FlatUnorderedValueSet<int> empty_set;
     int del_none = set3.Difference(empty_set);
     assert(del_none == 0);  // 没有元素被删除
     assert(set3.GetCount() == 6);
     std::cout << "   ✓ 与空集合差集正确（无删除）" << std::endl;
 
     // 测试无共同元素的差集
-    UnorderedValueSet<int> set4, set5;
+    FlatUnorderedValueSet<int> set4, set5;
     set4.Add(1); set4.Add(2); set4.Add(3);
     set5.Add(7); set5.Add(8); set5.Add(9);
     int del = set4.Difference(set5);
@@ -179,7 +179,7 @@ void TestCombinedOperations()
     std::cout << "\n=== 测试组合运算 ===" << std::endl;
 
     // 创建三个集合
-    UnorderedValueSet<int> A, B, C;
+    FlatUnorderedValueSet<int> A, B, C;
 
     // A = {1, 2, 3, 4}
     for(int i = 1; i <= 4; i++) A.Add(i);
@@ -202,11 +202,11 @@ void TestCombinedOperations()
     std::cout << "   ✓ (A ∪ B) ∩ C 计算正确" << std::endl;
 
     // 测试对称差集：(A - B) ∪ (B - A)
-    UnorderedValueSet<int> X, Y;
+    FlatUnorderedValueSet<int> X, Y;
     for(int i = 1; i <= 5; i++) X.Add(i);  // X = {1, 2, 3, 4, 5}
     for(int i = 3; i <= 7; i++) Y.Add(i);  // Y = {3, 4, 5, 6, 7}
 
-    UnorderedValueSet<int> X_copy, Y_copy;
+    FlatUnorderedValueSet<int> X_copy, Y_copy;
     for(int i = 1; i <= 5; i++) X_copy.Add(i);
     for(int i = 3; i <= 7; i++) Y_copy.Add(i);
 
@@ -224,7 +224,7 @@ void TestCombinedOperations()
 
 int main()
 {
-    std::cout << "=== UnorderedValueSet 集合运算测试 ===" << std::endl;
+    std::cout << "=== FlatUnorderedValueSet 集合运算测试 ===" << std::endl;
 
     TestUnion();
     TestIntersect();

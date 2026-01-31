@@ -242,7 +242,7 @@ void print_analysis()
 
     std::cout << "\n【总结】\n" << std::endl;
     
-    std::cout << "✅ 依赖统一: 统一使用 ankerl（与 UnorderedValueSet 一致）\n"
+    std::cout << "✅ 依赖统一: 统一使用 ankerl（与 FlatUnorderedValueSet 一致）\n"
               << "✅ 性能提升: 插入/查找略快，内存占用略少\n"
               << "✅ API 增强: 新增 ReleaseByPointer() 提供 O(1) 释放路径\n"
               << "✅ 向后兼容: Release() 保持原有语义，现有代码无需修改\n" << std::endl;
