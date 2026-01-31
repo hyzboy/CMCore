@@ -8,18 +8,18 @@ namespace hgl
 {
     /**
      * 现代无序映射 - 混合架构（ankerl + 分离式序列化）
-     * 
+     *
      * 核心特性：
      * 1. 主存储：ankerl::unordered_dense::map（极致查找性能，5.5x vs ManagedPool）
      * 2. 序列化支持：按需生成 key/value 独立数组
      * 3. 快速恢复：从独立数组重建 map
      * 4. 兼容性：API 与原 UnorderedMap<K,V> 保持一致
-     * 
+     *
      * 使用场景：
      * - 正常操作：直接用 ankerl map（极致性能）
      * - 状态保存：GetKeyArray() + GetValueArray() 生成独立数组
      * - 状态恢复：RebuildFromArrays(keys, values) 快速重建
-     * 
+     *
      * @tparam K Key 类型（任意，trivially 或 non-trivially 都支持）
      * @tparam V Value 类型（任意，trivially 或 non-trivially 都支持）
      */
@@ -29,25 +29,25 @@ namespace hgl
     protected:
         // 主存储：ankerl 提供极致性能
         ankerl::unordered_dense::map<K, V> map_data;
-        
+
     public:
         UnorderedMap() = default;
         virtual ~UnorderedMap() = default;
-        
+
         // ============================================================
         // 基础 API（兼容 UnorderedMap<K,V> 接口）
         // ============================================================
-        
+
         /**
          * 获取元素总数
          */
         int GetCount() const { return static_cast<int>(map_data.size()); }
-        
+
         /**
          * 检查容器是否为空
          */
         bool IsEmpty() const { return map_data.empty(); }
-        
+
         /**
          * 添加一个键值对
          * 如果 key 已存在，返回 false
@@ -56,7 +56,7 @@ namespace hgl
             auto [it, inserted] = map_data.try_emplace(key, value);
             return inserted;
         }
-        
+
         /**
          * 获取指定 key 对应的 value
          */
@@ -66,7 +66,7 @@ namespace hgl
             value = it->second;
             return true;
         }
-        
+
         /**
          * 获取指定 key 对应的 value 指针（非 const 版本）
          */
@@ -74,7 +74,7 @@ namespace hgl
             auto it = map_data.find(key);
             return (it != map_data.end()) ? &it->second : nullptr;
         }
-        
+
         /**
          * 获取指定 key 对应的 value 指针（const 版本）
          */
@@ -82,21 +82,21 @@ namespace hgl
             auto it = map_data.find(key);
             return (it != map_data.end()) ? &it->second : nullptr;
         }
-        
+
         /**
          * 根据 key 删除元素
          */
         bool DeleteByKey(const K& key) {
             return map_data.erase(key) > 0;
         }
-        
+
         /**
          * 检查是否包含指定 key
          */
         bool ContainsKey(const K& key) const {
             return map_data.contains(key);
         }
-        
+
         /**
          * 更改或添加（如果存在则更新，不存在则添加）
          */
@@ -104,7 +104,7 @@ namespace hgl
             map_data[key] = value;
             return true;
         }
-        
+
         /**
          * 更改指定 key 的 value（如果 key 不存在则返回 false）
          */
@@ -114,30 +114,30 @@ namespace hgl
             it->second = value;
             return true;
         }
-        
+
         /**
          * 清空所有元素（但不释放内存）
          */
-        void Clear() { 
-            map_data.clear(); 
+        void Clear() {
+            map_data.clear();
         }
-        
+
         /**
          * 清空并释放内存
          */
-        void Free() { 
+        void Free() {
             ankerl::unordered_dense::map<K, V> empty;
             map_data.swap(empty);
         }
-        
+
         // ============================================================
         // 序列化支持：分离式 Key/Value 访问
         // ============================================================
-        
+
         /**
          * 获取所有 Keys 到独立数组（用于快速序列化）
          * 支持 ValueArray<K>、std::vector<K> 等
-         * 
+         *
          * @param key_array 输出的 key 数组
          * @return key 数量
          */
@@ -147,18 +147,18 @@ namespace hgl
             const int count = GetCount();
             if (count > 0) {
                 ReserveContainer(key_array, count);
-                
+
                 for (const auto& [key, value] : map_data) {
                     AddToContainer(key_array, key);
                 }
             }
             return (int)GetContainerSize(key_array);
         }
-        
+
         /**
          * 获取所有 Values 到独立数组（用于快速序列化）
          * 支持 ValueArray<V>、std::vector<V> 等
-         * 
+         *
          * @param value_array 输出的 value 数组
          * @return value 数量
          */
@@ -168,18 +168,18 @@ namespace hgl
             const int count = GetCount();
             if (count > 0) {
                 ReserveContainer(value_array, count);
-                
+
                 for (const auto& [key, value] : map_data) {
                     AddToContainer(value_array, value);
                 }
             }
             return (int)GetContainerSize(value_array);
         }
-        
+
         /**
          * 同时获取 Key 和 Value 数组（保证顺序一致）
          * 这是保存状态时最高效的方式
-         * 
+         *
          * @param key_array 输出的 key 数组
          * @param value_array 输出的 value 数组
          * @return 元素数量
@@ -188,25 +188,25 @@ namespace hgl
         int GetKeyValueArrays(KeyArray& key_array, ValueArray& value_array) const {
             ClearContainer(key_array);
             ClearContainer(value_array);
-            
+
             const int count = GetCount();
             if (count <= 0) return 0;
-            
+
             ReserveContainer(key_array, count);
             ReserveContainer(value_array, count);
-            
+
             for (const auto& [key, value] : map_data) {
                 AddToContainer(key_array, key);
                 AddToContainer(value_array, value);
             }
-            
+
             return count;
         }
-        
+
         /**
          * 从独立的 Key/Value 数组重建 Map（用于快速反序列化）
          * 此操作会先清空现有内容
-         * 
+         *
          * @param keys Key 数组（可以是 ValueArray<K>、std::vector<K> 等）
          * @param values Value 数组
          * @param count 元素数量（可选，默认使用数组大小，-1 表示自动）
@@ -215,30 +215,30 @@ namespace hgl
         template<typename KeyArray, typename ValueArray>
         int RebuildFromArrays(const KeyArray& keys, const ValueArray& values, int count = -1) {
             Clear();
-            
+
             // 确定实际数量
             int key_count = GetArrayCount(keys);
             int value_count = GetArrayCount(values);
-            int actual_count = (count < 0) ? std::min(key_count, value_count) : 
+            int actual_count = (count < 0) ? std::min(key_count, value_count) :
                               std::min(count, std::min(key_count, value_count));
-            
+
             if (actual_count <= 0) return 0;
-            
+
             // 预分配空间
             map_data.reserve(actual_count);
-            
+
             // 重建 map
             for (int i = 0; i < actual_count; ++i) {
                 map_data[GetArrayElement(keys, i)] = GetArrayElement(values, i);
             }
-            
+
             return actual_count;
         }
-        
+
         /**
          * 批量添加（从独立数组）
          * 与 RebuildFromArrays 不同，此函数不会清空现有内容，只添加新元素
-         * 
+         *
          * @param keys Key 数组
          * @param values Value 数组
          * @param count 元素数量（可选）
@@ -248,23 +248,23 @@ namespace hgl
         int AddFromArrays(const KeyArray& keys, const ValueArray& values, int count = -1) {
             int key_count = GetArrayCount(keys);
             int value_count = GetArrayCount(values);
-            int actual_count = (count < 0) ? std::min(key_count, value_count) : 
+            int actual_count = (count < 0) ? std::min(key_count, value_count) :
                               std::min(count, std::min(key_count, value_count));
-            
+
             int added = 0;
             for (int i = 0; i < actual_count; ++i) {
                 if (Add(GetArrayElement(keys, i), GetArrayElement(values, i))) {
                     ++added;
                 }
             }
-            
+
             return added;
         }
-        
+
         // ============================================================
         // 枚举接口（兼容原 Map API）
         // ============================================================
-        
+
         /**
          * 枚举所有键值对
          */
@@ -284,7 +284,7 @@ namespace hgl
                 func(key, value);
             }
         }
-        
+
         /**
          * 枚举所有键
          */
@@ -294,7 +294,7 @@ namespace hgl
                 func(key);
             }
         }
-        
+
         /**
          * 枚举所有值
          */
@@ -304,11 +304,11 @@ namespace hgl
                 func(value);
             }
         }
-        
+
         // ============================================================
         // 兼容旧 API（用于与 UnorderedMap<K,V> 通用代码）
         // ============================================================
-        
+
         /**
          * 获取所有 key 列表（兼容旧 API）
          */
@@ -316,7 +316,7 @@ namespace hgl
         int GetKeyList(IT& il_list) {
             return GetKeyArray(il_list);
         }
-        
+
         /**
          * 获取所有 value 列表（兼容旧 API）
          */
@@ -324,7 +324,7 @@ namespace hgl
         int GetValueList(IT& il_list) {
             return GetValueArray(il_list);
         }
-        
+
         /**
          * 同时获取 key 和 value 列表（兼容旧 API）
          */
@@ -332,38 +332,38 @@ namespace hgl
         int GetList(ITK& key_list, ITV& value_list) {
             return GetKeyValueArrays(key_list, value_list);
         }
-        
+
         // ============================================================
         // STL 迭代器支持
         // ============================================================
-        
+
         /**
          * 获取 begin 迭代器（非 const）
          */
         auto begin() { return map_data.begin(); }
-        
+
         /**
          * 获取 end 迭代器（非 const）
          */
         auto end() { return map_data.end(); }
-        
+
         /**
          * 获取 begin 迭代器（const）
          */
         auto begin() const { return map_data.begin(); }
-        
+
         /**
          * 获取 end 迭代器（const）
          */
         auto end() const { return map_data.end(); }
-        
+
     protected:
         // ============================================================
         // 辅助函数：处理不同类型的数组/容器
         // ============================================================
-        
+
         // -------- 清空容器 --------
-        
+
         /**
          * 清空 ValueArray<T>
          */
@@ -371,7 +371,7 @@ namespace hgl
         static void ClearContainer(ValueArray<T>& arr) {
             arr.Clear();
         }
-        
+
         /**
          * 清空 std::vector<T>
          */
@@ -379,9 +379,9 @@ namespace hgl
         static void ClearContainer(std::vector<T>& vec) {
             vec.clear();
         }
-        
+
         // -------- 预留容量 --------
-        
+
         /**
          * 为 ValueArray<T> 预留空间
          */
@@ -389,7 +389,7 @@ namespace hgl
         static void ReserveContainer(ValueArray<T>& arr, int capacity) {
             arr.SetMaxCount(capacity);
         }
-        
+
         /**
          * 为 std::vector<T> 预留空间
          */
@@ -397,9 +397,9 @@ namespace hgl
         static void ReserveContainer(std::vector<T>& vec, int capacity) {
             vec.reserve(capacity);
         }
-        
+
         // -------- 添加元素 --------
-        
+
         /**
          * 向 ValueArray<T> 添加元素
          */
@@ -407,7 +407,7 @@ namespace hgl
         static void AddToContainer(ValueArray<T>& arr, const T& value) {
             arr.Add(value);
         }
-        
+
         /**
          * 向 std::vector<T> 添加元素
          */
@@ -415,9 +415,9 @@ namespace hgl
         static void AddToContainer(std::vector<T>& vec, const T& value) {
             vec.push_back(value);
         }
-        
+
         // -------- 获取容器大小 --------
-        
+
         /**
          * 获取 ValueArray<T> 的大小
          */
@@ -425,7 +425,7 @@ namespace hgl
         static size_t GetContainerSize(const ValueArray<T>& arr) {
             return arr.GetCount();
         }
-        
+
         /**
          * 获取 std::vector<T> 的大小
          */
@@ -433,9 +433,9 @@ namespace hgl
         static size_t GetContainerSize(const std::vector<T>& vec) {
             return vec.size();
         }
-        
+
         // -------- 原有的数组访问函数 --------
-        
+
         /**
          * 获取 ValueArray<T> 的大小
          */
@@ -443,7 +443,7 @@ namespace hgl
         static int GetArrayCount(const ValueArray<T>& arr) {
             return arr.GetCount();
         }
-        
+
         /**
          * 获取 ValueArray<T> 的指定索引元素
          */
@@ -451,7 +451,7 @@ namespace hgl
         static const T& GetArrayElement(const ValueArray<T>& arr, int index) {
             return arr[index];
         }
-        
+
         /**
          * 获取 std::vector<T> 的大小
          */
@@ -459,7 +459,7 @@ namespace hgl
         static int GetArrayCount(const std::vector<T>& arr) {
             return static_cast<int>(arr.size());
         }
-        
+
         /**
          * 获取 std::vector<T> 的指定索引元素
          */
@@ -467,7 +467,7 @@ namespace hgl
         static const T& GetArrayElement(const std::vector<T>& arr, int index) {
             return arr[index];
         }
-        
+
         /**
          * 获取 C 数组指针的元素（需要外部传递 count）
          */
