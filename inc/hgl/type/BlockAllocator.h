@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/type/SimpleValuePool.h>
+#include<hgl/type/FixedValuePool.h>
 #include<hgl/type/FlatOrderedSet.h>
 
 namespace hgl
@@ -40,7 +40,7 @@ namespace hgl
 
     protected:
 
-        SimpleValuePool<UserNode> ud_pool;    ///<用户数据占用信息池
+        FixedValuePool<UserNode> ud_pool;    ///<用户数据占用信息池
 
         FlatOrderedSet<UserNode *> ud_set;      ///<用户数据占用合集
 
@@ -64,7 +64,7 @@ namespace hgl
 
     private:
 
-        SimpleValuePool<ChainNode> node_pool; ///<链表节点池
+        FixedValuePool<ChainNode> node_pool; ///<链表节点池
 
         int free_count;                     ///<空闲数据块数量
 
