@@ -27,7 +27,7 @@ namespace hgl
 
         size_t GetLength() const { return length; }
 
-        // 用于 FlatOrderedValueSet 的比较（只比较字符串内容）
+        // 用于 FlatOrderedSet 的比较（只比较字符串内容）
         std::strong_ordering operator<=>(const ConstStringView<SC> &other) const
         {
             if(length != other.length)

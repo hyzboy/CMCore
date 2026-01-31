@@ -42,7 +42,7 @@ namespace hgl
 
         SimpleValuePool<UserNode> ud_pool;    ///<用户数据占用信息池
 
-        FlatOrderedValueSet<UserNode *> ud_set;      ///<用户数据占用合集
+        FlatOrderedSet<UserNode *> ud_set;      ///<用户数据占用合集
 
     public:
 

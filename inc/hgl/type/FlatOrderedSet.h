@@ -356,9 +356,15 @@ namespace hgl
             return std::upper_bound(data.begin(), data.end(), value);
         }
 
-        // ==================== 运算符 ====Set<T>& other)
+        // ==================== 运算符 ====================
+
+        /**
+         * @brief CN:赋值运算符\nEN:Assignment operator
+         */
+        FlatOrderedSet<T>& operator=(const FlatOrderedSet<T>& other)
         {
             data = other.data;
+            return *this;
         }
 
         /**

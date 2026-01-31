@@ -5,9 +5,9 @@ using namespace hgl;
 
 int main()
 {
-    std::cout << "Testing empty FlatOrderedValueSet GetLast..." << std::endl;
+    std::cout << "Testing empty FlatOrderedSet GetLast..." << std::endl;
 
-    FlatOrderedValueSet<int> set;
+    FlatOrderedSet<int> set;
     int val = 999;
 
     std::cout << "Set count: " << set.GetCount() << std::endl;

@@ -39,7 +39,7 @@ Analyze the implementation of inc/hgl/type/HashIDMap.h and inc/hgl/type/Unordere
 
 ### Existing Files (Already Present)
 
-- **inc/hgl/type/FlatOrderedValueSet.h** - Ordered set for trivially copyable types
+- **inc/hgl/type/FlatOrderedSet.h** - Ordered set for trivially copyable types
 - **inc/hgl/type/OrderedManagedSet.h** - Ordered set for non-trivial types
 
 ## Design Decisions
@@ -48,7 +48,7 @@ Analyze the implementation of inc/hgl/type/HashIDMap.h and inc/hgl/type/Unordere
 
 Although the task mentioned "基于红黑树" (based on red-black trees), the implementation uses **sorted arrays with binary search** for the following reasons:
 
-1. **Consistency**: Existing FlatOrderedValueSet and OrderedManagedSet use sorted arrays
+1. **Consistency**: Existing FlatOrderedSet and OrderedManagedSet use sorted arrays
 2. **Cache-friendly**: Contiguous memory provides better cache performance
 3. **Simpler code**: Easier to maintain and understand
 4. **No existing RB-tree infrastructure**: No red-black tree implementation exists in the codebase
@@ -74,7 +74,7 @@ After this implementation, CMCore now has a complete set of ordered containers:
 
 | Container Type | Key-Value | Trivial Types | Non-Trivial Types |
 |----------------|-----------|---------------|-------------------|
-| **Set** | No | FlatOrderedValueSet ✅ | OrderedManagedSet ✅ |
+| **Set** | No | FlatOrderedSet ✅ | OrderedManagedSet ✅ |
 | **Map** | Yes | OrderedMap ✅ | OrderedManagedMap ✅ |
 
 ## Code Quality

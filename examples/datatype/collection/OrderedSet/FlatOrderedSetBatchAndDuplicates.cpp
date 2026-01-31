@@ -8,7 +8,7 @@ using namespace std;
 int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
-    cout << "TEST 02: FlatOrderedValueSet Batch Add / Delete" << endl;
+    cout << "TEST 02: FlatOrderedSet Batch Add / Delete" << endl;
     cout << "========================================" << endl;
 
     FlatOrderedSet<int> set;

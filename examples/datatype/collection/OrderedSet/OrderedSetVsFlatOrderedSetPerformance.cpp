@@ -265,7 +265,7 @@ void Test06_MemoryFootprint(int64 count)
 int os_main(int, os_char**)
 {
     cout << "\n╔════════════════════════════════════════════════════════════╗" << endl;
-    cout << "║  OrderedSet vs FlatOrderedValueSet 性能测试       ║" << endl;
+    cout << "║  OrderedSet vs FlatOrderedSet 性能测试       ║" << endl;
     cout << "╚════════════════════════════════════════════════════════════╝" << endl;
     
     // 小规模测试
@@ -297,7 +297,7 @@ int os_main(int, os_char**)
     cout << "    ✗ 不支持零拷贝序列化" << endl;
     cout << "    ✗ 节点开销增加内存使用" << endl;
     
-    cout << "\n  FlatOrderedValueSet (向量):" << endl;
+    cout << "\n  FlatOrderedSet (向量):" << endl;
     cout << "    ✓ O(log n) 二分查找" << endl;
     cout << "    ✓ 连续内存 - 查找缓存友好" << endl;
     cout << "    ✓ 支持零拷贝序列化 (LoadFromBuffer)" << endl;
@@ -305,7 +305,7 @@ int os_main(int, os_char**)
     
     cout << "\n  使用场景指南:" << endl;
     cout << "    • OrderedSet: 频繁插入/删除操作" << endl;
-    cout << "    • FlatOrderedValueSet: 批量加载+频繁查询, 序列化" << endl;
+    cout << "    • FlatOrderedSet: 批量加载+频繁查询, 序列化" << endl;
     
     cout << "\n✅ 所有性能测试完成" << endl;
     return 0;

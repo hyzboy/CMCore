@@ -57,7 +57,7 @@ namespace hgl
     * ```
     *
     * @see OrderedMap 通用版本（支持非平凡类型）
-    * @see FlatOrderedValueSet 单值集合版本
+    * @see FlatOrderedSet 单值集合版本
     */
     template<typename K, typename V>
     class FlatOrderedMap

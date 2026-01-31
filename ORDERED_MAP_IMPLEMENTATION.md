@@ -18,7 +18,7 @@ The implementation follows the same pattern as existing ordered structures in CM
 - Provides O(n) insertion/deletion (due to array shifting)
 
 ### Rationale for Sorted Arrays vs Red-Black Trees
-1. **Consistency**: Existing FlatOrderedValueSet and OrderedManagedSet use sorted arrays
+1. **Consistency**: Existing FlatOrderedSet and OrderedManagedSet use sorted arrays
 2. **Cache-friendly**: Contiguous memory improves cache performance for iterations
 3. **Simpler code**: Easier to maintain and debug
 4. **Good for read-heavy workloads**: Excellent iteration and lookup performance
@@ -97,7 +97,7 @@ Comprehensive test suite covering:
 - Follows same pattern as existing MapTest.cpp
 
 ## Existing Files (Already Present)
-- **inc/hgl/type/FlatOrderedValueSet.h**: Ordered set for trivially copyable types
+- **inc/hgl/type/FlatOrderedSet.h**: Ordered set for trivially copyable types
 - **inc/hgl/type/OrderedManagedSet.h**: Ordered set for non-trivial types
 
 ## API Compatibility

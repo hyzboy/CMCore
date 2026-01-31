@@ -8,7 +8,7 @@ using namespace std;
 int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
-    cout << "TEST 03: FlatOrderedValueSet Comparison & Copy" << endl;
+    cout << "TEST 03: FlatOrderedSet Comparison & Copy" << endl;
     cout << "========================================" << endl;
 
     cout << "\n[3.1] Equality for identical sets:" << endl;

@@ -122,7 +122,7 @@ namespace hgl
     {
     protected:
 
-        FlatOrderedValueSet<THREAD *> thread_set;
+        FlatOrderedSet<THREAD *> thread_set;
 
     public:
 

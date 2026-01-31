@@ -19,7 +19,7 @@ constexpr bool is_const_iterator()
 int os_main(int, os_char**)
 {
     cout << "\n========================================" << endl;
-    cout << "TEST 04: FlatOrderedValueSet Const-Correctness Detection" << endl;
+    cout << "TEST 04: FlatOrderedSet Const-Correctness Detection" << endl;
     cout << "========================================" << endl;
 
     FlatOrderedSet<int> set;

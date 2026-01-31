@@ -277,12 +277,12 @@ void test_ordered_id_name()
 void test_sorted_set_with_id_name()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 5: FlatOrderedValueSet<OrderedIDName>" << std::endl;
+    std::cout << "TEST 5: FlatOrderedSet<OrderedIDName>" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     HGL_DEFINE_ANSI_IDNAME(MaterialName);
 
-    std::cout << "[5.1] Create FlatOrderedValueSet of OrderedIDName:" << std::endl;
+    std::cout << "[5.1] Create FlatOrderedSet of OrderedIDName:" << std::endl;
     MaterialNameSet name_set;
 
     MaterialName mat1("Texture1");
@@ -326,7 +326,7 @@ void test_edge_cases()
     std::cout << "========================================\n" << std::endl;
 
     std::cout << "[6.1] Empty operations:" << std::endl;
-    FlatOrderedValueSet<int> empty_set;
+    FlatOrderedSet<int> empty_set;
     TEST_ASSERT(empty_set.IsEmpty(), "Empty set is empty");
     TEST_ASSERT(!empty_set.Delete(5), "Delete from empty fails");
     int val;
@@ -370,7 +370,7 @@ void test_edge_cases()
     TEST_ASSERT(stress_css.GetCount() == 1000, "Stress test: 1000 strings added");
 
     std::cout << "\n[6.7] Memory reallocation test:" << std::endl;
-    FlatOrderedValueSet<int> realloc_set;
+    FlatOrderedSet<int> realloc_set;
     realloc_set.Reserve(10);
     for (int i = 0; i < 1000; i++) {
         realloc_set.Add(i * 3);
