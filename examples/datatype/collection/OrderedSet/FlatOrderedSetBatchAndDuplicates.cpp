@@ -1,4 +1,4 @@
-﻿#include<hgl/type/FlatOrderedValueSet.h>
+﻿#include<hgl/type/FlatOrderedSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -11,7 +11,7 @@ int os_main(int, os_char**)
     cout << "TEST 02: FlatOrderedValueSet Batch Add / Delete" << endl;
     cout << "========================================" << endl;
 
-    FlatOrderedValueSet<int> set;
+    FlatOrderedSet<int> set;
 
     cout << "\n[2.1] Batch Add without duplicates:" << endl;
     int values1[] = {40, 10, 30, 20};

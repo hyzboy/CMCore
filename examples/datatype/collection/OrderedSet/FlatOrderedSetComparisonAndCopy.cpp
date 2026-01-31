@@ -1,4 +1,4 @@
-﻿#include<hgl/type/FlatOrderedValueSet.h>
+﻿#include<hgl/type/FlatOrderedSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -12,7 +12,7 @@ int os_main(int, os_char**)
     cout << "========================================" << endl;
 
     cout << "\n[3.1] Equality for identical sets:" << endl;
-    FlatOrderedValueSet<int> a, b;
+    FlatOrderedSet<int> a, b;
     int base[] = {1, 3, 5, 7};
     a.Add(base, 4);
     b.Add(base, 4);
@@ -32,7 +32,7 @@ int os_main(int, os_char**)
     cout << "  ✓ a != b with different tail element" << endl;
 
     cout << "\n[3.4] Copy assignment and self-assignment:" << endl;
-    FlatOrderedValueSet<int> c;
+    FlatOrderedSet<int> c;
     c = a;
     assert(c == a);
     cout << "  ✓ Copy assignment produced equal set" << endl;

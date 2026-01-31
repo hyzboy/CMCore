@@ -10,12 +10,12 @@ namespace hgl
      * 有序集合</br>
      * 集合数据列表中不允许数据出现重复性，同时它会将数据排序</br>
      * 使用 std::vector 实现，支持连续内存布局</br>
-     * 
+     *
      * <b>特性：</b>
      * - 支持任意类型（需要支持 operator< 和 operator==）
      * - 自动去重和排序
      * - 查找 O(log n)，插入/删除 O(n)
-     * 
+     *
      * <b>重要提示：</b>
      * - 零拷贝序列化方法（GetData/LoadFromBuffer）仅适用于平凡类型（trivially copyable）
      * - 非平凡类型可以使用其他方法（Add/Delete/Find等）
@@ -76,19 +76,19 @@ namespace hgl
          * @brief CN:获取原始数据指针（仅限平凡类型用于零拷贝序列化）\nEN:Get raw data pointer (for trivially copyable types only)
          * @warning 此方法仅适用于平凡可复制类型，非平凡类型需使用对象级序列化
          */
-        T* GetData() 
-        { 
+        T* GetData()
+        {
             static_assert(std::is_trivially_copyable_v<T>,
                           "GetData() for binary serialization requires trivially copyable types. "
                           "For non-trivial types, iterate and serialize each element separately.");
-            return data.empty() ? nullptr : data.data(); 
+            return data.empty() ? nullptr : data.data();
         }
-        const T* GetData() const 
-        { 
+        const T* GetData() const
+        {
             static_assert(std::is_trivially_copyable_v<T>,
                           "GetData() for binary serialization requires trivially copyable types. "
                           "For non-trivial types, iterate and serialize each element separately.");
-            return data.empty() ? nullptr : data.data(); 
+            return data.empty() ? nullptr : data.data();
         }
 
         /**
@@ -103,7 +103,7 @@ namespace hgl
             static_assert(std::is_trivially_copyable_v<T>,
                           "LoadFromBuffer() for binary deserialization requires trivially copyable types. "
                           "For non-trivial types, deserialize each element and use Add() instead.");
-            
+
             if (!buffer || count <= 0)
                 return;
 

@@ -1,5 +1,5 @@
 #include<hgl/type/OrderedSet.h>
-#include<hgl/type/FlatOrderedValueSet.h>
+#include<hgl/type/FlatOrderedSet.h>
 #include<iostream>
 #include<chrono>
 #include<random>
@@ -56,7 +56,7 @@ void Test01_SequentialInsert(int64 count)
     PrintHeader("测试 01: 顺序插入 (" + to_string(count) + " 个元素)");
     
     OrderedSet<int> btree_set;
-    FlatOrderedValueSet<int> flat_set;
+    FlatOrderedSet<int> flat_set;
     
     // BTree插入
     double btree_time = MeasureTime([&]() {
@@ -83,7 +83,7 @@ void Test02_RandomInsert(int64 count)
     auto random_data = GenerateRandomData(count);
     
     OrderedSet<int> btree_set;
-    FlatOrderedValueSet<int> flat_set;
+    FlatOrderedSet<int> flat_set;
     
     // BTree插入
     double btree_time = MeasureTime([&]() {
@@ -114,7 +114,7 @@ void Test03_BulkInsertThenLookup(int64 count, int64 lookup_count)
     auto lookup_data = GenerateRandomData(lookup_count, count * 2);
     
     OrderedSet<int> btree_set;
-    FlatOrderedValueSet<int> flat_set;
+    FlatOrderedSet<int> flat_set;
     
     // BTree - 插入
     double btree_insert = MeasureTime([&]() {
@@ -163,7 +163,7 @@ void Test04_MixedOperations(int64 count)
     auto data = GenerateRandomData(count);
     
     OrderedSet<int> btree_set;
-    FlatOrderedValueSet<int> flat_set;
+    FlatOrderedSet<int> flat_set;
     
     // BTree - 混合操作
     double btree_time = MeasureTime([&]() {
@@ -207,7 +207,7 @@ void Test05_BulkLoadScenario(int64 count)
     
     cout << "  去重后的唯一元素: " << sorted_data.size() << endl;
     
-    FlatOrderedValueSet<int> flat_set;
+    FlatOrderedSet<int> flat_set;
     OrderedSet<int> btree_set;
     
     // Flat - 使用LoadFromBuffer（零拷贝加载）
@@ -238,7 +238,7 @@ void Test06_MemoryFootprint(int64 count)
     auto data = GenerateRandomData(count);
     
     OrderedSet<int> btree_set;
-    FlatOrderedValueSet<int> flat_set;
+    FlatOrderedSet<int> flat_set;
     
     for (auto val : data)
     {

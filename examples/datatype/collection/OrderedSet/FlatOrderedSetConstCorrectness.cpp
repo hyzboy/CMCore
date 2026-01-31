@@ -1,4 +1,4 @@
-#include<hgl/type/FlatOrderedValueSet.h>
+#include<hgl/type/FlatOrderedSet.h>
 #include<iostream>
 #include<cassert>
 #include<type_traits>
@@ -10,7 +10,7 @@ using namespace std;
 template<typename T>
 constexpr bool is_const_iterator()
 {
-    using SetType = FlatOrderedValueSet<T>;
+    using SetType = FlatOrderedSet<T>;
     using ConstIter = decltype(std::declval<const SetType>().begin());
     using Pointee = std::remove_pointer_t<ConstIter>;
     return std::is_const_v<Pointee>;
@@ -22,7 +22,7 @@ int os_main(int, os_char**)
     cout << "TEST 04: FlatOrderedValueSet Const-Correctness Detection" << endl;
     cout << "========================================" << endl;
 
-    FlatOrderedValueSet<int> set;
+    FlatOrderedSet<int> set;
     set.Add(1);
     set.Add(2);
     set.Add(3);
@@ -32,7 +32,7 @@ int os_main(int, os_char**)
     cout << "\n[4.1] begin()/end() constness check:" << endl;
     cout << "  begin() const returns " << (begin_is_const ? "const T*" : "T* (mutable!)") << endl;
 
-    const FlatOrderedValueSet<int>& cset = set;
+    const FlatOrderedSet<int>& cset = set;
 
     // Always treat const container begin() as const iterator
     auto ptr = cset.begin();

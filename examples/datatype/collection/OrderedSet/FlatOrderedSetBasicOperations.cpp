@@ -1,4 +1,4 @@
-﻿#include<hgl/type/FlatOrderedValueSet.h>
+﻿#include<hgl/type/FlatOrderedSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -11,7 +11,7 @@ int os_main(int, os_char**)
     cout << "TEST 01: FlatOrderedValueSet Basic Operations" << endl;
     cout << "========================================" << endl;
 
-    FlatOrderedValueSet<int> set;
+    FlatOrderedSet<int> set;
     assert(set.IsEmpty());
     assert(set.GetCount() == 0);
 

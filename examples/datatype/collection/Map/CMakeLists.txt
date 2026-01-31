@@ -6,12 +6,12 @@ cm_example_project_base(
 )
 
 cm_example_project_base(
-    PROJECT_NAME UnorderedMapTest
+    PROJECT_NAME UnorderedMapSerializationAndBenchmark
     FOLDER_PATH "Examples/CMCore/DataType/Collection/Map"
-    SOURCES UnorderedMapTest.cpp
+    SOURCES UnorderedMapSerializationAndBenchmark.cpp
     PRIVATE_LIBRARIES CMCore
 )
 
-cm_example_project("DataType/Collection/Map" MapTest                MapTest.cpp)
-cm_example_project("DataType/Collection/Map" OrderedMapTest         OrderedMapTest.cpp)
-cm_example_project("DataType/Collection/Map" FlatOrderedMapTest     FlatOrderedMapTest.cpp)
+cm_example_project("DataType/Collection/Map" UnorderedMapBasicOperations        UnorderedMapBasicOperations.cpp)
+cm_example_project("DataType/Collection/Map" OrderedMapFunctionalOrdering       OrderedMapFunctionalOrdering.cpp)
+cm_example_project("DataType/Collection/Map" FlatOrderedMapTest                 FlatOrderedMapTest.cpp)
