@@ -452,6 +452,10 @@ namespace hgl
          */
         int Union(const ThisClass& other)
         {
+            // 如果是自身，无需操作
+            if (this == &other)
+                return 0;
+
             int added = 0;
             other.Enum([&](const T& value) {
                 if (Add(value))
@@ -465,6 +469,10 @@ namespace hgl
          */
         int Intersect(const ThisClass& other)
         {
+            // 如果是自身，保持不变
+            if (this == &other)
+                return 0;
+
             int removed = 0;
 
             ValueArray<T> to_remove;
@@ -487,6 +495,14 @@ namespace hgl
          */
         int Difference(const ThisClass& other)
         {
+            // 如果是自身，结果为空集
+            if (this == &other)
+            {
+                int removed = GetCount();
+                Clear();
+                return removed;
+            }
+
             int removed = 0;
             other.Enum([&](const T& value) {
                 if (Delete(value))

@@ -7,3 +7,12 @@ cm_example_project("DataType/Collection/UnorderedSet" FlatUnorderedSetComparison
 
 ## FlatUnorderedSet compact/performance tests
 cm_example_project("DataType/Collection/UnorderedSet" FlatUnorderedSetCompactAndPerformance     FlatUnorderedSetCompactAndPerformance.cpp)
+
+## UnorderedSet tests and FlatUnorderedSet vs UnorderedSet comparison
+cm_example_project("DataType/Collection/UnorderedSet" UnorderedSetBasicAndComparison            UnorderedSetBasicAndComparison.cpp)
+
+## UnorderedSet independent tests
+cm_example_project("DataType/Collection/UnorderedSet" UnorderedSetSimple                       UnorderedSetSimple.cpp)
+cm_example_project("DataType/Collection/UnorderedSet" UnorderedSetBasicOperations              UnorderedSetBasicOperations.cpp)
+cm_example_project("DataType/Collection/UnorderedSet" UnorderedSetSetOperations                UnorderedSetSetOperations.cpp)
+cm_example_project("DataType/Collection/UnorderedSet" UnorderedSetComparisonOperators          UnorderedSetComparisonOperators.cpp)

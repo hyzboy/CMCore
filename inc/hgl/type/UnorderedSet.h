@@ -183,6 +183,10 @@ namespace hgl
          */
         int64 Union(const ThisClass& other)
         {
+            // 如果是自身，无需操作
+            if (this == &other)
+                return 0;
+
             int64 added = 0;
             other.Enum([&](const T& value) {
                 if (Add(value))
@@ -196,6 +200,10 @@ namespace hgl
          */
         int64 Intersect(const ThisClass& other)
         {
+            // 如果是自身，保持不变
+            if (this == &other)
+                return 0;
+
             std::vector<T> to_remove;
             to_remove.reserve(data.size());
 
@@ -220,6 +228,14 @@ namespace hgl
          */
         int64 Difference(const ThisClass& other)
         {
+            // 如果是自身，结果为空集
+            if (this == &other)
+            {
+                int64 removed = static_cast<int64>(data.size());
+                Clear();
+                return removed;
+            }
+
             int64 removed = 0;
             other.Enum([&](const T& value) {
                 if (Delete(value))
