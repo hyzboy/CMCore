@@ -296,11 +296,31 @@ namespace hgl
         }
 
         /**
+         * 枚举所有键（const 版本）
+         */
+        template<typename F>
+        void EnumKeys(F&& func) const {
+            for (const auto& [key, value] : map_data) {
+                func(key);
+            }
+        }
+
+        /**
          * 枚举所有值
          */
         template<typename F>
         void EnumValues(F&& func) {
             for (auto& [key, value] : map_data) {
+                func(value);
+            }
+        }
+
+        /**
+         * 枚举所有值（const 版本）
+         */
+        template<typename F>
+        void EnumValues(F&& func) const {
+            for (const auto& [key, value] : map_data) {
                 func(value);
             }
         }

@@ -469,6 +469,18 @@ namespace hgl
         * @brief CN:枚举所有键。\nEN:Enumerate all keys.
         */
         template<typename F>
+        void EnumKeys(F&& func)
+        {
+            for (auto& [key, value] : map_data)
+            {
+                func(key);
+            }
+        }
+
+        /**
+        * @brief CN:枚举所有键（const版本）。\nEN:Enumerate all keys (const version).
+        */
+        template<typename F>
         void EnumKeys(F&& func) const
         {
             for (const auto& [key, value] : map_data)

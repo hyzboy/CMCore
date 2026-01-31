@@ -5,6 +5,9 @@
 #include<unordered_map>
 #include<map>
 #include<hgl/type/ValueKVMap.h>
+#include<hgl/type/OrderedMap.h>
+#include<hgl/type/UnorderedMap.h>
+#include<hgl/type/FlatOrderedMap.h>
 #include<absl/container/flat_hash_map.h>
 #include<absl/container/node_hash_map.h>
 #include<absl/container/btree_map.h>
@@ -382,6 +385,162 @@ BenchmarkResult BenchmarkAbslBtreeMap(const vector<TestObject> &objects,
 }
 
 // ============================================================================
+// 测试 hgl::OrderedMap<int, int>
+// ============================================================================
+
+BenchmarkResult BenchmarkHglOrderedMap(const vector<TestObject> &objects,
+                                        const vector<int> &find_indices,
+                                        const vector<int> &erase_indices)
+{
+    BenchmarkResult result;
+    result.name = "hgl::OrderedMap<int,int>";
+
+    hgl::OrderedMap<int, int> map;
+
+    // 插入
+    {
+        Timer timer;
+        for (size_t i = 0; i < objects.size(); ++i)
+        {
+            map.Add((int)i, (int)i);
+        }
+        result.insert_time = timer.ElapsedMs();
+    }
+
+    // 查找
+    {
+        Timer timer;
+        int found = 0;
+        for (int idx : find_indices)
+        {
+            int value;
+            if (map.Get((int)(idx % objects.size()), value))
+                ++found;
+        }
+        result.find_time = timer.ElapsedMs();
+    }
+
+    // 删除
+    {
+        Timer timer;
+        for (int idx : erase_indices)
+        {
+            map.DeleteByKey((int)(idx % objects.size()));
+        }
+        result.erase_time = timer.ElapsedMs();
+    }
+
+    result.total_time = result.insert_time + result.find_time + result.erase_time;
+    result.memory_used = map.GetCount() * 16 + 1024 * objects.size();
+
+    return result;
+}
+
+// ============================================================================
+// 测试 hgl::UnorderedMap<int, int>
+// ============================================================================
+
+BenchmarkResult BenchmarkHglUnorderedMap(const vector<TestObject> &objects,
+                                          const vector<int> &find_indices,
+                                          const vector<int> &erase_indices)
+{
+    BenchmarkResult result;
+    result.name = "hgl::UnorderedMap<int,int>";
+
+    hgl::UnorderedMap<int, int> map;
+
+    // 插入
+    {
+        Timer timer;
+        for (size_t i = 0; i < objects.size(); ++i)
+        {
+            map.Add((int)i, (int)i);
+        }
+        result.insert_time = timer.ElapsedMs();
+    }
+
+    // 查找
+    {
+        Timer timer;
+        int found = 0;
+        for (int idx : find_indices)
+        {
+            int value;
+            if (map.Get((int)(idx % objects.size()), value))
+                ++found;
+        }
+        result.find_time = timer.ElapsedMs();
+    }
+
+    // 删除
+    {
+        Timer timer;
+        for (int idx : erase_indices)
+        {
+            map.DeleteByKey((int)(idx % objects.size()));
+        }
+        result.erase_time = timer.ElapsedMs();
+    }
+
+    result.total_time = result.insert_time + result.find_time + result.erase_time;
+    result.memory_used = map.GetCount() * 16 + 1024 * objects.size();
+
+    return result;
+}
+
+// ============================================================================
+// 测试 hgl::FlatOrderedMap<int, int>
+// ============================================================================
+
+BenchmarkResult BenchmarkHglFlatOrderedMap(const vector<TestObject> &objects,
+                                            const vector<int> &find_indices,
+                                            const vector<int> &erase_indices)
+{
+    BenchmarkResult result;
+    result.name = "hgl::FlatOrderedMap<int,int>";
+
+    hgl::FlatOrderedMap<int, int> map;
+
+    // 插入
+    {
+        Timer timer;
+        for (size_t i = 0; i < objects.size(); ++i)
+        {
+            map.Add((int)i, (int)i);
+        }
+        result.insert_time = timer.ElapsedMs();
+    }
+
+    // 查找
+    {
+        Timer timer;
+        int found = 0;
+        for (int idx : find_indices)
+        {
+            int value;
+            if (map.Get((int)(idx % objects.size()), value))
+                ++found;
+        }
+        result.find_time = timer.ElapsedMs();
+    }
+
+    // 删除
+    {
+        Timer timer;
+        for (int idx : erase_indices)
+        {
+            map.DeleteByKey((int)(idx % objects.size()));
+        }
+        result.erase_time = timer.ElapsedMs();
+    }
+
+    result.total_time = result.insert_time + result.find_time + result.erase_time;
+    result.memory_used = map.GetCount() * 8 + 1024 * objects.size();  // FlatOrderedMap 更紧凑
+
+    return result;
+}
+
+// ============================================================================
 // 测试 hgl::UnorderedMap<int, TestObject*> - 已禁用
 // 原因：Map 内部使用 ManagedPool，要求 KeyValue<K,V> 符合 RAII 要求
 // ============================================================================
@@ -617,32 +776,34 @@ int main(int, char **)
 
     Timer test_timer;
 
-    cout << "\n[1/4] Testing std::unordered_map..." << endl;
+    cout << "\n[1/7] Testing std::unordered_map..." << endl;
     results.push_back(BenchmarkUnorderedMap(objects, find_indices, erase_indices));
 
-    cout << "[2/4] Testing std::map..." << endl;
+    cout << "[2/7] Testing std::map..." << endl;
     results.push_back(BenchmarkMap(objects, find_indices, erase_indices));
 
     // cout << "[3/6] Testing ValueKVMap..." << endl;
     // results.push_back(BenchmarkValueKVMap(objects, find_indices, erase_indices));
 
-    cout << "[3/6] Testing absl::flat_hash_map..." << endl;
+    cout << "[3/7] Testing absl::flat_hash_map..." << endl;
     results.push_back(BenchmarkAbslFlatHashMap(objects, find_indices, erase_indices));
 
-    cout << "[4/6] Testing absl::node_hash_map..." << endl;
+    cout << "[4/7] Testing absl::node_hash_map..." << endl;
     results.push_back(BenchmarkAbslNodeHashMap(objects, find_indices, erase_indices));
 
-    cout << "[5/6] Testing absl::btree_map..." << endl;
+    cout << "[5/7] Testing absl::btree_map..." << endl;
     results.push_back(BenchmarkAbslBtreeMap(objects, find_indices, erase_indices));
 
-    // hgl 容器都要求使用 ManagedPool，对于指针值而言很复杂
-    // 详见注释掉的 BenchmarkHglOrderedManagedMap 和 BenchmarkHglUnorderedMangedMap
+    cout << "[6/7] Testing hgl::OrderedMap<int, int>..." << endl;
+    results.push_back(BenchmarkHglOrderedMap(objects, find_indices, erase_indices));
 
-    // cout << "[6/8] Testing hgl::OrderedManagedMap..." << endl;
-    // results.push_back(BenchmarkHglOrderedManagedMap(find_indices, erase_indices));
+    cout << "[7/7] Testing hgl::UnorderedMap<int, int>..." << endl;
+    results.push_back(BenchmarkHglUnorderedMap(objects, find_indices, erase_indices));
 
-    // cout << "[7/8] Testing hgl::UnorderedMangedMap..." << endl;
-    // results.push_back(BenchmarkHglUnorderedMangedMap(find_indices, erase_indices));
+    // 注意：hgl::FlatOrderedMap 可以额外测试，但当前 main 函数中固定为 7 个测试
+    // 如需测试 FlatOrderedMap，可取消注释以下行并调整计数
+    // cout << "[8/8] Testing hgl::FlatOrderedMap<int, int>..." << endl;
+    // results.push_back(BenchmarkHglFlatOrderedMap(objects, find_indices, erase_indices));
 
     cout << "\nAll benchmarks completed in " << test_timer.ElapsedMs() << " ms" << endl;
 
