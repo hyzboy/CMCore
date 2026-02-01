@@ -131,6 +131,53 @@ namespace hgl
         }
 
         // ============================================================
+        // 迭代器支持（支持 range-based for 循环）
+        // ============================================================
+
+        /**
+         * @brief 获取迭代器起始位置
+         * @note 支持 for(auto [k, v] : map) 语法
+         */
+        auto begin() {
+            return map_data.begin();
+        }
+
+        /**
+         * @brief 获取迭代器结束位置
+         */
+        auto end() {
+            return map_data.end();
+        }
+
+        /**
+         * @brief 获取 const 迭代器起始位置
+         */
+        auto begin() const {
+            return map_data.begin();
+        }
+
+        /**
+         * @brief 获取 const 迭代器结束位置
+         */
+        auto end() const {
+            return map_data.end();
+        }
+
+        /**
+         * @brief 获取 const 迭代器起始位置
+         */
+        auto cbegin() const {
+            return map_data.cbegin();
+        }
+
+        /**
+         * @brief 获取 const 迭代器结束位置
+         */
+        auto cend() const {
+            return map_data.cend();
+        }
+
+        // ============================================================
         // 序列化支持：分离式 Key/Value 访问
         // ============================================================
 
@@ -352,30 +399,6 @@ namespace hgl
         int GetList(ITK& key_list, ITV& value_list) {
             return GetKeyValueArrays(key_list, value_list);
         }
-
-        // ============================================================
-        // STL 迭代器支持
-        // ============================================================
-
-        /**
-         * 获取 begin 迭代器（非 const）
-         */
-        auto begin() { return map_data.begin(); }
-
-        /**
-         * 获取 end 迭代器（非 const）
-         */
-        auto end() { return map_data.end(); }
-
-        /**
-         * 获取 begin 迭代器（const）
-         */
-        auto begin() const { return map_data.begin(); }
-
-        /**
-         * 获取 end 迭代器（const）
-         */
-        auto end() const { return map_data.end(); }
 
     protected:
         // ============================================================
