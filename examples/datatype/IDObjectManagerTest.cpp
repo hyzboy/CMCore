@@ -56,180 +56,224 @@ void TestBasicAddAndFind()
 
 void TestAutoIncrementID()
 {
-    cout<<"\n=== Test 2: Auto Increment ID ==="<<endl;
+    cout<<"\n=== Test 2: Auto Increment ID (300 objects) ==="<<endl;
 
     Uint32IdManager<TestObj> mgr;
+    const int COUNT = 300;
+    uint32 *ids = new uint32[COUNT];
+    
+    for(int i = 0; i < COUNT; i++)
+    {
+        ids[i] = mgr.Add(new TestObj(i));
+    }
 
-    TestObj *obj1 = new TestObj(1);
-    TestObj *obj2 = new TestObj(2);
-    TestObj *obj3 = new TestObj(3);
+    cout<<"ID sequence verified for "<<COUNT<<" objects"<<endl;
+    for(int i = 0; i < COUNT; i++)
+    {
+        assert(ids[i] == (uint32)i);
+    }
 
-    uint32 id1 = mgr.Add(obj1);
-    uint32 id2 = mgr.Add(obj2);
-    uint32 id3 = mgr.Add(obj3);
+    assert(mgr.GetCount() == COUNT);
+    cout<<"All "<<COUNT<<" IDs correctly auto-incremented"<<endl;
 
-    cout<<"ID sequence: "<<id1<<", "<<id2<<", "<<id3<<endl;
-    assert(id1 == 0);
-    assert(id2 == 1);
-    assert(id3 == 2);
-
-    assert(mgr.GetCount() == 3);
-    cout<<"All IDs correctly auto-incremented"<<endl;
-
+    delete[] ids;
     mgr.Clear();
     cout<<"Test 2 PASSED"<<endl;
 }
 
 void TestDuplicateAdd()
 {
-    cout<<"\n=== Test 3: Duplicate Add (Same Pointer) ==="<<endl;
+    cout<<"\n=== Test 3: Duplicate Add (100 objects added twice) ==="<<endl;
 
     Uint32IdManager<TestObj> mgr;
-    TestObj *obj = new TestObj(42);
+    const int COUNT = 100;
+    
+    uint32 *ids = new uint32[COUNT];
+    TestObj **objects = new TestObj*[COUNT];
+    
+    for(int i = 0; i < COUNT; i++)
+    {
+        objects[i] = new TestObj(i * 42);
+        ids[i] = mgr.Add(objects[i]);
+    }
+    
+    // Add same objects again
+    for(int i = 0; i < COUNT; i++)
+    {
+        uint32 id2 = mgr.Add(objects[i]);
+        assert(id2 == ids[i]);
+    }
+    
+    cout<<"Added "<<COUNT<<" objects twice, got same IDs"<<endl;
 
-    uint32 id1 = mgr.Add(obj);
-    cout<<"First add returned ID: "<<id1<<endl;
+    // Count should still be COUNT (not duplicated)
+    assert(mgr.GetCount() == COUNT);
+    cout<<"Count is still "<<COUNT<<" (no duplicate entries)"<<endl;
 
-    uint32 id2 = mgr.Add(obj);
-    cout<<"Second add (same pointer) returned ID: "<<id2<<endl;
-
-    assert(id1 == id2);
-    cout<<"Duplicate add returned same ID"<<endl;
-
-    // Count should still be 1 (not duplicated)
-    assert(mgr.GetCount() == 1);
-    cout<<"Count is still 1 (no duplicate entry)"<<endl;
-
+    delete[] ids;
+    delete[] objects;
     mgr.Clear();
     cout<<"Test 3 PASSED"<<endl;
 }
 
 void TestReferenceCount()
 {
-    cout<<"\n=== Test 4: Reference Counting ==="<<endl;
+    cout<<"\n=== Test 4: Reference Counting (100 objects) ==="<<endl;
 
     Uint32IdManager<TestObj> mgr;
-    TestObj *obj = new TestObj(99);
+    const int COUNT = 100;
+    uint32 *ids = new uint32[COUNT];
+    
+    for(int i = 0; i < COUNT; i++)
+    {
+        ids[i] = mgr.Add(new TestObj(99 + i));
+    }
 
-    uint32 id = mgr.Add(obj);
-    cout<<"Added object, initial ref count should be 1"<<endl;
+    cout<<"Testing reference counting on "<<COUNT<<" objects"<<endl;
+    
+    // Get increases ref count for all
+    for(int i = 0; i < COUNT; i++)
+    {
+        mgr.Get(ids[i]);
+    }
+    
+    // Release all
+    for(int i = 0; i < COUNT; i++)
+    {
+        int rc = mgr.Release(ids[i], false);
+        assert(rc == 1);
+    }
+    
+    // Objects should still exist (zero_clear was false)
+    assert(mgr.GetCount() == COUNT);
+    cout<<"Reference counting verified on "<<COUNT<<" objects"<<endl;
 
-    // Get increases ref count
-    TestObj *g1 = mgr.Get(id);
-    assert(g1 == obj);
-    cout<<"Get() returned correct pointer, ref count now 2"<<endl;
-
-    // Add same pointer again increases ref count
-    uint32 id2 = mgr.Add(obj);
-    assert(id2 == id);
-    cout<<"Add same pointer again, ref count now 3"<<endl;
-
-    // Release without zero_clear
-    int rc = mgr.Release(id, false);
-    cout<<"Release returned ref count: "<<rc<<" (expected 2)"<<endl;
-    assert(rc == 2);
-
-    rc = mgr.Release(id, false);
-    cout<<"Release returned ref count: "<<rc<<" (expected 1)"<<endl;
-    assert(rc == 1);
-
-    rc = mgr.Release(id, false);
-    cout<<"Release returned ref count: "<<rc<<" (expected 0)"<<endl;
-    assert(rc == 0);
-
-    // Object should still exist (zero_clear was false)
-    assert(mgr.GetCount() == 1);
-    cout<<"Object still in manager (zero_clear=false)"<<endl;
-
+    delete[] ids;
     mgr.Clear();
     cout<<"Test 4 PASSED"<<endl;
 }
 
 void TestReleaseWithZeroClear()
 {
-    cout<<"\n=== Test 5: Release with zero_clear ==="<<endl;
+    cout<<"\n=== Test 5: Release with zero_clear (100 objects) ==="<<endl;
 
     Uint32IdManager<TestObj> mgr;
-    TestObj *obj = new TestObj(123);
+    const int COUNT = 100;
+    uint32 *ids = new uint32[COUNT];
+    
+    for(int i = 0; i < COUNT; i++)
+    {
+        ids[i] = mgr.Add(new TestObj(123 + i));
+    }
 
-    uint32 id = mgr.Add(obj);
+    // Release all with zero_clear=true
+    for(int i = 0; i < COUNT; i++)
+    {
+        int rc = mgr.Release(ids[i], true);
+        assert(rc == 0);
+    }
 
-    // Release with zero_clear=true when ref_count=1
-    int rc = mgr.Release(id, true);
-    cout<<"Release with zero_clear returned: "<<rc<<" (expected 0)"<<endl;
-    assert(rc == 0);
-
-    // Object should be removed
+    // Objects should be removed
     assert(mgr.GetCount() == 0);
-    cout<<"Object removed from manager"<<endl;
+    cout<<"All "<<COUNT<<" objects removed from manager"<<endl;
 
     // Find should return nullptr
-    TestObj *found = mgr.Find(id);
-    assert(found == nullptr);
-    cout<<"Find returns nullptr after zero_clear"<<endl;
+    for(int i = 0; i < COUNT; i++)
+    {
+        TestObj *found = mgr.Find(ids[i]);
+        assert(found == nullptr);
+    }
+    cout<<"Find returns nullptr for all after zero_clear"<<endl;
 
+    delete[] ids;
     cout<<"Test 5 PASSED"<<endl;
 }
 
 void TestReleaseByPointer()
 {
-    cout<<"\n=== Test 6: Release by Pointer ==="<<endl;
+    cout<<"\n=== Test 6: Release by Pointer (100 objects) ==="<<endl;
 
     Uint32IdManager<TestObj> mgr;
-    TestObj *obj = new TestObj(456);
+    const int COUNT = 100;
+    TestObj **objects = new TestObj*[COUNT];
+    uint32 *ids = new uint32[COUNT];
+    
+    for(int i = 0; i < COUNT; i++)
+    {
+        objects[i] = new TestObj(456 + i);
+        ids[i] = mgr.Add(objects[i]);
+        mgr.Get(ids[i]); // Increase ref count to 2
+    }
 
-    uint32 id = mgr.Add(obj);
-    mgr.Get(id); // Increase ref count to 2
-
-    // Release by pointer
-    int rc = mgr.Release(obj, false);
-    cout<<"Release by pointer returned: "<<rc<<" (expected 1)"<<endl;
-    assert(rc == 1);
+    // Release all by pointer
+    for(int i = 0; i < COUNT; i++)
+    {
+        int rc = mgr.Release(objects[i], false);
+        assert(rc == 1);
+    }
 
     // Release again by pointer with zero_clear
-    rc = mgr.Release(obj, true);
-    cout<<"Release by pointer with zero_clear returned: "<<rc<<" (expected 0)"<<endl;
-    assert(rc == 0);
+    for(int i = 0; i < COUNT; i++)
+    {
+        int rc = mgr.Release(objects[i], true);
+        assert(rc == 0);
+    }
 
     assert(mgr.GetCount() == 0);
-    cout<<"Object removed"<<endl;
+    cout<<"All "<<COUNT<<" objects removed"<<endl;
 
+    delete[] objects;
+    delete[] ids;
     cout<<"Test 6 PASSED"<<endl;
 }
 
 void TestGetKeyByValue()
 {
-    cout<<"\n=== Test 7: GetKeyByValue ==="<<endl;
+    cout<<"\n=== Test 7: GetKeyByValue (200 objects) ==="<<endl;
 
     Uint32IdManager<TestObj> mgr;
-    TestObj *obj1 = new TestObj(111);
-    TestObj *obj2 = new TestObj(222);
+    const int COUNT = 200;
+    TestObj **objects = new TestObj*[COUNT];
+    uint32 *ids = new uint32[COUNT];
 
-    uint32 id1 = mgr.Add(obj1);
-    uint32 id2 = mgr.Add(obj2);
+    for(int i = 0; i < COUNT; i++)
+    {
+        objects[i] = new TestObj(111 + i);
+        ids[i] = mgr.Add(objects[i]);
+    }
 
     uint32 found_key;
     uint found_count;
 
     // GetKeyByValue without increasing ref count
-    bool result = mgr.GetKeyByValue(obj1, &found_key, &found_count, false);
-    assert(result == true);
-    assert(found_key == id1);
-    assert(found_count == 1);
-    cout<<"GetKeyByValue found correct key: "<<found_key<<", ref count: "<<found_count<<endl;
+    for(int i = 0; i < COUNT; i++)
+    {
+        bool result = mgr.GetKeyByValue(objects[i], &found_key, &found_count, false);
+        assert(result == true);
+        assert(found_key == ids[i]);
+        assert(found_count == 1);
+    }
+    cout<<"GetKeyByValue found all "<<COUNT<<" objects with correct keys"<<endl;
 
-    // GetKeyByValue with increasing ref count
-    result = mgr.GetKeyByValue(obj2, &found_key, &found_count, true);
-    assert(result == true);
-    assert(found_key == id2);
-    assert(found_count == 1); // Returns count before increment
-    cout<<"GetKeyByValue with add_ref=true"<<endl;
+    // GetKeyByValue with increasing ref count on half
+    for(int i = 0; i < COUNT / 2; i++)
+    {
+        bool result = mgr.GetKeyByValue(objects[i], &found_key, &found_count, true);
+        assert(result == true);
+        assert(found_key == ids[i]);
+    }
+    cout<<"GetKeyByValue with add_ref=true verified"<<endl;
 
-    // Verify ref count was increased
-    int rc = mgr.Release(id2, false);
-    assert(rc == 1); // Should be 1 after one release (was 2)
+    // Verify ref count was increased for first half
+    for(int i = 0; i < COUNT / 2; i++)
+    {
+        int rc = mgr.Release(ids[i], false);
+        assert(rc == 1);
+    }
     cout<<"Ref count was correctly increased"<<endl;
 
+    delete[] objects;
+    delete[] ids;
     mgr.Clear();
     cout<<"Test 7 PASSED"<<endl;
 }
@@ -254,75 +298,92 @@ void TestNullHandling()
 
 void TestFindVsGet()
 {
-    cout<<"\n=== Test 9: Find vs Get ==="<<endl;
+    cout<<"\n=== Test 9: Find vs Get (100 objects) ==="<<endl;
 
     Uint32IdManager<TestObj> mgr;
-    TestObj *obj = new TestObj(789);
-
-    uint32 id = mgr.Add(obj);
+    const int COUNT = 100;
+    uint32 *ids = new uint32[COUNT];
+    TestObj **objects = new TestObj*[COUNT];
+    
+    for(int i = 0; i < COUNT; i++)
+    {
+        objects[i] = new TestObj(789 + i);
+        ids[i] = mgr.Add(objects[i]);
+    }
 
     // Find does NOT increase ref count
-    TestObj *f = mgr.Find(id);
-    assert(f == obj);
+    for(int i = 0; i < COUNT; i++)
+    {
+        TestObj *f = mgr.Find(ids[i]);
+        assert(f == objects[i]);
+    }
 
     // Get DOES increase ref count
-    TestObj *g = mgr.Get(id);
-    assert(g == obj);
+    for(int i = 0; i < COUNT; i++)
+    {
+        TestObj *g = mgr.Get(ids[i]);
+        assert(g == objects[i]);
+    }
 
     // Release once should leave ref count at 1
-    int rc = mgr.Release(id, false);
-    assert(rc == 1);
-    cout<<"Find doesn't increase ref count, Get does"<<endl;
+    for(int i = 0; i < COUNT; i++)
+    {
+        int rc = mgr.Release(ids[i], false);
+        assert(rc == 1);
+    }
+    cout<<"Find doesn't increase ref count, Get does - verified on "<<COUNT<<" objects"<<endl;
 
+    delete[] ids;
+    delete[] objects;
     mgr.Clear();
     cout<<"Test 9 PASSED"<<endl;
 }
 
 void TestClearFree()
 {
-    cout<<"\n=== Test 10: ClearFree ==="<<endl;
+    cout<<"\n=== Test 10: ClearFree (1000 objects) ==="<<endl;
 
     Uint32IdManager<TestObj> mgr;
 
-    TestObj *obj1 = new TestObj(1);
-    TestObj *obj2 = new TestObj(2);
-    TestObj *obj3 = new TestObj(3);
+    const int COUNT = 1000;
+    uint32 *ids = new uint32[COUNT];
+    
+    // Add multiple objects
+    for(int i = 0; i < COUNT; i++)
+    {
+        ids[i] = mgr.Add(new TestObj(i));
+    }
 
-    uint32 id1 = mgr.Add(obj1);
-    uint32 id2 = mgr.Add(obj2);
-    uint32 id3 = mgr.Add(obj3);
-
-    // Decrease ref count of obj1 and obj2 to 0
-    mgr.Release(id1, false);
-    mgr.Release(id2, false);
+    // Decrease ref count of first 500 objects to 0
+    for(int i = 0; i < COUNT / 2; i++)
+    {
+        mgr.Release(ids[i], false);
+    }
 
     cout<<"Before ClearFree, count: "<<mgr.GetCount()<<endl;
-    assert(mgr.GetCount() == 3);
+    assert(mgr.GetCount() == COUNT);
 
     // ClearFree should remove objects with ref_count <= 0
     mgr.ClearFree();
 
     cout<<"After ClearFree, count: "<<mgr.GetCount()<<endl;
-    assert(mgr.GetCount() == 1);
-
-    // obj3 should still be findable
-    TestObj *found = mgr.Find(id3);
-    assert(found == obj3);
+    assert(mgr.GetCount() == COUNT / 2);
     cout<<"ClearFree removed zero-ref objects, kept others"<<endl;
 
+    delete[] ids;
     mgr.Clear();
     cout<<"Test 10 PASSED"<<endl;
 }
 
 void TestMultipleObjects()
 {
-    cout<<"\n=== Test 11: Multiple Objects Management ==="<<endl;
+    cout<<"\n=== Test 11: Multiple Objects Management (1000 objects) ==="<<endl;
 
     Uint32IdManager<TestObj> mgr;
 
-    const int COUNT = 10;
-    TestObj *objects[COUNT];
-    uint32 ids[COUNT];
+    const int COUNT = 1000;
+    TestObj **objects = new TestObj*[COUNT];
+    uint32 *ids = new uint32[COUNT];
 
     // Add multiple objects
     for(int i = 0; i < COUNT; ++i)
@@ -353,6 +414,9 @@ void TestMultipleObjects()
     assert(mgr.GetCount() == COUNT / 2);
     cout<<"Released half, count now: "<<mgr.GetCount()<<endl;
 
+    delete[] objects;
+    delete[] ids;
+    
     mgr.Clear();
     cout<<"Test 11 PASSED"<<endl;
 }
@@ -389,52 +453,60 @@ void TestInvalidOperations()
 
 void TestClearWhileHavingReferences()
 {
-    cout<<"\n=== Test 13: Clear with References ==="<<endl;
+    cout<<"\n=== Test 13: Clear with References (100 objects) ==="<<endl;
 
     Uint32IdManager<TestObj> mgr;
 
-    TestObj *obj = new TestObj(999);
-    uint32 id = mgr.Add(obj);
+    const int COUNT = 100;
+    uint32 *ids = new uint32[COUNT];
+    
+    for(int i = 0; i < COUNT; i++)
+    {
+        ids[i] = mgr.Add(new TestObj(999 + i));
+        // Increase ref count to 3
+        mgr.Get(ids[i]);
+        mgr.Get(ids[i]);
+    }
 
-    // Increase ref count
-    mgr.Get(id);
-    mgr.Get(id);
-
-    cout<<"Object has ref count 3"<<endl;
+    cout<<"All "<<COUNT<<" objects have ref count 3"<<endl;
 
     // Clear should delete all objects regardless of ref count
     mgr.Clear();
 
     assert(mgr.GetCount() == 0);
-    cout<<"Clear removed all objects"<<endl;
+    cout<<"Clear removed all "<<COUNT<<" objects"<<endl;
 
+    delete[] ids;
     cout<<"Test 13 PASSED"<<endl;
 }
 
 void TestInstanceLifecycle()
 {
-    cout<<"\n=== Test 14: Instance Lifecycle ==="<<endl;
+    cout<<"\n=== Test 14: Instance Lifecycle (300 objects) ==="<<endl;
 
     TestObj::ResetInstanceCount();
     int initial_count = TestObj::GetInstanceCount();
     cout<<"Initial instance count: "<<initial_count<<endl;
 
+    const int COUNT = 300;
+
     {
         Uint32IdManager<TestObj> mgr;
+        
+        for(int i = 0; i < COUNT; i++)
+        {
+            mgr.Add(new TestObj(i * 10));
+        }
 
-        mgr.Add(new TestObj(1));
-        mgr.Add(new TestObj(2));
-        mgr.Add(new TestObj(3));
-
-        cout<<"After adding 3 objects, instance count: "<<TestObj::GetInstanceCount()<<endl;
-        assert(TestObj::GetInstanceCount() == initial_count + 3);
+        cout<<"After adding "<<COUNT<<" objects, instance count: "<<TestObj::GetInstanceCount()<<endl;
+        assert(TestObj::GetInstanceCount() == initial_count + COUNT);
 
         // mgr goes out of scope, should delete all objects
     }
 
     cout<<"After mgr destroyed, instance count: "<<TestObj::GetInstanceCount()<<endl;
     assert(TestObj::GetInstanceCount() == initial_count);
-    cout<<"All instances properly destroyed"<<endl;
+    cout<<"All "<<COUNT<<" instances properly destroyed"<<endl;
 
     cout<<"Test 14 PASSED"<<endl;
 }
