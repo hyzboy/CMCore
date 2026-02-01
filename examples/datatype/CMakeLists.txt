@@ -8,6 +8,7 @@ cm_example_project("DataType" Size2Test             Size2Test.cpp)
 cm_example_project("DataType" MemcmpTest            MemcmpTest.cpp)
 cm_example_project("DataType" Uint2HexStrTest       Uint2HexStrTest.cpp)
 cm_example_project("DataType" IDNameTest            IDNameTest.cpp)
+cm_example_project("DataType" IDNameStressTest      IDNameStressTest.cpp)
 cm_example_project("DataType" IDObjectManagerTest   IDObjectManagerTest.cpp)
 
 cm_example_project("DataType/ActiveManager" 1_ActiveIDManagerTest           ActiveIDManagerTest.cpp)
