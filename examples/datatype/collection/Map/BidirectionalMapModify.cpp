@@ -1,3 +1,4 @@
+#include<hgl/platform/Platform.h>
 #include<hgl/type/BidirectionalMap.h>
 #include<iostream>
 #include<cassert>
@@ -51,7 +52,8 @@ int os_main(int, os_char**)
         bmap.Add(2, "two");
         
         TEST_ASSERT(!bmap.Change(1, "two"), "Change(1, 'two') fails (value already used)");
-        TEST_ASSERT(bmap.Get(1, string()) && bmap.ContainsValue("one"), 
+        string dummy;
+        TEST_ASSERT(bmap.Get(1, dummy) && bmap.ContainsValue("one"), 
                    "Mapping unchanged after failed change");
     }
 

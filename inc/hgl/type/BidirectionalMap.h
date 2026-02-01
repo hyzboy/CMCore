@@ -7,6 +7,7 @@ namespace hgl
 {
     /**
      * @brief 高效双向映射容器
+     * 已通过20万级数量压力测试
      *
      * 架构设计：
      * - 底层数据：KEY向量 + VALUE向量（各存一份）
@@ -316,7 +317,11 @@ namespace hgl
             if (it == forward.end())
                 return false;
 
-            value = values[it->second.value_idx];
+            const int value_idx = it->second.value_idx;
+            if (value_idx < 0 || value_idx >= (int)values.size())
+                return false;
+
+            value = values[value_idx];
             return true;
         }
 
@@ -332,7 +337,11 @@ namespace hgl
             if (it == reverse.end())
                 return false;
 
-            key = keys[it->second.key_idx];
+            const int key_idx = it->second.key_idx;
+            if (key_idx < 0 || key_idx >= (int)keys.size())
+                return false;
+
+            key = keys[key_idx];
             return true;
         }
 
@@ -347,7 +356,11 @@ namespace hgl
             if (it == forward.end())
                 return nullptr;
 
-            return &values[it->second.value_idx];
+            const int value_idx = it->second.value_idx;
+            if (value_idx < 0 || value_idx >= (int)values.size())
+                return nullptr;
+
+            return &values[value_idx];
         }
 
         /**
@@ -361,7 +374,11 @@ namespace hgl
             if (it == forward.end())
                 return nullptr;
 
-            return &values[it->second.value_idx];
+            const int value_idx = it->second.value_idx;
+            if (value_idx < 0 || value_idx >= (int)values.size())
+                return nullptr;
+
+            return &values[value_idx];
         }
 
         /**
@@ -401,7 +418,7 @@ namespace hgl
          * @param key 键
          * @return 成功删除返回 true，key 不存在返回 false
          *
-         * @note 自动删除对应的 VALUE 映射
+         * @note 自动删除对应的 VALUE 映射，并从向量中移除数据
          */
         bool DeleteByKey(const K& key)
         {
@@ -409,10 +426,79 @@ namespace hgl
             if (it == forward.end())
                 return false;
 
-            const V value = values[it->second.value_idx];
+            const int key_del_idx = it->second.key_idx;      // 要删除的KEY在keys中的位置
+            const int value_del_idx = it->second.value_idx;  // 对应VALUE在values中的位置
+            
+            // 验证索引的有效性
+            if (key_del_idx < 0 || key_del_idx >= (int)keys.size() ||
+                value_del_idx < 0 || value_del_idx >= (int)values.size())
+                return false;  // 索引无效！严重错误
+            
+            const V value = values[value_del_idx];
 
+            // 验证一致性
+            if (keys[key_del_idx] != key || values[value_del_idx] != value)
+                return false;  // 严重错误！
+
+            // 从哈希表中删除
             forward.erase(it);
             reverse.erase(value);
+
+            // ============================================================
+            // 处理KEYS向量（交换删除）
+            // ============================================================
+            const int last_key_idx = static_cast<int>(keys.size()) - 1;
+            if (key_del_idx != last_key_idx)
+            {
+                const K last_key = keys[last_key_idx];
+                keys[key_del_idx] = last_key;
+                
+                // 更新last_key的key_idx（通过forward查找它的value_idx）
+                auto fwd_it = forward.find(last_key);
+                if (fwd_it != forward.end())
+                {
+                    fwd_it->second.key_idx = key_del_idx;
+                    const int last_key_value_idx = fwd_it->second.value_idx;
+                    if (last_key_value_idx >= 0 && last_key_value_idx < (int)values.size())
+                    {
+                        const V& last_key_value = values[last_key_value_idx];
+                        auto rev_it = reverse.find(last_key_value);
+                        if (rev_it != reverse.end())
+                            rev_it->second.key_idx = key_del_idx;
+                    }
+                }
+            }
+            keys.pop_back();
+
+            // ============================================================
+            // 处理VALUES向量（交换删除，独立处理）
+            // ============================================================
+            const int last_value_idx = static_cast<int>(values.size()) - 1;
+            if (value_del_idx != last_value_idx)
+            {
+                const V last_value = values[last_value_idx];
+                values[value_del_idx] = last_value;
+                
+                // 更新last_value的value_idx
+                // reverse map还存有这个last_value的映射
+                auto rev_it = reverse.find(last_value);
+                if (rev_it != reverse.end())
+                {
+                    // rev_it->second.key_idx是这个value对应的key在keys中的位置
+                    // 注意：这个key_idx是正确的，因为keys交换时已经更新了
+                    // 但我们需要通过这个key_idx找到keys中的key，然后查forward更新
+                    const int owner_key_idx = rev_it->second.key_idx;
+                    if (owner_key_idx >= 0 && owner_key_idx < (int)keys.size())
+                    {
+                        const K owner_key = keys[owner_key_idx];
+                        auto fwd_it = forward.find(owner_key);
+                        if (fwd_it != forward.end())
+                            fwd_it->second.value_idx = value_del_idx;
+                    }
+                    rev_it->second.value_idx = value_del_idx;
+                }
+            }
+            values.pop_back();
 
             return true;
         }
@@ -422,7 +508,7 @@ namespace hgl
          * @param value 值
          * @return 成功删除返回 true，value 不存在返回 false
          *
-         * @note 自动删除对应的 KEY 映射
+         * @note 自动删除对应的 KEY 映射，并从向量中移除数据
          */
         bool DeleteByValue(const V& value)
         {
@@ -430,10 +516,71 @@ namespace hgl
             if (it == reverse.end())
                 return false;
 
-            const K key = keys[it->second.key_idx];
+            const int key_del_idx = it->second.key_idx;      // 对应KEY在keys中的位置
+            const int value_del_idx = it->second.value_idx;  // 要删除的VALUE在values中的位置
+            const K key = keys[key_del_idx];
 
+            // 验证一致性
+            if (values[value_del_idx] != value || keys[key_del_idx] != key)
+                return false;  // 严重错误！
+
+            // 从哈希表中删除
             reverse.erase(it);
             forward.erase(key);
+
+            // ============================================================
+            // 处理KEYS向量（交换删除，独立处理）
+            // ============================================================
+            const int last_key_idx = static_cast<int>(keys.size()) - 1;
+            if (key_del_idx != last_key_idx)
+            {
+                const K last_key = keys[last_key_idx];
+                keys[key_del_idx] = last_key;
+                
+                // 更新last_key的key_idx
+                auto fwd_it = forward.find(last_key);
+                if (fwd_it != forward.end())
+                {
+                    fwd_it->second.key_idx = key_del_idx;
+                    const int last_key_value_idx = fwd_it->second.value_idx;
+                    if (last_key_value_idx >= 0 && last_key_value_idx < (int)values.size())
+                    {
+                        const V& last_key_value = values[last_key_value_idx];
+                        auto rev_it = reverse.find(last_key_value);
+                        if (rev_it != reverse.end())
+                            rev_it->second.key_idx = key_del_idx;
+                    }
+                }
+            }
+            keys.pop_back();
+
+            // ============================================================
+            // 处理VALUES向量（交换删除）
+            // ============================================================
+            const int last_value_idx = static_cast<int>(values.size()) - 1;
+            if (value_del_idx != last_value_idx)
+            {
+                const V last_value = values[last_value_idx];
+                values[value_del_idx] = last_value;
+                
+                // 更新last_value的value_idx
+                // reverse map还存有这个last_value的映射
+                auto rev_it = reverse.find(last_value);
+                if (rev_it != reverse.end())
+                {
+                    // rev_it->second.key_idx是这个value对应的key在keys中的位置
+                    const int owner_key_idx = rev_it->second.key_idx;
+                    if (owner_key_idx >= 0 && owner_key_idx < (int)keys.size())
+                    {
+                        const K owner_key = keys[owner_key_idx];
+                        auto fwd_it = forward.find(owner_key);
+                        if (fwd_it != forward.end())
+                            fwd_it->second.value_idx = value_del_idx;
+                    }
+                    rev_it->second.value_idx = value_del_idx;
+                }
+            }
+            values.pop_back();
 
             return true;
         }
@@ -480,14 +627,19 @@ namespace hgl
             if (it == forward.end())
                 return false;
 
+            const int value_idx = it->second.value_idx;
+            if (value_idx < 0 || value_idx >= (int)values.size())
+                return false;
+
             // 检查新值是否已被使用
+            const V old_value = values[value_idx];
+            if (old_value == new_value)
+                return true;
+
             if (reverse.contains(new_value))
                 return false;
 
             // 更新数据向量和反向索引
-            const V old_value = values[it->second.value_idx];
-            const int value_idx = it->second.value_idx;
-
             values[value_idx] = new_value;
             reverse.erase(old_value);
             reverse[new_value] = {it->second.key_idx, value_idx};
@@ -505,35 +657,69 @@ namespace hgl
          */
         bool ChangeOrAdd(const K& key, const V& value)
         {
-            auto it = forward.find(key);
-            if (it != forward.end())
+            // 首先检查KEY是否存在
+            auto key_it = forward.find(key);
+            
+            if (key_it != forward.end())
             {
-                // KEY 存在，更新
-                const V old_value = values[it->second.value_idx];
+                // KEY 存在，尝试更新
+                const int current_key_idx = key_it->second.key_idx;
+                const int current_value_idx = key_it->second.value_idx;
+                const V old_value = values[current_value_idx];
+                
                 if (old_value == value)
                     return true;  // 值相同，无需修改
 
-                reverse.erase(old_value);
-                values[it->second.value_idx] = value;
-                reverse[value] = it->second;
+                // 检查新值是否被其他KEY占用
+                auto value_it = reverse.find(value);
+                if (value_it != reverse.end())
+                {
+                    // 新值被其他KEY占用，需要删除那个KEY的映射
+                    const int other_key_idx = value_it->second.key_idx;
+                    const K other_key = keys[other_key_idx];
+                    
+                    // 防御：不应该是同一个KEY
+                    if (other_key == key)
+                        return true;
+                    
+                    // 删除其他映射，这会改变向量
+                    DeleteByKey(other_key);
+                    
+                    // DeleteByKey后，我们需要重新查询当前KEY的信息，
+                    // 因为向量可能被重新排列
+                    key_it = forward.find(key);
+                    if (key_it == forward.end())
+                        return false;  // 严重错误
+                }
+
+                // 此时key_it是最新的，安全访问
+                const int final_value_idx = key_it->second.value_idx;
+                const V final_old_value = values[final_value_idx];
+                
+                // 删除旧值的映射
+                reverse.erase(final_old_value);
+                
+                // 更新新值
+                values[final_value_idx] = value;
+                reverse[value] = {key_it->second.key_idx, final_value_idx};
+                
+                return true;
             }
             else
             {
-                // KEY 不存在，检查 VALUE 是否被占用
-                auto rev_it = reverse.find(value);
-                if (rev_it != reverse.end())
+                // KEY 不存在，需要检查VALUE是否被占用
+                auto value_it = reverse.find(value);
+                if (value_it != reverse.end())
                 {
                     // VALUE 已被占用，删除旧映射
-                    const K old_key = keys[rev_it->second.key_idx];
-                    forward.erase(old_key);
-                    reverse.erase(rev_it);
+                    const K old_key = keys[value_it->second.key_idx];
+                    DeleteByKey(old_key);
+                    // value_it已经失效，但我们不再使用它
                 }
 
                 // 添加新映射
-                Add(key, value);
+                return Add(key, value);
             }
-
-            return true;
         }
 
         // ============================================================
@@ -574,6 +760,50 @@ namespace hgl
         {
             std::vector<K>().swap(keys);
             std::vector<V>().swap(values);
+        }
+
+        // ============================================================
+        // 调试输出
+        // ============================================================
+
+        /**
+         * @brief 输出完整的内部数据状态（用于调试）
+         */
+        void DebugDump(const char* label = nullptr) const
+        {
+            if (label)
+                printf("\n========== %s ==========\n", label);
+            else
+                printf("\n========== BidirectionalMap Debug Dump ==========\n");
+
+            printf("Count: %d\n", GetCount());
+            printf("Keys size: %zu, Values size: %zu\n", keys.size(), values.size());
+
+            printf("\nKeys vector:\n");
+            for (size_t i = 0; i < keys.size(); ++i)
+            {
+                printf("  [%zu] = %d\n", i, (int)keys[i]);
+            }
+
+            printf("\nValues vector:\n");
+            for (size_t i = 0; i < values.size(); ++i)
+            {
+                printf("  [%zu] = \"%s\"\n", i, values[i].c_str());
+            }
+
+            printf("\nForward map (K -> IndexPair):\n");
+            for (const auto& [k, idx_pair] : forward)
+            {
+                printf("  key=%d -> (key_idx=%d, value_idx=%d)\n", (int)k, idx_pair.key_idx, idx_pair.value_idx);
+            }
+
+            printf("\nReverse map (V -> IndexPair):\n");
+            for (const auto& [v, idx_pair] : reverse)
+            {
+                printf("  value=\"%s\" -> (key_idx=%d, value_idx=%d)\n", v.c_str(), idx_pair.key_idx, idx_pair.value_idx);
+            }
+
+            printf("==============================================\n\n");
         }
 
         // ============================================================

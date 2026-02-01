@@ -1,3 +1,4 @@
+#include<hgl/platform/Platform.h>
 #include<hgl/type/BidirectionalMap.h>
 #include<iostream>
 #include<cassert>

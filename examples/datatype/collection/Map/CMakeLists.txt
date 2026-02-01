@@ -56,5 +56,8 @@ cm_example_project("DataType/Collection/Map" BidirectionalMapIterators         B
 cm_example_project("DataType/Collection/Map" BidirectionalMapEnum              BidirectionalMapEnum.cpp)
 cm_example_project("DataType/Collection/Map" BidirectionalMapModify            BidirectionalMapModify.cpp)
 cm_example_project("DataType/Collection/Map" BidirectionalMapEdgeCases         BidirectionalMapEdgeCases.cpp)
+cm_example_project("DataType/Collection/Map" BidirectionalMapStressTest        BidirectionalMapStressTest.cpp)
+cm_example_project("DataType/Collection/Map" BidirectionalMapDebugTest         BidirectionalMapDebugTest.cpp)
+cm_example_project("DataType/Collection/Map" BidirectionalMapDebugTest2        BidirectionalMapDebugTest2.cpp)
 
 cm_example_project("DataType/Collection/Map" OrderedMapFunctionalOrdering       OrderedMapFunctionalOrdering.cpp)

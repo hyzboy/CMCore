@@ -80,7 +80,7 @@ int os_main(int, os_char**)
     // [8] 包含检查
     cout << "\n[8] Contains checks:" << endl;
     TEST_ASSERT(bmap.ContainsKey(1), "ContainsKey(1) returns true");
-    TEST_ASSERT(bmap.ContainsKey(999), "ContainsKey(999) returns false");
+    TEST_ASSERT(!bmap.ContainsKey(999), "ContainsKey(999) returns false");
     TEST_ASSERT(bmap.ContainsValue("one"), "ContainsValue('one') returns true");
     TEST_ASSERT(!bmap.ContainsValue("nonexistent"), "ContainsValue('nonexistent') returns false");
 

@@ -1,3 +1,4 @@
+#include<hgl/platform/Platform.h>
 #include<hgl/type/BidirectionalMap.h>
 #include<iostream>
 #include<cassert>
@@ -42,8 +43,9 @@ int os_main(int, os_char**)
     {
         BidirectionalMap<int, string> empty_bmap;
         string result;
+        int key_result;
         TEST_ASSERT(!empty_bmap.Get(1, result), "Get on empty map returns false");
-        TEST_ASSERT(!empty_bmap.GetByValue("anything", result), 
+        TEST_ASSERT(!empty_bmap.GetByValue("anything", key_result), 
                    "GetByValue on empty map returns false");
     }
 
@@ -121,9 +123,16 @@ int os_main(int, os_char**)
         bmap.Add(2, "two");
         bmap.Add(3, "three");
         
+        bmap.DebugDump("After Add 1,2,3");
+        
         bmap.DeleteByKey(1);
+        bmap.DebugDump("After DeleteByKey(1)");
+        
         bmap.DeleteByKey(2);
+        bmap.DebugDump("After DeleteByKey(2)");
+        
         bmap.DeleteByKey(3);
+        bmap.DebugDump("After DeleteByKey(3)");
         
         TEST_ASSERT(bmap.IsEmpty(), "Map is empty after deleting all");
         
