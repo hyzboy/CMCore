@@ -1,0 +1,677 @@
+#pragma once
+
+#include<ankerl/unordered_dense.h>
+#include<vector>
+
+namespace hgl
+{
+    /**
+     * @brief 高效双向映射容器
+     *
+     * 架构设计：
+     * - 底层数据：KEY向量 + VALUE向量（各存一份）
+     * - 索引层：两个ankerl hashmap，分别存KEY->索引对 和 VALUE->索引对
+     *
+     * 优势：
+     * 1. 内存高效：KEY和VALUE各只存一份，hashmap只存纯索引
+     * 2. 序列化友好：KEY/VALUE向量本身就是序列化格式
+     * 3. 访问快速：直接通过索引访问，减少指针跳跃
+     * 4. 结构清晰：明确分离数据层和索引层
+     *
+     * 使用示例：
+     * @code
+     * BidirectionalMap<int, std::string> map;
+     * map.Add(1, "one");
+     * map.Add(2, "two");
+     *
+     * // 从KEY查询
+     * std::string value;
+     * map.Get(1, value);  // value = "one"
+     *
+     * // 从VALUE查询
+     * int key;
+     * map.GetByValue("one", key);  // key = 1
+     *
+     * // 删除（自动同步两个映射）
+     * map.DeleteByKey(1);
+     * map.DeleteByValue("two");
+     *
+     * // 获取KEY/VALUE向量用于序列化
+     * const ValueArray<int>& keys = map.GetKeys();
+     * const ValueArray<std::string>& values = map.GetValues();
+     * @endcode
+     *
+     * @tparam K Key 类型
+     * @tparam V Value 类型
+     */
+    template<typename K, typename V>
+    class BidirectionalMap
+    {
+    protected:
+        // ============================================================
+        // 底层数据存储（各存一份）
+        // ============================================================
+        std::vector<K> keys;    ///< 所有KEY的向量
+        std::vector<V> values;  ///< 所有VALUE的向量
+
+        // ============================================================
+        // 索引对结构（纯整数，极小开销）
+        // ============================================================
+        struct IndexPair
+        {
+            int key_idx;        ///< 该对在KEY向量中的索引
+            int value_idx;      ///< 该对在VALUE向量中的索引
+        };
+
+        // ============================================================
+        // 索引映射（ankerl hashmap，只存索引对，极高效率）
+        // ============================================================
+        ankerl::unordered_dense::map<K, IndexPair> forward;  ///< K -> IndexPair
+        ankerl::unordered_dense::map<V, IndexPair> reverse;  ///< V -> IndexPair
+
+    public:
+        BidirectionalMap() = default;
+        virtual ~BidirectionalMap() = default;
+
+        // ============================================================
+        // 迭代器支持
+        // ============================================================
+
+        /**
+         * @brief KEY-VALUE对迭代器
+         */
+        class KVIterator
+        {
+        private:
+            const BidirectionalMap* map;
+            int index;
+
+        public:
+            using difference_type = int;
+            using value_type = std::pair<const K&, const V&>;
+            using pointer = std::pair<const K*, const V*>;
+            using reference = std::pair<const K&, const V&>;
+            using iterator_category = std::forward_iterator_tag;
+
+            KVIterator(const BidirectionalMap* m, int idx) : map(m), index(idx) {}
+
+            reference operator*() const
+            {
+                return {map->keys[index], map->values[index]};
+            }
+
+            KVIterator& operator++()
+            {
+                ++index;
+                return *this;
+            }
+
+            KVIterator operator++(int)
+            {
+                KVIterator tmp = *this;
+                ++index;
+                return tmp;
+            }
+
+            bool operator==(const KVIterator& other) const
+            {
+                return index == other.index;
+            }
+
+            bool operator!=(const KVIterator& other) const
+            {
+                return index != other.index;
+            }
+        };
+
+        /**
+         * @brief KEY迭代器
+         */
+        class KeyIterator
+        {
+        private:
+            typename std::vector<K>::const_iterator iter;
+
+        public:
+            using difference_type = typename std::vector<K>::iterator::difference_type;
+            using value_type = K;
+            using pointer = const K*;
+            using reference = const K&;
+            using iterator_category = std::forward_iterator_tag;
+
+            KeyIterator(typename std::vector<K>::const_iterator it) : iter(it) {}
+
+            reference operator*() const { return *iter; }
+            pointer operator->() const { return &(*iter); }
+
+            KeyIterator& operator++()
+            {
+                ++iter;
+                return *this;
+            }
+
+            KeyIterator operator++(int)
+            {
+                KeyIterator tmp = *this;
+                ++iter;
+                return tmp;
+            }
+
+            bool operator==(const KeyIterator& other) const { return iter == other.iter; }
+            bool operator!=(const KeyIterator& other) const { return iter != other.iter; }
+        };
+
+        /**
+         * @brief VALUE迭代器
+         */
+        class ValueIterator
+        {
+        private:
+            typename std::vector<V>::const_iterator iter;
+
+        public:
+            using difference_type = typename std::vector<V>::iterator::difference_type;
+            using value_type = V;
+            using pointer = const V*;
+            using reference = const V&;
+            using iterator_category = std::forward_iterator_tag;
+
+            ValueIterator(typename std::vector<V>::const_iterator it) : iter(it) {}
+
+            reference operator*() const { return *iter; }
+            pointer operator->() const { return &(*iter); }
+
+            ValueIterator& operator++()
+            {
+                ++iter;
+                return *this;
+            }
+
+            ValueIterator operator++(int)
+            {
+                ValueIterator tmp = *this;
+                ++iter;
+                return tmp;
+            }
+
+            bool operator==(const ValueIterator& other) const { return iter == other.iter; }
+            bool operator!=(const ValueIterator& other) const { return iter != other.iter; }
+        };
+
+        /**
+         * @brief KEY视图（支持range-based for循环）
+         */
+        class KeysView
+        {
+        private:
+            const BidirectionalMap* map;
+
+        public:
+            KeysView(const BidirectionalMap* m) : map(m) {}
+
+            KeyIterator begin() const { return KeyIterator(map->keys.begin()); }
+            KeyIterator end() const { return KeyIterator(map->keys.end()); }
+        };
+
+        /**
+         * @brief VALUE视图（支持range-based for循环）
+         */
+        class ValuesView
+        {
+        private:
+            const BidirectionalMap* map;
+
+        public:
+            ValuesView(const BidirectionalMap* m) : map(m) {}
+
+            ValueIterator begin() const { return ValueIterator(map->values.begin()); }
+            ValueIterator end() const { return ValueIterator(map->values.end()); }
+        };
+
+        /**
+         * @brief 获取KEY-VALUE对迭代器开始位置
+         * @note 支持 for(auto [k, v] : map)
+         */
+        KVIterator begin() const { return KVIterator(this, 0); }
+
+        /**
+         * @brief 获取KEY-VALUE对迭代器结束位置
+         */
+        KVIterator end() const { return KVIterator(this, static_cast<int>(keys.size())); }
+
+        /**
+         * @brief 获取KEY视图
+         * @note 支持 for(auto k : map.Keys())
+         */
+        KeysView Keys() const { return KeysView(this); }
+
+        /**
+         * @brief 获取VALUE视图
+         * @note 支持 for(auto v : map.Values())
+         */
+        ValuesView Values() const { return ValuesView(this); }
+
+        /**
+         * @brief 获取KEY向量（只读）
+         */
+        const std::vector<K>& GetKeys() const { return keys; }
+
+        /**
+         * @brief 获取VALUE向量（只读）
+         */
+        const std::vector<V>& GetValues() const { return values; }
+
+        /**
+         * @brief 获取KEY向量（可写）
+         */
+        std::vector<K>& GetKeys() { return keys; }
+
+        /**
+         * @brief 获取VALUE向量（可写）
+         */
+        std::vector<V>& GetValues() { return values; }
+
+        // ============================================================
+        // 基础操作
+        // ============================================================
+
+        /**
+         * @brief 添加一个双向映射对
+         * @param key 键
+         * @param value 值
+         * @return 成功返回 true，如果 key 或 value 已存在返回 false
+         *
+         * @note 如果操作失败，两个映射都不会被修改（事务性）
+         */
+        bool Add(const K& key, const V& value)
+        {
+            // 检查 key 和 value 是否已存在
+            if (forward.contains(key) || reverse.contains(value))
+                return false;
+
+            // 添加到数据向量
+            int key_idx = static_cast<int>(keys.size());
+            int value_idx = static_cast<int>(values.size());
+
+            keys.push_back(key);
+            values.push_back(value);
+
+            // 添加到索引映射
+            IndexPair pair{key_idx, value_idx};
+            forward[key] = pair;
+            reverse[value] = pair;
+
+            return true;
+        }
+
+        /**
+         * @brief 根据 KEY 获取 VALUE
+         * @param key 键
+         * @param value 输出参数，存储值
+         * @return 找到返回 true，否则返回 false
+         */
+        bool Get(const K& key, V& value) const
+        {
+            auto it = forward.find(key);
+            if (it == forward.end())
+                return false;
+
+            value = values[it->second.value_idx];
+            return true;
+        }
+
+        /**
+         * @brief 根据 VALUE 获取 KEY
+         * @param value 值
+         * @param key 输出参数，存储键
+         * @return 找到返回 true，否则返回 false
+         */
+        bool GetByValue(const V& value, K& key) const
+        {
+            auto it = reverse.find(value);
+            if (it == reverse.end())
+                return false;
+
+            key = keys[it->second.key_idx];
+            return true;
+        }
+
+        /**
+         * @brief 获取 VALUE 对应的指针（const 版本）
+         * @param key 键
+         * @return 找到返回指针，否则返回 nullptr
+         */
+        const V* GetValuePointer(const K& key) const
+        {
+            auto it = forward.find(key);
+            if (it == forward.end())
+                return nullptr;
+
+            return &values[it->second.value_idx];
+        }
+
+        /**
+         * @brief 获取 VALUE 对应的指针（非 const 版本）
+         * @param key 键
+         * @return 找到返回指针，否则返回 nullptr
+         */
+        V* GetValuePointer(const K& key)
+        {
+            auto it = forward.find(key);
+            if (it == forward.end())
+                return nullptr;
+
+            return &values[it->second.value_idx];
+        }
+
+        /**
+         * @brief 获取 KEY 对应的指针（const 版本）
+         * @param value 值
+         * @return 找到返回指针，否则返回 nullptr
+         */
+        const K* GetKeyPointer(const V& value) const
+        {
+            auto it = reverse.find(value);
+            if (it == reverse.end())
+                return nullptr;
+
+            return &keys[it->second.key_idx];
+        }
+
+        /**
+         * @brief 获取 KEY 对应的指针（非 const 版本）
+         * @param value 值
+         * @return 找到返回指针，否则返回 nullptr
+         */
+        K* GetKeyPointer(const V& value)
+        {
+            auto it = reverse.find(value);
+            if (it == reverse.end())
+                return nullptr;
+
+            return &keys[it->second.key_idx];
+        }
+
+        // ============================================================
+        // 删除操作（自动同步两个映射）
+        // ============================================================
+
+        /**
+         * @brief 根据 KEY 删除映射对
+         * @param key 键
+         * @return 成功删除返回 true，key 不存在返回 false
+         *
+         * @note 自动删除对应的 VALUE 映射
+         */
+        bool DeleteByKey(const K& key)
+        {
+            auto it = forward.find(key);
+            if (it == forward.end())
+                return false;
+
+            const V value = values[it->second.value_idx];
+
+            forward.erase(it);
+            reverse.erase(value);
+
+            return true;
+        }
+
+        /**
+         * @brief 根据 VALUE 删除映射对
+         * @param value 值
+         * @return 成功删除返回 true，value 不存在返回 false
+         *
+         * @note 自动删除对应的 KEY 映射
+         */
+        bool DeleteByValue(const V& value)
+        {
+            auto it = reverse.find(value);
+            if (it == reverse.end())
+                return false;
+
+            const K key = keys[it->second.key_idx];
+
+            reverse.erase(it);
+            forward.erase(key);
+
+            return true;
+        }
+
+        // ============================================================
+        // 检查操作
+        // ============================================================
+
+        /**
+         * @brief 检查是否包含指定的 KEY
+         * @param key 键
+         * @return 存在返回 true，否则返回 false
+         */
+        bool ContainsKey(const K& key) const
+        {
+            return forward.contains(key);
+        }
+
+        /**
+         * @brief 检查是否包含指定的 VALUE
+         * @param value 值
+         * @return 存在返回 true，否则返回 false
+         */
+        bool ContainsValue(const V& value) const
+        {
+            return reverse.contains(value);
+        }
+
+        // ============================================================
+        // 修改操作
+        // ============================================================
+
+        /**
+         * @brief 修改指定 KEY 的 VALUE（KEY 必须存在）
+         * @param key 键
+         * @param new_value 新值
+         * @return 成功返回 true，KEY 不存在或新值已被其他 KEY 使用返回 false
+         *
+         * @note 如果新值与其他 KEY 的映射冲突，操作失败
+         */
+        bool Change(const K& key, const V& new_value)
+        {
+            auto it = forward.find(key);
+            if (it == forward.end())
+                return false;
+
+            // 检查新值是否已被使用
+            if (reverse.contains(new_value))
+                return false;
+
+            // 更新数据向量和反向索引
+            const V old_value = values[it->second.value_idx];
+            const int value_idx = it->second.value_idx;
+
+            values[value_idx] = new_value;
+            reverse.erase(old_value);
+            reverse[new_value] = {it->second.key_idx, value_idx};
+
+            return true;
+        }
+
+        /**
+         * @brief 修改或添加（如果 KEY 不存在则添加，存在则更新）
+         * @param key 键
+         * @param value 值
+         * @return 总是返回 true
+         *
+         * @note 如果 VALUE 被其他 KEY 使用，会自动删除该旧映射
+         */
+        bool ChangeOrAdd(const K& key, const V& value)
+        {
+            auto it = forward.find(key);
+            if (it != forward.end())
+            {
+                // KEY 存在，更新
+                const V old_value = values[it->second.value_idx];
+                if (old_value == value)
+                    return true;  // 值相同，无需修改
+
+                reverse.erase(old_value);
+                values[it->second.value_idx] = value;
+                reverse[value] = it->second;
+            }
+            else
+            {
+                // KEY 不存在，检查 VALUE 是否被占用
+                auto rev_it = reverse.find(value);
+                if (rev_it != reverse.end())
+                {
+                    // VALUE 已被占用，删除旧映射
+                    const K old_key = keys[rev_it->second.key_idx];
+                    forward.erase(old_key);
+                    reverse.erase(rev_it);
+                }
+
+                // 添加新映射
+                Add(key, value);
+            }
+
+            return true;
+        }
+
+        // ============================================================
+        // 容量操作
+        // ============================================================
+
+        /**
+         * @brief 获取映射对的总数
+         */
+        int GetCount() const
+        {
+            return static_cast<int>(keys.size());
+        }
+
+        /**
+         * @brief 检查是否为空
+         */
+        bool IsEmpty() const
+        {
+            return keys.empty();
+        }
+
+        /**
+         * @brief 清空所有映射（但不释放内存）
+         */
+        void Clear()
+        {
+            keys.clear();
+            values.clear();
+            forward.clear();
+            reverse.clear();
+        }
+
+        /**
+         * @brief 清空所有映射并释放内存
+         */
+        void Free()
+        {
+            std::vector<K>().swap(keys);
+            std::vector<V>().swap(values);
+        }
+
+        // ============================================================
+        // 枚举操作
+        // ============================================================
+
+        /**
+         * @brief 枚举所有映射对
+         * @param func 回调函数，签名为 void(const K& key, const V& value)
+         */
+        template<typename F>
+        void EnumKV(F&& func) const
+        {
+            for (int i = 0; i < static_cast<int>(keys.size()); ++i)
+            {
+                func(keys[i], values[i]);
+            }
+        }
+
+        /**
+         * @brief 枚举所有 KEY
+         * @param func 回调函数，签名为 void(const K& key)
+         */
+        template<typename F>
+        void EnumKeys(F&& func) const
+        {
+            for (int i = 0; i < static_cast<int>(keys.size()); ++i)
+            {
+                func(keys[i]);
+            }
+        }
+
+        /**
+         * @brief 枚举所有 VALUE
+         * @param func 回调函数，签名为 void(const V& value)
+         */
+        template<typename F>
+        void EnumValues(F&& func) const
+        {
+            for (int i = 0; i < static_cast<int>(values.size()); ++i)
+            {
+                func(values[i]);
+            }
+        }
+
+        // ============================================================
+        // 序列化支持（KEY/VALUE向量本身就是序列化格式）
+        // ============================================================
+
+        /**
+         * @brief 从 KEY/VALUE 数组重建双向映射（清空现有内容）
+         * @param key_array KEY 数组
+         * @param value_array VALUE 数组
+         * @param count 元素数量（可选，-1 表示自动）
+         * @return 成功重建的元素数量
+         */
+        template<typename KeyArray, typename ValueArray>
+        int RebuildFromArrays(const KeyArray& key_array, const ValueArray& value_array, int count = -1)
+        {
+            Clear();
+
+            int actual_count = std::min(GetArrayCount(key_array), GetArrayCount(value_array));
+            if (count >= 0)
+                actual_count = std::min(count, actual_count);
+
+            for (int i = 0; i < actual_count; ++i)
+            {
+                if (!Add(GetArrayElement(key_array, i), GetArrayElement(value_array, i)))
+                {
+                    // 如果添加失败（冲突），回滚
+                    Clear();
+                    return 0;
+                }
+            }
+
+            return actual_count;
+        }
+
+    protected:
+        // 辅助函数
+
+        template<typename T>
+        static int GetArrayCount(const std::vector<T>& arr)
+        {
+            return static_cast<int>(arr.size());
+        }
+
+        template<typename T>
+        static const T& GetArrayElement(const std::vector<T>& arr, int index)
+        {
+            return arr[index];
+        }
+
+        template<typename T>
+        static const T& GetArrayElement(const T* arr, int index)
+        {
+            return arr[index];
+        }
+    };
+
+}//namespace hgl

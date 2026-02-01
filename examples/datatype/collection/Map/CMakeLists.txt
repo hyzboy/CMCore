@@ -49,4 +49,12 @@ cm_example_project_base(
     PRIVATE_LIBRARIES CMCore
 )
 
+# BidirectionalMap<K,V> tests (Bidirectional lookup with O(1) both directions)
+cm_example_project("DataType/Collection/Map" BidirectionalMapBasicOperations   BidirectionalMapBasicOperations.cpp)
+cm_example_project("DataType/Collection/Map" BidirectionalMapFind              BidirectionalMapFind.cpp)
+cm_example_project("DataType/Collection/Map" BidirectionalMapIterators         BidirectionalMapIterators.cpp)
+cm_example_project("DataType/Collection/Map" BidirectionalMapEnum              BidirectionalMapEnum.cpp)
+cm_example_project("DataType/Collection/Map" BidirectionalMapModify            BidirectionalMapModify.cpp)
+cm_example_project("DataType/Collection/Map" BidirectionalMapEdgeCases         BidirectionalMapEdgeCases.cpp)
+
 cm_example_project("DataType/Collection/Map" OrderedMapFunctionalOrdering       OrderedMapFunctionalOrdering.cpp)
