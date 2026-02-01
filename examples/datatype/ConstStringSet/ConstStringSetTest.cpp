@@ -225,10 +225,8 @@ bool TestIterators()
     int count = 0;
     for(auto it = css.begin(); it != css.end(); ++it)
     {
-        // 新版本：迭代器返回 const ConstStringView<SC>*，直接就是指针
-        const ConstAnsiStringView* view = it;
-        TEST_ASSERT(view != nullptr, "Iterator should not return null");
-        TEST_ASSERT(view->id == count, "ID should match iteration order");
+        // 直接通过迭代器访问元素
+        TEST_ASSERT(it->id == count, "ID should match iteration order");
         count++;
     }
     TEST_ASSERT(count == 4, "Should iterate over all 4 strings");

@@ -8,6 +8,7 @@
 #include<set>
 #include<map>
 #include<string>
+#include<atomic>
 
 using namespace hgl;
 using namespace std;
@@ -16,11 +17,30 @@ using namespace std;
 static int test_passed = 0;
 static int test_failed = 0;
 
-// 详细日志开关
-static const bool kVerboseOps = true;      // 每步操作输出（设为false以减少输出）
+// 详细日志开关 - 为了诊断 Heisenbug，默认关闭
+static const bool kVerboseOps = false;      // 每步操作输出
 static const bool kDumpOnFailure = true;    // 失败时Dump内部结构
 static const bool kDumpEachOp = false;      // 每步都Dump（极其详细，输出量巨大）
-static const bool kVerifyEachOp = false;     // 每步都做一致性验证
+static const bool kVerifyEachOp = true;     // 每步都做一致性验证
+
+// 新增：内存屏障选项（用于诊断编译器优化问题）
+static const bool kUseMemoryBarriers = false;  // 在关键操作后添加内存屏障
+
+// 内存屏障辅助函数
+inline void MemoryBarrier()
+{
+    if (kUseMemoryBarriers)
+        std::atomic_thread_fence(std::memory_order_seq_cst);
+}
+
+// 用于防止编译器优化掉某些变量
+template<typename T>
+inline void PreventOptimization(T& value)
+{
+    // 使用 volatile 读取来防止优化
+    volatile T temp = value;
+    (void)temp;
+}
 
 static void LogOpHeader(const char* title)
 {
@@ -78,12 +98,16 @@ static bool VerifyState(const BidirectionalMap<K, V>& bmap, const map<K, V>& exp
     if (!kVerifyEachOp)
         return true;
 
+    // 使用 volatile 防止编译器优化
+    volatile int actual_count = bmap.GetCount();
+    volatile int expected_count = (int)expected.size();
+    
     bool ok = true;
 
-    if (bmap.GetCount() != (int)expected.size())
+    if (actual_count != expected_count)
     {
         cout << "  ✗ INTEGRITY FAIL: count mismatch at op " << op_index
-             << " (actual=" << bmap.GetCount() << ", expected=" << expected.size() << ")"
+             << " (actual=" << actual_count << ", expected=" << expected_count << ")"
              << " label=" << label << endl;
         ok = false;
     }
@@ -98,6 +122,10 @@ static bool VerifyState(const BidirectionalMap<K, V>& bmap, const map<K, V>& exp
             ok = false;
             break;
         }
+        
+        // 防止优化
+        PreventOptimization(got);
+        
         if (got != v)
         {
             cout << "  ✗ INTEGRITY FAIL: value mismatch key=" << k
@@ -115,6 +143,10 @@ static bool VerifyState(const BidirectionalMap<K, V>& bmap, const map<K, V>& exp
             ok = false;
             break;
         }
+        
+        // 防止优化
+        PreventOptimization(back_key);
+        
         if (back_key != k)
         {
             cout << "  ✗ INTEGRITY FAIL: reverse mismatch value=\"" << v << "\""

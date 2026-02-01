@@ -15,7 +15,7 @@ static int test_passed = 0;
 static int test_failed = 0;
 
 // 详细日志开关
-static const bool kVerboseOps = true;      // 每步操作输出
+static const bool kVerboseOps = false;     // 每步操作输出（关闭以测试 Heisenbug）
 static const bool kDumpOnFailure = true;   // 失败时Dump内部结构
 static const bool kDumpEachOp = false;     // 每步都Dump（极其详细，输出量巨大）
 static const bool kVerifyEachOp = true;    // 每步都做一致性验证
