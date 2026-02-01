@@ -12,8 +12,6 @@ add_subdirectory(Array)
 add_subdirectory(Queue)
 add_subdirectory(Map)
 
-cm_example_project("DataType/Collection" ValuePoolTest                ValuePoolTest.cpp)
-cm_example_project("DataType/Collection" ValuePoolPerformanceTest      ValuePoolPerformanceTest.cpp)
 cm_example_project("DataType/Collection" StringSetTest          StringSetTest.cpp)
 cm_example_project("DataType/Collection" StringListTest         StringListTest.cpp)
 cm_example_project("DataType/Collection" GetLastTest            GetLastTest.cpp)
@@ -22,4 +20,9 @@ cm_example_project("DataType/Collection" BlockAllocatorTest2    BlockAllocatorTe
 cm_example_project("DataType/Collection" MonotonicIDListTest    MonotonicIDListTest.cpp)
 cm_example_project("DataType/Collection" FlatTreeTest           FlatTreeTest.cpp)
 
-cm_example_project("DataType/Collection" ObjectManagerTest     ObjectManagerTest.cpp)
+cm_example_project("DataType/Collection" FixedValuePoolTest     FixedValuePoolTest.cpp)
+cm_example_project("DataType/Collection" PointerObjectPoolTest  PointerObjectPoolTest.cpp)
+cm_example_project("DataType/Collection" SimpleSeriesPoolTest   SimpleSeriesPoolTest.cpp)
+cm_example_project("DataType/Collection" SeriesPoolTest         SeriesPoolTest.cpp)
+
+cm_example_project("DataType/Collection" ObjectManagerTest      ObjectManagerTest.cpp)

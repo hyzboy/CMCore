@@ -1,6 +1,7 @@
 ﻿#include<hgl/type/ConstStringSet.h>
 #include<hgl/type/IDName.h>
 #include<hgl/type/FlatOrderedSet.h>
+#include<hgl/type/OrderedSet.h>
 #include<hgl/type/String.h>
 #include<iostream>
 #include<cstring>
@@ -112,7 +113,7 @@ static int tests_failed = 0;
 void test_sorted_set_complex()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 2: OrderedManagedSet<ComplexData> (Non-Trivial Type)" << std::endl;
+    std::cout << "TEST 2: OrderedSet<ComplexData> (Non-Trivial Type)" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     ComplexData::construct_count = 0;
@@ -121,7 +122,7 @@ void test_sorted_set_complex()
     ComplexData::move_count = 0;
 
     {
-        OrderedManagedSet<ComplexData> set;
+        OrderedSet<ComplexData> set;
 
         std::cout << "\n[2.1] Add complex objects:" << std::endl;
         ComplexData obj1(10, "First");
@@ -197,7 +198,7 @@ void test_const_string_set()
 
     std::cout << "\n[3.6] Iterate over strings:" << std::endl;
     int iter_count = 0;
-    for (const auto* view = css.begin(); view != css.end(); ++view) {
+    for (auto view = css.begin(); view != css.end(); ++view) {
         iter_count++;
         TEST_ASSERT(view->id >= 0, "String view has valid ID");
     }
