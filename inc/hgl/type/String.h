@@ -933,13 +933,19 @@ namespace hgl
     int Sprintf(String<T> &str, const T *format, ...)
     {
         if (!format || *format == 0) { str.Clear(); return 0; }
+        
         va_list args;
         va_start(args, format);
-        int len = hgl::vsprintf<T>(nullptr, 0, format, args);
-        if (len <= 0) { str.Clear(); va_end(args); return 0; }
+        int len = hgl::vsprintf_length<T>(format, args);
+        va_end(args);
+        
+        if (len <= 0) { str.Clear(); return 0; }
+        
         str.Resize(len);
+        va_start(args, format);
         len = hgl::vsprintf<T>(str.c_str(), len + 1, format, args);
         va_end(args);
+        
         return len;
     }
 
