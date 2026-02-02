@@ -120,8 +120,7 @@ IF(WIN32)
                                             Win/EnumVolume.cpp
                                             Win/ProgramPath.cpp)
 
-    SET(CMCORE_PLATFORM_CHARSET_SOURCES     Win/CodePage.cpp
-                                            Win/vsprintf.cpp)
+    SET(CMCORE_PLATFORM_CHARSET_SOURCES     Win/CodePage.cpp)
 
     SET(CMCORE_PLATFORM_SYSTEMINFO_SOURCES  Win/SystemInfo.cpp)
 

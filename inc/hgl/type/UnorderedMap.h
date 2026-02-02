@@ -3,6 +3,7 @@
 #include<ankerl/unordered_dense.h>
 #include<hgl/type/ValueArray.h>
 #include<vector>
+#include<utility>
 
 namespace hgl
 {
@@ -54,6 +55,16 @@ namespace hgl
          */
         bool Add(const K& key, const V& value) {
             auto [it, inserted] = map_data.try_emplace(key, value);
+            return inserted;
+        }
+
+        bool Add(const K& key, V&& value) {
+            auto [it, inserted] = map_data.try_emplace(key, std::move(value));
+            return inserted;
+        }
+
+        bool Add(K&& key, V&& value) {
+            auto [it, inserted] = map_data.try_emplace(std::move(key), std::move(value));
             return inserted;
         }
 
