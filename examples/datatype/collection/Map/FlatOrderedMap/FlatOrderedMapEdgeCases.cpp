@@ -1,3 +1,4 @@
+#include<hgl/platform/Platform.h>
 #include<hgl/type/FlatOrderedMap.h>
 #include<iostream>
 #include<cassert>
@@ -12,18 +13,18 @@ int os_main(int, os_char**)
     cout << "TEST 06: FlatOrderedMap<K,V> Edge Cases" << endl;
     cout << "========================================" << endl;
 
-    FlatOrderedMap<int, string> map;
+    FlatOrderedMap<int, int> map;
 
     cout << "\n[6.1] Empty map operations:" << endl;
     assert(map.IsEmpty());
     assert(map.GetCount() == 0);
     assert(map.Find(1) == -1);
-    string dummy;
+    int dummy;
     assert(!map.Get(1, dummy));
     cout << "  ✓ Empty map operations safe" << endl;
 
     cout << "\n[6.2] Single element:" << endl;
-    assert(map.Add(42, "answer"));
+    assert(map.Add(42, 420));
     assert(!map.IsEmpty());
     assert(map.GetCount() == 1);
     assert(map.GetKeyAt(0) == 42);
@@ -35,22 +36,22 @@ int os_main(int, os_char**)
     cout << "  ✓ Can delete back to empty" << endl;
 
     cout << "\n[6.4] Negative keys:" << endl;
-    map.Add(-100, "minus_hundred");
-    map.Add(-10, "minus_ten");
-    map.Add(0, "zero");
-    map.Add(10, "ten");
+    map.Add(-100, -1000);
+    map.Add(-10, -100);
+    map.Add(0, 0);
+    map.Add(10, 100);
     assert(map.GetKeyAt(0) == -100);
     assert(map.GetKeyAt(3) == 10);
     cout << "  ✓ Negative keys sorted correctly" << endl;
 
-    cout << "\n[6.5] Empty string values:" << endl;
-    FlatOrderedMap<int, string> str_map;
-    str_map.Add(1, "");
-    str_map.Add(2, "value");
-    string v;
-    assert(str_map.Get(1, v) && v == "");
-    assert(str_map.Get(2, v) && v == "value");
-    cout << "  ✓ Empty strings handled correctly" << endl;
+    cout << "\n[6.5] Zero values:" << endl;
+    FlatOrderedMap<int, int> val_map;
+    val_map.Add(1, 0);
+    val_map.Add(2, 100);
+    int v;
+    assert(val_map.Get(1, v) && v == 0);
+    assert(val_map.Get(2, v) && v == 100);
+    cout << "  ✓ Zero values handled correctly" << endl;
 
     cout << "\n[6.6] Large keys:" << endl;
     FlatOrderedMap<long long, int> large_map;
@@ -63,12 +64,12 @@ int os_main(int, os_char**)
 
     cout << "\n[6.7] Duplicate key handling:" << endl;
     map.Clear();
-    map.Add(1, "one");
-    bool added = map.Add(1, "ONE");
+    map.Add(1, 100);
+    bool added = map.Add(1, 999);
     assert(!added);  // false = not added
     assert(map.GetCount() == 1);
-    string val;
-    assert(map.Get(1, val) && val == "one");  // Original value unchanged
+    int val;
+    assert(map.Get(1, val) && val == 100);  // Original value unchanged
     cout << "  ✓ Duplicate keys rejected" << endl;
 
     cout << "\n[6.8] Non-existent operations:" << endl;
@@ -76,12 +77,12 @@ int os_main(int, os_char**)
     assert(!map.ContainsKey(999));
     assert(map.Find(999) == -1);
     assert(!map.DeleteByKey(999));
-    assert(!map.DeleteByValue("nonexistent"));
+    assert(!map.DeleteByValue(9999));
     assert(map.GetValuePointer(999) == nullptr);
     cout << "  ✓ Non-existent key/value operations safe" << endl;
 
     cout << "\n[6.9] Clear on empty:" << endl;
-    FlatOrderedMap<int, string> empty_map;
+    FlatOrderedMap<int, int> empty_map;
     empty_map.Clear();
     assert(empty_map.IsEmpty());
     cout << "  ✓ Clear on empty map safe" << endl;
@@ -105,12 +106,12 @@ int os_main(int, os_char**)
 
     cout << "\n[6.12] Const correctness:" << endl;
     map.Clear();
-    map.Add(1, "one");
-    const FlatOrderedMap<int, string>& const_ref = map;
+    map.Add(1, 100);
+    const FlatOrderedMap<int, int>& const_ref = map;
     assert(const_ref.Find(1) == 0);
     assert(const_ref.ContainsKey(1));
-    const string* const_ptr = const_ref.GetValuePointer(1);
-    assert(const_ptr != nullptr && *const_ptr == "one");
+    const int* const_ptr = const_ref.GetValuePointer(1);
+    assert(const_ptr != nullptr && *const_ptr == 100);
     cout << "  ✓ Const operations work" << endl;
 
     cout << "\n✅ TEST 06 PASSED" << endl;

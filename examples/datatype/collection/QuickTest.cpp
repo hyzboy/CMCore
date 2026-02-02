@@ -3,6 +3,7 @@
  * 用于快速验证ValueArray和std::vector<>的基本功能
  */
 
+#include<hgl/type/ValueArray.h>
 #include<hgl/type/ManagedArray.h>
 #include<iostream>
 #include<string>

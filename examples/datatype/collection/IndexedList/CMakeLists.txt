@@ -1,0 +1,5 @@
+cm_example_project("DataType/Collection/IndexedList" IndexedListBasicTest               IndexedListBasicTest.cpp)
+cm_example_project("DataType/Collection/IndexedList" IndexedListInteroperabilityTest    IndexedListInteroperabilityTest.cpp)
+cm_example_project("DataType/Collection/IndexedList" IndexedListStressAndBoundaryTest   IndexedListStressAndBoundaryTest.cpp)
+cm_example_project("DataType/Collection/IndexedList" IndexedListTypeSpecializationTest  IndexedListTypeSpecializationTest.cpp)
+cm_example_project("DataType/Collection/IndexedList" IndexedListVsListComparisonTest    IndexedListVsListComparisonTest.cpp)

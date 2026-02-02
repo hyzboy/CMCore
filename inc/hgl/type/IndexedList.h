@@ -597,7 +597,7 @@ namespace hgl
             if (fc > 0)
             {
                 const int32 add_count = (n < fc) ? n : fc;
-                
+
                 for (int32 i = 0; i < add_count; ++i)
                 {
                     I index;
@@ -606,7 +606,7 @@ namespace hgl
                     data_index.push_back(index);
                     ++result;
                 }
-                
+
                 n -= add_count;
             }
 
@@ -614,13 +614,13 @@ namespace hgl
             {
                 const I start_index = GetElementCount();
                 byte_storage.resize(byte_storage.size() + (size_t)n * sizeof(ArrayType));
-                
+
                 for (int32 i = 0; i < n; ++i)
                 {
                     std::memcpy(GetElementPtr(start_index + i), &data[result + i], sizeof(ArrayType));
                     data_index.push_back(start_index + i);
                 }
-                
+
                 result += n;
             }
 
@@ -630,7 +630,7 @@ namespace hgl
         bool Insert(int32 pos, const ArrayType& data)
         {
             if (pos < 0 || pos > (int32)data_index.size()) return false;
-            
+
             I index;
             if (free_index.Pop(index))
             {
@@ -837,7 +837,7 @@ namespace hgl
         {
             const uint8_t* search_bytes = reinterpret_cast<const uint8_t*>(&data);
             int element_count = GetElementCount();
-            
+
             for (int32 i = 0; i < (int32)data_index.size(); ++i)
             {
                 if (std::memcmp(byte_storage.data() + (size_t)data_index[i] * sizeof(ArrayType), search_bytes, sizeof(ArrayType)) == 0)
@@ -862,16 +862,16 @@ namespace hgl
             Iterator(IndexedList<ArrayType, I>* lst, int32 idx) : list(lst), current_index(idx) {}
 
             ArrayType& operator*() { return (*list)[current_index]; }
-            
+
             Iterator& operator++() { ++current_index; return *this; }
             Iterator operator++(int) { Iterator tmp = *this; ++current_index; return tmp; }
-            
+
             Iterator& operator+=(int32 v) { current_index += v; return *this; }
             Iterator& operator-=(int32 v) { current_index -= v; return *this; }
-            
+
             Iterator& operator--() { --current_index; return *this; }
             Iterator operator--(int) { Iterator tmp = *this; --current_index; return tmp; }
-            
+
             bool operator==(const Iterator& other) const { return current_index == other.current_index && list == other.list; }
             bool operator!=(const Iterator& other) const { return !(*this == other); }
         };
@@ -893,13 +893,13 @@ namespace hgl
             ConstIterator(const IndexedList<ArrayType, I>* lst, int32 idx) : list(lst), current_index(idx) {}
 
             const ArrayType& operator*() const { return (*list)[current_index]; }
-            
+
             ConstIterator& operator++() { ++current_index; return *this; }
             ConstIterator operator++(int) { ConstIterator tmp = *this; ++current_index; return tmp; }
-            
+
             ConstIterator& operator--() { --current_index; return *this; }
             ConstIterator operator--(int) { ConstIterator tmp = *this; --current_index; return tmp; }
-            
+
             bool operator==(const ConstIterator& other) const { return current_index == other.current_index && list == other.list; }
             bool operator!=(const ConstIterator& other) const { return !(*this == other); }
         };
@@ -910,14 +910,14 @@ namespace hgl
 
         IndexedList() = default;
         ~IndexedList() = default;
-        
+
         IndexedList(const ArrayType* lt, const int n) { Add(lt, n); }
-        
-        IndexedList(const IndexedList& rhs) 
+
+        IndexedList(const IndexedList& rhs)
             : byte_storage(rhs.byte_storage), data_index(rhs.data_index), free_index(rhs.free_index) {}
-        
+
         IndexedList(const std::initializer_list<ArrayType>& lt) { operator=(lt); }
-        
+
         IndexedList& operator=(const IndexedList& rhs)
         {
             if (this != &rhs)

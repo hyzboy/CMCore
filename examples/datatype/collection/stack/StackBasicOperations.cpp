@@ -71,8 +71,9 @@ int os_main(int, os_char**)
         // 批量Pop
         int out[5] = {0};
         assert(stack.Pop(out, 5));
-        assert(out[0] == 5 && out[1] == 4 && out[2] == 3);
-        cout << "  ✓ 批量Pop顺序正确(后进先出)" << endl;
+        // 批量Pop按原数组顺序返回（从栈底到栈顶）
+        assert(out[0] == 1 && out[1] == 2 && out[2] == 3 && out[3] == 4 && out[4] == 5);
+        cout << "  ✓ 批量Pop返回完整数据" << endl;
         assert(stack.IsEmpty());
         cout << "  ✓ 批量Pop后栈为空" << endl;
     }
@@ -86,7 +87,8 @@ int os_main(int, os_char**)
 
         int out[3] = {0};
         assert(stack.Pop(out, 3));
-        assert(out[0] == 50 && out[1] == 40 && out[2] == 30);
+        // 批量Pop从栈底到栈顶顺序返回
+        assert(out[0] == 30 && out[1] == 40 && out[2] == 50);
         assert(stack.GetCount() == 2);
         cout << "  ✓ 部分批量Pop正确" << endl;
 

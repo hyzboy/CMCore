@@ -1,16 +1,14 @@
 /**
- * 数组类型特化测试
+ * ValueArray 类型特化测试
  * 
  * 测试目标：
  * 1. 验证 ValueArray 对 C 数组类型的支持 (e.g., uint64[256])
- * 2. 验证 IndexedList 对 C 数组类型的支持
- * 3. 测试大对象的内存操作正确性
- * 4. 性能对比：数组类型 vs 标量类型
- * 5. 字节级数据完整性验证
+ * 2. 测试大对象的内存操作正确性
+ * 3. 性能对比：数组类型 vs 标量类型
+ * 4. 字节级数据完整性验证
  */
 
 #include<hgl/type/ValueArray.h>
-#include<hgl/type/IndexedList.h>
 #include<iostream>
 #include<iomanip>
 #include<cstring>
@@ -172,124 +170,13 @@ void test_valuearray_uint16k_large()
 }
 
 // ============================================================================
-// TEST 3: IndexedList<uint256> 索引操作
-// ============================================================================
-
-void test_indexedvaluearray_uint256_index()
-{
-    std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 3: IndexedList<uint256> 索引操作" << std::endl;
-    std::cout << "========================================\n" << std::endl;
-
-    IndexedList<uint256> indexed;
-    
-    std::cout << "\n[3.1] 基础索引添加:" << std::endl;
-    uint256 data1, data2, data3;
-    
-    fill_pattern(data1, 4, 0xAAAAAAAAAAAAAAAAULL);
-    fill_pattern(data2, 4, 0xBBBBBBBBBBBBBBBBULL);
-    fill_pattern(data3, 4, 0xCCCCCCCCCCCCCCCCULL);
-    
-    indexed.Add(data1);
-    indexed.Add(data2);
-    indexed.Add(data3);
-    
-    TEST_ASSERT(indexed.GetCount() == 3, "索引数组 Add 成功");
-
-    // 使用索引运算符访问
-    std::cout << "\n[3.2] 索引运算符访问:" << std::endl;
-    uint256 retrieved;
-    memcpy(retrieved, indexed[0], sizeof(uint256));
-    TEST_ASSERT(verify_pattern(retrieved, 4, 0xAAAAAAAAAAAAAAAAULL), "operator[0] 数据正确");
-    
-    memcpy(retrieved, indexed[1], sizeof(uint256));
-    TEST_ASSERT(verify_pattern(retrieved, 4, 0xBBBBBBBBBBBBBBBBULL), "operator[1] 数据正确");
-
-    // Insert 操作
-    std::cout << "\n[3.3] Insert 操作:" << std::endl;
-    uint256 data_insert;
-    fill_pattern(data_insert, 4, 0xDDDDDDDDDDDDDDDDULL);
-    
-    TEST_ASSERT(indexed.Insert(1, data_insert), "Insert(1) 成功");
-    TEST_ASSERT(indexed.GetCount() == 4, "Insert 后 GetCount == 4");
-    
-    memcpy(retrieved, indexed[1], sizeof(uint256));
-    TEST_ASSERT(verify_pattern(retrieved, 4, 0xDDDDDDDDDDDDDDDDULL), "Insert 的数据在正确位置");
-
-    // Delete 操作
-    std::cout << "\n[3.4] Delete 操作:" << std::endl;
-    TEST_ASSERT(indexed.Delete(1), "Delete(1) 成功");
-    TEST_ASSERT(indexed.GetCount() == 3, "Delete 后 GetCount == 3");
-    
-    memcpy(retrieved, indexed[1], sizeof(uint256));
-    TEST_ASSERT(verify_pattern(retrieved, 4, 0xBBBBBBBBBBBBBBBBULL), "Delete 后索引正确");
-}
-
-// ============================================================================
-// TEST 4: IndexedList<uint16k> 大对象索引管理
-// ============================================================================
-
-void test_indexedvaluearray_uint16k_management()
-{
-    std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 4: IndexedList<uint16k> 大对象索引管理" << std::endl;
-    std::cout << "========================================\n" << std::endl;
-
-    IndexedList<uint16k> large_indexed;
-    large_indexed.Reserve(50);
-    
-    std::cout << "\n[4.1] 添加大对象:" << std::endl;
-    const int ADD_COUNT = 30;
-    
-    for (int i = 0; i < ADD_COUNT; ++i)
-    {
-        uint16k data;
-        fill_pattern(data, 256, 0x2000000000000000ULL + i);
-        large_indexed.Add(data);
-    }
-    
-    TEST_ASSERT(large_indexed.GetCount() == ADD_COUNT, "添加 30 个大对象成功");
-    
-    // 验证空间重用
-    std::cout << "\n[4.2] 空间重用检测:" << std::endl;
-    int initial_alloc = large_indexed.GetAllocCount();
-    
-    // 删除一些元素
-    for (int i = 0; i < 10; ++i)
-        large_indexed.Delete(0);
-    
-    int free_count = large_indexed.GetFreeCount();
-    TEST_ASSERT(free_count > 0, "Delete 后 FreeCount > 0");
-    
-    // 再添加新元素，应该重用空闲空间
-    for (int i = 0; i < 5; ++i)
-    {
-        uint16k data;
-        fill_pattern(data, 256, 0x3000000000000000ULL + i);
-        large_indexed.Add(data);
-    }
-    
-    int new_alloc = large_indexed.GetAllocCount();
-    TEST_ASSERT(new_alloc <= initial_alloc, "空间重用，分配量未增加");
-
-    // Shrink 操作
-    std::cout << "\n[4.3] Shrink 操作:" << std::endl;
-    int before_count = large_indexed.GetCount();
-    large_indexed.Shrink();
-    int after_count = large_indexed.GetCount();
-    
-    TEST_ASSERT(before_count == after_count, "Shrink 后数据个数不变");
-    TEST_ASSERT(large_indexed.IsOrdered(), "Shrink 后数据有序");
-}
-
-// ============================================================================
-// TEST 5: 数组类型数据完整性 (Find 和 Delete by Value)
+// TEST 3: 数组类型数据完整性 (Find 和 Delete by Value)
 // ============================================================================
 
 void test_array_type_find_delete()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 5: 数组类型数据完整性测试 (Find/DeleteByValue)" << std::endl;
+    std::cout << "TEST 3: 数组类型数据完整性测试 (Find/DeleteByValue)" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     ValueArray<uint256> array;
@@ -304,7 +191,7 @@ void test_array_type_find_delete()
     array.Add(data1);  // 重复元素
     array.Add(data3);
     
-    std::cout << "\n[5.1] Find 操作:" << std::endl;
+    std::cout << "\n[3.1] Find 操作:" << std::endl;
     
     int index = array.Find(data2);
     TEST_ASSERT(index == 1, "Find(data2) 返回索引 1");
@@ -313,7 +200,7 @@ void test_array_type_find_delete()
     TEST_ASSERT(index == 0, "Find(data1) 返回第一个匹配的索引");
 
     // DeleteByValue
-    std::cout << "\n[5.2] DeleteByValue 操作:" << std::endl;
+    std::cout << "\n[3.2] DeleteByValue 操作:" << std::endl;
     
     TEST_ASSERT(array.Delete(data1), "DeleteByValue(data1) 成功");
     TEST_ASSERT(array.GetCount() == 3, "删除后 GetCount == 3");
@@ -327,18 +214,18 @@ void test_array_type_find_delete()
 }
 
 // ============================================================================
-// TEST 6: 性能对比 - 数组类型 vs 标量类型
+// TEST 4: 性能对比 - 数组类型 vs 标量类型
 // ============================================================================
 
 void test_performance_comparison()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 6: 性能对比 - 数组类型 vs 标量类型" << std::endl;
+    std::cout << "TEST 4: 性能对比 - 数组类型 vs 标量类型" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     const int TEST_COUNT = 10000;
     
-    std::cout << "\n[6.1] Add 操作性能对比:" << std::endl;
+    std::cout << "\n[4.1] Add 操作性能对比:" << std::endl;
     
     // 标量类型
     {
@@ -374,7 +261,7 @@ void test_performance_comparison()
                   << ": " << duration.count() << " μs" << std::endl;
     }
 
-    std::cout << "\n[6.2] Get 操作性能对比:" << std::endl;
+    std::cout << "\n[4.2] Get 操作性能对比:" << std::endl;
     
     ValueArray<uint64> scalar_array;
     ValueArray<uint256> array_type;
@@ -417,15 +304,13 @@ void test_performance_comparison()
 int main(int, char**)
 {
     std::cout << "\n╔════════════════════════════════════════╗" << std::endl;
-    std::cout << "║   数组类型特化综合测试 (C Array Types)  ║" << std::endl;
+    std::cout << "║  ValueArray 类型特化测试 (C Array)   ║" << std::endl;
     std::cout << "╚════════════════════════════════════════╝" << std::endl;
 
     try
     {
         test_valuearray_uint256_basic();
         test_valuearray_uint16k_large();
-        test_indexedvaluearray_uint256_index();
-        test_indexedvaluearray_uint16k_management();
         test_array_type_find_delete();
         test_performance_comparison();
     }

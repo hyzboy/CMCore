@@ -1,3 +1,4 @@
+#include<hgl/platform/Platform.h>
 #include<hgl/type/OrderedMap.h>
 #include<iostream>
 #include<cassert>
@@ -73,7 +74,7 @@ int os_main(int, os_char**)
 
     cout << "\n[4.9] FindByValue after deletion:" << endl;
     assert(map.FindByValue(3) == -1);  // Value 3 no longer exists
-    assert(map.FindByValue(4) == 3);   // Value 4 now at a different index
+    assert(map.FindByValue(4) == 2);   // Value 4 now at index 2 (was at index 3)
     cout << "  ✓ Indices updated after deletion" << endl;
 
     cout << "\n✅ TEST 04 PASSED" << endl;

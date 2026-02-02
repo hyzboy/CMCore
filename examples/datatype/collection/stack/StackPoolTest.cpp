@@ -1,4 +1,4 @@
-﻿#include<hgl/type/SimpleValuePool.h>
+﻿#include<hgl/type/FixedValuePool.h>
 #include"UserInfo.h"        //测试用结构体
 #include<iostream>
 #include<random>
@@ -27,7 +27,7 @@ template<typename T> void out_series_pool(const SeriesPool<T> *sp)
 
 int os_main(int,os_char **)
 {
-    SimpleValuePool<UserInfo> dsp_userinfo;
+    FixedValuePool<UserInfo> dsp_userinfo;
 
     dsp_userinfo.Init(user_info_array_count);    //用户信息数据池
 

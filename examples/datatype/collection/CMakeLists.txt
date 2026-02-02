@@ -11,6 +11,7 @@ add_subdirectory(UnorderedSet)
 add_subdirectory(Array)
 add_subdirectory(Queue)
 add_subdirectory(Map)
+add_subdirectory(IndexedList)
 
 cm_example_project("DataType/Collection" StringSetTest          StringSetTest.cpp)
 cm_example_project("DataType/Collection" StringListTest         StringListTest.cpp)

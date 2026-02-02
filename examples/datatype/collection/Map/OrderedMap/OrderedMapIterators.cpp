@@ -65,7 +65,6 @@ int os_main(int, os_char**)
         if (key == 5)
             value = "FIVE";
     }
-    assert(map.Get(5, string()); // Dummy var
     string val;
     assert(map.Get(5, val) && val == "FIVE");
     cout << "  ✓ Modified value through iterator" << endl;

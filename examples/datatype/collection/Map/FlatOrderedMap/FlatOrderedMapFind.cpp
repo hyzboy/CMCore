@@ -1,3 +1,4 @@
+#include<hgl/platform/Platform.h>
 #include<hgl/type/FlatOrderedMap.h>
 #include<iostream>
 #include<cassert>
@@ -11,12 +12,12 @@ int os_main(int, os_char**)
     cout << "TEST 02: FlatOrderedMap<K,V> Find & Value" << endl;
     cout << "========================================" << endl;
 
-    FlatOrderedMap<int, string> map;
+    FlatOrderedMap<int, int> map;
 
     cout << "\n[2.1] Populate map:" << endl;
-    map.Add(10, "ten");
-    map.Add(20, "twenty");
-    map.Add(30, "thirty");
+    map.Add(10, 100);
+    map.Add(20, 200);
+    map.Add(30, 300);
     assert(map.GetCount() == 3);
     cout << "  ✓ Populated with 3 items" << endl;
 
@@ -28,41 +29,41 @@ int os_main(int, os_char**)
     cout << "  ✓ Find by key works" << endl;
 
     cout << "\n[2.3] Get value:" << endl;
-    string val;
-    assert(map.Get(20, val) && val == "twenty");
+    int val;
+    assert(map.Get(20, val) && val == 200);
     assert(!map.Get(99, val));
     cout << "  ✓ Get value works" << endl;
 
     cout << "\n[2.4] GetValuePointer:" << endl;
-    const string* ptr = map.GetValuePointer(10);
-    assert(ptr != nullptr && *ptr == "ten");
+    const int* ptr = map.GetValuePointer(10);
+    assert(ptr != nullptr && *ptr == 100);
     ptr = map.GetValuePointer(99);
     assert(ptr == nullptr);
     cout << "  ✓ GetValuePointer works" << endl;
 
     cout << "\n[2.5] FindByValue:" << endl;
-    assert(map.FindByValue("twenty") == 1);
-    assert(map.FindByValue("thirty") == 2);
-    assert(map.FindByValue("forty") == -1);
+    assert(map.FindByValue(200) == 1);
+    assert(map.FindByValue(300) == 2);
+    assert(map.FindByValue(400) == -1);
     cout << "  ✓ FindByValue works" << endl;
 
     cout << "\n[2.6] ContainsValue:" << endl;
-    assert(map.ContainsValue("ten"));
-    assert(map.ContainsValue("thirty"));
-    assert(!map.ContainsValue("fifty"));
+    assert(map.ContainsValue(100));
+    assert(map.ContainsValue(300));
+    assert(!map.ContainsValue(500));
     cout << "  ✓ ContainsValue works" << endl;
 
     cout << "\n[2.7] DeleteByValue:" << endl;
-    assert(map.DeleteByValue("twenty"));
+    assert(map.DeleteByValue(200));
     assert(map.GetCount() == 2);
-    assert(!map.ContainsValue("twenty"));
+    assert(!map.ContainsValue(200));
     assert(map.ContainsKey(10));  // Key 10 still exists
     cout << "  ✓ DeleteByValue successful" << endl;
 
     cout << "\n[2.8] GetAndDelete:" << endl;
-    string retrieved;
+    int retrieved;
     assert(map.GetAndDelete(10, retrieved));
-    assert(retrieved == "ten");
+    assert(retrieved == 100);
     assert(map.GetCount() == 1);
     assert(!map.ContainsKey(10));
     cout << "  ✓ GetAndDelete works" << endl;

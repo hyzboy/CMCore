@@ -24,7 +24,7 @@ int os_main(int, os_char**)
     
     assert(empty_map.GetValuePointer(1) == nullptr);
     assert(!empty_map.ContainsKey(1));
-    assert(!empty_map.Delete(1));  // Delete from empty returns false
+    assert(!empty_map.DeleteByKey(1));  // Delete from empty returns false
     
     cout << "  ✓ All empty map operations handled correctly" << endl;
 
@@ -36,7 +36,7 @@ int os_main(int, os_char**)
     assert(single_map.ContainsKey(42));
     assert(single_map.Get(42, result) && result == "answer");
     
-    bool deleted = single_map.Delete(42);
+    bool deleted = single_map.DeleteByKey(42);
     assert(deleted);
     assert(single_map.IsEmpty());
     cout << "  ✓ Single element operations work correctly" << endl;
@@ -66,8 +66,8 @@ int os_main(int, os_char**)
     assert(changed == false);
     
     // Delete missing key
-    bool deleted = map4.Delete(999);
-    assert(deleted == false);
+    bool deleted2 = map4.DeleteByKey(999);
+    assert(deleted2 == false);
     
     // ChangeOrAdd for missing key
     bool changed_or_added = map4.ChangeOrAdd(999, "added");
