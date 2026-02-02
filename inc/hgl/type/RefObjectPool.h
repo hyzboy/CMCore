@@ -34,7 +34,7 @@ namespace hgl
 
         using ActiveItem=RefData<V>;
 
-        ObjectMap<K,ActiveItem> active_items;               ///<活跃的数据
+        UnorderedMap<K,ActiveItem> active_items;               ///<活跃的数据
         UnorderedMap<K,V> idle_items;                                ///<引用计数为0的
 
         /**
@@ -127,22 +127,21 @@ namespace hgl
          */
         bool Get(const K &key,V &value)
         {
-            int pos;
-            ActiveItem *ai;
+            ActiveItem *ai = active_items.GetValuePointer(key);
 
-            if(active_items.Get(key,ai))                    //在活跃列表中找
+            if(ai)                    //在活跃列表中找
             {
                 ++ai->ref_count;
                 value=ai->data;
                 return(true);
             }
 
-            // GetValueAndSerial returns the index position if found (>=0), or -1 if not found
-            pos=idle_items.GetValueAndSerial(key,value);
-            if(Found(pos))                   //在闲置列表中找 - Fixed: was pos>0, now pos>=0 to handle index 0
+            V idle_value;
+            if(idle_items.Get(key, idle_value))            //在闲置列表中找
             {
-                active_items.Add(key,new ActiveItem(value));
-                idle_items.DeleteAt(pos);
+                active_items.Add(key, ActiveItem(idle_value));
+                idle_items.DeleteByKey(key);
+                value = idle_value;
                 return(true);
             }
 
@@ -154,7 +153,7 @@ namespace hgl
          */
         void Add(const K &key,V &value)
         {
-            active_items.Add(key,new ActiveItem(value));
+            active_items.Add(key, ActiveItem(value));
         }
 
         /**
@@ -162,20 +161,16 @@ namespace hgl
          */
         void Release(const K &key)
         {
-            int pos;
-            ActiveItem *ai;
+            ActiveItem *ai = active_items.GetValuePointer(key);
 
-            // GetValueAndSerial returns the index position if found (>=0), or -1 if not found
-            pos=active_items.GetValueAndSerial(key,ai);
-
-            if(Found(pos))  //Fixed: was pos>0, now pos>=0 to handle index 0
+            if(ai)
             {
                 --ai->ref_count;
 
                 if(ai->ref_count==0)
                 {
                     idle_items.Add(key,ai->data);
-                    active_items.DeleteAt(pos);
+                    active_items.DeleteByKey(key);
                 }
 
                 return;
