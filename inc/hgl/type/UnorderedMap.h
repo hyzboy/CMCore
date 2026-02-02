@@ -84,6 +84,24 @@ namespace hgl
         }
 
         /**
+         * 获取指定 key 对应的 value 引用（非 const 版本）
+         * 注：调用者必须确保 key 存在，否则行为未定义
+         */
+        V& GetValueRef(const K& key) {
+            auto it = map_data.find(key);
+            return it->second;
+        }
+
+        /**
+         * 获取指定 key 对应的 value 引用（const 版本）
+         * 注：调用者必须确保 key 存在，否则行为未定义
+         */
+        const V& GetValueRef(const K& key) const {
+            auto it = map_data.find(key);
+            return it->second;
+        }
+
+        /**
          * 根据 key 删除元素
          */
         bool DeleteByKey(const K& key) {
