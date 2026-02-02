@@ -14,14 +14,14 @@ namespace hgl
     /**
     * @brief CN:有序映射 - 基于 B树实现的高性能有序容器
     *        EN:Ordered Map - High-performance ordered container based on B-tree
-    * 
+    *
     * 特性：
     * 1. 自动排序：所有元素按键的升序排列
     * 2. 高效查询：O(log n) 查找、插入、删除
     * 3. 内存高效：B树比红黑树有更好的缓存局部性
     * 4. 迭代器稳定：迭代时支持安全的删除操作
     * 5. 范围查询：支持前缀搜索、上下界等高级操作
-    * 
+    *
     * @tparam K Key 类型，必须支持 operator<
     * @tparam V Value 类型
     */
@@ -44,18 +44,18 @@ namespace hgl
         * @brief CN:获取元素数量。\nEN:Get number of elements.
         * @return CN:元素数量。EN:Number of elements.
         */
-        int GetCount() const 
-        { 
-            return static_cast<int>(map_data.size()); 
+        int GetCount() const
+        {
+            return static_cast<int>(map_data.size());
         }
 
         /**
         * @brief CN:检查是否为空。\nEN:Check if empty.
         * @return CN:为空返回true。EN:Return true if empty.
         */
-        bool IsEmpty() const 
-        { 
-            return map_data.empty(); 
+        bool IsEmpty() const
+        {
+            return map_data.empty();
         }
 
         /**
@@ -63,9 +63,9 @@ namespace hgl
         * @param key CN:键。EN:Key.
         * @return CN:存在返回true。EN:Return true if key exists.
         */
-        bool ContainsKey(const K& key) const 
-        { 
-            return map_data.contains(key); 
+        bool ContainsKey(const K& key) const
+        {
+            return map_data.contains(key);
         }
 
         // ============================================================
@@ -147,7 +147,7 @@ namespace hgl
             auto it = map_data.find(key);
             if (it == map_data.end())
                 return -1;
-            
+
             // 计算索引
             return static_cast<int>(std::distance(map_data.begin(), it));
         }
@@ -245,10 +245,10 @@ namespace hgl
 
             auto it_start = map_data.begin();
             std::advance(it_start, start);
-            
+
             auto it_end = it_start;
             std::advance(it_end, count);
-            
+
             map_data.erase(it_start, it_end);
             return true;
         }
@@ -291,7 +291,7 @@ namespace hgl
         {
             if (index < 0 || index >= GetCount())
                 return K();
-            
+
             auto it = map_data.begin();
             std::advance(it, index);
             return it->first;
@@ -306,7 +306,7 @@ namespace hgl
         {
             if (index < 0 || index >= GetCount())
                 return V();
-            
+
             auto it = map_data.begin();
             std::advance(it, index);
             return it->second;
@@ -321,7 +321,7 @@ namespace hgl
         {
             if (index < 0 || index >= GetCount())
                 return nullptr;
-            
+
             auto it = map_data.begin();
             std::advance(it, index);
             return &it->second;
@@ -394,7 +394,7 @@ namespace hgl
         {
             keys.Clear();
             keys.SetMaxCount(GetCount());
-            
+
             for (const auto& [k, v] : map_data)
             {
                 keys.Add(k);
@@ -410,7 +410,7 @@ namespace hgl
         {
             values.Clear();
             values.SetMaxCount(GetCount());
-            
+
             for (const auto& [k, v] : map_data)
             {
                 values.Add(v);
@@ -429,7 +429,7 @@ namespace hgl
             values.Clear();
             keys.SetMaxCount(GetCount());
             values.SetMaxCount(GetCount());
-            
+
             for (const auto& [k, v] : map_data)
             {
                 keys.Add(k);

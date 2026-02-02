@@ -289,6 +289,30 @@ namespace hgl
         }
 
         /**
+        * @brief CN:获取值引用（通过键）\nEN:Get value reference by key
+        * @param key CN:键。EN:Key.
+        * @return CN:值的非const引用。EN:Non-const reference to value.
+        * @note CN:调用者必须确保键存在，否则行为未定义。\nEN:Caller must ensure key exists, otherwise behavior is undefined.
+        */
+        virtual V& GetValueRef(const K& key)
+        {
+            int64 index = Find(key);
+            return values[index];
+        }
+
+        /**
+        * @brief CN:获取值引用（const版本）\nEN:Get value reference (const version)
+        * @param key CN:键。EN:Key.
+        * @return CN:值的const引用。EN:Const reference to value.
+        * @note CN:调用者必须确保键存在，否则行为未定义。\nEN:Caller must ensure key exists, otherwise behavior is undefined.
+        */
+        virtual const V& GetValueRef(const K& key) const
+        {
+            int64 index = Find(key);
+            return values[index];
+        }
+
+        /**
         * @brief CN:按索引获取键\nEN:Get key by index
         * @param index CN:索引。EN:Index.
         * @return CN:键或默认值。EN:Key or default value.
@@ -334,6 +358,28 @@ namespace hgl
             if (index < 0 || index >= (int64)values.size())
                 return nullptr;
             return &values[index];
+        }
+
+        /**
+        * @brief CN:按索引获取值引用\nEN:Get value reference by index
+        * @param index CN:索引。EN:Index.
+        * @return CN:值的非const引用。EN:Non-const reference to value.
+        * @note CN:调用者必须确保索引有效，否则行为未定义。\nEN:Caller must ensure index is valid, otherwise behavior is undefined.
+        */
+        virtual V& GetValueRefAt(int64 index)
+        {
+            return values[index];
+        }
+
+        /**
+        * @brief CN:按索引获取值引用（const版本）\nEN:Get value reference by index (const version)
+        * @param index CN:索引。EN:Index.
+        * @return CN:值的const引用。EN:Const reference to value.
+        * @note CN:调用者必须确保索引有效，否则行为未定义。\nEN:Caller must ensure index is valid, otherwise behavior is undefined.
+        */
+        virtual const V& GetValueRefAt(int64 index) const
+        {
+            return values[index];
         }
 
         /**
