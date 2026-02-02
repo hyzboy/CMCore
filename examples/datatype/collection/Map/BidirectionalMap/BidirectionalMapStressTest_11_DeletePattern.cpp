@@ -1,4 +1,4 @@
-#include "StressTestCommon.h"
+﻿#include "StressTestCommon.h"
 
 int os_main(int, os_char**)
 {
@@ -16,7 +16,7 @@ int os_main(int, os_char**)
         const int ROUNDS = 10000;
         LogOpHeader("[11] Delete Pattern Stress");
         int op_index = 0;
-        
+
         for (int round = 0; round < ROUNDS; round++)
         {
             // Add 5
@@ -39,7 +39,7 @@ int os_main(int, os_char**)
 
                 next_id++;
             }
-            
+
             // Delete 4 (oldest)
             for (int i = 0; i < 4; i++)
             {
@@ -61,10 +61,10 @@ int os_main(int, os_char**)
                 }
             }
         }
-        
+
         int expected_count = ROUNDS * 5 - ROUNDS * 4;
         TEST_ASSERT(bmap.GetCount() == expected_count, "Count matches pattern");
-        
+
         double elapsed = timer.elapsed_ms();
         cout << "  Rounds: " << ROUNDS << endl;
         cout << "  Final count: " << bmap.GetCount() << endl;

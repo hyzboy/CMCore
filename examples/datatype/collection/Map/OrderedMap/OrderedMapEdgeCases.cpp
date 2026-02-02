@@ -1,4 +1,4 @@
-#include<hgl/platform/Platform.h>
+﻿#include<hgl/platform/Platform.h>
 #include<hgl/type/OrderedMap.h>
 #include<iostream>
 #include<cassert>
@@ -113,7 +113,7 @@ int os_main(int, os_char**)
     OrderedMap<string, Person> person_map;
     person_map.Add("alice", Person("Alice", 30));
     person_map.Add("bob", Person("Bob", 25));
-    
+
     Person p;
     assert(person_map.Get("alice", p) && p.age == 30);
     cout << "  ✓ Complex value types work" << endl;
@@ -133,7 +133,7 @@ int os_main(int, os_char**)
     map.Add(1, "one");
     map.Add(2, "two");
     map.Add(3, "three");
-    
+
     // Iterate and collect
     int iter_count = 0;
     for (auto it = map.begin(); it != map.end(); ++it)

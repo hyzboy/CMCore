@@ -1,4 +1,4 @@
-#include<hgl/type/ConstStringSet.h>
+﻿#include<hgl/type/ConstStringSet.h>
 #include<hgl/io/TextOutputStream.h>
 #include<hgl/io/FileOutputStream.h>
 

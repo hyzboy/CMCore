@@ -1,4 +1,4 @@
-#include<hgl/platform/Platform.h>
+﻿#include<hgl/platform/Platform.h>
 #include<hgl/type/BidirectionalMap.h>
 #include<iostream>
 #include<cassert>
@@ -73,7 +73,7 @@ int os_main(int, os_char**)
     cout << "\n[7] Pointer queries:" << endl;
     const string* pval = bmap.GetValuePointer(1);
     TEST_ASSERT(pval != nullptr && *pval == "one", "GetValuePointer(1) returns valid pointer");
-    
+
     const int* pkey = bmap.GetKeyPointer("two");
     TEST_ASSERT(pkey != nullptr && *pkey == 2, "GetKeyPointer('two') returns valid pointer");
 

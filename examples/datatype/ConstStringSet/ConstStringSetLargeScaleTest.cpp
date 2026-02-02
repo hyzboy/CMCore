@@ -1,4 +1,4 @@
-#include<hgl/type/ConstStringSet.h>
+﻿#include<hgl/type/ConstStringSet.h>
 #include<iostream>
 #include<chrono>
 #include<cstring>
@@ -34,13 +34,13 @@ bool TestLargeScaleAddition()
         char buffer[64];
         int len = snprintf(buffer, sizeof(buffer), "string_unique_id_%d_data_%d", i, i * 2);
         int id = css.Add(buffer, len);
-        
+
         if(id != i)
         {
             cerr << "ERROR: Expected ID " << i << " but got " << id << endl;
             return false;
         }
-        
+
         if(i % 1000 == 0)
         {
             cout << "  Added " << i << " strings..." << endl;
@@ -84,10 +84,10 @@ bool TestLargeScaleDeduplication()
         char buffer[64];
         int len = snprintf(buffer, sizeof(buffer), "unique_string_%d", random_idx);
         int id = css.Add(buffer, len);
-        
+
         // 每次添加都应该返回相同的ID
         TEST_ASSERT(id == random_idx, "Duplicate should return same ID");
-        
+
         if(i % 10000 == 0)
         {
             cout << "  Processed " << i << " duplicate attempts..." << endl;
@@ -129,12 +129,12 @@ bool TestLargeScaleQuery()
     {
         char buffer[64];
         int len = snprintf(buffer, sizeof(buffer), "query_test_string_%d", i);
-        
+
         if(css.Contains(buffer, len))
         {
             found_count++;
         }
-        
+
         // 验证GetID
         int id = css.GetID(buffer, len);
         TEST_ASSERT(id == i, "GetID should return correct index");

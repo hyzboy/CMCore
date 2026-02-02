@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file UnorderedSet.h
  * @brief CN:高性能无序集合模板（基于连续内存优化）\nEN:High-performance unordered set template (optimized with contiguous memory)
  */

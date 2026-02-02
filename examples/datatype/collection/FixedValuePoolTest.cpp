@@ -1,6 +1,6 @@
-/**
+﻿/**
  * FixedValuePoolTest.cpp
- * 
+ *
  * 全面测试 FixedValuePool<T> 类
  * 测试场景：
  *   - 基本操作（初始化、分配、释放）
@@ -42,7 +42,7 @@ struct Point2D
 {
     float x;
     float y;
-    
+
     Point2D() : x(0.0f), y(0.0f) {}
     Point2D(float _x, float _y) : x(_x), y(_y) {}
 };
@@ -50,7 +50,7 @@ struct Point2D
 struct Vector3D
 {
     double x, y, z;
-    
+
     Vector3D() : x(0), y(0), z(0) {}
     Vector3D(double _x, double _y, double _z) : x(_x), y(_y), z(_z) {}
 };
@@ -61,7 +61,7 @@ struct GameEntity
     float health;
     float armor;
     bool active;
-    
+
     GameEntity() : id(0), health(100.0f), armor(0.0f), active(false) {}
 };
 
@@ -180,7 +180,7 @@ void test_pod_structs()
     cout << "\n[3.2] Verify point values:" << endl;
     bool all_correct = true;
     for (size_t i = 0; i < points.size(); i++) {
-        if (points[i]->x != static_cast<float>(i) || 
+        if (points[i]->x != static_cast<float>(i) ||
             points[i]->y != static_cast<float>(i * 2)) {
             all_correct = false;
             break;
@@ -240,13 +240,13 @@ void test_complex_structs()
             dead_entities.push_back(entities[i]);
         }
     }
-    
+
     for (auto entity : dead_entities) {
         pool.Release(entity);
         // Remove from entities vector
         entities.erase(remove(entities.begin(), entities.end(), entity), entities.end());
     }
-    
+
     TEST_ASSERT(dead_entities.size() > 0, "Some entities died");
     TEST_ASSERT(entities.size() < 30, "Living entities count reduced");
 
@@ -306,7 +306,7 @@ void test_memory_alignment()
         if (!all_unique) break;
     }
     TEST_ASSERT(all_unique, "All pointers are unique");
-    
+
     // Check all pointers are within pool range
     Vector3D* raw_data = pool.GetRawData();
     bool all_in_range = true;
@@ -321,8 +321,8 @@ void test_memory_alignment()
     cout << "\n[5.3] Verify data integrity:" << endl;
     bool data_intact = true;
     for (size_t i = 0; i < vectors.size(); i++) {
-        if (vectors[i]->x != i * 1.0 || 
-            vectors[i]->y != i * 2.0 || 
+        if (vectors[i]->x != i * 1.0 ||
+            vectors[i]->y != i * 2.0 ||
             vectors[i]->z != i * 3.0) {
             data_intact = false;
             break;
@@ -416,7 +416,7 @@ void test_zero_size_pool()
     cout << "========================================\n" << endl;
 
     FixedValuePool<int> pool;
-    
+
     cout << "[8.1] Initialize with size 0:" << endl;
     bool init_result = pool.Init(0);
     cout << "  Init with size 0: " << (init_result ? "succeeded" : "failed") << endl;
@@ -477,7 +477,7 @@ void test_alternating_operations()
 
     cout << "[10.1] Alternating acquire and release pattern:" << endl;
     vector<Point2D*> active_points;
-    
+
     for (int cycle = 0; cycle < 20; cycle++) {
         // Acquire 2-3 points
         int acquire_count = 2 + (cycle % 2);
@@ -526,7 +526,7 @@ int os_main(int, os_char**)
     cout << "========================================" << endl;
     cout << "Passed: " << tests_passed << endl;
     cout << "Failed: " << tests_failed << endl;
-    
+
     if (tests_failed == 0) {
         cout << "\n✅ ALL TESTS PASSED!" << endl;
     } else {

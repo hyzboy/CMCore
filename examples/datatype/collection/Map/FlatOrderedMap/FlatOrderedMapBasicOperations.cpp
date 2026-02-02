@@ -1,4 +1,4 @@
-#include<hgl/type/FlatOrderedMap.h>
+﻿#include<hgl/type/FlatOrderedMap.h>
 #include<iostream>
 #include<cassert>
 
@@ -12,7 +12,7 @@ int os_main(int, os_char**)
     cout << "========================================" << endl;
 
     FlatOrderedMap<int, float> map;
-    
+
     cout << "\n[1.1] Empty map checks:" << endl;
     assert(map.IsEmpty());
     assert(map.GetCount() == 0);

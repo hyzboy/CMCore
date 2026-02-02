@@ -1,4 +1,4 @@
-#include<hgl/type/OrderedSet.h>
+﻿#include<hgl/type/OrderedSet.h>
 #include<iostream>
 #include<cassert>
 #include<string>
@@ -38,7 +38,7 @@ int os_main(int, os_char**)
     str_set.Add("apple");
     str_set.Add("banana");
     assert(str_set.GetCount() == 3);
-    
+
     string first;
     assert(str_set.GetFirst(first));
     assert(first == "apple");
@@ -55,7 +55,7 @@ int os_main(int, os_char**)
 
     cout << "\n[7.2] OrderedSet with struct (Person):" << endl;
     OrderedSet<Person> person_set;
-    
+
     person_set.Add(Person("Charlie", 30));
     person_set.Add(Person("Alice", 25));
     person_set.Add(Person("Bob", 28));
@@ -101,7 +101,7 @@ int os_main(int, os_char**)
     double_set.Add(3.14);
     double_set.Add(1.41);
     double_set.Add(2.71);
-    
+
     double d;
     assert(double_set.GetFirst(d));
     assert(d > 1.4 && d < 1.5);

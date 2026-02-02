@@ -1,4 +1,4 @@
-#include<hgl/platform/Platform.h>
+﻿#include<hgl/platform/Platform.h>
 #include<hgl/type/FlatOrderedMap.h>
 #include<iostream>
 #include<cassert>

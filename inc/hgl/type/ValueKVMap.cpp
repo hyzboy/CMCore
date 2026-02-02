@@ -9,36 +9,36 @@ namespace hgl
     {
         const int count = data_list.GetCount();
         if(count <= 0) return -1;
-        
+
         const KVData *arr = data_list.GetData();
-        
+
         // 检查缓存位置
         if(cache_idx >= 0 && cache_idx < count && arr[cache_idx].key == key)
         {
             return cache_idx;
         }
-        
+
         // 预计算查询键的哈希值
         const uint64_t key_hash = std::hash<K>{}(key);
-        
+
         // 二分查找，加入哈希值预过滤
         int left = 0, right = count - 1;
         while(left <= right)
         {
             int mid = left + (right - left) / 2;
             const KVData &mkv = arr[mid];
-            
+
             // 先比较哈希，哈希不等则键肯定不等
             if(mkv.hash == key_hash && mkv.key == key)
             {
                 cache_idx = mid; // 更新缓存
                 return mid;
             }
-            
-            if(mkv.key < key) left = mid + 1; 
+
+            if(mkv.key < key) left = mid + 1;
             else right = mid - 1;
         }
-        
+
         return -1;
     }
 
@@ -47,24 +47,24 @@ namespace hgl
     {
         const int count = data_list.GetCount();
         if(count == 0) { pos = 0; return false; }
-        
+
         const KVData *arr = data_list.GetData();
         const uint64_t key_hash = std::hash<K>{}(key);
-        
+
         int left = 0,right = count - 1;
         while(left <= right)
         {
             int mid = left + (right - left) / 2;
             const KVData &mkv = arr[mid];
-            
+
             // 先比较哈希，哈希不等则键肯定不等
-            if(mkv.hash == key_hash && mkv.key == key) 
-            { 
-                pos = mid; 
+            if(mkv.hash == key_hash && mkv.key == key)
+            {
+                pos = mid;
                 cache_idx = mid; // 更新缓存
-                return true; 
+                return true;
             }
-            
+
             if(mkv.key < key) left = mid + 1; else right = mid - 1;
         }
         pos = left; // lower_bound

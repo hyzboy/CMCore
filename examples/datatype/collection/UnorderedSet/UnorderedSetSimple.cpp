@@ -1,4 +1,4 @@
-/**
+﻿/**
  * UnorderedSetSimple.cpp
  * UnorderedSet 简单使用示例
  */
@@ -95,9 +95,9 @@ int main()
         int added = unionSet.Union(set2);
         cout << "Union: {1,2,3} ∪ {2,3,4} = {";
         bool first = true;
-        unionSet.Enum([&](int v) { 
-            if (!first) cout << ","; 
-            cout << v; 
+        unionSet.Enum([&](int v) {
+            if (!first) cout << ",";
+            cout << v;
             first = false;
         });
         cout << "}, added " << added << endl;
@@ -108,9 +108,9 @@ int main()
         int removed = intersectSet.Intersect(set2);
         cout << "Intersection: {1,2,3} ∩ {2,3,4} = {";
         first = true;
-        intersectSet.Enum([&](int v) { 
-            if (!first) cout << ","; 
-            cout << v; 
+        intersectSet.Enum([&](int v) {
+            if (!first) cout << ",";
+            cout << v;
             first = false;
         });
         cout << "}, removed " << removed << endl;

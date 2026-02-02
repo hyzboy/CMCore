@@ -1,4 +1,4 @@
-#include "StressTestCommon.h"
+﻿#include "StressTestCommon.h"
 
 int os_main(int, os_char**)
 {
@@ -13,14 +13,14 @@ int os_main(int, os_char**)
         map<int, string> expected;
         const int OPS = 50000;
         int add_count = 0, delete_count = 0;
-        
+
         mt19937 rng(88888);
         uniform_int_distribution<int> op_dist(0, 2);
         uniform_int_distribution<int> key_dist(0, 4999);
-        
+
         Timer timer;
         LogOpHeader("[9] Basic Consistency");
-        
+
         for (int op = 0; op < OPS; op++)
         {
             int op_type = op_dist(rng);
@@ -28,7 +28,7 @@ int os_main(int, os_char**)
             string value;
             bool result = false;
             const char* op_name = "";
-            
+
             if (op_type == 0)  // Add
             {
                 op_name = "Add";
@@ -69,7 +69,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.GetCount() == add_count - delete_count, "Count = adds - deletes");
         double elapsed = timer.elapsed_ms();
         cout << "  Adds: " << add_count << ", Deletes: " << delete_count << endl;

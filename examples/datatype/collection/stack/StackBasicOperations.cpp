@@ -1,4 +1,4 @@
-#include<hgl/platform/Platform.h>
+﻿#include<hgl/platform/Platform.h>
 #include<hgl/type/Stack.h>
 #include<iostream>
 #include<cassert>
@@ -61,7 +61,7 @@ int os_main(int, os_char**)
     cout << "\n[TEST 3] 批量操作测试" << endl;
     {
         Stack<int> stack;
-        
+
         // 批量Push
         int data[] = {1, 2, 3, 4, 5};
         assert(stack.Push(data, 5));

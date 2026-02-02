@@ -1,4 +1,4 @@
-/**
+﻿/**
 * @file FlatOrderedMap.h
 * @brief CN:平铺有序映射 - 当Key/Value为trivially copyable时，支持零拷贝序列化
 *        EN:Flat ordered map - When Key/Value are trivially copyable, supports zero-copy serialization

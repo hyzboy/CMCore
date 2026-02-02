@@ -1,4 +1,4 @@
-#include "StressTestCommon.h"
+﻿#include "StressTestCommon.h"
 
 int os_main(int, os_char**)
 {
@@ -12,7 +12,7 @@ int os_main(int, os_char**)
         BidirectionalMap<int, string> bmap;
         map<int, string> expected;
         const int COUNT = 50000;
-        
+
         // 先添加
         for (int i = 0; i < COUNT; i++)
         {
@@ -20,7 +20,7 @@ int os_main(int, os_char**)
             bmap.Add(i, value);
             expected[i] = value;
         }
-        
+
         Timer timer;
         LogOpHeader("[2] Sequential Delete");
         // 顺序删除
@@ -40,7 +40,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.IsEmpty(), "Map is empty after all deletes");
         double elapsed = timer.elapsed_ms();
         cout << "  Time: " << elapsed << " ms (" << (elapsed / COUNT * 1000) << " us/op)" << endl;

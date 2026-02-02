@@ -1,4 +1,4 @@
-#include<hgl/type/UnorderedMap.h>
+﻿#include<hgl/type/UnorderedMap.h>
 #include<iostream>
 #include<cassert>
 #include<string>
@@ -15,27 +15,27 @@ int os_main(int, os_char**)
 
     cout << "\n[4.1] Empty map operations:" << endl;
     UnorderedMap<int, string> empty_map;
-    
+
     assert(empty_map.IsEmpty());
     assert(empty_map.GetCount() == 0);
-    
+
     string result;
     assert(!empty_map.Get(1, result));  // Get from empty returns false
-    
+
     assert(empty_map.GetValuePointer(1) == nullptr);
     assert(!empty_map.ContainsKey(1));
     assert(!empty_map.DeleteByKey(1));  // Delete from empty returns false
-    
+
     cout << "  ✓ All empty map operations handled correctly" << endl;
 
     cout << "\n[4.2] Single element map:" << endl;
     UnorderedMap<int, string> single_map;
     single_map.Add(42, "answer");
-    
+
     assert(single_map.GetCount() == 1);
     assert(single_map.ContainsKey(42));
     assert(single_map.Get(42, result) && result == "answer");
-    
+
     bool deleted = single_map.DeleteByKey(42);
     assert(deleted);
     assert(single_map.IsEmpty());
@@ -43,10 +43,10 @@ int os_main(int, os_char**)
 
     cout << "\n[4.3] Duplicate key rejection:" << endl;
     UnorderedMap<int, string> dup_map;
-    
+
     bool added1 = dup_map.Add(10, "first");
     bool added2 = dup_map.Add(10, "second");  // Duplicate
-    
+
     assert(added1 == true);
     assert(added2 == false);  // Duplicate rejected
     assert(dup_map.GetCount() == 1);
@@ -57,18 +57,18 @@ int os_main(int, os_char**)
     UnorderedMap<int, string> map4;
     map4.Add(1, "one");
     map4.Add(2, "two");
-    
+
     // Get missing key
     assert(!map4.Get(999, result));
-    
+
     // Change missing key
     bool changed = map4.Change(999, "new");
     assert(changed == false);
-    
+
     // Delete missing key
     bool deleted2 = map4.DeleteByKey(999);
     assert(deleted2 == false);
-    
+
     // ChangeOrAdd for missing key
     bool changed_or_added = map4.ChangeOrAdd(999, "added");
     assert(changed_or_added == true);  // Added since not present
@@ -81,13 +81,13 @@ int os_main(int, os_char**)
     cf_map.Add(1, "one");
     cf_map.Add(2, "two");
     cf_map.Add(3, "three");
-    
+
     UnorderedMap<int, string> cf_map2 = cf_map;  // Copy
-    
+
     cf_map.Clear();  // Clear but may retain capacity
     assert(cf_map.IsEmpty());
     assert(cf_map.GetCount() == 0);
-    
+
     cf_map2.Free();  // Free all memory
     assert(cf_map2.IsEmpty());
     assert(cf_map2.GetCount() == 0);
@@ -95,12 +95,12 @@ int os_main(int, os_char**)
 
     cout << "\n[4.6] Negative keys:" << endl;
     UnorderedMap<int, string> neg_map;
-    
+
     neg_map.Add(-1, "minus_one");
     neg_map.Add(-100, "minus_hundred");
     neg_map.Add(0, "zero");
     neg_map.Add(100, "hundred");
-    
+
     assert(neg_map.Get(-1, result) && result == "minus_one");
     assert(neg_map.Get(-100, result) && result == "minus_hundred");
     assert(neg_map.GetCount() == 4);
@@ -109,7 +109,7 @@ int os_main(int, os_char**)
     cout << "\n[4.7] Large values:" << endl;
     UnorderedMap<int, string> large_map;
     string large_value(10000, 'x');  // 10KB string
-    
+
     large_map.Add(1, large_value);
     string retrieved;
     assert(large_map.Get(1, retrieved));
@@ -119,10 +119,10 @@ int os_main(int, os_char**)
 
     cout << "\n[4.8] Empty string values:" << endl;
     UnorderedMap<int, string> empty_str_map;
-    
+
     empty_str_map.Add(1, "");  // Empty string value
     empty_str_map.Add(2, "non-empty");
-    
+
     assert(empty_str_map.GetCount() == 2);
     assert(empty_str_map.Get(1, result) && result == "");
     assert(empty_str_map.Get(2, result) && result == "non-empty");
@@ -130,26 +130,26 @@ int os_main(int, os_char**)
 
     cout << "\n[4.9] Multiple overwrites with ChangeOrAdd:" << endl;
     UnorderedMap<int, string> overwrite_map;
-    
+
     overwrite_map.ChangeOrAdd(5, "first");
     assert(overwrite_map.Get(5, result) && result == "first");
-    
+
     overwrite_map.ChangeOrAdd(5, "second");
     assert(overwrite_map.Get(5, result) && result == "second");
-    
+
     overwrite_map.ChangeOrAdd(5, "third");
     assert(overwrite_map.Get(5, result) && result == "third");
-    
+
     assert(overwrite_map.GetCount() == 1);
     cout << "  ✓ Multiple ChangeOrAdd overwrites work correctly" << endl;
 
     cout << "\n[4.10] Const correctness:" << endl;
     const UnorderedMap<int, string> const_map = UnorderedMap<int, string>();
-    
+
     // Const version should not modify
     // const_map.Add(1, "one");  // Would not compile
     // const_map.Delete(1);       // Would not compile
-    
+
     // But const_map.GetValuePointer should work (returns const pointer)
     auto ptr = const_map.GetValuePointer(1);
     // The const version returns const string*

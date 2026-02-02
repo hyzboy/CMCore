@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<stdlib.h>
 #include<initializer_list>
@@ -177,7 +177,7 @@ namespace hgl
         virtual bool Delete(int start,int num=1)
         {
             if(start<0 || start+num>(int)data_array.size()) return false;
-            
+
             if constexpr (std::is_array_v<T>)
             {
                 // 对数组类型手动删除并移动元素
@@ -258,7 +258,7 @@ namespace hgl
         virtual bool Insert(int pos,const T &data)
         {
             if(pos<0 || pos>(int)data_array.size()) return false;
-            
+
             if constexpr (std::is_array_v<T>)
             {
                 data_array.resize(data_array.size() + 1);
@@ -284,7 +284,7 @@ namespace hgl
         virtual bool Insert(int pos,const T *data,const int number)
         {
             if(!data || number<=0 || pos<0 || pos>(int)data_array.size()) return false;
-            
+
             if constexpr (std::is_array_v<T>)
             {
                 int old_size = (int)data_array.size();
@@ -324,7 +324,7 @@ namespace hgl
                 std::vector<T> temp(move_count);
                 for(int i=0; i<move_count; ++i)
                     std::memcpy(&temp[i], &data_array[old_pos+i], sizeof(T));
-                
+
                 // 手动移除元素（避免调用erase）
                 int actual_new_pos = new_pos;
                 if(new_pos > old_pos)
@@ -340,7 +340,7 @@ namespace hgl
                     for(int i=old_pos-1; i>=actual_new_pos; --i)
                         std::memcpy(&data_array[i+move_count], &data_array[i], sizeof(T));
                 }
-                
+
                 // 复制临时元素到目标位置
                 for(int i=0; i<move_count; ++i)
                     std::memcpy(&data_array[actual_new_pos+i], &temp[i], sizeof(T));
@@ -450,7 +450,7 @@ namespace hgl
     protected:
         using ArrayType = ElementType[ArraySize];
         std::vector<uint8_t> byte_storage;
-        
+
         int GetElementCount() const { return (int)(byte_storage.size() / sizeof(ArrayType)); }
         ArrayType* GetElementPtr(int idx) { return reinterpret_cast<ArrayType*>(byte_storage.data() + idx * sizeof(ArrayType)); }
         const ArrayType* GetElementPtr(int idx) const { return reinterpret_cast<const ArrayType*>(byte_storage.data() + idx * sizeof(ArrayType)); }
@@ -459,14 +459,14 @@ namespace hgl
         int GetAllocCount() const { return (int)(byte_storage.capacity() / sizeof(ArrayType)); }
         int GetCount() const { return GetElementCount(); }
         bool IsEmpty() const { return byte_storage.empty(); }
-        
-        bool Resize(int count) 
-        { 
+
+        bool Resize(int count)
+        {
             if (count < 0) return false;
             byte_storage.resize((size_t)count * sizeof(ArrayType));
             return true;
         }
-        
+
         bool Reserve(int count)
         {
             if (count < 0) return false;
@@ -475,12 +475,12 @@ namespace hgl
         }
 
         int GetTotalBytes() const { return (int)byte_storage.size(); }
-        
-        ArrayType* GetData() const 
-        { 
+
+        ArrayType* GetData() const
+        {
             return byte_storage.empty() ? nullptr : const_cast<ArrayType*>(reinterpret_cast<const ArrayType*>(byte_storage.data()));
         }
-        
+
         ArrayType* begin() const { return GetData(); }
         ArrayType* end() const { return GetData() + GetElementCount(); }
         ArrayType* last() const { return GetElementCount() == 0 ? nullptr : GetData() + GetElementCount() - 1; }
@@ -529,7 +529,7 @@ namespace hgl
         {
             int count = GetElementCount();
             const uint8_t* search_bytes = reinterpret_cast<const uint8_t*>(&data);
-            
+
             for (int i = 0; i < count; ++i)
             {
                 if (std::memcmp(byte_storage.data() + (size_t)i * sizeof(ArrayType), search_bytes, sizeof(ArrayType)) == 0)

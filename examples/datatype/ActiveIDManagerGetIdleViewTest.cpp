@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ActiveIDManagerGetIdleViewTest.cpp
  * 专门测试 ActiveIDManager::GetIdleView() 的崩溃问题
  *

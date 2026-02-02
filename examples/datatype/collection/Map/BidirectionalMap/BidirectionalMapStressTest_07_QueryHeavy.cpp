@@ -1,4 +1,4 @@
-#include "StressTestCommon.h"
+﻿#include "StressTestCommon.h"
 
 int os_main(int, os_char**)
 {
@@ -12,7 +12,7 @@ int os_main(int, os_char**)
         BidirectionalMap<int, string> bmap;
         map<int, string> expected;
         const int ITEMS = 10000;
-        
+
         // 添加10000个元素
         for (int i = 0; i < ITEMS; i++)
         {
@@ -20,19 +20,19 @@ int os_main(int, os_char**)
             bmap.Add(i, value);
             expected[i] = value;
         }
-        
+
         Timer timer;
         const int QUERIES = 100000;
         string dummy;
         int key_dummy;
         LogOpHeader("[7] Query-Heavy Ops");
-        
+
         for (int q = 0; q < QUERIES; q++)
         {
             int key = q % ITEMS;
             bool result = false;
             string value = "value_" + to_string(key);
-            
+
             // 交替进行正向和反向查询
             if (q % 2 == 0)
             {
@@ -53,7 +53,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         double elapsed = timer.elapsed_ms();
         cout << "  Total queries: " << QUERIES << endl;
         cout << "  Time: " << elapsed << " ms (" << (elapsed / QUERIES * 1000) << " us/op)" << endl;

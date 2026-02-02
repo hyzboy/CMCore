@@ -1,6 +1,6 @@
-/**
+﻿/**
  * PointerObjectPoolTest.cpp
- * 
+ *
  * 全面测试 PointerObjectPool<T> 类
  * 测试场景：
  *   - 基本操作（初始化、分配、释放）
@@ -92,7 +92,7 @@ public:
         cout << "    ComplexObject() default constructed" << endl;
     }
 
-    ComplexObject(int _id, const std::string& _name) 
+    ComplexObject(int _id, const std::string& _name)
         : id(_id), name(_name), dynamic_ptr(new int(_id * 100))
     {
         construct_count++;
@@ -229,7 +229,7 @@ void test_basic_operations()
     cout << "\n[1.8] Verify all objects destructed:" << endl;
     TEST_ASSERT(SimpleObject::construct_count == SimpleObject::destruct_count,
                 "All constructed objects were destructed");
-    cout << "    Constructs: " << SimpleObject::construct_count 
+    cout << "    Constructs: " << SimpleObject::construct_count
          << ", Destructs: " << SimpleObject::destruct_count << endl;
 }
 
@@ -274,7 +274,7 @@ void test_custom_construction()
     cout << "\n[2.4] Verify memory cleanup:" << endl;
     TEST_ASSERT(ComplexObject::construct_count == ComplexObject::destruct_count,
                 "All objects properly destructed");
-    cout << "    Constructs: " << ComplexObject::construct_count 
+    cout << "    Constructs: " << ComplexObject::construct_count
          << ", Destructs: " << ComplexObject::destruct_count << endl;
 }
 
@@ -413,7 +413,7 @@ void test_resource_lifecycle()
         ResourceHolder* reused = pool.Acquire();
         TEST_ASSERT(reused != nullptr, "Reacquired resource holder");
         TEST_ASSERT(!reused->is_loaded, "Reused holder is unloaded");
-        
+
         reused->Load();
         TEST_ASSERT(ResourceHolder::active_resources == 1, "Resource loaded");
         reused->Unload();
@@ -427,7 +427,7 @@ void test_resource_lifecycle()
                 "All resources destructed");
     TEST_ASSERT(ResourceHolder::active_resources == 0,
                 "No resources leaked");
-    cout << "    Constructs: " << ResourceHolder::construct_count 
+    cout << "    Constructs: " << ResourceHolder::construct_count
          << ", Destructs: " << ResourceHolder::destruct_count << endl;
 }
 
@@ -538,7 +538,7 @@ void test_alternating_pattern()
 
         cout << "\n[8.2] Pattern: acquire 3, release 2, repeat:" << endl;
         vector<SimpleObject*> active;
-        
+
         for (int cycle = 0; cycle < 20; cycle++) {
             // Acquire up to 3
             for (int i = 0; i < 3 && pool.GetIdleCount() > 0; i++) {
@@ -621,7 +621,7 @@ void test_stress()
         pool.Init();
 
         cout << "[10.1] Stress test: 10000 acquire/release cycles:" << endl;
-        
+
         // Populate pool
         for (int i = 0; i < 50; i++) {
             pool.AddObject(new SimpleObject(i));
@@ -686,7 +686,7 @@ int os_main(int, os_char**)
     cout << "========================================" << endl;
     cout << "Passed: " << tests_passed << endl;
     cout << "Failed: " << tests_failed << endl;
-    
+
     if (tests_failed == 0) {
         cout << "\n✅ ALL TESTS PASSED!" << endl;
     } else {

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 #include<hgl/type/BidirectionalMap.h>
@@ -81,10 +81,10 @@ class Timer
 {
 private:
     chrono::high_resolution_clock::time_point start_time;
-    
+
 public:
     Timer() { start_time = chrono::high_resolution_clock::now(); }
-    
+
     double elapsed_ms() const
     {
         auto end = chrono::high_resolution_clock::now();
@@ -101,7 +101,7 @@ static bool VerifyState(const BidirectionalMap<K, V>& bmap, const map<K, V>& exp
     // 使用 volatile 防止编译器优化
     volatile int actual_count = bmap.GetCount();
     volatile int expected_count = (int)expected.size();
-    
+
     bool ok = true;
 
     if (actual_count != expected_count)
@@ -122,10 +122,10 @@ static bool VerifyState(const BidirectionalMap<K, V>& bmap, const map<K, V>& exp
             ok = false;
             break;
         }
-        
+
         // 防止优化
         PreventOptimization(got);
-        
+
         if (got != v)
         {
             cout << "  ✗ INTEGRITY FAIL: value mismatch key=" << k
@@ -143,10 +143,10 @@ static bool VerifyState(const BidirectionalMap<K, V>& bmap, const map<K, V>& exp
             ok = false;
             break;
         }
-        
+
         // 防止优化
         PreventOptimization(back_key);
-        
+
         if (back_key != k)
         {
             cout << "  ✗ INTEGRITY FAIL: reverse mismatch value=\"" << v << "\""

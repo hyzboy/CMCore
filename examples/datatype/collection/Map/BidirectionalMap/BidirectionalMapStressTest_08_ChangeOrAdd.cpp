@@ -1,4 +1,4 @@
-#include "StressTestCommon.h"
+﻿#include "StressTestCommon.h"
 
 int os_main(int, os_char**)
 {
@@ -16,7 +16,7 @@ int os_main(int, os_char**)
         mt19937 rng(54321);
         uniform_int_distribution<int> key_dist(0, 4999);  // 较小范围造成冲突
         LogOpHeader("[8] ChangeOrAdd Stress");
-        
+
         for (int op = 0; op < OPS; op++)
         {
             int key = key_dist(rng);
@@ -34,7 +34,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.GetCount() <= 5000, "Map size bounded by key range");
         double elapsed = timer.elapsed_ms();
         cout << "  Operations: " << OPS << endl;

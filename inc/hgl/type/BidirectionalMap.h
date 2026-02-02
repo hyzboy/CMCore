@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<ankerl/unordered_dense.h>
 #include<vector>
@@ -510,12 +510,12 @@ namespace hgl
 
             const int key_del_idx = it->second.key_idx;      // 要删除的KEY在keys中的位置
             const int value_del_idx = it->second.value_idx;  // 对应VALUE在values中的位置
-            
+
             // 验证索引的有效性
             if (key_del_idx < 0 || key_del_idx >= (int)keys.size() ||
                 value_del_idx < 0 || value_del_idx >= (int)values.size())
                 return false;  // 索引无效！严重错误
-            
+
             const V value = values[value_del_idx];
 
             // 验证一致性
@@ -534,7 +534,7 @@ namespace hgl
             {
                 const K last_key = keys[last_key_idx];
                 keys[key_del_idx] = last_key;
-                
+
                 // 更新last_key的key_idx（通过forward查找它的value_idx）
                 auto fwd_it = forward.find(last_key);
                 if (fwd_it != forward.end())
@@ -560,7 +560,7 @@ namespace hgl
             {
                 const V last_value = values[last_value_idx];
                 values[value_del_idx] = last_value;
-                
+
                 // 更新last_value的value_idx
                 // reverse map还存有这个last_value的映射
                 auto rev_it = reverse.find(last_value);
@@ -618,7 +618,7 @@ namespace hgl
             {
                 const K last_key = keys[last_key_idx];
                 keys[key_del_idx] = last_key;
-                
+
                 // 更新last_key的key_idx
                 auto fwd_it = forward.find(last_key);
                 if (fwd_it != forward.end())
@@ -644,7 +644,7 @@ namespace hgl
             {
                 const V last_value = values[last_value_idx];
                 values[value_del_idx] = last_value;
-                
+
                 // 更新last_value的value_idx
                 // reverse map还存有这个last_value的映射
                 auto rev_it = reverse.find(last_value);
@@ -741,14 +741,14 @@ namespace hgl
         {
             // 首先检查KEY是否存在
             auto key_it = forward.find(key);
-            
+
             if (key_it != forward.end())
             {
                 // KEY 存在，尝试更新
                 const int current_key_idx = key_it->second.key_idx;
                 const int current_value_idx = key_it->second.value_idx;
                 const V old_value = values[current_value_idx];
-                
+
                 if (old_value == value)
                     return true;  // 值相同，无需修改
 
@@ -759,14 +759,14 @@ namespace hgl
                     // 新值被其他KEY占用，需要删除那个KEY的映射
                     const int other_key_idx = value_it->second.key_idx;
                     const K other_key = keys[other_key_idx];
-                    
+
                     // 防御：不应该是同一个KEY
                     if (other_key == key)
                         return true;
-                    
+
                     // 删除其他映射，这会改变向量
                     DeleteByKey(other_key);
-                    
+
                     // DeleteByKey后，我们需要重新查询当前KEY的信息，
                     // 因为向量可能被重新排列
                     key_it = forward.find(key);
@@ -777,14 +777,14 @@ namespace hgl
                 // 此时key_it是最新的，安全访问
                 const int final_value_idx = key_it->second.value_idx;
                 const V final_old_value = values[final_value_idx];
-                
+
                 // 删除旧值的映射
                 reverse.erase(final_old_value);
-                
+
                 // 更新新值
                 values[final_value_idx] = value;
                 reverse[value] = {key_it->second.key_idx, final_value_idx};
-                
+
                 return true;
             }
             else

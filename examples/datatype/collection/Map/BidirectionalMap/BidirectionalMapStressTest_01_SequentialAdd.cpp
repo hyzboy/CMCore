@@ -1,4 +1,4 @@
-#include "StressTestCommon.h"
+﻿#include "StressTestCommon.h"
 
 int os_main(int, os_char**)
 {
@@ -14,7 +14,7 @@ int os_main(int, os_char**)
         Timer timer;
         const int COUNT = 50000;
         LogOpHeader("[1] Sequential Add");
-        
+
         for (int i = 0; i < COUNT; i++)
         {
             const string value = "value_" + to_string(i);
@@ -32,7 +32,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.GetCount() == COUNT, "Count is 50000");
         double elapsed = timer.elapsed_ms();
         cout << "  Time: " << elapsed << " ms (" << (elapsed / COUNT * 1000) << " us/op)" << endl;

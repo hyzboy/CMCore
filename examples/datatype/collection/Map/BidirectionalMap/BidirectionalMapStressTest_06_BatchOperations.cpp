@@ -1,4 +1,4 @@
-#include "StressTestCommon.h"
+﻿#include "StressTestCommon.h"
 
 int os_main(int, os_char**)
 {
@@ -14,7 +14,7 @@ int os_main(int, os_char**)
         Timer timer;
         const int ROUNDS = 10000;
         LogOpHeader("[6] Batch Add-Change-Delete");
-        
+
         for (int round = 0; round < ROUNDS; round++)
         {
             // Add
@@ -30,7 +30,7 @@ int os_main(int, os_char**)
                     bmap.DebugDump("BatchAdd Integrity Failure");
                 return 1;
             }
-            
+
             // Change
             value = "modified_v" + to_string(round);
             result = bmap.Change(round, value);
@@ -44,7 +44,7 @@ int os_main(int, os_char**)
                     bmap.DebugDump("BatchChange Integrity Failure");
                 return 1;
             }
-            
+
             // Delete
             result = bmap.DeleteByKey(round);
             if (result)
@@ -58,7 +58,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.IsEmpty(), "Map is empty after batch operations");
         double elapsed = timer.elapsed_ms();
         cout << "  Total operations: " << (ROUNDS * 3) << endl;

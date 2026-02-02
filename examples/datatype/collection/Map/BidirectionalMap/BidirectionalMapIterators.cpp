@@ -1,4 +1,4 @@
-#include<hgl/platform/Platform.h>
+﻿#include<hgl/platform/Platform.h>
 #include<hgl/type/BidirectionalMap.h>
 #include<iostream>
 #include<cassert>
@@ -76,7 +76,7 @@ int os_main(int, os_char**)
         int expected_keys[] = { 10, 5, 15, 20 };
         string expected_values[] = { "ten", "five", "fifteen", "twenty" };
         int idx = 0;
-        
+
         for (auto [k, v] : bmap)
         {
             TEST_ASSERT(k == expected_keys[idx], "Key at index " + to_string(idx) + " matches");
@@ -112,7 +112,7 @@ int os_main(int, os_char**)
     {
         BidirectionalMap<int, string> single_map;
         single_map.Add(42, "answer");
-        
+
         int k_val = -1;
         string v_val = "";
         for (auto [k, v] : single_map)
@@ -152,7 +152,7 @@ int os_main(int, os_char**)
         {
             second_count++;
         }
-        TEST_ASSERT(first_count == second_count && first_count == 4, 
+        TEST_ASSERT(first_count == second_count && first_count == 4,
                    "Multiple iterations return consistent count");
     }
 

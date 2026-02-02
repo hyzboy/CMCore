@@ -1,4 +1,4 @@
-#include "StressTestCommon.h"
+﻿#include "StressTestCommon.h"
 
 int os_main(int, os_char**)
 {
@@ -14,7 +14,7 @@ int os_main(int, os_char**)
         Timer timer;
         const int ROUNDS = 20000;
         LogOpHeader("[5] Alternating Add-Delete");
-        
+
         for (int round = 0; round < ROUNDS; round++)
         {
             // 添加
@@ -32,7 +32,7 @@ int os_main(int, os_char**)
                     bmap.DebugDump("AltAdd Integrity Failure");
                 return 1;
             }
-            
+
             // 立即删除
             result = bmap.DeleteByKey(round);
             if (result)
@@ -48,7 +48,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.IsEmpty(), "Map is empty after all add-delete pairs");
         double elapsed = timer.elapsed_ms();
         cout << "  Total operations: " << (ROUNDS * 2) << endl;

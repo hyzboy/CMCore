@@ -1,4 +1,4 @@
-#include<hgl/type/OrderedSet.h>
+﻿#include<hgl/type/OrderedSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -66,7 +66,7 @@ int os_main(int, os_char**)
     auto it_lower = set.lower_bound(8);
     assert(*it_lower == 8);
     cout << "  lower_bound(8) = " << *it_lower << endl;
-    
+
     it_lower = set.lower_bound(9);
     assert(*it_lower == 10);
     cout << "  lower_bound(9) = " << *it_lower << " (first >= 9)" << endl;
@@ -76,7 +76,7 @@ int os_main(int, os_char**)
     auto it_upper = set.upper_bound(8);
     assert(*it_upper == 10);
     cout << "  upper_bound(8) = " << *it_upper << endl;
-    
+
     it_upper = set.upper_bound(9);
     assert(*it_upper == 10);
     cout << "  upper_bound(9) = " << *it_upper << " (first > 9)" << endl;

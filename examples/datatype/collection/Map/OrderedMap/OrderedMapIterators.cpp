@@ -1,4 +1,4 @@
-#include<hgl/platform/Platform.h>
+﻿#include<hgl/platform/Platform.h>
 #include<hgl/type/OrderedMap.h>
 #include<iostream>
 #include<cassert>
@@ -15,7 +15,7 @@ int os_main(int, os_char**)
     cout << "========================================" << endl;
 
     OrderedMap<int, string> map;
-    
+
     cout << "\n[5.1] Populate map:" << endl;
     map.Add(10, "ten");
     map.Add(5, "five");

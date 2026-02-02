@@ -1,4 +1,4 @@
-/**
+﻿/**
  * QueueTest04_UnreadSnapshot.cpp
  * 测试 Queue::GetUnreadSnapshot() 功能
  *

@@ -1,4 +1,4 @@
-#include<hgl/platform/Platform.h>
+﻿#include<hgl/platform/Platform.h>
 #include<hgl/type/BidirectionalMap.h>
 #include<iostream>
 #include<cassert>
@@ -35,9 +35,9 @@ int os_main(int, os_char**)
         bmap.Add(1, "one");
         bmap.Add(2, "two");
         bmap.Add(3, "three");
-        
+
         TEST_ASSERT(bmap.Change(1, "ONE"), "Change(1, 'ONE') succeeds");
-        
+
         string result;
         TEST_ASSERT(bmap.Get(1, result) && result == "ONE", "Changed value is 'ONE'");
         TEST_ASSERT(!bmap.ContainsValue("one"), "Old value 'one' no longer exists");
@@ -50,10 +50,10 @@ int os_main(int, os_char**)
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "one");
         bmap.Add(2, "two");
-        
+
         TEST_ASSERT(!bmap.Change(1, "two"), "Change(1, 'two') fails (value already used)");
         string dummy;
-        TEST_ASSERT(bmap.Get(1, dummy) && bmap.ContainsValue("one"), 
+        TEST_ASSERT(bmap.Get(1, dummy) && bmap.ContainsValue("one"),
                    "Mapping unchanged after failed change");
     }
 
@@ -62,7 +62,7 @@ int os_main(int, os_char**)
     {
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "one");
-        
+
         TEST_ASSERT(!bmap.Change(999, "new"), "Change(999, 'new') fails");
         TEST_ASSERT(bmap.GetCount() == 1, "Map remains unchanged");
     }
@@ -73,10 +73,10 @@ int os_main(int, os_char**)
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "one");
         bmap.Add(2, "two");
-        
+
         TEST_ASSERT(bmap.ChangeOrAdd(1, "ONE"), "ChangeOrAdd(1, 'ONE') succeeds");
         TEST_ASSERT(bmap.GetCount() == 2, "Count remains 2");
-        
+
         string result;
         TEST_ASSERT(bmap.Get(1, result) && result == "ONE", "Value updated to 'ONE'");
     }
@@ -86,10 +86,10 @@ int os_main(int, os_char**)
     {
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "one");
-        
+
         TEST_ASSERT(bmap.ChangeOrAdd(2, "two"), "ChangeOrAdd(2, 'two') succeeds");
         TEST_ASSERT(bmap.GetCount() == 2, "Count becomes 2");
-        
+
         string result;
         TEST_ASSERT(bmap.Get(2, result) && result == "two", "New mapping added");
     }
@@ -100,11 +100,11 @@ int os_main(int, os_char**)
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "one");
         bmap.Add(2, "two");
-        
+
         // 尝试将 KEY 1 的值改为 "two"，应该删除 KEY 2 -> "two" 的映射
         TEST_ASSERT(bmap.ChangeOrAdd(1, "two"), "ChangeOrAdd(1, 'two') succeeds");
         TEST_ASSERT(bmap.GetCount() == 1, "Count becomes 1 (old mapping removed)");
-        
+
         TEST_ASSERT(!bmap.ContainsKey(2), "Old key 2 no longer exists");
         TEST_ASSERT(!bmap.ContainsValue("one"), "Old value 'one' no longer exists");
     }
@@ -114,7 +114,7 @@ int os_main(int, os_char**)
     {
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "one");
-        
+
         TEST_ASSERT(bmap.ChangeOrAdd(1, "one"), "ChangeOrAdd(1, 'one') succeeds");
         TEST_ASSERT(bmap.GetCount() == 1, "Count remains 1");
         TEST_ASSERT(bmap.ContainsValue("one"), "Value still exists");
@@ -127,11 +127,11 @@ int os_main(int, os_char**)
         bmap.Add(1, "one");
         bmap.Add(2, "two");
         bmap.Add(3, "three");
-        
+
         TEST_ASSERT(bmap.Change(1, "ONE"), "First change succeeds");
         TEST_ASSERT(bmap.Change(2, "TWO"), "Second change succeeds");
         TEST_ASSERT(bmap.Change(3, "THREE"), "Third change succeeds");
-        
+
         TEST_ASSERT(bmap.GetCount() == 3, "Count remains 3");
         TEST_ASSERT(bmap.ContainsValue("ONE"), "New value 'ONE' exists");
         TEST_ASSERT(bmap.ContainsValue("TWO"), "New value 'TWO' exists");
@@ -143,13 +143,13 @@ int os_main(int, os_char**)
     {
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "one");
-        
+
         bmap.Change(1, "ONE");
-        
+
         int key;
-        TEST_ASSERT(bmap.GetByValue("ONE", key) && key == 1, 
+        TEST_ASSERT(bmap.GetByValue("ONE", key) && key == 1,
                    "Reverse lookup works after change");
-        TEST_ASSERT(!bmap.GetByValue("one", key), 
+        TEST_ASSERT(!bmap.GetByValue("one", key),
                    "Old value cannot be found after change");
     }
 
@@ -160,15 +160,15 @@ int os_main(int, os_char**)
         bmap.Add(10, "apple");
         bmap.Add(20, "banana");
         bmap.Add(30, "cherry");
-        
+
         // 修改 KEY 10 为新值
         bmap.ChangeOrAdd(10, "apricot");
         TEST_ASSERT(bmap.GetCount() == 3, "Count remains 3");
-        
+
         // 添加新 KEY
         bmap.ChangeOrAdd(40, "date");
         TEST_ASSERT(bmap.GetCount() == 4, "Count becomes 4");
-        
+
         // 修改 KEY 20 为已存在的值"cherry"，应删除 KEY 30
         bmap.ChangeOrAdd(20, "cherry");
         TEST_ASSERT(bmap.GetCount() == 3, "Count becomes 3 after conflict resolution");
@@ -191,7 +191,7 @@ int os_main(int, os_char**)
         bmap.ChangeOrAdd(3, "three");
         bmap.ChangeOrAdd(1, "ONE");  // 更新第一个
         bmap.ChangeOrAdd(2, "TWO");  // 更新第二个
-        
+
         TEST_ASSERT(bmap.GetCount() == 3, "Count is 3 after chain operations");
         TEST_ASSERT(bmap.ContainsValue("ONE"), "Updated value 'ONE' exists");
         TEST_ASSERT(bmap.ContainsValue("TWO"), "Updated value 'TWO' exists");

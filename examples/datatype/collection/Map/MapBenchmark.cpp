@@ -1,4 +1,4 @@
-#include<iostream>
+﻿#include<iostream>
 #include<chrono>
 #include<random>
 #include<vector>
@@ -26,7 +26,7 @@ struct TestObject
 
     TestObject() { memset(data, 0, sizeof(data)); }
     TestObject(int val) { memset(data, val % 256, sizeof(data)); }
-    
+
     bool operator==(const TestObject& other) const
     {
         return memcmp(data, other.data, sizeof(data)) == 0;
@@ -854,7 +854,7 @@ int main(int, char **)
     map<const TestObject*, int> stdmap;
     absl::flat_hash_map<const TestObject*, int> fmap;
     absl::node_hash_map<const TestObject*, int> nmap;
-    
+
     for (size_t i = 0; i < objects.size(); ++i) {
         const TestObject* ptr = &objects[i];
         umap[ptr] = (int)i;
@@ -919,7 +919,7 @@ int main(int, char **)
     cout << string(80, '=') << endl;
 
     const int STRESS_OPERATIONS = 100000;
-    
+
     // 场景1：频繁插入删除后查询（碎片化测试）
     cout << "\n[Scenario 1] 碎片化测试：删除50%元素后查询性能" << endl;
     cout << string(60, '-') << endl;
@@ -928,14 +928,14 @@ int main(int, char **)
         unordered_map<const TestObject*, int> umap1;
         absl::flat_hash_map<const TestObject*, int> fmap1;
         absl::node_hash_map<const TestObject*, int> nmap1;
-        
+
         for (size_t i = 0; i < objects.size(); ++i) {
             const TestObject* ptr = &objects[i];
             umap1[ptr] = (int)i;
             fmap1[ptr] = (int)i;
             nmap1[ptr] = (int)i;
         }
-        
+
         // 删除50%的元素（制造碎片）
         for (size_t i = 0; i < objects.size(); i += 2) {
             const TestObject* ptr = &objects[i];
@@ -943,10 +943,10 @@ int main(int, char **)
             fmap1.erase(ptr);
             nmap1.erase(ptr);
         }
-        
+
         cout << "已删除50%元素，当前元素数量：" << umap1.size() << endl;
         cout << "查找100万次（50%命中，50%未命中）...\n" << endl;
-        
+
         // 测试查询性能（50%命中，50%未命中）
         {
             Timer timer;
@@ -957,7 +957,7 @@ int main(int, char **)
             }
             cout << "std::unordered_map:   " << timer.ElapsedMs() << " ms (found: " << found << ")" << endl;
         }
-        
+
         {
             Timer timer;
             volatile int found = 0;
@@ -967,7 +967,7 @@ int main(int, char **)
             }
             cout << "absl::flat_hash_map:  " << timer.ElapsedMs() << " ms (found: " << found << ")" << endl;
         }
-        
+
         {
             Timer timer;
             volatile int found = 0;
@@ -978,7 +978,7 @@ int main(int, char **)
             cout << "absl::node_hash_map:  " << timer.ElapsedMs() << " ms (found: " << found << ")" << endl;
         }
     }
-    
+
     // 场景2：插入删除查询混合操作
     cout << "\n[Scenario 2] 混合操作：随机插入/删除/查询" << endl;
     cout << string(60, '-') << endl;
@@ -988,18 +988,18 @@ int main(int, char **)
         mt19937 gen(rd());
         uniform_int_distribution<> op_dist(0, 9);  // 0-3插入，4-6删除，7-9查询
         uniform_int_distribution<> idx_dist(0, objects.size() - 1);
-        
+
         // std::unordered_map
         {
             unordered_map<const TestObject*, int> map;
             Timer timer;
             int inserts = 0, deletes = 0, finds = 0;
-            
+
             for (int i = 0; i < STRESS_OPERATIONS; ++i) {
                 int op = op_dist(gen);
                 int idx = idx_dist(gen);
                 const TestObject* ptr = &objects[idx];
-                
+
                 if (op < 4) {  // 插入
                     map[ptr] = idx;
                     ++inserts;
@@ -1012,21 +1012,21 @@ int main(int, char **)
                 }
             }
             cout << "std::unordered_map:   " << timer.ElapsedMs() << " ms "
-                 << "(I:" << inserts << " D:" << deletes << " F:" << finds 
+                 << "(I:" << inserts << " D:" << deletes << " F:" << finds
                  << " Final:" << map.size() << ")" << endl;
         }
-        
+
         // absl::flat_hash_map
         {
             absl::flat_hash_map<const TestObject*, int> map;
             Timer timer;
             int inserts = 0, deletes = 0, finds = 0;
-            
+
             for (int i = 0; i < STRESS_OPERATIONS; ++i) {
                 int op = op_dist(gen);
                 int idx = idx_dist(gen);
                 const TestObject* ptr = &objects[idx];
-                
+
                 if (op < 4) {
                     map[ptr] = idx;
                     ++inserts;
@@ -1039,21 +1039,21 @@ int main(int, char **)
                 }
             }
             cout << "absl::flat_hash_map:  " << timer.ElapsedMs() << " ms "
-                 << "(I:" << inserts << " D:" << deletes << " F:" << finds 
+                 << "(I:" << inserts << " D:" << deletes << " F:" << finds
                  << " Final:" << map.size() << ")" << endl;
         }
-        
+
         // absl::node_hash_map
         {
             absl::node_hash_map<const TestObject*, int> map;
             Timer timer;
             int inserts = 0, deletes = 0, finds = 0;
-            
+
             for (int i = 0; i < STRESS_OPERATIONS; ++i) {
                 int op = op_dist(gen);
                 int idx = idx_dist(gen);
                 const TestObject* ptr = &objects[idx];
-                
+
                 if (op < 4) {
                     map[ptr] = idx;
                     ++inserts;
@@ -1066,11 +1066,11 @@ int main(int, char **)
                 }
             }
             cout << "absl::node_hash_map:  " << timer.ElapsedMs() << " ms "
-                 << "(I:" << inserts << " D:" << deletes << " F:" << finds 
+                 << "(I:" << inserts << " D:" << deletes << " F:" << finds
                  << " Final:" << map.size() << ")" << endl;
         }
     }
-    
+
     // 场景3：频繁扩容测试
     cout << "\n[Scenario 3] 扩容测试：从空表逐步插入10万元素" << endl;
     cout << string(60, '-') << endl;
@@ -1084,7 +1084,7 @@ int main(int, char **)
             }
             cout << "std::unordered_map:   " << timer.ElapsedMs() << " ms" << endl;
         }
-        
+
         {
             Timer timer;
             absl::flat_hash_map<const TestObject*, int> map;
@@ -1093,7 +1093,7 @@ int main(int, char **)
             }
             cout << "absl::flat_hash_map:  " << timer.ElapsedMs() << " ms" << endl;
         }
-        
+
         {
             Timer timer;
             absl::node_hash_map<const TestObject*, int> map;
@@ -1103,7 +1103,7 @@ int main(int, char **)
             cout << "absl::node_hash_map:  " << timer.ElapsedMs() << " ms" << endl;
         }
     }
-    
+
     // 场景4：查询未命中测试
     cout << "\n[Scenario 4] 未命中查询：查询不存在的元素" << endl;
     cout << string(60, '-') << endl;
@@ -1114,9 +1114,9 @@ int main(int, char **)
         for (int i = 0; i < 1000; ++i) {
             miss_objects.emplace_back(99999 + i);
         }
-        
+
         cout << "查找10万次不存在的元素...\n" << endl;
-        
+
         {
             Timer timer;
             volatile int found = 0;
@@ -1126,7 +1126,7 @@ int main(int, char **)
             }
             cout << "std::unordered_map:   " << timer.ElapsedMs() << " ms (found: " << found << ")" << endl;
         }
-                
+
         {
             Timer timer;
             volatile int found = 0;
@@ -1136,7 +1136,7 @@ int main(int, char **)
             }
             cout << "absl::flat_hash_map:  " << timer.ElapsedMs() << " ms (found: " << found << ")" << endl;
         }
-        
+
         {
             Timer timer;
             volatile int found = 0;

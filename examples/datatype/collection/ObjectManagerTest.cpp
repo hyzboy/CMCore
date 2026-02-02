@@ -1,4 +1,4 @@
-#include<hgl/type/ObjectManager.h>
+﻿#include<hgl/type/ObjectManager.h>
 #include<iostream>
 #include<string>
 #include<cassert>
@@ -15,12 +15,12 @@ class TestObject
 public:
     int id;
     string name;
-    
+
     TestObject(int i, const string& n) : id(i), name(n)
     {
         cout << "  [Create] TestObject(" << id << ", \"" << name << "\")" << endl;
     }
-    
+
     ~TestObject()
     {
         cout << "  [Delete] TestObject(" << id << ", \"" << name << "\")" << endl;
@@ -48,7 +48,7 @@ void TestBasicOperations()
         assert(manager.Add(100, obj1) == true);
         assert(manager.Add(200, obj2) == true);
         assert(manager.Add(300, obj3) == true);
-        
+
         // 重复添加应该失败
         auto obj_dup = new TestObject(99, "Duplicate");
         assert(manager.Add(100, obj_dup) == false);
@@ -77,12 +77,12 @@ void TestBasicOperations()
         assert(obj != nullptr);
         assert(obj->id == 2);
         cout << "  Got: " << obj->id << " -> " << obj->name << endl;
-        
+
         // 多次 Get 应该增加引用计数
         TestObject* obj2 = manager.Get(200);
         assert(obj2 == obj);
         cout << "  Called Get twice on same object" << endl;
-        
+
         // 使用新的 GetRefCount 方法
         int ref_count = manager.GetRefCount(200);
         cout << "  Ref count by key: " << ref_count << endl;
@@ -94,7 +94,7 @@ void TestBasicOperations()
         TestObject* obj = manager.Find(100);
         int found_key = -1;
         uint ref_count = 0;
-        
+
         bool result = manager.GetKeyByValue(obj, &found_key, &ref_count, false);
         assert(result == true);
         assert(found_key == 100);
@@ -131,7 +131,7 @@ void TestReferenceCount()
         cout << "  Initial ref_count: " << initial_count << endl;
 
         manager.Get(1);
-        
+
         uint after_get;
         manager.GetKeyByValue(obj, nullptr, &after_get, false);
         cout << "  After Get(): " << after_get << endl;
@@ -147,7 +147,7 @@ void TestReferenceCount()
         int remaining = manager.Release(1, false);
         cout << "  After Release: " << remaining << endl;
         assert(remaining == before_release - 1);
-        
+
         // 使用新的 GetRefCount 方法验证
         int ref_count = manager.GetRefCount(1);
         cout << "  Ref count by key after Release: " << ref_count << endl;
@@ -163,7 +163,7 @@ void TestReferenceCount()
         int remaining = manager.Release(obj, false);
         cout << "  After Release by pointer: " << remaining << endl;
         assert(remaining == before_release - 1);
-        
+
         // 使用新的 GetRefCount 方法按对象指针查询
         int ref_count = manager.GetRefCount(obj);
         cout << "  Ref count by pointer after Release: " << ref_count << endl;
@@ -261,11 +261,11 @@ void TestAutoIdManager()
     {
         TestObject* existing_obj = manager.Find(0);
         uint32 id = manager.Add(existing_obj); // 添加已存在的对象
-        
+
         cout << "  Adding existing object returned ID: " << id << endl;
         assert(id == 0); // 返回原来的 ID
         assert(manager.GetCount() == 3); // 数量不变
-        
+
         // 检查引用计数是否增加
         uint ref_count;
         manager.GetKeyByValue(existing_obj, nullptr, &ref_count, false);
@@ -310,7 +310,7 @@ void TestEdgeCases()
         assert(manager.GetCount() == 0);
         assert(manager.Find(1) == nullptr);
         assert(manager.Get(1) == nullptr);
-        
+
         int result = manager.Release(1, false);
         assert(result == -1);
         cout << "  Empty manager operations handled correctly" << endl;
@@ -327,10 +327,10 @@ void TestEdgeCases()
     {
         auto obj1 = new TestObject(1, "First");
         auto obj2 = new TestObject(2, "Second");
-        
+
         assert(manager.Add(100, obj1) == true);
         assert(manager.Add(100, obj2) == false); // 重复键
-        
+
         delete obj2; // 手动删除未添加的对象
         cout << "  Duplicate key correctly rejected" << endl;
     }
@@ -362,12 +362,12 @@ class Asset
 public:
     string filename;
     int size;
-    
+
     Asset(const string& fn, int sz) : filename(fn), size(sz)
     {
         cout << "  [Load] Asset: " << filename << " (" << size << " bytes)" << endl;
     }
-    
+
     ~Asset()
     {
         cout << "  [Unload] Asset: " << filename << endl;
@@ -395,13 +395,13 @@ void TestRealWorldScenario()
         // 场景1 使用 texture 和 model
         Asset* tex1 = asset_manager.Get("texture.png");
         Asset* mdl1 = asset_manager.Get("model.obj");
-        
+
         // 场景2 也使用 texture
         Asset* tex2 = asset_manager.Get("texture.png");
-        
+
         cout << "  Scene 1 acquired texture and model" << endl;
         cout << "  Scene 2 acquired texture" << endl;
-        
+
         uint tex_refs = 0;
         asset_manager.GetKeyByValue(tex1, nullptr, &tex_refs, false);
         cout << "  Texture ref_count: " << tex_refs << endl;
@@ -413,10 +413,10 @@ void TestRealWorldScenario()
         // 场景1 结束，释放资源
         asset_manager.Release("texture.png", false);   // ref_count: 3 -> 2
         asset_manager.Release("model.obj", false);     // ref_count: 2 -> 1
-        
+
         // 场景2 结束，释放资源
         asset_manager.Release("texture.png", false);   // ref_count: 2 -> 1
-        
+
         cout << "  Released assets from scenes" << endl;
         cout << "  Assets still loaded: " << asset_manager.GetCount() << endl;
         // 此时都没被删除，因为都还有ref_count > 0
@@ -428,7 +428,7 @@ void TestRealWorldScenario()
         // 再释放一次，使ref_count到0
         asset_manager.Release("texture.png", true);   // ref_count: 1 -> 0，删除！
         asset_manager.Release("model.obj", true);     // ref_count: 1 -> 0，删除！
-        
+
         cout << "  Assets after final release: " << asset_manager.GetCount() << endl;
         assert(asset_manager.GetCount() == 1); // 只剩 sound.wav
     }

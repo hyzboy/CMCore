@@ -1,4 +1,4 @@
-#include<hgl/type/FlatOrderedMap.h>
+﻿#include<hgl/type/FlatOrderedMap.h>
 #include<iostream>
 #include<cassert>
 
@@ -88,7 +88,7 @@ int os_main(int, os_char**)
     map.Clear();
     map.Add(1, 1.5);
     map.Add(2, 2.5);
-    
+
     assert(map.Change(1, 1.9));
     double v;
     assert(map.Get(1, v) && v == 1.9);
@@ -97,7 +97,7 @@ int os_main(int, os_char**)
     bool is_new = map.AddOrUpdate(2, 2.9);
     assert(!is_new);  // false = updated
     assert(map.Get(2, v) && v == 2.9);
-    
+
     is_new = map.AddOrUpdate(3, 3.5);
     assert(is_new);   // true = added
     assert(map.GetCount() == 3);

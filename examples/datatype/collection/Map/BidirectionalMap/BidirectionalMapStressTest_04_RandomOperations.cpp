@@ -1,4 +1,4 @@
-#include "StressTestCommon.h"
+﻿#include "StressTestCommon.h"
 
 int os_main(int, os_char**)
 {
@@ -14,11 +14,11 @@ int os_main(int, os_char**)
         mt19937 rng(12345);  // 固定种子保证可复现
         uniform_int_distribution<int> op_dist(0, 2);  // 0:Add, 1:Delete, 2:Change
         uniform_int_distribution<int> key_dist(0, 9999);
-        
+
         Timer timer;
         const int OPS = 100000;
         LogOpHeader("[4] Random Ops");
-        
+
         for (int op = 0; op < OPS; op++)
         {
             int op_type = op_dist(rng);
@@ -26,7 +26,7 @@ int os_main(int, os_char**)
             string value;
             bool result = false;
             const char* op_name = "";
-            
+
             if (op_type == 0)  // Add
             {
                 op_name = "Add";
@@ -62,7 +62,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.GetCount() == (int)expected.size(), "Count matches expected");
         double elapsed = timer.elapsed_ms();
         cout << "  Operations: " << OPS << endl;

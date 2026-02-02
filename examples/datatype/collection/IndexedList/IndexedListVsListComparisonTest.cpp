@@ -1,6 +1,6 @@
-/**
+﻿/**
  * IndexedList vs std::list 性能对比测试
- * 
+ *
  * 测试目标：
  * 1. 对比 IndexedList 和 std::list 的性能
  * 2. 分析不同操作下的性能特征
@@ -57,14 +57,14 @@ void test_sequential_add()
     {
         IndexedList<int> ia;
         ia.Reserve(TEST_COUNT);
-        
+
         TIMER_START;
         for (int i = 0; i < TEST_COUNT; ++i)
             ia.Add(i);
         TIMER_END("添加耗时");
-        
+
         TEST_ASSERT(ia.GetCount() == TEST_COUNT, "添加元素个数正确");
-        
+
         double memory_kb = ia.GetTotalBytes() / 1024.0;
         std::cout << "    内存占用: " << std::fixed << std::setprecision(2) << memory_kb << " KB" << std::endl;
     }
@@ -73,14 +73,14 @@ void test_sequential_add()
     std::cout << "\n[1.2] std::list 顺序添加:" << std::endl;
     {
         std::list<int> list;
-        
+
         TIMER_START;
         for (int i = 0; i < TEST_COUNT; ++i)
             list.push_back(i);
         TIMER_END("添加耗时");
-        
+
         TEST_ASSERT(list.size() == TEST_COUNT, "添加元素个数正确");
-        
+
         // 估算 std::list 内存占用（每个节点 ~40 字节）
         double memory_kb = TEST_COUNT * 40.0 / 1024.0;
         std::cout << "    内存占用(估计): " << std::fixed << std::setprecision(2) << memory_kb << " KB" << std::endl;
@@ -107,7 +107,7 @@ void test_random_access()
         ia.Reserve(DATA_SIZE);
         for (int i = 0; i < DATA_SIZE; ++i)
             ia.Add(i * 2);
-        
+
         TIMER_START;
         volatile int sum = 0;
         for (int i = 0; i < ACCESS_COUNT; ++i)
@@ -124,7 +124,7 @@ void test_random_access()
         std::list<int> list;
         for (int i = 0; i < DATA_SIZE; ++i)
             list.push_back(i * 2);
-        
+
         TIMER_START;
         volatile int sum = 0;
         for (int i = 0; i < ACCESS_COUNT; ++i)
@@ -135,7 +135,7 @@ void test_random_access()
             sum += *it;
         }
         TIMER_END("访问耗时");
-        
+
         std::cout << "    [注] std::list 不支持 O(1) 随机访问，每次访问需 O(n) 遍历" << std::endl;
     }
 }
@@ -161,12 +161,12 @@ void test_middle_insert()
         ia.Reserve(INITIAL_SIZE * 2);
         for (int i = 0; i < INITIAL_SIZE; ++i)
             ia.Add(i);
-        
+
         TIMER_START;
         for (int i = 0; i < INSERT_COUNT; ++i)
             ia.Insert(INSERT_POS, 9999);
         TIMER_END("插入耗时");
-        
+
         TEST_ASSERT(ia.GetCount() == INITIAL_SIZE + INSERT_COUNT, "插入后元素个数正确");
     }
 
@@ -176,7 +176,7 @@ void test_middle_insert()
         std::list<int> list;
         for (int i = 0; i < INITIAL_SIZE; ++i)
             list.push_back(i);
-        
+
         TIMER_START;
         for (int i = 0; i < INSERT_COUNT; ++i)
         {
@@ -185,7 +185,7 @@ void test_middle_insert()
             list.insert(it, 9999);
         }
         TIMER_END("插入耗时");
-        
+
         TEST_ASSERT(list.size() == INITIAL_SIZE + INSERT_COUNT, "插入后元素个数正确");
         std::cout << "    [注] std::list 中间插入无需移动元素，仅链接指针（但定位用时）" << std::endl;
     }
@@ -211,13 +211,13 @@ void test_delete_operations()
         ia.Reserve(INITIAL_SIZE);
         for (int i = 0; i < INITIAL_SIZE; ++i)
             ia.Add(i);
-        
+
         TIMER_START;
         // 从后往前删除避免索引偏移
         for (int i = 0; i < DELETE_COUNT; ++i)
             ia.Delete(INITIAL_SIZE / 2 - 1);
         TIMER_END("删除耗时");
-        
+
         TEST_ASSERT(ia.GetCount() == INITIAL_SIZE - DELETE_COUNT, "删除后元素个数正确");
     }
 
@@ -227,7 +227,7 @@ void test_delete_operations()
         std::list<int> list;
         for (int i = 0; i < INITIAL_SIZE; ++i)
             list.push_back(i);
-        
+
         TIMER_START;
         for (int i = 0; i < DELETE_COUNT; ++i)
         {
@@ -236,7 +236,7 @@ void test_delete_operations()
             list.erase(it);
         }
         TIMER_END("删除耗时");
-        
+
         TEST_ASSERT(list.size() == INITIAL_SIZE - DELETE_COUNT, "删除后元素个数正确");
     }
 }
@@ -261,7 +261,7 @@ void test_sequential_traversal()
         ia.Reserve(DATA_SIZE);
         for (int i = 0; i < DATA_SIZE; ++i)
             ia.Add(i);
-        
+
         TIMER_START;
         volatile int sum = 0;
         for (int t = 0; t < TRAVERSE_COUNT; ++t)
@@ -278,7 +278,7 @@ void test_sequential_traversal()
         std::list<int> list;
         for (int i = 0; i < DATA_SIZE; ++i)
             list.push_back(i);
-        
+
         TIMER_START;
         volatile int sum = 0;
         for (int t = 0; t < TRAVERSE_COUNT; ++t)
@@ -301,11 +301,11 @@ void test_memory_efficiency()
     std::cout << "========================================\n" << std::endl;
 
     const int TEST_SIZES[] = {1000, 10000, 100000, 1000000};
-    
+
     std::cout << "\n[6.1] 各容量下的内存占用对比:\n" << std::endl;
-    std::cout << std::left << std::setw(15) << "元素个数" 
-              << std::setw(25) << "IndexedList(KB)" 
-              << std::setw(25) << "std::list(估计KB)" 
+    std::cout << std::left << std::setw(15) << "元素个数"
+              << std::setw(25) << "IndexedList(KB)"
+              << std::setw(25) << "std::list(估计KB)"
               << std::setw(15) << "比率" << std::endl;
     std::cout << std::string(80, '-') << std::endl;
 
@@ -315,11 +315,11 @@ void test_memory_efficiency()
         ia.Reserve(size);
         for (int i = 0; i < size; ++i)
             ia.Add(i);
-        
+
         double ia_memory = ia.GetTotalBytes() / 1024.0;
         double list_memory = size * 40.0 / 1024.0;  // 每个节点估计 40 字节
         double ratio = list_memory / ia_memory;
-        
+
         std::cout << std::left << std::setw(15) << size
                   << std::setw(25) << std::fixed << std::setprecision(2) << ia_memory
                   << std::setw(25) << list_memory
@@ -340,45 +340,45 @@ void test_mixed_operations()
     std::cout << "[7.1] IndexedList 混合操作:" << std::endl;
     {
         IndexedList<int> ia;
-        
+
         TIMER_START;
-        
+
         // 添加 10K 个元素
         for (int i = 0; i < 10000; ++i)
             ia.Add(i);
-        
+
         // 随机访问 1000 次
         for (int i = 0; i < 1000; ++i)
             volatile int v = ia[i % ia.GetCount()];
-        
+
         // 插入 100 个元素
         for (int i = 0; i < 100; ++i)
             ia.Insert(i % ia.GetCount(), 999);
-        
+
         // 删除 50 个元素
         for (int i = 0; i < 50; ++i)
             ia.Delete(i % ia.GetCount());
-        
+
         // 遍历一次
         volatile int sum = 0;
         for (int i = 0; i < ia.GetCount(); ++i)
             sum += ia[i];
-        
+
         TIMER_END("混合操作耗时");
-        
+
         std::cout << "    最终元素个数: " << ia.GetCount() << std::endl;
     }
 
     std::cout << "\n[7.2] std::list 混合操作:" << std::endl;
     {
         std::list<int> list;
-        
+
         TIMER_START;
-        
+
         // 添加 10K 个元素
         for (int i = 0; i < 10000; ++i)
             list.push_back(i);
-        
+
         // 随机访问 1000 次
         for (int i = 0; i < 1000; ++i)
         {
@@ -386,7 +386,7 @@ void test_mixed_operations()
             std::advance(it, i % list.size());
             volatile int v = *it;
         }
-        
+
         // 插入 100 个元素
         for (int i = 0; i < 100; ++i)
         {
@@ -394,7 +394,7 @@ void test_mixed_operations()
             std::advance(it, i % list.size());
             list.insert(it, 999);
         }
-        
+
         // 删除 50 个元素
         for (int i = 0; i < 50; ++i)
         {
@@ -402,14 +402,14 @@ void test_mixed_operations()
             std::advance(it, i % list.size());
             list.erase(it);
         }
-        
+
         // 遍历一次
         volatile int sum = 0;
         for (auto v : list)
             sum += v;
-        
+
         TIMER_END("混合操作耗时");
-        
+
         std::cout << "    最终元素个数: " << list.size() << std::endl;
     }
 }
@@ -425,39 +425,39 @@ void print_analysis()
     std::cout << std::string(80, '=') << std::endl;
 
     std::cout << "\n【IndexedList 的优势】\n" << std::endl;
-    
+
     std::cout << "1. 随机访问性能: O(1) 时间复杂度\n"
               << "   - 数组连续存储，CPU 缓存友好\n"
               << "   - 避免指针间接引用开销\n"
               << "   - 可比 std::list 快 100+ 倍\n" << std::endl;
-    
+
     std::cout << "2. 内存效率高\n"
               << "   - 无指针开销（每个节点节省 16-24 字节）\n"
               << "   - 无额外分配碎片\n"
               << "   - 可比 std::list 节省 80% 内存\n" << std::endl;
-    
+
     std::cout << "3. 缓存友好\n"
               << "   - 连续内存布局\n"
               << "   - 高 CPU 缓存命中率\n"
               << "   - 良好的预取特性\n" << std::endl;
-    
+
     std::cout << "4. 顺序遍历快速\n"
               << "   - 线性遍历性能优异\n"
               << "   - 适合流式数据处理\n" << std::endl;
 
     std::cout << "\n【std::list 的优势】\n" << std::endl;
-    
+
     std::cout << "1. 中间插入/删除: 仅涉及指针操作\n"
               << "   - 无需移动大量元素\n"
               << "   - 对于频繁的中间修改有优势\n"
               << "   - 插入/删除点定位可能较慢\n" << std::endl;
-    
+
     std::cout << "2. 动态增长\n"
               << "   - 无需预分配\n"
               << "   - 节点按需分配\n" << std::endl;
 
     std::cout << "\n【性能对比结论】\n" << std::endl;
-    
+
     std::cout << "操作类型              | IndexedList | std::list | 胜者" << std::endl;
     std::cout << std::string(70, '-') << std::endl;
     std::cout << "顺序添加              |    极快(O(1))     | 快(O(1)) | ≈(IndexedVA内存优)" << std::endl;
@@ -468,32 +468,32 @@ void print_analysis()
     std::cout << "内存占用              |    少             | 多       | ★IndexedList" << std::endl;
 
     std::cout << "\n【使用建议】\n" << std::endl;
-    
+
     std::cout << "【选择 IndexedList】\n"
               << "  ✓ 需要频繁随机访问的场景（如数组、矩阵）\n"
               << "  ✓ 需要高效遍历的场景\n"
               << "  ✓ 内存受限的场景\n"
               << "  ✓ 大多数现实应用场景（>90%）\n"
               << "  ✓ 游戏开发、图形处理、数据处理\n" << std::endl;
-    
+
     std::cout << "【选择 std::list】\n"
               << "  ✓ 频繁中间插入/删除、很少随机访问\n"
               << "  ✓ 不需要预估容量\n"
               << "  ✓ 需要 O(1) 两端操作（使用 deque 更优）\n"
               << "  ✓ 仅占 <10% 的使用场景\n" << std::endl;
-    
+
     std::cout << "\n【性能原因分析】\n" << std::endl;
-    
+
     std::cout << "1. 随机访问差异巨大（100+倍）的原因：\n"
               << "   - IndexedList: 直接计算内存地址 arr[i]\n"
               << "   - std::list: 需从头遍历 i 次，O(n) 时间\n"
               << "   - 缓存局部性差异（缓存命中率相差10倍以上）\n\n" << std::endl;
-    
+
     std::cout << "2. 内存占用差异大（4-5倍）的原因：\n"
               << "   - std::list 每个节点需要两个指针（前驱、后继）= 16 字节\n"
               << "   - 加上数据、对齐 = 每个 int 需 40+ 字节\n"
               << "   - IndexedList 仅需 4 字节/int\n\n" << std::endl;
-    
+
     std::cout << "3. 中间操作（插入/删除）对比：\n"
               << "   - std::list 理论上 O(1)，但定位 O(n)，总体仍然较慢\n"
               << "   - IndexedList 需移动元素 O(n)，但缓存友好\n"
@@ -521,7 +521,7 @@ int main()
         test_sequential_traversal();
         test_memory_efficiency();
         test_mixed_operations();
-        
+
         print_analysis();
 
         // 测试总结

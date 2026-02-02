@@ -1,4 +1,4 @@
-#include<hgl/type/IDName.h>
+﻿#include<hgl/type/IDName.h>
 #include<iostream>
 #include<chrono>
 #include<vector>
@@ -25,13 +25,13 @@ bool TestLargeScaleAddition()
         char buffer[64];
         int len = snprintf(buffer, sizeof(buffer), "stress_unique_str_%d", i);
         StressTestIDName id(buffer, len);
-        
+
         if(id.GetID() != i)
         {
             cerr << "ERROR: Expected ID " << i << " but got " << id.GetID() << endl;
             return false;
         }
-        
+
         if(i % 10000 == 0)
         {
             cout << "  Added " << i << " strings..." << endl;
@@ -43,7 +43,7 @@ bool TestLargeScaleAddition()
 
     cout << "✓ Added " << NUM_STRINGS << " unique strings in " << duration.count() << " ms" << endl;
     cout << "  Average time per creation: " << (double)duration.count() / NUM_STRINGS * 1000 << " us" << endl;
-    
+
     return true;
 }
 
@@ -83,12 +83,12 @@ bool TestLargeScaleDeduplication()
         char buffer[64];
         int len = snprintf(buffer, sizeof(buffer), "dedup_unique_%d", random_idx);
         StressTestIDName id(buffer, len);
-        
+
         if(id.GetID() == ids[random_idx])
         {
             dedup_count++;
         }
-        
+
         if(i % 50000 == 0)
         {
             cout << "  Processed " << i << " attempts..." << endl;
@@ -100,7 +100,7 @@ bool TestLargeScaleDeduplication()
 
     cout << "✓ Deduplication verified: " << dedup_count << "/" << NUM_ATTEMPTS << " matched existing IDs" << endl;
     cout << "  Total time: " << duration.count() << " ms" << endl;
-    
+
     return dedup_count == NUM_ATTEMPTS;
 }
 
@@ -142,7 +142,7 @@ bool TestLargeScaleComparison()
 
     cout << "✓ Performed " << comparison_count << " comparisons in " << duration.count() << " ms" << endl;
     cout << "  Average comparison time: " << (double)duration.count() / comparison_count * 1000 << " us" << endl;
-    
+
     return true;
 }
 
@@ -180,7 +180,7 @@ bool TestLargeScaleAssignment()
         StressTestIDName id;
         id = templates[idx];
         assignments.push_back(id);
-        
+
         if(i % 50000 == 0)
         {
             cout << "  Completed " << i << " assignments..." << endl;
@@ -192,7 +192,7 @@ bool TestLargeScaleAssignment()
 
     cout << "✓ Performed " << NUM_ASSIGNMENTS << " assignments in " << duration.count() << " ms" << endl;
     cout << "  Average assignment time: " << (double)duration.count() / NUM_ASSIGNMENTS * 1000 << " us" << endl;
-    
+
     return true;
 }
 
@@ -207,10 +207,10 @@ bool TestLargeScaleQuery()
     // 准备数据 - 先清空Registry确保测试隔离
     cout << "Clearing registry and preparing " << NUM_STRINGS << " strings..." << endl;
     Registry::Clear();
-    
+
     vector<int> registered_ids;
     registered_ids.reserve(NUM_STRINGS);
-    
+
     for(int i = 0; i < NUM_STRINGS; i++)
     {
         char buffer[64];
@@ -228,15 +228,15 @@ bool TestLargeScaleQuery()
     {
         char buffer[64];
         int len = snprintf(buffer, sizeof(buffer), "query_test_string_%d", i);
-        
+
         int id = Registry::GetID(buffer, len);
-        
+
         // 验证ID存在且与注册时相同
         if(id >= 0 && id == registered_ids[i])
         {
             found_count++;
         }
-        
+
         if(i % 10000 == 0)
         {
             cout << "  Queried " << i << " strings..." << endl;
@@ -248,7 +248,7 @@ bool TestLargeScaleQuery()
 
     cout << "✓ Found " << found_count << "/" << NUM_STRINGS << " strings in " << duration.count() << " ms" << endl;
     cout << "  Average query time: " << (double)duration.count() / NUM_STRINGS * 1000 << " us" << endl;
-    
+
     return found_count == NUM_STRINGS;
 }
 
@@ -267,7 +267,7 @@ bool TestMixedOperationsStress()
     cout << "Phase 1: Adding " << PHASE1_COUNT << " unique strings..." << endl;
     vector<StressTestIDName> objects;
     objects.reserve(PHASE1_COUNT);
-    
+
     for(int i = 0; i < PHASE1_COUNT; i++)
     {
         char buffer[64];
@@ -287,12 +287,12 @@ bool TestMixedOperationsStress()
         char buffer[64];
         int len = snprintf(buffer, sizeof(buffer), "mixed_stress_%d", idx);
         StressTestIDName id(buffer, len);
-        
+
         if(id.GetID() == objects[idx].GetID())
         {
             dedup_verified++;
         }
-        
+
         if(i % 50000 == 0)
         {
             cout << "  Processed " << i << " attempts..." << endl;
@@ -306,7 +306,7 @@ bool TestMixedOperationsStress()
     {
         int idx1 = dist(rng);
         int idx2 = dist(rng);
-        
+
         if(idx1 != idx2 && objects[idx1] != objects[idx2])
         {
             comparison_count++;
@@ -319,7 +319,7 @@ bool TestMixedOperationsStress()
     cout << "✓ All operations completed in " << duration.count() << " ms" << endl;
     cout << "  Deduplication verified: " << dedup_verified << "/" << PHASE2_COUNT << endl;
     cout << "  Comparisons performed: " << comparison_count << endl;
-    
+
     return true;
 }
 
@@ -336,14 +336,14 @@ bool TestLargeScaleContainer()
     // 创建并添加100,000个IDName对象
     cout << "Creating OrderedSet with " << NUM_ITEMS << " items..." << endl;
     IDNameSet set;
-    
+
     for(int i = 0; i < NUM_ITEMS; i++)
     {
         char buffer[64];
         int len = snprintf(buffer, sizeof(buffer), "container_item_%d", i);
         StressTestIDName id(buffer, len);
         set.Add(id);
-        
+
         if(i % (NUM_ITEMS/10) == 0)
         {
             cout << "  Added " << i << " items..." << endl;
@@ -362,7 +362,7 @@ bool TestLargeScaleContainer()
 
     cout << "✓ Container operations completed in " << duration.count() << " ms" << endl;
     cout << "  Final container size: " << set.GetCount() << " items" << endl;
-    
+
     return true;
 }
 

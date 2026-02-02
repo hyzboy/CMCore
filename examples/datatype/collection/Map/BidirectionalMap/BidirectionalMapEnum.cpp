@@ -1,4 +1,4 @@
-#include<hgl/platform/Platform.h>
+﻿#include<hgl/platform/Platform.h>
 #include<hgl/type/BidirectionalMap.h>
 #include<iostream>
 #include<cassert>
@@ -88,7 +88,7 @@ int os_main(int, os_char**)
             collected.push_back({k, v});
         });
         TEST_ASSERT(collected.size() == 5, "Collected 5 pairs");
-        TEST_ASSERT(collected[0].first == 1 && collected[0].second == "one", 
+        TEST_ASSERT(collected[0].first == 1 && collected[0].second == "one",
                    "First collected pair is (1, 'one')");
     }
 
@@ -111,7 +111,7 @@ int os_main(int, os_char**)
             values.push_back(v);
         });
         TEST_ASSERT(values.size() == 5, "Collected 5 values");
-        TEST_ASSERT(values[0] == "one" && values[4] == "five", 
+        TEST_ASSERT(values[0] == "one" && values[4] == "five",
                    "Values are in insertion order");
     }
 
@@ -147,7 +147,7 @@ int os_main(int, os_char**)
             if (!val_str.empty()) val_str += ",";
             val_str += v;
         });
-        TEST_ASSERT(val_str == "one,two,three,four,five", 
+        TEST_ASSERT(val_str == "one,two,three,four,five",
                    "Values concatenated correctly: " + val_str);
     }
 
@@ -167,14 +167,14 @@ int os_main(int, os_char**)
     {
         BidirectionalMap<int, string> single_bmap;
         single_bmap.Add(42, "answer");
-        
+
         int k_result = -1;
         string v_result = "";
         single_bmap.EnumKV([&](const int& k, const string& v) {
             k_result = k;
             v_result = v;
         });
-        TEST_ASSERT(k_result == 42 && v_result == "answer", 
+        TEST_ASSERT(k_result == 42 && v_result == "answer",
                    "Single element enumeration works");
     }
 
@@ -185,7 +185,7 @@ int os_main(int, os_char**)
         bmap.EnumKV([&](const int& k, const string& v) {
             outer_sum += k;
         });
-        TEST_ASSERT(outer_sum == 100 + 15, 
+        TEST_ASSERT(outer_sum == 100 + 15,
                    "Lambda correctly captured and modified outer variable");
     }
 

@@ -1,4 +1,4 @@
-#include<hgl/platform/Platform.h>
+﻿#include<hgl/platform/Platform.h>
 #include<hgl/type/OrderedMap.h>
 #include<iostream>
 #include<cassert>
@@ -14,7 +14,7 @@ int os_main(int, os_char**)
     cout << "========================================" << endl;
 
     OrderedMap<int, string> map;
-    
+
     cout << "\n[3.1] Populate map with sorted keys:" << endl;
     map.Add(10, "ten");
     map.Add(5, "five");
@@ -70,10 +70,10 @@ int os_main(int, os_char**)
     assert(map.GetCount() == 5);
     assert(map.DeleteAt(2));  // Delete index 2 (key 10)
     assert(map.GetCount() == 4);
-    
+
     // Verify key 10 is gone
     assert(!map.ContainsKey(10));
-    
+
     // Verify remaining keys are in order
     int key1 = map.GetKeyAt(0);
     int key2 = map.GetKeyAt(1);

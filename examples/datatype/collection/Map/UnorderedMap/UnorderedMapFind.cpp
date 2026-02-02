@@ -1,4 +1,4 @@
-#include<hgl/type/UnorderedMap.h>
+﻿#include<hgl/type/UnorderedMap.h>
 #include<iostream>
 #include<cassert>
 #include<string>
@@ -32,10 +32,10 @@ int os_main(int, os_char**)
     cout << "\n[1.3] GetValuePointer:" << endl;
     const string* ptr = map.GetValuePointer(10);
     assert(ptr != nullptr && *ptr == "ten");
-    
+
     string* ptr_write = map.GetValuePointer(20);
     assert(ptr_write != nullptr && *ptr_write == "twenty");
-    
+
     ptr = map.GetValuePointer(99);
     assert(ptr == nullptr);
     cout << "  ✓ GetValuePointer works" << endl;

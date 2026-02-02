@@ -1,4 +1,4 @@
-#include<hgl/type/OrderedSet.h>
+﻿#include<hgl/type/OrderedSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -112,7 +112,7 @@ int os_main(int, os_char**)
     set.Add(100);
     set.Add(200);
     set.Add(300);
-    
+
     // Delete middle
     assert(set.DeleteAt(1));
     assert(set.GetCount() == 2);

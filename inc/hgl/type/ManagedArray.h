@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<vector>
 #include<algorithm>
@@ -106,8 +106,8 @@ namespace hgl
         }
 
         // ============ 查找 ============
-        virtual int Find(const ItemPointer &data) const 
-        { 
+        virtual int Find(const ItemPointer &data) const
+        {
             auto it = std::find(items.begin(), items.end(), data);
             return (it == items.end()) ? -1 : (int)std::distance(items.begin(), it);
         }
@@ -116,8 +116,8 @@ namespace hgl
         virtual bool Contains(const ItemPointer &flag) const { return Find(flag) >= 0; }
 
         // ============ 插入元素 ============
-        virtual bool Insert(int index, const ItemPointer &obj) 
-        { 
+        virtual bool Insert(int index, const ItemPointer &obj)
+        {
             if(index<0 || index>(int)items.size()) return false;
             items.insert(items.begin()+index, obj);
             return true;
@@ -131,8 +131,8 @@ namespace hgl
         }
 
         // ============ 交换与移动 ============
-        virtual void Exchange(int a, int b) 
-        { 
+        virtual void Exchange(int a, int b)
+        {
             if(a>=0 && a<(int)items.size() && b>=0 && b<(int)items.size())
                 std::swap(items[a], items[b]);
         }
@@ -156,13 +156,13 @@ namespace hgl
         }
 
         // ============ 数据读写 ============
-        ItemPointer At(int index) 
-        { 
+        ItemPointer At(int index)
+        {
             if(index<0 || index>=(int)items.size()) return nullptr;
             return items[index];
         }
-        const ItemPointer At(int index) const 
-        { 
+        const ItemPointer At(int index) const
+        {
             if(index<0 || index>=(int)items.size()) return nullptr;
             return items[index];
         }
@@ -216,9 +216,9 @@ namespace hgl
 
         // ============ 释放与清理 ============
         // Free: 先 Clear（对元素 delete），再调用 shrink_to_fit
-        virtual void Free() 
-        { 
-            Clear(); 
+        virtual void Free()
+        {
+            Clear();
             items.shrink_to_fit();
         }
 
@@ -233,33 +233,33 @@ namespace hgl
         }
 
         // ============ Unlink 系列：仅断开关联（不 delete） ============
-        virtual bool Unlink(int index)                    
-        { 
+        virtual bool Unlink(int index)
+        {
             if(index<0 || index>=(int)items.size()) return false;
             items.erase(items.begin()+index);
             return true;
         }          ///< 断开指定索引
-        virtual bool UnlinkMove(int index)                
-        { 
+        virtual bool UnlinkMove(int index)
+        {
             if(index<0 || index>=(int)items.size()) return false;
             items.erase(items.begin()+index);
             return true;
         }     ///< 断开并前移其后的元素
-        virtual bool Unlink(int start, int number)        
-        { 
+        virtual bool Unlink(int start, int number)
+        {
             if(start<0 || number<=0 || start+number>(int)items.size()) return false;
             items.erase(items.begin()+start, items.begin()+start+number);
             return true;
         }  ///< 断开一段范围
-        virtual bool UnlinkByValue(ItemPointer &ip)       
-        { 
+        virtual bool UnlinkByValue(ItemPointer &ip)
+        {
             auto it = std::find(items.begin(), items.end(), ip);
             if(it == items.end()) return false;
             items.erase(it);
             return true;
         }      ///< 通过值断开（单个）
         virtual void UnlinkByValue(ItemPointer *ip, int n)
-        { 
+        {
             if(!ip || n<=0) return;
             for(int i = 0; i < n; ++i)
             {
@@ -329,7 +329,7 @@ namespace hgl
         {
             auto it = std::find(items.begin(), items.end(), ip);
             if (it == items.end()) return false;
-            
+
             int idx = std::distance(items.begin(), it);
             _DeleteRange(idx, 1);
             items.erase(items.begin() + idx);

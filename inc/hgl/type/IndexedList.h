@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 #include<hgl/type/CompareUtil.h>

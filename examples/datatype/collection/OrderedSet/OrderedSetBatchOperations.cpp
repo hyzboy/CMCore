@@ -1,4 +1,4 @@
-#include<hgl/type/OrderedSet.h>
+﻿#include<hgl/type/OrderedSet.h>
 #include<iostream>
 #include<cassert>
 
@@ -31,7 +31,7 @@ int os_main(int, os_char**)
     int64 inserted2 = set.Add(values2, 3);
     cout << "  Inserted count returned: " << inserted2 << endl;
     cout << "  Expected: 2 (15 and 25, since 20 already exists)" << endl;
-    
+
     assert(set.Contains(15));
     assert(set.Contains(20));
     assert(set.Contains(25));

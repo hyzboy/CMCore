@@ -1,4 +1,4 @@
-#include<hgl/type/OrderedSet.h>
+﻿#include<hgl/type/OrderedSet.h>
 #include<iostream>
 #include<cassert>
 #include<string>
@@ -60,15 +60,15 @@ int os_main(int, os_char**)
     cout << "\n[6.7] Test with different element sets:" << endl;
     set1.Clear();
     set2.Clear();
-    
+
     int vals_a[] = {10, 20, 30};
     int vals_b[] = {10, 20, 30};
     int vals_c[] = {10, 20, 40};
-    
+
     set1.Add(vals_a, 3);
     set2.Add(vals_b, 3);
     set3.Add(vals_c, 3);
-    
+
     assert(set1 == set2);
     assert(set1 != set3);
     cout << "  ✓ Sets with same content are equal, different content are not equal" << endl;

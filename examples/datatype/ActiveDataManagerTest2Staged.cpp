@@ -1,4 +1,4 @@
-#include<hgl/CoreType.h>
+﻿#include<hgl/CoreType.h>
 #include<hgl/type/ActiveIDManager.h>
 #include<vector>
 #include<iostream>

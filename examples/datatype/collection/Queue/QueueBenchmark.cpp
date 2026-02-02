@@ -1,8 +1,8 @@
-/**
+﻿/**
  * QueueBenchmark.cpp
- * 
+ *
  * 性能对比测试：hgl::Queue vs std::queue vs std::deque
- * 
+ *
  * 测试场景：
  * 1. 顺序 Push 性能
  * 2. 顺序 Pop 性能
@@ -42,7 +42,7 @@ public:
     {
         auto end_time = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(end_time - start_time).count();
-        cout << "  " << setw(40) << left << name 
+        cout << "  " << setw(40) << left << name
              << ": " << setw(10) << right << duration << " μs" << endl;
     }
 };
@@ -145,13 +145,13 @@ void TestPushPopMixed(int count)
         Queue<TestData> q;
         Timer t("hgl::Queue<TestData>");
         TestData data;
-        
+
         for(int i = 0; i < count / 5; i++)
         {
             q.Push(TestData(i * 3));
             q.Push(TestData(i * 3 + 1));
             q.Push(TestData(i * 3 + 2));
-            
+
             if(!q.IsEmpty()) q.Pop(data);
             if(!q.IsEmpty()) q.Pop(data);
         }
@@ -161,13 +161,13 @@ void TestPushPopMixed(int count)
     {
         std::queue<TestData> q;
         Timer t("std::queue<TestData>");
-        
+
         for(int i = 0; i < count / 5; i++)
         {
             q.push(TestData(i * 3));
             q.push(TestData(i * 3 + 1));
             q.push(TestData(i * 3 + 2));
-            
+
             if(!q.empty()) q.pop();
             if(!q.empty()) q.pop();
         }
@@ -177,13 +177,13 @@ void TestPushPopMixed(int count)
     {
         std::deque<TestData> q;
         Timer t("std::deque<TestData>");
-        
+
         for(int i = 0; i < count / 5; i++)
         {
             q.push_back(TestData(i * 3));
             q.push_back(TestData(i * 3 + 1));
             q.push_back(TestData(i * 3 + 2));
-            
+
             if(!q.empty()) q.pop_front();
             if(!q.empty()) q.pop_front();
         }
@@ -202,13 +202,13 @@ void TestFIFOCycle(int count)
         Queue<TestData> q;
         Timer t("hgl::Queue<TestData>");
         TestData data;
-        
+
         for(int cycle = 0; cycle < count; cycle++)
         {
             // 生产
             for(int i = 0; i < batch_size; i++)
                 q.Push(TestData(cycle * batch_size + i));
-            
+
             // 消费
             for(int i = 0; i < batch_size; i++)
                 q.Pop(data);
@@ -219,13 +219,13 @@ void TestFIFOCycle(int count)
     {
         std::queue<TestData> q;
         Timer t("std::queue<TestData>");
-        
+
         for(int cycle = 0; cycle < count; cycle++)
         {
             // 生产
             for(int i = 0; i < batch_size; i++)
                 q.push(TestData(cycle * batch_size + i));
-            
+
             // 消费
             for(int i = 0; i < batch_size; i++)
                 q.pop();
@@ -236,13 +236,13 @@ void TestFIFOCycle(int count)
     {
         std::deque<TestData> q;
         Timer t("std::deque<TestData>");
-        
+
         for(int cycle = 0; cycle < count; cycle++)
         {
             // 生产
             for(int i = 0; i < batch_size; i++)
                 q.push_back(TestData(cycle * batch_size + i));
-            
+
             // 消费
             for(int i = 0; i < batch_size; i++)
                 q.pop_front();
@@ -311,69 +311,69 @@ void TestMemoryEfficiency()
     {
         Queue<TestData> q;
         TestData data;
-        
+
         auto start = high_resolution_clock::now();
-        
+
         for(int cycle = 0; cycle < cycle_count; cycle++)
         {
             for(int i = 0; i < items_per_cycle; i++)
                 q.Push(TestData(i));
-            
+
             for(int i = 0; i < items_per_cycle; i++)
                 q.Pop(data);
         }
-        
+
         auto end = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(end - start).count();
-        
-        cout << "  " << setw(40) << left << "hgl::Queue<TestData>" 
-             << ": " << setw(10) << right << duration << " μs" 
+
+        cout << "  " << setw(40) << left << "hgl::Queue<TestData>"
+             << ": " << setw(10) << right << duration << " μs"
              << " (final count: " << q.GetCount() << ")" << endl;
     }
 
     // std::queue
     {
         std::queue<TestData> q;
-        
+
         auto start = high_resolution_clock::now();
-        
+
         for(int cycle = 0; cycle < cycle_count; cycle++)
         {
             for(int i = 0; i < items_per_cycle; i++)
                 q.push(TestData(i));
-            
+
             for(int i = 0; i < items_per_cycle; i++)
                 q.pop();
         }
-        
+
         auto end = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(end - start).count();
-        
-        cout << "  " << setw(40) << left << "std::queue<TestData>" 
-             << ": " << setw(10) << right << duration << " μs" 
+
+        cout << "  " << setw(40) << left << "std::queue<TestData>"
+             << ": " << setw(10) << right << duration << " μs"
              << " (final count: " << q.size() << ")" << endl;
     }
 
     // std::deque
     {
         std::deque<TestData> q;
-        
+
         auto start = high_resolution_clock::now();
-        
+
         for(int cycle = 0; cycle < cycle_count; cycle++)
         {
             for(int i = 0; i < items_per_cycle; i++)
                 q.push_back(TestData(i));
-            
+
             for(int i = 0; i < items_per_cycle; i++)
                 q.pop_front();
         }
-        
+
         auto end = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(end - start).count();
-        
-        cout << "  " << setw(40) << left << "std::deque<TestData>" 
-             << ": " << setw(10) << right << duration << " μs" 
+
+        cout << "  " << setw(40) << left << "std::deque<TestData>"
+             << ": " << setw(10) << right << duration << " μs"
              << " (final count: " << q.size() << ")" << endl;
     }
 }
@@ -390,7 +390,7 @@ void TestSmallDataType()
         Timer t("hgl::Queue<int>");
         for(int i = 0; i < count; i++)
             q.Push(i);
-        
+
         int val;
         for(int i = 0; i < count; i++)
             q.Pop(val);
@@ -402,7 +402,7 @@ void TestSmallDataType()
         Timer t("std::queue<int>");
         for(int i = 0; i < count; i++)
             q.push(i);
-        
+
         for(int i = 0; i < count; i++)
             q.pop();
     }
@@ -413,7 +413,7 @@ void TestSmallDataType()
         Timer t("std::deque<int>");
         for(int i = 0; i < count; i++)
             q.push_back(i);
-        
+
         for(int i = 0; i < count; i++)
             q.pop_front();
     }
@@ -439,7 +439,7 @@ void TestIteratorPerformance()
     int dummy;
     for(int i = 0; i < count / 4; i++)
         hgl_q.Pop(dummy);
-    
+
     for(int i = count; i < count + count / 4; i++)
         hgl_q.Push(i);
 

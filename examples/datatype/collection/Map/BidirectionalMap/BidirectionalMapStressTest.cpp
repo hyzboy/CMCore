@@ -1,4 +1,4 @@
-#include<hgl/platform/Platform.h>
+﻿#include<hgl/platform/Platform.h>
 #include<hgl/type/BidirectionalMap.h>
 #include<iostream>
 #include<chrono>
@@ -59,10 +59,10 @@ class Timer
 {
 private:
     chrono::high_resolution_clock::time_point start_time;
-    
+
 public:
     Timer() { start_time = chrono::high_resolution_clock::now(); }
-    
+
     double elapsed_ms() const
     {
         auto end = chrono::high_resolution_clock::now();
@@ -140,7 +140,7 @@ int os_main(int, os_char**)
         Timer timer;
         const int COUNT = 50000;
         LogOpHeader("[1] Sequential Add");
-        
+
         for (int i = 0; i < COUNT; i++)
         {
             const string value = "value_" + to_string(i);
@@ -158,7 +158,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.GetCount() == COUNT, "Count is 50000");
         double elapsed = timer.elapsed_ms();
         cout << "  Time: " << elapsed << " ms (" << (elapsed / COUNT * 1000) << " us/op)" << endl;
@@ -170,7 +170,7 @@ int os_main(int, os_char**)
         BidirectionalMap<int, string> bmap;
         map<int, string> expected;
         const int COUNT = 50000;
-        
+
         // 先添加
         for (int i = 0; i < COUNT; i++)
         {
@@ -178,7 +178,7 @@ int os_main(int, os_char**)
             bmap.Add(i, value);
             expected[i] = value;
         }
-        
+
         Timer timer;
         LogOpHeader("[2] Sequential Delete");
         // 顺序删除
@@ -198,7 +198,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.IsEmpty(), "Map is empty after all deletes");
         double elapsed = timer.elapsed_ms();
         cout << "  Time: " << elapsed << " ms (" << (elapsed / COUNT * 1000) << " us/op)" << endl;
@@ -210,7 +210,7 @@ int os_main(int, os_char**)
         BidirectionalMap<int, string> bmap;
         map<int, string> expected;
         const int COUNT = 50000;
-        
+
         // 先添加
         for (int i = 0; i < COUNT; i++)
         {
@@ -218,7 +218,7 @@ int os_main(int, os_char**)
             bmap.Add(i, value);
             expected[i] = value;
         }
-        
+
         Timer timer;
         LogOpHeader("[3] Sequential Change");
         // 顺序修改
@@ -239,7 +239,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.GetCount() == COUNT, "Count remains 50000");
         double elapsed = timer.elapsed_ms();
         cout << "  Time: " << elapsed << " ms (" << (elapsed / COUNT * 1000) << " us/op)" << endl;
@@ -253,11 +253,11 @@ int os_main(int, os_char**)
         mt19937 rng(12345);  // 固定种子保证可复现
         uniform_int_distribution<int> op_dist(0, 2);  // 0:Add, 1:Delete, 2:Change
         uniform_int_distribution<int> key_dist(0, 9999);
-        
+
         Timer timer;
         const int OPS = 100000;
         LogOpHeader("[4] Random Ops");
-        
+
         for (int op = 0; op < OPS; op++)
         {
             int op_type = op_dist(rng);
@@ -265,7 +265,7 @@ int os_main(int, os_char**)
             string value;
             bool result = false;
             const char* op_name = "";
-            
+
             if (op_type == 0)  // Add
             {
                 op_name = "Add";
@@ -301,7 +301,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.GetCount() == (int)expected.size(), "Count matches expected");
         double elapsed = timer.elapsed_ms();
         cout << "  Operations: " << OPS << endl;
@@ -317,7 +317,7 @@ int os_main(int, os_char**)
         Timer timer;
         const int ROUNDS = 20000;
         LogOpHeader("[5] Alternating Add-Delete");
-        
+
         for (int round = 0; round < ROUNDS; round++)
         {
             // 添加
@@ -335,7 +335,7 @@ int os_main(int, os_char**)
                     bmap.DebugDump("AltAdd Integrity Failure");
                 return 1;
             }
-            
+
             // 立即删除
             result = bmap.DeleteByKey(round);
             if (result)
@@ -351,7 +351,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.IsEmpty(), "Map is empty after all add-delete pairs");
         double elapsed = timer.elapsed_ms();
         cout << "  Total operations: " << (ROUNDS * 2) << endl;
@@ -366,7 +366,7 @@ int os_main(int, os_char**)
         Timer timer;
         const int ROUNDS = 10000;
         LogOpHeader("[6] Batch Add-Change-Delete");
-        
+
         for (int round = 0; round < ROUNDS; round++)
         {
             // Add
@@ -382,7 +382,7 @@ int os_main(int, os_char**)
                     bmap.DebugDump("BatchAdd Integrity Failure");
                 return 1;
             }
-            
+
             // Change
             value = "modified_v" + to_string(round);
             result = bmap.Change(round, value);
@@ -396,7 +396,7 @@ int os_main(int, os_char**)
                     bmap.DebugDump("BatchChange Integrity Failure");
                 return 1;
             }
-            
+
             // Delete
             result = bmap.DeleteByKey(round);
             if (result)
@@ -410,7 +410,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.IsEmpty(), "Map is empty after batch operations");
         double elapsed = timer.elapsed_ms();
         cout << "  Total operations: " << (ROUNDS * 3) << endl;
@@ -423,7 +423,7 @@ int os_main(int, os_char**)
         BidirectionalMap<int, string> bmap;
         map<int, string> expected;
         const int ITEMS = 10000;
-        
+
         // 添加10000个元素
         for (int i = 0; i < ITEMS; i++)
         {
@@ -431,19 +431,19 @@ int os_main(int, os_char**)
             bmap.Add(i, value);
             expected[i] = value;
         }
-        
+
         Timer timer;
         const int QUERIES = 100000;
         string dummy;
         int key_dummy;
         LogOpHeader("[7] Query-Heavy Ops");
-        
+
         for (int q = 0; q < QUERIES; q++)
         {
             int key = q % ITEMS;
             bool result = false;
             string value = "value_" + to_string(key);
-            
+
             // 交替进行正向和反向查询
             if (q % 2 == 0)
             {
@@ -464,7 +464,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         double elapsed = timer.elapsed_ms();
         cout << "  Total queries: " << QUERIES << endl;
         cout << "  Time: " << elapsed << " ms (" << (elapsed / QUERIES * 1000) << " us/op)" << endl;
@@ -480,7 +480,7 @@ int os_main(int, os_char**)
         mt19937 rng(54321);
         uniform_int_distribution<int> key_dist(0, 4999);  // 较小范围造成冲突
         LogOpHeader("[8] ChangeOrAdd Stress");
-        
+
         for (int op = 0; op < OPS; op++)
         {
             int key = key_dist(rng);
@@ -498,7 +498,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.GetCount() <= 5000, "Map size bounded by key range");
         double elapsed = timer.elapsed_ms();
         cout << "  Operations: " << OPS << endl;
@@ -513,14 +513,14 @@ int os_main(int, os_char**)
         map<int, string> expected;
         const int OPS = 50000;
         int add_count = 0, delete_count = 0;
-        
+
         mt19937 rng(88888);
         uniform_int_distribution<int> op_dist(0, 2);
         uniform_int_distribution<int> key_dist(0, 4999);
-        
+
         Timer timer;
         LogOpHeader("[9] Basic Consistency");
-        
+
         for (int op = 0; op < OPS; op++)
         {
             int op_type = op_dist(rng);
@@ -528,7 +528,7 @@ int os_main(int, os_char**)
             string value;
             bool result = false;
             const char* op_name = "";
-            
+
             if (op_type == 0)  // Add
             {
                 op_name = "Add";
@@ -569,7 +569,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.GetCount() == add_count - delete_count, "Count = adds - deletes");
         double elapsed = timer.elapsed_ms();
         cout << "  Adds: " << add_count << ", Deletes: " << delete_count << endl;
@@ -582,20 +582,20 @@ int os_main(int, os_char**)
     {
         BidirectionalMap<int, string> bmap;
         const int ITEMS = 50000;
-        
+
         for (int i = 0; i < ITEMS; i++)
             bmap.Add(i, "value_" + to_string(i));
-        
+
         Timer timer;
         const int ITERATIONS = 1000;
         long long sum = 0;
-        
+
         for (int iter = 0; iter < ITERATIONS; iter++)
         {
             for (auto [k, v] : bmap)
                 sum += k;
         }
-        
+
         double elapsed = timer.elapsed_ms();
         long long total_items = (long long)ITEMS * ITERATIONS;
         cout << "  Total iterations: " << total_items << endl;
@@ -612,7 +612,7 @@ int os_main(int, os_char**)
         const int ROUNDS = 10000;
         LogOpHeader("[11] Delete Pattern Stress");
         int op_index = 0;
-        
+
         for (int round = 0; round < ROUNDS; round++)
         {
             // Add 5
@@ -635,7 +635,7 @@ int os_main(int, os_char**)
 
                 next_id++;
             }
-            
+
             // Delete 4 (oldest)
             for (int i = 0; i < 4; i++)
             {
@@ -657,10 +657,10 @@ int os_main(int, os_char**)
                 }
             }
         }
-        
+
         int expected_count = ROUNDS * 5 - ROUNDS * 4;
         TEST_ASSERT(bmap.GetCount() == expected_count, "Count matches pattern");
-        
+
         double elapsed = timer.elapsed_ms();
         cout << "  Rounds: " << ROUNDS << endl;
         cout << "  Final count: " << bmap.GetCount() << endl;
@@ -672,15 +672,15 @@ int os_main(int, os_char**)
     {
         BidirectionalMap<int, string> bmap;
         map<int, string> expected;
-        
+
         mt19937 rng(777);
         uniform_int_distribution<int> op_dist(0, 2);
         uniform_int_distribution<int> key_dist(0, 999);  // 仅1000个KEY
-        
+
         Timer timer;
         const int OPS = 20000;
         LogOpHeader("[12] Dense Random Ops");
-        
+
         for (int op = 0; op < OPS; op++)
         {
             int op_type = op_dist(rng);
@@ -688,7 +688,7 @@ int os_main(int, os_char**)
             string value;
             bool result = false;
             const char* op_name = "";
-            
+
             if (op_type == 0)  // Add
             {
                 op_name = "Add";
@@ -723,7 +723,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.GetCount() == (int)expected.size(), "Consistency maintained");
         double elapsed = timer.elapsed_ms();
         cout << "  Operations: " << OPS << endl;

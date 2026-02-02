@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/type/SeriesPool.h>
 
@@ -8,7 +8,7 @@ namespace hgl
      * 固定大小值池 - 用于 trivial 类型（如 POD 结构体、整数等）
      * 一次分配固定数量的值，值的生存期与池一致，无需手动构造/析构
      * 适用场景：内存密集、高频分配释放、trivial 类型
-     * 
+     *
      * @tparam T 值类型（必须是 trivial 类型，如 int、float、struct Point 等）
      */
     template<typename T> class FixedValuePool

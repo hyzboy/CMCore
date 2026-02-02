@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/platform/Platform.h>
 #include<hgl/type/BidirectionalMap.h>
@@ -61,10 +61,10 @@ class Timer
 {
 private:
     chrono::high_resolution_clock::time_point start_time;
-    
+
 public:
     Timer() { start_time = chrono::high_resolution_clock::now(); }
-    
+
     double elapsed_ms() const
     {
         auto end = chrono::high_resolution_clock::now();

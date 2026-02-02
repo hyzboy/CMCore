@@ -1,4 +1,4 @@
-/**
+﻿/**
 * @file OrderedMap.h
 * @brief CN:有序映射模板类，基于absl::btree_map实现，提供键值对的有序存储和快速查询。
 *        EN:Ordered map template class based on absl::btree_map, providing key-value pairs with ordered storage and fast queries.

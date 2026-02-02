@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/type/Stack.h>
 
@@ -8,14 +8,14 @@ namespace hgl
      * 指针对象池 - 用于 non-trivial 类型（如含有复杂初始化逻辑的类）
      * 维护指针列表，支持动态增长，自动调用构造/析构函数
      * 适用场景：non-trivial 类型、需要动态增长、需要完整生命周期管理
-     * 
+     *
      * 使用方式：
      *  1. Init() - 初始化空池
      *  2. AddObject(obj) - 手动添加预创建的对象到池（用户负责构造参数）
      *  3. Acquire() - 获取对象指针（池空时创建新对象，但新对象仅调用无参构造）
      *  4. Release(ptr) - 归还对象指针（对象保持有效，等待重用）
      *  5. 析构时自动清理所有对象
-     * 
+     *
      * @tparam T 对象类型（非指针，如 MyClass、SpatialAudioSource 等）
      */
     template<typename T> class PointerObjectPool

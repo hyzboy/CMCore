@@ -1,4 +1,4 @@
-#include<hgl/platform/Platform.h>
+﻿#include<hgl/platform/Platform.h>
 #include<hgl/type/Stack.h>
 #include<iostream>
 #include<cassert>
@@ -16,7 +16,7 @@ int os_main(int, os_char**)
     cout << "\n[TEST 1] 容量管理测试" << endl;
     {
         Stack<int> stack;
-        
+
         // 预分配容量
         stack.Reserve(100);
         int64 capacity = stack.GetAllocCount();
@@ -26,7 +26,7 @@ int os_main(int, os_char**)
         // 添加元素不应超出预分配容量
         for (int i = 0; i < 100; i++)
             stack.Push(i);
-        
+
         assert(stack.GetCount() == 100);
         int64 new_capacity = stack.GetAllocCount();
         assert(new_capacity >= 100);
@@ -95,7 +95,7 @@ int os_main(int, os_char**)
         // 重新使用清空的栈
         for (int i = 100; i < 110; i++)
             stack.Push(i);
-        
+
         int value;
         assert(stack.Pop(value) && value == 109);
         cout << "  ✓ Clear后可重新使用栈" << endl;
@@ -110,7 +110,7 @@ int os_main(int, os_char**)
         // 添加大量元素
         for (int i = 0; i < large_count; i++)
             stack.Push(i);
-        
+
         assert(stack.GetCount() == large_count);
         cout << "  ✓ 成功添加" << large_count << "个元素" << endl;
 

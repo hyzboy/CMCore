@@ -362,7 +362,7 @@ void NonTrivialTypeTest()
     cout << "  Total instances (construct+copy): " << (ComplexValue::construct_count + ComplexValue::copy_count) << endl;
     TEST_ASSERT(ComplexValue::destruct_count >= ComplexValue::construct_count,
                 "All constructed objects destroyed (no memory leak)");
-    
+
     ComplexValue::SetTrace(false);  // 关闭追踪
 }
 

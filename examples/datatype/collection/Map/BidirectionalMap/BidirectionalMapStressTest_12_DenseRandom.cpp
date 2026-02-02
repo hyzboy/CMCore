@@ -1,4 +1,4 @@
-#include "StressTestCommon.h"
+﻿#include "StressTestCommon.h"
 
 int os_main(int, os_char**)
 {
@@ -11,15 +11,15 @@ int os_main(int, os_char**)
     {
         BidirectionalMap<int, string> bmap;
         map<int, string> expected;
-        
+
         mt19937 rng(777);
         uniform_int_distribution<int> op_dist(0, 2);
         uniform_int_distribution<int> key_dist(0, 999);  // 仅1000个KEY
-        
+
         Timer timer;
         const int OPS = 20000;
         LogOpHeader("[12] Dense Random Ops");
-        
+
         for (int op = 0; op < OPS; op++)
         {
             int op_type = op_dist(rng);
@@ -27,7 +27,7 @@ int os_main(int, os_char**)
             string value;
             bool result = false;
             const char* op_name = "";
-            
+
             if (op_type == 0)  // Add
             {
                 op_name = "Add";
@@ -62,7 +62,7 @@ int os_main(int, os_char**)
                 return 1;
             }
         }
-        
+
         TEST_ASSERT(bmap.GetCount() == (int)expected.size(), "Consistency maintained");
         double elapsed = timer.elapsed_ms();
         cout << "  Operations: " << OPS << endl;

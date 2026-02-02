@@ -1,6 +1,6 @@
-/**
+﻿/**
  * SeriesPoolTest.cpp
- * 
+ *
  * 全面测试 SeriesPool<T> 类
  * 测试场景：
  *   - 基本操作（初始化、分配、释放）
@@ -55,7 +55,7 @@ void test_basic_operations()
 
     cout << "\n[1.2] Acquire series numbers:" << endl;
     int s1, s2, s3;
-    
+
     bool acquire1 = pool.Acquire(&s1);
     TEST_ASSERT(acquire1, "First acquire succeeded");
     TEST_ASSERT(s1 >= 0 && s1 < 10, "First series in valid range");
@@ -170,7 +170,7 @@ void test_double_release()
     int s2;
     pool.Acquire(&s2);
     TEST_ASSERT(s2 == s, "Previously released series can be reacquired");
-    
+
     bool third_release = pool.Release(s2);
     TEST_ASSERT(third_release, "Release after reacquire succeeds");
 
@@ -214,7 +214,7 @@ void test_random_series()
     SeriesInt pool2;
     pool2.Init(10);
     pool2.InitRandomSeries(0, 5);  // Range only has 6 values, need 10
-    
+
     set<int> series2;
     for (int i = 0; i < 10; i++) {
         int s;
@@ -258,7 +258,7 @@ void test_free_list_check()
 
     cout << "\n[5.3] Release and verify:" << endl;
     pool.Release(s1);
-    
+
 #ifdef SERIES_POOL_ENABLE_TRACKING
     bool s1_free_after = pool.IsInFreeList(s1);
     TEST_ASSERT(s1_free_after, "Released series s1 back in free list");
@@ -292,7 +292,7 @@ void test_tracking_features()
         pool.Acquire(&s);
         series.push_back(s);
     }
-    
+
     size_t after_acquire = pool.GetAllocatedCount();
     TEST_ASSERT(after_acquire == 5, "Allocated count is 5");
     TEST_ASSERT(!pool.IsFullyReleased(), "Pool is not fully released");
@@ -300,7 +300,7 @@ void test_tracking_features()
     cout << "\n[6.3] Release some and check count:" << endl;
     pool.Release(series[0]);
     pool.Release(series[1]);
-    
+
     size_t after_partial = pool.GetAllocatedCount();
     TEST_ASSERT(after_partial == 3, "Allocated count is 3 after partial release");
 
@@ -308,7 +308,7 @@ void test_tracking_features()
     for (size_t i = 2; i < series.size(); i++) {
         pool.Release(series[i]);
     }
-    
+
     TEST_ASSERT(pool.GetAllocatedCount() == 0, "All series released");
     TEST_ASSERT(pool.IsFullyReleased(), "Pool is fully released");
 #else
@@ -460,11 +460,11 @@ void test_edge_cases()
     bool ok1 = pool1.Acquire(&s1);
     TEST_ASSERT(ok1, "Acquire from size-1 pool succeeded");
     TEST_ASSERT(s1 == 0, "Series number is 0");
-    
+
     int s2;
     bool ok2 = pool1.Acquire(&s2);
     TEST_ASSERT(!ok2, "Second acquire from size-1 pool fails");
-    
+
     pool1.Release(s1);
     bool ok3 = pool1.Acquire(&s2);
     TEST_ASSERT(ok3, "Reacquire after release succeeds");
@@ -473,7 +473,7 @@ void test_edge_cases()
     SeriesInt pool_multi;
     bool init1 = pool_multi.Init(10);
     TEST_ASSERT(init1, "First init succeeded");
-    
+
     bool init2 = pool_multi.Init(20);
     TEST_ASSERT(!init2, "Second init fails (already initialized)");
     TEST_ASSERT(pool_multi.GetMaxCount() == 10, "Max count unchanged");
@@ -483,7 +483,7 @@ void test_edge_cases()
     pool_raw.Init(100);
     int* raw_data = pool_raw.GetRawData();
     TEST_ASSERT(raw_data != nullptr, "Raw data pointer is valid");
-    
+
     // Verify raw data contains valid series numbers
     bool all_valid = true;
     for (int i = 0; i < 100; i++) {
@@ -519,7 +519,7 @@ void test_stress()
                 operations++;
             }
         }
-        
+
         if ((i % 2 == 0) && !active.empty()) {
             size_t idx = i % active.size();
             pool.Release(active[idx]);
@@ -573,7 +573,7 @@ int os_main(int, os_char**)
     cout << "========================================" << endl;
     cout << "Passed: " << tests_passed << endl;
     cout << "Failed: " << tests_failed << endl;
-    
+
     if (tests_failed == 0) {
         cout << "\n✅ ALL TESTS PASSED!" << endl;
     } else {

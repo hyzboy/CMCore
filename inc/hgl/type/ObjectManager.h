@@ -82,7 +82,7 @@ namespace hgl
         {
             // 收集需要删除的键
             std::vector<K> keys_to_delete;
-            
+
             items.EnumKV([&keys_to_delete](const K& key, ManagedObj& obj) {
                 if (obj.ref_count <= 0)
                 {
@@ -172,7 +172,7 @@ namespace hgl
         virtual bool GetKeyByValue(V *value, K *key = nullptr, uint *count = nullptr, bool add_ref = false)
         {
             bool found = false;
-            
+
             items.EnumKV([&](const K& k, ManagedObj& obj) {
                 if (obj.value == value)
                 {
@@ -218,7 +218,7 @@ namespace hgl
         virtual int GetRefCount(V *value) const
         {
             int result = -1;
-            
+
             items.EnumKV([&](const K& k, const ManagedObj& obj) {
                 if (obj.value == value)
                 {

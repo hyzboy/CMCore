@@ -234,7 +234,7 @@ void NonTrivialTypeTest()
         complex_map.Add(1, ComplexValue(1, "First"));
         complex_map.Add(2, ComplexValue(2, "Second"));
         complex_map.Add(3, ComplexValue(3, "Third"));
-        
+
         int initial_construct = ComplexValue::construct_count;
         int initial_destruct = ComplexValue::destruct_count;
 

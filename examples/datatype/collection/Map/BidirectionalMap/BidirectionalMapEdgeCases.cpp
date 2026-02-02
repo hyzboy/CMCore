@@ -1,4 +1,4 @@
-#include<hgl/platform/Platform.h>
+﻿#include<hgl/platform/Platform.h>
 #include<hgl/type/BidirectionalMap.h>
 #include<iostream>
 #include<cassert>
@@ -45,7 +45,7 @@ int os_main(int, os_char**)
         string result;
         int key_result;
         TEST_ASSERT(!empty_bmap.Get(1, result), "Get on empty map returns false");
-        TEST_ASSERT(!empty_bmap.GetByValue("anything", key_result), 
+        TEST_ASSERT(!empty_bmap.GetByValue("anything", key_result),
                    "GetByValue on empty map returns false");
     }
 
@@ -74,22 +74,22 @@ int os_main(int, os_char**)
     {
         BidirectionalMap<int, string> large_bmap;
         const int LARGE_SIZE = 10000;
-        
+
         // 添加大量数据
         for (int i = 0; i < LARGE_SIZE; i++)
         {
-            TEST_ASSERT(large_bmap.Add(i, "value_" + to_string(i)), 
+            TEST_ASSERT(large_bmap.Add(i, "value_" + to_string(i)),
                        "Add item " + to_string(i));
             if (i != LARGE_SIZE - 1) test_passed--;  // 避免冗长输出
         }
         test_passed++;  // 恢复计数
-        
-        TEST_ASSERT(large_bmap.GetCount() == LARGE_SIZE, 
+
+        TEST_ASSERT(large_bmap.GetCount() == LARGE_SIZE,
                    "Count is " + to_string(LARGE_SIZE));
-        
+
         // 查询中间项
         string result;
-        TEST_ASSERT(large_bmap.Get(5000, result) && result == "value_5000", 
+        TEST_ASSERT(large_bmap.Get(5000, result) && result == "value_5000",
                    "Query middle item succeeds");
     }
 
@@ -109,7 +109,7 @@ int os_main(int, os_char**)
     {
         BidirectionalMap<int, string> bmap;
         TEST_ASSERT(bmap.Add(1, ""), "Add with empty string value");
-        
+
         string result;
         TEST_ASSERT(bmap.Get(1, result) && result == "", "Retrieved empty string");
         TEST_ASSERT(bmap.ContainsValue(""), "ContainsValue for empty string works");
@@ -122,20 +122,20 @@ int os_main(int, os_char**)
         bmap.Add(1, "one");
         bmap.Add(2, "two");
         bmap.Add(3, "three");
-        
+
         bmap.DebugDump("After Add 1,2,3");
-        
+
         bmap.DeleteByKey(1);
         bmap.DebugDump("After DeleteByKey(1)");
-        
+
         bmap.DeleteByKey(2);
         bmap.DebugDump("After DeleteByKey(2)");
-        
+
         bmap.DeleteByKey(3);
         bmap.DebugDump("After DeleteByKey(3)");
-        
+
         TEST_ASSERT(bmap.IsEmpty(), "Map is empty after deleting all");
-        
+
         TEST_ASSERT(bmap.Add(10, "ten"), "Add to cleared map");
         TEST_ASSERT(bmap.GetCount() == 1, "Count is 1");
     }
@@ -148,7 +148,7 @@ int os_main(int, os_char**)
         bmap1.Clear();
         TEST_ASSERT(bmap1.IsEmpty(), "After Clear, map is empty");
         TEST_ASSERT(bmap1.Add(2, "two"), "Can add after Clear");
-        
+
         BidirectionalMap<int, string> bmap2;
         bmap2.Add(1, "one");
         bmap2.Free();
@@ -163,9 +163,9 @@ int os_main(int, os_char**)
         bmap.Add(1, "one");
         bmap.Add(2, "two");
         bmap.Add(3, "three");
-        
+
         bmap.Clear();
-        
+
         int count = 0;
         for (auto [k, v] : bmap)
         {
@@ -178,19 +178,19 @@ int os_main(int, os_char**)
     cout << "\n[11] Alternating Add and Delete:" << endl;
     {
         BidirectionalMap<int, string> bmap;
-        
+
         bmap.Add(1, "one");
         TEST_ASSERT(bmap.GetCount() == 1, "Count is 1");
-        
+
         bmap.Add(2, "two");
         TEST_ASSERT(bmap.GetCount() == 2, "Count is 2");
-        
+
         bmap.DeleteByKey(1);
         TEST_ASSERT(bmap.GetCount() == 1, "Count is 1 after delete");
-        
+
         bmap.Add(3, "three");
         TEST_ASSERT(bmap.GetCount() == 2, "Count is 2 after re-add");
-        
+
         bmap.DeleteByValue("two");
         TEST_ASSERT(bmap.GetCount() == 1, "Count is 1 after value delete");
     }
@@ -201,10 +201,10 @@ int os_main(int, os_char**)
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "one");
         bmap.Add(2, "two");
-        
+
         const auto& keys = bmap.GetKeys();
         const auto& values = bmap.GetValues();
-        
+
         TEST_ASSERT(keys.size() == 2, "GetKeys returns size 2");
         TEST_ASSERT(values.size() == 2, "GetValues returns size 2");
         TEST_ASSERT(keys[0] == 1 && keys[1] == 2, "Keys are correct");
@@ -216,12 +216,12 @@ int os_main(int, os_char**)
     {
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "a");
-        
+
         // 尝试多次添加同一 KEY
         TEST_ASSERT(!bmap.Add(1, "b"), "Cannot add duplicate key (attempt 1)");
         TEST_ASSERT(!bmap.Add(1, "c"), "Cannot add duplicate key (attempt 2)");
         TEST_ASSERT(bmap.GetCount() == 1, "Count remains 1");
-        
+
         string result;
         TEST_ASSERT(bmap.Get(1, result) && result == "a", "Value unchanged");
     }
@@ -231,14 +231,14 @@ int os_main(int, os_char**)
     {
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "shared");
-        
+
         // 尝试多次添加同一 VALUE
         TEST_ASSERT(!bmap.Add(2, "shared"), "Cannot add duplicate value (attempt 1)");
         TEST_ASSERT(!bmap.Add(3, "shared"), "Cannot add duplicate value (attempt 2)");
         TEST_ASSERT(bmap.GetCount() == 1, "Count remains 1");
-        
+
         int result;
-        TEST_ASSERT(bmap.GetByValue("shared", result) && result == 1, 
+        TEST_ASSERT(bmap.GetByValue("shared", result) && result == 1,
                    "Value still mapped to original key");
     }
 

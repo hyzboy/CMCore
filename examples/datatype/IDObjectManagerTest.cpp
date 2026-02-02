@@ -61,7 +61,7 @@ void TestAutoIncrementID()
     Uint32IdManager<TestObj> mgr;
     const int COUNT = 300;
     uint32 *ids = new uint32[COUNT];
-    
+
     for(int i = 0; i < COUNT; i++)
     {
         ids[i] = mgr.Add(new TestObj(i));
@@ -87,23 +87,23 @@ void TestDuplicateAdd()
 
     Uint32IdManager<TestObj> mgr;
     const int COUNT = 100;
-    
+
     uint32 *ids = new uint32[COUNT];
     TestObj **objects = new TestObj*[COUNT];
-    
+
     for(int i = 0; i < COUNT; i++)
     {
         objects[i] = new TestObj(i * 42);
         ids[i] = mgr.Add(objects[i]);
     }
-    
+
     // Add same objects again
     for(int i = 0; i < COUNT; i++)
     {
         uint32 id2 = mgr.Add(objects[i]);
         assert(id2 == ids[i]);
     }
-    
+
     cout<<"Added "<<COUNT<<" objects twice, got same IDs"<<endl;
 
     // Count should still be COUNT (not duplicated)
@@ -123,27 +123,27 @@ void TestReferenceCount()
     Uint32IdManager<TestObj> mgr;
     const int COUNT = 100;
     uint32 *ids = new uint32[COUNT];
-    
+
     for(int i = 0; i < COUNT; i++)
     {
         ids[i] = mgr.Add(new TestObj(99 + i));
     }
 
     cout<<"Testing reference counting on "<<COUNT<<" objects"<<endl;
-    
+
     // Get increases ref count for all
     for(int i = 0; i < COUNT; i++)
     {
         mgr.Get(ids[i]);
     }
-    
+
     // Release all
     for(int i = 0; i < COUNT; i++)
     {
         int rc = mgr.Release(ids[i], false);
         assert(rc == 1);
     }
-    
+
     // Objects should still exist (zero_clear was false)
     assert(mgr.GetCount() == COUNT);
     cout<<"Reference counting verified on "<<COUNT<<" objects"<<endl;
@@ -160,7 +160,7 @@ void TestReleaseWithZeroClear()
     Uint32IdManager<TestObj> mgr;
     const int COUNT = 100;
     uint32 *ids = new uint32[COUNT];
-    
+
     for(int i = 0; i < COUNT; i++)
     {
         ids[i] = mgr.Add(new TestObj(123 + i));
@@ -197,7 +197,7 @@ void TestReleaseByPointer()
     const int COUNT = 100;
     TestObj **objects = new TestObj*[COUNT];
     uint32 *ids = new uint32[COUNT];
-    
+
     for(int i = 0; i < COUNT; i++)
     {
         objects[i] = new TestObj(456 + i);
@@ -304,7 +304,7 @@ void TestFindVsGet()
     const int COUNT = 100;
     uint32 *ids = new uint32[COUNT];
     TestObj **objects = new TestObj*[COUNT];
-    
+
     for(int i = 0; i < COUNT; i++)
     {
         objects[i] = new TestObj(789 + i);
@@ -347,7 +347,7 @@ void TestClearFree()
 
     const int COUNT = 1000;
     uint32 *ids = new uint32[COUNT];
-    
+
     // Add multiple objects
     for(int i = 0; i < COUNT; i++)
     {
@@ -416,7 +416,7 @@ void TestMultipleObjects()
 
     delete[] objects;
     delete[] ids;
-    
+
     mgr.Clear();
     cout<<"Test 11 PASSED"<<endl;
 }
@@ -459,7 +459,7 @@ void TestClearWhileHavingReferences()
 
     const int COUNT = 100;
     uint32 *ids = new uint32[COUNT];
-    
+
     for(int i = 0; i < COUNT; i++)
     {
         ids[i] = mgr.Add(new TestObj(999 + i));
@@ -492,7 +492,7 @@ void TestInstanceLifecycle()
 
     {
         Uint32IdManager<TestObj> mgr;
-        
+
         for(int i = 0; i < COUNT; i++)
         {
             mgr.Add(new TestObj(i * 10));

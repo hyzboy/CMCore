@@ -1,4 +1,4 @@
-#include<hgl/type/PtrArray.h>
+﻿#include<hgl/type/PtrArray.h>
 #include<iostream>
 #include<string>
 

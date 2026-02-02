@@ -1,4 +1,4 @@
-#include<hgl/type/ActiveDataManager.h>
+﻿#include<hgl/type/ActiveDataManager.h>
 #include<iostream>
 #include<vector>
 #include<unordered_set>

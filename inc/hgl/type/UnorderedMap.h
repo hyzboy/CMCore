@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<ankerl/unordered_dense.h>
 #include<hgl/type/ValueArray.h>
