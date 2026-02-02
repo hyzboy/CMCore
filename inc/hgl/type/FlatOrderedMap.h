@@ -452,6 +452,57 @@ namespace hgl
         }
 
         /**
+        * @brief CN:添加键值对（移动语义版本）\nEN:Add key-value pair (move semantics version)
+        * @param key CN:键（右值引用）。EN:Key (rvalue reference).
+        * @param value CN:值（右值引用）。EN:Value (rvalue reference).
+        * @return CN:添加成功返回true，键已存在返回false。EN:Return true if added successfully, false if key exists.
+        */
+        virtual bool Add(K&& key, V&& value)
+        {
+            auto it = std::lower_bound(keys.begin(), keys.end(), key);
+
+            // 检查是否已存在
+            if (it != keys.end() && !(*it < key) && !(key < *it))  // *it == key
+            {
+                return false;  // 键已存在
+            }
+
+            // 插入到正确的有序位置
+            int64 index = std::distance(keys.begin(), it);
+            keys.insert(it, std::move(key));
+            values.insert(values.begin() + index, std::move(value));
+            return true;
+        }
+
+        /**
+        * @brief CN:添加键值对（混合语义版本1：键右值）\nEN:Add key-value pair (mixed version 1: key rvalue)
+        */
+        virtual bool Add(K&& key, const V& value)
+        {
+            auto it = std::lower_bound(keys.begin(), keys.end(), key);
+            if (it != keys.end() && !(*it < key) && !(key < *it))
+                return false;
+            int64 index = std::distance(keys.begin(), it);
+            keys.insert(it, std::move(key));
+            values.insert(values.begin() + index, value);
+            return true;
+        }
+
+        /**
+        * @brief CN:添加键值对（混合语义版本2：值右值）\nEN:Add key-value pair (mixed version 2: value rvalue)
+        */
+        virtual bool Add(const K& key, V&& value)
+        {
+            auto it = std::lower_bound(keys.begin(), keys.end(), key);
+            if (it != keys.end() && !(*it < key) && !(key < *it))
+                return false;
+            int64 index = std::distance(keys.begin(), it);
+            keys.insert(it, key);
+            values.insert(values.begin() + index, std::move(value));
+            return true;
+        }
+
+        /**
         * @brief CN:添加或更新键值对\nEN:Add or update key-value pair
         * @param key CN:键。EN:Key.
         * @param value CN:值。EN:Value.
@@ -471,6 +522,54 @@ namespace hgl
         }
 
         /**
+        * @brief CN:添加或更新键值对（移动语义版本）\nEN:Add or update key-value pair (move semantics version)
+        */
+        virtual bool AddOrUpdate(K&& key, V&& value)
+        {
+            int64 index = Find(key);
+            if (index >= 0)
+            {
+                values[index] = std::move(value);
+                return false;
+            }
+
+            Add(std::move(key), std::move(value));
+            return true;
+        }
+
+        /**
+        * @brief CN:添加或更新键值对（混合语义版本1：键右值）\nEN:Add or update (mixed version 1: key rvalue)
+        */
+        virtual bool AddOrUpdate(K&& key, const V& value)
+        {
+            int64 index = Find(key);
+            if (index >= 0)
+            {
+                values[index] = value;
+                return false;
+            }
+
+            Add(std::move(key), value);
+            return true;
+        }
+
+        /**
+        * @brief CN:添加或更新键值对（混合语义版本2：值右值）\nEN:Add or update (mixed version 2: value rvalue)
+        */
+        virtual bool AddOrUpdate(const K& key, V&& value)
+        {
+            int64 index = Find(key);
+            if (index >= 0)
+            {
+                values[index] = std::move(value);
+                return false;
+            }
+
+            Add(key, std::move(value));
+            return true;
+        }
+
+        /**
         * @brief CN:修改键对应的值\nEN:Change value for a key
         * @param key CN:键。EN:Key.
         * @param value CN:新值。EN:New value.
@@ -482,6 +581,20 @@ namespace hgl
             if (index >= 0)
             {
                 values[index] = value;
+                return true;
+            }
+            return false;
+        }
+
+        /**
+        * @brief CN:修改键对应的值（移动语义版本）\nEN:Change value for a key (move semantics version)
+        */
+        virtual bool Change(const K& key, V&& value)
+        {
+            int64 index = Find(key);
+            if (index >= 0)
+            {
+                values[index] = std::move(value);
                 return true;
             }
             return false;

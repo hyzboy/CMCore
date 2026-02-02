@@ -82,6 +82,15 @@ namespace hgl
         }
 
         /**
+         * @brief CN:添加一个元素（移动语义版本）\nEN:Add an element (move semantics version)
+         * @return CN:成功返回 true，已存在返回 false\nEN:true if added, false if already exists
+         */
+        bool Add(T&& value)
+        {
+            return data.insert(std::move(value)).second;
+        }
+
+        /**
          * @brief CN:批量添加元素\nEN:Add multiple elements
          */
         int64 Add(const T* values, int64 count)

@@ -11,3 +11,6 @@ cm_example_project_base(
     SOURCES FlatOrderedMapTest.cpp
     PRIVATE_LIBRARIES CMCore
 )
+
+# Move Semantics Test
+cm_example_project("DataType/Collection/Map/FlatOrderedMap" FlatOrderedMapMoveSemantics      FlatOrderedMapMoveSemantics.cpp)

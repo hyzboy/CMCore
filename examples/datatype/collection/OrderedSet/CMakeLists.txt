@@ -15,3 +15,6 @@ cm_example_project("DataType/Collection/OrderedSet" FlatOrderedSetConstCorrectne
 # Performance comparison between OrderedSet (BTree) and FlatOrderedSet (Vector)
 cm_example_project("DataType/Collection/OrderedSet" OrderedSetVsFlatOrderedSetPerformance	OrderedSetVsFlatOrderedSetPerformance.cpp)
 
+# Move Semantics Test (covers both OrderedSet and FlatOrderedSet)
+cm_example_project("DataType/Collection/OrderedSet" OrderedSetMoveSemantics               OrderedSetMoveSemantics.cpp)
+

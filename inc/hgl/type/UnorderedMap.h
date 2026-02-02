@@ -63,6 +63,11 @@ namespace hgl
             return inserted;
         }
 
+        bool Add(K&& key, const V& value) {
+            auto [it, inserted] = map_data.try_emplace(std::move(key), value);
+            return inserted;
+        }
+
         bool Add(K&& key, V&& value) {
             auto [it, inserted] = map_data.try_emplace(std::move(key), std::move(value));
             return inserted;
@@ -135,12 +140,46 @@ namespace hgl
         }
 
         /**
+         * 更改或添加（移动语义版本）
+         */
+        bool ChangeOrAdd(K&& key, V&& value) {
+            map_data[std::move(key)] = std::move(value);
+            return true;
+        }
+
+        /**
+         * 更改或添加（混合语义版本1：键右值）
+         */
+        bool ChangeOrAdd(K&& key, const V& value) {
+            map_data[std::move(key)] = value;
+            return true;
+        }
+
+        /**
+         * 更改或添加（混合语义版本2：值右值）
+         */
+        bool ChangeOrAdd(const K& key, V&& value) {
+            map_data[key] = std::move(value);
+            return true;
+        }
+
+        /**
          * 更改指定 key 的 value（如果 key 不存在则返回 false）
          */
         bool Change(const K& key, const V& value) {
             auto it = map_data.find(key);
             if (it == map_data.end()) return false;
             it->second = value;
+            return true;
+        }
+
+        /**
+         * 更改指定 key 的 value（移动语义版本）
+         */
+        bool Change(const K& key, V&& value) {
+            auto it = map_data.find(key);
+            if (it == map_data.end()) return false;
+            it->second = std::move(value);
             return true;
         }
 

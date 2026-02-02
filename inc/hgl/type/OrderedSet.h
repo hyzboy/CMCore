@@ -133,6 +133,20 @@ namespace hgl
         }
 
         /**
+         * @brief CN:添加一个元素（移动语义版本）\nEN:Add an element (move semantics version)
+         * @param value 要添加的值（右值引用）
+         * @return 插入位置的索引，如果已存在返回 -1
+         */
+        int64 Add(T&& value)
+        {
+            auto result = data.insert(std::move(value));
+            if (!result.second)
+                return -1;  // 已存在
+
+            return std::distance(data.begin(), result.first);
+        }
+
+        /**
          * @brief CN:批量添加元素\nEN:Add multiple elements
          * @param dl 数据指针
          * @param count 数据个数

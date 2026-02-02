@@ -85,6 +85,36 @@ namespace hgl
         }
 
         /**
+        * @brief CN:添加键值对（移动语义版本）。\nEN:Add key-value pair (move semantics version).
+        * @param key CN:键（右值引用）。EN:Key (rvalue reference).
+        * @param value CN:值（右值引用）。EN:Value (rvalue reference).
+        * @return CN:添加成功返回true，键已存在返回false。EN:Return true if added successfully, false if key exists.
+        */
+        virtual bool Add(K&& key, V&& value)
+        {
+            auto result = map_data.insert({std::move(key), std::move(value)});
+            return result.second;
+        }
+
+        /**
+        * @brief CN:添加键值对（混合语义版本1：键右值）。\nEN:Add key-value pair (mixed version 1: key rvalue).
+        */
+        virtual bool Add(K&& key, const V& value)
+        {
+            auto result = map_data.insert({std::move(key), value});
+            return result.second;
+        }
+
+        /**
+        * @brief CN:添加键值对（混合语义版本2：值右值）。\nEN:Add key-value pair (mixed version 2: value rvalue).
+        */
+        virtual bool Add(const K& key, V&& value)
+        {
+            auto result = map_data.insert({key, std::move(value)});
+            return result.second;
+        }
+
+        /**
         * @brief CN:添加或更新键值对。\nEN:Add or update key-value pair.
         * @param key CN:键。EN:Key.
         * @param value CN:值。EN:Value.
@@ -92,6 +122,30 @@ namespace hgl
         virtual void AddOrUpdate(const K& key, const V& value)
         {
             map_data[key] = value;
+        }
+
+        /**
+        * @brief CN:添加或更新键值对（移动语义版本）。\nEN:Add or update key-value pair (move semantics version).
+        */
+        virtual void AddOrUpdate(K&& key, V&& value)
+        {
+            map_data[std::move(key)] = std::move(value);
+        }
+
+        /**
+        * @brief CN:添加或更新键值对（混合语义版本1：键右值）。\nEN:Add or update (mixed version 1: key rvalue).
+        */
+        virtual void AddOrUpdate(K&& key, const V& value)
+        {
+            map_data[std::move(key)] = value;
+        }
+
+        /**
+        * @brief CN:添加或更新键值对（混合语义版本2：值右值）。\nEN:Add or update (mixed version 2: value rvalue).
+        */
+        virtual void AddOrUpdate(const K& key, V&& value)
+        {
+            map_data[key] = std::move(value);
         }
 
         // ============================================================

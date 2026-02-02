@@ -18,6 +18,9 @@ cm_example_project("DataType/Collection/Map/BidirectionalMap" BidirectionalMapSt
 cm_example_project("DataType/Collection/Map/BidirectionalMap" BidirectionalMapStressTest_07_QueryHeavy             BidirectionalMapStressTest_07_QueryHeavy.cpp)
 cm_example_project("DataType/Collection/Map/BidirectionalMap" BidirectionalMapStressTest_08_ChangeOrAdd            BidirectionalMapStressTest_08_ChangeOrAdd.cpp)
 cm_example_project("DataType/Collection/Map/BidirectionalMap" BidirectionalMapStressTest_09_BasicConsistency       BidirectionalMapStressTest_09_BasicConsistency.cpp)
+
+# Move Semantics Test
+cm_example_project("DataType/Collection/Map/BidirectionalMap" BidirectionalMapMoveSemantics  BidirectionalMapMoveSemantics.cpp)
 cm_example_project("DataType/Collection/Map/BidirectionalMap" BidirectionalMapStressTest_10_IteratorPerformance    BidirectionalMapStressTest_10_IteratorPerformance.cpp)
 cm_example_project("DataType/Collection/Map/BidirectionalMap" BidirectionalMapStressTest_11_DeletePattern          BidirectionalMapStressTest_11_DeletePattern.cpp)
 cm_example_project("DataType/Collection/Map/BidirectionalMap" BidirectionalMapStressTest_12_DenseRandom            BidirectionalMapStressTest_12_DenseRandom.cpp)

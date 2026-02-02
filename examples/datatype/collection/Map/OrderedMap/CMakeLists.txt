@@ -7,3 +7,6 @@ cm_example_project("DataType/Collection/Map/OrderedMap" OrderedMapIterators     
 cm_example_project("DataType/Collection/Map/OrderedMap" OrderedMapEnum                    OrderedMapEnum.cpp)
 cm_example_project("DataType/Collection/Map/OrderedMap" OrderedMapEdgeCases               OrderedMapEdgeCases.cpp)
 cm_example_project("DataType/Collection/Map/OrderedMap" OrderedMapFunctionalOrdering      OrderedMapFunctionalOrdering.cpp)
+
+# Move Semantics Test
+cm_example_project("DataType/Collection/Map/OrderedMap" OrderedMapMoveSemantics            OrderedMapMoveSemantics.cpp)

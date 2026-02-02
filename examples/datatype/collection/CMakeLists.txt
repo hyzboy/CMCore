@@ -27,3 +27,6 @@ cm_example_project("DataType/Collection" SimpleSeriesPoolTest   SimpleSeriesPool
 cm_example_project("DataType/Collection" SeriesPoolTest         SeriesPoolTest.cpp)
 
 cm_example_project("DataType/Collection" ObjectManagerTest      ObjectManagerTest.cpp)
+
+# Move Semantics Tests (comprehensive test suite for all container move semantics)
+cm_example_project("DataType/Collection" ComprehensiveMoveSemanticsTest  ComprehensiveMoveSemanticsTest.cpp)

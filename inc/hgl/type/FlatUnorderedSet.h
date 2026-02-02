@@ -261,6 +261,47 @@ namespace hgl
         }
 
         /**
+         * @brief CN:添加一个元素（移动语义版本）\nEN:Add an element (move semantics version)
+         * @param value CN:要添加的值（右值引用）\nEN:Value to add (rvalue reference)
+         * @return CN:成功返回 true，已存在返回 false\nEN:true if added, false if already exists
+         */
+        bool Add(T&& value)
+        {
+            static_assert(std::is_trivially_copyable_v<T>,
+                "Add() requires trivially copyable types for optimal hashing.");
+            uint64 hash = ComputeOptimalHash(value);
+
+            // 检查是否已存在
+            auto it = hash_map.find(hash);
+            if (it != hash_map.end()) {
+                for (int id : it->second) {
+                    if (!data_manager.IsActive(id))
+                        continue;
+                    T existing;
+                    if (data_manager.GetData(existing, id) && existing == value)
+                        return false;  // 已存在
+                }
+            }
+
+            // 获取或创建新ID
+            int new_id;
+            if (!data_manager.GetOrCreate(&new_id, 1))
+                return false;
+
+            // 写入数据（使用移动语义）
+            if (!data_manager.WriteData(std::move(value), new_id))
+            {
+                data_manager.Release(&new_id, 1);
+                return false;
+            }
+
+            // 添加到哈希表
+            hash_map[hash].push_back(new_id);
+
+            return true;
+        }
+
+        /**
          * @brief CN:批量添加元素\nEN:Add multiple elements
          */
         int Add(const T* values, int count)

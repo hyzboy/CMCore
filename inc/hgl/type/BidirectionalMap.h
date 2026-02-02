@@ -306,6 +306,88 @@ namespace hgl
         }
 
         /**
+         * @brief 添加一个双向映射对（移动语义版本）
+         * @param key 键（右值引用）
+         * @param value 值（右值引用）
+         * @return 成功返回 true，如果 key 或 value 已存在返回 false
+         *
+         * @note 如果操作失败，两个映射都不会被修改（事务性）
+         */
+        bool Add(K&& key, V&& value)
+        {
+            // 检查 key 和 value 是否已存在
+            if (forward.contains(key) || reverse.contains(value))
+                return false;
+
+            // 添加到数据向量
+            int key_idx = static_cast<int>(keys.size());
+            int value_idx = static_cast<int>(values.size());
+
+            keys.push_back(std::move(key));
+            values.push_back(std::move(value));
+
+            // 添加到索引映射（使用移动后的对象可能失败，但已经push_back了）
+            const K& final_key = keys.back();
+            const V& final_value = values.back();
+
+            IndexPair pair{key_idx, value_idx};
+            forward[final_key] = pair;
+            reverse[final_value] = pair;
+
+            return true;
+        }
+
+        /**
+         * @brief 添加一个双向映射对（混合语义版本1：键右值）
+         */
+        bool Add(K&& key, const V& value)
+        {
+            // 检查 key 和 value 是否已存在
+            if (forward.contains(key) || reverse.contains(value))
+                return false;
+
+            int key_idx = static_cast<int>(keys.size());
+            int value_idx = static_cast<int>(values.size());
+
+            keys.push_back(std::move(key));
+            values.push_back(value);
+
+            const K& final_key = keys.back();
+            const V& final_value = values.back();
+
+            IndexPair pair{key_idx, value_idx};
+            forward[final_key] = pair;
+            reverse[final_value] = pair;
+
+            return true;
+        }
+
+        /**
+         * @brief 添加一个双向映射对（混合语义版本2：值右值）
+         */
+        bool Add(const K& key, V&& value)
+        {
+            // 检查 key 和 value 是否已存在
+            if (forward.contains(key) || reverse.contains(value))
+                return false;
+
+            int key_idx = static_cast<int>(keys.size());
+            int value_idx = static_cast<int>(values.size());
+
+            keys.push_back(key);
+            values.push_back(std::move(value));
+
+            const K& final_key = keys.back();
+            const V& final_value = values.back();
+
+            IndexPair pair{key_idx, value_idx};
+            forward[final_key] = pair;
+            reverse[final_value] = pair;
+
+            return true;
+        }
+
+        /**
          * @brief 根据 KEY 获取 VALUE
          * @param key 键
          * @param value 输出参数，存储值

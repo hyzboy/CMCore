@@ -16,3 +16,6 @@ cm_example_project("DataType/Collection/UnorderedSet" UnorderedSetSimple        
 cm_example_project("DataType/Collection/UnorderedSet" UnorderedSetBasicOperations              UnorderedSetBasicOperations.cpp)
 cm_example_project("DataType/Collection/UnorderedSet" UnorderedSetSetOperations                UnorderedSetSetOperations.cpp)
 cm_example_project("DataType/Collection/UnorderedSet" UnorderedSetComparisonOperators          UnorderedSetComparisonOperators.cpp)
+
+# Move Semantics Test (covers both UnorderedSet and FlatUnorderedSet)
+cm_example_project("DataType/Collection/UnorderedSet" UnorderedSetMoveSemantics                UnorderedSetMoveSemantics.cpp)
