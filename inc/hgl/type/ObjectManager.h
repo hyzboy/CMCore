@@ -265,7 +265,9 @@ namespace hgl
         * @param value CN:对象指针。EN:Object pointer.
         * @param zero_clear CN:为true时引用计数为0则删除对象。EN:If true, delete object when ref_count is zero.
         * @return CN:剩余引用计数。EN:Remaining reference count.
+        * @warning CN:此API性能较差，需要遍历所有对象。建议使用Release(const K &key)。\nEN:This API is slow as it enumerates all items. Consider using Release(const K &key) instead.
         */
+        [[deprecated("Performance warning: This API enumerates all items. Use Release(const K &key) for better performance.")]]
         int Release(V *value, bool zero_clear = false)
         {
             K found_key;
