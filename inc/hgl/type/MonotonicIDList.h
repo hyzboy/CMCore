@@ -439,7 +439,7 @@ namespace hgl
             const int32 count=(int32)data_array.size();
             if(count<=0)
             {
-                remap_list.Clear();
+                remap_list.clear();
                 return 0;
             }
 
@@ -451,7 +451,7 @@ namespace hgl
             // CN/EN: 构建旧ID到新ID的映射，新ID从 id_base 开始
             for(int32 i=0; i<count; ++i)
             {
-                const I old_id = *location_to_id.At(i);
+                const I old_id = location_to_id[i];
                 IDRemap remap;
                 remap.old_id=old_id;
                 remap.new_id=static_cast<I>(id_base + i);
@@ -464,7 +464,7 @@ namespace hgl
             {
                 const I new_id=static_cast<I>(id_base + i);
                 id_to_location_map.Add(new_id, i);
-                *location_to_id.At(i)=new_id;
+                location_to_id[i]=new_id;
             }
 
             // 更新 next_id
