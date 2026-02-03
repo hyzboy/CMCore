@@ -228,17 +228,42 @@ namespace hgl
             if (!dl || count <= 0)
                 return 0;
 
-            int64 added = 0;
-            for (int64 i = 0; i < count; i++)
+            // Optimization: For large batches, collect and sort first to reduce insertions
+            if (count > 10)  // Threshold for batch optimization
             {
-                auto it = std::lower_bound(data.begin(), data.end(), dl[i]);
-                if (it == data.end() || *it != dl[i])
-                {
-                    data.insert(it, dl[i]);
-                    ++added;
-                }
+                // Create temporary sorted unique list from input
+                std::vector<T> to_add(dl, dl + count);
+                std::sort(to_add.begin(), to_add.end());
+                auto last = std::unique(to_add.begin(), to_add.end());
+                to_add.erase(last, to_add.end());
+
+                // Merge with existing data
+                std::vector<T> merged;
+                merged.reserve(data.size() + to_add.size());
+                
+                std::set_union(data.begin(), data.end(),
+                              to_add.begin(), to_add.end(),
+                              std::back_inserter(merged));
+                
+                int64 added = static_cast<int64>(merged.size() - data.size());
+                data = std::move(merged);
+                return added;
             }
-            return added;
+            else
+            {
+                // For small batches, use original insertion method
+                int64 added = 0;
+                for (int64 i = 0; i < count; i++)
+                {
+                    auto it = std::lower_bound(data.begin(), data.end(), dl[i]);
+                    if (it == data.end() || *it != dl[i])
+                    {
+                        data.insert(it, dl[i]);
+                        ++added;
+                    }
+                }
+                return added;
+            }
         }
 
         // ==================== 删除 ====================
@@ -283,17 +308,40 @@ namespace hgl
             if (!dp || count <= 0)
                 return 0;
 
-            int64 deleted = 0;
-            for (int64 i = 0; i < count; i++)
+            // Optimization: Use single-pass removal algorithm to avoid O(n²) complexity
+            if (count > 5)  // Threshold for batch optimization
             {
-                auto it = std::lower_bound(data.begin(), data.end(), dp[i]);
-                if (it != data.end() && *it == dp[i])
-                {
-                    data.erase(it);
-                    ++deleted;
-                }
+                // Create sorted set of items to delete for O(log m) lookup
+                std::vector<T> to_delete(dp, dp + count);
+                std::sort(to_delete.begin(), to_delete.end());
+                auto last = std::unique(to_delete.begin(), to_delete.end());
+                to_delete.erase(last, to_delete.end());
+
+                // Single pass: remove all matching elements using std::remove_if
+                auto old_size = data.size();
+                auto new_end = std::remove_if(data.begin(), data.end(),
+                    [&to_delete](const T& elem) {
+                        return std::binary_search(to_delete.begin(), to_delete.end(), elem);
+                    });
+                
+                data.erase(new_end, data.end());
+                return static_cast<int64>(old_size - data.size());
             }
-            return deleted;
+            else
+            {
+                // For small batches, use original deletion method (still O(n) per delete but simpler)
+                int64 deleted = 0;
+                for (int64 i = 0; i < count; i++)
+                {
+                    auto it = std::lower_bound(data.begin(), data.end(), dp[i]);
+                    if (it != data.end() && *it == dp[i])
+                    {
+                        data.erase(it);
+                        ++deleted;
+                    }
+                }
+                return deleted;
+            }
         }
 
         /**
