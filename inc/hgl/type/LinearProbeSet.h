@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file FlatUnorderedSet_OpenAddress.h
  * @brief CN:开放寻址无序集合（线性探测）- LinearProbeSet
  */
@@ -13,43 +13,43 @@ namespace hgl
 {
     /**
      * 【线性探测集合 LinearProbeSet】
-     * 
+     *
      * 【原理】
      * 使用单个连续数组实现开放寻址哈希表，采用线性探测冲突处理：
      *  • 插入/查找时，如果目标位置被占据，则依次探测下一个位置
      *  • 删除使用墓碑标记(-2)，不物理移除元素
      *  • 当负载因子超过阈值(默认70%)时重哈希
-     * 
+     *
      * 数据结构：
      *  struct Slot {
      *    int id;      // -1: 空, -2: 墓碑, >=0: 有效元素ID
      *    uint64 hash; // 哈希值
      *  }
-     * 
+     *
      * 【特点】
      *  • 缓存友好 - 单一连续数组，缓存命中率高
      *  • 内存高效 - 无链表/桶额外开销，仅一个数组
      *  • 碰撞处理优秀 - 线性探测在高碰撞数据上表现稳定
      *  • 快速遍历 - 无需追踪链表
-     * 
+     *
      * 【适用场景】✓
      *  • 高碰撞率数据（如连续哈希值）
      *  • CPU缓存敏感的应用
      *  • 内存占用敏感的嵌入式系统
      *  • 小规模集合（缓存命中最优）
      *  • 不适合：频繁删除后再插入的场景（墓碑积累）
-     * 
+     *
      * 【性能特征】
      *  • Insert: O(1) avg, O(n) worst
      *  • Delete: O(1) avg, O(n) worst
      *  • Lookup: O(1) avg with good hash, O(n) worst
      *  • 缓存友好度: 最优（线性内存访问）
      *  • 内存占用: 最小（无额外结构）
-     * 
+     *
      * 【配置】
      *  • SetMaxLoadFactor(f): 重哈希阈值(0.1~0.95)
      *  • RehashToFit(): 手动清理墓碑并压缩
-     * 
+     *
      * 【注意】
      *  • 大量删除后需要定期调用RehashToFit()清理墓碑
      *  • 否则查找性能会因墓碑积累而退化
@@ -141,7 +141,7 @@ namespace hgl
             {
                 first = false;
                 const Slot &slot = table[pos];
-                
+
                 // 空槽位，说明不存在（线性探测中遇到空槽就可以停止）
                 if (slot.id == -1)
                     return -1;
@@ -163,7 +163,7 @@ namespace hgl
 
                 pos = (pos + 1) & (cap - 1);
             }
-            
+
             return -1;
         }
 
@@ -232,7 +232,7 @@ namespace hgl
             {
                 first = false;
                 Slot &slot = table[pos];
-                
+
                 // 空槽位，不应该发生（FindID已经找到了）
                 if (slot.id == -1)
                     return false;
@@ -247,7 +247,7 @@ namespace hgl
 
                 pos = (pos + 1) & (cap - 1);
             }
-            
+
             return false;
         }
 

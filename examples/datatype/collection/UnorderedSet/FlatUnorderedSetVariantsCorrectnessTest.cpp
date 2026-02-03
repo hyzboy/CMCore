@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FlatUnorderedSetVariantsCorrectnessTest.cpp
  * 正确性测试：验证所有变体的行为一致性
  */
@@ -23,16 +23,16 @@ template<typename SetType>
 static bool VerifyDataConsistency(const SetType &set, const vector<int> &expected_values, const string &checkpoint)
 {
     cout << "    [验证:" << checkpoint << "] ";
-    
+
     int count = set.GetCount();
     int expected_count = (int)expected_values.size();
-    
+
     if (count != expected_count)
     {
         cout << "❌ Count不匹配: set=" << count << ", expected=" << expected_count << endl;
         return false;
     }
-    
+
     // 验证expected中的所有元素都在set中
     for (int val : expected_values)
     {
@@ -42,7 +42,7 @@ static bool VerifyDataConsistency(const SetType &set, const vector<int> &expecte
             return false;
         }
     }
-    
+
     // 验证set中的所有元素都在expected中
     bool all_match = true;
     set.Enum([&](int val) {
@@ -52,10 +52,10 @@ static bool VerifyDataConsistency(const SetType &set, const vector<int> &expecte
             all_match = false;
         }
     });
-    
+
     if (!all_match)
         return false;
-    
+
     cout << "✓ (count=" << count << ")" << endl;
     return true;
 }
@@ -129,13 +129,13 @@ static void TestLargeScale(const string &name)
         cout << "  ❌ Count mismatch after insert: expected " << N << ", got " << set.GetCount() << endl;
         assert(false);
     }
-    
+
     // 验证插入后数据一致性
     if (!VerifyDataConsistency(set, expected, "插入完成"))
     {
         assert(false);
     }
-    
+
     cout << "  ✓ Insert " << N << " elements" << endl;
 
     // 查找
@@ -160,7 +160,7 @@ static void TestLargeScale(const string &name)
     // 删除一半 - 逐步验证
     int delete_success = 0;
     const int verify_interval = 500;  // 每删除500个就验证一次
-    
+
     for (int i = 0; i < N; i += 2)
     {
         // 删除前验证
@@ -168,7 +168,7 @@ static void TestLargeScale(const string &name)
         {
             cout << "  ❌ Element " << i << " missing before delete!" << endl;
             cout << "     delete_success=" << delete_success << ", current_count=" << set.GetCount() << endl;
-            
+
             // 打印周围元素的状态
             cout << "     Nearby elements: ";
             for (int j = max(0, i-5); j <= min(N-1, i+5); j++)
@@ -176,19 +176,19 @@ static void TestLargeScale(const string &name)
                 cout << j << ":" << (set.Contains(j) ? "Y" : "N") << " ";
             }
             cout << endl;
-            
+
             assert(false);
         }
-        
+
         if (set.Delete(i))
         {
             ++delete_success;
-            
+
             // 从expected中移除
             auto it = find(expected.begin(), expected.end(), i);
             if (it != expected.end())
                 expected.erase(it);
-            
+
             // 定期验证
             if (delete_success % verify_interval == 0)
             {
@@ -205,13 +205,13 @@ static void TestLargeScale(const string &name)
             assert(false);
         }
     }
-    
+
     // 最终验证
     if (!VerifyDataConsistency(set, expected, "删除完成"))
     {
         assert(false);
     }
-    
+
     if (delete_success != N / 2)
     {
         cout << "  ❌ Delete failed: expected " << (N/2) << ", got " << delete_success << endl;
@@ -231,8 +231,8 @@ static void TestLargeScale(const string &name)
         bool exists = set.Contains(i);
         if (exists != should_exist)
         {
-            cout << "  ❌ Element " << i << " state incorrect: expected " 
-                 << (should_exist ? "exists" : "deleted") 
+            cout << "  ❌ Element " << i << " state incorrect: expected "
+                 << (should_exist ? "exists" : "deleted")
                  << ", got " << (exists ? "exists" : "deleted") << endl;
             assert(false);
         }
@@ -306,7 +306,7 @@ static void TestRandomOperations(const string &name)
     });
     assert(enum_count == (int)expected.size());
 
-    cout << "  ✓ " << ops << " random operations (add=" << add_count 
+    cout << "  ✓ " << ops << " random operations (add=" << add_count
          << ", del=" << del_count << ", final=" << expected.size() << ")" << endl;
 }
 
@@ -417,12 +417,12 @@ int main()
         cout << "\n" << string(60, '=') << endl;
         cout << "  🎉 All Variants Passed All Tests!" << endl;
         cout << string(60, '=') << endl;
-        
+
         // 正确性测试汇总表
         cout << "\n╔════════════════════════════════════════════════════════════════════════════╗" << endl;
         cout << "║                    Correctness Test Summary                               ║" << endl;
         cout << "╚════════════════════════════════════════════════════════════════════════════╝" << endl;
-        
+
         cout << "\n┌─ BASIC FUNCTIONALITY TESTS" << endl;
         cout << "│" << endl;
         cout << "│  Test Case                       │  Original  │ DualHash │ OpenAddr │ Sharded" << endl;
@@ -432,7 +432,7 @@ int main()
         cout << "│  Enumeration                     │    ✅      │    ✅    │    ✅    │   ✅" << endl;
         cout << "│  Clear Operation                 │    ✅      │    ✅    │    ✅    │   ✅" << endl;
         cout << "└──────────────────────────────────┴────────────┴──────────┴──────────┴─────────" << endl;
-        
+
         cout << "\n┌─ SCALE TESTS (10,000 elements)" << endl;
         cout << "│" << endl;
         cout << "│  Operation                       │  Original  │ DualHash │ OpenAddr │ Sharded" << endl;
@@ -442,7 +442,7 @@ int main()
         cout << "│  Delete Half                     │    ✅      │    ✅    │    ✅    │   ✅" << endl;
         cout << "│  Verify Final State              │    ✅      │    ✅    │    ✅    │   ✅" << endl;
         cout << "└──────────────────────────────────┴────────────┴──────────┴──────────┴─────────" << endl;
-        
+
         cout << "\n┌─ RANDOM OPERATION TESTS (5,000 ops)" << endl;
         cout << "│" << endl;
         cout << "│  Stress Test                     │  Original  │ DualHash │ OpenAddr │ Sharded" << endl;
@@ -451,7 +451,7 @@ int main()
         cout << "│  Final State Consistency         │    ✅      │    ✅    │    ✅    │   ✅" << endl;
         cout << "│  Enumeration Integrity          │    ✅      │    ✅    │    ✅    │   ✅" << endl;
         cout << "└──────────────────────────────────┴────────────┴──────────┴──────────┴─────────" << endl;
-        
+
         cout << "\n┌─ EDGE CASE TESTS" << endl;
         cout << "│" << endl;
         cout << "│  Edge Case                       │  Original  │ DualHash │ OpenAddr │ Sharded" << endl;
@@ -462,7 +462,7 @@ int main()
         cout << "│  Delete Non-Existent             │    ✅      │    ✅    │    ✅    │   ✅" << endl;
         cout << "│  Sequential Duplicates           │    ✅      │    ✅    │    ✅    │   ✅" << endl;
         cout << "└──────────────────────────────────┴────────────┴──────────┴──────────┴─────────" << endl;
-        
+
         cout << "\n┌─ REAL-WORLD USAGE PATTERNS" << endl;
         cout << "│" << endl;
         cout << "│  Pattern                         │  Original  │ DualHash │ OpenAddr │ Sharded" << endl;
@@ -470,7 +470,7 @@ int main()
         cout << "│  5 Delete/Reinsert Cycles (1k)   │    ✅      │    ✅    │    ✅    │   ✅" << endl;
         cout << "│  Data Consistency Through Cycles │    ✅      │    ✅    │    ✅    │   ✅" << endl;
         cout << "└──────────────────────────────────┴────────────┴──────────┴──────────┴─────────" << endl;
-        
+
         cout << "\n【测试覆盖统计】" << endl;
         cout << "  ✓ 基本操作:       4项测试  (Add, Delete, Enum, Clear)" << endl;
         cout << "  ✓ 大规模测试:     4项测试  (10k元素插入、查找、删除、验证)" << endl;

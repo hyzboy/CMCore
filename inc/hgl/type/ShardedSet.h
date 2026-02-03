@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file FlatUnorderedSet_Sharded.h
  * @brief CN:分片无序集合（按哈希高位分片）- ShardedSet
  */
@@ -15,13 +15,13 @@ namespace hgl
 {
     /**
      * 【分片集合 ShardedSet】
-     * 
+     *
      * 【原理】
      * 将数据按哈希值高位分割为K个独立分片(默认16个)：
      *  • 哈希值的第4位决定分片编号: (hash >> 60) & 0xF
      *  • 每个分片独立维护ActiveDataManager和HashMap
      *  • 每个分片完全隔离，可独立操作和扩展
-     * 
+     *
      * 架构：
      *  Shard[0]  ┌─ data_manager ┐  Shard[1]  ┌─ data_manager ┐
      *            ├─ hash_map    ┤             ├─ hash_map    ┤
@@ -30,14 +30,14 @@ namespace hgl
      *  Shard[15] ┌─ data_manager ┐
      *            ├─ hash_map    ┤
      *            └─ deleted_cnt ┘
-     * 
+     *
      * 【特点】
      *  • 低争用 - 分片间无锁竞争
      *  • 可并行化 - 可为每个分片创建线程
      *  • 大规模友好 - 百万级元素可保持性能
      *  • 可预测性能 - 单分片大小恒定(n/16)
      *  • 平衡设计 - 平衡了内存和访问速度
-     * 
+     *
      * 【适用场景】✓
      *  • 大规模数据集(> 100k元素)
      *  • 多线程环境(可并行操作各分片)
@@ -45,19 +45,19 @@ namespace hgl
      *  • 需要可预测性能的系统
      *  • 分布式缓存(可为每分片配置)
      *  • 不适合：小数据集(16个分片开销大)
-     * 
+     *
      * 【性能特征】
      *  • Insert: O(1) avg, O(n/16) worst
      *  • Delete: O(1) avg, O(n/16) worst
      *  • Lookup: O(1) avg, O(n/16) worst
      *  • 内存占用: 16倍ActiveDataManager (固定)
      *  • 并行度: 16个独立分片
-     * 
+     *
      * 【配置】
      *  • SHARD_COUNT模板参数: 分片数(必须是2的幂)
      *  • Reserve(capacity): 均分容量到各分片
      *  • RefreshHashMap(): 全局重建所有分片哈希表
-     * 
+     *
      * 【使用建议】
      *  • 元素数量预期 > 10000 时开始考虑
      *  • 有锁或并发需求时强烈推荐

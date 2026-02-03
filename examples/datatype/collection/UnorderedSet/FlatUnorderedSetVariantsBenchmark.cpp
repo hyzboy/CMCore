@@ -1,7 +1,7 @@
-/**
+﻿/**
  * FlatUnorderedSetVariantsBenchmark.cpp
  * 严谨基准测试：比较 FlatUnorderedSet 及三种变体性能
- * 
+ *
  * 测试场景：
  * 1. 基本操作：插入、查找、删除、遍历
  * 2. 混合操作：随机插入删除、删除后再插入
@@ -190,7 +190,7 @@ static PerformanceData RunAllBenchmarks(const string &name)
                 for (int i = 0; i < n; i += 2)
                     set.Delete(values[i]);
                 auto t5 = chrono::high_resolution_clock::now();
-                
+
                 for (int i = 1; i < n; i += 2)
                     set.Delete(values[i]);
                 auto t6 = chrono::high_resolution_clock::now();
@@ -243,7 +243,7 @@ static PerformanceData RunAllBenchmarks(const string &name)
             for (int cycle = 0; cycle < n; cycle++)
             {
                 int val = dist(rng);
-                
+
                 if (cycle % 3 == 0)
                     set.Add(val);
                 else if (cycle % 3 == 1)
@@ -454,14 +454,14 @@ int main()
     cout << "\n" << string(80, '=') << endl;
     cout << "  Benchmark Complete - Performance Comparison" << endl;
     cout << string(80, '=') << endl;
-    
+
     // ========== 详细对比表格 ==========
-    
+
     cout << "\n╔════════════════════════════════════════════════════════════════════════════════╗" << endl;
     cout << "║                    OPERATION TIMING COMPARISON                                 ║" << endl;
     cout << "║                      (Time in microseconds)                                    ║" << endl;
     cout << "╚════════════════════════════════════════════════════════════════════════════════╝" << endl;
-    
+
     // Insert Operations
     cout << "\n┌─ INSERT OPERATIONS (Build Time)" << endl;
     cout << "│" << endl;
@@ -472,7 +472,7 @@ int main()
     printf("│  100k elements│  %10.2f us  │  %10.2f us  │  %10.2f us  │  %10.2f us  │\n",
            perf_original.insert_100k, perf_dualhash.insert_100k, perf_openaddr.insert_100k, perf_sharded.insert_100k);
     cout << "└───────────────┴─────────────────┴─────────────────┴─────────────────┴─────────────────┘" << endl;
-    
+
     // Lookup (Hit Rate)
     cout << "\n┌─ LOOKUP OPERATIONS - HIT RATE (Find existing elements)" << endl;
     cout << "│" << endl;
@@ -483,7 +483,7 @@ int main()
     printf("│  100k elements│  %10.2f us  │  %10.2f us  │  %10.2f us  │  %10.2f us  │\n",
            perf_original.lookup_hit_100k, perf_dualhash.lookup_hit_100k, perf_openaddr.lookup_hit_100k, perf_sharded.lookup_hit_100k);
     cout << "└───────────────┴─────────────────┴─────────────────┴─────────────────┴─────────────────┘" << endl;
-    
+
     // Lookup (Miss Rate)
     cout << "\n┌─ LOOKUP OPERATIONS - MISS RATE (Search for non-existent elements)" << endl;
     cout << "│" << endl;
@@ -494,7 +494,7 @@ int main()
     printf("│  100k elements│  %10.2f us  │  %10.2f us  │  %10.2f us  │  %10.2f us  │\n",
            perf_original.lookup_miss_100k, perf_dualhash.lookup_miss_100k, perf_openaddr.lookup_miss_100k, perf_sharded.lookup_miss_100k);
     cout << "└───────────────┴─────────────────┴─────────────────┴─────────────────┴─────────────────┘" << endl;
-    
+
     // Delete Operations
     cout << "\n┌─ DELETE OPERATIONS (Remove all elements)" << endl;
     cout << "│" << endl;
@@ -505,7 +505,7 @@ int main()
     printf("│  100k elements│  %10.2f us  │  %10.2f us  │  %10.2f us  │  %10.2f us  │\n",
            perf_original.delete_100k, perf_dualhash.delete_100k, perf_openaddr.delete_100k, perf_sharded.delete_100k);
     cout << "└───────────────┴─────────────────┴─────────────────┴─────────────────┴─────────────────┘" << endl;
-    
+
     // Iteration
     cout << "\n┌─ ITERATION PERFORMANCE (Enum all elements)" << endl;
     cout << "│" << endl;
@@ -516,12 +516,12 @@ int main()
     printf("│  100k elements│  %10.2f us  │  %10.2f us  │  %10.2f us  │  %10.2f us  │\n",
            perf_original.iterate_100k, perf_dualhash.iterate_100k, perf_openaddr.iterate_100k, perf_sharded.iterate_100k);
     cout << "└───────────────┴─────────────────┴─────────────────┴─────────────────┴─────────────────┘" << endl;
-    
+
     // Real-world scenarios
     cout << "\n╔════════════════════════════════════════════════════════════════════════════════╗" << endl;
     cout << "║                    REAL-WORLD SCENARIOS PERFORMANCE                           ║" << endl;
     cout << "╚════════════════════════════════════════════════════════════════════════════════╝" << endl;
-    
+
     cout << "\n┌─ MIXED OPERATIONS (50k elements - 50% churn rate)" << endl;
     cout << "│" << endl;
     cout << "│  Variant                              │    Time (microseconds)    │" << endl;
@@ -531,7 +531,7 @@ int main()
     printf("│  LinearProbeSet (Linear Probing)      │    %10.2f us         │\n", perf_openaddr.mixed_ops);
     printf("│  ShardedSet (16 partitions)           │    %10.2f us         │\n", perf_sharded.mixed_ops);
     cout << "└───────────────────────────────────────┴───────────────────────────┘" << endl;
-    
+
     cout << "\n┌─ DELETE/REINSERTION CYCLES (10k elements, 10 cycles)" << endl;
     cout << "│" << endl;
     cout << "│  Variant                              │    Time (microseconds)    │" << endl;
@@ -541,13 +541,13 @@ int main()
     printf("│  LinearProbeSet (Linear Probing)      │    %10.2f us         │\n", perf_openaddr.delete_reinsert);
     printf("│  ShardedSet (16 partitions)           │    %10.2f us         │\n", perf_sharded.delete_reinsert);
     cout << "└───────────────────────────────────────┴───────────────────────────┘" << endl;
-    
+
     cout << "\n┌─ GARBAGE ACCUMULATION (50k elements)" << endl;
     cout << "│" << endl;
     cout << "│  State                    │  Original  │ DualHashSet │ LinearProbe │ ShardedSet│" << endl;
     cout << "├───────────────────────────┼────────────┼────────────┼─────────────┼───────────┤" << endl;
     printf("│  Fresh Lookup             │  %8.2f  │  %8.2f  │  %8.2f   │  %8.2f  │\n",
-           perf_original.garbage_lookup_fresh, perf_dualhash.garbage_lookup_fresh, 
+           perf_original.garbage_lookup_fresh, perf_dualhash.garbage_lookup_fresh,
            perf_openaddr.garbage_lookup_fresh, perf_sharded.garbage_lookup_fresh);
     printf("│  After 90%% Delete         │  %8.2f  │  %8.2f  │  %8.2f   │  %8.2f  │\n",
            perf_original.garbage_lookup_90del, perf_dualhash.garbage_lookup_90del,
@@ -556,7 +556,7 @@ int main()
            perf_original.garbage_lookup_99del, perf_dualhash.garbage_lookup_99del,
            perf_openaddr.garbage_lookup_99del, perf_sharded.garbage_lookup_99del);
     cout << "└───────────────────────────┴────────────┴────────────┴─────────────┴───────────┘" << endl;
-    
+
     // 计算degradation百分比
     double deg_orig_90 = (perf_original.garbage_lookup_90del / perf_original.garbage_lookup_fresh - 1.0) * 100;
     double deg_orig_99 = (perf_original.garbage_lookup_99del / perf_original.garbage_lookup_fresh - 1.0) * 100;
@@ -566,7 +566,7 @@ int main()
     double deg_open_99 = (perf_openaddr.garbage_lookup_99del / perf_openaddr.garbage_lookup_fresh - 1.0) * 100;
     double deg_shard_90 = (perf_sharded.garbage_lookup_90del / perf_sharded.garbage_lookup_fresh - 1.0) * 100;
     double deg_shard_99 = (perf_sharded.garbage_lookup_99del / perf_sharded.garbage_lookup_fresh - 1.0) * 100;
-    
+
     cout << "\n┌─ GARBAGE DEGRADATION RATIO" << endl;
     cout << "│" << endl;
     cout << "│  Variant                    │  90% Delete  │  99% Delete  │" << endl;
@@ -576,12 +576,12 @@ int main()
     printf("│  LinearProbeSet             │   %+6.2f%%   │   %+6.2f%%   │\n", deg_open_90, deg_open_99);
     printf("│  ShardedSet                 │   %+6.2f%%   │   %+6.2f%%   │\n", deg_shard_90, deg_shard_99);
     cout << "└─────────────────────────────┴──────────────┴──────────────┘" << endl;
-    
+
     cout << "\n┌─ HASH COLLISION PERFORMANCE (10k elements with collision pattern)" << endl;
     cout << "│" << endl;
     cout << "│  Variant                              │  Insert (us)   │  Lookup (us)   │" << endl;
     cout << "├───────────────────────────────────────┼────────────────┼────────────────┤" << endl;
-    printf("│  Original                             │   %10.2f   │   %10.2f   │\n", 
+    printf("│  Original                             │   %10.2f   │   %10.2f   │\n",
            perf_original.collision_insert, perf_original.collision_lookup);
     printf("│  DualHashSet (Incremental Rebuild)    │   %10.2f   │   %10.2f   │\n",
            perf_dualhash.collision_insert, perf_dualhash.collision_lookup);
@@ -590,14 +590,14 @@ int main()
     printf("│  ShardedSet (16 partitions)           │   %10.2f   │   %10.2f   │\n",
            perf_sharded.collision_insert, perf_sharded.collision_lookup);
     cout << "└───────────────────────────────────────┴────────────────┴────────────────┘" << endl;
-    
+
     // 性能指标总结
     cout << "\n╔════════════════════════════════════════════════════════════════════════════════╗" << endl;
     cout << "║                    PERFORMANCE RATING SUMMARY                                 ║" << endl;
     cout << "╚════════════════════════════════════════════════════════════════════════════════╝" << endl;
-    
+
     cout << "\n【最快的操作 - 按场景分类】" << endl;
-    
+
     // Insert速度最快
     double min_insert_10k = min({perf_original.insert_10k, perf_dualhash.insert_10k, perf_openaddr.insert_10k, perf_sharded.insert_10k});
     cout << "  Insert (10k):     ";
@@ -606,7 +606,7 @@ int main()
     else if (perf_openaddr.insert_10k == min_insert_10k) cout << "✓ LinearProbeSet";
     else cout << "✓ ShardedSet";
     cout << endl;
-    
+
     // Lookup速度最快
     double min_lookup_10k = min({perf_original.lookup_hit_10k, perf_dualhash.lookup_hit_10k, perf_openaddr.lookup_hit_10k, perf_sharded.lookup_hit_10k});
     cout << "  Lookup (10k):     ";
@@ -615,7 +615,7 @@ int main()
     else if (perf_openaddr.lookup_hit_10k == min_lookup_10k) cout << "✓ LinearProbeSet";
     else cout << "✓ ShardedSet";
     cout << endl;
-    
+
     // Delete速度最快
     double min_delete_10k = min({perf_original.delete_10k, perf_dualhash.delete_10k, perf_openaddr.delete_10k, perf_sharded.delete_10k});
     cout << "  Delete (10k):     ";
@@ -624,7 +624,7 @@ int main()
     else if (perf_openaddr.delete_10k == min_delete_10k) cout << "✓ LinearProbeSet";
     else cout << "✓ ShardedSet";
     cout << endl;
-    
+
     // 混合操作最快
     double min_mixed = min({perf_original.mixed_ops, perf_dualhash.mixed_ops, perf_openaddr.mixed_ops, perf_sharded.mixed_ops});
     cout << "  Mixed Ops:        ";
@@ -633,7 +633,7 @@ int main()
     else if (perf_openaddr.mixed_ops == min_mixed) cout << "✓ LinearProbeSet";
     else cout << "✓ ShardedSet";
     cout << endl;
-    
+
     // 垃圾稳定性最好（degradation最少）
     double min_deg = min({deg_orig_90 + deg_orig_99, deg_dual_90 + deg_dual_99, deg_open_90 + deg_open_99, deg_shard_90 + deg_shard_99});
     cout << "  Garbage Stability:";
@@ -642,7 +642,7 @@ int main()
     else if (deg_open_90 + deg_open_99 == min_deg) cout << "✓ LinearProbeSet";
     else cout << "✓ ShardedSet";
     cout << endl;
-    
+
     // 碰撞处理能力
     double min_collision = min({perf_original.collision_insert, perf_dualhash.collision_insert, perf_openaddr.collision_insert, perf_sharded.collision_insert});
     cout << "  Collision Handle: ";
@@ -651,7 +651,7 @@ int main()
     else if (perf_openaddr.collision_insert == min_collision) cout << "✓ LinearProbeSet (推荐)";
     else cout << "✓ ShardedSet";
     cout << endl;
-    
+
     cout << "\n【使用建议】" << endl;
     cout << "  • Original:      一般用途，删除不频繁（< 10%），简单数据" << endl;
     cout << "  • DualHashSet:   高频删除场景，无GC峰值延迟，平滑性能" << endl;

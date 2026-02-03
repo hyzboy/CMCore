@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file FlatUnorderedSet_DualHash.h
  * @brief CN:双哈希表渐进式重建无序集合 - DualHashSet
  */
@@ -15,36 +15,36 @@ namespace hgl
 {
     /**
      * 【双哈希表集合 DualHashSet】
-     * 
+     *
      * 【原理】
      * 采用双哈希表设计实现渐进式垃圾回收。维护两个哈希表：
      *  - hash_map_active: 活跃数据表
      *  - hash_map_rebuilding: 重建过程中的临时表
-     * 
+     *
      * 当删除计数超过阈值(默认1024)时，启动增量重建：
      *  1. 在StartRebuild()时创建重建表
      *  2. 每次Add/Delete时调用StepRebuild(batch)进行增量处理，默认批次128个元素
      *  3. 无需等待GC完成，可继续Add/Delete操作
      *  4. 重建完成后，合并旧表剩余数据到新表，然后交换
-     * 
+     *
      * 【特点】
      *  • 无停顿垃圾回收 - GC不会导致性能突变
      *  • 删除密集操作友好 - 平滑处理大量删除
      *  • 内存占用稳定 - 二次哈希表占用可预测
-     * 
+     *
      * 【适用场景】✓
      *  • 高频删除操作（删除率 > 10%）
      *  • 需要稳定延迟的实时系统
      *  • 缓存/会话管理（频繁超期清理）
      *  • 事件队列（消息处理后删除）
      *  • 不适合：内存极度受限的场景
-     * 
+     *
      * 【性能特征】
      *  • Insert: O(1) avg, O(n) worst
-     *  • Delete: O(1) avg, O(n) worst  
+     *  • Delete: O(1) avg, O(n) worst
      *  • Lookup: O(1) avg, O(n) worst
      *  • GC代价: 分摊O(1)，无峰值延迟
-     * 
+     *
      * 【配置】
      *  • SetRebuildThreshold(n): 何时触发重建（删除计数达到n）
      *  • SetRebuildBatch(n): 每步处理元素数（越大GC越快，可能有延迟峰值）
@@ -152,14 +152,14 @@ namespace hgl
                     else
                         ++it;
                 }
-                
+
                 // 合并：把旧表中剩余的有效ID添加到新表
                 for (auto &pair : hash_map_active)
                 {
                     for (int id : pair.second)
                         hash_map_rebuilding[pair.first].push_back(id);
                 }
-                
+
                 hash_map_active = std::move(hash_map_rebuilding);
                 hash_map_rebuilding.clear();
                 is_rebuilding = false;
@@ -224,14 +224,14 @@ namespace hgl
 
             uint64 hash = ComputeOptimalHash(value);
             hash_map_active[hash].push_back(new_id);
-            
+
             // 如果正在重建，也要添加到重建表中
             if (is_rebuilding)
                 hash_map_rebuilding[hash].push_back(new_id);
-            
+
             // 在添加后推进重建
             MaybeRebuild();
-            
+
             return true;
         }
 
@@ -244,7 +244,7 @@ namespace hgl
             if (data_manager.Release(&id, 1) > 0)
             {
                 ++deleted_count;
-                
+
                 // 从哈希表中移除（避免查找失效的ID）
                 // 先从活跃表移除
                 uint64 hash = ComputeOptimalHash(value);
@@ -259,7 +259,7 @@ namespace hgl
                     if (id_list.empty())
                         hash_map_active.erase(it);
                 }
-                
+
                 // 如果正在重建，也从重建表移除
                 if (is_rebuilding)
                 {
@@ -275,10 +275,10 @@ namespace hgl
                             hash_map_rebuilding.erase(it2);
                     }
                 }
-                
+
                 // 在删除后推进重建
                 MaybeRebuild();
-                
+
                 return true;
             }
 
