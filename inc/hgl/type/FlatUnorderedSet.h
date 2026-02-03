@@ -40,28 +40,54 @@ namespace hgl
 
         /**
          * @brief CN:哈希到ID的映射表\nEN:Hash to ID mapping table
+         * @note CN:优化策略：使用 small_vector 或单个 ID 存储减少小碰撞开销\nEN:Optimization: use small storage for single ID to reduce overhead
          */
-        ankerl::unordered_dense::map<uint64, std::vector<int>> hash_map;
+        ankerl::unordered_dense::map<uint64, int> hash_to_id;
+        
+        /**
+         * @brief CN:处理哈希碰撞的辅助映射（仅在发生碰撞时使用）\nEN:Collision handling map (only used when collisions occur)
+         * @note CN:大多数情况下此表为空，节省内存\nEN:This table is empty in most cases, saving memory
+         */
+        ankerl::unordered_dense::map<uint64, std::vector<int>> collision_chains;
 
         /**
-         * @brief CN:根据值查找ID\nEN:Find ID by value
+         * @brief CN:根据值查找ID（优化版本）\nEN:Find ID by value (optimized version)
          */
         int FindID(const T& value) const
         {
             static_assert(std::is_trivially_copyable_v<T>,
                 "FindID() requires trivially copyable types for optimal hashing.");
             uint64 hash = ComputeOptimalHash(value);  // ✅ 使用优化的哈希
-            auto it = hash_map.find(hash);
-            if (it == hash_map.end())
-                return -1;
-
-            for (int id : it->second) {
+            
+            // 第一步：快速路径 - 检查单个ID映射
+            auto it = hash_to_id.find(hash);
+            if (it == hash_to_id.end())
+                return -1;  // 哈希不存在
+            
+            int first_id = it->second;
+            
+            // 第二步：检查第一个ID是否匹配（最常见情况 - 无碰撞）
+            if (data_manager.IsActive(first_id))
+            {
+                T existing;
+                if (data_manager.GetData(existing, first_id) && existing == value)
+                    return first_id;
+            }
+            
+            // 第三步：处理碰撞情况（罕见路径）
+            auto collision_it = collision_chains.find(hash);
+            if (collision_it == collision_chains.end())
+                return -1;  // 只有一个ID且不匹配
+            
+            // 在碰撞链中查找
+            for (int id : collision_it->second) {
                 if (!data_manager.IsActive(id))
                     continue;
                 T existing;
                 if (data_manager.GetData(existing, id) && existing == value)
                     return id;
             }
+            
             return -1;
         }
 
@@ -70,7 +96,8 @@ namespace hgl
         {
             static_assert(std::is_trivially_copyable_v<T>,
                 "RebuildHashMap() requires trivially copyable types for optimal hashing.");
-            hash_map.clear();
+            hash_to_id.clear();
+            collision_chains.clear();
 
             auto active_ids = data_manager.GetActiveView();
             const int count = (int)active_ids.size();
@@ -86,7 +113,26 @@ namespace hgl
                     continue;
 
                 uint64 hash = ComputeOptimalHash(*ptr);  // ✅ 使用优化的哈希
-                hash_map[hash].push_back(id);
+                
+                // 使用优化的两级存储策略
+                auto it = hash_to_id.find(hash);
+                if (it == hash_to_id.end())
+                {
+                    // 首次遇到此哈希：直接存储ID
+                    hash_to_id[hash] = id;
+                }
+                else
+                {
+                    // 碰撞：将原ID和新ID都移到碰撞链
+                    auto& chain = collision_chains[hash];
+                    if (chain.empty())
+                    {
+                        // 第一次碰撞：将原有ID加入链
+                        chain.reserve(4);  // 预分配小容量
+                        chain.push_back(it->second);
+                    }
+                    chain.push_back(id);
+                }
             }
         }
 
@@ -220,7 +266,7 @@ namespace hgl
         // ==================== 添加 ====================
 
         /**
-         * @brief CN:添加一个元素\nEN:Add an element
+         * @brief CN:添加一个元素（优化版本）\nEN:Add an element (optimized version)
          * @param value CN:要添加的值\nEN:Value to add
          * @return CN:成功返回 true，已存在返回 false\nEN:true if added, false if already exists
          */
@@ -230,15 +276,31 @@ namespace hgl
                 "Add() requires trivially copyable types for optimal hashing.");
             uint64 hash = ComputeOptimalHash(value);  // ✅ 使用优化的哈希
 
-            // 检查是否已存在
-            auto it = hash_map.find(hash);
-            if (it != hash_map.end()) {
-                for (int id : it->second) {
-                    if (!data_manager.IsActive(id))
-                        continue;
+            // 第一步：快速检查主哈希表
+            auto it = hash_to_id.find(hash);
+            if (it != hash_to_id.end())
+            {
+                // 检查第一个ID
+                int first_id = it->second;
+                if (data_manager.IsActive(first_id))
+                {
                     T existing;
-                    if (data_manager.GetData(existing, id) && existing == value)
+                    if (data_manager.GetData(existing, first_id) && existing == value)
                         return false;  // 已存在
+                }
+                
+                // 检查碰撞链（如果存在）
+                auto collision_it = collision_chains.find(hash);
+                if (collision_it != collision_chains.end())
+                {
+                    for (int id : collision_it->second)
+                    {
+                        if (!data_manager.IsActive(id))
+                            continue;
+                        T existing;
+                        if (data_manager.GetData(existing, id) && existing == value)
+                            return false;  // 已存在
+                    }
                 }
             }
 
@@ -254,8 +316,24 @@ namespace hgl
                 return false;
             }
 
-            // 添加到哈希表
-            hash_map[hash].push_back(new_id);
+            // 添加到哈希表（使用优化的两级存储）
+            if (it == hash_to_id.end())
+            {
+                // 首次遇到此哈希：直接存储
+                hash_to_id[hash] = new_id;
+            }
+            else
+            {
+                // 碰撞：添加到碰撞链
+                auto& chain = collision_chains[hash];
+                if (chain.empty())
+                {
+                    // 第一次碰撞：将原ID移到链中
+                    chain.reserve(4);
+                    chain.push_back(it->second);
+                }
+                chain.push_back(new_id);
+            }
 
             return true;
         }
@@ -271,15 +349,31 @@ namespace hgl
                 "Add() requires trivially copyable types for optimal hashing.");
             uint64 hash = ComputeOptimalHash(value);
 
-            // 检查是否已存在
-            auto it = hash_map.find(hash);
-            if (it != hash_map.end()) {
-                for (int id : it->second) {
-                    if (!data_manager.IsActive(id))
-                        continue;
+            // 第一步：快速检查主哈希表
+            auto it = hash_to_id.find(hash);
+            if (it != hash_to_id.end())
+            {
+                // 检查第一个ID
+                int first_id = it->second;
+                if (data_manager.IsActive(first_id))
+                {
                     T existing;
-                    if (data_manager.GetData(existing, id) && existing == value)
+                    if (data_manager.GetData(existing, first_id) && existing == value)
                         return false;  // 已存在
+                }
+                
+                // 检查碰撞链（如果存在）
+                auto collision_it = collision_chains.find(hash);
+                if (collision_it != collision_chains.end())
+                {
+                    for (int id : collision_it->second)
+                    {
+                        if (!data_manager.IsActive(id))
+                            continue;
+                        T existing;
+                        if (data_manager.GetData(existing, id) && existing == value)
+                            return false;  // 已存在
+                    }
                 }
             }
 
@@ -295,8 +389,24 @@ namespace hgl
                 return false;
             }
 
-            // 添加到哈希表
-            hash_map[hash].push_back(new_id);
+            // 添加到哈希表（使用优化的两级存储）
+            if (it == hash_to_id.end())
+            {
+                // 首次遇到此哈希：直接存储
+                hash_to_id[hash] = new_id;
+            }
+            else
+            {
+                // 碰撞：添加到碰撞链
+                auto& chain = collision_chains[hash];
+                if (chain.empty())
+                {
+                    // 第一次碰撞：将原ID移到链中
+                    chain.reserve(4);
+                    chain.push_back(it->second);
+                }
+                chain.push_back(new_id);
+            }
 
             return true;
         }
@@ -399,7 +509,8 @@ namespace hgl
         void Clear()
         {
             data_manager.Clear();
-            hash_map.clear();
+            hash_to_id.clear();
+            collision_chains.clear();
         }
 
         /**
@@ -410,7 +521,8 @@ namespace hgl
             // std::vector 的内存会在析构时自动释放
             // 这里显式清空以触发内存释放
             data_manager.Free();
-            hash_map.clear();
+            hash_to_id.clear();
+            collision_chains.clear();
         }
 
         // ==================== 获取数据 ====================
