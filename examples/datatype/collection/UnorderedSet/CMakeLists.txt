@@ -5,6 +5,13 @@ cm_example_project("DataType/Collection/UnorderedSet" FlatUnorderedSetBasicOpera
 cm_example_project("DataType/Collection/UnorderedSet" FlatUnorderedSetSetOperations             FlatUnorderedSetSetOperations.cpp)
 cm_example_project("DataType/Collection/UnorderedSet" FlatUnorderedSetComparisonOperators       FlatUnorderedSetComparisonOperators.cpp)
 
+cm_example_project("DataType/Collection/UnorderedSet" FlatUnorderedSetDualHashSimple            FlatUnorderedSetDualHashSimple.cpp)
+cm_example_project("DataType/Collection/UnorderedSet" FlatUnorderedSetOpenAddressSimple         FlatUnorderedSetOpenAddressSimple.cpp)
+cm_example_project("DataType/Collection/UnorderedSet" FlatUnorderedSetShardedSimple             FlatUnorderedSetShardedSimple.cpp)
+
+cm_example_project("DataType/Collection/UnorderedSet" FlatUnorderedSetVariantsBenchmark         FlatUnorderedSetVariantsBenchmark.cpp)
+cm_example_project("DataType/Collection/UnorderedSet" FlatUnorderedSetVariantsCorrectnessTest   FlatUnorderedSetVariantsCorrectnessTest.cpp)
+
 ## FlatUnorderedSet compact/performance tests
 cm_example_project("DataType/Collection/UnorderedSet" FlatUnorderedSetCompactAndPerformance     FlatUnorderedSetCompactAndPerformance.cpp)
 
