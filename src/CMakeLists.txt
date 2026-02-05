@@ -237,7 +237,13 @@ SET(CMCORE_IO_EVENT_FILES ${CMCORE_IO_INCLUDE_PATH}/event/KeyboardEvent.h
                           ${CMCORE_IO_INCLUDE_PATH}/event/GestureEvent.h
                           ${CMCORE_IO_INCLUDE_PATH}/event/EventDispatcher.h
                           ${CMCORE_IO_INCLUDE_PATH}/event/InputMapping.h
+                          ${CMCORE_IO_INCLUDE_PATH}/event/InputTypes.h
+                          ${CMCORE_IO_INCLUDE_PATH}/event/InputContext.h
+                          ${CMCORE_IO_INCLUDE_PATH}/event/InputConfig.h
+                          ${CMCORE_IO_INCLUDE_PATH}/event/InputMapper.h
                           IO/Event/MouseEvent.cpp
+                          IO/Event/InputConfig.cpp
+                          IO/Event/InputMapper.cpp
                           IO/Event/PointerEvent.cpp
                           IO/Event/TouchEvent.cpp
                           IO/Event/GestureEvent.cpp
