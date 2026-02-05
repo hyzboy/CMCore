@@ -12,9 +12,22 @@
 #include <set>
 #include <cmath>
 #include <fstream>
+#include <chrono>
 
 namespace hgl
 {
+    /**
+     * @brief 构建统计信息
+     */
+    struct BuildStatsSet
+    {
+        int retry_count = 0;        // 重试次数 (0表示第一次成功)
+        int num_buckets = 0;        // 最终桶数量
+        int num_keys = 0;           // 键数量
+        float space_overhead = 0.0f; // 空间开销百分比
+        uint64_t build_time_us = 0;  // 构建时间(微秒)
+    };
+
     /**
      * @brief 静态完美哈希集合构建器
      * 
@@ -30,6 +43,7 @@ namespace hgl
         std::vector<uint16_t> displacement_table;  // 位移表
         std::vector<K> sorted_keys;             // 排列后的键
         uint32_t num_buckets;                   // 桶数量
+        BuildStatsSet build_stats;              // 构建统计
 
         // 哈希函数（与运行时容器相同）
         uint64_t Hash1(const K& key) const
@@ -85,20 +99,16 @@ namespace hgl
             return keys.size();
         }
 
+    private:
         /**
-         * @brief 构建完美哈希集合（CHD算法简化版）
+         * @brief 尝试用指定桶数量构建
+         * @param target_buckets 目标桶数量
          * @return 成功返回true
          */
-        bool Build()
+        bool TryBuildWithBuckets(uint32_t target_buckets)
         {
-            if (keys.empty())
-                return false;
-
             uint32_t n = static_cast<uint32_t>(keys.size());
-            
-            // 对于最小原型，使用简单但可靠的方法：
-            // 桶数量 = 键数量，这样每个桶最多1个键
-            num_buckets = n;
+            num_buckets = target_buckets;
             if (num_buckets == 0)
                 num_buckets = 1;
 
@@ -205,6 +215,65 @@ namespace hgl
                 return false;
 
             return true;
+        }
+
+    public:
+        /**
+         * @brief 构建完美哈希集合（带自动重试机制）
+         * 
+         * 使用自动重试策略：
+         * - Round 1: num_buckets = N (原始)
+         * - Round 2: num_buckets = N * 1.5 (增加50%)
+         * - Round 3: num_buckets = N * 2.0 (双倍)
+         * 
+         * @return 成功返回true
+         */
+        bool Build()
+        {
+            if (keys.empty())
+                return false;
+
+            uint32_t n = static_cast<uint32_t>(keys.size());
+            
+            // 开始计时
+            auto start = std::chrono::high_resolution_clock::now();
+            
+            // 尝试3轮，逐步增加桶数量
+            const float multipliers[] = {1.0f, 1.5f, 2.0f};
+            
+            for (int round = 0; round < 3; round++)
+            {
+                uint32_t target_buckets = static_cast<uint32_t>(n * multipliers[round]);
+                if (target_buckets < n)
+                    target_buckets = n;
+                
+                if (TryBuildWithBuckets(target_buckets))
+                {
+                    // 构建成功，记录统计信息
+                    auto end = std::chrono::high_resolution_clock::now();
+                    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+                    
+                    build_stats.retry_count = round;
+                    build_stats.num_buckets = num_buckets;
+                    build_stats.num_keys = n;
+                    build_stats.space_overhead = ((float)(num_buckets - n) / n) * 100.0f;
+                    build_stats.build_time_us = duration.count();
+                    
+                    return true;
+                }
+            }
+            
+            // 所有重试都失败（极罕见）
+            return false;
+        }
+
+        /**
+         * @brief 获取构建统计信息
+         * @return 构建统计
+         */
+        const BuildStatsSet& GetBuildStats() const
+        {
+            return build_stats;
         }
 
         /**
