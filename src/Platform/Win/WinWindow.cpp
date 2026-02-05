@@ -68,7 +68,7 @@ namespace hgl
             WNDCLASSEXW win_class{};
 
             win_class.cbSize        = sizeof(WNDCLASSEXW);
-            win_class.style         = CS_HREDRAW | CS_VREDRAW;
+            win_class.style         = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
             win_class.lpfnWndProc   = WindowProc;
             win_class.cbClsExtra    = 0;
             win_class.cbWndExtra    = 0;
