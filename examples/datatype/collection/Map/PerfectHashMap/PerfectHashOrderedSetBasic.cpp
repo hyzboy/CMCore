@@ -3,6 +3,7 @@
  * @brief 测试 FlatPerfectHashOrderedSet 基本功能
  */
 #include <hgl/type/FlatPerfectHashOrderedSet.h>
+#include <hgl/platform/Platform.h>
 #include <iostream>
 #include <cassert>
 

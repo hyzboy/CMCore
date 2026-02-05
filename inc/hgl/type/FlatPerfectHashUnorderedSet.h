@@ -6,54 +6,38 @@
 #pragma once
 
 #include <vector>
-#include <hgl/type/DataType.h>
+#include <cstdint>
 #include <hgl/util/hash/QuickHash.h>
 
 namespace hgl
 {
+    // 类型定义
+    using int64 = int64_t;
+    using int32 = int32_t;
     /**
      * @brief CN:基于完美哈希的平铺无序集合
      *        EN:Flat Unordered Set with Perfect Hash
-     *
      * 设计特点：
      * 1. 无序存储：元素按插入顺序存储在连续内存中
      * 2. 哈希索引：使用哈希表实现O(1)查找
      * 3. 完美哈希：针对静态数据集优化，负载因子可调
      * 4. 零拷贝序列化：整个结构可直接保存/加载
      * 5. 平凡类型：仅支持trivially copyable类型
-     *
      * 使用场景：
      * - 静态只读数据集
      * - 需要快速查找但不关心顺序
      * - 需要序列化到文件并快速加载
      * - 内存映射文件场景
-     *
      * 性能特征：
      * - 查找：O(1)（哈希表）
      * - 插入：O(1) 平均，最坏O(n)（需要重建哈希）
      * - 删除：O(1) 平均，最坏O(n)（需要移动最后元素和重建哈希）
      * - 遍历：O(n)（按插入顺序）
      * - 序列化：O(n)（直接内存拷贝）
-     *
      * @tparam T 元素类型，必须：
      *           1. 是 trivially copyable（可直接内存拷贝）
      *           2. 支持 operator==（用于去重）
-     *
-     * @example
-     * ```cpp
-     * FlatPerfectHashUnorderedSet<int> set;
-     * set.Add(1); set.Add(2); set.Add(3);
-     * 
-     * // O(1) 查找
-     * bool found = set.Contains(2);  // true
-     * 
-     * // 序列化
-     * auto data_ptr = set.GetData();
-     * auto hash_ptr = set.GetHashTable();
-     * int count = set.GetCount();
-     * // ... 保存 ...
-     * ```
-     */
+          */
     template<typename T>
     class FlatPerfectHashUnorderedSet
     {

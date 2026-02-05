@@ -7,61 +7,38 @@
 
 #include <vector>
 #include <algorithm>
-#include <hgl/type/DataType.h>
+#include <cstdint>
 #include <hgl/util/hash/QuickHash.h>
 
 namespace hgl
 {
+    // 类型定义
+    using int64 = int64_t;
+    using int32 = int32_t;
     /**
      * @brief CN:基于完美哈希的平铺有序集合
      *        EN:Flat Ordered Set with Perfect Hash
-     *
      * 设计特点：
      * 1. 有序数据存储：元素按升序存储在连续内存中
      * 2. 哈希索引表：使用哈希表将O(log n)的查找优化为O(1)
      * 3. 完美哈希：针对已知静态数据集，哈希表大小可优化以减少冲突
      * 4. 零拷贝序列化：整个结构可直接保存到文件并加载使用
      * 5. 平凡类型：仅支持trivially copyable类型
-     *
      * 使用场景：
      * - 静态只读数据集（配置、资源列表）
      * - 需要快速查找和有序遍历
      * - 需要序列化到文件并快速加载
      * - 内存映射文件场景
-     *
      * 性能特征：
      * - 查找：O(1)（哈希表）
      * - 插入：O(n)（需要维护有序性和重建哈希）
      * - 删除：O(n)（需要移动元素和重建哈希）
      * - 遍历：O(n)（按升序）
      * - 序列化：O(n)（直接内存拷贝）
-     *
      * @tparam T 元素类型，必须：
      *           1. 支持 operator< （用于排序）
      *           2. 是 trivially copyable（可直接内存拷贝）
      *           3. 支持 operator==（用于去重）
-     *
-     * @example
-     * ```cpp
-     * FlatPerfectHashOrderedSet<int> set;
-     * set.Add(3); set.Add(1); set.Add(2);
-     * 
-     * // O(1) 查找
-     * bool found = set.Contains(2);  // true
-     * 
-     * // 有序遍历：1, 2, 3
-     * for (auto& val : set) { /* ... */ }
-     * 
-     * // 序列化
-     * auto data_ptr = set.GetData();
-     * auto hash_ptr = set.GetHashTable();
-     * int count = set.GetCount();
-     * int hash_size = set.GetHashTableSize();
-     * // ... 保存到文件 ...
-     * 
-     * // 反序列化
-     * set.LoadFromBuffers(data_buffer, hash_buffer, count, hash_size);
-     * ```
      */
     template<typename T>
     class FlatPerfectHashOrderedSet

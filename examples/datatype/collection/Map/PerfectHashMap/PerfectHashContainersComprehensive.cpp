@@ -3,6 +3,7 @@
  * @brief 综合测试所有完美哈希容器
  */
 #include <hgl/type/FlatPerfectHashOrderedSet.h>
+#include <hgl/platform/Platform.h>
 #include <hgl/type/FlatPerfectHashOrderedMap.h>
 #include <hgl/type/FlatPerfectHashUnorderedSet.h>
 #include <hgl/type/FlatPerfectHashUnorderedMap.h>

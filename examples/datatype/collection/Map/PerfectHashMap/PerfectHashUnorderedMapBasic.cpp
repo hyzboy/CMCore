@@ -3,6 +3,7 @@
  * @brief 测试 FlatPerfectHashUnorderedMap 基本功能
  */
 #include <hgl/type/FlatPerfectHashUnorderedMap.h>
+#include <hgl/platform/Platform.h>
 #include <iostream>
 #include <cassert>
 

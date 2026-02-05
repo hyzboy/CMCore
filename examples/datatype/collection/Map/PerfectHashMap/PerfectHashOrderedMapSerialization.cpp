@@ -3,6 +3,7 @@
  * @brief 测试 FlatPerfectHashOrderedMap 序列化功能
  */
 #include <hgl/type/FlatPerfectHashOrderedMap.h>
+#include <hgl/platform/Platform.h>
 #include <iostream>
 #include <cassert>
 #include <cstring>

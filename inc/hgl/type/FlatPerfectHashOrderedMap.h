@@ -7,51 +7,32 @@
 
 #include <vector>
 #include <algorithm>
-#include <hgl/type/DataType.h>
+#include <cstdint>
 #include <hgl/util/hash/QuickHash.h>
 
 namespace hgl
 {
+    // 类型定义
+    using int64 = int64_t;
+    using int32 = int32_t;
     /**
      * @brief CN:基于完美哈希的平铺有序映射
      *        EN:Flat Ordered Map with Perfect Hash
-     *
      * 设计特点：
      * 1. 有序存储：Key按升序存储，Key[i]对应Value[i]
      * 2. 哈希索引：使用哈希表将O(log n)的查找优化为O(1)
      * 3. 完美哈希：针对静态数据集优化，减少冲突
      * 4. 零拷贝序列化：可直接保存/加载整个结构
      * 5. 平凡类型：Key和Value必须是trivially copyable
-     *
      * 性能特征：
      * - 查找：O(1)（哈希表）
      * - 插入：O(n)（维护有序和重建哈希）
      * - 删除：O(n)（移动元素和重建哈希）
      * - 遍历：O(n)（按Key升序）
      * - 序列化：O(n)（直接内存拷贝）
-     *
      * @tparam K Key类型，必须是trivially copyable且支持operator<
-     * @tparam V Value类型，必须是trivially copyable
-     *
-     * @example
-     * ```cpp
-     * FlatPerfectHashOrderedMap<int, float> map;
-     * map.Add(3, 3.0f); map.Add(1, 1.0f);
+     * @tparam V Value类型，必须是trivially copyable;
      * 
-     * // O(1) 查找
-     * float value;
-     * bool found = map.Get(1, value);
-     * 
-     * // 有序遍历：[1,1.0f], [3,3.0f]
-     * map.EnumKV([](const int& k, const float& v) { /* ... */ });
-     * 
-     * // 序列化
-     * auto keys_ptr = map.GetKeyData();
-     * auto values_ptr = map.GetValueData();
-     * auto hash_ptr = map.GetHashTable();
-     * // ... 保存 ...
-     * ```
-     */
     template<typename K, typename V>
     class FlatPerfectHashOrderedMap
     {

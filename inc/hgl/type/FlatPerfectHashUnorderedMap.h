@@ -6,49 +6,32 @@
 #pragma once
 
 #include <vector>
-#include <hgl/type/DataType.h>
+#include <cstdint>
 #include <hgl/util/hash/QuickHash.h>
 
 namespace hgl
 {
+    // 类型定义
+    using int64 = int64_t;
+    using int32 = int32_t;
     /**
      * @brief CN:基于完美哈希的平铺无序映射
      *        EN:Flat Unordered Map with Perfect Hash
-     *
      * 设计特点：
      * 1. 无序存储：Key和Value按插入顺序存储，Key[i]对应Value[i]
      * 2. 哈希索引：使用哈希表实现O(1)查找
      * 3. 完美哈希：针对静态数据集优化
      * 4. 零拷贝序列化：可直接保存/加载整个结构
      * 5. 平凡类型：Key和Value必须是trivially copyable
-     *
      * 性能特征：
      * - 查找：O(1)（哈希表）
      * - 插入：O(1) 平均
      * - 删除：O(1) 平均（swap-and-pop）
      * - 遍历：O(n)（按插入顺序）
      * - 序列化：O(n)（直接内存拷贝）
-     *
      * @tparam K Key类型，必须是trivially copyable
      * @tparam V Value类型，必须是trivially copyable
-     *
-     * @example
-     * ```cpp
-     * FlatPerfectHashUnorderedMap<int, float> map;
-     * map.Add(1, 1.0f);
-     * map.Add(2, 2.0f);
-     * 
-     * // O(1) 查找
-     * float value;
-     * bool found = map.Get(1, value);
-     * 
-     * // 序列化
-     * auto keys_ptr = map.GetKeyData();
-     * auto values_ptr = map.GetValueData();
-     * auto hash_ptr = map.GetHashTable();
-     * // ... 保存 ...
-     * ```
-     */
+          */
     template<typename K, typename V>
     class FlatPerfectHashUnorderedMap
     {
