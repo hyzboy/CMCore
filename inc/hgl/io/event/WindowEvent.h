@@ -75,14 +75,14 @@ namespace hgl::io
                                                 WindowSize.y = wed->height;
                                                 OnCreate(wed->width,wed->height);break;
 
-                    case WindowEventID::DpiChanged:      OnDpiChanged(uint16(wed->wparam & 0xFFFF), uint16((wed->wparam >> 16) & 0xFFFF));break;
-                    case WindowEventID::DisplayChange:  OnDisplayChange(uint16(wed->lparam & 0xFFFF), uint16((wed->lparam >> 16) & 0xFFFF), wed->wparam);break;
-                    case WindowEventID::SetCursor:      OnSetCursor(wed->wparam, wed->lparam);break;
-                    case WindowEventID::MouseActivate:  OnMouseActivate(wed->wparam, wed->lparam);break;
-                    case WindowEventID::InputLangChange:OnInputLangChange(wed->wparam, wed->lparam);break;
-                    case WindowEventID::ImeStartComposition: OnImeStartComposition(wed->wparam, wed->lparam);break;
-                    case WindowEventID::ImeComposition:      OnImeComposition(wed->wparam, wed->lparam);break;
-                    case WindowEventID::ImeEndComposition:    OnImeEndComposition(wed->wparam, wed->lparam);break;
+                    case WindowEventID::DpiChanged:         OnDpiChanged(uint16(wed->wparam & 0xFFFF), uint16((wed->wparam >> 16) & 0xFFFF));break;
+                    case WindowEventID::DisplayChange:      OnDisplayChange(uint16(wed->lparam & 0xFFFF), uint16((wed->lparam >> 16) & 0xFFFF), wed->wparam);break;
+                    case WindowEventID::SetCursor:          OnSetCursor(wed->wparam, wed->lparam);break;
+                    case WindowEventID::MouseActivate:      OnMouseActivate(wed->wparam, wed->lparam);break;
+                    case WindowEventID::InputLangChange:    OnInputLangChange(wed->wparam, wed->lparam);break;
+                    case WindowEventID::ImeStartComposition:OnImeStartComposition(wed->wparam, wed->lparam);break;
+                    case WindowEventID::ImeComposition:     OnImeComposition(wed->wparam, wed->lparam);break;
+                    case WindowEventID::ImeEndComposition:  OnImeEndComposition(wed->wparam, wed->lparam);break;
                 }
             }
 

@@ -37,6 +37,8 @@ namespace hgl
         void OnImeComposition(uint32,uint32) override {}
         void OnImeEndComposition(uint32,uint32) override {}
 
+        io::EventProcResult OnEvent(const io::EventHeader &header,const uint64 data) override;
+
         virtual bool MessageProc()=0;
         virtual bool WaitMessage()=0;
 
@@ -51,14 +53,6 @@ namespace hgl
         virtual ~Window()=default;
 
         io::InputMapper &GetInputMapper(){return input_mapper;}
-        io::EventDispatcher *GetEventDispatcher(){return &input_mapper;}
-        io::EventDispatcher *GetWindowEventDispatcher(){return this;}
-
-        bool AddChildDispatcher(io::EventDispatcher *ie){return input_mapper.AddChildDispatcher(ie);}
-        bool RemoveChildDispatcher(io::EventDispatcher *ie){return input_mapper.RemoveChildDispatcher(ie);}
-
-        bool SetExclusiveDispatcher(io::EventDispatcher *ie){return input_mapper.SetExclusiveDispatcher(ie);}
-        bool RemoveExclusiveDispatcher(io::EventDispatcher *ie){return input_mapper.RemoveExclusiveDispatcher(ie);}
 
         virtual bool Create(uint,uint)=0;
         virtual bool Create(uint,uint,uint)=0;

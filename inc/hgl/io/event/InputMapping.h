@@ -402,7 +402,7 @@ namespace hgl::io
      * - 将物理输入转换为逻辑动作事件
      * - 通过回调通知应用层
      */
-    class InputMapper : public EventDispatcher
+    class InputMapper
     {
     public:
 
@@ -417,7 +417,7 @@ namespace hgl::io
 
     public:
 
-        InputMapper() : EventDispatcher(InputEventSource::Root), current_time(0.0) {}
+        InputMapper() : current_time(0.0) {}
         virtual ~InputMapper() = default;
 
         /**
@@ -458,35 +458,12 @@ namespace hgl::io
         }
 
         /**
-         * 更新时间（每帧调用）
-         */
-        virtual bool Update() override
-        {
-            // 可在此处理持续动作的Ongoing事件
-            return EventDispatcher::Update();
-        }
-
-        /**
-         * 处理物理输入事件（重写EventDispatcher）
-         */
-        virtual EventProcResult OnEvent(const EventHeader& header, const uint64 data) override
-        {
-            // 尝试将物理输入转换为逻辑动作
-            const bool forward_physical = ProcessPhysicalInput(header, data);
-
-            if (!forward_physical)
-                return EventProcResult::Break;
-            return EventDispatcher::OnEvent(header, data);
-        }
-
-        /**
          * 设置当前时间（用于计算elapsed_time）
          */
         void SetCurrentTime(double time)
         {
             current_time = time;
         }
-
 
     private:
 
@@ -503,6 +480,8 @@ namespace hgl::io
             });
             return binding;
         }
+
+public:
 
         /**
          * 处理物理输入 → 逻辑动作的转换

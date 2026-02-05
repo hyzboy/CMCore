@@ -51,6 +51,23 @@ namespace hgl
         is_close=true;
     }
 
+    io::EventProcResult Window::OnEvent(const io::EventHeader &header,const uint64 data)
+    {
+        if(header.type == io::InputEventSource::Keyboard
+        || header.type == io::InputEventSource::Mouse
+        || header.type == io::InputEventSource::Joystick
+        || header.type == io::InputEventSource::Pointer
+        || header.type == io::InputEventSource::Touch
+        || header.type == io::InputEventSource::Gesture)
+        {
+            const bool forward_physical = input_mapper.ProcessPhysicalInput(header, data);
+            if(!forward_physical)
+                return io::EventProcResult::Break;
+        }
+
+        return io::WindowEvent::OnEvent(header, data);
+    }
+
     bool Window::Update()
     {
         while(MessageProc());
