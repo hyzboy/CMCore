@@ -11,14 +11,19 @@ namespace hgl::io
             position.x=med->x;
             position.y=med->y;
 
-            if(MouseAction(header.id)==MouseAction::Wheel)
+            #ifdef _DEBUG
+            if(med->action!=(uint8)header.id)
+                return EventProcResult::Break;
+            #endif//_DEBUG
+
+            if(MouseAction(med->action)==MouseAction::Wheel)
             {
                 if(OnWheel(position)==EventProcResult::Break)
                     return EventProcResult::Break;
             }
             else
             {
-                switch(MouseAction(header.id))
+                switch(MouseAction(med->action))
                 {
                     case MouseAction::Move:        if(OnMove       (position)                         ==EventProcResult::Break)return EventProcResult::Break;break;
                     case MouseAction::Pressed:     pressed_statues[med->button]=true;
