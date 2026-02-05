@@ -66,7 +66,7 @@ bool TestScale(int num_keys, const std::vector<uint32_t>& all_keys)
         TestData data;
         data.value = all_keys[i];
         snprintf(data.name, sizeof(data.name), "Item_%d", i);
-        builder.AddKey(all_keys[i], data);
+        builder.Add(all_keys[i], data);
     }
 
     auto build_start = std::chrono::high_resolution_clock::now();

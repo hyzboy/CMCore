@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
         data.level = 1;
         data.power = 100.0f;
         
-        builder.AddKey(key, data);
+        builder.Add(key, data);
     }
 
     auto build_start = std::chrono::high_resolution_clock::now();
