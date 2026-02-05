@@ -4,3 +4,8 @@ cm_example_project("DataType/StaticPerfectHash" StaticPerfectHashMapPrototype St
 cm_example_project("DataType/StaticPerfectHash" StaticPerfectHashMapScaleTest StaticPerfectHashMapScaleTest.cpp)
 cm_example_project("DataType/StaticPerfectHash" StringSetMPHTest StringSetMPHTest.cpp)
 cm_example_project("DataType/StaticPerfectHash" ProgressiveMPHTest ProgressiveMPHTest.cpp)
+
+# Static Perfect Hash Set Tests
+
+cm_example_project("DataType/StaticPerfectHash" StaticPerfectHashSetBasicTest StaticPerfectHashSetBasicTest.cpp)
+cm_example_project("DataType/StaticPerfectHash" StringSetFileTest StringSetFileTest.cpp)
