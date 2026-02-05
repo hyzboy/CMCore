@@ -138,6 +138,27 @@ namespace hgl::io
         }
     };
 
+}//namespace hgl::io
+
+namespace std
+{
+    template<>
+    struct hash<hgl::io::PhysicalInput>
+    {
+        size_t operator()(const hgl::io::PhysicalInput& v) const noexcept
+        {
+            const hgl::uint32 source = static_cast<hgl::uint32>(v.source) & 0xFFu;
+            const hgl::uint32 index = static_cast<hgl::uint32>(v.index) & 0xFFu;
+            const hgl::uint32 code = static_cast<hgl::uint32>(v.code) & 0xFFFFu;
+            const hgl::uint32 packed = (source << 24) | (index << 16) | code;
+            return static_cast<size_t>(packed);
+        }
+    };
+}
+
+namespace hgl::io
+{
+
     /**
      * 动作事件状态
      */
@@ -179,6 +200,16 @@ namespace hgl::io
 
         InputBinding(PhysicalInput phys, ActionID act, ActionValueType vt = ActionValueType::Digital, bool forward_physical = false)
             : physical(phys), action(act), value_type(vt), scale(1.0f), negate(false), forward_physical_input(forward_physical) {}
+
+        bool operator==(const InputBinding& other) const
+        {
+            return physical == other.physical
+                && action == other.action
+                && value_type == other.value_type
+                && scale == other.scale
+                && negate == other.negate
+                && forward_physical_input == other.forward_physical_input;
+        }
     };
 
     /**
@@ -465,7 +496,7 @@ namespace hgl::io
         const InputBinding* FindBindingInContextStack(const PhysicalInput& physical) const
         {
             const InputBinding* binding = nullptr;
-            context_stack.ForEachFromTop([&](InputContext* ctx, int index)
+            context_stack.ForEachFromTop([&](int index, InputContext* ctx)
             {
                 if (!binding && ctx)
                     binding = ctx->FindBinding(physical);
@@ -602,12 +633,4 @@ namespace hgl::io
         }
     };
 
-    /**
-     * 获取全局输入映射器
-     */
-    inline InputMapper &GetGlobalInputMapper()
-    {
-        static InputMapper instance;
-        return instance;
-    }
 }//namespace hgl::io

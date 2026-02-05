@@ -12,6 +12,17 @@ namespace hgl
         is_min=false;
     }
 
+    void Window::OnCreate(uint w,uint h)
+    {
+        width=w;
+        height=h;
+
+        if(w==0||h==0)
+            is_min=true;
+        else
+            is_min=false;
+    }
+
     void Window::OnResize(uint w,uint h)
     {
         if(w==width&&height==h)

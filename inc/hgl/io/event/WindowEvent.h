@@ -12,7 +12,16 @@ namespace hgl::io
         Create,
         Active,
         Resize,
-        Close
+        Close,
+
+        DpiChanged,
+        DisplayChange,
+        SetCursor,
+        MouseActivate,
+        InputLangChange,
+        ImeStartComposition,
+        ImeComposition,
+        ImeEndComposition
     };//enum class WindowEventID
 
     union WindowEventData
@@ -22,6 +31,12 @@ namespace hgl::io
         struct
         {
             uint16 width,height;
+        };
+
+        struct
+        {
+            uint32 wparam;
+            uint32 lparam;
         };
 
         bool active;
@@ -59,6 +74,15 @@ namespace hgl::io
                     case WindowEventID::Create: WindowSize.x = wed->width;
                                                 WindowSize.y = wed->height;
                                                 OnCreate(wed->width,wed->height);break;
+
+                    case WindowEventID::DpiChanged:      OnDpiChanged(uint16(wed->wparam & 0xFFFF), uint16((wed->wparam >> 16) & 0xFFFF));break;
+                    case WindowEventID::DisplayChange:  OnDisplayChange(uint16(wed->lparam & 0xFFFF), uint16((wed->lparam >> 16) & 0xFFFF), wed->wparam);break;
+                    case WindowEventID::SetCursor:      OnSetCursor(wed->wparam, wed->lparam);break;
+                    case WindowEventID::MouseActivate:  OnMouseActivate(wed->wparam, wed->lparam);break;
+                    case WindowEventID::InputLangChange:OnInputLangChange(wed->wparam, wed->lparam);break;
+                    case WindowEventID::ImeStartComposition: OnImeStartComposition(wed->wparam, wed->lparam);break;
+                    case WindowEventID::ImeComposition:      OnImeComposition(wed->wparam, wed->lparam);break;
+                    case WindowEventID::ImeEndComposition:    OnImeEndComposition(wed->wparam, wed->lparam);break;
                 }
             }
 
@@ -74,5 +98,14 @@ namespace hgl::io
         virtual void OnResize(uint w,uint h){}
         virtual void OnActive(bool){}
         virtual void OnClose (){}
+
+        virtual void OnDpiChanged(uint16,uint16){}
+        virtual void OnDisplayChange(uint16,uint16,uint32){}
+        virtual void OnSetCursor(uint32,uint32){}
+        virtual void OnMouseActivate(uint32,uint32){}
+        virtual void OnInputLangChange(uint32,uint32){}
+        virtual void OnImeStartComposition(uint32,uint32){}
+        virtual void OnImeComposition(uint32,uint32){}
+        virtual void OnImeEndComposition(uint32,uint32){}
     };//class WindowEvent:public EventDispatcher
 }//namespace hgl::io

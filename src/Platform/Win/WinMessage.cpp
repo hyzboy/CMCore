@@ -213,6 +213,27 @@ namespace hgl
         static EventHeader event_header;
         static WindowEventData window_event_data;
 
+        static bool IsWindowSystemMessage(uint32 msg)
+        {
+            switch(msg)
+            {
+                case WM_CLOSE:
+                case WM_SIZE:
+                case WM_ACTIVATE:
+                case WM_DPICHANGED:
+                case WM_DISPLAYCHANGE:
+                case WM_SETCURSOR:
+                case WM_MOUSEACTIVATE:
+                case WM_INPUTLANGCHANGE:
+                case WM_IME_STARTCOMPOSITION:
+                case WM_IME_COMPOSITION:
+                case WM_IME_ENDCOMPOSITION:
+                    return true;
+            }
+
+            return false;
+        }
+
         void WMProcDestroy(EventDispatcher *ie,uint32,uint32)
         {
             event_header.type   =InputEventSource::Window;
@@ -222,6 +243,27 @@ namespace hgl
             ie->OnEvent(event_header,window_event_data.data);
             PostQuitMessage(0);
         }
+
+        #define WMEF_WINDOW_SYS(name,win_id) void name(EventDispatcher *ie,uint32 wParam,uint32 lParam) \
+            { \
+                event_header.type   =InputEventSource::Window; \
+                event_header.index  =0; \
+                event_header.id     =(uint16)WindowEventID::win_id; \
+                window_event_data.wparam = wParam; \
+                window_event_data.lparam = lParam; \
+                ie->OnEvent(event_header,window_event_data.data); \
+            }
+
+        WMEF_WINDOW_SYS(WMProcDpiChanged,      DpiChanged);
+        WMEF_WINDOW_SYS(WMProcDisplayChange,  DisplayChange);
+        WMEF_WINDOW_SYS(WMProcSetCursor,      SetCursor);
+        WMEF_WINDOW_SYS(WMProcMouseActivate,  MouseActivate);
+        WMEF_WINDOW_SYS(WMProcInputLangChange,InputLangChange);
+        WMEF_WINDOW_SYS(WMProcImeStart,       ImeStartComposition);
+        WMEF_WINDOW_SYS(WMProcImeComposition, ImeComposition);
+        WMEF_WINDOW_SYS(WMProcImeEnd,         ImeEndComposition);
+
+        #undef WMEF_WINDOW_SYS
 
         static MouseEventData mouse_event_data;
 
@@ -827,6 +869,14 @@ namespace hgl
         WM_MAP(WM_SYSCHAR           ,WMProcChar);
         WM_MAP(WM_ACTIVATE          ,WMProcActive);
         WM_MAP(WM_SIZE              ,WMProcSize);
+        WM_MAP(WM_DPICHANGED        ,WMProcDpiChanged);
+        WM_MAP(WM_DISPLAYCHANGE     ,WMProcDisplayChange);
+        WM_MAP(WM_SETCURSOR         ,WMProcSetCursor);
+        WM_MAP(WM_MOUSEACTIVATE     ,WMProcMouseActivate);
+        WM_MAP(WM_INPUTLANGCHANGE   ,WMProcInputLangChange);
+        WM_MAP(WM_IME_STARTCOMPOSITION,WMProcImeStart);
+        WM_MAP(WM_IME_COMPOSITION   ,WMProcImeComposition);
+        WM_MAP(WM_IME_ENDCOMPOSITION,WMProcImeEnd);
         WM_MAP(WM_POINTERDOWN       ,WMProcPointerDown);
         WM_MAP(WM_POINTERUP         ,WMProcPointerUp);
         WM_MAP(WM_POINTERUPDATE     ,WMProcPointerUpdate);
@@ -847,10 +897,13 @@ namespace hgl
         if(uMsg<2048)
             if(WMProc[uMsg])
             {
-                EventDispatcher *ie=(EventDispatcher *)GetWindowLongPtrW(hWnd,GWLP_USERDATA);
+                Window *win=(Window *)GetWindowLongPtrW(hWnd,GWLP_USERDATA);
 
-                if(ie)
+                if(win)
+                {
+                    EventDispatcher *ie = IsWindowSystemMessage(uMsg) ? static_cast<EventDispatcher *>(win) : win->GetEventDispatcher();
                     WMProc[uMsg](ie,wParam,lParam);
+                }
             }
 
         return (DefWindowProcW(hWnd, uMsg, wParam, lParam));

@@ -2,6 +2,7 @@
 
 #include<hgl/type/String.h>
 #include<hgl/io/event/WindowEvent.h>
+#include<hgl/io/event/InputMapping.h>
 
 namespace hgl
 {
@@ -18,11 +19,23 @@ namespace hgl
         bool is_close;
         bool is_min;
 
+        io::InputMapper input_mapper;
+
     protected:
 
+        void OnCreate(uint,uint) override;
         void OnResize(uint,uint) override;
         void OnActive(bool) override;
-        void OnClose () override;
+        void OnClose() override;
+
+        void OnDpiChanged(uint16,uint16) override {}
+        void OnDisplayChange(uint16,uint16,uint32) override {}
+        void OnSetCursor(uint32,uint32) override {}
+        void OnMouseActivate(uint32,uint32) override {}
+        void OnInputLangChange(uint32,uint32) override {}
+        void OnImeStartComposition(uint32,uint32) override {}
+        void OnImeComposition(uint32,uint32) override {}
+        void OnImeEndComposition(uint32,uint32) override {}
 
         virtual bool MessageProc()=0;
         virtual bool WaitMessage()=0;
@@ -36,6 +49,16 @@ namespace hgl
 
         Window(const OSString &);
         virtual ~Window()=default;
+
+        io::InputMapper &GetInputMapper(){return input_mapper;}
+        io::EventDispatcher *GetEventDispatcher(){return &input_mapper;}
+        io::EventDispatcher *GetWindowEventDispatcher(){return this;}
+
+        bool AddChildDispatcher(io::EventDispatcher *ie){return input_mapper.AddChildDispatcher(ie);}
+        bool RemoveChildDispatcher(io::EventDispatcher *ie){return input_mapper.RemoveChildDispatcher(ie);}
+
+        bool SetExclusiveDispatcher(io::EventDispatcher *ie){return input_mapper.SetExclusiveDispatcher(ie);}
+        bool RemoveExclusiveDispatcher(io::EventDispatcher *ie){return input_mapper.RemoveExclusiveDispatcher(ie);}
 
         virtual bool Create(uint,uint)=0;
         virtual bool Create(uint,uint,uint)=0;
