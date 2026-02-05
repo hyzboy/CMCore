@@ -10,3 +10,10 @@ cm_example_project("DataType/StaticPerfectHash" RetryMechanismTest RetryMechanis
 
 cm_example_project("DataType/StaticPerfectHash" StaticPerfectHashSetBasicTest StaticPerfectHashSetBasicTest.cpp)
 cm_example_project("DataType/StaticPerfectHash" StringSetFileTest StringSetFileTest.cpp)
+
+# Large Scale and Stress Tests
+
+cm_example_project("DataType/StaticPerfectHash" LargeScaleMapTest LargeScaleMapTest.cpp)
+cm_example_project("DataType/StaticPerfectHash" LargeScaleSetTest LargeScaleSetTest.cpp)
+cm_example_project("DataType/StaticPerfectHash" StressTest StressTest.cpp)
+cm_example_project("DataType/StaticPerfectHash" PerformanceBenchmark PerformanceBenchmark.cpp)
