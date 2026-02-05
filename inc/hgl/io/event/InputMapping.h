@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <hgl/io/event/InputTypes.h>
 #include <hgl/io/event/InputContext.h>

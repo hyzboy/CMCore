@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <functional>
 #include <hgl/io/event/EventDispatcher.h>
