@@ -1,3 +1,4 @@
 # Static Perfect Hash Map Tests
 
 cm_example_project("DataType/StaticPerfectHash" StaticPerfectHashMapPrototype StaticPerfectHashMapPrototype.cpp)
+cm_example_project("DataType/StaticPerfectHash" StaticPerfectHashMapScaleTest StaticPerfectHashMapScaleTest.cpp)
