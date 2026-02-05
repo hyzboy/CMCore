@@ -1,0 +1,8 @@
+FireBall
+IceBolt
+Lightning
+Heal
+Shield
+Teleport
+Meteor
+Resurrect

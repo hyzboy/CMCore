@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <map>
 #include <cmath>
+#include <fstream>
 
 namespace hgl
 {
@@ -239,6 +240,26 @@ namespace hgl
                        header.num_keys * sizeof(V));
 
             return total_size;
+        }
+
+        /**
+         * @brief 保存到文件
+         * @param filename 文件路径
+         * @return 成功返回true
+         */
+        bool SaveToFile(const char* filename) const
+        {
+            std::vector<uint8_t> buffer;
+            if (SaveToMemory(buffer) == 0)
+                return false;
+
+            std::ofstream file(filename, std::ios::binary);
+            if (!file.is_open())
+                return false;
+
+            file.write(reinterpret_cast<const char*>(buffer.data()), buffer.size());
+            file.close();
+            return true;
         }
 
         /**

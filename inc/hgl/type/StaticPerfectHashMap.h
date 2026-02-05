@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <cstring>
 #include <vector>
+#include <fstream>
 
 namespace hgl
 {
@@ -186,6 +187,31 @@ namespace hgl
         const std::vector<V>& GetValues() const
         {
             return values;
+        }
+
+        /**
+         * @brief 从文件加载MPH数据
+         * @param filename 文件路径
+         * @return 成功返回true
+         */
+        bool LoadFromFile(const char* filename)
+        {
+            std::ifstream file(filename, std::ios::binary);
+            if (!file.is_open())
+                return false;
+
+            // 获取文件大小
+            file.seekg(0, std::ios::end);
+            size_t file_size = file.tellg();
+            file.seekg(0, std::ios::beg);
+
+            // 读取到内存
+            std::vector<uint8_t> buffer(file_size);
+            file.read(reinterpret_cast<char*>(buffer.data()), file_size);
+            file.close();
+
+            // 从内存加载
+            return LoadFromMemory(buffer.data(), buffer.size());
         }
     };
 
