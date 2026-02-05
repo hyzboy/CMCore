@@ -18,3 +18,4 @@ cm_example_project("DataType/ActiveManager" 6_ActiveIDManagerEnhancedTest   Acti
 
 add_subdirectory(collection)
 add_subdirectory(ConstStringSet)
+add_subdirectory(static_mph)
