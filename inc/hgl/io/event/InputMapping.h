@@ -406,12 +406,12 @@ namespace hgl::io
                 MouseEventData* md = (MouseEventData*)&data;
                 physical.code = md->button;
 
-                if (MouseEventID(header.id) == MouseEventID::Pressed)
+                if (MouseAction(header.id) == MouseAction::Pressed)
                 {
                     is_pressed = true;
                     value = ActionValue::Digital(true);
                 }
-                else if (MouseEventID(header.id) == MouseEventID::Released)
+                else if (MouseAction(header.id) == MouseAction::Released)
                 {
                     is_released = true;
                     value = ActionValue::Digital(false);

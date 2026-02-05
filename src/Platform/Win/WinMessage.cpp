@@ -6,6 +6,7 @@
 #include<hgl/io/event/TouchEvent.h>
 #include<hgl/io/event/GestureEvent.h>
 #include<Windows.h>
+#include<Windowsx.h>
 
 #ifdef _DEBUG
 #include<hgl/log/Log.h>
@@ -224,15 +225,16 @@ namespace hgl
 
         static MouseEventData mouse_event_data;
 
-        #define WMEF_MOUSE(mouse_button,action)   void WMProcMouse##mouse_button##action(EventDispatcher *ie,uint32 wParam,uint32 lParam)    \
+        #define WMEF_MOUSE(mouse_button,mouse_action)   void WMProcMouse##mouse_button##mouse_action(EventDispatcher *ie,uint32 wParam,uint32 lParam)    \
             {   \
-                mouse_event_data.x=LOWORD(lParam); \
-                mouse_event_data.y=HIWORD(lParam); \
+                mouse_event_data.x=GET_X_LPARAM(lParam); \
+                mouse_event_data.y=GET_Y_LPARAM(lParam); \
                 mouse_event_data.button=(uint8)MouseButton::mouse_button;    \
+                mouse_event_data.action=(uint8)MouseAction::mouse_action;    \
                 \
                 event_header.type   =InputEventSource::Mouse;  \
                 event_header.index  =0;   \
-                event_header.id     =(uint16)MouseEventID::action; \
+                event_header.id     =(uint16)MouseAction::mouse_action; \
                 \
                 ie->OnEvent(event_header,mouse_event_data.data);    \
             }
@@ -251,31 +253,52 @@ namespace hgl
 
             void WMProcMouseMove(EventDispatcher *ie,uint32 wParam,uint32 lParam)
             {
-                mouse_event_data.x=LOWORD(lParam);
-                mouse_event_data.y=HIWORD(lParam);
+                mouse_event_data.x=GET_X_LPARAM(lParam);
+                mouse_event_data.y=GET_Y_LPARAM(lParam);
                 mouse_event_data.button=0;
+                mouse_event_data.action=(uint8)MouseAction::Move;
 
                 event_header.type   =InputEventSource::Mouse;
                 event_header.index  =0;
-                event_header.id     =(uint16)MouseEventID::Move;
+                event_header.id     =(uint16)MouseAction::Move;
 
                 ie->OnEvent(event_header,mouse_event_data.data);
             }
         #undef WMEF_MOUSE
 
+        #define WMEF_MOUSE_X(mouse_action)   void WMProcMouseX##mouse_action(EventDispatcher *ie,uint32 wParam,uint32 lParam)    \
+            {   \
+                mouse_event_data.x=GET_X_LPARAM(lParam); \
+                mouse_event_data.y=GET_Y_LPARAM(lParam); \
+                const WORD xbtn=GET_XBUTTON_WPARAM(wParam); \
+                mouse_event_data.button=(uint8)((xbtn==XBUTTON1)?MouseButton::X1:MouseButton::X2); \
+                mouse_event_data.action=(uint8)MouseAction::mouse_action;  \
+                \
+                event_header.type   =InputEventSource::Mouse;  \
+                event_header.index  =0;   \
+                event_header.id     =(uint16)MouseAction::mouse_action; \
+                \
+                ie->OnEvent(event_header,mouse_event_data.data);    \
+            }
+
+            WMEF_MOUSE_X(Pressed);
+            WMEF_MOUSE_X(Released);
+            WMEF_MOUSE_X(DblClicked);
+        #undef WMEF_MOUSE_X
+
         #define WMEF2(name) void name(EventDispatcher *ie,uint32 wParam,uint32 lParam)
             WMEF2(WMProcMouseWheel)
             {
                 const int zDelta=GET_WHEEL_DELTA_WPARAM(wParam);
-                //const uint key=(uint)ConvertOSKey(GET_KEYSTATE_WPARAM(wParam));
 
-                mouse_event_data.x=0;
-                mouse_event_data.y=zDelta;
-                mouse_event_data.button=0;
+                mouse_event_data.x=GET_X_LPARAM(lParam);
+                mouse_event_data.y=GET_Y_LPARAM(lParam);
+                mouse_event_data.button=(uint8)(zDelta / WHEEL_DELTA);
+                mouse_event_data.action=(uint8)MouseAction::Wheel;
 
                 event_header.type   =InputEventSource::Mouse;
                 event_header.index  =0;
-                event_header.id     =(uint16)MouseEventID::Wheel;
+                event_header.id     =(uint16)MouseAction::Wheel;
 
                 ie->OnEvent(event_header,mouse_event_data.data);
             }
@@ -283,15 +306,15 @@ namespace hgl
             WMEF2(WMProcMouseHWheel)
             {
                 const int zDelta=GET_WHEEL_DELTA_WPARAM(wParam);
-                //const uint key=(uint)ConvertOSKey(GET_KEYSTATE_WPARAM(wParam));
 
-                mouse_event_data.x=zDelta;
-                mouse_event_data.y=0;
-                mouse_event_data.button=0;
+                mouse_event_data.x=GET_X_LPARAM(lParam);
+                mouse_event_data.y=GET_Y_LPARAM(lParam);
+                mouse_event_data.button=(uint8)(zDelta / WHEEL_DELTA);
+                mouse_event_data.action=(uint8)MouseAction::Wheel;
 
                 event_header.type   =InputEventSource::Mouse;
                 event_header.index  =0;
-                event_header.id     =(uint16)MouseEventID::Wheel;
+                event_header.id     =(uint16)MouseAction::Wheel;
 
                 ie->OnEvent(event_header,mouse_event_data.data);
             }
@@ -811,6 +834,10 @@ namespace hgl
         WM_MAP(WM_POINTERLEAVE      ,WMProcPointerLeave);
         WM_MAP(WM_TOUCH             ,WMProcTouch);
         WM_MAP(WM_GESTURE           ,WMProcGesture);
+
+        WM_MAP(WM_XBUTTONDOWN       ,WMProcMouseXPressed);
+        WM_MAP(WM_XBUTTONUP         ,WMProcMouseXReleased);
+        WM_MAP(WM_XBUTTONDBLCLK     ,WMProcMouseXDblClicked);
 
     #undef WM_MAP
     }

@@ -11,21 +11,21 @@ namespace hgl::io
             position.x=med->x;
             position.y=med->y;
 
-            if(MouseEventID(header.id)==MouseEventID::Wheel)
+            if(MouseAction(header.id)==MouseAction::Wheel)
             {
                 if(OnWheel(position)==EventProcResult::Break)
                     return EventProcResult::Break;
             }
             else
             {
-                switch(MouseEventID(header.id))
+                switch(MouseAction(header.id))
                 {
-                    case MouseEventID::Move:        if(OnMove       (position)                         ==EventProcResult::Break)return EventProcResult::Break;break;
-                    case MouseEventID::Pressed:     pressed_statues[med->button]=true;
+                    case MouseAction::Move:        if(OnMove       (position)                         ==EventProcResult::Break)return EventProcResult::Break;break;
+                    case MouseAction::Pressed:     pressed_statues[med->button]=true;
                                                     if(OnPressed    (position,MouseButton(med->button))==EventProcResult::Break)return EventProcResult::Break;break;
-                    case MouseEventID::Released:    pressed_statues[med->button]=false;
+                    case MouseAction::Released:    pressed_statues[med->button]=false;
                                                     if(OnReleased   (position,MouseButton(med->button))==EventProcResult::Break)return EventProcResult::Break;break;
-                    case MouseEventID::DblClicked:  if(OnDblClicked (position,MouseButton(med->button))==EventProcResult::Break)return EventProcResult::Break;break;
+                    case MouseAction::DblClicked:  if(OnDblClicked (position,MouseButton(med->button))==EventProcResult::Break)return EventProcResult::Break;break;
                 }
             }
         }

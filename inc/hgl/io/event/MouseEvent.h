@@ -23,7 +23,7 @@ namespace hgl::io
         ENUM_CLASS_RANGE(None,X2)
     };
 
-    enum class MouseEventID
+    enum class MouseAction
     {
         Move    =0,
         Pressed,
@@ -32,6 +32,7 @@ namespace hgl::io
         Wheel
     };
 
+    #pragma pack(push, 1)
     union MouseEventData
     {
         uint64 data;
@@ -40,8 +41,10 @@ namespace hgl::io
         {
             int16 x,y;
             uint8 button;
+            uint8 action;
         };
     };
+    #pragma pack(pop)
 
     constexpr size_t MouseEventDataBytes=sizeof(MouseEventData);
 
