@@ -20,6 +20,30 @@ namespace hgl::io
     constexpr ActionID ACTION_NONE = 0;
 
     /**
+     * 预置动作ID配置
+     */
+    struct FpsActionConfig
+    {
+        ActionID move_forward = 1;
+        ActionID move_backward = 2;
+        ActionID move_left = 3;
+        ActionID move_right = 4;
+        ActionID fire = 5;
+        ActionID jump = 6;
+        ActionID crouch = 7;
+        ActionID run = 8;
+        ActionID prone = 9;
+        ActionID aim = 10;
+        ActionID reload = 11;
+        ActionID use = 12;
+        ActionID melee = 13;
+        ActionID grenade = 14;
+        ActionID weapon1 = 15;
+        ActionID weapon2 = 16;
+        ActionID weapon3 = 17;
+    };
+
+    /**
      * 动作值类型
      */
     enum class ActionValueType
@@ -149,11 +173,12 @@ namespace hgl::io
         ActionValueType value_type;     ///< 值类型
         float           scale;          ///< 缩放系数（用于模拟量）
         bool            negate;         ///< 是否取反（用于方向反转）
+        bool            forward_physical_input;  ///< 是否继续分发物理输入
 
-        InputBinding() : action(ACTION_NONE), value_type(ActionValueType::Digital), scale(1.0f), negate(false) {}
+        InputBinding() : action(ACTION_NONE), value_type(ActionValueType::Digital), scale(1.0f), negate(false), forward_physical_input(false) {}
 
-        InputBinding(PhysicalInput phys, ActionID act, ActionValueType vt = ActionValueType::Digital)
-            : physical(phys), action(act), value_type(vt), scale(1.0f), negate(false) {}
+        InputBinding(PhysicalInput phys, ActionID act, ActionValueType vt = ActionValueType::Digital, bool forward_physical = false)
+            : physical(phys), action(act), value_type(vt), scale(1.0f), negate(false), forward_physical_input(forward_physical) {}
     };
 
     /**
@@ -186,25 +211,25 @@ namespace hgl::io
         /**
          * 便捷添加：键盘按键 → 动作
          */
-        void BindKey(KeyboardButton key, ActionID action, uint8 device_index = 0)
+        void BindKey(ActionID action, KeyboardButton key, uint8 device_index = 0, bool forward_physical = false)
         {
-            AddBinding(InputBinding(PhysicalInput::Keyboard(key, device_index), action));
+            AddBinding(InputBinding(PhysicalInput::Keyboard(key, device_index), action, ActionValueType::Digital, forward_physical));
         }
 
         /**
          * 便捷添加：鼠标按钮 → 动作
          */
-        void BindMouse(MouseButton button, ActionID action, uint8 device_index = 0)
+        void BindMouse(ActionID action, MouseButton button, uint8 device_index = 0, bool forward_physical = false)
         {
-            AddBinding(InputBinding(PhysicalInput::Mouse(button, device_index), action));
+            AddBinding(InputBinding(PhysicalInput::Mouse(button, device_index), action, ActionValueType::Digital, forward_physical));
         }
 
         /**
          * 便捷添加：手柄按钮 → 动作
          */
-        void BindJoystick(JoystickButton button, ActionID action, uint8 device_index = 0)
+        void BindJoystick(ActionID action, JoystickButton button, uint8 device_index = 0, bool forward_physical = false)
         {
-            AddBinding(InputBinding(PhysicalInput::Joystick(button, device_index), action));
+            AddBinding(InputBinding(PhysicalInput::Joystick(button, device_index), action, ActionValueType::Digital, forward_physical));
         }
 
         /**
@@ -249,6 +274,84 @@ namespace hgl::io
     };
 
     /**
+     * 输入配置助手
+     */
+    class InputConfig
+    {
+    public:
+        /**
+         * FPS惯用配置模板
+         * - WSAD / 方向键：前后左右
+         * - 鼠标左键：射击
+         * - 鼠标右键：瞄准
+         * - 空格：跳跃
+         * - 左Shift：奔跑
+         * - 左Ctrl/C：蹲下
+         * - Z：趴下
+         * - R：换弹
+         * - E：交互
+         * - V：近战
+         * - G：手雷
+         * - 1/2/3：切换武器
+         */
+        static void ApplyFpsTemplate(InputContext& context, const FpsActionConfig& cfg = {})
+        {
+            context.BindKey(cfg.move_forward, KeyboardButton::W);
+            context.BindKey(cfg.move_forward, KeyboardButton::Up);
+
+            context.BindKey(cfg.move_backward, KeyboardButton::S);
+            context.BindKey(cfg.move_backward, KeyboardButton::Down);
+
+            context.BindKey(cfg.move_left, KeyboardButton::A);
+            context.BindKey(cfg.move_left, KeyboardButton::Left);
+
+            context.BindKey(cfg.move_right, KeyboardButton::D);
+            context.BindKey(cfg.move_right, KeyboardButton::Right);
+
+            context.BindMouse(cfg.fire, MouseButton::Left);
+            context.BindMouse(cfg.aim, MouseButton::Right);
+
+            context.BindKey(cfg.jump, KeyboardButton::Space);
+            context.BindKey(cfg.run, KeyboardButton::LeftShift);
+
+            context.BindKey(cfg.crouch, KeyboardButton::LeftCtrl);
+            context.BindKey(cfg.crouch, KeyboardButton::C);
+            context.BindKey(cfg.prone, KeyboardButton::Z);
+
+            context.BindKey(cfg.reload, KeyboardButton::R);
+            context.BindKey(cfg.use, KeyboardButton::E);
+            context.BindKey(cfg.melee, KeyboardButton::V);
+            context.BindKey(cfg.grenade, KeyboardButton::G);
+
+            context.BindKey(cfg.weapon1, KeyboardButton::_1);
+            context.BindKey(cfg.weapon2, KeyboardButton::_2);
+            context.BindKey(cfg.weapon3, KeyboardButton::_3);
+        }
+
+        /**
+         * COD惯用配置模板
+         */
+        static void ApplyCodTemplate(InputContext& context, const FpsActionConfig& cfg = {})
+        {
+            ApplyFpsTemplate(context, cfg);
+
+            context.BindKey(cfg.use, KeyboardButton::F);
+            context.BindKey(cfg.melee, KeyboardButton::V);
+        }
+
+        /**
+         * 战地惯用配置模板
+         */
+        static void ApplyBattlefieldTemplate(InputContext& context, const FpsActionConfig& cfg = {})
+        {
+            ApplyFpsTemplate(context, cfg);
+
+            context.BindKey(cfg.use, KeyboardButton::E);
+            context.BindKey(cfg.melee, KeyboardButton::F);
+        }
+    };
+
+    /**
      * 动作状态（跟踪持续时间等）
      */
     struct ActionState
@@ -277,7 +380,7 @@ namespace hgl::io
     private:
 
         Stack<InputContext*>                context_stack;          ///< 上下文堆栈（栈顶优先）
-        UnorderedMap<ActionID, ActionState>          action_states;          ///< 当前激活的动作状态
+        UnorderedMap<ActionID, ActionState> action_states;          ///< 当前激活的动作状态
         ActionCallback                      action_callback;        ///< 动作事件回调
         double                              current_time;           ///< 当前时间（秒）
 
@@ -338,9 +441,10 @@ namespace hgl::io
         virtual EventProcResult OnEvent(const EventHeader& header, const uint64 data) override
         {
             // 尝试将物理输入转换为逻辑动作
-            ProcessPhysicalInput(header, data);
+            const bool forward_physical = ProcessPhysicalInput(header, data);
 
-            // 继续传递给子分发器
+            if (!forward_physical)
+                return EventProcResult::Break;
             return EventDispatcher::OnEvent(header, data);
         }
 
@@ -351,6 +455,7 @@ namespace hgl::io
         {
             current_time = time;
         }
+
 
     private:
 
@@ -371,7 +476,7 @@ namespace hgl::io
         /**
          * 处理物理输入 → 逻辑动作的转换
          */
-        void ProcessPhysicalInput(const EventHeader& header, const uint64 data)
+        bool ProcessPhysicalInput(const EventHeader& header, const uint64 data)
         {
             // 构造物理输入描述
             PhysicalInput physical;
@@ -399,7 +504,7 @@ namespace hgl::io
                     value = ActionValue::Digital(false);
                 }
                 else
-                    return; // 忽略Char事件
+                    return true; // 忽略Char事件，继续分发物理输入
             }
             else if (header.type == InputEventSource::Mouse)
             {
@@ -417,37 +522,39 @@ namespace hgl::io
                     value = ActionValue::Digital(false);
                 }
                 else
-                    return; // 暂不处理Move和Wheel
+                    return true; // 暂不处理Move和Wheel，继续分发物理输入
             }
             else if (header.type == InputEventSource::Joystick)
             {
                 // TODO: 解析手柄事件（需要JoystickEventData定义）
-                return;
+                return true;
             }
             else
             {
-                return; // 不支持的输入源
+                return true; // 不支持的输入源，继续分发物理输入
             }
 
             // 从上下文堆栈查找绑定（栈顶优先）
             const InputBinding* binding = FindBindingInContextStack(physical);
 
             if (!binding)
-                return; // 未找到绑定
+                return true; // 未找到绑定，继续分发物理输入
+
+            const bool forward_physical = binding->forward_physical_input;
 
             // 触发动作事件
             ActionID action_id = binding->action;
             ActionState state;
 
             if(!action_states.Get(action_id,state))
-            {
-                return;
-            }
+                return forward_physical;
 
             ActionEvent evt;
             evt.action = action_id;
             evt.value = value;
-            evt.trigger = physical;
+            evt.trigger.source = InputEventSource::Logic;
+            evt.trigger.index = 0;
+            evt.trigger.code = uint16(action_id);
 
             if (is_pressed)
             {
@@ -458,7 +565,7 @@ namespace hgl::io
                     new_state.active = true;
                     new_state.current_value = value;
                     new_state.start_time = current_time;
-                    new_state.trigger = physical;
+                    new_state.trigger = evt.trigger;
                     action_states.Add(action_id, new_state);
 
                     evt.state = ActionEventState::Started;
@@ -483,13 +590,24 @@ namespace hgl::io
                 }
                 else
                 {
-                    return; // 未激活的动作，忽略释放事件
+                        return forward_physical; // 未激活的动作，忽略释放事件
                 }
             }
 
             // 触发回调
             if (action_callback)
                 action_callback(evt);
+
+            return forward_physical;
         }
     };
+
+    /**
+     * 获取全局输入映射器
+     */
+    inline InputMapper &GetGlobalInputMapper()
+    {
+        static InputMapper instance;
+        return instance;
+    }
 }//namespace hgl::io

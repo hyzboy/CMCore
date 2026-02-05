@@ -10,6 +10,8 @@ namespace hgl::io
         OS,
         Window,
 
+        Logic,      ///< 逻辑输入源（虚拟输入设备，参见InputMapping.h）
+
         Keyboard,
         Mouse,
         Joystick,
