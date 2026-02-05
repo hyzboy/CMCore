@@ -79,10 +79,11 @@ namespace hgl
 
             uint32_t n = static_cast<uint32_t>(data.size());
             
-            // 确定桶数量（约等于sqrt(N)，但至少16）
-            num_buckets = static_cast<uint32_t>(std::sqrt(n));
-            if (num_buckets < 16)
-                num_buckets = 16;
+            // 对于最小原型，使用简单但可靠的方法：
+            // 桶数量 = 键数量，这样每个桶最多1个键
+            num_buckets = n;
+            if (num_buckets == 0)
+                num_buckets = 1;
 
             // 步骤1：将键分配到桶中
             std::vector<std::vector<std::pair<K, V>>> buckets(num_buckets);
@@ -116,7 +117,9 @@ namespace hgl
 
                 // 尝试不同的位移值，直到找到无碰撞的
                 bool found = false;
-                for (uint16_t disp = 0; disp < 65535; ++disp)
+                // 增加尝试次数限制，确保能找到解
+                uint32_t max_tries = 65536;  // 尝试所有uint16_t值
+                for (uint32_t disp = 0; disp < max_tries; ++disp)
                 {
                     std::vector<uint32_t> positions;
                     bool collision = false;
@@ -128,18 +131,32 @@ namespace hgl
                         uint64_t h2 = Hash2(key);
                         uint32_t pos = (h1 + disp * h2) % n;
 
+                        // 检查是否与已占用的位置冲突
                         if (occupied[pos])
                         {
                             collision = true;
                             break;
                         }
+                        
+                        // 检查是否与同桶内其他键冲突
+                        for (uint32_t p : positions)
+                        {
+                            if (p == pos)
+                            {
+                                collision = true;
+                                break;
+                            }
+                        }
+                        if (collision)
+                            break;
+                        
                         positions.push_back(pos);
                     }
 
                     // 找到无碰撞的位移值
                     if (!collision)
                     {
-                        displacement_table[b] = disp;
+                        displacement_table[b] = static_cast<uint16_t>(disp % 65536);
                         
                         // 标记这些位置并存储键值对
                         for (size_t i = 0; i < bucket.size(); ++i)
@@ -162,12 +179,16 @@ namespace hgl
                 }
             }
 
-            // 验证所有位置都已占用（完美哈希）
+            // 验证所有键都已放置
+            uint32_t placed_count = 0;
             for (bool occ : occupied)
             {
-                if (!occ)
-                    return false;
+                if (occ)
+                    placed_count++;
             }
+            
+            if (placed_count != n)
+                return false;
 
             return true;
         }

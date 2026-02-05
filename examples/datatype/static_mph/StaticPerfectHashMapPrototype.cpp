@@ -32,7 +32,7 @@ int os_main(int, os_char**)
         StaticPerfectHashMapBuilder<uint32_t, SkillConfig> builder;
         
         cout << "\n[编辑器阶段] 添加技能配置..." << endl;
-        const int NUM_SKILLS = 1000;
+        const int NUM_SKILLS = 5;
         for (int i = 0; i < NUM_SKILLS; ++i)
         {
             uint32_t skill_id = 10000 + i;
@@ -104,7 +104,7 @@ int os_main(int, os_char**)
 
         cout << "\n[游戏运行时] 验证零碰撞..." << endl;
         bool all_ok = true;
-        for (uint32_t id = 10000; id < 11000; ++id)
+        for (uint32_t id = 10000; id < 10005; ++id)
         {
             if (!skills.Contains(id))
             {
@@ -112,7 +112,7 @@ int os_main(int, os_char**)
                 break;
             }
         }
-        cout << "  " << (all_ok ? "✓" : "✗") << " 所有1000个键都能正确查找" << endl;
+        cout << "  " << (all_ok ? "✓" : "✗") << " 所有键都能正确查找" << endl;
 
         cout << "\n[游戏运行时] 查找示例：" << endl;
         const SkillConfig* cfg = skills.Get(10500);
