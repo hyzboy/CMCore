@@ -1,22 +1,39 @@
 # Perfect Hash 容器实现文档
 
+## ⚠️ 重要说明：命名澄清
+
+**注意**：本实现使用的是**传统哈希表（Hash Table with Linear Probing）**，而非计算机科学定义的**完美哈希（Perfect Hash）**或**最小完美哈希（Minimal Perfect Hash, MPH）**。
+
+- **真正的 Perfect Hash**：零碰撞，为静态键集定制的哈希函数，空间最优（N个键用N个位置）
+- **当前实现**：线性探测哈希表，有碰撞处理，1.5-2倍空间，支持动态操作
+
+**详细技术对比请参考**：
+- `PERFECT_HASH_CLARIFICATION.md` - 详细技术对比
+- `NAMING_CLARIFICATION.md` - 命名问题说明
+
+建议的准确名称：`FlatHashIndexedMap` 或 `FlatHashMap`（去掉"Perfect"）
+
+---
+
 ## 概述
 
-本实现提供了四个基于完美哈希技术的容器，支持O(1)查找和零拷贝序列化：
+本实现提供了四个基于哈希索引的容器，支持O(1)查找和零拷贝序列化：
 
-1. **FlatPerfectHashOrderedSet** - 有序集合，支持O(1)查找和有序遍历
-2. **FlatPerfectHashOrderedMap** - 有序映射，支持O(1)查找和按Key有序遍历
-3. **FlatPerfectHashUnorderedSet** - 无序集合，支持O(1)查找和插入顺序遍历
-4. **FlatPerfectHashUnorderedMap** - 无序映射，支持O(1)查找和插入顺序遍历
+1. **FlatPerfectHashOrderedSet** - 有序集合，哈希索引+有序遍历
+2. **FlatPerfectHashOrderedMap** - 有序映射，哈希索引+按Key有序遍历
+3. **FlatPerfectHashUnorderedSet** - 无序集合，哈希索引+插入顺序遍历
+4. **FlatPerfectHashUnorderedMap** - 无序映射，哈希索引+插入顺序遍历
 
 ## 设计特点
 
-### 1. 完美哈希技术
+### 1. 哈希索引技术（非真正的完美哈希）
 
-- **哈希表索引**：使用线性探测哈希表实现O(1)查找
+- **哈希表索引**：使用线性探测哈希表实现O(1)平均查找
 - **负载因子**：有序版本使用1.5x，无序版本使用2x，保证良好性能
-- **碰撞处理**：线性探测法，简单高效
-- **零开销哈希**：QuickHash.h提供针对平凡类型的优化哈希函数
+- **碰撞处理**：线性探测法，简单高效（真正的完美哈希无需碰撞处理）
+- **优化哈希**：QuickHash.h提供针对平凡类型的优化哈希函数（FNV-1a）
+
+**注意**：这是传统的开放寻址哈希表，不是计算机科学定义的完美哈希（Perfect Hash）。真正的完美哈希需要为静态键集定制无碰撞的哈希函数。
 
 ### 2. 零拷贝序列化
 
