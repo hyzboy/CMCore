@@ -1,4 +1,4 @@
-﻿#include<hgl/type/BaseString.h>
+﻿#include<hgl/type/String.h>
 #import <Foundation/Foundation.h>
 
 namespace hgl

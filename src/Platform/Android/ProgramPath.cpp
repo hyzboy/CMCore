@@ -1,4 +1,4 @@
-﻿#include<hgl/type/BaseString.h>
+﻿#include<hgl/type/String.h>
 #include<unistd.h>
 #include<pwd.h>
 #include<unistd.h>

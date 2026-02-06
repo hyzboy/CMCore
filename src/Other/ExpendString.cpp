@@ -1,4 +1,4 @@
-﻿#include<hgl/type/BaseString.h>
+﻿#include<hgl/type/String.h>
 #include<hgl/type/UnorderedMap.h>
 #include<hgl/Info.h>
 
