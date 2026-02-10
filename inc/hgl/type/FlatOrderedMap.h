@@ -88,6 +88,28 @@ namespace hgl
         FlatOrderedMap() = default;
         virtual ~FlatOrderedMap() = default;
 
+        class AssignProxy
+        {
+            ThisClass* map;
+            K key;
+
+        public:
+            AssignProxy(ThisClass* in_map, const K& in_key) : map(in_map), key(in_key) {}
+            AssignProxy(ThisClass* in_map, K&& in_key) : map(in_map), key(std::move(in_key)) {}
+
+            AssignProxy& operator=(const V& value)
+            {
+                map->AddOrUpdate(key, value);
+                return *this;
+            }
+
+            AssignProxy& operator=(V&& value)
+            {
+                map->AddOrUpdate(key, std::move(value));
+                return *this;
+            }
+        };
+
         // ============================================================
         // 序列化支持
         // ============================================================
@@ -215,6 +237,9 @@ namespace hgl
                 values.reserve(count);
             }
         }
+
+        AssignProxy operator[](const K& key) { return AssignProxy(this, key); }
+        AssignProxy operator[](K&& key) { return AssignProxy(this, std::move(key)); }
 
         // ============================================================
         // 基础查询

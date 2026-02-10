@@ -69,8 +69,9 @@ int os_main(int, os_char**)
     bool deleted2 = map4.DeleteByKey(999);
     assert(deleted2 == false);
 
-    // ChangeOrAdd for missing key
-    bool changed_or_added = map4.ChangeOrAdd(999, "added");
+    // operator[] for missing key
+    bool changed_or_added = !map4.ContainsKey(999);
+    map4[999] = "added";
     assert(changed_or_added == true);  // Added since not present
     assert(map4.GetCount() == 3);
     assert(map4.Get(999, result) && result == "added");
@@ -128,20 +129,20 @@ int os_main(int, os_char**)
     assert(empty_str_map.Get(2, result) && result == "non-empty");
     cout << "  ✓ Empty string values handled correctly" << endl;
 
-    cout << "\n[4.9] Multiple overwrites with ChangeOrAdd:" << endl;
+    cout << "\n[4.9] Multiple overwrites with operator[]:" << endl;
     UnorderedMap<int, string> overwrite_map;
 
-    overwrite_map.ChangeOrAdd(5, "first");
+    overwrite_map[5] = "first";
     assert(overwrite_map.Get(5, result) && result == "first");
 
-    overwrite_map.ChangeOrAdd(5, "second");
+    overwrite_map[5] = "second";
     assert(overwrite_map.Get(5, result) && result == "second");
 
-    overwrite_map.ChangeOrAdd(5, "third");
+    overwrite_map[5] = "third";
     assert(overwrite_map.Get(5, result) && result == "third");
 
     assert(overwrite_map.GetCount() == 1);
-    cout << "  ✓ Multiple ChangeOrAdd overwrites work correctly" << endl;
+    cout << "  ✓ Multiple operator[] overwrites work correctly" << endl;
 
     cout << "\n[4.10] Const correctness:" << endl;
     const UnorderedMap<int, string> const_map = UnorderedMap<int, string>();

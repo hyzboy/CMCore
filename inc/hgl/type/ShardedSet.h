@@ -104,8 +104,8 @@ namespace hgl
         }
 
     public:
-        FlatUnorderedSet_Sharded() = default;
-        virtual ~FlatUnorderedSet_Sharded() = default;
+        ShardedSet() = default;
+        virtual ~ShardedSet() = default;
 
         void Reserve(int capacity)
         {

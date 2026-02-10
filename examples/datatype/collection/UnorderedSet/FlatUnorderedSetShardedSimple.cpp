@@ -10,9 +10,9 @@ using namespace hgl;
 
 int main()
 {
-    std::cout << "=== FlatUnorderedSet_Sharded 简单测试 ===" << std::endl;
+    std::cout << "=== ShardedSet 简单测试 ===" << std::endl;
 
-    FlatUnorderedSet_Sharded<int> set;
+    ShardedSet<int> set;
 
     std::cout << "\n1. 测试添加元素:" << std::endl;
     bool r1 = set.Add(10);

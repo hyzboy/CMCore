@@ -177,8 +177,8 @@ namespace hgl
         }
 
     public:
-        FlatUnorderedSet_DualHash() = default;
-        virtual ~FlatUnorderedSet_DualHash() = default;
+        DualHashSet() = default;
+        virtual ~DualHashSet() = default;
 
         void Reserve(int capacity)
         {

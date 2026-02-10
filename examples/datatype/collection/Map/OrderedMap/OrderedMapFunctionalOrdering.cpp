@@ -398,9 +398,10 @@ void EdgeCaseTest()
     map.Get(50, val);
     TEST_ASSERT(val == 100, "Original value preserved");
 
-    // 4.3 ChangeOrAdd测试（维护顺序）
-    cout << "\n[4.3] ChangeOrAdd test:" << endl;
-    TEST_ASSERT(map.ChangeOrAdd(150, 300), "ChangeOrAdd new key");
+    // 4.3 operator[]测试（维护顺序）
+    cout << "\n[4.3] operator[] test:" << endl;
+    TEST_ASSERT(!map.ContainsKey(150), "Key 150 does not exist before operator[]");
+    map[150] = 300;
     TEST_ASSERT(map.ContainsKey(150), "New key 150 exists");
 
     // 验证150在末尾

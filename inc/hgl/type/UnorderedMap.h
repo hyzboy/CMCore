@@ -47,13 +47,13 @@ namespace hgl
 
             AssignProxy& operator=(const V& value)
             {
-                map->ChangeOrAdd(key, value);
+                map->map_data[key] = value;
                 return *this;
             }
 
             AssignProxy& operator=(V&& value)
             {
-                map->ChangeOrAdd(key, std::move(value));
+                map->map_data[key] = std::move(value);
                 return *this;
             }
         };
@@ -166,38 +166,6 @@ namespace hgl
         }
 
         /**
-         * 更改或添加（如果存在则更新，不存在则添加）
-         */
-        bool ChangeOrAdd(const K& key, const V& value) {
-            map_data[key] = value;
-            return true;
-        }
-
-        /**
-         * 更改或添加（移动语义版本）
-         */
-        bool ChangeOrAdd(K&& key, V&& value) {
-            map_data[std::move(key)] = std::move(value);
-            return true;
-        }
-
-        /**
-         * 更改或添加（混合语义版本1：键右值）
-         */
-        bool ChangeOrAdd(K&& key, const V& value) {
-            map_data[std::move(key)] = value;
-            return true;
-        }
-
-        /**
-         * 更改或添加（混合语义版本2：值右值）
-         */
-        bool ChangeOrAdd(const K& key, V&& value) {
-            map_data[key] = std::move(value);
-            return true;
-        }
-
-        /**
          * 更改指定 key 的 value（如果 key 不存在则返回 false）
          */
         bool Change(const K& key, const V& value) {
@@ -228,7 +196,7 @@ namespace hgl
          * 清空并释放内存
          */
         void Free() {
-            ankerl::unordered_dense::map<K, V> empty;
+            ankerl::unordered_dense::map<K, V, Hash, KeyEqual> empty;
             map_data.swap(empty);
         }
 

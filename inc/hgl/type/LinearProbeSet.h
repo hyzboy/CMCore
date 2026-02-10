@@ -168,8 +168,8 @@ namespace hgl
         }
 
     public:
-        FlatUnorderedSet_OpenAddress() = default;
-        virtual ~FlatUnorderedSet_OpenAddress() = default;
+        LinearProbeSet() = default;
+        virtual ~LinearProbeSet() = default;
 
         void Reserve(int capacity)
         {

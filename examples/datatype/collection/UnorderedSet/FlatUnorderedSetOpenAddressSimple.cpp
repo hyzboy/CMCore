@@ -10,9 +10,9 @@ using namespace hgl;
 
 int main()
 {
-    std::cout << "=== FlatUnorderedSet_OpenAddress 简单测试 ===" << std::endl;
+    std::cout << "=== LinearProbeSet 简单测试 ===" << std::endl;
 
-    FlatUnorderedSet_OpenAddress<int> set;
+    LinearProbeSet<int> set;
 
     std::cout << "\n1. 测试添加元素:" << std::endl;
     bool r1 = set.Add(10);

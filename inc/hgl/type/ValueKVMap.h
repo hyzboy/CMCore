@@ -2,6 +2,7 @@
 
 #include <hgl/type/KeyValue.h>
 #include <hgl/type/ValueArray.h>
+#include <utility>
 
 namespace hgl
 {
@@ -24,6 +25,28 @@ namespace hgl
     public:
         ValueKVMap() = default;
         ~ValueKVMap() = default;
+
+        class AssignProxy
+        {
+            ValueKVMap* map;
+            K key;
+
+        public:
+            AssignProxy(ValueKVMap* in_map, const K& in_key) : map(in_map), key(in_key) {}
+            AssignProxy(ValueKVMap* in_map, K&& in_key) : map(in_map), key(std::move(in_key)) {}
+
+            AssignProxy& operator=(const V& value)
+            {
+                map->AssignValue(key, value);
+                return *this;
+            }
+
+            AssignProxy& operator=(V&& value)
+            {
+                map->AssignValue(key, value);
+                return *this;
+            }
+        };
 
         //迭代支持（只读）
         const KVData * begin () const
@@ -56,6 +79,9 @@ namespace hgl
         {
             return data_list.IsEmpty();
         }
+
+        AssignProxy operator[](const K& key) { return AssignProxy(this, key); }
+        AssignProxy operator[](K&& key) { return AssignProxy(this, std::move(key)); }
 
         // 查找
         bool FindPos (const K &key, int &pos) const;
@@ -104,10 +130,12 @@ namespace hgl
 
         bool DeleteAt (int index);
         bool DeleteAt (int start, int number);
-        bool ChangeOrAdd (const K &key, const V &value);
         bool Change (const K &key, const V &value);
         void Free () { data_list.Free(); }
         void Clear () { data_list.Clear(); }
+
+    private:
+        bool AssignValue (const K &key, const V &value);
 
         // 批量导出
         template<typename IT>

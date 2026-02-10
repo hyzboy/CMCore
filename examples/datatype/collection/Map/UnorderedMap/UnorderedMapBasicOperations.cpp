@@ -137,9 +137,10 @@ void BasicOperationTest()
     map.Get(1, retrieved_value);
     TEST_ASSERT(retrieved_value == 150, "Value updated correctly");
 
-    TEST_ASSERT(map.ChangeOrAdd(1, 200), "ChangeOrAdd existing key");
+    TEST_ASSERT(map.ContainsKey(1), "operator[] existing key");
+    map[1] = 200;
     map.Get(1, retrieved_value);
-    TEST_ASSERT(retrieved_value == 200, "Value updated via ChangeOrAdd");
+    TEST_ASSERT(retrieved_value == 200, "Value updated via operator[]");
 
     // 1.5 删除元素
     cout << "\n[1.5] Delete elements:" << endl;
@@ -294,10 +295,11 @@ void EdgeCaseTest()
     TEST_ASSERT(map.DeleteByKey(100), "First delete succeeds");
     TEST_ASSERT(!map.DeleteByKey(100), "Second delete fails");
 
-    // 4.4 ChangeOrAdd vs Change测试
-    cout << "\n[4.4] ChangeOrAdd vs Change:" << endl;
+    // 4.4 operator[] vs Change测试
+    cout << "\n[4.4] operator[] vs Change:" << endl;
     TEST_ASSERT(!map.Change(200, 2000), "Change non-existent key fails");
-    TEST_ASSERT(map.ChangeOrAdd(200, 2000), "ChangeOrAdd creates new key");
+    TEST_ASSERT(!map.ContainsKey(200), "Key 200 does not exist before operator[]");
+    map[200] = 2000;
     TEST_ASSERT(map.ContainsKey(200), "Key 200 now exists");
     TEST_ASSERT(map.Change(200, 3000), "Change existing key succeeds");
     int updated_val = 0;

@@ -188,8 +188,8 @@ int os_main(int, os_char**)
     string val_check;
     assert(modify_map.Get(1, val_check) && val_check == "Modified");
 
-    // Modify via ChangeOrAdd
-    modify_map.ChangeOrAdd(1, "Modified Again");
+    // Modify via operator[] assignment
+    modify_map[1] = "Modified Again";
     assert(modify_map.Get(1, val_check) && val_check == "Modified Again");
 
     cout << "  ✓ Modification of complex values works" << endl;

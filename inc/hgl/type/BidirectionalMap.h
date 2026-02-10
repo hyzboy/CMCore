@@ -2,6 +2,7 @@
 
 #include<ankerl/unordered_dense.h>
 #include<vector>
+#include<utility>
 
 namespace hgl
 {
@@ -49,6 +50,7 @@ namespace hgl
     class BidirectionalMap
     {
     protected:
+        using ThisClass = BidirectionalMap<K, V>;
         // ============================================================
         // 底层数据存储（各存一份）
         // ============================================================
@@ -73,6 +75,28 @@ namespace hgl
     public:
         BidirectionalMap() = default;
         virtual ~BidirectionalMap() = default;
+
+        class AssignProxy
+        {
+            ThisClass* map;
+            K key;
+
+        public:
+            AssignProxy(ThisClass* in_map, const K& in_key) : map(in_map), key(in_key) {}
+            AssignProxy(ThisClass* in_map, K&& in_key) : map(in_map), key(std::move(in_key)) {}
+
+            AssignProxy& operator=(const V& value)
+            {
+                map->AssignValue(key, value);
+                return *this;
+            }
+
+            AssignProxy& operator=(V&& value)
+            {
+                map->AssignValue(key, value);
+                return *this;
+            }
+        };
 
         // ============================================================
         // 迭代器支持
@@ -691,6 +715,9 @@ namespace hgl
             return reverse.contains(value);
         }
 
+        AssignProxy operator[](const K& key) { return AssignProxy(this, key); }
+        AssignProxy operator[](K&& key) { return AssignProxy(this, std::move(key)); }
+
         // ============================================================
         // 修改操作
         // ============================================================
@@ -729,15 +756,8 @@ namespace hgl
             return true;
         }
 
-        /**
-         * @brief 修改或添加（如果 KEY 不存在则添加，存在则更新）
-         * @param key 键
-         * @param value 值
-         * @return 总是返回 true
-         *
-         * @note 如果 VALUE 被其他 KEY 使用，会自动删除该旧映射
-         */
-        bool ChangeOrAdd(const K& key, const V& value)
+    private:
+        bool AssignValue(const K& key, const V& value)
         {
             // 首先检查KEY是否存在
             auto key_it = forward.find(key);
@@ -804,6 +824,7 @@ namespace hgl
             }
         }
 
+    public:
         // ============================================================
         // 容量操作
         // ============================================================

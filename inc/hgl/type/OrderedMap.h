@@ -29,12 +29,35 @@ namespace hgl
     class OrderedMap
     {
     protected:
+        using ThisClass = OrderedMap<K, V>;
         absl::btree_map<K, V> map_data;
 
     public:
 
         OrderedMap() = default;
         virtual ~OrderedMap() = default;
+
+        class AssignProxy
+        {
+            ThisClass* map;
+            K key;
+
+        public:
+            AssignProxy(ThisClass* in_map, const K& in_key) : map(in_map), key(in_key) {}
+            AssignProxy(ThisClass* in_map, K&& in_key) : map(in_map), key(std::move(in_key)) {}
+
+            AssignProxy& operator=(const V& value)
+            {
+                map->AddOrUpdate(key, value);
+                return *this;
+            }
+
+            AssignProxy& operator=(V&& value)
+            {
+                map->AddOrUpdate(key, std::move(value));
+                return *this;
+            }
+        };
 
         // ============================================================
         // 基础查询
@@ -67,6 +90,9 @@ namespace hgl
         {
             return map_data.contains(key);
         }
+
+        AssignProxy operator[](const K& key) { return AssignProxy(this, key); }
+        AssignProxy operator[](K&& key) { return AssignProxy(this, std::move(key)); }
 
         // ============================================================
         // 添加元素
@@ -414,25 +440,6 @@ namespace hgl
 
             it->second = value;
             return true;
-        }
-
-        /**
-        * @brief CN:修改或添加键值对。\nEN:Change or add key-value pair.
-        * @param key CN:键。EN:Key.
-        * @param value CN:值。EN:Value.
-        * @return CN:返回是否是新增（true=新增，false=修改）。EN:Return true if added, false if changed.
-        */
-        virtual bool ChangeOrAdd(const K& key, const V& value)
-        {
-            auto it = map_data.find(key);
-            if (it != map_data.end())
-            {
-                it->second = value;
-                return false;  // 修改了现有键
-            }
-
-            map_data[key] = value;
-            return true;  // 添加了新键
         }
 
         // ============================================================

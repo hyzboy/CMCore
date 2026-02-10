@@ -57,18 +57,20 @@ int os_main(int, os_char**)
     assert(!map.Change(99, "ninety-nine"));
     cout << "  ✓ Change on missing key returns false" << endl;
 
-    cout << "\n[1.7] ChangeOrAdd - change existing:" << endl;
-    bool result = map.ChangeOrAdd(20, "TWENTY");
-    assert(result);  // ChangeOrAdd returns true for any operation
+    cout << "\n[1.7] operator[] - change existing:" << endl;
+    bool result = map.ContainsKey(20);
+    map[20] = "TWENTY";
+    assert(result);
     assert(map.Get(20, value) && value == "TWENTY");
-    cout << "  ✓ ChangeOrAdd changed existing key" << endl;
+    cout << "  ✓ operator[] changed existing key" << endl;
 
-    cout << "\n[1.8] ChangeOrAdd - add new:" << endl;
-    result = map.ChangeOrAdd(40, "forty");
+    cout << "\n[1.8] operator[] - add new:" << endl;
+    result = !map.ContainsKey(40);
+    map[40] = "forty";
     assert(result);
     assert(map.GetCount() == 5);
     assert(map.Get(40, value) && value == "forty");
-    cout << "  ✓ ChangeOrAdd added new key" << endl;
+    cout << "  ✓ operator[] added new key" << endl;
 
     cout << "\n[1.9] DeleteByKey:" << endl;
     assert(map.DeleteByKey(15));

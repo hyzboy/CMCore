@@ -145,7 +145,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    bool ValueKVMap<K,V>::ChangeOrAdd(const K &key,const V &value)
+    bool ValueKVMap<K,V>::AssignValue(const K &key,const V &value)
     {
         int pos;
         if(FindPos(key,pos))

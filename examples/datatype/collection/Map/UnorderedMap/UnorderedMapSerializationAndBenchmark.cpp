@@ -91,12 +91,12 @@ void TestBasicOperations()
     assert(!map.Change(999, "nonexistent"));
     cout << "  Change operations passed" << endl;
 
-    // Test ChangeOrAdd
-    cout << "\n✓ Testing ChangeOrAdd..." << endl;
-    assert(map.ChangeOrAdd(1, "apple_v2"));
-    assert(map.ChangeOrAdd(4, "durian"));
+    // Test operator[] assignment
+    cout << "\n✓ Testing operator[] assignment..." << endl;
+    map[1] = "apple_v2";
+    map[4] = "durian";
     assert(map.GetCount() == 4);
-    cout << "  ChangeOrAdd operations passed" << endl;
+    cout << "  operator[] assignment passed" << endl;
 
     // Test DeleteByKey
     cout << "\n✓ Testing DeleteByKey..." << endl;

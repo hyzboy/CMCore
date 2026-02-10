@@ -37,23 +37,25 @@ int os_main(int, os_char**)
     assert(!map.Change(99, "value"));
     cout << "  ✓ Change on non-existent key returns false" << endl;
 
-    cout << "\n[2.5] ChangeOrAdd - change existing:" << endl;
-    bool is_new = map.ChangeOrAdd(1, "ONE_AGAIN");
+    cout << "\n[2.5] operator[] - change existing:" << endl;
+    bool is_new = !map.ContainsKey(1);
+    map[1] = "ONE_AGAIN";
     assert(!is_new);  // false means changed
     assert(map.Get(1, v) && v == "ONE_AGAIN");
     cout << "  Changed key 1, is_new=false" << endl;
 
-    cout << "\n[2.6] ChangeOrAdd - add new:" << endl;
-    is_new = map.ChangeOrAdd(2, "two");
+    cout << "\n[2.6] operator[] - add new:" << endl;
+    is_new = !map.ContainsKey(2);
+    map[2] = "two";
     assert(is_new);   // true means added
     assert(map.GetCount() == 2);
     assert(map.Get(2, v) && v == "two");
     cout << "  Added key 2, is_new=true" << endl;
 
-    cout << "\n[2.7] Multiple ChangeOrAdd:" << endl;
-    map.ChangeOrAdd(3, "three");
-    map.ChangeOrAdd(4, "four");
-    map.ChangeOrAdd(5, "five");
+    cout << "\n[2.7] Multiple operator[] assignments:" << endl;
+    map[3] = "three";
+    map[4] = "four";
+    map[5] = "five";
     assert(map.GetCount() == 5);
     cout << "  ✓ Multiple operations maintained consistency" << endl;
 

@@ -67,55 +67,55 @@ int os_main(int, os_char**)
         TEST_ASSERT(bmap.GetCount() == 1, "Map remains unchanged");
     }
 
-    // [4] ChangeOrAdd - KEY 存在，更新 VALUE
-    cout << "\n[4] ChangeOrAdd with existing key:" << endl;
+    // [4] operator[] - KEY 存在，更新 VALUE
+    cout << "\n[4] operator[] with existing key:" << endl;
     {
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "one");
         bmap.Add(2, "two");
 
-        TEST_ASSERT(bmap.ChangeOrAdd(1, "ONE"), "ChangeOrAdd(1, 'ONE') succeeds");
+        bmap[1] = "ONE";
         TEST_ASSERT(bmap.GetCount() == 2, "Count remains 2");
 
         string result;
         TEST_ASSERT(bmap.Get(1, result) && result == "ONE", "Value updated to 'ONE'");
     }
 
-    // [5] ChangeOrAdd - KEY 不存在，添加新映射
-    cout << "\n[5] ChangeOrAdd with new key:" << endl;
+    // [5] operator[] - KEY 不存在，添加新映射
+    cout << "\n[5] operator[] with new key:" << endl;
     {
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "one");
 
-        TEST_ASSERT(bmap.ChangeOrAdd(2, "two"), "ChangeOrAdd(2, 'two') succeeds");
+        bmap[2] = "two";
         TEST_ASSERT(bmap.GetCount() == 2, "Count becomes 2");
 
         string result;
         TEST_ASSERT(bmap.Get(2, result) && result == "two", "New mapping added");
     }
 
-    // [6] ChangeOrAdd - VALUE 被占用，自动删除旧映射
-    cout << "\n[6] ChangeOrAdd with value conflict (auto-replace):" << endl;
+    // [6] operator[] - VALUE 被占用，自动删除旧映射
+    cout << "\n[6] operator[] with value conflict (auto-replace):" << endl;
     {
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "one");
         bmap.Add(2, "two");
 
         // 尝试将 KEY 1 的值改为 "two"，应该删除 KEY 2 -> "two" 的映射
-        TEST_ASSERT(bmap.ChangeOrAdd(1, "two"), "ChangeOrAdd(1, 'two') succeeds");
+        bmap[1] = "two";
         TEST_ASSERT(bmap.GetCount() == 1, "Count becomes 1 (old mapping removed)");
 
         TEST_ASSERT(!bmap.ContainsKey(2), "Old key 2 no longer exists");
         TEST_ASSERT(!bmap.ContainsValue("one"), "Old value 'one' no longer exists");
     }
 
-    // [7] ChangeOrAdd - 值相同不修改
-    cout << "\n[7] ChangeOrAdd with same value (no change):" << endl;
+    // [7] operator[] - 值相同不修改
+    cout << "\n[7] operator[] with same value (no change):" << endl;
     {
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "one");
 
-        TEST_ASSERT(bmap.ChangeOrAdd(1, "one"), "ChangeOrAdd(1, 'one') succeeds");
+        bmap[1] = "one";
         TEST_ASSERT(bmap.GetCount() == 1, "Count remains 1");
         TEST_ASSERT(bmap.ContainsValue("one"), "Value still exists");
     }
@@ -153,8 +153,8 @@ int os_main(int, os_char**)
                    "Old value cannot be found after change");
     }
 
-    // [10] ChangeOrAdd 复杂场景
-    cout << "\n[10] ChangeOrAdd complex scenario:" << endl;
+    // [10] operator[] 复杂场景
+    cout << "\n[10] operator[] complex scenario:" << endl;
     {
         BidirectionalMap<int, string> bmap;
         bmap.Add(10, "apple");
@@ -162,15 +162,15 @@ int os_main(int, os_char**)
         bmap.Add(30, "cherry");
 
         // 修改 KEY 10 为新值
-        bmap.ChangeOrAdd(10, "apricot");
+        bmap[10] = "apricot";
         TEST_ASSERT(bmap.GetCount() == 3, "Count remains 3");
 
         // 添加新 KEY
-        bmap.ChangeOrAdd(40, "date");
+        bmap[40] = "date";
         TEST_ASSERT(bmap.GetCount() == 4, "Count becomes 4");
 
         // 修改 KEY 20 为已存在的值"cherry"，应删除 KEY 30
-        bmap.ChangeOrAdd(20, "cherry");
+        bmap[20] = "cherry";
         TEST_ASSERT(bmap.GetCount() == 3, "Count becomes 3 after conflict resolution");
         TEST_ASSERT(!bmap.ContainsKey(30), "Old key 30 removed due to conflict");
     }
@@ -182,15 +182,15 @@ int os_main(int, os_char**)
         TEST_ASSERT(!empty_bmap.Change(1, "one"), "Change on empty map fails");
     }
 
-    // [12] ChangeOrAdd 链式操作
-    cout << "\n[12] ChangeOrAdd chain operations:" << endl;
+    // [12] operator[] 链式操作
+    cout << "\n[12] operator[] chain operations:" << endl;
     {
         BidirectionalMap<int, string> bmap;
-        bmap.ChangeOrAdd(1, "one");
-        bmap.ChangeOrAdd(2, "two");
-        bmap.ChangeOrAdd(3, "three");
-        bmap.ChangeOrAdd(1, "ONE");  // 更新第一个
-        bmap.ChangeOrAdd(2, "TWO");  // 更新第二个
+        bmap[1] = "one";
+        bmap[2] = "two";
+        bmap[3] = "three";
+        bmap[1] = "ONE";  // 更新第一个
+        bmap[2] = "TWO";  // 更新第二个
 
         TEST_ASSERT(bmap.GetCount() == 3, "Count is 3 after chain operations");
         TEST_ASSERT(bmap.ContainsValue("ONE"), "Updated value 'ONE' exists");

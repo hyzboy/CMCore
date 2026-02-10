@@ -69,44 +69,44 @@ int os_main(int, os_char**)
         cout << "  ✓ All Add overloads work" << endl;
     }
 
-    // 测试4: ChangeOrAdd 的移动语义
-    cout << "\n[4] Test ChangeOrAdd with move semantics:" << endl;
+    // 测试4: operator[] 的移动语义
+    cout << "\n[4] Test operator[] assignment with move semantics:" << endl;
     {
         UnorderedMap<int, string> map;
 
         // 添加新元素
-        map.ChangeOrAdd(1, string("first"));
+        map[1] = string("first");
 
         // 更新现有元素
-        map.ChangeOrAdd(1, string("updated"));
+        map[1] = string("updated");
 
         string val;
         assert(map.Get(1, val) && val == "updated");
-        cout << "  ✓ ChangeOrAdd move semantics work" << endl;
+        cout << "  ✓ operator[] assignment move semantics work" << endl;
     }
 
-    // 测试5: ChangeOrAdd 的所有重载版本
-    cout << "\n[5] Test ChangeOrAdd overloads:" << endl;
+    // 测试5: operator[] 赋值覆盖语义
+    cout << "\n[5] Test operator[] assignment variants:" << endl;
     {
         UnorderedMap<string, int> map;
 
         // (const K&, const V&)
         string k1 = "key1";
         int v1 = 10;
-        map.ChangeOrAdd(k1, v1);
+        map[k1] = v1;
 
         // (const K&, V&&)  - 实际上这里 int 是平凡类型，但测试调用
-        map.ChangeOrAdd("key2", 20);
+        map["key2"] = 20;
 
         // (K&&, const V&)
         int v3 = 30;
-        map.ChangeOrAdd(string("key3"), v3);
+        map[string("key3")] = v3;
 
         // (K&&, V&&)
-        map.ChangeOrAdd(string("key4"), 40);
+        map[string("key4")] = 40;
 
         assert(map.GetCount() == 4);
-        cout << "  ✓ All ChangeOrAdd overloads work" << endl;
+        cout << "  ✓ operator[] assignment variants work" << endl;
     }
 
     // 测试6: Change 的移动语义
@@ -130,7 +130,7 @@ int os_main(int, os_char**)
 
         // 直接传递临时对象
         map.Add(1, string("temp1"));
-        map.ChangeOrAdd(2, string("temp2"));
+        map[2] = string("temp2");
         map.Change(1, string("modified_temp"));
 
         assert(map.GetCount() == 2);
@@ -158,23 +158,23 @@ int os_main(int, os_char**)
         cout << "  ✓ Batch move operations work" << endl;
     }
 
-    // 测试9: ChangeOrAdd 覆盖测试
-    cout << "\n[9] Test ChangeOrAdd coverage:" << endl;
+    // 测试9: operator[] 覆盖测试
+    cout << "\n[9] Test operator[] overwrite coverage:" << endl;
     {
         UnorderedMap<int, vector<int>> map;
 
         // 添加
         vector<int> v1 = {1, 2, 3};
-        map.ChangeOrAdd(1, move(v1));
+        map[1] = move(v1);
 
         // 更新
-        map.ChangeOrAdd(1, vector<int>{4, 5, 6});
+        map[1] = vector<int>{4, 5, 6};
 
         vector<int> result;
         map.Get(1, result);
         vector<int> expected{4, 5, 6};
         assert(result == expected);
-        cout << "  ✓ ChangeOrAdd add/update cycle works" << endl;
+        cout << "  ✓ operator[] add/update cycle works" << endl;
     }
 
     // 测试10: 大规模插入性能

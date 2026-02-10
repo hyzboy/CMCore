@@ -470,8 +470,8 @@ int os_main(int, os_char**)
         cout << "  Time: " << elapsed << " ms (" << (elapsed / QUERIES * 1000) << " us/op)" << endl;
     }
 
-    // [8] ChangeOrAdd压力测试
-    cout << "\n[8] ChangeOrAdd Stress (50000 operations):" << endl;
+    // [8] operator[]压力测试
+    cout << "\n[8] operator[] Stress (50000 operations):" << endl;
     {
         BidirectionalMap<int, string> bmap;
         map<int, string> expected;
@@ -479,16 +479,16 @@ int os_main(int, os_char**)
         const int OPS = 50000;
         mt19937 rng(54321);
         uniform_int_distribution<int> key_dist(0, 4999);  // 较小范围造成冲突
-        LogOpHeader("[8] ChangeOrAdd Stress");
+        LogOpHeader("[8] operator[] Stress");
 
         for (int op = 0; op < OPS; op++)
         {
             int key = key_dist(rng);
             string value = "v" + to_string(key) + "_" + to_string(op);
-            bmap.ChangeOrAdd(key, value);
+            bmap[key] = value;
             expected[key] = value;
 
-            LogOp(op, "ChangeOrAdd", key, value, true, bmap.GetCount(), (int)expected.size());
+            LogOp(op, "Assign", key, value, true, bmap.GetCount(), (int)expected.size());
 
             const bool ok = VerifyState(bmap, expected, "ChangeOrAdd", op);
             if (!ok)
