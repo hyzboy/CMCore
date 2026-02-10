@@ -36,6 +36,28 @@ namespace hgl
         UnorderedMap() = default;
         virtual ~UnorderedMap() = default;
 
+        class AssignProxy
+        {
+            UnorderedMap* map;
+            K key;
+
+        public:
+            AssignProxy(UnorderedMap* in_map, const K& in_key) : map(in_map), key(in_key) {}
+            AssignProxy(UnorderedMap* in_map, K&& in_key) : map(in_map), key(std::move(in_key)) {}
+
+            AssignProxy& operator=(const V& value)
+            {
+                map->ChangeOrAdd(key, value);
+                return *this;
+            }
+
+            AssignProxy& operator=(V&& value)
+            {
+                map->ChangeOrAdd(key, std::move(value));
+                return *this;
+            }
+        };
+
         // ============================================================
         // 基础 API（兼容 UnorderedMap<K,V> 接口）
         // ============================================================
@@ -54,6 +76,12 @@ namespace hgl
          * 预分配容量
          */
         void SetMaxCount(size_t count) { map_data.reserve(count); }
+
+        /**
+         * 仅用于赋值的便捷写法：map[key] = value
+         */
+        AssignProxy operator[](const K& key) { return AssignProxy(this, key); }
+        AssignProxy operator[](K&& key) { return AssignProxy(this, std::move(key)); }
 
         /**
          * 添加一个键值对
