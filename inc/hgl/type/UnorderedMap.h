@@ -46,55 +46,14 @@ namespace hgl
         int GetCount() const { return static_cast<int>(map_data.size()); }
 
         /**
-         * std::unordered_map 兼容：size()
-         */
-        size_t size() const { return map_data.size(); }
-
-        /**
          * 检查容器是否为空
          */
         bool IsEmpty() const { return map_data.empty(); }
 
         /**
-         * std::unordered_map 兼容：empty()
+         * 预分配容量
          */
-        bool empty() const { return map_data.empty(); }
-
-        /**
-         * std::unordered_map 兼容：clear()
-         */
-        void clear() { map_data.clear(); }
-
-        /**
-         * std::unordered_map 兼容：reserve()
-         */
-        void reserve(size_t count) { map_data.reserve(count); }
-
-        /**
-         * std::unordered_map 兼容：operator[]
-         */
-        V& operator[](const K& key) { return map_data[key]; }
-        V& operator[](K&& key) { return map_data[std::move(key)]; }
-
-        /**
-         * std::unordered_map 兼容：find()
-         */
-        auto find(const K& key) { return map_data.find(key); }
-        auto find(const K& key) const { return map_data.find(key); }
-
-        /**
-         * std::unordered_map 兼容：erase(key)
-         */
-        size_t erase(const K& key) { return map_data.erase(key); }
-
-        /**
-         * std::unordered_map 兼容：emplace(...)
-         */
-        template<typename... Args>
-        auto emplace(Args&&... args)
-        {
-            return map_data.emplace(std::forward<Args>(args)...);
-        }
+        void SetMaxCount(size_t count) { map_data.reserve(count); }
 
         /**
          * 添加一个键值对
