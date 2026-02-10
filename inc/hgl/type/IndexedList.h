@@ -9,6 +9,8 @@
 
 namespace hgl
 {
+    // AI NOTE: Keeps data in a dense array while exposing stable logical indices
+    // via a separate index list. Data moves but index mapping updates.
     /**
     * 索引数据列表<br>
     * IndexedList与ValueArray功能类似，但它的区别是它使用索引来访问数据。

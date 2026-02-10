@@ -5,6 +5,9 @@
 
 namespace hgl
 {
+    // AI NOTE: Ordered set backed by absl::btree_set.
+    // Keeps elements sorted by operator< with O(log n) ops.
+    // Iteration yields sorted order; erase invalidates only erased iterator.
     /**
      * 有序合集</br>
      * 集合数据列表中不允许数据出现重复性，同时它会将数据排序</br>

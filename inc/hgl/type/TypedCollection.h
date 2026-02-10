@@ -4,6 +4,8 @@
 
 namespace hgl
 {
+    // AI NOTE: Typed wrapper over Collection that forwards to void* storage.
+    // Provides typed Add/Get/Set without changing Collection's layout.
     /**
     * 元素合集模板是Collection类的一个模板化版本，它的数据计数和长度都是以模板类型为基准。
     */

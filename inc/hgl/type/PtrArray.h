@@ -8,6 +8,8 @@
 
 namespace hgl
 {
+    // AI NOTE: Manual dynamic array for non-trivial types.
+    // Manages raw memory and explicit ctor/dtor; indices may shift on delete.
     /**
      * 非平凡类型专用的阵列容器。
      * 与 ValueBuffer 接口尽量保持一致，手动管理内存并显式调用构造/析构函数。

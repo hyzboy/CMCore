@@ -5,6 +5,8 @@
 
 namespace hgl
 {
+    // AI NOTE: Static registry maps unique strings to integer IDs.
+    // IDs are stable per process; registration is global per MANAGER type.
     /**
      * ID-Name 注册表模板
      * 为每个 MANAGER 类型维护一个独立的 ConstStringSet 实例

@@ -11,6 +11,9 @@
 
 namespace hgl
 {
+    // AI NOTE: Ordered key/value map backed by absl::btree_map.
+    // Iteration is sorted by key; inserts/erases are O(log n).
+    // operator[] is write-only (assignment) and forwards to AddOrUpdate.
     /**
     * @brief CN:有序映射 - 基于 B树实现的高性能有序容器
     *        EN:Ordered Map - High-performance ordered container based on B-tree

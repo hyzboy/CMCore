@@ -6,6 +6,9 @@
 
 namespace hgl
 {
+    // AI NOTE: Sorted unique set stored in a single vector.
+    // Lookup uses binary search; insert/erase are O(n) due to shifts.
+    // Iterators/pointers invalidate on insert/erase.
     /**
      * 有序集合</br>
      * 集合数据列表中不允许数据出现重复性，同时它会将数据排序</br>

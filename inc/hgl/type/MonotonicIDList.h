@@ -7,6 +7,9 @@
 
 namespace hgl
 {
+    // AI NOTE: Stores values in arrays and assigns monotonically increasing IDs.
+    // ID->location is tracked by ValueKVMap; removed slots go to a free stack.
+    // Data is trivially copyable; locations can be reused after remove.
     using MonotonicID=int32;
 
     constexpr const MonotonicID MONOTONIC_ID_INVALID=0;

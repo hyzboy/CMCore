@@ -13,6 +13,9 @@
 
 namespace hgl
 {
+    // AI NOTE: Compact unordered set using ActiveDataManager (contiguous data)
+    // and a hash->id list map. Deletes mark ids inactive; rebuild hash map
+    // if values are modified in place. Best for trivially copyable types.
     // ==================== 紧凑型无序值集合（Compact Value Set）====================
 
     /**

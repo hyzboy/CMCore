@@ -4,6 +4,8 @@
 
 namespace hgl
 {
+    // AI NOTE: Fixed-size pool for trivial types with ID-based allocation.
+    // Init allocates once; Acquire/Release use a SeriesInt free list.
     /**
      * 固定大小值池 - 用于 trivial 类型（如 POD 结构体、整数等）
      * 一次分配固定数量的值，值的生存期与池一致，无需手动构造/析构

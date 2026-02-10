@@ -6,6 +6,8 @@
 
 namespace hgl
 {
+    // AI NOTE: Owns pointers to non-trivial objects and deletes them on Clear/Free.
+    // Use Unlink APIs to detach without deleting. Pointer order may change on erase.
     /**
      * 对象列表：
      * 本容器保存指针类型并对这些指针拥有所有权（Owning Ptr）。

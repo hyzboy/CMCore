@@ -8,6 +8,10 @@
 
 namespace hgl
 {
+    // AI NOTE: Wrapper around ankerl::unordered_dense::map with optional
+    // key/value array extraction for serialization and fast rebuild.
+    // operator[] is write-only (assignment), use Get/GetValuePointer to read.
+    // Pointer/reference results may be invalidated by rehash or erase.
     /**
      * 现代无序映射 - 混合架构（ankerl + 分离式序列化）
      *

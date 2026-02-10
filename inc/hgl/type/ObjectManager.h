@@ -8,6 +8,8 @@
 
 namespace hgl
 {
+    // AI NOTE: Object manager stores key->ManagedObject with ref_count.
+    // Get increments ref_count; Release decrements and optionally deletes.
     /**
     * @brief CN:带引用计数的管理对象。\nEN:Managed object with reference counting.
     */

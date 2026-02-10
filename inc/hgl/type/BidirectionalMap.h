@@ -6,6 +6,9 @@
 
 namespace hgl
 {
+    // AI NOTE: Bidirectional map with unique key<->value pairs.
+    // Stores keys/values in parallel vectors; maps only keep indices.
+    // Delete/update can reorder vectors, so indices are not stable.
     /**
      * @brief 高效双向映射容器
      * 已通过20万级数量压力测试

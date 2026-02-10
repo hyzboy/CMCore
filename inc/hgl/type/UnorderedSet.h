@@ -7,6 +7,9 @@
 
 namespace hgl
 {
+    // AI NOTE: Thin wrapper over ankerl::unordered_dense::set.
+    // Average O(1) insert/find/erase; iteration order is unspecified.
+    // Iterators/pointers can be invalidated by rehash or erase.
     /**
      * 无序集合</br>
      * 集合数据列表中不允许数据出现重复性</br>

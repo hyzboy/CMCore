@@ -4,6 +4,8 @@
 
 namespace hgl
 {
+    // AI NOTE: Pool of owning pointers for non-trivial objects.
+    // Acquire returns an existing idle object; no auto-allocation.
     /**
      * 指针对象池 - 用于 non-trivial 类型（如含有复杂初始化逻辑的类）
      * 维护指针列表，支持动态增长，自动调用构造/析构函数

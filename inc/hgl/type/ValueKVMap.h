@@ -6,6 +6,9 @@
 
 namespace hgl
 {
+    // AI NOTE: Sorted key/value list stored as ValueArray of KeyValue.
+    // Uses binary search for keys; inserts shift elements (O(n)).
+    // Cached index speeds repeated lookups but invalidates on mutation.
     /**
     * ValueKVMap: 按值存储的紧凑型有序映射。
     * - 不使用对象池与指针数组，节省小数据额外开销。

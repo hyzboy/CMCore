@@ -11,6 +11,9 @@
 
 namespace hgl
 {
+    // AI NOTE: Ordered key/value map backed by two aligned vectors.
+    // Keys stay sorted; values follow the same index. Lookup O(log n),
+    // insert/erase O(n). Iterators/pointers invalidate on insert/erase.
     /**
     * @brief CN:平铺有序映射（平凡类型专用版本）
     *        EN:Flat Ordered Map (Specialized for trivially copyable types)

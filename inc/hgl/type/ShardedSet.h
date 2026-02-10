@@ -13,6 +13,9 @@
 
 namespace hgl
 {
+    // AI NOTE: Hash set sharded into SHARD_COUNT partitions (power of two).
+    // Each shard has its own ActiveDataManager and hash->id map.
+    // Operations hash value, pick shard, then act locally.
     /**
      * 【分片集合 ShardedSet】
      *

@@ -13,6 +13,9 @@
 
 namespace hgl
 {
+    // AI NOTE: Hash set with two hash maps to support incremental rebuild/GC.
+    // Deletes mark ids inactive; rebuild compacts maps in batches to avoid stalls.
+    // ActiveDataManager owns the contiguous values.
     /**
      * 【双哈希表集合 DualHashSet】
      *

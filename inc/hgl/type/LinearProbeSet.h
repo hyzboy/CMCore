@@ -11,6 +11,9 @@
 
 namespace hgl
 {
+    // AI NOTE: Open-addressing hash set with linear probing and tombstones.
+    // Uses ActiveDataManager to store values; table size is power of two.
+    // Rehash when load factor exceeded; deletes leave tombstones.
     /**
      * 【线性探测集合 LinearProbeSet】
      *

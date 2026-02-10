@@ -3,6 +3,8 @@
 #include<hgl/type/UnorderedMap.h>
 namespace hgl
 {
+    // AI NOTE: Ref-counted object pool with active and idle maps.
+    // Active items hold ref_count; idle items are cached for reuse.
     template<typename T> struct RefData
     {
         int ref_count;
