@@ -1,6 +1,10 @@
 ﻿#pragma once
 
 #include <cstddef>
+#include <type_traits>
+#include <hgl/CoreType.h>
+#include <hgl/type/DataType.h>
+#include <hgl/type/EnumUtil.h>
 #include <hgl/type/IDName.h>
 #include <hgl/io/event/InputEventSource.h>
 #include <hgl/io/event/KeyboardEvent.h>
@@ -13,33 +17,94 @@ namespace hgl::io
      * 逻辑动作ID（应用层自定义）
      * 示例：Fire=1, Jump=2, MoveForward=3, Reload=4 等
      */
-    using ActionID = uint32;
+    using ActionID = uint16;
 
     constexpr ActionID ACTION_NONE = 0;
 
-    /**
-     * 预置动作ID配置
-     */
-    struct FpsActionConfig
+    // Global action ID layout: high 8 bits = domain, low 8 bits = index.
+    enum class ActionDomain : uint8
     {
-        ActionID move_forward = 1;
-        ActionID move_backward = 2;
-        ActionID move_left = 3;
-        ActionID move_right = 4;
-        ActionID fire = 5;
-        ActionID jump = 6;
-        ActionID crouch = 7;
-        ActionID run = 8;
-        ActionID prone = 9;
-        ActionID aim = 10;
-        ActionID reload = 11;
-        ActionID use = 12;
-        ActionID melee = 13;
-        ActionID grenade = 14;
-        ActionID weapon1 = 15;
-        ActionID weapon2 = 16;
-        ActionID weapon3 = 17;
+        None = 0,
+        Fps = 1,
+        ModelViewer = 2,
+        Camera = 3
     };
+
+    constexpr ActionID MakeActionID(ActionDomain domain, uint8 index)
+    {
+        return static_cast<ActionID>((static_cast<ActionID>(domain) << 8) | index);
+    }
+
+    template<typename T, typename = std::enable_if_t<std::is_enum_v<T>>>
+    constexpr ActionID MakeActionID(ActionDomain domain, T index)
+    {
+        return MakeActionID(domain, static_cast<uint8>(index));
+    }
+
+    enum class FpsAction : uint8
+    {
+        MoveForward = 1,
+        MoveBackward,
+        MoveLeft,
+        MoveRight,
+        Fire,
+        Jump,
+        Crouch,
+        Run,
+        Prone,
+        Aim,
+        Reload,
+        Use,
+        Melee,
+        Grenade,
+        Weapon1,
+        Weapon2,
+        Weapon3,
+        ENUM_CLASS_RANGE(MoveForward, Weapon3)
+    };
+
+    enum class ModelViewerAction : uint8
+    {
+        Rotate = 1,
+        Pan,
+        ZoomIn,
+        ZoomOut,
+        ResetView,
+        Focus,
+        ENUM_CLASS_RANGE(Rotate, Focus)
+    };
+
+    template<typename EnumAction>
+    constexpr size_t ActionIndex(EnumAction action)
+    {
+        return static_cast<size_t>(ToInt(action) - ToInt(EnumAction::BEGIN_RANGE));
+    }
+
+    /**
+     * 通用动作ID配置
+     */
+    template<typename EnumAction, ActionDomain Domain>
+    struct ActionConfig
+    {
+        ActionID ids[RangeSize<EnumAction>()]{};
+
+        ActionConfig()
+        {
+            for (uint8 v = static_cast<uint8>(EnumAction::BEGIN_RANGE);
+                 v <= static_cast<uint8>(EnumAction::END_RANGE);
+                 ++v)
+            {
+                const size_t index = static_cast<size_t>(v - static_cast<uint8>(EnumAction::BEGIN_RANGE));
+                ids[index] = MakeActionID(Domain, v);
+            }
+        }
+
+        ActionID& operator[](EnumAction action) { return ids[ActionIndex(action)]; }
+        const ActionID& operator[](EnumAction action) const { return ids[ActionIndex(action)]; }
+    };
+
+    using FpsActionConfig = ActionConfig<FpsAction, ActionDomain::Fps>;
+    using ModelViewerActionConfig = ActionConfig<ModelViewerAction, ActionDomain::ModelViewer>;
 
     /**
      * 动作值类型
