@@ -53,20 +53,49 @@ namespace hgl::io
         else if (header.type == InputEventSource::Mouse)
         {
             MouseEventData* md = (MouseEventData*)&data;
+            const MouseAction action = MouseAction(header.id);
+
+            if (action == MouseAction::Wheel)
+            {
+                physical.code = uint16(MouseButton::None);
+
+                const InputBinding* binding = FindBindingInContextStack(physical);
+                if (!binding)
+                    return true; // no binding, forward physical
+
+                float analog_value = static_cast<float>(md->y) * binding->scale;
+                if (binding->negate)
+                    analog_value = -analog_value;
+
+                ActionEvent evt;
+                evt.action = binding->action;
+                evt.value = ActionValue::Analog1D(analog_value);
+                evt.state = ActionEventState::Ongoing;
+                evt.elapsed_time = 0.0;
+                evt.trigger.source = InputEventSource::Logic;
+                evt.trigger.index = 0;
+                evt.trigger.code = uint16(binding->action);
+
+                if (action_callback)
+                    action_callback(evt);
+
+                return binding->forward_physical_input;
+            }
+
             physical.code = md->button;
 
-            if (MouseAction(header.id) == MouseAction::Pressed)
+            if (action == MouseAction::Pressed)
             {
                 is_pressed = true;
                 value = ActionValue::Digital(true);
             }
-            else if (MouseAction(header.id) == MouseAction::Released)
+            else if (action == MouseAction::Released)
             {
                 is_released = true;
                 value = ActionValue::Digital(false);
             }
             else
-                return true; // ignore move/wheel for mapping
+                return true; // ignore move/dblclick for mapping
         }
         else if (header.type == InputEventSource::Joystick)
         {
@@ -87,7 +116,7 @@ namespace hgl::io
         ActionState state;
 
         if(!action_states.Get(action_id,state))
-            return forward_physical;
+            state.active = false;
 
         ActionEvent evt;
         evt.action = action_id;

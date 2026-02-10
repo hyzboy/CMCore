@@ -9,12 +9,12 @@ namespace hgl::io
      */
     struct ModelViewerActionConfig
     {
-        ActionID rotate;      // 旋转
-        ActionID pan;         // 平移
-        ActionID zoom_in;     // 放大
-        ActionID zoom_out;    // 缩小
-        ActionID reset_view;  // 重置视角
-        ActionID focus;       // 视角聚焦
+        ActionID rotate = 1001;      // 旋转
+        ActionID pan = 1002;         // 平移
+        ActionID zoom_in = 1003;     // 放大
+        ActionID zoom_out = 1004;    // 缩小
+        ActionID reset_view = 1005;  // 重置视角
+        ActionID focus = 1006;       // 视角聚焦
     };
 
     /**

@@ -4,6 +4,7 @@
 #include<hgl/type/ValueArray.h>
 #include<vector>
 #include<utility>
+#include<functional>
 
 namespace hgl
 {
@@ -24,12 +25,12 @@ namespace hgl
      * @tparam K Key 类型（任意，trivially 或 non-trivially 都支持）
      * @tparam V Value 类型（任意，trivially 或 non-trivially 都支持）
      */
-    template<typename K, typename V>
+    template<typename K, typename V, typename Hash = std::hash<K>, typename KeyEqual = std::equal_to<K>>
     class UnorderedMap
     {
     protected:
         // 主存储：ankerl 提供极致性能
-        ankerl::unordered_dense::map<K, V> map_data;
+        ankerl::unordered_dense::map<K, V, Hash, KeyEqual> map_data;
 
     public:
         UnorderedMap() = default;
@@ -45,9 +46,55 @@ namespace hgl
         int GetCount() const { return static_cast<int>(map_data.size()); }
 
         /**
+         * std::unordered_map 兼容：size()
+         */
+        size_t size() const { return map_data.size(); }
+
+        /**
          * 检查容器是否为空
          */
         bool IsEmpty() const { return map_data.empty(); }
+
+        /**
+         * std::unordered_map 兼容：empty()
+         */
+        bool empty() const { return map_data.empty(); }
+
+        /**
+         * std::unordered_map 兼容：clear()
+         */
+        void clear() { map_data.clear(); }
+
+        /**
+         * std::unordered_map 兼容：reserve()
+         */
+        void reserve(size_t count) { map_data.reserve(count); }
+
+        /**
+         * std::unordered_map 兼容：operator[]
+         */
+        V& operator[](const K& key) { return map_data[key]; }
+        V& operator[](K&& key) { return map_data[std::move(key)]; }
+
+        /**
+         * std::unordered_map 兼容：find()
+         */
+        auto find(const K& key) { return map_data.find(key); }
+        auto find(const K& key) const { return map_data.find(key); }
+
+        /**
+         * std::unordered_map 兼容：erase(key)
+         */
+        size_t erase(const K& key) { return map_data.erase(key); }
+
+        /**
+         * std::unordered_map 兼容：emplace(...)
+         */
+        template<typename... Args>
+        auto emplace(Args&&... args)
+        {
+            return map_data.emplace(std::forward<Args>(args)...);
+        }
 
         /**
          * 添加一个键值对

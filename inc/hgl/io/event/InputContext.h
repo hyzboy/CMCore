@@ -51,6 +51,14 @@ namespace hgl::io
         }
 
         /**
+         * 便捷添加：鼠标滚轮 → 动作
+         */
+        void BindMouseWheel(ActionID action, uint8 device_index = 0, bool forward_physical = false)
+        {
+            AddBinding(InputBinding(PhysicalInput::Mouse(MouseButton::None, device_index), action, ActionValueType::Analog1D, forward_physical));
+        }
+
+        /**
          * 便捷添加：手柄按钮 → 动作
          */
         void BindJoystick(ActionID action, JoystickButton button, uint8 device_index = 0, bool forward_physical = false)

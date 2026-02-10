@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file String.h
  * @brief CN: 通用字符串模板类声明文件，基于 std::basic_string 封装，提供丰富的字符串操作接口。
  *        EN: General string template class declaration file, based on std::basic_string, providing rich string manipulation interfaces.
@@ -1124,8 +1124,8 @@ namespace hgl
 namespace std
 {
     /**
-     * @brief std::hash specialization to support hgl::String as key in std::unordered_map
-     *        CN: std::hash 特化，支持 hgl::String 作为 std::unordered_map 的键
+     * @brief std::hash specialization to support hgl::String as key in hgl::UnorderedMap
+     *        CN: std::hash 特化，支持 hgl::String 作为 hgl::UnorderedMap 的键
      */
     template<typename T>
     struct hash<hgl::String<T>>
@@ -1147,3 +1147,4 @@ namespace std
         }
     };
 }
+
