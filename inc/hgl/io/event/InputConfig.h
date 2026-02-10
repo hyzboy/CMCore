@@ -5,6 +5,19 @@
 namespace hgl::io
 {
     /**
+     * 模型观察（模型居中）配置模板
+     */
+    struct ModelViewerActionConfig
+    {
+        ActionID rotate;      // 旋转
+        ActionID pan;         // 平移
+        ActionID zoom_in;     // 放大
+        ActionID zoom_out;    // 缩小
+        ActionID reset_view;  // 重置视角
+        ActionID focus;       // 视角聚焦
+    };
+
+    /**
      * 输入配置助手
      */
     class InputConfig
@@ -36,5 +49,10 @@ namespace hgl::io
          * 战地惯用配置模板
          */
         static void ApplyBattlefieldTemplate(InputContext& context, const FpsActionConfig& cfg = {});
+
+        /**
+         * 模型观察惯用配置模板
+         */
+        static void ApplyModelViewerTemplate(InputContext& context, const ModelViewerActionConfig& cfg = {});
     };
 }//namespace hgl::io

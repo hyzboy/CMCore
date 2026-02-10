@@ -51,4 +51,18 @@ namespace hgl::io
         context.BindKey(cfg.use, KeyboardButton::E);
         context.BindKey(cfg.melee, KeyboardButton::F);
     }
+
+    void InputConfig::ApplyModelViewerTemplate(InputContext& context, const ModelViewerActionConfig& cfg)
+    {
+        context.BindMouse(cfg.rotate, MouseButton::Left);
+        context.BindMouse(cfg.pan, MouseButton::Right);
+
+        context.BindKey(cfg.zoom_in, KeyboardButton::PageUp);
+        context.BindKey(cfg.zoom_in, KeyboardButton::Equals);
+        context.BindKey(cfg.zoom_out, KeyboardButton::PageDown);
+        context.BindKey(cfg.zoom_out, KeyboardButton::Minus);
+
+        context.BindKey(cfg.reset_view, KeyboardButton::R);
+        context.BindKey(cfg.focus, KeyboardButton::F);
+    }
 }
