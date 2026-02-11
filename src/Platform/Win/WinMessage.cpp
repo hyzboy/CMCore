@@ -333,9 +333,9 @@ namespace hgl
             {
                 const int zDelta=GET_WHEEL_DELTA_WPARAM(wParam);
 
-                mouse_event_data.x=GET_X_LPARAM(lParam);
-                mouse_event_data.y=GET_Y_LPARAM(lParam);
-                mouse_event_data.button=(uint8)(zDelta / WHEEL_DELTA);
+                mouse_event_data.x=0;
+                mouse_event_data.y=(int16)(zDelta / WHEEL_DELTA);
+                mouse_event_data.button=0;
                 mouse_event_data.action=(uint8)MouseAction::Wheel;
 
                 event_header.type   =InputEventSource::Mouse;
@@ -349,9 +349,9 @@ namespace hgl
             {
                 const int zDelta=GET_WHEEL_DELTA_WPARAM(wParam);
 
-                mouse_event_data.x=GET_X_LPARAM(lParam);
-                mouse_event_data.y=GET_Y_LPARAM(lParam);
-                mouse_event_data.button=(uint8)(zDelta / WHEEL_DELTA);
+                mouse_event_data.x=(int16)(zDelta / WHEEL_DELTA);
+                mouse_event_data.y=0;
+                mouse_event_data.button=0;
                 mouse_event_data.action=(uint8)MouseAction::Wheel;
 
                 event_header.type   =InputEventSource::Mouse;
