@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file String.h
  * @brief CN: 通用字符串模板类声明文件，基于 std::basic_string 封装，提供丰富的字符串操作接口。
  *        EN: General string template class declaration file, based on std::basic_string, providing rich string manipulation interfaces.
