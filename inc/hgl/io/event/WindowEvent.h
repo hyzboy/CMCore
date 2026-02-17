@@ -94,8 +94,8 @@ namespace hgl::io
 
     public:
 
-        virtual void OnCreate(uint w,uint h){}
-        virtual void OnResize(uint w,uint h){}
+        virtual void OnCreate(uint,uint){}
+        virtual void OnResize(uint,uint){}
         virtual void OnActive(bool){}
         virtual void OnClose (){}
 
