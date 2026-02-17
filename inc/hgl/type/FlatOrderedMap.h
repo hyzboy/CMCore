@@ -737,7 +737,7 @@ namespace hgl
         void GetKeyArray(KeyArray& key_array) const
         {
             key_array.Clear();
-            key_array.SetMaxCount((int)keys.size());
+            key_array.Reserve((int)keys.size());
 
             for (const auto& key : keys)
             {
@@ -753,7 +753,7 @@ namespace hgl
         void GetValueArray(ValueArray& value_array) const
         {
             value_array.Clear();
-            value_array.SetMaxCount((int)values.size());
+            value_array.Reserve((int)values.size());
 
             for (const auto& value : values)
             {
@@ -771,8 +771,8 @@ namespace hgl
         {
             key_array.Clear();
             value_array.Clear();
-            key_array.SetMaxCount((int)keys.size());
-            value_array.SetMaxCount((int)values.size());
+            key_array.Reserve((int)keys.size());
+            value_array.Reserve((int)values.size());
 
             for (const auto& key : keys)
             {

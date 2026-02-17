@@ -457,7 +457,7 @@ namespace hgl
         void GetKeyArray(KeyArray& keys) const
         {
             keys.Clear();
-            keys.SetMaxCount(GetCount());
+            keys.Reserve(GetCount());
 
             for (const auto& [k, v] : map_data)
             {
@@ -473,7 +473,7 @@ namespace hgl
         void GetValueArray(ValueArray& values) const
         {
             values.Clear();
-            values.SetMaxCount(GetCount());
+            values.Reserve(GetCount());
 
             for (const auto& [k, v] : map_data)
             {
@@ -491,8 +491,8 @@ namespace hgl
         {
             keys.Clear();
             values.Clear();
-            keys.SetMaxCount(GetCount());
-            values.SetMaxCount(GetCount());
+            keys.Reserve(GetCount());
+            values.Reserve(GetCount());
 
             for (const auto& [k, v] : map_data)
             {

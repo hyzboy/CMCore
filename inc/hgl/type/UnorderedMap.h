@@ -79,7 +79,7 @@ namespace hgl
         /**
          * 预分配容量
          */
-        void SetMaxCount(size_t count) { map_data.reserve(count); }
+        void Reserve(size_t count) { map_data.reserve(count); }
 
         /**
          * 仅用于赋值的便捷写法：map[key] = value
@@ -504,7 +504,7 @@ namespace hgl
          */
         template<typename T>
         static void ReserveContainer(ValueArray<T>& arr, int capacity) {
-            arr.SetMaxCount(capacity);
+            arr.Reserve(capacity);
         }
 
         /**
