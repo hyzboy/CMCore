@@ -118,18 +118,18 @@ public:
     //全局日志对象的快捷方式
 
 #ifdef _DEBUG
-    #define GLogVerbose(...)    ::hgl::logger::GlobalLogger.Verbose   (std::source_location::current(),__VA_ARGS__);
-    #define GLogDebug(...)      ::hgl::logger::GlobalLogger.Verbose   (std::source_location::current(),__VA_ARGS__);
+    #define GLogVerbose(...)    {::hgl::logger::GlobalLogger.Verbose   (std::source_location::current(),__VA_ARGS__);}
+    #define GLogDebug(...)      {::hgl::logger::GlobalLogger.Verbose   (std::source_location::current(),__VA_ARGS__);}
 #else
     #define GLogVerbose(...)    {}
     #define GLogDebug(...)      {}
 #endif//
 
-    #define GLogInfo(...)       ::hgl::logger::GlobalLogger.Info      (std::source_location::current(),__VA_ARGS__);
-    #define GLogNotice(...)     ::hgl::logger::GlobalLogger.Notice    (std::source_location::current(),__VA_ARGS__);
-    #define GLogWarning(...)    ::hgl::logger::GlobalLogger.Warning   (std::source_location::current(),__VA_ARGS__);
-    #define GLogError(...)      ::hgl::logger::GlobalLogger.Error     (std::source_location::current(),__VA_ARGS__);
-    #define GLogFatal(...)      ::hgl::logger::GlobalLogger.Fatal     (std::source_location::current(),__VA_ARGS__);
+    #define GLogInfo(...)       {::hgl::logger::GlobalLogger.Info      (std::source_location::current(),__VA_ARGS__);}
+    #define GLogNotice(...)     {::hgl::logger::GlobalLogger.Notice    (std::source_location::current(),__VA_ARGS__);}
+    #define GLogWarning(...)    {::hgl::logger::GlobalLogger.Warning   (std::source_location::current(),__VA_ARGS__);}
+    #define GLogError(...)      {::hgl::logger::GlobalLogger.Error     (std::source_location::current(),__VA_ARGS__);}
+    #define GLogFatal(...)      {::hgl::logger::GlobalLogger.Fatal     (std::source_location::current(),__VA_ARGS__);}
 
     #define DEFINE_LOGGER_MODULE(name) namespace hgl::logger{::hgl::logger::ObjectLogger Log##name(OS_TEXT(#name));}
     #define EXTERN_LOGGER_MODULE(name) namespace hgl::logger{extern ::hgl::logger::ObjectLogger Log##name;}
