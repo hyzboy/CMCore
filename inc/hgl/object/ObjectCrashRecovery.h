@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 /**
  * ObjectCrashRecovery - 从内存倾转或日志中恢复对象信息
@@ -9,7 +9,7 @@
  * - 生成收集报告
  */
 
-#include<hgl/utils/ObjectBase.h>
+#include<hgl/object/ObjectBase.h>
 #include<fstream>
 #include<vector>
 #include<cstring>

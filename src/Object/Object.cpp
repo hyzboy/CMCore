@@ -1,4 +1,4 @@
-﻿//#include<hgl/type/object/Object.h>
+﻿//#include<hgl/object/Object.h>
 
 namespace hgl
 {

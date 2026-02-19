@@ -12,14 +12,22 @@ SET(CMCORE_TYPE_BITSARRAY_FILES ${CMCORE_TYPE_INCLUDE_PATH}/BitsArray.h
                                 Type/BitsArray.cpp)
 SOURCE_GROUP("DataType\\BitsArray" FILES ${CMCORE_TYPE_BITSARRAY_FILES})
 
+##==================================================================================================
 ## Object 对象基类
-SET(CMCORE_TYPE_OBJECT_FILES ${CMCORE_TYPE_INCLUDE_PATH}/object/ObjectBaseInfo.h
-                             ${CMCORE_TYPE_INCLUDE_PATH}/object/Object.h
-                             Object/ObjectBaseInfo.cpp
-                             Object/Object.cpp
-                             Object/TickObject.cpp)
-SOURCE_GROUP("DataType\\Object" FILES ${CMCORE_TYPE_OBJECT_FILES})
+##==================================================================================================
+SET(CMCORE_OBJECT_INCLUDE_PATH  ${CMCORE_ROOT_INCLUDE_PATH}/hgl/object)
+SET(CMCORE_OBJECT_FILES         ${CMCORE_OBJECT_INCLUDE_PATH}/Object.h
+                                ${CMCORE_OBJECT_INCLUDE_PATH}/ObjectBase.h
+                                ${CMCORE_OBJECT_INCLUDE_PATH}/ObjectTracker.h
+                                ${CMCORE_OBJECT_INCLUDE_PATH}/ObjectCrashRecovery.h
+                                Object/Object.cpp
+                                Object/TickObject.cpp
+                                Object/ObjectTracker.cpp)
 
+SOURCE_GROUP("Object" FILES ${CMCORE_OBJECT_FILES})
+
+
+##==================================================================================================
 ## IDName 标识名称
 SET(CMCORE_TYPE_IDNAME_FILES ${CMCORE_TYPE_INCLUDE_PATH}/ConstStringSet.h
                              ${CMCORE_TYPE_INCLUDE_PATH}/IDName.h
@@ -364,22 +372,13 @@ SET(CMCORE_LOG_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/log/Log.h
 SOURCE_GROUP("Log" FILES ${CMCORE_LOG_FILES})
 
 ##==================================================================================================
-## Utils 工具类
-##==================================================================================================
-SET(CMCORE_OBJECT_TRACKER_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/utils/ObjectBase.h
-                                ${CMCORE_ROOT_INCLUDE_PATH}/hgl/utils/ObjectTracker.h
-                                ${CMCORE_ROOT_INCLUDE_PATH}/hgl/utils/ObjectCrashRecovery.h
-                                utils/ObjectTracker.cpp)
-SOURCE_GROUP("ObjectTracker" FILES ${CMCORE_OBJECT_TRACKER_FILES})
-
-##==================================================================================================
 ## Library 库定义
 ##==================================================================================================
 add_cm_library(CMCore "CM" ${CMCORE_ROOT_INCLUDE_PATH}
 #                        ${SYSTEM_INFO_SOURCE}
 
                         ${CMCORE_TYPE_INFO_FILES}
-                        ${CMCORE_TYPE_OBJECT_FILES}
+                        ${CMCORE_OBJECT_FILES}
                         ${CMCORE_TYPE_BITSARRAY_FILES}
                         ${CMCORE_TEXT_STRING_FILES}
                         ${CMCORE_TEXT_ENCODING_FILES}
@@ -404,7 +403,6 @@ add_cm_library(CMCore "CM" ${CMCORE_ROOT_INCLUDE_PATH}
                         ${CMCORE_EVENT_FILES}
                         ${CMCORE_PLUGIN_FILES}
                         ${CMCORE_LOG_FILES}
-                        ${CMCORE_OBJECT_TRACKER_FILES}
                         )
 
 target_link_libraries(CMCore PRIVATE CMCoreType absl::flat_hash_map absl::node_hash_map absl::btree)

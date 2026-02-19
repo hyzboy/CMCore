@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 /**
  * ObjectBase - 所有可追踪资源的基类
@@ -12,7 +12,7 @@
  */
 
 #include<hgl/core/ObjectType.h>
-#include<hgl/utils/ObjectTracker.h>
+#include<hgl/object/ObjectTracker.h>
 #include<cstdint>
 #include<atomic>
 #include<string>
