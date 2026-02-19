@@ -144,6 +144,29 @@ public:
     #define DEFINE_LOGGER_MODULE(name) namespace hgl::logger{::hgl::logger::ObjectLogger Log##name(OS_TEXT(#name));}
     #define EXTERN_LOGGER_MODULE(name) namespace hgl::logger{extern ::hgl::logger::ObjectLogger Log##name;}
 
+    // 非类成员函数/静态函数日志绑定：
+    // 用法：
+    //   1) 在某处定义模块对象：DEFINE_LOGGER_MODULE(Render)
+    //   2) 在需要输出的.cpp顶部绑定：USE_MODULE_LOGGER(Render)
+    //   3) 在自由函数中直接使用：FLogInfo(...), FLogError(...)
+    #define USE_MODULE_LOGGER(name) \
+        namespace hgl::logger{extern ::hgl::logger::ObjectLogger Log##name;} \
+        static inline ::hgl::logger::ObjectLogger &GetModuleLogger(){return ::hgl::logger::Log##name;}
+
+#ifdef _DEBUG
+    #define FLogVerbose(...)   {GetModuleLogger().Verbose(std::source_location::current(),__VA_ARGS__);}
+    #define FLogDebug(...)     {GetModuleLogger().Debug  (std::source_location::current(),__VA_ARGS__);}
+#else
+    #define FLogVerbose(...)   {}
+    #define FLogDebug(...)     {}
+#endif//
+
+    #define FLogInfo(...)      {GetModuleLogger().Info   (std::source_location::current(),__VA_ARGS__);}
+    #define FLogNotice(...)    {GetModuleLogger().Notice (std::source_location::current(),__VA_ARGS__);}
+    #define FLogWarning(...)   {GetModuleLogger().Warning(std::source_location::current(),__VA_ARGS__);}
+    #define FLogError(...)     {GetModuleLogger().Error  (std::source_location::current(),__VA_ARGS__);}
+    #define FLogFatal(...)     {GetModuleLogger().Fatal  (std::source_location::current(),__VA_ARGS__);}
+
 #ifdef _DEBUG
     #define MLogVerbose(name,...)   {::hgl::logger::Log##name.Verbose(std::source_location::current(),__VA_ARGS__);}
     #define MLogDebug(name,...)     {::hgl::logger::Log##name.Debug  (std::source_location::current(),__VA_ARGS__);}
