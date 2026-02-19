@@ -1,4 +1,5 @@
 ﻿#include<hgl/log/Logger.h>
+#include<hgl/log/LogMessage.h>
 #include<hgl/CodePage.h>
 #include<hgl/thread/ThreadMutex.h>
 #include<unistd.h>
@@ -19,7 +20,6 @@ namespace hgl
         */
         class LogUnixConsole:public Logger
         {
-            char endline;
             char log_buf[LOG_BUF_SIZE];
 
 #ifdef LOGINFO_THREAD_MUTEX
@@ -30,7 +30,6 @@ namespace hgl
 
             LogUnixConsole(LogLevel ll):Logger(ll)
             {
-                endline='\n';
             }
 
             bool Create(const OSString &)
@@ -64,8 +63,11 @@ namespace hgl
             }
 #endif//LOG_INFO_TIME
 
-            void Write(const u16char *str,int size)
+            void Write(const LogMessage *msg) override
             {
+                if(!msg||!msg->message||msg->message_length<=0)
+                    return;
+
             #ifdef LOGINFO_THREAD_MUTEX
                 mutex.Lock();
             #endif//LOGINFO_THREAD_MUTEX
@@ -78,37 +80,21 @@ namespace hgl
                     WriteTime();
                 #endif//LOG_INFO_TIME
 
-                    int len;
-
-                    len=u16_to_u8(log_buf,LOG_BUF_SIZE,str,size);
-
-                    if(len>0)
+                    if constexpr(sizeof(os_char)==sizeof(char))
                     {
-                        log_buf[len++]='\n';
-
-                        write(STDOUT_FILENO,log_buf,len);
+                        write(STDOUT_FILENO,reinterpret_cast<const char *>(msg->message),msg->message_length);
+                        write(STDOUT_FILENO,"\n",1);
                     }
-            #ifdef LOGINFO_THREAD_MUTEX
-                mutex.Unlock();
-            #endif//LOGINFO_THREAD_MUTEX
-            }
+                    else
+                    {
+                        const int len=u16_to_u8(log_buf,LOG_BUF_SIZE,reinterpret_cast<const u16char *>(msg->message),msg->message_length);
 
-            void Write(const char *str,int size)
-            {
-            #ifdef LOGINFO_THREAD_MUTEX
-                mutex.Lock();
-            #endif//LOGINFO_THREAD_MUTEX
-
-                #ifdef LOG_INFO_THREAD
-                    WriteThreadID();
-                #endif//LOG_INFO_THREAD
-
-                #ifdef LOG_INFO_TIME
-                    WriteTime();
-                #endif//LOG_INFO_TIME
-
-                    write(STDOUT_FILENO,str,size);
-                    write(STDOUT_FILENO,&endline,1);
+                        if(len>0)
+                        {
+                            log_buf[len]='\n';
+                            write(STDOUT_FILENO,log_buf,len+1);
+                        }
+                    }
             #ifdef LOGINFO_THREAD_MUTEX
                 mutex.Unlock();
             #endif//LOGINFO_THREAD_MUTEX
@@ -117,9 +103,6 @@ namespace hgl
 
         Logger *CreateLoggerConsole(LogLevel ll)
         {
-            if(ll<llError)
-                return(nullptr);
-
             return(new LogUnixConsole(ll));
         }
     }//logger

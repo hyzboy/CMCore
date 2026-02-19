@@ -1,4 +1,5 @@
-﻿#include<hgl/Logger.h>
+﻿#include<hgl/log/Logger.h>
+#include<hgl/log/LogMessage.h>
 #include<hgl/CodePage.h>
 #include<hgl/thread/ThreadMutex.h>
 #include<unistd.h>
@@ -16,17 +17,26 @@ namespace hgl
     {
         constexpr uint LOG_BUF_SIZE=4096;
 
-        constexpr android_LogPriority android_priority[]={  ANDROID_LOG_ERROR,          //llError
-                                                            ANDROID_LOG_WARN,           //llProblem
-                                                            ANDROID_LOG_INFO,           //llHint
-                                                            ANDROID_LOG_VERBOSE};       //llLog
+        static android_LogPriority ToAndroidPriority(const LogLevel level)
+        {
+            switch(level)
+            {
+                case LogLevel::Fatal:   return ANDROID_LOG_FATAL;
+                case LogLevel::Error:   return ANDROID_LOG_ERROR;
+                case LogLevel::Warning: return ANDROID_LOG_WARN;
+                case LogLevel::Notice:  return ANDROID_LOG_INFO;
+                case LogLevel::Info:    return ANDROID_LOG_INFO;
+                case LogLevel::Debug:   return ANDROID_LOG_DEBUG;
+                case LogLevel::Verbose:
+                default:                return ANDROID_LOG_VERBOSE;
+            }
+        }
 
         /**
         * Android控制台日志插件接口
         */
         class LogAndroidConsole:public Logger
         {
-            char endline;
             char thread_string[256];
             char time_string[256];
             char log_buf[LOG_BUF_SIZE];
@@ -35,15 +45,10 @@ namespace hgl
             ThreadMutex mutex;
 #endif//LOGINFO_THREAD_MUTEX
 
-            android_LogPriority prio;
-
         public:
 
             LogAndroidConsole(LogLevel ll):Logger(ll)
             {
-                prio=android_priority[ll];
-
-                endline='\n';
             }
 
             bool Create(const OSString &)
@@ -73,8 +78,11 @@ namespace hgl
             }
 #endif//LOG_INFO_TIME
 
-            void Write(const u16char *str,int size)
+            void Write(const LogMessage *msg) override
             {
+                if(!msg||!msg->message||msg->message_length<=0)
+                    return;
+
             #ifdef LOGINFO_THREAD_MUTEX
                 mutex.Lock();
             #endif//LOGINFO_THREAD_MUTEX
@@ -91,42 +99,32 @@ namespace hgl
                     strcat(log_buf,LOG_BUF_SIZE,time_string);
                 #endif//LOG_INFO_TIME
 
-                    int len;
+                    int pos=hgl::strlen(log_buf);
 
-                    len=u16_to_u8(log_buf+hgl::strlen(log_buf),LOG_BUF_SIZE,str,size);
-
-                    if(len>0)
+                    if constexpr(sizeof(os_char)==sizeof(char))
                     {
-                        log_buf[len++]=0;
+                        int copy_len=msg->message_length;
 
-                        __android_log_write(prio,"",log_buf);
+                        if(copy_len>int(LOG_BUF_SIZE-1-pos))
+                            copy_len=LOG_BUF_SIZE-1-pos;
+
+                        if(copy_len>0)
+                        {
+                            memcpy(log_buf+pos,reinterpret_cast<const char *>(msg->message),copy_len);
+                            pos+=copy_len;
+                        }
                     }
-            #ifdef LOGINFO_THREAD_MUTEX
-                mutex.Unlock();
-            #endif//LOGINFO_THREAD_MUTEX
-            }
+                    else
+                    {
+                        const int len=u16_to_u8(log_buf+pos,LOG_BUF_SIZE-pos,reinterpret_cast<const u16char *>(msg->message),msg->message_length);
 
-            void Write(const char *str,int size)
-            {
-            #ifdef LOGINFO_THREAD_MUTEX
-                mutex.Lock();
-            #endif//LOGINFO_THREAD_MUTEX
+                        if(len>0)
+                            pos+=len;
+                    }
 
-                log_buf[0]=0;
+                    log_buf[pos]=0;
 
-                #ifdef LOG_INFO_THREAD
-                    WriteThreadID();
-                    strcpy(log_buf,LOG_BUF_SIZE,thread_string);
-                #endif//LOG_INFO_THREAD
-
-                #ifdef LOG_INFO_TIME
-                    WriteTime();
-                    strcat(log_buf,LOG_BUF_SIZE,time_string);
-                #endif//LOG_INFO_TIME
-
-                strcpy(log_buf,LOG_BUF_SIZE,str,size);
-
-                __android_log_write(prio,"",log_buf);
+                    __android_log_write(ToAndroidPriority(msg->level),"",log_buf);
 
             #ifdef LOGINFO_THREAD_MUTEX
                 mutex.Unlock();
@@ -134,11 +132,8 @@ namespace hgl
             }
         };//class LogAndroidConsole:public Logger
 
-        Logger *CreateLoggerConsole(const OSString &,LogLevel ll)
+        Logger *CreateLoggerConsole(LogLevel ll)
         {
-            if(ll<llError)
-                return(nullptr);
-
             return(new LogAndroidConsole(ll));
         }
     }//logger
