@@ -177,6 +177,7 @@ namespace hgl
                 if(log_interface->Init())
                     return(pi);
 
+            delete pi;
             delete log_interface;
             log_interface=nullptr;
 

@@ -65,7 +65,7 @@ namespace hgl
 
             void Close() override
             {
-                CloseHandle(console_handle);
+                console_handle=nullptr;
             }
 
             void Write(const LogMessage *msg) override

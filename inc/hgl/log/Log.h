@@ -39,7 +39,7 @@ namespace hgl::logger
 
         const size_t GetLoggerTypeHash()const
         {
-            return object_type_info->hash_code();
+            return object_type_info?object_type_info->hash_code():0;
         }
 
         void SetLoggerInstanceName(const OSString &name)
@@ -119,7 +119,7 @@ public:
 
 #ifdef _DEBUG
     #define GLogVerbose(...)    {::hgl::logger::GlobalLogger.Verbose   (std::source_location::current(),__VA_ARGS__);}
-    #define GLogDebug(...)      {::hgl::logger::GlobalLogger.Verbose   (std::source_location::current(),__VA_ARGS__);}
+    #define GLogDebug(...)      {::hgl::logger::GlobalLogger.Debug     (std::source_location::current(),__VA_ARGS__);}
 #else
     #define GLogVerbose(...)    {}
     #define GLogDebug(...)      {}
