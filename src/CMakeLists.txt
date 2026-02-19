@@ -1,4 +1,4 @@
-#==================================================================================================
+﻿#==================================================================================================
 ## DataType 数据类型基础
 ##==================================================================================================
 SET(CMCORE_TYPE_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type)
@@ -369,7 +369,7 @@ SOURCE_GROUP("Log" FILES ${CMCORE_LOG_FILES})
 SET(CMCORE_OBJECT_TRACKER_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/utils/ObjectBase.h
                                 ${CMCORE_ROOT_INCLUDE_PATH}/hgl/utils/ObjectTracker.h
                                 ${CMCORE_ROOT_INCLUDE_PATH}/hgl/utils/ObjectCrashRecovery.h
-                                ObjectTracker.cpp)
+                                utils/ObjectTracker.cpp)
 SOURCE_GROUP("ObjectTracker" FILES ${CMCORE_OBJECT_TRACKER_FILES})
 
 ##==================================================================================================
