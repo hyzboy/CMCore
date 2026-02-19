@@ -364,6 +364,15 @@ SET(CMCORE_LOG_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/log/Log.h
 SOURCE_GROUP("Log" FILES ${CMCORE_LOG_FILES})
 
 ##==================================================================================================
+## Utils 工具类
+##==================================================================================================
+SET(CMCORE_OBJECT_TRACKER_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/utils/ObjectBase.h
+                                ${CMCORE_ROOT_INCLUDE_PATH}/hgl/utils/ObjectTracker.h
+                                ${CMCORE_ROOT_INCLUDE_PATH}/hgl/utils/ObjectCrashRecovery.h
+                                ObjectTracker.cpp)
+SOURCE_GROUP("ObjectTracker" FILES ${CMCORE_OBJECT_TRACKER_FILES})
+
+##==================================================================================================
 ## Library 库定义
 ##==================================================================================================
 add_cm_library(CMCore "CM" ${CMCORE_ROOT_INCLUDE_PATH}
@@ -395,6 +404,7 @@ add_cm_library(CMCore "CM" ${CMCORE_ROOT_INCLUDE_PATH}
                         ${CMCORE_EVENT_FILES}
                         ${CMCORE_PLUGIN_FILES}
                         ${CMCORE_LOG_FILES}
+                        ${CMCORE_OBJECT_TRACKER_FILES}
                         )
 
 target_link_libraries(CMCore PRIVATE CMCoreType absl::flat_hash_map absl::node_hash_map absl::btree)
