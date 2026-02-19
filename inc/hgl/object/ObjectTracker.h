@@ -312,7 +312,7 @@ namespace hgl::utils
         ScopeCapture& operator=(const ScopeCapture&) = delete;
     };
 
-    extern AllocationTracker<1000000>* g_object_tracker;
+    extern AllocationTracker<OBJECT_TRACKER_CAPACITY>* g_object_tracker;
 
     void initialize_object_tracker();
     void shutdown_object_tracker();
