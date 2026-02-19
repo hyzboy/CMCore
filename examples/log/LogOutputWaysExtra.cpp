@@ -1,4 +1,4 @@
-#include"LogOutputWaysShared.h"
+﻿#include"LogOutputWaysShared.h"
 
 USE_MODULE_LOGGER(LogWaysDemo)
 

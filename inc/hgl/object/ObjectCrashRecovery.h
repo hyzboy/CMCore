@@ -2,7 +2,7 @@
 
 /**
  * ObjectCrashRecovery - 从内存倾转或日志中恢复对象信息
- * 
+ *
  * 用于：
  * - 分析程序崩溃时的对象状态
  * - 检测泄漏的根本原因
@@ -104,7 +104,7 @@ namespace hgl::utils
                 }
 
                 const auto& registry = ObjectRegistry::get_instance();
-                
+
                 // 获取所有对象快照
                 std::vector<ObjectSnapshot> snapshots;
                 {
@@ -207,7 +207,7 @@ namespace hgl::utils
         ) noexcept
         {
             std::vector<ObjectSnapshot> found_objects;
-            
+
             const uint8_t* ptr = (const uint8_t*)memory_start;
             const uint8_t* end = ptr + memory_size;
 
@@ -268,7 +268,7 @@ namespace hgl::utils
                 {
                     bool is_leak = !obj.is_destroyed;
                     const char* row_class = is_leak ? "leak" : "valid";
-                    
+
                     file << "<tr class=\"" << row_class << "\">";
                     file << "<td>0x" << std::hex << obj.object_id << std::dec << "</td>";
                     file << "<td>0x" << std::hex << obj.object_type << std::dec << "</td>";

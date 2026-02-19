@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<hgl/log/Log.h>
 #include<hgl/log/Logger.h>

@@ -1,8 +1,8 @@
-#pragma once
+﻿#pragma once
 
 /**
  * ObjectBase 使用示例
- * 
+ *
  * 展示如何为各种Vulkan对象添加追踪
  * 只需派生自ObjectBase并在构造/析构时传入位置信息即可
  */
@@ -15,7 +15,7 @@ namespace hgl::graph
     // ============================================================
     // 示例1: Fence 对象追踪
     // ============================================================
-    
+
     class VKFenceBase : public hgl::utils::ObjectBase
     {
     protected:
@@ -45,7 +45,7 @@ namespace hgl::graph
         {
             // 自动记录销毁位置
             HGL_OBJECT_DESTROY_LOCATION();
-            
+
             if (fence_ != VK_NULL_HANDLE && device_ != VK_NULL_HANDLE)
             {
                 vkDestroyFence(device_, fence_, nullptr);
@@ -90,7 +90,7 @@ namespace hgl::graph
         virtual ~VKBufferBase() noexcept override
         {
             HGL_OBJECT_DESTROY_LOCATION();
-            
+
             if (buffer_ != VK_NULL_HANDLE && device_ != VK_NULL_HANDLE)
             {
                 vkDestroyBuffer(device_, buffer_, nullptr);
@@ -135,7 +135,7 @@ namespace hgl::graph
         virtual ~VKImageBase() noexcept override
         {
             HGL_OBJECT_DESTROY_LOCATION();
-            
+
             if (image_ != VK_NULL_HANDLE && device_ != VK_NULL_HANDLE)
             {
                 vkDestroyImage(device_, image_, nullptr);
@@ -178,7 +178,7 @@ namespace hgl::graph
         virtual ~VKCommandBufferBase() noexcept override
         {
             HGL_OBJECT_DESTROY_LOCATION();
-            
+
             if (cmd_buf_ != VK_NULL_HANDLE && device_ != VK_NULL_HANDLE)
             {
                 vkFreeCommandBuffers(device_, pool_, 1, &cmd_buf_);
@@ -222,22 +222,22 @@ namespace hgl::graph
 
 /**
  * 迁移现有代码的步骤：
- * 
+ *
  * 1. 为每个需要追踪的类创建基类版本
  *    class MyResourceBase : public ObjectBase { ... }
- * 
+ *
  * 2. 在构造函数中传入创建位置
  *    : ObjectBase(TYPE, name, std::source_location::current())
- * 
+ *
  * 3. 在析构函数中记录销毁位置
  *    virtual ~MyResourceBase() override
  *    {
  *        HGL_OBJECT_DESTROY_LOCATION();
  *        // 清理代码...
  *    }
- * 
+ *
  * 4. 跟踪信息自动保存，无需额外代码
- * 
+ *
  * 5. 可以随时查询对象信息
  *    HGL_LIST_ALL_OBJECTS();
  *    HGL_REPORT_LEAKS();

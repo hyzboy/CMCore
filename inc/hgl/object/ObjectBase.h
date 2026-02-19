@@ -2,7 +2,7 @@
 
 /**
  * ObjectBase - 所有可追踪资源的基类
- * 
+ *
  * 特性：
  * - 魔数验证（检测有效对象）
  * - 自动ID生成
@@ -25,13 +25,13 @@ namespace hgl::utils
 {
     // 重用 ObjectTracker 中定义的 SourceLocation 和 ObjectIdGenerator
     // （避免重定义冲突）
-    
+
     // SourceLocation 已由 ObjectTracker.h 定义
     // ObjectIdGenerator 已由 ObjectTracker.h 定义
 
     /**
      * 全局对象基类 - 所有需要追踪的资源必须继承此类
-     * 
+     *
      * 使用方式：
      *   class MyResource : public ObjectBase
      *   {
@@ -40,7 +40,7 @@ namespace hgl::utils
      *           : ObjectBase(hgl::core::ObjectTypeTag::SomeType, "MyResource", loc)
      *       {
      *       }
-     *       
+     *
      *       virtual ~MyResource() override
      *       {
      *           // ObjectBase 析构函数自动处理
@@ -227,7 +227,7 @@ namespace hgl::utils
         void register_object(ObjectBase* obj) noexcept
         {
             if (!obj) return;
-            
+
             std::lock_guard<std::mutex> lock(lock_);
             objects_[obj->get_object_id()] = obj;
         }
@@ -323,7 +323,7 @@ namespace hgl::utils
 
 /**
  * 宏：强制派生类实现虚析构函数并继承ObjectBase
- * 
+ *
  * 使用方式：
  *   class MyResource : public ObjectBase
  *   {

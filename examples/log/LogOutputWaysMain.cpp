@@ -1,4 +1,4 @@
-#include"LogOutputWaysShared.h"
+﻿#include"LogOutputWaysShared.h"
 
 int main()
 {
