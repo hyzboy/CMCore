@@ -4,6 +4,11 @@
 #include<hgl/type/String.h>
 #include<hgl/log/Log.h>
 
+namespace hgl::io
+{
+    class InputStream;
+}
+
 namespace hgl::io::minipack
 {
     class MiniPack
@@ -89,6 +94,7 @@ namespace hgl::io::minipack
         }
     };//class MiniPackMemory
 
+    MiniPackReader *GetMiniPackReader(::hgl::io::InputStream *);
     MiniPackReader *GetMiniPackReader(const OSStringView &);
     MiniPackMemory *GetMiniPackMemory(const OSStringView &);
     MiniPackMemory *GetMiniPackFileMapping(const OSStringView &);
