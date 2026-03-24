@@ -171,7 +171,7 @@ namespace hgl
         /** @brief CN: 返回字符长度（不包含末尾的隐含 NUL） EN: Get string length (excluding trailing NUL) */
         const int Length() const { return int(buffer.size()); }
         /** @brief CN: 是否为空字符串 EN: Is string empty */
-        const bool IsEmpty() const { return buffer.empty(); }
+        const bool IsEmpty() const { return buffer.empty()||buffer.size()==0; }
         /** @brief CN: 获取首字符，空时返回 0 EN: Get first character, returns 0 if empty */
         const T GetFirstChar() const { return buffer.empty() ? T(0) : buffer.front(); }
         /** @brief CN: 获取尾字符，空时返回 0 EN: Get last character, returns 0 if empty */
