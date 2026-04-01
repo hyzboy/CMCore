@@ -8,6 +8,7 @@
 #include <hgl/type/DataType.h>
 #include <hgl/type/FNV1a.h>
 #include <hgl/type/StrChar.h>
+#include <hgl/type/Str.Comp.h>
 #include <string>
 #include <initializer_list>
 #include <unordered_set>
@@ -349,6 +350,27 @@ namespace hgl
         int  Comp(const uint pos, const T *str, const int num)          const { if (pos > (uint)Length() || num <= 0) return 0; return hgl::strcmp(c_str() + pos, str, num); }
 
         /**
+         * @brief 定长内容比较（仅比较指定范围内的内容，忽略后续差异）
+         * CN: 与 Comp 不同，CompContent 仅比较给定长度范围内的内容，即使某一方在范围外仍有字符也不影响结果
+         * EN: Fixed-length content comparison: compares only the specified ranges and ignores trailing data
+         */
+        std::strong_ordering  CompContent(const SelfClass &rhs, const int src_size, const int dst_size) const
+        {
+            if (src_size <= 0 || dst_size <= 0) return std::strong_ordering::equal;
+            return hgl::strcmp_content(c_str(), static_cast<std::size_t>(src_size), rhs.c_str(), static_cast<std::size_t>(dst_size));
+        }
+
+        std::strong_ordering  CompContent(const T *str, const int src_size, const int dst_size) const
+        {
+            if (src_size <= 0 || dst_size <= 0) return std::strong_ordering::equal;
+            return hgl::strcmp_content(c_str(), static_cast<std::size_t>(src_size), str, static_cast<std::size_t>(dst_size));
+        }
+
+        /* 便捷重载：同时指定比较长度 num，表示双方都按 num 长度比较 */
+        std::strong_ordering  CompContent(const SelfClass &rhs, const int num) const { if (num <= 0) return std::strong_ordering::equal; return hgl::strcmp_content(c_str(), static_cast<std::size_t>(num), rhs.c_str(), static_cast<std::size_t>(num)); }
+        std::strong_ordering  CompContent(const T *str, const int num)         const { if (num <= 0) return std::strong_ordering::equal; return hgl::strcmp_content(c_str(), static_cast<std::size_t>(num), str, static_cast<std::size_t>(num)); }
+
+        /**
          * @brief 全字符串不区分大小写比较
          * CN: 使用 hgl::stricmp 实现，兼容 C 风格字符串比较
          * EN: Uses hgl::stricmp, compatible with C-style string comparison
@@ -378,6 +400,25 @@ namespace hgl
         int  CaseComp(const SelfClass &rhs, const int num)          const { if (num <= 0) return 0; return hgl::stricmp(c_str(), Length(), rhs.c_str(), num); }
         int  CaseComp(const T *str, const int num)                  const { if (num <= 0) return 0; return hgl::stricmp(c_str(), Length(), str, num); }
         int  CaseComp(const uint pos, const T *str, const int num)  const { if (num <= 0 || pos > (uint)Length()) return 0; return hgl::stricmp(c_str() + pos, Length() - pos, str, num); }
+
+        /**
+         * @brief 定长内容不区分大小写比较（仅比较指定范围内的内容，忽略后续差异）
+         * EN: Fixed-length case-insensitive content comparison: compares only specified ranges and ignores trailing data
+         */
+        std::strong_ordering CaseCompContent(const SelfClass &rhs, const int src_size, const int dst_size) const
+        {
+            if (src_size <= 0 || dst_size <= 0) return std::strong_ordering::equal;
+            return hgl::stricmp_content(c_str(), static_cast<std::size_t>(src_size), rhs.c_str(), static_cast<std::size_t>(dst_size));
+        }
+
+        std::strong_ordering CaseCompContent(const T *str, const int src_size, const int dst_size) const
+        {
+            if (src_size <= 0 || dst_size <= 0) return std::strong_ordering::equal;
+            return hgl::stricmp_content(c_str(), static_cast<std::size_t>(src_size), str, static_cast<std::size_t>(dst_size));
+        }
+
+        std::strong_ordering CaseCompContent(const SelfClass &rhs, const int num) const { if (num <= 0) return std::strong_ordering::equal; return hgl::stricmp_content(c_str(), static_cast<std::size_t>(num), rhs.c_str(), static_cast<std::size_t>(num)); }
+        std::strong_ordering CaseCompContent(const T *str, const int num)         const { if (num <= 0) return std::strong_ordering::equal; return hgl::stricmp_content(c_str(), static_cast<std::size_t>(num), str, static_cast<std::size_t>(num)); }
 
         // CN: 字符串到布尔/整型/浮点型的转换，底层调用工具函数
         // EN: String to bool/int/float conversion, calls utility functions underneath

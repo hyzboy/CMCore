@@ -411,7 +411,7 @@ namespace hgl
 
             for (int i = 0; i < count; ++i)
             {
-                if (Items[i] && Items[i]->Comp(str, cn) == 0)
+                if (Items[i] && Items[i]->CompContent(str, cn) == 0)
                     return (i);
             }
 
@@ -430,7 +430,7 @@ namespace hgl
 
             for (int i = 0; i < count; ++i)
             {
-                if (Items[i] && Items[i]->CaseComp(str, cn) == 0)
+                if (Items[i] && Items[i]->CaseCompContent(str, cn) == 0)
                     return (i);
             }
 
