@@ -129,6 +129,7 @@ SOURCE_GROUP("DataType\\Template\\Cache" FILES ${CMCORE_TYPE_CACHE_FILES})
 SET(CMCORE_TYPE_CORE_FILES ${CMCORE_TYPE_INCLUDE_PATH}/Inherit.h
                            ${CMCORE_TYPE_INCLUDE_PATH}/TypeInfo.h
                            ${CMCORE_TYPE_INCLUDE_PATH}/DataType.h
+                           ${CMCORE_TYPE_INCLUDE_PATH}/FNV1a.h
                            ${CMCORE_TYPE_INCLUDE_PATH}/VersionData.h
                            ${CMCORE_TYPE_INCLUDE_PATH}/TickObject.h
                            ${CMCORE_TYPE_INCLUDE_PATH}/UnicodeBlocks.h

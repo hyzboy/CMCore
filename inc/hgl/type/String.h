@@ -6,6 +6,7 @@
 #pragma once
 
 #include <hgl/type/DataType.h>
+#include <hgl/type/FNV1a.h>
 #include <hgl/type/StrChar.h>
 #include <string>
 #include <initializer_list>
@@ -1132,18 +1133,17 @@ namespace std
     {
         size_t operator()(const hgl::String<T>& str) const noexcept
         {
-            // FNV-1a hash algorithm
             const T* data = str.c_str();
             int len = str.Length();
-            size_t result = 14695981039346656037ULL; // FNV offset basis
+
+            using HashType = std::conditional_t<sizeof(size_t) == sizeof(hgl::uint64), hgl::uint64, hgl::uint32>;
+
+            HashType result = hgl::hash::FNV1aInit<HashType>();
 
             for (int i = 0; i < len; ++i)
-            {
-                result ^= static_cast<size_t>(data[i]);
-                result *= 1099511628211ULL; // FNV prime
-            }
+                result = hgl::hash::FNV1aAppend(result, data[i]);
 
-            return result;
+            return static_cast<size_t>(result);
         }
     };
 }
