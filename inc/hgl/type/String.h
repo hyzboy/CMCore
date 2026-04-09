@@ -9,9 +9,9 @@
 #include <hgl/type/FNV1a.h>
 #include <hgl/type/StrChar.h>
 #include <hgl/type/Str.Comp.h>
+#include <ankerl/unordered_dense.h>
 #include <string>
 #include <initializer_list>
-#include <unordered_set>
 #include <format>
 
 namespace hgl
@@ -825,7 +825,7 @@ namespace hgl
         int UniqueCharCount() const
         {
             if (IsEmpty()) return 0;
-            std::unordered_set<T> uniq; uniq.reserve(buffer.size());
+            ankerl::unordered_dense::set<T> uniq; uniq.reserve(buffer.size());
             for (const auto &ch : buffer) uniq.insert(ch);
             return int(uniq.size());
         }

@@ -4,7 +4,10 @@
 */
 #pragma once
 
-#include <hgl/type/UnorderedMap.h>
+#include <ankerl/unordered_dense.h>
+#include <hgl/type/DataType.h>
+#include <functional>
+#include <vector>
 
 namespace hgl
 {
@@ -50,7 +53,8 @@ namespace hgl
         /**
         * @brief CN:对象映射表。\nEN:Object map table.
         */
-        UnorderedMap<K, ManagedObj> items;
+        using MapType = ankerl::unordered_dense::map<K, ManagedObj, std::hash<K>, std::equal_to<K>>;
+        MapType items;
 
     public:
 
@@ -66,15 +70,17 @@ namespace hgl
         */
         virtual void Clear()
         {
-            items.EnumValues([](ManagedObj& obj) {
+            for (auto& kv : items)
+            {
+                ManagedObj& obj = kv.second;
                 if (obj.value)
                 {
                     delete obj.value;
                     obj.value = nullptr;
                 }
-            });
+            }
 
-            items.Clear();
+            items.clear();
         }
 
         /**
@@ -85,7 +91,10 @@ namespace hgl
             // 收集需要删除的键
             std::vector<K> keys_to_delete;
 
-            items.EnumKV([&keys_to_delete](const K& key, ManagedObj& obj) {
+            for (auto& kv : items)
+            {
+                const K& key = kv.first;
+                ManagedObj& obj = kv.second;
                 if (obj.ref_count <= 0)
                 {
                     if (obj.value)
@@ -95,12 +104,12 @@ namespace hgl
                     }
                     keys_to_delete.push_back(key);
                 }
-            });
+            }
 
             // 删除收集到的键
             for (const K& key : keys_to_delete)
             {
-                items.DeleteByKey(key);
+                items.erase(key);
             }
         }
 
@@ -110,7 +119,7 @@ namespace hgl
         */
         const int GetCount() const
         {
-            return items.GetCount();
+            return static_cast<int>(items.size());
         }
 
         /**
@@ -126,12 +135,12 @@ namespace hgl
                 return false;
             }
 
-            if (items.ContainsKey(key))
+            if (items.contains(key))
             {
                 return false;
             }
 
-            items.Add(key, obj);
+            items.emplace(key, ManagedObj(obj));
             return true;
         }
 
@@ -142,8 +151,8 @@ namespace hgl
         */
         virtual V *Find(const K &key) const
         {
-            const ManagedObj* obj = items.GetValuePointer(key);
-            return obj ? obj->value : nullptr;
+            auto it = items.find(key);
+            return it != items.end() ? it->second.value : nullptr;
         }
 
         /**
@@ -153,11 +162,11 @@ namespace hgl
         */
         virtual V *Get(const K &key)
         {
-            ManagedObj* obj = items.GetValuePointer(key);
-            if (obj)
+            auto it = items.find(key);
+            if (it != items.end())
             {
-                ++obj->ref_count;
-                return obj->value;
+                ++it->second.ref_count;
+                return it->second.value;
             }
 
             return nullptr;
@@ -173,9 +182,10 @@ namespace hgl
         */
         virtual bool GetKeyByValue(V *value, K *key = nullptr, uint *count = nullptr, bool add_ref = false)
         {
-            bool found = false;
-
-            items.EnumKV([&](const K& k, ManagedObj& obj) {
+            for (auto& kv : items)
+            {
+                const K& k = kv.first;
+                ManagedObj& obj = kv.second;
                 if (obj.value == value)
                 {
                     if (key)
@@ -193,12 +203,11 @@ namespace hgl
                         ++obj.ref_count;
                     }
 
-                    found = true;
-                    return; // 找到后退出枚举
+                    return true;
                 }
-            });
+            }
 
-            return found;
+            return false;
         }
 
         /**
@@ -208,8 +217,8 @@ namespace hgl
         */
         virtual int GetRefCount(const K &key) const
         {
-            const ManagedObj* obj = items.GetValuePointer(key);
-            return obj ? obj->ref_count : -1;
+            auto it = items.find(key);
+            return it != items.end() ? it->second.ref_count : -1;
         }
 
         /**
@@ -221,13 +230,15 @@ namespace hgl
         {
             int result = -1;
 
-            items.EnumKV([&](const K& k, const ManagedObj& obj) {
+            for (const auto& kv : items)
+            {
+                const ManagedObj& obj = kv.second;
                 if (obj.value == value)
                 {
                     result = obj.ref_count;
-                    return; // 找到后退出枚举
+                    break;
                 }
-            });
+            }
 
             return result;
         }
@@ -240,23 +251,25 @@ namespace hgl
         */
         virtual int Release(const K &key, bool zero_clear = false)
         {
-            ManagedObj* obj = items.GetValuePointer(key);
-            if (!obj)
+            auto it = items.find(key);
+            if (it == items.end())
             {
                 return -1;
             }
 
-            --obj->ref_count;
-            int remaining_count = obj->ref_count;  // 保存值，因为后面 DeleteByKey 会使 obj 指针失效
+            ManagedObj& obj = it->second;
+
+            --obj.ref_count;
+            int remaining_count = obj.ref_count;
 
             if (remaining_count <= 0 && zero_clear)
             {
-                if (obj->value)
+                if (obj.value)
                 {
-                    delete obj->value;
-                    obj->value = nullptr;
+                    delete obj.value;
+                    obj.value = nullptr;
                 }
-                items.DeleteByKey(key);
+                items.erase(it);
             }
 
             return remaining_count;
@@ -276,14 +289,17 @@ namespace hgl
             bool found = false;
             int remaining_count = -1;
 
-            items.EnumKV([&](const K& k, ManagedObj& obj) {
+            for (auto& kv : items)
+            {
+                const K& k = kv.first;
+                ManagedObj& obj = kv.second;
                 if (obj.value == value)
                 {
                     found_key = k;
                     found = true;
-                    return; // 退出枚举
+                    break;
                 }
-            });
+            }
 
             if (found)
             {

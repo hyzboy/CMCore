@@ -1,9 +1,9 @@
 ﻿#pragma once
 
 #include <hgl/type/StrChar.h>
+#include <ankerl/unordered_dense.h>
 #include <string>
 #include <string_view>
-#include <unordered_set>
 
 namespace hgl
 {
@@ -1434,7 +1434,7 @@ namespace hgl
                 return 0;
             }
 
-            std::unordered_set<T> uniq;
+            ankerl::unordered_dense::set<T> uniq;
 
             uniq.reserve(size_t(Length()));
 
