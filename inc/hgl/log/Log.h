@@ -4,6 +4,7 @@
 #include<vector>
 #include<hgl/log/LogLevel.h>
 #include<hgl/Charset.h>
+#include<hgl/type/StdString.h>
 #include<typeinfo>
 #include<string>
 #include<source_location>
@@ -64,6 +65,31 @@ namespace hgl::logger
         const bool     IsOutputLevelName()const { return output_level_name; }                      ///< 查询级别名输出开关
 
 public:
+
+        void LogText(const std::source_location &sl,const LogLevel level,const std::string &text)
+        {
+            if(text.empty())
+                return;
+
+            const OSString os_text=ToOSString(text);
+            LogString(sl,level,os_text.c_str(),static_cast<int>(os_text.Length()));
+        }
+
+    #define LOG_HELPER_DECL_STD_STRING(LEVEL_ENUM) \
+        void LEVEL_ENUM(const std::source_location &sl,const std::string &text) \
+        {   \
+            LogText(sl,LogLevel::LEVEL_ENUM,text); \
+        }
+
+        LOG_HELPER_DECL_STD_STRING(Verbose)
+        LOG_HELPER_DECL_STD_STRING(Debug)
+        LOG_HELPER_DECL_STD_STRING(Info)
+        LOG_HELPER_DECL_STD_STRING(Notice)
+        LOG_HELPER_DECL_STD_STRING(Warning)
+        LOG_HELPER_DECL_STD_STRING(Error)
+        LOG_HELPER_DECL_STD_STRING(Fatal)
+
+    #undef LOG_HELPER_DECL_STD_STRING
 
         void LogString(const std::source_location &,const LogLevel,const os_char *,const int);     ///< 核心输出入口：拼装前缀并下发到sink
 
