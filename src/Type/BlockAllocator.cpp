@@ -47,6 +47,8 @@ namespace hgl
 
             UserNode *ud=ud_pool.Acquire();
 
+            if(!ud){free_count+=acquire_count;return(nullptr);}
+
             ud->start=start->start;
             ud->count=acquire_count;
 
@@ -77,16 +79,18 @@ namespace hgl
             }
 
             cn=cn->next;
-        }while(cn!=end);
+            }while(cn!=nullptr);
 
-        if(!fit)    //没有合适的
-            return(nullptr);
+            if(!fit)    //没有合适的
+                return(nullptr);
 
-        free_count-=acquire_count;
+            free_count-=acquire_count;
 
-        UserNode *ud=ud_pool.Acquire();
+            UserNode *ud=ud_pool.Acquire();
 
-        ud->start=fit->start;
+            if(!ud){free_count+=acquire_count;return(nullptr);}
+
+            ud->start=fit->start;
         ud->count=acquire_count;
 
         ud_set.Add(ud);
@@ -138,6 +142,7 @@ namespace hgl
 
                 free_count+=ud->count;      //空闲数量增加
                 ud_set.Delete(ud);
+                ud_pool.Release(ud);
                 return(true);
             }
             else if(cur->start==ud_end)     //接在一起了
@@ -147,6 +152,7 @@ namespace hgl
 
                 free_count+=ud->count;      //空闲数量增加
                 ud_set.Delete(ud);
+                ud_pool.Release(ud);
                 return(true);
             }
             else if(cur->start>ud_end)      //在前面
@@ -167,6 +173,7 @@ namespace hgl
 
                 free_count+=ud->count;      //空闲数量增加
                 ud_set.Delete(ud);
+                ud_pool.Release(ud);
                 return(true);
             }
 
@@ -181,6 +188,7 @@ namespace hgl
 
                     free_count+=ud->count;      //空闲数量增加
                     ud_set.Delete(ud);
+                    ud_pool.Release(ud);
                     return(true);
                 }
                 else
@@ -198,6 +206,7 @@ namespace hgl
 
                         free_count+=ud->count;      //空闲数量增加
                         ud_set.Delete(ud);
+                        ud_pool.Release(ud);
                         return(true);
                     }
                     else //next->start<ud_end
@@ -236,11 +245,12 @@ namespace hgl
 
                 free_count+=ud->count;      //空闲数量增加
                 ud_set.Delete(ud);
+                ud_pool.Release(ud);
                 return(true);
             }
 
             cur=next;
-        }while(cur<=end);
+        }while(cur!=nullptr);
 
         //未找到？？
         return(false);
