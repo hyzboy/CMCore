@@ -1,12 +1,13 @@
 ﻿/**
 * @file ObjectManager.h
-* @brief CN:对象管理模板类，支持引用计数和ID分配。\nEN:Object management template class, supports reference counting and ID allocation.
-*/
+ * @brief CN:对象管理模板类，支持引用计数和ID分配。\nEN:Object management template class, supports reference counting and ID allocation.
+ */
 #pragma once
 
 #include <ankerl/unordered_dense.h>
 #include <hgl/type/DataType.h>
 #include <functional>
+#include <memory>
 #include <vector>
 
 namespace hgl
@@ -389,4 +390,113 @@ namespace hgl
     */
     template<typename V>
     using Uint64IdManager = AutoIdObjectManager<uint64, V>;
+
+    /**
+    * @brief CN:基于 shared_ptr 的自动 ID 对象管理器。\nEN:shared_ptr-based object manager with automatic ID allocation.
+    *
+    * Manager 内部以 shared_ptr<V> 持有对象的所有权。
+    * 外部调用方通过 weak_ptr<V> 持有弱引用：Manager 销毁或 Release 后弱引用自动 expired，
+    * 无需手动通知，也不会产生悬空指针。
+    *
+    * @tparam K CN:ID 类型（通常为 int/uint）。EN:ID type (typically int/uint).
+    * @tparam V CN:值类型。EN:Value type.
+    */
+    template<typename K, typename V>
+    class SharedObjectManager
+    {
+    protected:
+        using MapType = ankerl::unordered_dense::map<K, std::shared_ptr<V>>;
+        MapType items;
+        K id_count = 0;
+
+    public:
+
+        SharedObjectManager() = default;
+        virtual ~SharedObjectManager() { Clear(); }
+
+        /**
+        * @brief CN:清空所有对象。\nEN:Clear all managed objects.
+        */
+        void Clear() { items.clear(); }
+
+        /**
+        * @brief CN:获取当前管理的对象数量。\nEN:Get number of managed objects.
+        */
+        int GetCount() const { return static_cast<int>(items.size()); }
+
+        /**
+        * @brief CN:接管一个裸指针，分配 ID，返回 weak_ptr。\nEN:Take ownership of a raw pointer, assign ID, return weak_ptr.
+        * @param value CN:对象裸指针（Manager 接管所有权）。EN:Raw pointer (ownership transferred to Manager).
+        * @return CN:分配的 ID，失败返回 K(-1)。EN:Allocated ID, or K(-1) on failure.
+        */
+        K Add(V *value)
+        {
+            if(!value) return K(-1);
+            K key = id_count++;
+            items.emplace(key, std::shared_ptr<V>(value));
+            return key;
+        }
+
+        /**
+        * @brief CN:通过 ID 获取 weak_ptr（不增加引用计数）。\nEN:Get weak_ptr by ID (does not extend lifetime).
+        */
+        std::weak_ptr<V> Get(const K &key) const
+        {
+            auto it = items.find(key);
+            if(it != items.end()) return it->second;
+            return {};
+        }
+
+        /**
+        * @brief CN:通过 ID 获取 shared_ptr（延长生命周期）。\nEN:Get shared_ptr by ID (extends lifetime).
+        */
+        std::shared_ptr<V> Acquire(const K &key) const
+        {
+            auto it = items.find(key);
+            if(it != items.end()) return it->second;
+            return nullptr;
+        }
+
+        /**
+        * @brief CN:通过 ID 释放对象（从 Manager 移除，引用计数归零则 delete）。
+        * EN:Release object by ID (remove from Manager; deleted when all shared_ptrs expire).
+        */
+        bool Release(const K &key)
+        {
+            return items.erase(key) > 0;
+        }
+
+        /**
+        * @brief CN:通过 shared_ptr 释放对象。EN:Release object by shared_ptr.
+        */
+        bool Release(const std::shared_ptr<V> &ptr)
+        {
+            for(auto it = items.begin(); it != items.end(); ++it)
+            {
+                if(it->second == ptr)
+                {
+                    items.erase(it);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /**
+        * @brief CN:通过裸指针释放对象。EN:Release object by raw pointer.
+        */
+        bool Release(V *value)
+        {
+            for(auto it = items.begin(); it != items.end(); ++it)
+            {
+                if(it->second.get() == value)
+                {
+                    items.erase(it);
+                    return true;
+                }
+            }
+            return false;
+        }
+    };//class SharedObjectManager
+
 } // namespace hgl
