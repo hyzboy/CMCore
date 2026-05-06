@@ -1405,7 +1405,7 @@ namespace hgl
          */
         int StatChar(const T ch) const
         {
-            return ::StatChar(c_str(), ch);
+            return hgl::stat_char(c_str(), ch);
         }
 
         /**
@@ -1417,7 +1417,7 @@ namespace hgl
          */
         int StatLine() const
         {
-            return ::StatLine(c_str());
+            return hgl::stat_line(c_str());
         }
 
         /**

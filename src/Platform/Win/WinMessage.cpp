@@ -10,7 +10,13 @@
 
 #ifdef _DEBUG
 #include<hgl/log/Log.h>
-#endif//_DEBUG
+#endif // _DEBUG
+
+#if defined(WM_POINTERDOWN) && defined(GET_POINTERID_WPARAM) && defined(PT_POINTER)
+#define HGL_HAS_WIN_POINTER_API 1
+#else
+#define HGL_HAS_WIN_POINTER_API 0
+#endif
 
 namespace hgl
 {
@@ -23,7 +29,7 @@ namespace hgl
         static KeyboardButton KeyConvert[256]{};
         static void (*WMProc[2048])(EventDispatcher *,uint32,uint32){};                 //消息处理队列
 
-        static TOUCHINPUT WinTouchInputBuffer[MAX_TOUCH_COUNT]{};
+        static TOUCHINPUT WinTouchInputBuffer[MAX_TOUCH_POINTS]{};
 
         /**
          * Convert Windows TOUCH input data to TouchEvent
@@ -205,7 +211,7 @@ namespace hgl
                 GLogVerbose( WideString(L"Unknow Key: " )+WideString::numberOf(key)
                             +WideString(L" ,name: "     )+WideString(name));
             }
-    #endif _DEBUG
+    #endif // _DEBUG
 
             return KeyConvert[key];
         }
@@ -374,6 +380,7 @@ namespace hgl
             }
         #undef WMEF2
 
+#if HGL_HAS_WIN_POINTER_API
             static PointerEventData pointer_event_data;
             static PointerExtendedInfo pointer_extended_info;
 
@@ -667,6 +674,7 @@ namespace hgl
                 }
             }
         #undef WMEF_POINTER
+#endif // HGL_HAS_WIN_POINTER_API
 
             static TouchEventData touch_event_data;
 
@@ -877,11 +885,13 @@ namespace hgl
         WM_MAP(WM_IME_STARTCOMPOSITION,WMProcImeStart);
         WM_MAP(WM_IME_COMPOSITION   ,WMProcImeComposition);
         WM_MAP(WM_IME_ENDCOMPOSITION,WMProcImeEnd);
+    #if HGL_HAS_WIN_POINTER_API
         WM_MAP(WM_POINTERDOWN       ,WMProcPointerDown);
         WM_MAP(WM_POINTERUP         ,WMProcPointerUp);
         WM_MAP(WM_POINTERUPDATE     ,WMProcPointerUpdate);
         WM_MAP(WM_POINTERENTER      ,WMProcPointerEnter);
         WM_MAP(WM_POINTERLEAVE      ,WMProcPointerLeave);
+    #endif // HGL_HAS_WIN_POINTER_API
         WM_MAP(WM_TOUCH             ,WMProcTouch);
         WM_MAP(WM_GESTURE           ,WMProcGesture);
 

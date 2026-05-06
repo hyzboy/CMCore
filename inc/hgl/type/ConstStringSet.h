@@ -230,21 +230,48 @@ namespace hgl
                 Add(str.c_str(), str.length());
         }
 
-        // ==================== 哈希统计接口（性能分析 - 委托给 HashIDMap） ====================
+        // ==================== 哈希统计接口（性能分析） ====================
 
         // 获取哈希碰撞次数
         int GetCollisionCount() const {
-            return hash_id_map.GetCollisionCount();
+            int collisions = 0;
+
+            for(const auto &entry : hash_id_map)
+            {
+                const size_t chain_size = entry.second.size();
+
+                if(chain_size > 1)
+                    collisions += int(chain_size - 1);
+            }
+
+            return collisions;
         }
 
         // 获取哈希表负载因子（用于性能分析）
         float GetLoadFactor() const {
-            return hash_id_map.GetLoadFactor((int)str_list.size());
+            return hash_id_map.load_factor();
         }
 
         // 获取平均碰撞链长度（用于性能分析）
         float GetAverageCollisionChainLength() const {
-            return hash_id_map.GetAverageCollisionChainLength();
+            size_t collided_bucket_count = 0;
+            size_t collided_item_count = 0;
+
+            for(const auto &entry : hash_id_map)
+            {
+                const size_t chain_size = entry.second.size();
+
+                if(chain_size > 1)
+                {
+                    ++collided_bucket_count;
+                    collided_item_count += chain_size;
+                }
+            }
+
+            if(collided_bucket_count == 0)
+                return 0.0f;
+
+            return float(collided_item_count) / float(collided_bucket_count);
         }
 
         // 获取碰撞槽位溢出次数（性能监控）

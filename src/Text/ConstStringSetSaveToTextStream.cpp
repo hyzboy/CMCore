@@ -91,10 +91,14 @@ namespace hgl
     template bool SaveToTextStream<char>(hgl::io::TextOutputStream *tos,const ConstStringSet<char> *css,bool output_id);
     template bool SaveToTextStream<wchar_t>(hgl::io::TextOutputStream *tos,const ConstStringSet<wchar_t> *css,bool output_id);
     template bool SaveToTextStream<u8char>(hgl::io::TextOutputStream *tos,const ConstStringSet<u8char> *css,bool output_id);
+#if HGL_OS != HGL_OS_Windows
     template bool SaveToTextStream<u16char>(hgl::io::TextOutputStream *tos,const ConstStringSet<u16char> *css,bool output_id);
+#endif
 
     template bool SaveToTextFile<char>(const OSString &filename,const ConstStringSet<char> *css,bool output_id,bool output_bom);
     template bool SaveToTextFile<wchar_t>(const OSString &filename,const ConstStringSet<wchar_t> *css,bool output_id,bool output_bom);
     template bool SaveToTextFile<u8char>(const OSString &filename,const ConstStringSet<u8char> *css,bool output_id,bool output_bom);
+#if HGL_OS != HGL_OS_Windows
     template bool SaveToTextFile<u16char>(const OSString &filename,const ConstStringSet<u16char> *css,bool output_id,bool output_bom);
+#endif
 }//namespace hgl

@@ -537,9 +537,9 @@ namespace hgl
         }
 
         /** @brief 统计字符出现次数 */
-        int StatChar(const T ch)const { return ::StatChar(c_str(), ch); }
+        int StatChar(const T ch)const { return hgl::stat_char(c_str(), ch); }
         /** @brief 统计行数 */
-        int StatLine()          const { return ::StatLine(c_str()); }
+        int StatLine()          const { return hgl::stat_line(c_str()); }
 
         // 查找/替换 ----------------------------------------------------------
         /**
