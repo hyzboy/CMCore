@@ -80,7 +80,7 @@ namespace hgl
 
             void Write(const LogMessage *msg) override
             {
-                if(!msg||!msg->message||msg->message_length<=0)
+                if(!msg)
                     return;
 
             #ifdef LOGINFO_THREAD_MUTEX
@@ -101,22 +101,23 @@ namespace hgl
 
                     int pos=hgl::strlen(log_buf);
 
-                    if constexpr(sizeof(os_char)==sizeof(char))
+                    if(msg->text.message_u8&&msg->text.message_u8_length>0)
                     {
-                        int copy_len=msg->message_length;
+                        int copy_len=msg->text.message_u8_length;
 
                         if(copy_len>int(LOG_BUF_SIZE-1-pos))
                             copy_len=LOG_BUF_SIZE-1-pos;
 
                         if(copy_len>0)
                         {
-                            memcpy(log_buf+pos,reinterpret_cast<const char *>(msg->message),copy_len);
+                            memcpy(log_buf+pos,msg->text.message_u8,copy_len);
                             pos+=copy_len;
                         }
                     }
                     else
+                    if(msg->text.message_u16&&msg->text.message_u16_length>0)
                     {
-                        const int len=u16_to_u8(log_buf+pos,LOG_BUF_SIZE-pos,reinterpret_cast<const u16char *>(msg->message),msg->message_length);
+                        const int len=u16_to_u8(log_buf+pos,LOG_BUF_SIZE-pos,msg->text.message_u16,msg->text.message_u16_length);
 
                         if(len>0)
                             pos+=len;

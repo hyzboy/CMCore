@@ -143,14 +143,24 @@ namespace hgl::logger
         OSString text(str,size);
         OSString final_message=prefix+text;
 
+        const U8String final_message_u8=ToU8String(final_message);
+        const U16String final_message_u16=to_u16(final_message_u8);
+
         LogMessage msg;
 
-        msg.object_type_info    =object_type_info;
-        msg.object_instance_name=object_instance_name;
-        msg.source_location     =sl;
-        msg.level               =level;
-        msg.message             =final_message.c_str();
-        msg.message_length      =final_message.Length();
+        msg.meta.object_type_info    =object_type_info;
+        msg.meta.object_instance_name=object_instance_name;
+        msg.meta.source_location     =sl;
+        msg.meta.level               =level;
+    #if HGL_OS == HGL_OS_Windows
+        msg.meta.message_encoding    =LogTextEncoding::UTF16;
+    #else
+        msg.meta.message_encoding    =LogTextEncoding::UTF8;
+    #endif
+        msg.text.message_u8          =final_message_u8.c_str();
+        msg.text.message_u8_length   =final_message_u8.Length();
+        msg.text.message_u16         =final_message_u16.c_str();
+        msg.text.message_u16_length  =final_message_u16.Length();
 
         LogOutput(msg);
     }

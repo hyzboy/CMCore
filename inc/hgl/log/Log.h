@@ -18,13 +18,13 @@ namespace hgl::logger
     */
     class ObjectLogger
     {
-        const std::type_info *object_type_info      =nullptr;          ///< 所属对象类型信息(可为空：全局/匿名logger)
+        const std::type_info * object_type_info      =nullptr;         ///< 所属对象类型信息(可为空：全局/匿名logger)
 
         OSString               object_type_name;                       ///< 模块/类型名(来自typeid或手工命名)
         OSString               object_instance_name;                   ///< 实例名(可选，优先于类型名输出)
 
-        std::vector<u8char>    log_buffer_u8;                         ///< UTF-8格式化临时缓冲区
-        std::vector<u16char>   log_buffer_u16;                        ///< UTF-16格式化临时缓冲区
+        std::vector<u8char>    log_buffer_u8;                          ///< UTF-8格式化临时缓冲区
+        std::vector<u16char>   log_buffer_u16;                         ///< UTF-16格式化临时缓冲区
 
         uint64                 module_message_count    =0;             ///< 当前logger已输出消息计数(用于时间采样)
         uint32                 time_output_interval    =100;           ///< 时间输出间隔(每N条输出一次时间，默认100)

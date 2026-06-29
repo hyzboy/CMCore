@@ -41,7 +41,7 @@ namespace hgl
 
             for(int i=0;i<n;i++)
             {
-                if((*log)->GetLevel()<=msg->level)
+                if((*log)->GetLevel()<=msg->meta.level)
                     (*log)->Write(msg);
 
                 ++log;
@@ -77,12 +77,18 @@ namespace hgl
                                 OS_TEXT("Current path: ") + cur_path.c_str() + OS_TEXT("\n");
             LogMessage msg;
 
-            msg.object_type_info    =nullptr;
-            msg.object_instance_name=OS_TEXT("LogInfo");
-            msg.source_location     =std::source_location::current();
-            msg.level               =LogLevel::Verbose;
-            msg.message             =str.c_str();
-            msg.message_length      =str.Length();
+            msg.meta.object_type_info    =nullptr;
+            msg.meta.object_instance_name=OS_TEXT("LogInfo");
+            msg.meta.source_location     =std::source_location::current();
+            msg.meta.level               =LogLevel::Verbose;
+            msg.meta.message_encoding    =LogTextEncoding::Native;
+            const U8String str_u8   =ToU8String(str);
+            const U16String str_u16 =to_u16(str_u8);
+
+            msg.text.message_u8          =str_u8.c_str();
+            msg.text.message_u8_length   =str_u8.Length();
+            msg.text.message_u16         =str_u16.c_str();
+            msg.text.message_u16_length  =str_u16.Length();
 
             WriteLog(&msg);
 
@@ -195,7 +201,8 @@ namespace hgl
 
         void LogOutput(const LogMessage &msg)
         {
-            if(!msg.message||msg.message_length<=0)
+            if((!msg.text.message_u8||msg.text.message_u8_length<=0)
+            && (!msg.text.message_u16||msg.text.message_u16_length<=0))
                 return;
 
             if(!log_interface)

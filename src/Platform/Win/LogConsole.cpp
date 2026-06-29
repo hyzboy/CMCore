@@ -70,12 +70,29 @@ namespace hgl
 
             void Write(const LogMessage *msg) override
             {
-                if (!msg||!msg->message||msg->message_length<=0)return;
+                if(!msg)
+                    return;
 
-                const std::string color = GetAnsiColorByLogLevel(msg->level);
+                const std::string color = GetAnsiColorByLogLevel(msg->meta.level);
+                const u16char *text=msg->text.message_u16;
+                int text_length=msg->text.message_u16_length;
+
+                if(!text||text_length<=0)
+                {
+                    if(msg->text.message_u8&&msg->text.message_u8_length>0)
+                    {
+                        const U16String wide=ToOSString(U8String(msg->text.message_u8,msg->text.message_u8_length));
+
+                        text=wide.c_str();
+                        text_length=wide.Length();
+                    }
+                }
+
+                if(!text||text_length<=0)
+                    return;
 
                 WriteConsoleA(console_handle, color.c_str(), (DWORD)color.size(), &result, nullptr);
-                WriteConsoleW(console_handle, msg->message, msg->message_length, &result, nullptr);
+                WriteConsoleW(console_handle, text, text_length, &result, nullptr);
                 WriteConsoleW(console_handle, L"\n", 1, &result, nullptr);
                 WriteConsoleA(console_handle, "\033[0m", 4, &result, nullptr); // 重置颜色
             }

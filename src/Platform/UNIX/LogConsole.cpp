@@ -65,7 +65,7 @@ namespace hgl
 
             void Write(const LogMessage *msg) override
             {
-                if(!msg||!msg->message||msg->message_length<=0)
+                if(!msg)
                     return;
 
             #ifdef LOGINFO_THREAD_MUTEX
@@ -80,21 +80,34 @@ namespace hgl
                     WriteTime();
                 #endif//LOG_INFO_TIME
 
-                    if constexpr(sizeof(os_char)==sizeof(char))
-                    {
-                        write(STDOUT_FILENO,reinterpret_cast<const char *>(msg->message),msg->message_length);
-                        write(STDOUT_FILENO,"\n",1);
-                    }
-                    else
-                    {
-                        const int len=u16_to_u8(log_buf,LOG_BUF_SIZE,reinterpret_cast<const u16char *>(msg->message),msg->message_length);
+                    int pos=hgl::strlen(log_buf);
 
-                        if(len>0)
+                    if(msg->text.message_u8&&msg->text.message_u8_length>0)
+                    {
+                        int copy_len=msg->text.message_u8_length;
+
+                        if(copy_len>int(LOG_BUF_SIZE-1-pos))
+                            copy_len=LOG_BUF_SIZE-1-pos;
+
+                        if(copy_len>0)
                         {
-                            log_buf[len]='\n';
-                            write(STDOUT_FILENO,log_buf,len+1);
+                            memcpy(log_buf+pos,msg->text.message_u8,copy_len);
+                            pos+=copy_len;
                         }
                     }
+                    else
+                    if(msg->text.message_u16&&msg->text.message_u16_length>0)
+                    {
+                        const int len=u16_to_u8(log_buf+pos,LOG_BUF_SIZE-pos,msg->text.message_u16,msg->text.message_u16_length);
+
+                        if(len>0)
+                            pos+=len;
+                    }
+
+                    if(pos>0)
+                        write(STDOUT_FILENO,log_buf,pos);
+
+                    write(STDOUT_FILENO,"\n",1);
             #ifdef LOGINFO_THREAD_MUTEX
                 mutex.Unlock();
             #endif//LOGINFO_THREAD_MUTEX

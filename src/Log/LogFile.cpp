@@ -60,7 +60,7 @@ namespace hgl
 
                     if(fos.CreateTrunc(filename))//创建成功
                     {
-                        tos=io::CreateTextOutputStream<os_char>(&fos);
+                        tos=io::CreateTextOutputStream<u8char>(&fos);
                         tos->WriteBOM();
 
                         return(true);
@@ -78,12 +78,25 @@ namespace hgl
 
             void Write(const LogMessage *msg)
             {
-                if (!msg||!msg->message||msg->message_length<=0)return;
+                if (!msg)
+                    return;
 
                 if(!tos)
                     return;
 
-                tos->WriteLine(msg->message,msg->message_length);
+                if(msg->text.message_u8&&msg->text.message_u8_length>0)
+                {
+                    tos->WriteLine(msg->text.message_u8,msg->text.message_u8_length);
+                    return;
+                }
+
+                if(msg->text.message_u16&&msg->text.message_u16_length>0)
+                {
+                    const U8String text=to_u8(msg->text.message_u16,msg->text.message_u16_length);
+
+                    if(text.Length()>0)
+                        tos->WriteLine(text.c_str(),text.Length());
+                }
             }
         };//class LogFile
 
