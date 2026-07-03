@@ -6,7 +6,7 @@
 #pragma once
 
 #include <hgl/type/DataType.h>
-#include <hgl/type/FNV1a.h>
+#include <hgl/util/hash/FNV1a.h>
 #include <hgl/type/StrChar.h>
 #include <hgl/type/Str.Comp.h>
 #include <ankerl/unordered_dense.h>
