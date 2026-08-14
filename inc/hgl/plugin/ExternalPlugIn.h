@@ -43,5 +43,6 @@ namespace hgl
                 bool Load(const OSString &,const OSString &);                   ///<加载插件
 
         virtual bool GetInterface(uint,void *) override;
+                bool GetCapability(uint,void *);                                ///<取得插件能力
     };//class ExternalPlugIn:public PlugIn
 }//namespace hgl

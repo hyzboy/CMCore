@@ -1,4 +1,5 @@
 ﻿#include<hgl/plugin/PlugInManager.h>
+#include<hgl/plugin/PlugInInterface.h>
 #include<hgl/filesystem/FileSystem.h>
 #include<hgl/plugin/ExternalPlugIn.h>
 
@@ -6,9 +7,44 @@ namespace hgl
 {
     using namespace filesystem;
 
+    namespace
+    {
+        /**
+         * 从已加载的插件填充探测信息(版本/介绍/菜单信息/扩展名)
+         */
+        template<typename T>
+        void FillInfoFromPlugin(T &pi,PlugInInfo &info)
+        {
+            info.version = pi.GetVersion();
+            info.intro   = pi.GetIntro();
+
+            PlugInMenuInfo menu;
+            if(pi.GetCapability(uint32(PlugInCapability::MenuInfo),&menu))
+            {
+                if(menu.display_name)info.display_name=menu.display_name;
+                if(menu.category)    info.category    =menu.category;
+                info.priority=menu.priority;
+            }
+
+            PlugInFileExtensions fe;
+            if(pi.GetCapability(uint32(PlugInCapability::FileExtensions),&fe))
+            {
+                if(fe.items)
+                {
+                    for(uint32 i=0;i<fe.count;i++)
+                        if(fe.items[i])
+                            info.extensions.Add(fe.items[i]);
+                }
+            }
+        }
+    }
+
     PlugInManager::PlugInManager(const OSString &n)
     {
         name=OS_TEXT("CMP.")+n;
+        category_name=n;
+
+        probe_cache_valid=false;
 
         OSString pn;
 
@@ -99,7 +135,7 @@ namespace hgl
 
                 OSString fname=fi->name;
                 if(!fname.EndsWithIgnoreCase(ext))continue;
-                if( fname.StartsWithIgnoreCase(prefix))continue;
+                if(!fname.StartsWithIgnoreCase(prefix))continue;
 
                 OSString plugin_name=fname.SubString(prefix.Length(),fname.Length()-prefix.Length()-ext.Length());
 
@@ -110,6 +146,16 @@ namespace hgl
                     if(out_names.Find(plugin_name)==-1)
                         out_names.Add(plugin_name);
                 #endif
+            }
+        }
+
+        const int total=out_names.GetCount();
+        for(int i=0;i<total-1;i++)
+        {
+            for(int j=0;j<total-1-i;j++)
+            {
+                if(out_names[j]>out_names[j+1])
+                    out_names.Exchange(j,j+1);
             }
         }
 
@@ -126,12 +172,16 @@ namespace hgl
         const int ncount=names.GetCount();
         for(int i=0;i<ncount;i++)
         {
-            PlugInInfo *info=new PlugInInfo;
+            PlugInInfo *info=out_infos.Create();
 
             info->name=names[i];
             info->version=0;
+            info->priority=0;
             info->status=PlugInStatus::NONE;
             info->intro.Clear();
+            info->display_name.Clear();
+            info->category.Clear();
+            info->extensions.Clear();
             info->filename.Clear();
 
             OSString fullpath;
@@ -146,8 +196,7 @@ namespace hgl
                 ExternalPlugIn epi;
                 if(epi.Load(info->name,fullpath))
                 {
-                    info->version=epi.GetVersion();
-                    info->intro=epi.GetIntro();
+                    FillInfoFromPlugin(epi,*info);
                     info->status=PlugInStatus::COMPLETE;
                     epi.Free();
                 }
@@ -156,11 +205,49 @@ namespace hgl
                     info->status=PlugInStatus::LOAD_FAILED;
                 }
             }
-
-            out_infos.Add(info);
         }
 
+        AppendStaticPlugIns(out_infos);
+
         return out_infos.GetCount();
+    }
+
+    int PlugInManager::ScanAndProbe(hgl::ManagedArray<PlugInInfo> &out_infos,bool force)
+    {
+        if(!force && probe_cache_valid)
+        {
+            out_infos.Clear();
+
+            const int count=probe_cache.GetCount();
+            for(int i=0;i<count;i++)
+            {
+                PlugInInfo *src=probe_cache[i];
+                if(!src)continue;
+
+                PlugInInfo *dst=out_infos.Create();
+                *dst=*src;
+            }
+
+            return out_infos.GetCount();
+        }
+
+        ScanDetailed(out_infos,true);
+
+        probe_cache.Free();
+
+        const int count=out_infos.GetCount();
+        for(int i=0;i<count;i++)
+        {
+            PlugInInfo *src=out_infos[i];
+            if(!src)continue;
+
+            PlugInInfo *dst=probe_cache.Create();
+            *dst=*src;
+        }
+
+        probe_cache_valid=true;
+
+        return count;
     }
 
     bool PlugInManager::ProbePlugin(const OSString &pi_name,PlugInInfo &out_info) const
@@ -168,7 +255,11 @@ namespace hgl
         out_info.name=pi_name;
         out_info.filename.Clear();
         out_info.version=0;
+        out_info.priority=0;
         out_info.intro.Clear();
+        out_info.display_name.Clear();
+        out_info.category.Clear();
+        out_info.extensions.Clear();
         out_info.status=PlugInStatus::NONE;
 
         OSString fullpath;
@@ -183,8 +274,7 @@ namespace hgl
         ExternalPlugIn epi;
         if(epi.Load(pi_name,fullpath))
         {
-            out_info.version=epi.GetVersion();
-            out_info.intro=epi.GetIntro();
+            FillInfoFromPlugin(epi,out_info);
             out_info.status=PlugInStatus::COMPLETE;
             epi.Free();
             return true;
@@ -192,6 +282,72 @@ namespace hgl
 
         out_info.status=PlugInStatus::LOAD_FAILED;
         return false;
+    }
+
+    void PlugInManager::AppendStaticPlugIns(hgl::ManagedArray<PlugInInfo> &out_infos) const
+    {
+        for(StaticPlugInRegistrar *reg=StaticPlugInRegistrar::GetHead();reg;reg=reg->next)
+        {
+            const StaticPlugInDesc &d=reg->desc;
+
+            if(!d.init||!d.name)continue;
+
+            // 类目不匹配则跳过
+            if(d.category && category_name.Comp(d.category)!=0)
+                continue;
+
+            // 若外部 DLL 已提供同名插件，则以文件版为准，跳过内建版
+            bool exists=false;
+            const int ncount=out_infos.GetCount();
+            for(int i=0;i<ncount;i++)
+            {
+                if(out_infos[i] && out_infos[i]->name.Comp(d.name)==0)
+                {
+                    exists=true;
+                    break;
+                }
+            }
+            if(exists)continue;
+
+            PlugInInterface *pi=d.init();
+            if(!pi)continue;
+
+            PlugInInfo *info=out_infos.Create();
+            info->name=d.name;
+            info->filename.Clear();
+            info->version=0;
+            info->priority=0;
+            info->status=PlugInStatus::NO_LOAD;
+            info->intro.Clear();
+            info->display_name.Clear();
+            info->category.Clear();
+            info->extensions.Clear();
+
+            StaticPlugIn spi(OSString(d.name),pi);
+            FillInfoFromPlugin(spi,*info);
+        }
+    }
+
+    void PlugInManager::LoadStaticPlugIns()
+    {
+        for(StaticPlugInRegistrar *reg=StaticPlugInRegistrar::GetHead();reg;reg=reg->next)
+        {
+            const StaticPlugInDesc &d=reg->desc;
+
+            if(!d.init||!d.name)continue;
+
+            if(d.category && category_name.Comp(d.category)!=0)
+                continue;
+
+            const OSString pi_name(d.name);
+
+            if(this->Find(pi_name))continue;        //已加载
+
+            PlugInInterface *pi=d.init();
+            if(!pi)continue;
+
+            this->Add(pi_name,new StaticPlugIn(pi_name,pi));
+        }
     }
 
     bool PlugInManager::RegisterPlugin(PlugIn *pi)
@@ -208,11 +364,8 @@ namespace hgl
 
     uint PlugInManager::UnregisterPlugin(const OSString &pi_name)
     {
-        PlugIn *pi=this->Find(pi_name);
-
-        if(!pi)return(0);
-
-        return this->Release(pi);
+        const int remain=this->Release(pi_name,true);
+        return remain>=0?1:0;
     }
 
     bool PlugInManager::AddFindPath(const OSString &path)
@@ -228,6 +381,9 @@ namespace hgl
                 return(false);
 
         findpath.Add(path);
+
+        probe_cache_valid=false;        //查找目录变化，缓存失效
+
         return(true);
     }
 
@@ -236,7 +392,9 @@ namespace hgl
         if(pi_name.IsEmpty())return(nullptr);
         if(filename.IsEmpty())return(nullptr);
 
-        PlugIn *pi=this->Get(pi_name);
+        LoadStaticPlugIns();
+
+        PlugIn *pi=this->Find(pi_name);
 
         if(pi)return pi;
 
@@ -257,7 +415,9 @@ namespace hgl
     {
         if(pi_name.IsEmpty())return(nullptr);
 
-        PlugIn *pi=this->Get(pi_name);
+        LoadStaticPlugIns();
+
+        PlugIn *pi=this->Find(pi_name);
 
         if(pi)return(pi);
 
@@ -292,7 +452,6 @@ namespace hgl
     {
         if(pi_name.IsEmpty())return(false);
 
-        this->Release(pi_name);
-        return(true);
+        return this->Release(pi_name,true)>=0;
     }
 }//namespace hgl

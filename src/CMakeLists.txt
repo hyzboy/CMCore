@@ -407,7 +407,8 @@ add_cm_library(CMCore "CM" ${CMCORE_ROOT_INCLUDE_PATH}
                         ${CMCORE_LOG_FILES}
                         )
 
-target_link_libraries(CMCore PRIVATE CMCoreType absl::flat_hash_map absl::node_hash_map absl::btree)
+target_link_libraries(CMCore PUBLIC CMCoreType)
+target_link_libraries(CMCore PUBLIC absl::flat_hash_map absl::node_hash_map absl::btree)
 
 ##==================================================================================================
 ## Platform 平台相关（从CMPlatform合并）
