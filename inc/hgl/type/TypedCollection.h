@@ -26,19 +26,19 @@ namespace hgl
 
         bool Add(const T &element){return Collection::Add(&element);}
 
-        bool Get(const uint64 index,T &element)const{return Collection::Get(index,&element);}
+        bool Get(const uint64 index,T &element){return Collection::Get(index,&element);}
         bool Set(const uint64 index,const T &element){return Collection::Set(index,&element);}
 
         bool Insert(const uint64 offset,const T &element){return Collection::Insert(offset,&element);}
 
-        T *     Map(const uint64,const uint64 range){return (T *)Collection::Map(range,range);}
+        T *Map(const uint64 start,const uint64 range){return (T *)Collection::Map(start,range);}
 
-        int64   indexOf (const T &value)const{return Collection::indexOfValue<T>(&cee);}
+        int64   indexOf (const T &value)const{return Collection::indexOfValue<T>(value);}
         bool    Contains(const T &value)const{return Collection::ContainsValue<T>(value);}
 
         int64   Remove(const T &value,int max_count=1)
         {
-            return Collection::RemoveValue(condition,max_count);
+            return Collection::RemoveValue<T>(value,max_count);
         }
     };//class TypedCollection
 }//namespace hgl

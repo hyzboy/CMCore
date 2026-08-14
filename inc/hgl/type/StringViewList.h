@@ -118,6 +118,8 @@ namespace hgl
 
         void FromString(const String<CharT>& text)
         {
+            Clear();    // 重复调用时清空旧行，避免残留
+
             if (text.IsEmpty())
                 return;
 

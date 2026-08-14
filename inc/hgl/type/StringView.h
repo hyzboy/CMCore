@@ -365,7 +365,7 @@ namespace hgl
                 return -1;
             }
 
-            const T *r = hgl::strchr(view.data() + pos, ch.c_str(), ch.Length());
+            const T *r = hgl::strstr(view.data() + pos, Length() - pos, ch.c_str(), ch.Length());
 
             return r ? int(r - (view.data() + pos)) : -1;
         }
@@ -1486,6 +1486,18 @@ namespace hgl
         bool operator==(const SelfClass &other) const
         {
             return Comp(other) == 0;
+        }
+
+        /**
+         * @brief CN: 与 C 字符串比较（内容比较）
+         *        EN: Compare with C string (content comparison)
+         *
+         * CN: 必须有此重载：本类存在 operator const T* 隐式转换，
+         *     若无此重载，view == "literal" 会退化为指针比较（永远为 false）。
+         */
+        bool operator==(const T *str) const
+        {
+            return Comp(str) == 0;
         }
 
         /**

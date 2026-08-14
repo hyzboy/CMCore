@@ -373,10 +373,10 @@ void TestPerformance()
     cout << "+--" << string(30, '-') << "-+-" << string(12, '-') << "-+-"
          << string(12, '-') << "-+-" << string(12, '-') << "-+-" << string(12, '-') << "-+" << endl;
 
-    cout << "\n【性能对比】" << endl;
-    cout << "std::unordered_map 相对性能: " << fixed << setprecision(2)
+    cout << "\n[Performance Comparison]" << endl;
+    cout << "std::unordered_map relative performance: " << fixed << setprecision(2)
          << (modern_total / hash_total) << "x" << endl;
-    cout << "std::map 相对性能:           " << fixed << setprecision(2)
+    cout << "std::map relative performance:           " << fixed << setprecision(2)
          << (modern_total / std_total) << "x" << endl;
 }
 
@@ -444,13 +444,13 @@ int main()
         cout << "\n" << string(80, '=') << endl;
         cout << "✓ All tests passed successfully!" << endl;
         cout << string(80, '=') << endl;
-        cout << "\n【总结】\n" << endl;
-        cout << "✓ 基础操作: Add, Get, Delete, Change, ChangeOrAdd 正常工作" << endl;
-        cout << "✓ 序列化支持: GetKeyArray, GetValueArray, GetKeyValueArrays 高效分离" << endl;
-        cout << "✓ 反序列化支持: RebuildFromArrays, AddFromArrays 快速恢复" << endl;
-        cout << "✓ 性能优秀: 基于 ankerl::unordered_dense 提供最优性能" << endl;
-        cout << "✓ 状态快照: 支持游戏状态保存/恢复场景" << endl;
-        cout << "\n测试完成！\n" << endl;
+        cout << "\n[Summary]\n" << endl;
+        cout << "✓ Basic ops: Add, Get, Delete, Change, ChangeOrAdd work correctly" << endl;
+        cout << "✓ Serialization: GetKeyArray, GetValueArray, GetKeyValueArrays efficient separation" << endl;
+        cout << "✓ Deserialization: RebuildFromArrays, AddFromArrays fast recovery" << endl;
+        cout << "✓ Performance: ankerl::unordered_dense provides optimal performance" << endl;
+        cout << "✓ State snapshot: supports game state save/restore" << endl;
+        cout << "\nTest complete!\n" << endl;
         return 0;
     }
     catch (const exception& e) {

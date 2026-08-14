@@ -352,10 +352,10 @@ void NonTrivialTypeTest()
         TEST_ASSERT(complex_map.GetCount() == 2, "Object deleted");
 
         cout << "\n[3.5] Scope exit (auto cleanup):" << endl;
-        cout << "  Map清空中..." << endl;
+        cout << "  Clearing map..." << endl;
     }
 
-    cout << "\n[3.6] 清空后统计:" << endl;
+    cout << "\n[3.6] Stats after clear:" << endl;
     // 验证所有对象都被正确析构
     // 注：析构数可能大于构造数，因为btree_map内部复制产生的临时对象也会被析构
     cout << "  Final destructs: " << ComplexValue::destruct_count << endl;

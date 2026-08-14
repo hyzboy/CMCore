@@ -53,7 +53,7 @@ vector<int> GenerateRandomData(int64 count, int max_value = 1000000)
 // 测试1: 顺序插入
 void Test01_SequentialInsert(int64 count)
 {
-    PrintHeader("测试 01: 顺序插入 (" + to_string(count) + " 个元素)");
+    PrintHeader("Test 01: Sequential insert (" + to_string(count) + " elements)");
 
     OrderedSet<int> btree_set;
     FlatOrderedSet<int> flat_set;
@@ -70,15 +70,15 @@ void Test01_SequentialInsert(int64 count)
             flat_set.Add((int)i);
     });
 
-    PrintResult("插入", "BTree", btree_time, count);
-    PrintResult("插入", "Flat ", flat_time, count);
-    cout << "  加速比: " << (btree_time / flat_time) << "x (BTree 更快)" << endl;
+    PrintResult("Insert", "BTree", btree_time, count);
+    PrintResult("Insert", "Flat ", flat_time, count);
+    cout << "  Speedup: " << (btree_time / flat_time) << "x (BTree faster)" << endl;
 }
 
 // 测试2: 随机插入
 void Test02_RandomInsert(int64 count)
 {
-    PrintHeader("测试 02: 随机插入 (" + to_string(count) + " 个元素)");
+    PrintHeader("Test 02: Random insert (" + to_string(count) + " elements)");
 
     auto random_data = GenerateRandomData(count);
 
@@ -97,18 +97,18 @@ void Test02_RandomInsert(int64 count)
             flat_set.Add(val);
     });
 
-    PrintResult("插入", "BTree", btree_time, count);
-    PrintResult("插入", "Flat ", flat_time, count);
-    cout << "  加速比: " << (btree_time / flat_time) << "x (BTree 更快)" << endl;
-    cout << "  最终大小: BTree=" << btree_set.GetCount()
+    PrintResult("Insert", "BTree", btree_time, count);
+    PrintResult("Insert", "Flat ", flat_time, count);
+    cout << "  Speedup: " << (btree_time / flat_time) << "x (BTree faster)" << endl;
+    cout << "  Final size: BTree=" << btree_set.GetCount()
          << ", Flat=" << flat_set.GetCount() << endl;
 }
 
 // 测试3: 批量插入后查找
 void Test03_BulkInsertThenLookup(int64 count, int64 lookup_count)
 {
-    PrintHeader("测试 03: 批量插入+查找 (" + to_string(count) + " 插入, "
-                + to_string(lookup_count) + " 次查找)");
+    PrintHeader("Test 03: Bulk insert + find (" + to_string(count) + " inserts, "
+                + to_string(lookup_count) + " finds)");
 
     auto insert_data = GenerateRandomData(count);
     auto lookup_data = GenerateRandomData(lookup_count, count * 2);
@@ -144,21 +144,21 @@ void Test03_BulkInsertThenLookup(int64 count, int64 lookup_count)
                 ++flat_found;
     });
 
-    cout << "\n  插入阶段:" << endl;
-    PrintResult("  插入", "BTree", btree_insert, count);
-    PrintResult("  插入", "Flat ", flat_insert, count);
+    cout << "\n  Insert phase:" << endl;
+    PrintResult("  Insert", "BTree", btree_insert, count);
+    PrintResult("  Insert", "Flat ", flat_insert, count);
 
-    cout << "\n  查找阶段:" << endl;
-    PrintResult("  查找", "BTree", btree_lookup, lookup_count);
-    PrintResult("  查找", "Flat ", flat_lookup, lookup_count);
-    cout << "  找到: BTree=" << btree_found << ", Flat=" << flat_found << endl;
-    cout << "  查找加速比: " << (btree_lookup / flat_lookup) << "x" << endl;
+    cout << "\n  Find phase:" << endl;
+    PrintResult("  Find", "BTree", btree_lookup, lookup_count);
+    PrintResult("  Find", "Flat ", flat_lookup, lookup_count);
+    cout << "  Found: BTree=" << btree_found << ", Flat=" << flat_found << endl;
+    cout << "  Find speedup: " << (btree_lookup / flat_lookup) << "x" << endl;
 }
 
 // 测试4: 混合操作（插入+删除）
 void Test04_MixedOperations(int64 count)
 {
-    PrintHeader("测试 04: 混合插入/删除 (" + to_string(count) + " 操作)");
+    PrintHeader("Test 04: Mixed insert/delete (" + to_string(count) + " operations)");
 
     auto data = GenerateRandomData(count);
 
@@ -185,17 +185,17 @@ void Test04_MixedOperations(int64 count)
         }
     });
 
-    PrintResult("混合操作", "BTree", btree_time, count);
-    PrintResult("混合操作", "Flat ", flat_time, count);
-    cout << "  加速比: " << (btree_time / flat_time) << "x (BTree 更快)" << endl;
-    cout << "  最终大小: BTree=" << btree_set.GetCount()
+    PrintResult("Mixed operations", "BTree", btree_time, count);
+    PrintResult("Mixed operations", "Flat ", flat_time, count);
+    cout << "  Speedup: " << (btree_time / flat_time) << "x (BTree faster)" << endl;
+    cout << "  Final size: BTree=" << btree_set.GetCount()
          << ", Flat=" << flat_set.GetCount() << endl;
 }
 
 // 测试5: 批量加载场景（Flat的优势场景）
 void Test05_BulkLoadScenario(int64 count)
 {
-    PrintHeader("测试 05: 批量加载场景 (" + to_string(count) + " 个元素)");
+    PrintHeader("Test 05: Bulk load scenario (" + to_string(count) + " elements)");
 
     auto data = GenerateRandomData(count);
 
@@ -205,7 +205,7 @@ void Test05_BulkLoadScenario(int64 count)
     auto last = unique(sorted_data.begin(), sorted_data.end());
     sorted_data.erase(last, sorted_data.end());
 
-    cout << "  去重后的唯一元素: " << sorted_data.size() << endl;
+    cout << "  Unique elements after dedup: " << sorted_data.size() << endl;
 
     FlatOrderedSet<int> flat_set;
     OrderedSet<int> btree_set;
@@ -221,19 +221,19 @@ void Test05_BulkLoadScenario(int64 count)
             btree_set.Add(val);
     });
 
-    PrintResult("批量加载", "Flat (LoadFromBuffer)", flat_load, sorted_data.size());
-    PrintResult("顺序插入", "BTree", btree_load, sorted_data.size());
-    cout << "  加速比: " << (btree_load / flat_load) << "x (Flat 更快)" << endl;
+    PrintResult("Bulk load", "Flat (LoadFromBuffer)", flat_load, sorted_data.size());
+    PrintResult("Sequential insert", "BTree", btree_load, sorted_data.size());
+    cout << "  Speedup: " << (btree_load / flat_load) << "x (Flat faster)" << endl;
 
     // 验证数据一致性
     assert(flat_set.GetCount() == btree_set.GetCount());
-    cout << "  ✓ 数据一致性已验证" << endl;
+    cout << "  ✓ Data consistency verified" << endl;
 }
 
 // 测试6: 内存占用对比
 void Test06_MemoryFootprint(int64 count)
 {
-    PrintHeader("测试 06: 内存占用 (" + to_string(count) + " 个元素)");
+    PrintHeader("Test 06: Memory usage (" + to_string(count) + " elements)");
 
     auto data = GenerateRandomData(count);
 
@@ -249,23 +249,23 @@ void Test06_MemoryFootprint(int64 count)
     int64 flat_capacity = flat_set.GetAllocCount();
     int64 flat_size = flat_set.GetCount();
 
-    cout << "  Flat 向量:" << endl;
-    cout << "    大小: " << flat_size << " 个元素" << endl;
-    cout << "    容量: " << flat_capacity << " 个元素" << endl;
-    cout << "    内存: ~" << (flat_capacity * sizeof(int) / 1024) << " KB" << endl;
-    cout << "    利用率: " << (100.0 * flat_size / flat_capacity) << "%" << endl;
+    cout << "  Flat vector:" << endl;
+    cout << "    Size: " << flat_size << " elements" << endl;
+    cout << "    Capacity: " << flat_capacity << " elements" << endl;
+    cout << "    Memory: ~" << (flat_capacity * sizeof(int) / 1024) << " KB" << endl;
+    cout << "    Utilization: " << (100.0 * flat_size / flat_capacity) << "%" << endl;
 
-    cout << "\n  BTree 集合:" << endl;
-    cout << "    大小: " << btree_set.GetCount() << " 个元素" << endl;
-    cout << "    内存: ~" << (btree_set.GetCount() * sizeof(int) * 1.5 / 1024)
-         << " KB (估计含开销)" << endl;
-    cout << "    注: BTree 有节点开销但无过度分配" << endl;
+    cout << "\n  BTree set:" << endl;
+    cout << "    Size: " << btree_set.GetCount() << " elements" << endl;
+    cout << "    Memory: ~" << (btree_set.GetCount() * sizeof(int) * 1.5 / 1024)
+         << " KB (estimated with overhead)" << endl;
+    cout << "    note: BTree has node overhead but no over-allocation" << endl;
 }
 
 int os_main(int, os_char**)
 {
     cout << "\n╔════════════════════════════════════════════════════════════╗" << endl;
-    cout << "║  OrderedSet vs FlatOrderedSet 性能测试       ║" << endl;
+    cout << "║  OrderedSet vs FlatOrderedSet Performance Test  ║" << endl;
     cout << "╚════════════════════════════════════════════════════════════╝" << endl;
 
     // 小规模测试
@@ -286,27 +286,27 @@ int os_main(int, os_char**)
     Test06_MemoryFootprint(100000);
 
     // 超大规模测试（可选）
-    cout << "\n[可选] 运行大规模测试..." << endl;
+    cout << "\n[optional] Running large-scale test..." << endl;
     Test01_SequentialInsert(1000000);
     Test02_RandomInsert(1000000);
 
-    PrintHeader("总结");
+    PrintHeader("Summary");
     cout << "  OrderedSet (BTree):" << endl;
-    cout << "    ✓ O(log n) 插入/删除 - 高效处理频繁修改" << endl;
-    cout << "    ✓ 无重新分配开销" << endl;
-    cout << "    ✗ 不支持零拷贝序列化" << endl;
-    cout << "    ✗ 节点开销增加内存使用" << endl;
+    cout << "    ✓ O(log n) insert/delete - efficient for frequent modifications" << endl;
+    cout << "    ✓ No re-allocation overhead" << endl;
+    cout << "    ✗ No zero-copy serialization" << endl;
+    cout << "    ✗ Node overhead increases memory usage" << endl;
 
-    cout << "\n  FlatOrderedSet (向量):" << endl;
-    cout << "    ✓ O(log n) 二分查找" << endl;
-    cout << "    ✓ 连续内存 - 查找缓存友好" << endl;
-    cout << "    ✓ 支持零拷贝序列化 (LoadFromBuffer)" << endl;
-    cout << "    ✗ O(n) 插入/删除 - 频繁修改时较慢" << endl;
+    cout << "\n  FlatOrderedSet (vector):" << endl;
+    cout << "    ✓ O(log n) binary search" << endl;
+    cout << "    ✓ Contiguous memory - cache friendly lookup" << endl;
+    cout << "    ✓ Zero-copy serialization (LoadFromBuffer)" << endl;
+    cout << "    ✗ O(n) insert/delete - slow for frequent modifications" << endl;
 
-    cout << "\n  使用场景指南:" << endl;
-    cout << "    • OrderedSet: 频繁插入/删除操作" << endl;
-    cout << "    • FlatOrderedSet: 批量加载+频繁查询, 序列化" << endl;
+    cout << "\n  Usage scenario guide:" << endl;
+    cout << "    • OrderedSet: frequent insert/delete operations" << endl;
+    cout << "    • FlatOrderedSet: bulk load + frequent queries, serialization" << endl;
 
-    cout << "\n✅ 所有性能测试完成" << endl;
+    cout << "\n✅ All performance tests completed" << endl;
     return 0;
 }

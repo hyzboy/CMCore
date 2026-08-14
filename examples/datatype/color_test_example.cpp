@@ -170,7 +170,7 @@ int main()
 
     std::cout << "\n=== All Tests Completed ===\n";
     std::cout << "Color3ub and Color4ub classes are working correctly!\n";
-    std::cout << "所有测试完成，Color3ub和Color4ub类运行正常！\n";
+    std::cout << "All tests completed, Color3ub and Color4ub classes working correctly!\n";
 
     return 0;
 }

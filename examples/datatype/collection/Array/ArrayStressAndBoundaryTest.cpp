@@ -51,13 +51,13 @@ static long long total_time_ms = 0;
 void test_extreme_scale_valuearray()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 1: 极端规模测试 - ValueArray" << std::endl;
+    std::cout << "TEST 1: Extreme scale test - ValueArray" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     const int MILLION = 1000000;
     const int HALF_MILLION = 500000;
 
-    std::cout << "\n[1.1] 添加 1 百万个元素:" << std::endl;
+    std::cout << "\n[1.1] Add 1 million elements:" << std::endl;
 
     ValueArray<int> large_va;
 
@@ -67,15 +67,15 @@ void test_extreme_scale_valuearray()
         for (int i = 0; i < MILLION; ++i)
             large_va.Add(i);
     },
-    "添加 1,000,000 个元素"
+    "Added 1,000,000 elements"
     );
 
-    TEST_ASSERT(large_va.GetCount() == MILLION, "包含 1,000,000 个元素");
+    TEST_ASSERT(large_va.GetCount() == MILLION, "Contains 1,000,000 elements");
 
-    std::cout << "  内存占用: " << (large_va.GetTotalBytes() / (1024 * 1024)) << " MB" << std::endl;
-    std::cout << "  已分配容量: " << large_va.GetAllocCount() << std::endl;
+    std::cout << "  Memory usage: " << (large_va.GetTotalBytes() / (1024 * 1024)) << " MB" << std::endl;
+    std::cout << "  Allocated capacity: " << large_va.GetAllocCount() << std::endl;
 
-    std::cout << "\n[1.2] 随机访问 1,000,000 次:" << std::endl;
+    std::cout << "\n[1.2] Random access 1,000,000 times:" << std::endl;
 
     std::mt19937 gen(std::random_device{}());
     std::uniform_int_distribution<> dis(0, MILLION - 1);
@@ -91,10 +91,10 @@ void test_extreme_scale_valuearray()
             sum += value;
         }
     },
-    "1,000,000 次随机访问"
+    "1,000,000 random accesses"
     );
 
-    std::cout << "\n[1.3] 删除 500K 个元素:" << std::endl;
+    std::cout << "\n[1.3] Delete 500K elements:" << std::endl;
 
     TIME_OPERATION(
     {
@@ -103,10 +103,10 @@ void test_extreme_scale_valuearray()
             large_va.Delete(0);
         }
     },
-    "删除 500,000 个元素"
+    "Deleted 500,000 elements"
     );
 
-    TEST_ASSERT(large_va.GetCount() == MILLION - HALF_MILLION, "删除后元素个数正确");
+    TEST_ASSERT(large_va.GetCount() == MILLION - HALF_MILLION, "Element count correct after delete");
 }
 
 // ============================================================================
@@ -116,38 +116,38 @@ void test_extreme_scale_valuearray()
 void test_boundary_conditions()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 2: 边界条件测试" << std::endl;
+    std::cout << "TEST 2: Boundary condition test" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    std::cout << "\n[2.1] 空容器操作:" << std::endl;
+    std::cout << "\n[2.1] Empty container operations:" << std::endl;
     {
         ValueArray<int> empty_va;
 
-        TEST_ASSERT(empty_va.IsEmpty(), "新容器为空");
+        TEST_ASSERT(empty_va.IsEmpty(), "New container is empty");
         TEST_ASSERT(empty_va.GetCount() == 0, "GetCount() == 0");
         TEST_ASSERT(empty_va.GetAllocCount() == 0, "GetAllocCount() == 0");
 
         int dummy;
-        TEST_ASSERT(!empty_va.Get(0, dummy), "Get(0) 在空容器上返回 false");
-        TEST_ASSERT(!empty_va.Delete(0), "Delete(0) 在空容器上返回 false");
+        TEST_ASSERT(!empty_va.Get(0, dummy), "Get(0) returns false on empty container");
+        TEST_ASSERT(!empty_va.Delete(0), "Delete(0) returns false on empty container");
     }
 
-    std::cout << "\n[2.2] 单元素容器操作:" << std::endl;
+    std::cout << "\n[2.2] Single-element container operations:" << std::endl;
     {
         ValueArray<double> single_va;
         single_va.Add(3.14159);
 
-        TEST_ASSERT(single_va.GetCount() == 1, "包含 1 个元素");
+        TEST_ASSERT(single_va.GetCount() == 1, "Contains 1 element");
 
         double value;
-        TEST_ASSERT(single_va.Get(0, value), "Get(0) 成功");
-        TEST_ASSERT(abs(value - 3.14159) < 0.00001, "值正确");
+        TEST_ASSERT(single_va.Get(0, value), "Get(0) succeeded");
+        TEST_ASSERT(abs(value - 3.14159) < 0.00001, "Value correct");
 
-        TEST_ASSERT(single_va.Delete(0), "Delete(0) 成功");
-        TEST_ASSERT(single_va.IsEmpty(), "删除后为空");
+        TEST_ASSERT(single_va.Delete(0), "Delete(0) succeeded");
+        TEST_ASSERT(single_va.IsEmpty(), "Empty after delete");
     }
 
-    std::cout << "\n[2.3] Clear vs Free 对比:" << std::endl;
+    std::cout << "\n[2.3] Clear vs Free comparison:" << std::endl;
     {
         ValueArray<int> va;
         va.Reserve(100);
@@ -159,15 +159,15 @@ void test_boundary_conditions()
 
         va.Clear();
         int after_clear_alloc = va.GetAllocCount();
-        TEST_ASSERT(after_clear_alloc == before_alloc, "Clear 后容量不变");
-        TEST_ASSERT(va.GetCount() == 0, "Clear 后元素数为 0");
+        TEST_ASSERT(after_clear_alloc == before_alloc, "Capacity unchanged after Clear");
+        TEST_ASSERT(va.GetCount() == 0, "Element count 0 after Clear");
 
         va.Free();
         int after_free_alloc = va.GetAllocCount();
-        TEST_ASSERT(after_free_alloc == 0, "Free 后容量为 0");
+        TEST_ASSERT(after_free_alloc == 0, "Capacity 0 after Free");
     }
 
-    std::cout << "\n[2.4] 越界访问测试:" << std::endl;
+    std::cout << "\n[2.4] Out-of-range access tests:" << std::endl;
     {
         ValueArray<int> va;
         va.Add(10);
@@ -175,12 +175,12 @@ void test_boundary_conditions()
         va.Add(30);
 
         int dummy;
-        TEST_ASSERT(!va.Get(-1, dummy), "Get(-1) 返回 false");
-        TEST_ASSERT(!va.Get(3, dummy), "Get(3) 越界返回 false");
-        TEST_ASSERT(!va.Get(100, dummy), "Get(100) 越界返回 false");
+        TEST_ASSERT(!va.Get(-1, dummy), "Get(-1) returns false");
+        TEST_ASSERT(!va.Get(3, dummy), "Get(3) out of range returns false");
+        TEST_ASSERT(!va.Get(100, dummy), "Get(100) out of range returns false");
 
-        TEST_ASSERT(!va.Delete(-1), "Delete(-1) 返回 false");
-        TEST_ASSERT(!va.Delete(3), "Delete(3) 越界返回 false");
+        TEST_ASSERT(!va.Delete(-1), "Delete(-1) returns false");
+        TEST_ASSERT(!va.Delete(3), "Delete(3) out of range returns false");
     }
 }
 
@@ -191,13 +191,13 @@ void test_boundary_conditions()
 void test_cyclic_stress()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 3: 循环压力测试" << std::endl;
+    std::cout << "TEST 3: Cyclic stress test" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     const int CYCLE_COUNT = 1000;
     const int CYCLE_SIZE = 100;
 
-    std::cout << "\n[3.1] " << CYCLE_COUNT << " 次循环 (每次 Add " << CYCLE_SIZE << " 个):" << std::endl;
+    std::cout << "\n[3.1] " << CYCLE_COUNT << " cycles (Add " << CYCLE_SIZE << " each):" << std::endl;
 
     ValueArray<int> stress_va;
 
@@ -213,13 +213,13 @@ void test_cyclic_stress()
                 stress_va.Delete(0);
         }
     },
-    CYCLE_COUNT << " 次循环 (Add/Delete)"
+    CYCLE_COUNT << " cycles (Add/Delete)"
     );
 
-    TEST_ASSERT(stress_va.GetCount() > 0, "循环后容器非空");
-    std::cout << "  最终元素数: " << stress_va.GetCount() << std::endl;
+    TEST_ASSERT(stress_va.GetCount() > 0, "Container not empty after cycles");
+    std::cout << "  Final element count: " << stress_va.GetCount() << std::endl;
 
-    std::cout << "\n[3.2] 快速 Add/Delete 交替:" << std::endl;
+    std::cout << "\n[3.2] Rapid Add/Delete alternation:" << std::endl;
 
     ValueArray<int> alternate_va;
 
@@ -232,7 +232,7 @@ void test_cyclic_stress()
                 alternate_va.Delete(0);
         }
     },
-    "100,000 次 Add/Delete 交替"
+    "100,000 Add/Delete alternations"
     );
 }
 
@@ -243,12 +243,12 @@ void test_cyclic_stress()
 void test_preallocation_benefit()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 4: 预分配效果验证" << std::endl;
+    std::cout << "TEST 4: Pre-allocation effect" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     const int TEST_SIZE = 1000000;
 
-    std::cout << "\n[4.1] 不预分配:" << std::endl;
+    std::cout << "\n[4.1] Without pre-allocation:" << std::endl;
 
     long long no_prealloc_time = 0;
 
@@ -263,9 +263,9 @@ void test_preallocation_benefit()
         no_prealloc_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
     }
 
-    std::cout << "  耗时: " << no_prealloc_time / 1000.0 << " ms" << std::endl;
+    std::cout << "  Time: " << no_prealloc_time / 1000.0 << " ms" << std::endl;
 
-    std::cout << "\n[4.2] 有预分配:" << std::endl;
+    std::cout << "\n[4.2] With pre-allocation:" << std::endl;
 
     long long prealloc_time = 0;
 
@@ -281,12 +281,12 @@ void test_preallocation_benefit()
         prealloc_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
     }
 
-    std::cout << "  耗时: " << prealloc_time / 1000.0 << " ms" << std::endl;
+    std::cout << "  Time: " << prealloc_time / 1000.0 << " ms" << std::endl;
 
     double improvement = ((double)(no_prealloc_time - prealloc_time) / no_prealloc_time) * 100.0;
-    std::cout << "  性能提升: " << std::fixed << std::setprecision(2) << improvement << "%" << std::endl;
+    std::cout << "  Speedup: " << std::fixed << std::setprecision(2) << improvement << "%" << std::endl;
 
-    TEST_ASSERT(prealloc_time < no_prealloc_time, "预分配更快");
+    TEST_ASSERT(prealloc_time < no_prealloc_time, "Pre-allocation is faster");
 }
 
 // ============================================================================
@@ -296,7 +296,7 @@ void test_preallocation_benefit()
 void test_container_reuse_pattern()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 5: 容器复用模式" << std::endl;
+    std::cout << "TEST 5: Container reuse pattern" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     std::cout << "\n[5.1] Clear + Reuse:" << std::endl;
@@ -318,7 +318,7 @@ void test_container_reuse_pattern()
         reusable.Clear();
         std::cout << "cleared (alloc=" << reusable.GetAllocCount() << ")" << std::endl;
 
-        TEST_ASSERT(reusable.IsEmpty(), "Clear 后为空");
+        TEST_ASSERT(reusable.IsEmpty(), "Empty after Clear");
     }
 }
 
@@ -329,7 +329,7 @@ void test_container_reuse_pattern()
 int main(int, char**)
 {
     std::cout << "\n╔════════════════════════════════════════╗" << std::endl;
-    std::cout << "║  ValueArray 容器压力和边界测试       ║" << std::endl;
+    std::cout << "║  ValueArray Stress and Boundary Test  ║" << std::endl;
     std::cout << "╚════════════════════════════════════════╝" << std::endl;
 
     try
@@ -342,25 +342,25 @@ int main(int, char**)
     }
     catch (const std::exception& e)
     {
-        std::cerr << "异常: " << e.what() << std::endl;
+        std::cerr << "Exception: " << e.what() << std::endl;
         return 1;
     }
 
     std::cout << "\n╔════════════════════════════════════════╗" << std::endl;
-    std::cout << "║           测试结果统计               ║" << std::endl;
+    std::cout << "║        Test Result Summary            ║" << std::endl;
     std::cout << "╚════════════════════════════════════════╝" << std::endl;
-    std::cout << "  通过: " << tests_passed << std::endl;
-    std::cout << "  失败: " << tests_failed << std::endl;
-    std::cout << "  总耗时: " << total_time_ms << " ms" << std::endl;
+    std::cout << "  Passed: " << tests_passed << std::endl;
+    std::cout << "  Failed: " << tests_failed << std::endl;
+    std::cout << "  Total time: " << total_time_ms << " ms" << std::endl;
 
     if (tests_failed > 0)
     {
-        std::cout << "\n❌ 测试未全部通过" << std::endl;
+        std::cout << "\n❌ Not all tests passed" << std::endl;
         return 1;
     }
     else
     {
-        std::cout << "\n✅ 所有测试通过" << std::endl;
-        return 0;
+        std::cout << "\n✅ All tests passed" << std::endl;
+        return tests_failed == 0 ? 0 : 1;
     }
 }

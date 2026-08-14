@@ -57,19 +57,19 @@ struct TestData
 void test_valuearray_to_indexedlist()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 1: ValueArray → IndexedList 转换" << std::endl;
+    std::cout << "TEST 1: ValueArray -> IndexedList conversion" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     // 创建 ValueArray
-    std::cout << "\n[1.1] 创建 ValueArray:" << std::endl;
+    std::cout << "\n[1.1] Create ValueArray:" << std::endl;
     ValueArray<int> va;
     for (int i = 1; i <= 10; ++i)
         va.Add(i * 10);
 
-    TEST_ASSERT(va.GetCount() == 10, "ValueArray 包含 10 个元素");
+    TEST_ASSERT(va.GetCount() == 10, "ValueArray contains 10 elements");
 
     // 转换到 IndexedList
-    std::cout << "\n[1.2] 转换到 IndexedList:" << std::endl;
+    std::cout << "\n[1.2] Convert to IndexedList:" << std::endl;
     IndexedList<int> ia;
 
     for (int i = 0; i < va.GetCount(); ++i)
@@ -79,10 +79,10 @@ void test_valuearray_to_indexedlist()
         ia.Add(value);
     }
 
-    TEST_ASSERT(ia.GetCount() == va.GetCount(), "IndexedList 元素数与 ValueArray 相同");
+    TEST_ASSERT(ia.GetCount() == va.GetCount(), "IndexedList element count matches ValueArray");
 
     // 验证数据
-    std::cout << "\n[1.3] 验证转换后的数据:" << std::endl;
+    std::cout << "\n[1.3] Verify converted data:" << std::endl;
     bool data_match = true;
     for (int i = 0; i < va.GetCount(); ++i)
     {
@@ -97,7 +97,7 @@ void test_valuearray_to_indexedlist()
         }
     }
 
-    TEST_ASSERT(data_match, "所有元素值匹配");
+    TEST_ASSERT(data_match, "All element values match");
 }
 
 // ============================================================================
@@ -107,11 +107,11 @@ void test_valuearray_to_indexedlist()
 void test_indexedlist_to_valuearray()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 2: IndexedList → ValueArray 转换" << std::endl;
+    std::cout << "TEST 2: IndexedList -> ValueArray conversion" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     // 创建 IndexedList 并添加删除操作，产生碎片
-    std::cout << "\n[2.1] 创建含碎片的 IndexedList:" << std::endl;
+    std::cout << "\n[2.1] Create IndexedList with fragmentation:" << std::endl;
     IndexedList<double> ia;
 
     for (int i = 0; i < 20; ++i)
@@ -123,11 +123,11 @@ void test_indexedlist_to_valuearray()
 
     int original_count = ia.GetCount();
 
-    std::cout << "  原始 IndexedList: count=" << ia.GetCount()
+    std::cout << "  Original IndexedList: count=" << ia.GetCount()
               << ", free=" << ia.GetFreeCount() << std::endl;
 
     // 转换到 ValueArray（应该只包含有效元素）
-    std::cout << "\n[2.2] 转换到 ValueArray（紧凑存储）:" << std::endl;
+    std::cout << "\n[2.2] Convert to ValueArray (compact storage):" << std::endl;
     ValueArray<double> va;
 
     for (int i = 0; i < ia.GetCount(); ++i)
@@ -136,10 +136,10 @@ void test_indexedlist_to_valuearray()
         va.Add(value);
     }
 
-    TEST_ASSERT(va.GetCount() == original_count, "ValueArray 包含所有有效元素");
-    TEST_ASSERT(va.GetAllocCount() >= va.GetCount(), "ValueArray 无碎片（紧凑）");
+    TEST_ASSERT(va.GetCount() == original_count, "ValueArray contains all valid elements");
+    TEST_ASSERT(va.GetAllocCount() >= va.GetCount(), "ValueArray has no fragmentation (compact)");
 
-    std::cout << "  转换后 ValueArray: count=" << va.GetCount()
+    std::cout << "  Converted ValueArray: count=" << va.GetCount()
               << ", alloc=" << va.GetAllocCount() << std::endl;
 }
 
@@ -150,10 +150,10 @@ void test_indexedlist_to_valuearray()
 void test_indexedlist_copy_constructor()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 3: IndexedList 拷贝构造" << std::endl;
+    std::cout << "TEST 3: IndexedList copy construction" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    std::cout << "\n[3.1] IndexedList 拷贝构造函数:" << std::endl;
+    std::cout << "\n[3.1] IndexedList copy constructor:" << std::endl;
     {
         IndexedList<double> source;
         for (int i = 0; i < 100; ++i)
@@ -163,8 +163,8 @@ void test_indexedlist_copy_constructor()
 
         IndexedList<double> dest = source;
 
-        TEST_ASSERT(dest.GetCount() == source_count, "拷贝后目标容器元素数正确");
-        TEST_ASSERT(source.GetCount() == source_count, "拷贝后源容器保持不变");
+        TEST_ASSERT(dest.GetCount() == source_count, "Target container count correct after copy");
+        TEST_ASSERT(source.GetCount() == source_count, "Source container unchanged after copy");
 
         // 验证数据正确性
         bool data_match = true;
@@ -176,7 +176,7 @@ void test_indexedlist_copy_constructor()
                 break;
             }
         }
-        TEST_ASSERT(data_match, "拷贝后数据正确");
+        TEST_ASSERT(data_match, "Data correct after copy");
     }
 }
 
@@ -187,10 +187,10 @@ void test_indexedlist_copy_constructor()
 void test_indexedlist_deep_copy()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 4: IndexedList 深层拷贝" << std::endl;
+    std::cout << "TEST 4: IndexedList deep copy" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    std::cout << "\n[4.1] IndexedList 拷贝独立性:" << std::endl;
+    std::cout << "\n[4.1] IndexedList copy independence:" << std::endl;
     {
         IndexedList<TestData> original;
         original.Add(TestData(1, 100.0, "first"));
@@ -198,7 +198,7 @@ void test_indexedlist_deep_copy()
 
         IndexedList<TestData> copy = original;
 
-        TEST_ASSERT(copy.GetCount() == original.GetCount(), "拷贝后元素数相同");
+        TEST_ASSERT(copy.GetCount() == original.GetCount(), "Same element count after copy");
 
         // 修改拷贝，不应影响原始容器
         TestData new_data(99, 999.0, "modified");
@@ -207,7 +207,7 @@ void test_indexedlist_deep_copy()
         TestData original_first = original[0];
         TestData copy_first = copy[0];
 
-        TEST_ASSERT(original_first.id != copy_first.id, "修改拷贝不影响原始容器");
+        TEST_ASSERT(original_first.id != copy_first.id, "Modifying copy does not affect original");
     }
 }
 
@@ -218,17 +218,17 @@ void test_indexedlist_deep_copy()
 void test_mixed_operations()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 5: IndexedList 与 ValueArray 混合操作" << std::endl;
+    std::cout << "TEST 5: IndexedList and ValueArray mixed operations" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    std::cout << "\n[5.1] ValueArray + IndexedList 混合操作:" << std::endl;
+    std::cout << "\n[5.1] ValueArray + IndexedList mixed operations:" << std::endl;
 
     // 步骤1: 在 ValueArray 中准备数据
     ValueArray<int> va;
     for (int i = 1; i <= 10; ++i)
         va.Add(i);
 
-    TEST_ASSERT(va.GetCount() == 10, "ValueArray 准备 10 个元素");
+    TEST_ASSERT(va.GetCount() == 10, "ValueArray prepares 10 elements");
 
     // 步骤2: 转换到 IndexedList
     IndexedList<int> ia;
@@ -239,13 +239,13 @@ void test_mixed_operations()
         ia.Add(value);
     }
 
-    TEST_ASSERT(ia.GetCount() == 10, "IndexedList 接收 10 个元素");
+    TEST_ASSERT(ia.GetCount() == 10, "IndexedList receives 10 elements");
 
     // 步骤3: 在 IndexedList 中删除
     for (int i = 0; i < 5; ++i)
         ia.Delete(0);
 
-    TEST_ASSERT(ia.GetCount() == 5, "删除后 IndexedList 包含 5 个元素");
+    TEST_ASSERT(ia.GetCount() == 5, "IndexedList contains 5 elements after delete");
 
     // 步骤4: 转回 ValueArray
     ValueArray<int> va2;
@@ -255,7 +255,7 @@ void test_mixed_operations()
         va2.Add(value);
     }
 
-    TEST_ASSERT(va2.GetCount() == 5, "最终 ValueArray 包含 5 个元素");
+    TEST_ASSERT(va2.GetCount() == 5, "Final ValueArray contains 5 elements");
 }
 
 // ============================================================================
@@ -265,12 +265,12 @@ void test_mixed_operations()
 void test_large_scale_conversion()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 6: 大规模数据转换性能" << std::endl;
+    std::cout << "TEST 6: Large-scale conversion performance" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     const int LARGE_SIZE = 100000;
 
-    std::cout << "\n[6.1] 大规模 ValueArray → IndexedList:" << std::endl;
+    std::cout << "\n[6.1] Large-scale ValueArray -> IndexedList:" << std::endl;
 
     // 准备 ValueArray
     ValueArray<int> large_va;
@@ -278,7 +278,7 @@ void test_large_scale_conversion()
     for (int i = 0; i < LARGE_SIZE; ++i)
         large_va.Add(i);
 
-    std::cout << "  源 ValueArray: " << large_va.GetTotalBytes() / 1024 << " KB" << std::endl;
+    std::cout << "  Source ValueArray: " << large_va.GetTotalBytes() / 1024 << " KB" << std::endl;
 
     // 转换到 IndexedList
     auto start = std::chrono::high_resolution_clock::now();
@@ -295,10 +295,10 @@ void test_large_scale_conversion()
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-    std::cout << "  目标 IndexedList: " << ia.GetTotalBytes() / 1024 << " KB" << std::endl;
-    std::cout << "  转换耗时: " << duration.count() << " ms" << std::endl;
+    std::cout << "  Target IndexedList: " << ia.GetTotalBytes() / 1024 << " KB" << std::endl;
+    std::cout << "  Conversion time: " << duration.count() << " ms" << std::endl;
 
-    TEST_ASSERT(ia.GetCount() == LARGE_SIZE, "大规模转换成功");
+    TEST_ASSERT(ia.GetCount() == LARGE_SIZE, "Large-scale conversion succeeded");
 }
 
 // ============================================================================
@@ -308,7 +308,7 @@ void test_large_scale_conversion()
 int main(int, char**)
 {
     std::cout << "\n╔════════════════════════════════════════╗" << std::endl;
-    std::cout << "║  IndexedList 容器互操作性测试        ║" << std::endl;
+    std::cout << "║  IndexedList Container Interop Test    ║" << std::endl;
     std::cout << "╚════════════════════════════════════════╝" << std::endl;
 
     try
@@ -322,24 +322,24 @@ int main(int, char**)
     }
     catch (const std::exception& e)
     {
-        std::cerr << "异常: " << e.what() << std::endl;
+        std::cerr << "Exception: " << e.what() << std::endl;
         return 1;
     }
 
     std::cout << "\n╔════════════════════════════════════════╗" << std::endl;
-    std::cout << "║           测试结果统计               ║" << std::endl;
+    std::cout << "║        Test Result Summary            ║" << std::endl;
     std::cout << "╚════════════════════════════════════════╝" << std::endl;
-    std::cout << "  通过: " << tests_passed << std::endl;
-    std::cout << "  失败: " << tests_failed << std::endl;
+    std::cout << "  Passed: " << tests_passed << std::endl;
+    std::cout << "  Failed: " << tests_failed << std::endl;
 
     if (tests_failed > 0)
     {
-        std::cout << "\n❌ 测试未全部通过" << std::endl;
+        std::cout << "\n❌ Not all tests passed" << std::endl;
         return 1;
     }
     else
     {
-        std::cout << "\n✅ 所有测试通过" << std::endl;
-        return 0;
+        std::cout << "\n✅ All tests passed" << std::endl;
+        return tests_failed == 0 ? 0 : 1;
     }
 }

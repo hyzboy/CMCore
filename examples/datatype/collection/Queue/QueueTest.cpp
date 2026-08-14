@@ -131,13 +131,13 @@ void TestQueueCircularBuffer()
 
     Queue<int> q;
 
-    cout<<"[1] 填充队列..."<<endl;
+    cout<<"[1] Filling queue..."<<endl;
     for(int i = 0; i < 5; ++i)
         q.Push(i * 10);
 
     cout<<"Count: "<<q.GetCount()<<endl;
 
-    cout<<"\n[2] 弹出 3 个元素..."<<endl;
+    cout<<"\n[2] Popping 3 elements..."<<endl;
     int val;
     for(int i = 0; i < 3; ++i)
     {
@@ -146,13 +146,13 @@ void TestQueueCircularBuffer()
     }
     cout<<"Count: "<<q.GetCount()<<endl;
 
-    cout<<"\n[3] 再添加 3 个元素（测试循环缓冲区）..."<<endl;
+    cout<<"\n[3] Adding 3 more elements (circular buffer test)..."<<endl;
     for(int i = 0; i < 3; ++i)
         q.Push((i + 100) * 10);
 
     cout<<"Count: "<<q.GetCount()<<endl;
 
-    cout<<"\n[4] 全部弹出（验证顺序）..."<<endl;
+    cout<<"\n[4] Popping all (verify order)..."<<endl;
     while(q.Pop(val))
         cout<<"Popped: "<<val<<endl;
 }
@@ -168,25 +168,25 @@ void TestQueueCapacity()
 
     Queue<int> q;
 
-    cout<<"[1] 初始状态..."<<endl;
+    cout<<"[1] Initial state..."<<endl;
     cout<<"AllocCount: "<<q.GetAllocCount()<<", Count: "<<q.GetCount()<<endl;
 
-    cout<<"\n[2] Reserve 预分配..."<<endl;
+    cout<<"\n[2] Reserve pre-allocation..."<<endl;
     q.Reserve(100);
     cout<<"After Reserve(100):"<<endl;
     cout<<"AllocCount: "<<q.GetAllocCount()<<", Count: "<<q.GetCount()<<endl;
 
-    cout<<"\n[3] 添加 50 个元素..."<<endl;
+    cout<<"\n[3] Adding 50 elements..."<<endl;
     for(int i = 0; i < 50; ++i)
         q.Push(i);
     cout<<"AllocCount: "<<q.GetAllocCount()<<", Count: "<<q.GetCount()<<endl;
 
-    cout<<"\n[4] 清空..."<<endl;
+    cout<<"\n[4] Clear..."<<endl;
     q.Clear();
     cout<<"After Clear():"<<endl;
     cout<<"AllocCount: "<<q.GetAllocCount()<<", Count: "<<q.GetCount()<<endl;
 
-    cout<<"\n[5] 释放内存..."<<endl;
+    cout<<"\n[5] Free memory..."<<endl;
     q.Free();
     cout<<"After Free():"<<endl;
     cout<<"AllocCount: "<<q.GetAllocCount()<<", Count: "<<q.GetCount()<<endl;
@@ -290,22 +290,22 @@ void TestTypeConstraints()
     cout<<"-----------------------------------------"<<endl;
     cout<<"Type Constraints Test"<<endl<<endl;
 
-    cout<<"[1] Queue<int> - 平凡类型 [OK]"<<endl;
+    cout<<"[1] Queue<int> - trivially copyable [OK]"<<endl;
     Queue<int> q1;
     q1.Push(42);
 
-    cout<<"[2] Queue<UserInfo> - 平凡 POD [OK]"<<endl;
+    cout<<"[2] Queue<UserInfo> - trivial POD [OK]"<<endl;
     Queue<UserInfo> q2;
 
-    cout<<"[3] Queue<QueueTestObject*> - 指针类型（手动管理） [OK]"<<endl;
+    cout<<"[3] Queue<QueueTestObject*> - pointer type (manual management) [OK]"<<endl;
     Queue<QueueTestObject*> oq1;
     oq1.Push(new QueueTestObject());
     QueueTestObject* tmp;
     if(oq1.Pop(tmp)) delete tmp;
 
-    cout<<"\n注意：以下类型组合会编译失败："<<endl;
-    cout<<"- Queue<std::string> - [X] (非平凡类型)"<<endl;
-    cout<<"- Queue<QueueTestObject> - [X] (有析构函数)"<<endl;
+    cout<<"\nNote: the following type combinations fail to compile:"<<endl;
+    cout<<"- Queue<std::string> - [X] (non-trivial type)"<<endl;
+    cout<<"- Queue<QueueTestObject> - [X] (has destructor)"<<endl;
 }
 
 int os_main(int,os_char **)

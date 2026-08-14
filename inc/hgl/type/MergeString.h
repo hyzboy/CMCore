@@ -13,31 +13,23 @@ namespace hgl
     {
         int total_chars=0;
 
-        const int line=sl.GetCount();
-        String<T> **sp=sl.GetDataList();
-
-        for(int i=0;i<line;i++)
+        for(const String<T> *str : sl)
         {
-            total_chars+=(*sp)->Length();
-
-            ++sp;
+            total_chars+=str->Length();
         }
 
-        total_chars+=line*end_line.Length();
+        total_chars+=sl.GetCount()*end_line.Length();
 
         String<T> fullname;
 
         T *tp=fullname.Resize(total_chars);
 
-        sp=sl.GetDataList();
-        for(int i=0;i<line;i++)
+        for(const String<T> *str : sl)
         {
-            mem_copy(tp,(*sp)->c_str(),(*sp)->Length());
-            tp+=(*sp)->Length();
+            mem_copy(tp,str->c_str(),str->Length());
+            tp+=str->Length();
             mem_copy(tp,end_line.c_str(),end_line.Length());
             tp+=end_line.Length();
-
-            ++sp;
         }
 
         return fullname;

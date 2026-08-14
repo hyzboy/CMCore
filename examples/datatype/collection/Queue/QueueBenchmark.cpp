@@ -487,15 +487,15 @@ int os_main(int, os_char**)
         cout << "\n========================================" << endl;
         cout << "Benchmark Complete" << endl;
         cout << "========================================" << endl;
-        cout << "\n分析总结 / Analysis Summary:" << endl;
-        cout << "  - hgl::Queue: 双缓冲设计，适合批量操作和 FIFO 场景" << endl;
-        cout << "  - std::queue: 标准库适配器，通用性好" << endl;
-        cout << "  - std::deque: 底层实现，灵活性最高" << endl;
-        cout << "\n建议 / Recommendations:" << endl;
-        cout << "  • 批量操作频繁 → 优先 hgl::Queue (批量 Push)" << endl;
-        cout << "  • 严格 FIFO 场景 → hgl::Queue 或 std::deque" << endl;
-        cout << "  • 通用队列需求 → std::queue (标准且可靠)" << endl;
-        cout << "  • 需要双端操作 → std::deque (支持两端访问)" << endl;
+        cout << "\nAnalysis Summary:" << endl;
+        cout << "  - hgl::Queue: dual-buffer design, suited for batch operations and FIFO" << endl;
+        cout << "  - std::queue: standard library adapter, good generality" << endl;
+        cout << "  - std::deque: underlying implementation, most flexible" << endl;
+        cout << "\nRecommendations:" << endl;
+        cout << "  • Frequent batch operations -> prefer hgl::Queue (batch Push)" << endl;
+        cout << "  • Strict FIFO -> hgl::Queue or std::deque" << endl;
+        cout << "  • General queue needs -> std::queue (standard and reliable)" << endl;
+        cout << "  • Double-ended operations -> std::deque (access both ends)" << endl;
         cout << "========================================" << endl;
     }
     catch(const exception& e)

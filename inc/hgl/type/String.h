@@ -442,7 +442,14 @@ namespace hgl
     protected:
         // CN: ConvFunc 是用于字符串转换的回调函数类型
         // EN: ConvFunc is a callback function type for string conversion
-        typedef const T *(*ConvFunc)(const T *, int &, const bool (*trimfunc)(const T &));
+        typedef const T *(*ConvFunc)(const T *, int &, bool (*trimfunc)(const T &));
+
+        // CN: 空白字符判定谓词（与 trim* 函数的 bool(*)(const T&) 签名匹配）
+        //     is_space<T> 是按值+noexcept 签名，不能直接作为函数指针传递
+        static bool IsSpaceChar(const T &ch)
+        {
+            return is_space<T>(ch);
+        }
 
         /**
          * @brief 基于回调函数的通用字符串转换器（用于 Trim 等）
@@ -461,11 +468,41 @@ namespace hgl
     public:
         // 修剪/截取 ----------------------------------------------------------
         /** @brief 左侧修剪，返回修剪后的新字符串 */
-        SelfClass TrimLeft  () const            { return StrConv(trimleft); }
+        SelfClass TrimLeft  () const
+        {
+            if(Length() == 0) return SelfClass();
+
+            int new_len = Length();
+            const T *new_str = hgl::trimleft<T>(c_str(), new_len, &IsSpaceChar);
+
+            if(!new_str || new_len <= 0) return SelfClass();
+
+            return SelfClass(new_str, new_len);
+        }
         /** @brief 右侧修剪，返回修剪后的新字符串 */
-        SelfClass TrimRight () const            { return StrConv(trimright); }
+        SelfClass TrimRight () const
+        {
+            if(Length() == 0) return SelfClass();
+
+            int new_len = Length();
+            const T *new_str = hgl::trimright<T>(c_str(), new_len, &IsSpaceChar);
+
+            if(!new_str || new_len <= 0) return SelfClass();
+
+            return SelfClass(new_str, new_len);
+        }
         /** @brief 两端修剪，返回修剪后的新字符串 */
-        SelfClass Trim      () const            { return StrConv(trim); }
+        SelfClass Trim      () const
+        {
+            if(Length() == 0) return SelfClass();
+
+            int new_len = Length();
+            const T *new_str = hgl::trim<T>(c_str(), new_len, &IsSpaceChar);
+
+            if(!new_str || new_len <= 0) return SelfClass();
+
+            return SelfClass(new_str, new_len);
+        }
 
         /** @brief 删除左侧 n 个字符（就地） */
         bool      TrimLeft  (int n)             { return Delete(0, n); }
@@ -565,7 +602,7 @@ namespace hgl
         int FindChars(int pos, const SelfClass &ch)             const
         {
             if (pos < 0 || pos >= Length()) return -1;
-            const T *r = hgl::strchr(c_str() + pos, ch.c_str(), ch.Length());
+            const T *r = hgl::strstr(c_str() + pos, Length() - pos, ch.c_str(), ch.Length());
             return r ? int(r - (c_str() + pos)) : -1;
         }
 
@@ -815,6 +852,18 @@ namespace hgl
         bool operator==(const SelfClass &str) const
         {
             return Comp(str) == 0;
+        }
+
+        /**
+         * @brief CN: 与 C 字符串比较（内容比较）
+         *        EN: Compare with C string (content comparison)
+         *
+         * CN: 必须有此重载：本类存在 operator const T* 隐式转换，
+         *     若无此重载，str == "literal" 会退化为指针比较（永远为 false）。
+         */
+        bool operator==(const T *s) const
+        {
+            return Comp(s) == 0;
         }
 
         /**

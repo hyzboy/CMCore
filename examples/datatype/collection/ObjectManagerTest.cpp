@@ -466,14 +466,14 @@ int main()
         cout << "✓ All tests passed successfully!" << endl;
         cout << string(80, '═') << endl;
 
-        cout << "\n【测试覆盖】\n" << endl;
-        cout << "✓ 基础操作: Add, Find, Get, GetCount" << endl;
-        cout << "✓ 引用计数: Get 增加, Release 减少" << endl;
-        cout << "✓ 内存管理: Clear, ClearFree, zero_clear" << endl;
-        cout << "✓ 查找: GetKeyByValue, Find by key" << endl;
-        cout << "✓ 自动ID: AutoIdObjectManager, 重复对象检测" << endl;
-        cout << "✓ 边界情况: 空管理器, nullptr, 重复键" << endl;
-        cout << "✓ 实际场景: 资源管理器模拟" << endl;
+        cout << "\n[Test Coverage]\n" << endl;
+        cout << "✓ Basic ops: Add, Find, Get, GetCount" << endl;
+        cout << "✓ Ref counting: Get increases, Release decreases" << endl;
+        cout << "✓ Memory management: Clear, ClearFree, zero_clear" << endl;
+        cout << "✓ Lookup: GetKeyByValue, Find by key" << endl;
+        cout << "✓ Auto ID: AutoIdObjectManager, duplicate object detection" << endl;
+        cout << "✓ Edge cases: empty manager, nullptr, duplicate keys" << endl;
+        cout << "✓ Real world: resource manager simulation" << endl;
     }
     catch (const exception& e)
     {

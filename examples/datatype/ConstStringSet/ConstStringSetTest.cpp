@@ -381,7 +381,7 @@ bool TestUTF8()
     ConstU8StringSet css;
 
     // 中文字符串
-    const u8char* chinese = reinterpret_cast<const u8char*>(u8"你好世界");
+    const u8char* chinese = reinterpret_cast<const u8char*>(u8"Hello World");
     int len_chinese = strlen(reinterpret_cast<const char*>(chinese));
     int id1 = css.Add(chinese, len_chinese);
     TEST_ASSERT(id1 == 0, "Chinese string should be added");

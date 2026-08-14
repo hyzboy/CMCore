@@ -22,14 +22,14 @@ using namespace std;
 template<typename SetType>
 static bool VerifyDataConsistency(const SetType &set, const vector<int> &expected_values, const string &checkpoint)
 {
-    cout << "    [验证:" << checkpoint << "] ";
+    cout << "    [Verify:" << checkpoint << "] ";
 
     int count = set.GetCount();
     int expected_count = (int)expected_values.size();
 
     if (count != expected_count)
     {
-        cout << "❌ Count不匹配: set=" << count << ", expected=" << expected_count << endl;
+        cout << "❌ Count mismatch: set=" << count << ", expected=" << expected_count << endl;
         return false;
     }
 
@@ -38,7 +38,7 @@ static bool VerifyDataConsistency(const SetType &set, const vector<int> &expecte
     {
         if (!set.Contains(val))
         {
-            cout << "❌ 元素" << val << "应该存在但不存在" << endl;
+            cout << "❌ element " << val << "should exist but does not" << endl;
             return false;
         }
     }
@@ -48,7 +48,7 @@ static bool VerifyDataConsistency(const SetType &set, const vector<int> &expecte
     set.Enum([&](int val) {
         if (find(expected_values.begin(), expected_values.end(), val) == expected_values.end())
         {
-            cout << "❌ 元素" << val << "不应该存在但存在" << endl;
+            cout << "❌ element " << val << "should not exist but does" << endl;
             all_match = false;
         }
     });
@@ -131,7 +131,7 @@ static void TestLargeScale(const string &name)
     }
 
     // 验证插入后数据一致性
-    if (!VerifyDataConsistency(set, expected, "插入完成"))
+    if (!VerifyDataConsistency(set, expected, "Insertion complete"))
     {
         assert(false);
     }
@@ -192,9 +192,9 @@ static void TestLargeScale(const string &name)
             // 定期验证
             if (delete_success % verify_interval == 0)
             {
-                if (!VerifyDataConsistency(set, expected, "删除" + to_string(delete_success) + "个"))
+                if (!VerifyDataConsistency(set, expected, "Delete " + to_string(delete_success) + ""))
                 {
-                    cout << "  ❌ 删除到第" << delete_success << "个时数据不一致！" << endl;
+                    cout << "  ❌ Inconsistent at delete #" << delete_success << "!" << endl;
                     assert(false);
                 }
             }
@@ -207,7 +207,7 @@ static void TestLargeScale(const string &name)
     }
 
     // 最终验证
-    if (!VerifyDataConsistency(set, expected, "删除完成"))
+    if (!VerifyDataConsistency(set, expected, "Deletion complete"))
     {
         assert(false);
     }
@@ -471,14 +471,14 @@ int main()
         cout << "│  Data Consistency Through Cycles │    ✅      │    ✅    │    ✅    │   ✅" << endl;
         cout << "└──────────────────────────────────┴────────────┴──────────┴──────────┴─────────" << endl;
 
-        cout << "\n【测试覆盖统计】" << endl;
-        cout << "  ✓ 基本操作:       4项测试  (Add, Delete, Enum, Clear)" << endl;
-        cout << "  ✓ 大规模测试:     4项测试  (10k元素插入、查找、删除、验证)" << endl;
-        cout << "  ✓ 随机操作:       3项测试  (5k随机操作、状态一致性、枚举完整性)" << endl;
-        cout << "  ✓ 边界条件:       5项测试  (空集、单元素、重复、不存在、顺序重复)" << endl;
-        cout << "  ✓ 真实场景:       2项测试  (5轮删除-重插入循环、数据一致性)" << endl;
+        cout << "\n[Test Coverage Statistics]" << endl;
+        cout << "  ✓ Basic ops:      4 tests  (Add, Delete, Enum, Clear)" << endl;
+        cout << "  ✓ Large scale:    4 tests  (10k insert, find, delete, verify)" << endl;
+        cout << "  ✓ Random ops:     3 tests  (5k random ops, state consistency, enum completeness)" << endl;
+        cout << "  ✓ Edge cases:     5 tests  (empty, single, duplicate, missing, repeated)" << endl;
+        cout << "  ✓ Real world:     2 tests  (5 delete-reinsert cycles, data consistency)" << endl;
         cout << "  =" << endl;
-        cout << "  总计:            18项测试 × 4个变体 = 72项测试用例 ✅ 全部通过" << endl;
+        cout << "  Total:           18 tests x 4 variants = 72 cases ✅ all passed" << endl;
         cout << endl;
 
         return 0;

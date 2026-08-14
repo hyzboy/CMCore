@@ -113,9 +113,9 @@ namespace hgl
          */
         int GetRefCount(const K &key)const
         {
-            ActiveItem *ai;
+            const ActiveItem *ai = active_items.GetValuePointer(key);
 
-            if(active_items.Get(key,ai))                    //在活跃列表中找
+            if(ai)
                 return ai->ref_count;
 
             if(idle_items.ContainsKey(key))

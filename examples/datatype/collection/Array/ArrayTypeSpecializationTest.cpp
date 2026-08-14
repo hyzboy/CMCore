@@ -67,15 +67,15 @@ namespace {
 void test_valuearray_uint256_basic()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 1: ValueArray<uint256> 基础操作" << std::endl;
+    std::cout << "TEST 1: ValueArray<uint256> basic operations" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     ValueArray<uint256> array;
-    TEST_ASSERT(array.IsEmpty(), "新创建的 ValueArray 为空");
+    TEST_ASSERT(array.IsEmpty(), "Newly created ValueArray is empty");
     TEST_ASSERT(array.GetCount() == 0, "GetCount() == 0");
 
     // 添加元素
-    std::cout << "\n[1.1] Add 操作:" << std::endl;
+    std::cout << "\n[1.1] Add operation:" << std::endl;
     uint256 data1, data2, data3;
 
     fill_pattern(data1, 4, 0x1111111111111111ULL);
@@ -86,33 +86,33 @@ void test_valuearray_uint256_basic()
     array.Add(data2);
     array.Add(data3);
 
-    TEST_ASSERT(array.GetCount() == 3, "Add 后 GetCount() == 3");
-    TEST_ASSERT(!array.IsEmpty(), "数组不为空");
+    TEST_ASSERT(array.GetCount() == 3, "GetCount() == 3 after Add");
+    TEST_ASSERT(!array.IsEmpty(), "Array not empty");
 
     // 获取元素
-    std::cout << "\n[1.2] Get 操作:" << std::endl;
+    std::cout << "\n[1.2] Get operation:" << std::endl;
     uint256 retrieved;
 
-    TEST_ASSERT(array.Get(0, retrieved), "Get(0) 成功");
-    TEST_ASSERT(verify_pattern(retrieved, 4, 0x1111111111111111ULL), "Get(0) 数据正确");
+    TEST_ASSERT(array.Get(0, retrieved), "Get(0) succeeded");
+    TEST_ASSERT(verify_pattern(retrieved, 4, 0x1111111111111111ULL), "Get(0) data correct");
 
-    TEST_ASSERT(array.Get(1, retrieved), "Get(1) 成功");
-    TEST_ASSERT(verify_pattern(retrieved, 4, 0x2222222222222222ULL), "Get(1) 数据正确");
+    TEST_ASSERT(array.Get(1, retrieved), "Get(1) succeeded");
+    TEST_ASSERT(verify_pattern(retrieved, 4, 0x2222222222222222ULL), "Get(1) data correct");
 
-    TEST_ASSERT(array.Get(2, retrieved), "Get(2) 成功");
-    TEST_ASSERT(verify_pattern(retrieved, 4, 0x3333333333333333ULL), "Get(2) 数据正确");
+    TEST_ASSERT(array.Get(2, retrieved), "Get(2) succeeded");
+    TEST_ASSERT(verify_pattern(retrieved, 4, 0x3333333333333333ULL), "Get(2) data correct");
 
-    TEST_ASSERT(!array.Get(3, retrieved), "Get(3) 越界返回 false");
-    TEST_ASSERT(!array.Get(-1, retrieved), "Get(-1) 越界返回 false");
+    TEST_ASSERT(!array.Get(3, retrieved), "Get(3) out of range returns false");
+    TEST_ASSERT(!array.Get(-1, retrieved), "Get(-1) out of range returns false");
 
     // 设置元素
-    std::cout << "\n[1.3] Set 操作:" << std::endl;
+    std::cout << "\n[1.3] Set operation:" << std::endl;
     uint256 new_data;
     fill_pattern(new_data, 4, 0x4444444444444444ULL);
 
-    TEST_ASSERT(array.Set(1, new_data), "Set(1) 成功");
-    TEST_ASSERT(array.Get(1, retrieved), "Set 后 Get(1) 成功");
-    TEST_ASSERT(verify_pattern(retrieved, 4, 0x4444444444444444ULL), "Set 后数据正确");
+    TEST_ASSERT(array.Set(1, new_data), "Set(1) succeeded");
+    TEST_ASSERT(array.Get(1, retrieved), "Get(1) succeeds after Set");
+    TEST_ASSERT(verify_pattern(retrieved, 4, 0x4444444444444444ULL), "Data correct after Set");
 }
 
 // ============================================================================
@@ -122,16 +122,16 @@ void test_valuearray_uint256_basic()
 void test_valuearray_uint16k_large()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 2: ValueArray<uint16k> 大对象操作 (2048字节)" << std::endl;
+    std::cout << "TEST 2: ValueArray<uint16k> large object operations (2048 bytes)" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     ValueArray<uint16k> large_array;
 
-    std::cout << "\n[2.1] 大对象批量操作:" << std::endl;
+    std::cout << "\n[2.1] Large object batch operations:" << std::endl;
     const int LARGE_COUNT = 100;
 
     large_array.Reserve(LARGE_COUNT);
-    TEST_ASSERT(large_array.GetAllocCount() >= LARGE_COUNT, "Reserve 预分配成功");
+    TEST_ASSERT(large_array.GetAllocCount() >= LARGE_COUNT, "Reserve pre-allocation succeeded");
 
     // 添加 100 个 2KB 对象
     for (int i = 0; i < LARGE_COUNT; ++i)
@@ -141,32 +141,32 @@ void test_valuearray_uint16k_large()
         large_array.Add(data);
     }
 
-    TEST_ASSERT(large_array.GetCount() == LARGE_COUNT, "批量 Add 成功");
+    TEST_ASSERT(large_array.GetCount() == LARGE_COUNT, "Bulk Add succeeded");
 
     // 验证内存占用
     int expected_bytes = LARGE_COUNT * sizeof(uint16k);
-    TEST_ASSERT(large_array.GetTotalBytes() == expected_bytes, "GetTotalBytes 正确");
+    TEST_ASSERT(large_array.GetTotalBytes() == expected_bytes, "GetTotalBytes correct");
 
-    std::cout << "  总内存占用: " << large_array.GetTotalBytes() / 1024 << " KB" << std::endl;
+    std::cout << "  Total memory usage: " << large_array.GetTotalBytes() / 1024 << " KB" << std::endl;
 
     // 随机访问验证
-    std::cout << "\n[2.2] 随机访问验证:" << std::endl;
+    std::cout << "\n[2.2] Random access verification:" << std::endl;
     uint16k retrieved;
 
     for (int idx : {0, 50, 99})
     {
-        TEST_ASSERT(large_array.Get(idx, retrieved), "Get(" << idx << ") 成功");
+        TEST_ASSERT(large_array.Get(idx, retrieved), "Get(" << idx << ") succeeded");
         TEST_ASSERT(verify_pattern(retrieved, 256, 0x1000000000000000ULL + idx),
-                   "Get(" << idx << ") 数据模式正确");
+                   "Get(" << idx << ") data pattern correct");
     }
 
     // 删除操作
-    std::cout << "\n[2.3] Delete 操作:" << std::endl;
-    TEST_ASSERT(large_array.Delete(50), "Delete(50) 成功");
-    TEST_ASSERT(large_array.GetCount() == LARGE_COUNT - 1, "删除后 GetCount 正确");
+    std::cout << "\n[2.3] Delete operation:" << std::endl;
+    TEST_ASSERT(large_array.Delete(50), "Delete(50) succeeded");
+    TEST_ASSERT(large_array.GetCount() == LARGE_COUNT - 1, "GetCount correct after delete");
     TEST_ASSERT(!large_array.Get(50, retrieved) ||
                 !verify_pattern(retrieved, 256, 0x1000000000000000ULL + 50),
-               "删除的元素无法验证");
+               "Deleted elements cannot be verified");
 }
 
 // ============================================================================
@@ -176,7 +176,7 @@ void test_valuearray_uint16k_large()
 void test_array_type_find_delete()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 3: 数组类型数据完整性测试 (Find/DeleteByValue)" << std::endl;
+    std::cout << "TEST 3: Array type data integrity (Find/DeleteByValue)" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     ValueArray<uint256> array;
@@ -191,26 +191,26 @@ void test_array_type_find_delete()
     array.Add(data1);  // 重复元素
     array.Add(data3);
 
-    std::cout << "\n[3.1] Find 操作:" << std::endl;
+    std::cout << "\n[3.1] Find operation:" << std::endl;
 
     int index = array.Find(data2);
-    TEST_ASSERT(index == 1, "Find(data2) 返回索引 1");
+    TEST_ASSERT(index == 1, "Find(data2) returns index 1");
 
     index = array.Find(data1);
-    TEST_ASSERT(index == 0, "Find(data1) 返回第一个匹配的索引");
+    TEST_ASSERT(index == 0, "Find(data1) returns first matching index");
 
     // DeleteByValue
-    std::cout << "\n[3.2] DeleteByValue 操作:" << std::endl;
+    std::cout << "\n[3.2] DeleteByValue operation:" << std::endl;
 
-    TEST_ASSERT(array.Delete(data1), "DeleteByValue(data1) 成功");
-    TEST_ASSERT(array.GetCount() == 3, "删除后 GetCount == 3");
+    TEST_ASSERT(array.Delete(data1), "DeleteByValue(data1) succeeded");
+    TEST_ASSERT(array.GetCount() == 3, "GetCount == 3 after delete");
 
     int new_index = array.Find(data1);
-    TEST_ASSERT(new_index != 0, "第一个 data1 被删除");
+    TEST_ASSERT(new_index != 0, "First data1 deleted");
 
     // 再次删除 data1
-    TEST_ASSERT(array.Delete(data1), "再次 DeleteByValue(data1) 成功");
-    TEST_ASSERT(array.Find(data1) == -1, "所有 data1 被删除");
+    TEST_ASSERT(array.Delete(data1), "Second DeleteByValue(data1) succeeded");
+    TEST_ASSERT(array.Find(data1) == -1, "All data1 deleted");
 }
 
 // ============================================================================
@@ -220,12 +220,12 @@ void test_array_type_find_delete()
 void test_performance_comparison()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 4: 性能对比 - 数组类型 vs 标量类型" << std::endl;
+    std::cout << "TEST 4: Performance comparison - array type vs scalar type" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     const int TEST_COUNT = 10000;
 
-    std::cout << "\n[4.1] Add 操作性能对比:" << std::endl;
+    std::cout << "\n[4.1] Add performance comparison:" << std::endl;
 
     // 标量类型
     {
@@ -261,7 +261,7 @@ void test_performance_comparison()
                   << ": " << duration.count() << " μs" << std::endl;
     }
 
-    std::cout << "\n[4.2] Get 操作性能对比:" << std::endl;
+    std::cout << "\n[4.2] Get performance comparison:" << std::endl;
 
     ValueArray<uint64> scalar_array;
     ValueArray<uint256> array_type;
@@ -304,7 +304,7 @@ void test_performance_comparison()
 int main(int, char**)
 {
     std::cout << "\n╔════════════════════════════════════════╗" << std::endl;
-    std::cout << "║  ValueArray 类型特化测试 (C Array)   ║" << std::endl;
+    std::cout << "║  ValueArray Type Specialization Test  ║" << std::endl;
     std::cout << "╚════════════════════════════════════════╝" << std::endl;
 
     try
@@ -316,24 +316,24 @@ int main(int, char**)
     }
     catch (const std::exception& e)
     {
-        std::cerr << "异常: " << e.what() << std::endl;
+        std::cerr << "Exception: " << e.what() << std::endl;
         return 1;
     }
 
     std::cout << "\n╔════════════════════════════════════════╗" << std::endl;
-    std::cout << "║           测试结果统计               ║" << std::endl;
+    std::cout << "║        Test Result Summary            ║" << std::endl;
     std::cout << "╚════════════════════════════════════════╝" << std::endl;
-    std::cout << "  通过: " << tests_passed << std::endl;
-    std::cout << "  失败: " << tests_failed << std::endl;
+    std::cout << "  Passed: " << tests_passed << std::endl;
+    std::cout << "  Failed: " << tests_failed << std::endl;
 
     if (tests_failed > 0)
     {
-        std::cout << "\n❌ 测试未全部通过" << std::endl;
+        std::cout << "\n❌ Not all tests passed" << std::endl;
         return 1;
     }
     else
     {
-        std::cout << "\n✅ 所有测试通过" << std::endl;
-        return 0;
+        std::cout << "\n✅ All tests passed" << std::endl;
+        return tests_failed == 0 ? 0 : 1;
     }
 }

@@ -1,10 +1,10 @@
 # Queue 相关测试项目
 
 
-cm_example_project("DataType/Collection/Queue" QueueTest              QueueTest.cpp)
+cm_datatype_test("DataType/Collection/Queue" QueueTest              QueueTest.cpp)
 cm_example_project("DataType/Collection/Queue" QueueBenchmark      QueueBenchmark.cpp)
 
-cm_example_project("DataType/Collection/Queue" QueueTest01_BasicOperations     QueueTest01_BasicOperations.cpp)
-cm_example_project("DataType/Collection/Queue" QueueTest02_IteratorCoverage    QueueTest02_IteratorCoverage.cpp)
-cm_example_project("DataType/Collection/Queue" QueueTest03_GetDataVariants     QueueTest03_GetDataVariants.cpp)
-cm_example_project("DataType/Collection/Queue" QueueTest04_UnreadSnapshot      QueueTest04_UnreadSnapshot.cpp)
+cm_datatype_test("DataType/Collection/Queue" QueueTest01_BasicOperations     QueueTest01_BasicOperations.cpp)
+cm_datatype_test("DataType/Collection/Queue" QueueTest02_IteratorCoverage    QueueTest02_IteratorCoverage.cpp)
+cm_datatype_test("DataType/Collection/Queue" QueueTest03_GetDataVariants     QueueTest03_GetDataVariants.cpp)
+cm_datatype_test("DataType/Collection/Queue" QueueTest04_UnreadSnapshot      QueueTest04_UnreadSnapshot.cpp)

@@ -180,20 +180,20 @@ void TestUTF8()
     std::cout << "\n========== Test 6: UTF-8 Support ==========" << std::endl;
 
     // 中文名称
-    TestU8IDName id1(reinterpret_cast<const u8char*>(u8"中文名称"));
+    TestU8IDName id1(reinterpret_cast<const u8char*>(u8"Chinese Name"));
     assert(id1.IsValid());
     assert(id1.GetID() == 0);
     std::cout << "✓ Chinese characters" << std::endl;
 
     // 日文名称
-    TestU8IDName id2(reinterpret_cast<const u8char*>(u8"日本語"));
+    TestU8IDName id2(reinterpret_cast<const u8char*>(u8"Japanese"));
     assert(id2.IsValid());
     assert(id2.GetID() == 1);
     assert(id1 != id2);
     std::cout << "✓ Japanese characters" << std::endl;
 
     // 去重测试
-    TestU8IDName id3(reinterpret_cast<const u8char*>(u8"中文名称"));
+    TestU8IDName id3(reinterpret_cast<const u8char*>(u8"Chinese Name"));
     assert(id3 == id1);
     std::cout << "✓ UTF-8 deduplication" << std::endl;
 }

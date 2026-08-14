@@ -596,7 +596,7 @@ int main()
     cout << "║                    PERFORMANCE RATING SUMMARY                                 ║" << endl;
     cout << "╚════════════════════════════════════════════════════════════════════════════════╝" << endl;
 
-    cout << "\n【最快的操作 - 按场景分类】" << endl;
+    cout << "\n[Fastest Operation - By Scenario]" << endl;
 
     // Insert速度最快
     double min_insert_10k = min({perf_original.insert_10k, perf_dualhash.insert_10k, perf_openaddr.insert_10k, perf_sharded.insert_10k});
@@ -638,7 +638,7 @@ int main()
     double min_deg = min({deg_orig_90 + deg_orig_99, deg_dual_90 + deg_dual_99, deg_open_90 + deg_open_99, deg_shard_90 + deg_shard_99});
     cout << "  Garbage Stability:";
     if (deg_orig_90 + deg_orig_99 == min_deg) cout << "✓ Original";
-    else if (deg_dual_90 + deg_dual_99 == min_deg) cout << "✓ DualHashSet (推荐)";
+    else if (deg_dual_90 + deg_dual_99 == min_deg) cout << "✓ DualHashSet (recommended)";
     else if (deg_open_90 + deg_open_99 == min_deg) cout << "✓ LinearProbeSet";
     else cout << "✓ ShardedSet";
     cout << endl;
@@ -648,15 +648,15 @@ int main()
     cout << "  Collision Handle: ";
     if (perf_original.collision_insert == min_collision) cout << "✓ Original";
     else if (perf_dualhash.collision_insert == min_collision) cout << "✓ DualHashSet";
-    else if (perf_openaddr.collision_insert == min_collision) cout << "✓ LinearProbeSet (推荐)";
+    else if (perf_openaddr.collision_insert == min_collision) cout << "✓ LinearProbeSet (recommended)";
     else cout << "✓ ShardedSet";
     cout << endl;
 
-    cout << "\n【使用建议】" << endl;
-    cout << "  • Original:      一般用途，删除不频繁（< 10%），简单数据" << endl;
-    cout << "  • DualHashSet:   高频删除场景，无GC峰值延迟，平滑性能" << endl;
-    cout << "  • LinearProbeSet: 高碰撞率数据，缓存友好性能，内存紧凑" << endl;
-    cout << "  • ShardedSet:    大规模数据（> 100k），多核并行，低争用" << endl;
+    cout << "\n[Recommendations]" << endl;
+    cout << "  • Original:      general purpose, infrequent deletes (< 10%), simple data" << endl;
+    cout << "  • DualHashSet:   high-frequency deletes, no GC spike latency, smooth performance" << endl;
+    cout << "  • LinearProbeSet: high collision data, cache-friendly, compact memory" << endl;
+    cout << "  • ShardedSet:    large data (> 100k), multi-core parallel, low contention" << endl;
     cout << endl;
 
     return 0;

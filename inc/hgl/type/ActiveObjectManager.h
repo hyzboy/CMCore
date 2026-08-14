@@ -365,8 +365,9 @@ namespace hgl
 
             if (it != idle_object_map.end())
             {
-                MoveToActive(it->second);
-                return ObjectRef(this, it->second);
+                ObjectItem *item = it->second;
+                MoveToActive(item);
+                return ObjectRef(this, item);
             }
 
             ObjectItem *item = CreateObject(id, args...);
@@ -390,8 +391,9 @@ namespace hgl
 
             if (it != idle_object_map.end())
             {
-                MoveToActive(it->second);
-                return ObjectRef(this, it->second);
+                ObjectItem *item = it->second;
+                MoveToActive(item);
+                return ObjectRef(this, item);
             }
 
             return ObjectRef(this, nullptr);

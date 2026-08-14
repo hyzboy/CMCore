@@ -863,7 +863,7 @@ int main(int, char **)
         nmap[ptr] = (int)i;
     }
 
-    cout << "\n容器已预填充 " << objects.size() << " 个元素，开始纯查找测试...\n" << endl;
+    cout << "\nContainer pre-filled with " << objects.size() << " elements, starting pure lookup test...\n" << endl;
 
     // 测试 std::unordered_map
     {
@@ -921,7 +921,7 @@ int main(int, char **)
     const int STRESS_OPERATIONS = 100000;
 
     // 场景1：频繁插入删除后查询（碎片化测试）
-    cout << "\n[Scenario 1] 碎片化测试：删除50%元素后查询性能" << endl;
+    cout << "\n[Scenario 1] Fragmentation test: query performance after deleting 50%" << endl;
     cout << string(60, '-') << endl;
     {
         // 预先构建容器
@@ -944,8 +944,8 @@ int main(int, char **)
             nmap1.erase(ptr);
         }
 
-        cout << "已删除50%元素，当前元素数量：" << umap1.size() << endl;
-        cout << "查找100万次（50%命中，50%未命中）...\n" << endl;
+        cout << "Deleted 50% of elements, current count: " << umap1.size() << endl;
+        cout << "1 million lookups (50% hit, 50% miss)...\n" << endl;
 
         // 测试查询性能（50%命中，50%未命中）
         {
@@ -980,9 +980,9 @@ int main(int, char **)
     }
 
     // 场景2：插入删除查询混合操作
-    cout << "\n[Scenario 2] 混合操作：随机插入/删除/查询" << endl;
+    cout << "\n[Scenario 2] Mixed operations: random insert/delete/query" << endl;
     cout << string(60, '-') << endl;
-    cout << "执行10万次随机操作（40%插入，30%删除，30%查询）...\n" << endl;
+    cout << "100k random operations (40% insert, 30% delete, 30% query)...\n" << endl;
     {
         random_device rd;
         mt19937 gen(rd());
@@ -1072,9 +1072,9 @@ int main(int, char **)
     }
 
     // 场景3：频繁扩容测试
-    cout << "\n[Scenario 3] 扩容测试：从空表逐步插入10万元素" << endl;
+    cout << "\n[Scenario 3] Growth test: insert 100k elements from empty" << endl;
     cout << string(60, '-') << endl;
-    cout << "测试多次rehash的性能影响...\n" << endl;
+    cout << "Measuring performance impact of repeated rehash...\n" << endl;
     {
         {
             Timer timer;
@@ -1105,7 +1105,7 @@ int main(int, char **)
     }
 
     // 场景4：查询未命中测试
-    cout << "\n[Scenario 4] 未命中查询：查询不存在的元素" << endl;
+    cout << "\n[Scenario 4] Miss lookups: querying non-existent elements" << endl;
     cout << string(60, '-') << endl;
     {
         // 创建额外的测试对象用于未命中查询
@@ -1115,7 +1115,7 @@ int main(int, char **)
             miss_objects.emplace_back(99999 + i);
         }
 
-        cout << "查找10万次不存在的元素...\n" << endl;
+        cout << "100k lookups of non-existent elements...\n" << endl;
 
         {
             Timer timer;

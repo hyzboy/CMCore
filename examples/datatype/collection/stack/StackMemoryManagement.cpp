@@ -9,11 +9,11 @@ using namespace std;
 int os_main(int, os_char**)
 {
     cout << "\n╔══════════════════════════════════════╗" << endl;
-    cout << "║  Stack 内存管理测试                  ║" << endl;
+    cout << "║  Stack Memory Management Test        ║" << endl;
     cout << "╚══════════════════════════════════════╝" << endl;
 
     // TEST 1: 容量管理测试
-    cout << "\n[TEST 1] 容量管理测试" << endl;
+    cout << "\n[TEST 1] Capacity management" << endl;
     {
         Stack<int> stack;
 
@@ -21,7 +21,7 @@ int os_main(int, os_char**)
         stack.Reserve(100);
         int64 capacity = stack.GetAllocCount();
         assert(capacity >= 100);
-        cout << "  ✓ Reserve(100)成功预分配" << endl;
+        cout << "  ✓ Reserve(100) pre-allocated successfully" << endl;
 
         // 添加元素不应超出预分配容量
         for (int i = 0; i < 100; i++)
@@ -30,53 +30,53 @@ int os_main(int, os_char**)
         assert(stack.GetCount() == 100);
         int64 new_capacity = stack.GetAllocCount();
         assert(new_capacity >= 100);
-        cout << "  ✓ 100个元素在预分配容量内" << endl;
+        cout << "  ✓ 100 elements fit within pre-allocated capacity" << endl;
     }
 
     // TEST 2: Clear vs Free测试
-    cout << "\n[TEST 2] Clear vs Free测试" << endl;
+    cout << "\n[TEST 2] Clear vs Free" << endl;
     {
         Stack<int> stack;
         for (int i = 0; i < 100; i++)
             stack.Push(i);
 
         int64 capacity_before = stack.GetAllocCount();
-        cout << "  Clear前容量: " << capacity_before << endl;
+        cout << "  Capacity before Clear: " << capacity_before << endl;
 
         stack.Clear();
         assert(stack.IsEmpty());
         assert(stack.GetCount() == 0);
         int64 capacity_after_clear = stack.GetAllocCount();
-        cout << "  Clear后容量: " << capacity_after_clear << endl;
-        cout << "  ✓ Clear保留了容量" << endl;
+        cout << "  Capacity after Clear: " << capacity_after_clear << endl;
+        cout << "  ✓ Clear keeps capacity" << endl;
 
         stack.Free();
         assert(stack.IsEmpty());
         int64 capacity_after_free = stack.GetAllocCount();
-        cout << "  Free后容量: " << capacity_after_free << endl;
-        cout << "  ✓ Free释放了容量" << endl;
+        cout << "  Capacity after Free: " << capacity_after_free << endl;
+        cout << "  ✓ Free releases capacity" << endl;
     }
 
     // TEST 3: Resize操作测试
-    cout << "\n[TEST 3] Resize操作测试" << endl;
+    cout << "\n[TEST 3] Resize operations" << endl;
     {
         Stack<int> stack;
         for (int i = 0; i < 50; i++)
             stack.Push(i);
 
-        cout << "  Resize前: " << stack.GetCount() << " 元素" << endl;
+        cout << "  Before Resize: " << stack.GetCount() << " elements" << endl;
         stack.Resize(100);
-        cout << "  Resize(100)后: " << stack.GetCount() << " 元素" << endl;
+        cout << "  After Resize(100): " << stack.GetCount() << " elements" << endl;
         assert(stack.GetCount() <= 100);
-        cout << "  ✓ Resize调整大小" << endl;
+        cout << "  ✓ Resize changes size" << endl;
 
         int value;
         assert(stack.Top(value));
-        cout << "  ✓ Resize后栈顶元素仍可访问" << endl;
+        cout << "  ✓ Top element still accessible after Resize" << endl;
     }
 
     // TEST 4: 栈的销毁和重用测试
-    cout << "\n[TEST 4] 栈的销毁和重用测试" << endl;
+    cout << "\n[TEST 4] Stack destruction and reuse" << endl;
     {
         Stack<int> stack;
         stack.Reserve(1000);
@@ -85,12 +85,12 @@ int os_main(int, os_char**)
             stack.Push(i);
 
         int64 count_before = stack.GetCount();
-        cout << "  Clear前元素数: " << count_before << endl;
+        cout << "  Element count before Clear: " << count_before << endl;
 
         stack.Clear();
         int64 count_after_clear = stack.GetCount();
         assert(count_after_clear == 0);
-        cout << "  ✓ Clear后元素数为0" << endl;
+        cout << "  ✓ Element count 0 after Clear" << endl;
 
         // 重新使用清空的栈
         for (int i = 100; i < 110; i++)
@@ -98,11 +98,11 @@ int os_main(int, os_char**)
 
         int value;
         assert(stack.Pop(value) && value == 109);
-        cout << "  ✓ Clear后可重新使用栈" << endl;
+        cout << "  ✓ Stack reusable after Clear" << endl;
     }
 
     // TEST 5: 大容量压力测试
-    cout << "\n[TEST 5] 大容量压力测试" << endl;
+    cout << "\n[TEST 5] Large capacity stress test" << endl;
     {
         Stack<int> stack;
         const int large_count = 100000;
@@ -112,11 +112,11 @@ int os_main(int, os_char**)
             stack.Push(i);
 
         assert(stack.GetCount() == large_count);
-        cout << "  ✓ 成功添加" << large_count << "个元素" << endl;
+        cout << "  ✓ Added successfully" << large_count << " elements" << endl;
 
         int value;
         assert(stack.Top(value) && value == large_count - 1);
-        cout << "  ✓ 栈顶元素正确" << endl;
+        cout << "  ✓ Top element correct" << endl;
 
         // 弹出所有元素
         for (int i = 0; i < large_count; i++)
@@ -124,9 +124,9 @@ int os_main(int, os_char**)
             assert(stack.Pop(value));
         }
         assert(stack.IsEmpty());
-        cout << "  ✓ 成功弹出所有元素" << endl;
+        cout << "  ✓ All elements popped successfully" << endl;
     }
 
-    cout << "\n✅ 内存管理测试全部通过" << endl;
+    cout << "\n✅ All memory management tests passed" << endl;
     return 0;
 }
