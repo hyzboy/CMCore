@@ -8,6 +8,7 @@ cm_example_project("DataType" MemcmpTest            MemcmpTest.cpp)
 cm_example_project("DataType" IDNameTest            IDNameTest.cpp)
 cm_example_project("DataType" IDNameStressTest      IDNameStressTest.cpp)
 cm_example_project("DataType" IDObjectManagerTest   IDObjectManagerTest.cpp)
+cm_example_project("DataType" TypedBlockAllocatorTest TypedBlockAllocatorTest.cpp)
 
 cm_example_project("DataType/ActiveManager" 1_ActiveIDManagerTest           ActiveIDManagerTest.cpp)
 cm_example_project("DataType/ActiveManager" 2_ActiveIDManagerGetIdleViewTest ActiveIDManagerGetIdleViewTest.cpp)

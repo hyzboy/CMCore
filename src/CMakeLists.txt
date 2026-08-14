@@ -42,6 +42,8 @@ SOURCE_GROUP("DataType\\Collection" FILES ${CMCORE_TYPE_COLLECTION_FILES})
 
 ## BlockAllocator 数据链
 SET(CMCORE_TYPE_DATACHAIN_FILES ${CMCORE_TYPE_INCLUDE_PATH}/BlockAllocator.h
+                                ${CMCORE_TYPE_INCLUDE_PATH}/BlockPool.h
+                                ${CMCORE_TYPE_INCLUDE_PATH}/TypedBlockAllocator.h
                                 Type/BlockAllocator.cpp)
 SOURCE_GROUP("DataType\\BlockAllocator" FILES ${CMCORE_TYPE_DATACHAIN_FILES})
 
