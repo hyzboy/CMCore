@@ -81,4 +81,14 @@ namespace hgl
 
         return plugin_interface->GetInterface(ver,interface_data);
     }
+
+    bool ExternalPlugIn::GetCapability(uint id,void *data)
+    {
+        if(!plugin_interface)return(false);
+
+        if(!plugin_interface->GetCapability)
+            return(false);
+
+        return plugin_interface->GetCapability(uint32(id),data);
+    }
 }//namespace hgl

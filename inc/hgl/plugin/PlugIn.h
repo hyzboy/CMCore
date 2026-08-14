@@ -10,8 +10,6 @@ namespace hgl
     {
     protected:
 
-        uint ref_count;
-
         uint ver;
         OSString name;
         U16String intro;
@@ -28,14 +26,10 @@ namespace hgl
 
         PlugIn()
         {
-            ref_count=0;
             ver=0;
         }
 
         virtual ~PlugIn()=default;
-
-        uint add_ref(){return ++ref_count;}
-        uint release_ref(){return --ref_count;}
 
         virtual bool GetInterface(uint,void *)=0;
     };//class PlugIn

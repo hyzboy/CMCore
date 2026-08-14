@@ -1,7 +1,9 @@
 ﻿#pragma once
 
 #include<hgl/plugin/ExternalPlugIn.h>
+#include<hgl/plugin/StaticPlugIn.h>
 #include<hgl/type/ObjectManager.h>
+#include<hgl/type/ManagedArray.h>
 #include<hgl/type/StringList.h>
 #include<hgl/type/ValueArray.h>
 
@@ -14,6 +16,10 @@ namespace hgl
         PlugInStatus    status;
         uint            version;
         U16String       intro;
+        U16String       display_name;      ///<菜单显示名(能力 MenuInfo)
+        U16String       category;          ///<分组名(能力 MenuInfo)
+        int             priority;          ///<排序优先级(能力 MenuInfo,越大越靠前)
+        AnsiStringList  extensions;        ///<支持的文件扩展名(能力 FileExtensions)
     };
 
     /**
@@ -22,8 +28,12 @@ namespace hgl
     class PlugInManager:public ManagedObjectRegistry<OSString,PlugIn>
     {
         OSString name;                                                          ///<插件类目名称(必须符合代码名称规则)
+        OSString category_name;                                                 ///<插件类目(构造时传入的原始名称，如 "Audio")
 
         OSStringList findpath;                                                  ///<插件查找目录
+
+        mutable bool probe_cache_valid;                                         ///<探测缓存是否有效
+        mutable ManagedArray<PlugInInfo> probe_cache;                           ///<探测结果缓存
 
     public:
 
@@ -32,6 +42,8 @@ namespace hgl
 
         bool    RegisterPlugin(PlugIn *);                                       ///<注册一个内置插件
         uint    UnregisterPlugin(const OSString &);                             ///<释放一个内置插件
+
+        void    LoadStaticPlugIns();                                            ///<加载所有静态登记的内建插件
 
         bool    AddFindPath (const OSString &path);                             ///<添加一个插件查找目录
 
@@ -43,45 +55,15 @@ namespace hgl
 
         int     Scan(OSStringList &out_names) const;                             ///<扫描可用插件名称
         int     ScanDetailed(hgl::ManagedArray<PlugInInfo> &out_infos,bool probe=false) const;   ///<扫描可用插件并可选探测
+        int     ScanAndProbe(hgl::ManagedArray<PlugInInfo> &out_infos,bool force=false);         ///<扫描并探测插件(带缓存)，用于菜单注册等场景
         bool    ProbePlugin(const OSString &pi_name,PlugInInfo &out_info) const; ///<对指定插件做一次信息探测
 
         PlugIn *LoadPlugin  (const OSString &,const OSString &);                ///<加载一个外部插件，明确指定全路径文件名
         PlugIn *LoadPlugin  (const OSString &);                                 ///<加载一个外部插件，自行查找
         bool    UnloadPlugin(const OSString &);                                 ///<释放一个外部插件
+
+    private:
+
+        void    AppendStaticPlugIns(hgl::ManagedArray<PlugInInfo> &out_infos) const;    ///<把静态登记的内建插件追加到扫描结果
     };//class PlugInManager:public ManagedObjectRegistry<U16String,PlugIn>
-
-    /**
-     * 插件注册模板
-     */
-    template<typename T> class RegisterPlugInProxy
-    {
-        T *plugin;
-
-    public:
-
-        RegisterPlugInProxy()
-        {
-            plugin=new T;
-        }
-
-        virtual ~RegisterPlugInProxy()
-        {
-            delete plugin;
-        }
-
-        T *get(){return plugin;}
-    };//template<typename T> class RegisterPlugInProxy
-
-    /*
-        如Log插件中的Console,File插件，是直接在代码中的，属于内部插件。
-        但Log输出至MySQL的插件，是以独立.dll/.so/dylib形式存在的，属于外部插件。
-    */
-
-#ifndef __MAKE_PLUGIN__     //内部插件
-    #define REGISTER_PLUG_IN(name,classname)    static RegisterPlugInProxy<name,classname> plugin_proxy_##classname;   \
-                                                extern "C" void register_plugin_##classname;
-#else                       //外部插件
-    #define REGISTER_PLUG_IN(name,classname)    static RegisterPlugInProxy<name,classname> plugin_proxy_##classname     \
-    extern "C" void register_plugin_##name(void){}
-#endif//__MAKE_PLUGIN__
 }//namespace hgl
