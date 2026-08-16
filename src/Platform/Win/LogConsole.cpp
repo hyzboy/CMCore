@@ -1,8 +1,8 @@
 ﻿#include<hgl/log/Logger.h>
 #include<hgl/log/LogMessage.h>
 #include<hgl/Charset.h>
+#include<hgl/utf.h>
 #include<windows.h>
-#include <string>
 
 namespace hgl
 {
@@ -18,7 +18,9 @@ namespace hgl
 
             void *console_handle=nullptr;
 
-            u16char buf[LOG_BUF_SIZE]{};
+            bool is_console=false;                  ///<是否为真正的控制台(而非重定向的管道/文件)
+
+            u8char u8_buf[LOG_BUF_SIZE];            ///<管道/文件模式的UTF-8输出缓冲
 
             bool EnableVirtualTerminal()
             {
@@ -30,7 +32,7 @@ namespace hgl
                 return SetConsoleMode(static_cast<HANDLE>(console_handle), mode);
             }
 
-            std::string GetAnsiColorByLogLevel(LogLevel level)
+            const char *GetAnsiColorByLogLevel(LogLevel level)
             {
                 switch (level)
                 {
@@ -45,12 +47,54 @@ namespace hgl
                 }
             }
 
+            void WriteToConsole(const u16char *text,int text_length,LogLevel level)
+            {
+                const char *color=GetAnsiColorByLogLevel(level);
+
+                WriteConsoleA(console_handle, color, (DWORD)strlen(color), &result, nullptr);
+                WriteConsoleW(console_handle, text, text_length, &result, nullptr);
+                WriteConsoleW(console_handle, L"\n", 1, &result, nullptr);
+                WriteConsoleA(console_handle, "\033[0m", 4, &result, nullptr); // 重置颜色
+            }
+
+            void WriteToPipe(const LogMessage *msg)
+            {
+                int len=0;
+
+                if(msg->text.message_u8&&msg->text.message_u8_length>0)
+                {
+                    int copy_len=msg->text.message_u8_length;
+
+                    if(copy_len>LOG_BUF_SIZE-2)
+                        copy_len=LOG_BUF_SIZE-2;
+
+                    memcpy(u8_buf,msg->text.message_u8,copy_len);
+                    len=copy_len;
+                }
+                else if(msg->text.message_u16&&msg->text.message_u16_length>0)
+                {
+                    len=u16_to_u8(u8_buf,LOG_BUF_SIZE-1,msg->text.message_u16,msg->text.message_u16_length);
+                }
+
+                if(len<=0)
+                    return;
+
+                u8_buf[len]='\n';
+
+                WriteFile(static_cast<HANDLE>(console_handle),u8_buf,len+1,&result,nullptr);
+            }
+
         public:
 
             LogWinConsole(LogLevel ll):Logger(ll)
             {
                 console_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-                EnableVirtualTerminal(); // 启用虚拟终端模式
+
+                DWORD mode;
+                is_console=(GetConsoleMode(static_cast<HANDLE>(console_handle),&mode)!=0);
+
+                if(is_console)
+                    EnableVirtualTerminal(); // 启用虚拟终端模式
             }
 
             bool Create(const U16String &)
@@ -73,28 +117,31 @@ namespace hgl
                 if(!msg)
                     return;
 
-                const std::string color = GetAnsiColorByLogLevel(msg->meta.level);
-                const u16char *text=msg->text.message_u16;
-                int text_length=msg->text.message_u16_length;
-
-                if(!text||text_length<=0)
+                if(is_console)
                 {
-                    if(msg->text.message_u8&&msg->text.message_u8_length>0)
+                    const u16char *text=msg->text.message_u16;
+                    int text_length=msg->text.message_u16_length;
+
+                    if(!text||text_length<=0)
                     {
-                        const U16String wide=ToOSString(U8String(msg->text.message_u8,msg->text.message_u8_length));
+                        if(msg->text.message_u8&&msg->text.message_u8_length>0)
+                        {
+                            const U16String wide=ToOSString(U8String(msg->text.message_u8,msg->text.message_u8_length));
 
-                        text=wide.c_str();
-                        text_length=wide.Length();
+                            text=wide.c_str();
+                            text_length=wide.Length();
+                        }
                     }
+
+                    if(!text||text_length<=0)
+                        return;
+
+                    WriteToConsole(text,text_length,msg->meta.level);
                 }
-
-                if(!text||text_length<=0)
-                    return;
-
-                WriteConsoleA(console_handle, color.c_str(), (DWORD)color.size(), &result, nullptr);
-                WriteConsoleW(console_handle, text, text_length, &result, nullptr);
-                WriteConsoleW(console_handle, L"\n", 1, &result, nullptr);
-                WriteConsoleA(console_handle, "\033[0m", 4, &result, nullptr); // 重置颜色
+                else
+                {
+                    WriteToPipe(msg);
+                }
             }
         }; // class LogWinConsole
 
