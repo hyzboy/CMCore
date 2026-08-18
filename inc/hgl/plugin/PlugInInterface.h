@@ -97,6 +97,10 @@ namespace hgl
  *
  * 定义 __MAKE_PLUGIN__(编译为 DLL/SO)时本宏为空；
  * 否则(静态链接)向全局链表登记一条 StaticPlugInDesc。
+ *
+ * 注意(静态链接模式)：若插件源码编入静态库且目标文件内无其他被引用符号，
+ * 链接器(/OPT:REF)会丢弃整个目标文件，静态登记对象随之消失、插件静默不可用。
+ * 需 /WHOLEARCHIVE 链接该库，或从宿主代码显式引用插件目标文件的符号。
  */
 #ifdef __MAKE_PLUGIN__
     #define REGISTER_PLUG_IN(category,name)             /* DLL/SO 模式：无需静态登记 */

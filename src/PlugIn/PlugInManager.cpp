@@ -41,7 +41,7 @@ namespace hgl
 
     PlugInManager::PlugInManager(const OSString &n)
     {
-        name=OS_TEXT("CMP.")+n;
+        name=OSString(HGL_PLUGIN_FRONTNAME)+n;      //Windows:CMP.  Linux/Apple等:libCMP.
         category_name=n;
 
         probe_cache_valid=false;
@@ -101,8 +101,14 @@ namespace hgl
 
     PlugInStatus PlugInManager::GetStatus(const OSString &pi_name) const
     {
-        PlugIn *pi=(const_cast<PlugInManager*>(this))->Find(pi_name);
-        if(pi) return PlugInStatus::COMPLETE;
+        PlugIn *pi=this->Find(pi_name);
+        if(pi)
+        {
+            const ExternalPlugIn *epi=dynamic_cast<const ExternalPlugIn *>(pi);
+            if(epi)return epi->GetStatus();         //外部插件：返回真实状态(可能为 LOAD_FAILED)
+
+            return PlugInStatus::COMPLETE;          //静态插件加载即可用
+        }
 
         OSString fp;
         if(HasPluginFile(pi_name,&fp))
@@ -119,7 +125,7 @@ namespace hgl
         if(fp_count<=0)return 0;
 
         OSString prefix=name+OS_TEXT(".");
-        OSString ext=OS_TEXT("")+OSString(HGL_PLUGIN_EXTNAME);
+        const OSString ext=OSString(HGL_PLUGIN_EXTNAME);
 
         for(std::size_t i=0;i<fp_count;i++)
         {
@@ -149,12 +155,13 @@ namespace hgl
             }
         }
 
+        //排序:统一忽略大小写,与 Windows 去重(CaseFind)一致,保证跨平台顺序相同
         const int total=out_names.GetCount();
         for(int i=0;i<total-1;i++)
         {
             for(int j=0;j<total-1-i;j++)
             {
-                if(out_names[j]>out_names[j+1])
+                if(out_names[j].CaseComp(out_names[j+1])>0)
                     out_names.Exchange(j,j+1);
             }
         }
@@ -402,7 +409,11 @@ namespace hgl
 
         ExternalPlugIn *epi=new ExternalPlugIn;
 
-        epi->Load(pi_name,filename);
+        if(!epi->Load(pi_name,filename))            //加载失败：不登记，避免坏插件对象永久占用注册表
+        {
+            delete epi;
+            return(nullptr);
+        }
 
         if(this->Add(pi_name,epi))
             return epi;
@@ -427,7 +438,6 @@ namespace hgl
 
         OSString pi_filename=name+OS_TEXT(".")+pi_name+HGL_PLUGIN_EXTNAME;
         OSString pi_fullfilename;
-        ExternalPlugIn *epi=new ExternalPlugIn;
 
         for(std::size_t i=0;i<fp_count;i++)
         {
@@ -435,16 +445,19 @@ namespace hgl
 
             if(!FileExist(pi_fullfilename))continue;
 
+            //每个目录使用全新实例：Load 失败后 ExternalPlugIn 内部状态为 LOAD_FAILED 且拒绝重试，
+            //若复用同一实例，首个目录加载失败会导致后续目录全部被拒(多路径查找失效)
+            ExternalPlugIn *epi=new ExternalPlugIn;
+
             if(epi->Load(pi_name,pi_fullfilename))
             {
                 if(this->Add(pi_name,epi))
                     return epi;
             }
 
-            epi->Free();
+            delete epi;                             //加载失败或登记失败：丢弃本次尝试，继续下一个目录
         }
 
-        delete epi;
         return(nullptr);
     }
 

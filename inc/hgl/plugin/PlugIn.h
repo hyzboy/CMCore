@@ -14,11 +14,9 @@ namespace hgl
         OSString name;
         U16String intro;
 
-        OSString filename;                                                                          ///<插件文件名
-
     public:
 
-        const uint          GetVersion  ()const{return ver;}                                        ///<取得插件版本
+        uint                GetVersion  ()const{return ver;}                                        ///<取得插件版本
         const OSString &    GetName     ()const{return name;}                                       ///<取得插件名称
         const U16String &   GetIntro    ()const{return intro;}                                      ///<取得插件介绍
 
@@ -32,5 +30,13 @@ namespace hgl
         virtual ~PlugIn()=default;
 
         virtual bool GetInterface(uint,void *)=0;
+
+        /**
+         * 查询插件能力(见 PlugInCapability)
+         * @param id   能力ID
+         * @param data 能力数据结构指针
+         * @return 是否支持该能力
+         */
+        virtual bool GetCapability(uint id,void *data){return false;}
     };//class PlugIn
 }//namespace hgl

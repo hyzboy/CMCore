@@ -154,8 +154,6 @@ namespace hgl
                 ver=1;
                 name=OS_TEXT("Log");
                 intro=U16_TEXT("unicode text log module.");
-
-                filename=OS_TEXT("Loginfo.cpp");
             }
 
             bool GetInterface(uint ver,void *data) override

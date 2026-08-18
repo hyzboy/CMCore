@@ -32,8 +32,8 @@ namespace hgl
 
         OSStringList findpath;                                                  ///<插件查找目录
 
-        mutable bool probe_cache_valid;                                         ///<探测缓存是否有效
-        mutable ManagedArray<PlugInInfo> probe_cache;                           ///<探测结果缓存
+        bool probe_cache_valid;                                                 ///<探测缓存是否有效
+        ManagedArray<PlugInInfo> probe_cache;                                   ///<探测结果缓存
 
     public:
 

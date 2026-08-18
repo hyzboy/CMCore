@@ -36,7 +36,7 @@ namespace hgl
             return plugin_interface->GetInterface(ver_code,data);
         }
 
-        bool GetCapability(uint id,void *data)
+        virtual bool GetCapability(uint id,void *data) override
         {
             if(!plugin_interface||!plugin_interface->GetCapability)return(false);
             return plugin_interface->GetCapability(id,data);
