@@ -333,6 +333,7 @@ SET(CMCORE_THREAD_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Atomic.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/RWLock.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Semaphore.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/SemLock.h
+                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/SpscQueue.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/SwapColl.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/SwapData.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Thread.h
