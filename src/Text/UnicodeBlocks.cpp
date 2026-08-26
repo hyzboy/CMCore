@@ -406,6 +406,105 @@ namespace hgl
     }
 
     /**
+     * 判断当前字符是否是西里尔字符
+     */
+    bool isCyrillic(const u32char ch)
+    {
+        if(ch>0xFFFF)return(false);
+
+        CHECK_UNICODE_BLOCKS(cyrillic)
+        CHECK_UNICODE_BLOCKS(cyrillic_supplement)
+        CHECK_UNICODE_BLOCKS(cyrillic_extended_c)
+        CHECK_UNICODE_BLOCKS(cyrillic_extended)
+        CHECK_UNICODE_BLOCKS(ciryllic_extended_B)
+
+        return(false);
+    }
+
+    /**
+     * 判断当前字符是否是希腊字符
+     */
+    bool isGreek(const u32char ch)
+    {
+        if(ch>0xFFFF)return(false);
+
+        CHECK_UNICODE_BLOCKS(greek_coptic)
+        CHECK_UNICODE_BLOCKS(greek_extended)
+
+        return(false);
+    }
+
+    /**
+     * 判断当前字符是否是韩文字符
+     */
+    bool isHangul(const u32char ch)
+    {
+        if(ch>0xFFFF)return(false);
+
+        CHECK_UNICODE_BLOCKS(hangul_jamo)
+        CHECK_UNICODE_BLOCKS(hangul_compatibility_jamo)
+        CHECK_UNICODE_BLOCKS(hangul)
+        CHECK_UNICODE_BLOCKS(hangul_syllables)
+        CHECK_UNICODE_BLOCKS(hangul_jamo_extended_b)
+
+        return(false);
+    }
+
+    /**
+     * 判断当前字符是否是阿拉伯字符
+     */
+    bool isArabic(const u32char ch)
+    {
+        if(ch>0xFFFF)return(false);
+
+        CHECK_UNICODE_BLOCKS(arabic)
+        CHECK_UNICODE_BLOCKS(arabic_supplement)
+        CHECK_UNICODE_BLOCKS(arabic_extended_a)
+        CHECK_UNICODE_BLOCKS(arabic_presentation_forms_a)
+        CHECK_UNICODE_BLOCKS(arabic_presentation_forms_b)
+
+        return(false);
+    }
+
+    /**
+     * 判断当前字符是否是希伯来字符
+     */
+    bool isHebrew(const u32char ch)
+    {
+        if(ch>0xFFFF)return(false);
+
+        CHECK_UNICODE_BLOCKS(hebrew)
+
+        return(false);
+    }
+
+    /**
+     * 判断当前字符是否是泰文字符
+     */
+    bool isThai(const u32char ch)
+    {
+        if(ch>0xFFFF)return(false);
+
+        CHECK_UNICODE_BLOCKS(thai)
+
+        return(false);
+    }
+
+    /**
+     * 判断当前字符是否是天城文字符
+     */
+    bool isDevanagari(const u32char ch)
+    {
+        if(ch>0xFFFF)return(false);
+
+        CHECK_UNICODE_BLOCKS(devanagari)
+        CHECK_UNICODE_BLOCKS(devanagari_extended_characters)
+        CHECK_UNICODE_BLOCKS(vedic_extensions)
+
+        return(false);
+    }
+
+    /**
      * 判断当前字符是否是CJK字符
      */
     bool isCJK(const u16char ch)

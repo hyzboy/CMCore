@@ -337,6 +337,13 @@ namespace hgl
     bool IsInUnicodeBlock(const UnicodeBlock &type,const u32char ch);
 
     bool isLatin        (const u32char ch);     ///判断当前字符是否是拉丁字符
+    bool isCyrillic     (const u32char ch);     ///判断当前字符是否是西里尔字符
+    bool isGreek        (const u32char ch);     ///判断当前字符是否是希腊字符
+    bool isHangul       (const u32char ch);     ///判断当前字符是否是韩文字符
+    bool isArabic       (const u32char ch);     ///判断当前字符是否是阿拉伯字符
+    bool isHebrew       (const u32char ch);     ///判断当前字符是否是希伯来字符
+    bool isThai         (const u32char ch);     ///判断当前字符是否是泰文字符
+    bool isDevanagari   (const u32char ch);     ///判断当前字符是否是天城文字符
     bool isCJK          (const u16char ch);     ///判断当前字符是否是CJK字符
     bool isCJK          (const u32char ch);     ///判断当前字符是否是CJK字符
     bool isEmoji        (const u32char ch);     ///判断当前字符是否是表情符号
