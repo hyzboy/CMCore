@@ -379,7 +379,7 @@ namespace hgl
             return(false);
 
         if(ch<UnicodeBlockList[(size_t)type].begin)return(false);
-        if(ch<UnicodeBlockList[(size_t)type].end)return(false);
+        if(ch>UnicodeBlockList[(size_t)type].end)return(false);
 
         return(true);
     }
