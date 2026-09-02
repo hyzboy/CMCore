@@ -73,6 +73,15 @@ namespace hgl
         virtual void SetSystemCursor(bool){}
 
         virtual bool Update() override;
+
+    public: // 平台原生句柄（供 Vulkan surface 等 OS 集成层查询，避免 dynamic_cast 具体窗口类）
+
+        /** 原生窗口句柄：Win32=HWND，XCB=xcb_window_t，Wayland=wl_surface，Android=ANativeWindow*，Apple=NSView* 等 */
+        virtual void *GetNativeHandle()const{return nullptr;}
+
+        /** 原生显示/实例句柄：Win32=HINSTANCE，XCB=xcb_connection_t*，Wayland=wl_display*；无此概念的平台返回 nullptr */
+        virtual void *GetNativeDisplay()const{return nullptr;}
+
     };//class Window
 
     Window *CreateRenderWindow(const OSString &win_name);

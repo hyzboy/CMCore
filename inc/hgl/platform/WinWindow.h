@@ -31,6 +31,9 @@ namespace hgl
         HWND GetWnd(){return win_hwnd;}
         HDC GetHDC(){return win_dc;}
 
+        void *GetNativeHandle()const override{return(void *)win_hwnd;}
+        void *GetNativeDisplay()const override{return(void *)hInstance;}
+
         void SetCaption(const OSString &caption) override;
 
         void Show() override;

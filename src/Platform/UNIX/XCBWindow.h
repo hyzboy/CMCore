@@ -29,6 +29,9 @@ namespace hgl
         xcb_screen_t *GetScreen(){return screen;}
         xcb_window_t GetWindow(){return window;}
 
+        void *GetNativeHandle()const override{return reinterpret_cast<void *>(uintptr_t(window));}
+        void *GetNativeDisplay()const override{return connection;}
+
         void SetCaption(const OSString &caption) override;
 
         void Show()override{}
