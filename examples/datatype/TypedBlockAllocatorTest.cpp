@@ -335,6 +335,99 @@ static void test_detach()
     // Note: pool still alive; ta destructor safely skips ReleaseAll because pool was cleared
 }
 
+// ---------------- TEST 6: full merge after ReleaseAll ----------------
+
+static void test_full_merge_after_release_all()
+{
+    cout << "\n========================================" << endl;
+    cout << "TEST 6: full merge after ReleaseAll" << endl;
+    cout << "========================================\n" << endl;
+
+    MemoryAllocator ma;
+    BlockPool pool;
+    TEST_ASSERT(pool.Init(&ma, 256, 16), "256-block pool init succeeded");
+
+    TypedBlockAllocator<MaterialBig64> ta;      // 4 blocks per slot
+    ta.Init(&pool, 8);                          // one batch = 32 blocks
+
+    for(int i = 0; i < 8; i++)
+        TEST_ASSERT(ta.Acquire() != 0, "acquired slot");
+
+    ta.ReleaseAll();
+
+    // 全部段归还并合并后，应能一次性申请整段连续空间（起始块号 1）
+    TEST_ASSERT(pool.Acquire(pool.GetFreeCount()) == 1,
+                "pool fully merged into one contiguous segment after ReleaseAll");
+}
+
+// ---------------- TEST 7: release guards (debug only) ----------------
+
+static void test_release_guards()
+{
+#ifdef _DEBUG
+    cout << "\n========================================" << endl;
+    cout << "TEST 7: release guards (double-release / foreign block)" << endl;
+    cout << "========================================\n" << endl;
+
+    MemoryAllocator ma;
+    BlockPool pool;
+    TEST_ASSERT(pool.Init(&ma, 128, 16), "128-block pool init succeeded");
+
+    TypedBlockAllocator<MaterialPBR32> ta;      // 2 blocks per slot
+    ta.Init(&pool, 8);
+
+    uint32 idx = ta.Acquire();
+    TEST_ASSERT(idx != 0, "acquired slot");
+
+    TEST_ASSERT(ta.Release(idx) == true, "first release succeeds");
+    TEST_ASSERT(ta.Release(idx) == false, "double release rejected (in free list)");
+    TEST_ASSERT(ta.Release(idx + ta.GetSlotBlocks()) == false, "release of never-acquired slot rejected");
+    TEST_ASSERT(ta.Release(99999) == false, "release of out-of-range block rejected");
+#else
+    cout << "\nTEST 7 skipped (release guards are debug-only)" << endl;
+#endif//#ifdef _DEBUG
+}
+
+// ---------------- TEST 8: fragmentation wedge and full-merge chain ----------------
+
+static void test_fragmentation_wedge()
+{
+    cout << "\n========================================" << endl;
+    cout << "TEST 8: fragmentation wedge / full-merge chain" << endl;
+    cout << "========================================\n" << endl;
+
+    MemoryAllocator ma;
+    BlockPool pool;
+    TEST_ASSERT(pool.Init(&ma, 100, 16), "100-block pool init succeeded");
+
+    TypedBlockAllocator<MaterialBase16> ta;     // 1 block per slot, batch 10 -> [1..10]
+    ta.Init(&pool, 10);
+
+    TypedBlockAllocator<MaterialBig64> tb;      // 4 blocks per slot, batch 1
+    tb.Init(&pool, 1);
+
+    for(int i = 0; i < 5; i++)
+        TEST_ASSERT(ta.Acquire() != 0, "ta acquired slot");
+
+    for(int i = 0; i < 9; i++)
+        TEST_ASSERT(tb.Acquire() != 0, "tb acquired slot");
+    // 布局: ta=[1..10] tb=[11..46] 空闲=[47..99](53块)
+
+    ta.ReleaseAll();                            // 空闲变为 [1..10]+[47..99]
+
+    uint32 big = pool.Acquire(53);
+    TEST_ASSERT(big == 47, "53-block contiguous acquire lands on the single fitting segment");
+
+    TEST_ASSERT(pool.Acquire(63) == 0, "oversized acquire cleanly returns 0 while fragmented");
+
+    TEST_ASSERT(pool.Release(big), "released big segment");
+
+    tb.ReleaseAll();                            // 归还 [11..46]，三段全部相邻合并
+
+    TEST_ASSERT(pool.Acquire(pool.GetFreeCount()) == 1,
+                "all segments fully merged into one after chained ReleaseAll");
+}
+
 // ---------------- Main ----------------
 
 int os_main(int, os_char **)
@@ -355,6 +448,9 @@ int os_main(int, os_char **)
 
     test_exhaustion_sentinel();
     test_detach();
+    test_full_merge_after_release_all();
+    test_release_guards();
+    test_fragmentation_wedge();
 
     cout << "\n========================================" << endl;
     cout << "TEST SUMMARY" << endl;

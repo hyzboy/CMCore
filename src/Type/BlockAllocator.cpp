@@ -126,133 +126,84 @@ namespace hgl
         if(!ud_set.Contains(ud))
             return(false);
 
-        const int ud_end=ud->GetEnd();
-
+        // 有序定位：找到第一个 start 大于 ud->start 的节点，插入点即其之前。
+        // （旧实现逐分支单侧合并，且尾插分支会打乱链序，相邻空闲段可能永久分裂）
         ChainNode *cur=start;
-        ChainNode *next;
-        int cur_end;
+        ChainNode *prev=nullptr;
 
-        do
+        while(cur&&cur->start<ud->start)
         {
-            cur_end=cur->GetEnd();
+            prev=cur;
+            cur=cur->next;
+        }
 
-            if(cur_end==ud->start)          //接在一起了
-            {
-                cur->count+=ud->count;      //count扩充
+        ChainNode *node=nullptr;
 
-                free_count+=ud->count;      //空闲数量增加
-                ud_set.Delete(ud);
-                ud_pool.Release(ud);
-                return(true);
-            }
-            else if(cur->start==ud_end)     //接在一起了
-            {
-                cur->count+=ud->count;
-                cur->start-=ud->count;
+        if(prev&&prev->GetEnd()==ud->start)             //与前段相接：并入前段
+        {
+            node=prev;
+            node->count+=ud->count;
+        }
+        else if(cur&&cur->start==ud->GetEnd())          //与后段相接：并入后段
+        {
+            node=cur;
+            node->count+=ud->count;
+            node->start=ud->start;
+        }
+        else                                            //独立新段：按序插入
+        {
+            node=node_pool.Acquire();
 
-                free_count+=ud->count;      //空闲数量增加
-                ud_set.Delete(ud);
-                ud_pool.Release(ud);
-                return(true);
-            }
-            else if(cur->start>ud_end)      //在前面
-            {
-                ChainNode *new_cn=node_pool.Acquire();
+            node->prev=prev;
+            node->next=cur;
+            node->start=ud->start;
+            node->count=ud->count;
 
-                new_cn->prev=cur->prev;
-                new_cn->next=cur;
-                new_cn->start=ud->start;
-                new_cn->count=ud->count;
+            if(prev)
+                prev->next=node;
+            else
+                start=node;
 
-                if(cur->prev)
-                    cur->prev->next=new_cn;
-                else
-                    start=new_cn;
+            if(cur)
+                cur->prev=node;
+            else
+                end=node;
+        }
 
-                cur->prev=new_cn;
+        //级联合并：node 与后段、前段相邻则依次吸并（顺序保证 start 有序）
+        if(node->next&&node->GetEnd()==node->next->start)
+        {
+            ChainNode *nx=node->next;
 
-                free_count+=ud->count;      //空闲数量增加
-                ud_set.Delete(ud);
-                ud_pool.Release(ud);
-                return(true);
-            }
+            node->count+=nx->count;
+            node->next=nx->next;
 
-            next=cur->next;
+            if(nx->next)
+                nx->next->prev=node;
+            else
+                end=node;
 
-            if(next)
-            {
-                if(next->start==ud_end)     //下一个块接着，那就合并
-                {
-                    next->count+=ud->count;    //count扩充
-                    next->start-=ud->count;    //start前移,理论上==ud->start，调试时检查一下
+            node_pool.Release(nx);
+        }
 
-                    free_count+=ud->count;      //空闲数量增加
-                    ud_set.Delete(ud);
-                    ud_pool.Release(ud);
-                    return(true);
-                }
-                else
-                    if(next->start>ud_end)      //下一个块不接着，但是在后面，那就新建一个节点
-                    {
-                        ChainNode *new_cn=node_pool.Acquire();
+        if(node->prev&&node->prev->GetEnd()==node->start)
+        {
+            ChainNode *pv=node->prev;
 
-                        new_cn->prev=cur;
-                        new_cn->next=next;
-                        new_cn->start=ud->start;
-                        new_cn->count=ud->count;
+            pv->count+=node->count;
+            pv->next=node->next;
 
-                        cur->next=new_cn;
-                        next->prev=new_cn;
+            if(node->next)
+                node->next->prev=pv;
+            else
+                end=pv;
 
-                        free_count+=ud->count;      //空闲数量增加
-                        ud_set.Delete(ud);
-                        ud_pool.Release(ud);
-                        return(true);
-                    }
-                    else //next->start<ud_end
-                    {
-                        if(next->start>=ud->start)  //这个块在中间，那就是出错了
-                        {
-                            //                            LogError(OS_TEXT("BlockAllocator::Release, block cross."));
-                            return(false);
-                        }
-                    }
-            }
-            else    //都没下一个了，那这个就当下一个吧
-            {
-                ChainNode *new_cn=node_pool.Acquire();
+            node_pool.Release(node);
+        }
 
-                new_cn->start=ud->start;
-                new_cn->count=ud->count;
-
-                if(cur==start)      //卧槽这是第一个
-                {
-                    new_cn->prev=nullptr;
-                    new_cn->next=cur;
-
-                    cur->prev=new_cn;
-
-                    start=new_cn;
-                }
-                else
-                {
-                    new_cn->prev=cur;
-                    new_cn->next=nullptr;
-
-                    cur->next=new_cn;
-                    end=new_cn;
-                }
-
-                free_count+=ud->count;      //空闲数量增加
-                ud_set.Delete(ud);
-                ud_pool.Release(ud);
-                return(true);
-            }
-
-            cur=next;
-        }while(cur!=nullptr);
-
-        //未找到？？
-        return(false);
+        free_count+=ud->count;                          //空闲数量增加
+        ud_set.Delete(ud);
+        ud_pool.Release(ud);
+        return(true);
     }
 }//namespace hgl

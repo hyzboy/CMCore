@@ -33,6 +33,40 @@ namespace hgl
         Stack<uint32> free_slots;       ///< 空闲槽起始块号（LIFO，缓存友好）
         Stack<uint32> batch_starts;     ///< 每次向上级申请的连续段起始块号（用于整体回收）
 
+#ifdef _DEBUG
+
+        /**
+         * 块号是否属于本类型申请过的批量段（防越权释放污染其它类型）
+         */
+        bool IsOwnedBlock(const uint32 idx) const
+        {
+            const uint32 seg_blocks=batch_slots*slot_blocks;
+            const uint32 *starts=batch_starts.GetData();
+            const int count=batch_starts.GetCount();
+
+            for(int i=0;i<count;i++)
+                if(idx>=starts[i]&&idx<starts[i]+seg_blocks)
+                    return true;
+
+            return false;
+        }
+
+        /**
+         * 块号是否已在空闲表中（防 double-release 造成双份借出）
+         */
+        bool IsInFreeList(const uint32 idx) const
+        {
+            const uint32 *slots=free_slots.GetData();
+            const int count=free_slots.GetCount();
+
+            for(int i=0;i<count;i++)
+                if(slots[i]==idx)
+                    return true;
+
+            return false;
+        }
+#endif//#ifdef _DEBUG
+
     public:
 
         TypedBlockAllocator():pool(nullptr),slot_blocks(0),batch_slots(0){}
@@ -96,11 +130,22 @@ namespace hgl
 
         /**
          * 释放对象（块号归还本类型空闲列表，不归还上级）
+         *
+         * debug 构造下校验：块号必须属于本类型的批量段，且不在空闲表中
+         * （double-release 会产生两份借出记录，GPU 侧表现为静默数据串扰）
          */
         bool Release(const uint32 idx)
         {
             if(!pool||idx==0)
                 return false;
+
+#ifdef _DEBUG
+            if(!IsOwnedBlock(idx))
+                return false;
+
+            if(IsInFreeList(idx))
+                return false;
+#endif//#ifdef _DEBUG
 
             free_slots.Push(idx);
             return true;
