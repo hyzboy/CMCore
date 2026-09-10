@@ -2,16 +2,31 @@
 
 namespace hgl
 {
+    void ActiveIDManager::PushIdle(const int id)
+    {
+        idle_list.push_back(id);
+        idle_lookup.insert(id);
+    }
+
+    void ActiveIDManager::PopIdle()
+    {
+        idle_lookup.erase(idle_list.front());
+        idle_list.pop_front();
+    }
+
+    void ActiveIDManager::ClearIdle()
+    {
+        idle_list.clear();
+        idle_lookup.clear();
+    }
+
     bool ActiveIDManager::Create(int *id_list,const int count)
     {
         if(!id_list||count<=0)return(false);
 
-        // 检查是否会导致ID溢出
-        if(id_count > INT_MAX - count)
-        {
-            // ID容量已满，无法继续分配
-            return false;
-        }
+        // 检查是否会导致ID溢出（与 GetRemainingCapacity() 同一条件）
+        if(count > GetRemainingCapacity())
+            return(false);
 
         for(int i=id_count;i<id_count+count;i++)
         {
@@ -24,62 +39,55 @@ namespace hgl
         return(true);
     }
 
-    void ActiveIDManager::Reserve(int c)
-    {
-        // btree_set 无需手动预留容量
-        // deque 自动扩展，无需预留
-    }
-
     int ActiveIDManager::CreateActive(int *id,const int count)
     {
         if(!id||count<=0)return(0);
 
         if(!Create(id,count))return(0);
 
-        // 批量插入到 btree_set
-        int added = 0;
+        // 新编号从 id_count 之后连续分配，绝不可能已在 active_list 中（不变式），
+        // 因此 insert 必然成功；返回值恒为 count（全有或全无）。
         for(int i = 0; i < count; i++)
-        {
-            if(active_list.insert(id[i]).second)
-                ++added;
-        }
-        return added;
+            active_list.insert(id[i]);
+
+        return count;
     }
 
     /**
-        * 创建若干ID，并置于闲置ID列表中。(注：无视闲置列表中已存在的ID)
-        * @return 成功添加的个数
+        * 创建若干ID，并置于闲置ID列表中。
+        * 分配的是全新编号（ID水位之后连续分配），不会与已有编号重复。
+        * 语义为“全有或全无”：容量不足时返回0，且不改动任何状态。
+        * @return 成功添加的个数（count 或 0）
         */
     int ActiveIDManager::CreateIdle(int *idp,const int count)
     {
         if(count<=0)return(0);
 
-        int created_ids[512];  // 临时缓冲，支持一次性创建最多512个ID
-        int batch_size = (count > 512) ? 512 : count;
+        // 容量预检：保证下列分批 Create 不会中途失败，不会留下“部分成功”的半成品状态
+        if(!CanCreate(count))
+            return(0);
+
+        constexpr int kBatchSize=512;   // 临时缓冲上限，避免超大栈占用
+        int created_ids[kBatchSize];
         int total_created = 0;
 
         while(total_created < count)
         {
-            batch_size = (count - total_created > 512) ? 512 : (count - total_created);
+            const int batch_size = (count - total_created > kBatchSize)
+                                 ? kBatchSize
+                                 : (count - total_created);
 
-            if(!Create(created_ids, batch_size))
-            {
-                return total_created;
-            }
+            if(!Create(created_ids, batch_size))    // 不可达：CanCreate 已预检容量
+                break;
 
-            // 将创建的ID推入 deque（直接插入到尾部）
+            // 将创建的ID推入闲置集合（顺序 + 成员索引同步维护）
             for(int i = 0; i < batch_size; i++)
             {
-                idle_list.push_back(created_ids[i]);
-            }
+                PushIdle(created_ids[i]);
 
-            // 如果需要输出，拷贝到idp
-            if(idp)
-            {
-                for(int i = 0; i < batch_size; i++)
-                {
+                // 如果需要输出，拷贝到idp
+                if(idp)
                     idp[total_created + i] = created_ids[i];
-                }
             }
 
             total_created += batch_size;
@@ -108,24 +116,20 @@ namespace hgl
     {
         if(!id||count<=0)return(false);
 
-        // 检查是否有足够的闲置ID
+        // 全有或全无：闲置不足时直接失败，输出数组与内部状态均不做任何改动
         if(static_cast<int>(idle_list.size()) < count)
-            return false;
+            return(false);
 
-        // 从 deque 头部取出 count 个ID（FIFO）
+        // 从 deque 头部取出 count 个ID（FIFO）并激活
         for(int i = 0; i < count; i++)
         {
             id[i] = idle_list.front();
-            idle_list.pop_front();
-        }
 
-        // 批量加入到 active_list
-        for(int i = 0; i < count; i++)
-        {
+            PopIdle();
             active_list.insert(id[i]);
         }
 
-        return true;
+        return(true);
     }
 
     /**
@@ -140,9 +144,16 @@ namespace hgl
     {
         if(!id||count<=0)return(false);
 
-        if(static_cast<int>(idle_list.size()) < count)
+        const int idle_count = static_cast<int>(idle_list.size());
+
+        if(idle_count < count)
         {
-            [[maybe_unused]] int created = CreateIdle(count - static_cast<int>(idle_list.size()));
+            const int shortage = count - idle_count;
+
+            // CreateIdle 为“全有或全无”：失败时没有任何ID被创建，此处直接失败即可，
+            // 不会出现“返回false但状态已改变”的账实不符。
+            if(CreateIdle(shortage) != shortage)
+                return(false);
         }
 
         return Get(id,count);
@@ -165,9 +176,8 @@ namespace hgl
             if(active_list.erase(id[i]) > 0)
             {
                 // 添加到 idle_list 尾部（FIFO）
-                idle_list.push_back(id[i]);
+                PushIdle(id[i]);
                 ++result;
-                ++released_count;  // 统计已释放ID
             }
         }
 
@@ -183,13 +193,11 @@ namespace hgl
 
         if(count > 0)
         {
-            // 将所有活跃ID移到闲置队列尾部
+            // 将所有活跃ID移到闲置队列尾部；active_list 有序，故释放次序为ID升序
             for(int id : active_list)
             {
-                idle_list.push_back(id);
+                PushIdle(id);
             }
-
-            released_count += count;  // 统计已释放ID
 
             active_list.clear();
         }

@@ -41,7 +41,7 @@ public:
         cout << "  Before: aim.GetTotalCount()=" << aim.GetTotalCount()
              << ", data_array.capacity()=" << data_array.capacity() << endl;
 
-        aim.Reserve(c);
+        // ID侧无预分配语义（btree_set/deque 无 reserve），只有 data_array 可预留
         data_array.reserve(c);
 
         cout << "  After: aim.GetTotalCount()=" << aim.GetTotalCount()

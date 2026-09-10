@@ -40,8 +40,9 @@ namespace hgl
         */
         void Reserve(int c)
         {
-            aim.Reserve(c);
-            data_array.reserve(c);
+            // 只有 data_array 存在预分配语义（ID侧两个容器均为按需增长）
+            if (c > 0)
+                data_array.reserve(static_cast<size_t>(c));
         }
 
         /**
@@ -87,8 +88,7 @@ namespace hgl
         /**
         * @brief CN:获取闲置ID队列的快照。\nEN:Get idle ID queue snapshot (copy, not reference).
         *
-        * CN:返回所有闲置ID的完整快照（深拷贝）。\nEN:Returns a complete snapshot (deep copy) of all idle IDs.
-        * CN:快照包含读段+写段的所有数据。\nEN:Snapshot contains all data from both read and write segments.
+        * CN:返回所有闲置ID的完整快照（按FIFO次序的深拷贝）。\nEN:Returns a complete snapshot (deep copy) of all idle IDs in FIFO order.
         * CN:可以安全地长期保存。\nEN:Safe to keep for long periods.
         */
         std::vector<int> GetIdleView() const
@@ -172,9 +172,9 @@ namespace hgl
         }
 
         /**
-        * @brief CN:批量获取数据（指针数组）。\nEN:Batch get data (pointer array).
+        * @brief CN:批量获取数据（指针数组，const版本——不交出可写指针）。\nEN:Batch get data (pointer array, const-correct).
         */
-        bool GetData(T **da, const int *idp, const int count) const
+        bool GetData(const T **da, const int *idp, const int count) const
         {
             int result = 0;
 
@@ -182,7 +182,7 @@ namespace hgl
             {
                 if (*idp >= 0 && *idp < (int)data_array.size())
                 {
-                    *da = const_cast<T*>(&data_array[*idp]);
+                    *da = &data_array[*idp];
                     ++result;
                 }
                 else
@@ -223,30 +223,47 @@ namespace hgl
 
         /**
         * @brief CN:创建活跃ID。\nEN:Create active ID.
+        * @return CN:实际创建的ID数量（0=失败，容量不足）；\nEN:Number of IDs actually created (0 = failure).
         */
-        void CreateActive(int *id, const int count = 1)
+        int CreateActive(int *id, const int count = 1)
         {
-            aim.CreateActive(id, count);
+            if (!id || count <= 0)
+                return 0;
 
-            data_array.resize(data_array.size() + count);
+            const int created = aim.CreateActive(id, count);
+            if (created <= 0)
+                return 0;
+
+            // data_array 的长度必须恒等于ID水位（新ID总是连续追加在水位之后）
+            data_array.resize(static_cast<size_t>(aim.GetHistoryMaxId()));
+            return created;
         }
 
         /**
         * @brief CN:创建闲置ID。\nEN:Create idle ID.
+        * @return CN:实际创建的ID数量（0=失败，容量不足）；\nEN:Number of IDs actually created (0 = failure).
         */
-        void CreateIdle(int *idp = nullptr, const int count = 1)
+        int CreateIdle(int *idp = nullptr, const int count = 1)
         {
-            aim.CreateIdle(idp, count);
+            if (count <= 0)
+                return 0;
 
-            data_array.resize(data_array.size() + count);
+            const int created = aim.CreateIdle(idp, count);
+            if (created <= 0)
+                return 0;
+
+            // data_array 的长度必须恒等于ID水位（新ID总是连续追加在水位之后）
+            data_array.resize(static_cast<size_t>(aim.GetHistoryMaxId()));
+            return created;
         }
 
         /**
         * @brief CN:创建闲置ID（无返回）。\nEN:Create idle ID (no return).
+        * @return CN:实际创建的ID数量（0=失败，容量不足）；\nEN:Number of IDs actually created (0 = failure).
         */
-        void CreateIdle(const int count = 1)
+        int CreateIdle(const int count = 1)
         {
-            CreateIdle(nullptr, count);
+            return CreateIdle(nullptr, count);
         }
 
         /**
@@ -265,8 +282,8 @@ namespace hgl
             if (!id || count <= 0)
                 return false;
 
-            int idle_count = GetIdleCount();
-            int get_count = (idle_count < count) ? idle_count : count;
+            const int idle_count = GetIdleCount();
+            const int get_count = (idle_count < count) ? idle_count : count;
 
             // Try to get IDs from idle pool first
             if (get_count > 0)
@@ -278,11 +295,19 @@ namespace hgl
             }
 
             // Create new active IDs if needed
-            int create_count = count - get_count;
+            const int create_count = count - get_count;
             if (create_count > 0)
             {
-                aim.CreateActive(id, create_count);
-                data_array.resize(data_array.size() + create_count);
+                // 全有或全无：创建失败时把已取出的闲置ID归还，保证返回false时不产生副作用
+                if (aim.CreateActive(id, create_count) != create_count)
+                {
+                    if (get_count > 0)
+                        aim.Release(id - get_count, get_count);
+
+                    return false;
+                }
+
+                data_array.resize(static_cast<size_t>(aim.GetHistoryMaxId()));
             }
 
             return true;
@@ -305,12 +330,14 @@ namespace hgl
         }
 
         /**
-        * @brief CN:清空所有活跃数据（但不释放内存）。\nEN:Clear all active data (without freeing memory).
+        * @brief CN:把所有活跃ID归还闲置池（不清理数据槽内容、不释放内存）。\nEN:Return all active IDs to the idle pool (slots are kept, memory is not freed).
+        *
+        * CN:数据槽保留旧值，直到对应ID被重新取出并写入；ID水位与 data_array 长度均不变。\nEN:Data slots keep their values until the ID is fetched again and rewritten.
         */
         void Clear()
         {
             aim.ReleaseAllActive();
-            // 保留 data_array 的长度以便后续重用，不重置 count
+            // 保留 data_array 的长度以便后续重用，不重置 id_count
         }
 
         /**

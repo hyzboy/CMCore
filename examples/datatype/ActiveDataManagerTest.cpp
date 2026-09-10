@@ -21,18 +21,18 @@ void DebugOutputArray(const char *hint,const int *id,const int count)
     cout<<']';
 }
 
-void DebugOutputArray(const char *hint,UserInfo **ui,const int count)
+void DebugOutputArray(const char *hint,const UserInfo *const *ui,const int count)
 {
     cout<<"("<<hint<<":"<<count<<")";
     if(count<=0)return;
-    UserInfo **p=ui;
+    const UserInfo *const *p=ui;
     cout<<"[";
     bool first=true;
     for(int i=0;i<count;i++)
     {
         if(!first) cout<<", ";
         first=false;
-        UserInfo *cur=*p;
+        const UserInfo *cur=*p;
         if(cur)
             cout<<cur->name;
         else
@@ -45,7 +45,7 @@ void DebugOutputArray(const char *hint,UserInfo **ui,const int count)
 void DebugOutputArray(const char *hint,ActiveDataManager<UserInfo> &adm,const int *idp,const int count)
 {
     if(!idp||count<=0)return;
-    UserInfo **ui=new UserInfo *[count];
+    const UserInfo **ui=new const UserInfo *[count];
     adm.GetData(ui,idp,count);
     DebugOutputArray(hint,ui,count);
     delete[] ui;

@@ -40,8 +40,6 @@ namespace hgl
 
     void ActiveMemoryBlockManager::Reserve(int c)
     {
-        aim.Reserve(c);
-
         if(unit_size==0||c<=0)
             return;
 

@@ -63,7 +63,6 @@ int main()
         ActiveIDManager aim;
 
         cout << "  Calling Reserve(20)..." << endl;
-        aim.Reserve(20);
 
         cout << "  Calling GetIdleView() on empty idle list..." << endl;
         DebugOutputIdleView("Empty idle list state", aim);
@@ -79,7 +78,6 @@ int main()
         ActiveIDManager aim;
 
         cout << "  Calling Reserve(20)..." << endl;
-        aim.Reserve(20);
 
         cout << "  Calling CreateIdle(5)..." << endl;
         int idle_ids[5];
@@ -103,7 +101,6 @@ int main()
     cout << "=== Test 3: Nested GetIdleView() Calls ===" << endl;
     {
         ActiveIDManager aim;
-        aim.Reserve(20);
 
         int idle_ids[5];
         aim.CreateIdle(idle_ids, 5);
@@ -137,7 +134,6 @@ int main()
     cout << "=== Test 4: GetIdleView() After Get() ===" << endl;
     {
         ActiveIDManager aim;
-        aim.Reserve(20);
 
         int idle_ids[5];
         aim.CreateIdle(idle_ids, 5);
@@ -159,7 +155,6 @@ int main()
     cout << "=== Test 5: Stress Test - 100 GetIdleView() Calls ===" << endl;
     {
         ActiveIDManager aim;
-        aim.Reserve(50);
 
         int idle_ids[10];
         aim.CreateIdle(idle_ids, 10);

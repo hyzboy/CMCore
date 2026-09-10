@@ -33,7 +33,6 @@ int main()
     cout << "========================================" << endl << endl;
 
     ActiveIDManager aim;
-    aim.Reserve(64);
 
     // --- 初始状态 ---
     cout << "=== Test 1: Initial State ===" << endl;
@@ -148,7 +147,6 @@ int main()
     cout << "Testing: Create 10 IDs, release odd indices, verify FIFO reuse pattern" << endl;
 
     ActiveIDManager frag_test;
-    frag_test.Reserve(100);
 
     int all_ids[10];
     [[maybe_unused]] int created_idle = frag_test.CreateIdle(all_ids, 10);
@@ -223,7 +221,6 @@ int main()
     cout << "Testing: Bulk operations with FIFO verification" << endl;
 
     ActiveIDManager big;
-    big.Reserve(2000);
     const int BIG_N = 1000;
 
     [[maybe_unused]] int idle_created = big.CreateIdle(BIG_N);
