@@ -373,6 +373,7 @@ namespace hgl
                 event_header.index  =0;
                 event_header.id     =(uint16)WindowEventID::Resize;
 
+                window_event_data.data = 0;
                 window_event_data.width =LOWORD(lParam);
                 window_event_data.height=HIWORD(lParam);
 
