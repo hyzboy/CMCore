@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include<hgl/object/Object.h>
 
 namespace hgl
@@ -7,14 +7,6 @@ namespace hgl
      */
     class TickObject
     {
-        bool tickable=true;
-
-    public:
-
-        bool IsTickable()const{return tickable;}
-
-        void SetTickable(bool t){tickable=t;}
-
     public:
 
         TickObject()=default;

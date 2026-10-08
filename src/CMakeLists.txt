@@ -1,4 +1,4 @@
-﻿#==================================================================================================
+#==================================================================================================
 ## DataType 数据类型基础
 ##==================================================================================================
 SET(CMCORE_TYPE_INCLUDE_PATH   ${CMCORE_ROOT_INCLUDE_PATH}/hgl/type)
@@ -21,7 +21,6 @@ SET(CMCORE_OBJECT_FILES         ${CMCORE_OBJECT_INCLUDE_PATH}/Object.h
                                 ${CMCORE_OBJECT_INCLUDE_PATH}/ObjectTracker.h
                                 ${CMCORE_OBJECT_INCLUDE_PATH}/ObjectCrashRecovery.h
                                 Object/Object.cpp
-                                Object/TickObject.cpp
                                 Object/ObjectTracker.cpp)
 
 SOURCE_GROUP("Object" FILES ${CMCORE_OBJECT_FILES})
@@ -131,7 +130,6 @@ SET(CMCORE_TYPE_CORE_FILES ${CMCORE_TYPE_INCLUDE_PATH}/Inherit.h
                            ${CMCORE_TYPE_INCLUDE_PATH}/TypeInfo.h
                            ${CMCORE_TYPE_INCLUDE_PATH}/DataType.h
                            ${CMCORE_TYPE_INCLUDE_PATH}/VersionData.h
-                           ${CMCORE_TYPE_INCLUDE_PATH}/TickObject.h
                            ${CMCORE_TYPE_INCLUDE_PATH}/UnicodeBlocks.h
                            ${CMCORE_TYPE_INCLUDE_PATH}/MemoryAllocator.h)
 SOURCE_GROUP("DataType\\Template\\Core" FILES ${CMCORE_TYPE_CORE_FILES})
