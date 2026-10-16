@@ -16,56 +16,39 @@ namespace hgl
          */
         OSString NormalizeFilename(const OSString &filename)
         {
-            int old_len=filename.Length();
+            if(filename.IsEmpty())
+                return OSString();
 
+            const int old_len=filename.Length();
             OSString new_filename;
-
             os_char *new_string=new_filename.Resize(old_len+1);
 
             const os_char *sp=filename.c_str();
             os_char *tp=new_string;
-            os_char last_char=0;
-            bool fix=false;
+
+#if HGL_OS == HGL_OS_Windows
+            // UNC and device namespace paths require two leading separators.
+            if(old_len>1
+             &&(sp[0]==HGL_DIRECTORY_SEPARATOR||sp[0]==HGL_INCORRECT_DIRECTORY_SEPARATOR)
+             &&(sp[1]==HGL_DIRECTORY_SEPARATOR||sp[1]==HGL_INCORRECT_DIRECTORY_SEPARATOR))
+            {
+                *tp++=HGL_DIRECTORY_SEPARATOR;
+                *tp++=HGL_DIRECTORY_SEPARATOR;
+                sp+=2;
+            }
+#endif
 
             while(*sp)
             {
-                if(*sp==HGL_INCORRECT_DIRECTORY_SEPARATOR)
-                {
-                    if(last_char==HGL_INCORRECT_DIRECTORY_SEPARATOR)
-                    {
-                        fix=true;
-                        ++sp;
-                        continue;
-                    }
-                    else
-                    {
-                        last_char=*sp;
-                        fix=true;
-                        ++sp;
-                        *tp=HGL_DIRECTORY_SEPARATOR;
-                    }
-                }
-                else
-                {
-                    if(*sp==HGL_DIRECTORY_SEPARATOR
-                     &&last_char==HGL_DIRECTORY_SEPARATOR)
-                    {
-                        last_char=*sp;
-                        fix=true;
+                const os_char ch=(*sp==HGL_INCORRECT_DIRECTORY_SEPARATOR)
+                    ?HGL_DIRECTORY_SEPARATOR:*sp;
+                ++sp;
 
-                        ++sp;
-                        continue;
-                    }
-                    else
-                    {
-                        last_char=*sp;
+                if(ch==HGL_DIRECTORY_SEPARATOR
+                 &&tp>new_string&&tp[-1]==HGL_DIRECTORY_SEPARATOR)
+                    continue;
 
-                        *tp=*sp;
-                        ++sp;
-                    }
-                }
-
-                ++tp;
+                *tp++=ch;
             }
 
             *tp=0;

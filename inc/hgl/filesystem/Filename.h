@@ -846,8 +846,9 @@ namespace hgl::filesystem
 
     // Normalize filename (formerly FixFilename)
     /**
-     * @brief CN: 规范化操作系统字符串形式的文件名，处理中/平台特定问题。
-     * @brief EN: Normalize OSString filename, handling platform-specific issues.
+     * @brief CN: 统一路径分隔符并合并连续分隔符，Windows 下保留 UNC/设备路径的双分隔符前缀。
+     * @brief EN: Normalize separators and collapse repeats, preserving Windows UNC/device double-separator prefixes.
+     * @note Only separator normalization is performed; dot segments are not resolved and no filesystem access occurs.
      */
     OSString NormalizeFilename(const OSString &filename);
 }//namespace hgl::filesystem
