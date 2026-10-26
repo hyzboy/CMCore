@@ -5,6 +5,7 @@
 #include<hgl/Charset.h>
 #include<hgl/log/LogCategory.h>
 #include<hgl/log/LogLevel.h>
+#include<hgl/object/ObjectIdentity.h>
 
 namespace hgl::logger
 {
@@ -17,11 +18,16 @@ namespace hgl::logger
 
     struct LogMessageMeta
     {
+        ObjectLoggerId          object_logger_id=InvalidObjectLoggerId; ///<产生此消息的logger实例ID
+
+        ObjectId                object_id=InvalidObjectId;      ///<宿主对象唯一ID(未绑定为0)
+        ObjectTypeId            object_type_id=InvalidObjectTypeId; ///<宿主对象类型ID(未绑定为0)
+
         LogCategoryId           category_id=InvalidLogCategoryId; ///<所属日志类别
 
         const std::type_info *  object_type_info=nullptr;      ///<对象数据类型的type_info指针
 
-        OSString                object_instance_name;          ///<对象实例名
+        OSString                object_instance_name;          ///<可读对象实例名
 
         std::source_location    source_location;               ///<调用位置
 

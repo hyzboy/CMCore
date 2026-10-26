@@ -323,6 +323,7 @@ namespace hgl
                                 OS_TEXT("Current path: ") + cur_path.c_str() + OS_TEXT("\n");
             LogMessage msg;
 
+            msg.meta.object_logger_id     =LogLogInfo.GetLoggerId();
             msg.meta.category_id         =LogLogInfo.GetCategoryId();
             msg.meta.object_type_info    =nullptr;
             msg.meta.object_instance_name=OS_TEXT("LogInfo");
@@ -405,7 +406,7 @@ namespace hgl
 
             bool GetInterface(uint ver,void *data) override
             {
-                if(ver!=5||!data)
+                if(ver!=6||!data)
                     return(false);
 
                 memcpy(data,&LogInterface5,sizeof(LogInterface));
@@ -424,7 +425,7 @@ namespace hgl
 
             log_interface=new LogInterface;
 
-            if(pi->GetInterface(5,log_interface))
+            if(pi->GetInterface(6,log_interface))
                 if(log_interface->Init())
                     return(pi);
 

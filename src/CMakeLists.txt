@@ -16,10 +16,12 @@ SOURCE_GROUP("DataType\\BitsArray" FILES ${CMCORE_TYPE_BITSARRAY_FILES})
 ## Object 对象基类
 ##==================================================================================================
 SET(CMCORE_OBJECT_INCLUDE_PATH  ${CMCORE_ROOT_INCLUDE_PATH}/hgl/object)
-SET(CMCORE_OBJECT_FILES         ${CMCORE_OBJECT_INCLUDE_PATH}/Object.h
+SET(CMCORE_OBJECT_FILES         ${CMCORE_OBJECT_INCLUDE_PATH}/ObjectIdentity.h
+                                ${CMCORE_OBJECT_INCLUDE_PATH}/Object.h
                                 ${CMCORE_OBJECT_INCLUDE_PATH}/ObjectBase.h
                                 ${CMCORE_OBJECT_INCLUDE_PATH}/ObjectTracker.h
                                 ${CMCORE_OBJECT_INCLUDE_PATH}/ObjectCrashRecovery.h
+                                Object/ObjectIdentity.cpp
                                 Object/Object.cpp
                                 Object/ObjectTracker.cpp)
 

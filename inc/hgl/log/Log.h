@@ -4,6 +4,7 @@
 #include<vector>
 #include<hgl/log/LogCategory.h>
 #include<hgl/log/LogLevel.h>
+#include<hgl/object/ObjectIdentity.h>
 #include<hgl/Charset.h>
 #include<hgl/type/StdString.h>
 #include<typeinfo>
@@ -21,9 +22,13 @@ namespace hgl::logger
     {
         const std::type_info * object_type_info      =nullptr;         ///< 所属对象类型信息(可为空：全局/匿名logger)
 
+        ObjectLoggerId         object_logger_id      =InvalidObjectLoggerId; ///< 此logger实例的唯一ID
         LogCategoryId          category_id           =InvalidLogCategoryId;
         OSString               object_type_name;                       ///< 模块/类型名(来自typeid或手工命名)
-        OSString               object_instance_name;                   ///< 实例名(可选，优先于类型名输出)
+        OSString               object_instance_name;                   ///< 开发者设置的人类可读实例名
+
+        ObjectId               bound_object_id       =InvalidObjectId; ///< 绑定的宿主对象ID(未绑定为0)
+        ObjectTypeId           bound_object_type_id  =InvalidObjectTypeId; ///< 绑定的宿主对象类型ID(未绑定为0)
 
         std::vector<u8char>    log_buffer_u8;                          ///< UTF-8格式化临时缓冲区
         std::vector<u16char>   log_buffer_u16;                         ///< UTF-16格式化临时缓冲区
@@ -40,16 +45,34 @@ namespace hgl::logger
         ObjectLogger(const std::type_info *);                          ///< 按类型构造：自动提取类型名
         ObjectLogger(const os_char *name);                             ///< 按名称构造：用于模块logger
         ObjectLogger(const os_char *name,LogLevel default_level);
+        ObjectLogger(const ObjectLogger &);
+        ObjectLogger &operator=(const ObjectLogger &);
 
         virtual ~ObjectLogger()=default;                               ///< 虚析构：支持多态使用
 
+        ObjectLoggerId GetLoggerId()const{return object_logger_id;}
         const OSString &GetLoggerTypeName()const { return object_type_name; }                    ///< 获取logger类型名
         LogCategoryId GetCategoryId()const{return category_id;}
         bool IsEnabled(LogLevel level)const{return IsLogEnabled(category_id,level);}
 
+        /**
+         * 将logger与宿主对象身份绑定，之后此logger输出的所有消息都会携带宿主对象ID/类型ID
+         * @param object_id 宿主对象唯一ID(InvalidObjectId表示解绑)
+         * @param type_id 宿主对象类型ID
+         * @param cat_id 日志类别ID(InvalidLogCategoryId表示保持原类别)
+         * @param type_name 宿主对象类型名(可为空，非空时同时更新logger类型名)
+         */
+        void BindObjectIdentity(const ObjectId object_id,const ObjectTypeId type_id,
+                                const LogCategoryId cat_id=InvalidLogCategoryId,
+                                const os_char *type_name=nullptr);
+
+        const ObjectId     GetBoundObjectId()const{return bound_object_id;}                      ///< 获取绑定的宿主对象ID
+        const ObjectTypeId GetBoundObjectTypeId()const{return bound_object_type_id;}             ///< 获取绑定的宿主对象类型ID
+        const bool         IsBoundToObject()const{return bound_object_id!=InvalidObjectId;}       ///< 是否绑定到宿主对象
+
         const size_t   GetLoggerTypeHash()const { return object_type_info?object_type_info->hash_code():0; } ///< 获取类型哈希(空则0)
 
-        void           SetLoggerInstanceName(const OSString &name) { object_instance_name=name; } ///< 设置实例名(用于区分同类型实例)
+        void           SetLoggerInstanceName(const OSString &name) { object_instance_name=name; } ///< 设置可读实例名(不作为唯一身份)
 
         const OSString &GetLoggerInstanceName()const { return object_instance_name; }             ///< 获取实例名
 

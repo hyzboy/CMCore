@@ -3,15 +3,21 @@
 #include<hgl/Charset.h>
 #include<hgl/type/StdString.h>
 #include<hgl/time/DateTime.h>
+#include<hgl/thread/Atomic.h>
 #include<cstdarg>
-#include<atomic>
 #include<cstring>
 
 namespace hgl::logger
 {
     void LogOutput(const LogMessage &msg);
 
-    static std::atomic_uint64_t GlobalLogSequence=0;
+    static hgl::atom_uint64 GlobalLogSequence=0;
+    static hgl::atom_uint64 GlobalObjectLoggerId=0;
+
+    static ObjectLoggerId CreateObjectLoggerId()
+    {
+        return ++GlobalObjectLoggerId;
+    }
 
     namespace
     {
@@ -65,6 +71,7 @@ namespace hgl::logger
 {
     ObjectLogger::ObjectLogger()
     {
+        object_logger_id=CreateObjectLoggerId();
         object_type_info=nullptr;
         object_type_name=OSString(OS_TEXT("Global"));
         object_instance_name.Clear();
@@ -73,6 +80,7 @@ namespace hgl::logger
 
     ObjectLogger::ObjectLogger(const std::type_info *info):object_type_info(info)
     {
+        object_logger_id=CreateObjectLoggerId();
         object_type_name=info?ToOSString(info->name()):OSString(OS_TEXT("?"));
 
         object_instance_name.Clear();
@@ -86,11 +94,63 @@ namespace hgl::logger
 
     ObjectLogger::ObjectLogger(const os_char *name,const LogLevel default_level)
     {
+        object_logger_id=CreateObjectLoggerId();
         object_type_info=nullptr;
 
         object_type_name=name?OSString(name):OSString(OS_TEXT("?"));
-        object_instance_name=name;
+        object_instance_name.Clear();
         category_id=RegisterLogCategory(object_type_name,default_level);
+    }
+
+    ObjectLogger::ObjectLogger(const ObjectLogger &other)
+        :object_type_info(other.object_type_info),
+         object_logger_id(CreateObjectLoggerId()),
+         category_id(other.category_id),
+         object_type_name(other.object_type_name),
+         object_instance_name(other.object_instance_name),
+         bound_object_id(other.bound_object_id),
+         bound_object_type_id(other.bound_object_type_id),
+         module_message_count(other.module_message_count),
+         time_output_interval(other.time_output_interval),
+         source_location_min_level(other.source_location_min_level),
+         output_module_name(other.output_module_name),
+         output_level_name(other.output_level_name)
+    {
+    }
+
+    ObjectLogger &ObjectLogger::operator=(const ObjectLogger &other)
+    {
+        if(this==&other)
+            return *this;
+
+        object_type_info=other.object_type_info;
+        category_id=other.category_id;
+        object_type_name=other.object_type_name;
+        object_instance_name=other.object_instance_name;
+        bound_object_id=other.bound_object_id;
+        bound_object_type_id=other.bound_object_type_id;
+        module_message_count=other.module_message_count;
+        time_output_interval=other.time_output_interval;
+        source_location_min_level=other.source_location_min_level;
+        output_module_name=other.output_module_name;
+        output_level_name=other.output_level_name;
+        log_buffer_u8.clear();
+        log_buffer_u16.clear();
+
+        return *this;
+    }
+
+    void ObjectLogger::BindObjectIdentity(const ObjectId object_id,const ObjectTypeId type_id,
+                                          const LogCategoryId cat_id,const os_char *type_name)
+    {
+        bound_object_id      =object_id;
+        bound_object_type_id =type_id;
+
+        if(cat_id!=InvalidLogCategoryId)
+            category_id=cat_id;
+
+        if(type_name&&*type_name)
+            object_type_name=OSString(type_name);
     }
 
     void ObjectLogger::LogString(const std::source_location &sl,const LogLevel level,const os_char *str,const int size)
@@ -102,6 +162,14 @@ namespace hgl::logger
         const uint64 module_seq=++module_message_count;
 
         OSString prefix=OS_TEXT("[#")+OSString::numberOf(seq)+OS_TEXT("]");
+        prefix+=OS_TEXT("[ObjectLogger:")+OSString::numberOf(object_logger_id)+OS_TEXT("]");
+
+        if(!object_instance_name.IsEmpty())
+        {
+            prefix+=OS_TEXT("[");
+            prefix+=object_instance_name;
+            prefix+=OS_TEXT("]");
+        }
 
         if(time_output_interval>0
          &&(module_seq%time_output_interval)==0)
@@ -113,17 +181,12 @@ namespace hgl::logger
 
         if(output_module_name)
         {
-            prefix+=OS_TEXT("[");
-
-            if(!object_instance_name.IsEmpty())
-                prefix+=object_instance_name;
-            else
-            if(!object_type_name.IsEmpty())
-                prefix+=object_type_name;
-            else
-                prefix+=OS_TEXT("Global");
-
-            prefix+=OS_TEXT("]");
+            if(object_instance_name.IsEmpty())
+            {
+                prefix+=OS_TEXT("[");
+                prefix+=(object_type_name.IsEmpty()?OSString(OS_TEXT("Global")):object_type_name);
+                prefix+=OS_TEXT("]");
+            }
         }
 
         if(output_level_name)
@@ -157,6 +220,9 @@ namespace hgl::logger
 
         LogMessage msg;
 
+        msg.meta.object_logger_id     =object_logger_id;
+        msg.meta.object_id           =bound_object_id;
+        msg.meta.object_type_id      =bound_object_type_id;
         msg.meta.category_id         =category_id;
         msg.meta.object_type_info    =object_type_info;
         msg.meta.object_instance_name=object_instance_name;

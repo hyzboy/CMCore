@@ -7,9 +7,11 @@ namespace hgl::logger
 {
     using LogCategoryId=uint32;
     using LogOutputterId=uint32;
+    using ObjectLoggerId=uint64;
 
     constexpr LogCategoryId InvalidLogCategoryId=0;
     constexpr LogOutputterId InvalidLogOutputterId=0;
+    constexpr ObjectLoggerId InvalidObjectLoggerId=0;
 
     LogCategoryId RegisterLogCategory(const OSString &,LogLevel);
     LogCategoryId FindLogCategory(const OSString &);
