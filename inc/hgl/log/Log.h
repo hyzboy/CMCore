@@ -2,6 +2,7 @@
 
 #include<hgl/type/String.h>
 #include<vector>
+#include<hgl/log/LogCategory.h>
 #include<hgl/log/LogLevel.h>
 #include<hgl/Charset.h>
 #include<hgl/type/StdString.h>
@@ -20,6 +21,7 @@ namespace hgl::logger
     {
         const std::type_info * object_type_info      =nullptr;         ///< 所属对象类型信息(可为空：全局/匿名logger)
 
+        LogCategoryId          category_id           =InvalidLogCategoryId;
         OSString               object_type_name;                       ///< 模块/类型名(来自typeid或手工命名)
         OSString               object_instance_name;                   ///< 实例名(可选，优先于类型名输出)
 
@@ -37,10 +39,13 @@ namespace hgl::logger
         ObjectLogger();                                                ///< 默认构造：全局logger语义
         ObjectLogger(const std::type_info *);                          ///< 按类型构造：自动提取类型名
         ObjectLogger(const os_char *name);                             ///< 按名称构造：用于模块logger
+        ObjectLogger(const os_char *name,LogLevel default_level);
 
         virtual ~ObjectLogger()=default;                               ///< 虚析构：支持多态使用
 
         const OSString &GetLoggerTypeName()const { return object_type_name; }                    ///< 获取logger类型名
+        LogCategoryId GetCategoryId()const{return category_id;}
+        bool IsEnabled(LogLevel level)const{return IsLogEnabled(category_id,level);}
 
         const size_t   GetLoggerTypeHash()const { return object_type_info?object_type_info->hash_code():0; } ///< 获取类型哈希(空则0)
 
@@ -68,7 +73,7 @@ public:
 
         void LogText(const std::source_location &sl,const LogLevel level,const U16String &text)
         {
-            if(text.IsEmpty())
+            if(text.IsEmpty()||!IsEnabled(level))
                 return;
 
             const U8String utf8_text=to_u8(text);
@@ -78,7 +83,7 @@ public:
 
         void LogText(const std::source_location &sl,const LogLevel level,const std::string &text)
         {
-            if(text.empty())
+            if(text.empty()||!IsEnabled(level))
                 return;
 
             const OSString os_text=ToOSString(text);
@@ -200,6 +205,7 @@ public:
     #define GLogFatal(...)      {::hgl::logger::GlobalLogger.Fatal     (std::source_location::current(),__VA_ARGS__);}
 
     #define DEFINE_LOGGER_MODULE(name) namespace hgl::logger{::hgl::logger::ObjectLogger Log##name(OS_TEXT(#name));}
+    #define DEFINE_LOGGER_MODULE_WITH_LEVEL(name,level) namespace hgl::logger{::hgl::logger::ObjectLogger Log##name(OS_TEXT(#name),level);}
     #define EXTERN_LOGGER_MODULE(name) namespace hgl::logger{extern ::hgl::logger::ObjectLogger Log##name;}
 
     // 非类成员函数/静态函数日志绑定：

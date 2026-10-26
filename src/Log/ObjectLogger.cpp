@@ -68,6 +68,7 @@ namespace hgl::logger
         object_type_info=nullptr;
         object_type_name=OSString(OS_TEXT("Global"));
         object_instance_name.Clear();
+        category_id=RegisterLogCategory(object_type_name,LogLevel::Verbose);
     }
 
     ObjectLogger::ObjectLogger(const std::type_info *info):object_type_info(info)
@@ -75,13 +76,21 @@ namespace hgl::logger
         object_type_name=info?ToOSString(info->name()):OSString(OS_TEXT("?"));
 
         object_instance_name.Clear();
+        category_id=RegisterLogCategory(object_type_name,LogLevel::Verbose);
     }
 
     ObjectLogger::ObjectLogger(const os_char *name)
+        :ObjectLogger(name,LogLevel::Verbose)
+    {
+    }
+
+    ObjectLogger::ObjectLogger(const os_char *name,const LogLevel default_level)
     {
         object_type_info=nullptr;
 
+        object_type_name=name?OSString(name):OSString(OS_TEXT("?"));
         object_instance_name=name;
+        category_id=RegisterLogCategory(object_type_name,default_level);
     }
 
     void ObjectLogger::LogString(const std::source_location &sl,const LogLevel level,const os_char *str,const int size)
@@ -148,6 +157,7 @@ namespace hgl::logger
 
         LogMessage msg;
 
+        msg.meta.category_id         =category_id;
         msg.meta.object_type_info    =object_type_info;
         msg.meta.object_instance_name=object_instance_name;
         msg.meta.source_location     =sl;
@@ -167,7 +177,7 @@ namespace hgl::logger
 
     void ObjectLogger::LogPrintf(const std::source_location &sl,const LogLevel level,const u8char *fmt, va_list args)
     {
-        if(!fmt||!*fmt)return;
+        if(!fmt||!*fmt||!IsEnabled(level))return;
         va_list args_copy;
         va_copy(args_copy,args);
         const int len=std::vsnprintf(nullptr,0,(char *)fmt,args_copy);
@@ -204,7 +214,7 @@ namespace hgl::logger
 #if HGL_OS == HGL_OS_Windows
     void ObjectLogger::LogPrintf(const std::source_location &sl,const LogLevel level,const u16char *fmt, va_list args)
     {
-        if(!fmt||!*fmt)return;
+        if(!fmt||!*fmt||!IsEnabled(level))return;
         va_list args_copy;
         va_copy(args_copy,args);
         const int len=std::vswprintf(nullptr,0,fmt,args_copy);

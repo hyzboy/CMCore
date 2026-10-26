@@ -88,7 +88,8 @@ namespace hgl
 
             LogWinConsole(LogLevel ll):Logger(ll)
             {
-                console_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+                SetOutputterName(OS_TEXT("Console"));
+                console_handle=GetStdHandle(STD_OUTPUT_HANDLE);
 
                 DWORD mode;
                 is_console=(GetConsoleMode(static_cast<HANDLE>(console_handle),&mode)!=0);

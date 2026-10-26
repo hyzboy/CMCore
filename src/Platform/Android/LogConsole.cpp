@@ -49,6 +49,7 @@ namespace hgl
 
             LogAndroidConsole(LogLevel ll):Logger(ll)
             {
+                SetOutputterName(OS_TEXT("Console"));
             }
 
             bool Create(const OSString &)
@@ -139,4 +140,3 @@ namespace hgl
         }
     }//logger
 }//namespace hgl
-

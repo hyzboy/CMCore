@@ -3,6 +3,7 @@
 #include<iostream>
 #include<source_location>
 #include<hgl/Charset.h>
+#include<hgl/log/LogCategory.h>
 #include<hgl/log/LogLevel.h>
 
 namespace hgl::logger
@@ -16,6 +17,8 @@ namespace hgl::logger
 
     struct LogMessageMeta
     {
+        LogCategoryId           category_id=InvalidLogCategoryId; ///<所属日志类别
+
         const std::type_info *  object_type_info=nullptr;      ///<对象数据类型的type_info指针
 
         OSString                object_instance_name;          ///<对象实例名

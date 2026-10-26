@@ -30,6 +30,7 @@ namespace hgl
 
             LogUnixConsole(LogLevel ll):Logger(ll)
             {
+                SetOutputterName(OS_TEXT("Console"));
             }
 
             bool Create(const OSString &)

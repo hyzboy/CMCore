@@ -2,6 +2,7 @@
 
 #include<hgl/type/String.h>
 #include<hgl/log/LogLevel.h>
+#include<hgl/log/LogCategory.h>
 
 namespace hgl::logger
 {
@@ -16,6 +17,11 @@ namespace hgl::logger
 
         LogLevel min_level;                                                                     ///<最小输出级别
         Logger *parent;                                                                         ///<上级输出器
+        LogOutputterId outputter_id=InvalidLogOutputterId;
+        OSString outputter_name;
+
+        friend bool AddLogger(Logger *);
+        friend bool SetLogOutputterLevel(LogOutputterId,LogLevel);
 
     public:
 
@@ -24,6 +30,10 @@ namespace hgl::logger
 
         const LogLevel  GetLevel    ()const{return min_level;}                                  ///<取得最小输出级别
         Logger *        GetParent   (){return parent;}                                          ///<取得上级日志输出器
+        LogOutputterId  GetOutputterId()const{return outputter_id;}
+        const OSString &GetOutputterName()const{return outputter_name;}
+
+        void SetOutputterName(const OSString &name){outputter_name=name;}
 
         virtual void Close()=0;                                                                 ///<关闭日志
 

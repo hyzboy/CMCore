@@ -17,6 +17,7 @@ namespace hgl
 
             LogWinDialog(const OSString &n,LogLevel ll):Logger(ll)
             {
+                SetOutputterName(OS_TEXT("Dialog"));
                 name=n;
             }
 

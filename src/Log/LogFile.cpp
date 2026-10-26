@@ -21,6 +21,7 @@ namespace hgl
 
             LogFile(LogLevel ll):Logger(ll)
             {
+                SetOutputterName(OS_TEXT("File"));
                 tos=nullptr;
             }
 
