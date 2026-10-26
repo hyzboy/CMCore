@@ -20,14 +20,10 @@ SET(CMCORE_OBJECT_FILES         ${CMCORE_OBJECT_INCLUDE_PATH}/ObjectIdentity.h
                                 ${CMCORE_OBJECT_INCLUDE_PATH}/Object.h
                                 ${CMCORE_OBJECT_INCLUDE_PATH}/RefObject.h
                                 ${CMCORE_OBJECT_INCLUDE_PATH}/MetaObject.h
-                                ${CMCORE_OBJECT_INCLUDE_PATH}/ObjectBase.h
-                                ${CMCORE_OBJECT_INCLUDE_PATH}/ObjectTracker.h
-                                ${CMCORE_OBJECT_INCLUDE_PATH}/ObjectCrashRecovery.h
                                 Object/ObjectIdentity.cpp
                                 Object/Object.cpp
                                 Object/RefObject.cpp
-                                Object/MetaObject.cpp
-                                Object/ObjectTracker.cpp)
+                                Object/MetaObject.cpp)
 
 SOURCE_GROUP("Object" FILES ${CMCORE_OBJECT_FILES})
 
