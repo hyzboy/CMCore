@@ -28,7 +28,7 @@ namespace hgl
         {
             int fp;
 
-            if(fom==FileOpenMode::Create       )fp=hgl_open64(fn,O_WRONLY|O_CREAT,           S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);else
+            if(fom==FileOpenMode::Create       )fp=hgl_open64(fn,O_WRONLY|O_CREAT|O_EXCL,   S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);else
             if(fom==FileOpenMode::CreateTrunc  )fp=hgl_open64(fn,O_WRONLY|O_CREAT|O_TRUNC,   S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);else
             if(fom==FileOpenMode::OnlyRead     )fp=hgl_open64(fn,O_RDONLY  );else
             if(fom==FileOpenMode::OnlyWrite    )fp=hgl_open64(fn,O_WRONLY  );else

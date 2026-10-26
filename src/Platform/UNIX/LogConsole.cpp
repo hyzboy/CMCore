@@ -72,6 +72,8 @@ namespace hgl
                 mutex.Lock();
             #endif//LOGINFO_THREAD_MUTEX
 
+                log_buf[0]=0;
+
                 #ifdef LOG_INFO_THREAD
                     WriteThreadID();
                 #endif//LOG_INFO_THREAD

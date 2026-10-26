@@ -12,7 +12,7 @@ namespace hgl
         {
             None=0,
 
-            Create,                      ///<创建文件，如存在则失败
+            Create,                      ///<独占创建文件，如存在则失败
             CreateTrunc,                 ///<强制创建，如存在则抹掉
             CreateTemp,
             OnlyRead,                    ///<只读方式
@@ -46,7 +46,7 @@ namespace hgl
             virtual ~FileAccess();
 
             virtual bool Open           (const OSString &,FileOpenMode fom);                                ///<以指定模式打开一个文件
-            virtual bool Create         (const OSString &fn){return Open(fn,FileOpenMode::Create);}         ///<创建一个新文件，如文件已存在则创建失败
+            virtual bool Create         (const OSString &fn){return Open(fn,FileOpenMode::Create);}         ///<独占创建一个新文件，如文件已存在则创建失败
             virtual bool CreateTrunc    (const OSString &fn){return Open(fn,FileOpenMode::CreateTrunc);}    ///<创建一个新文件，如文件已存在则抹消它
             virtual bool OpenRead       (const OSString &fn){return Open(fn,FileOpenMode::OnlyRead);}       ///<以只读模式打开一个文件
             virtual bool OpenWrite      (const OSString &fn){return Open(fn,FileOpenMode::OnlyWrite);}      ///<以只写模式打开一个文件

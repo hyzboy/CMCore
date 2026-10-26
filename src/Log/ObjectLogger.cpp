@@ -201,6 +201,7 @@ namespace hgl::logger
     }
 #endif//HGL_SUPPORT_CHAR8_T
 
+#if HGL_OS == HGL_OS_Windows
     void ObjectLogger::LogPrintf(const std::source_location &sl,const LogLevel level,const u16char *fmt, va_list args)
     {
         if(!fmt||!*fmt)return;
@@ -214,18 +215,8 @@ namespace hgl::logger
             log_buffer_u16.resize(len+1);
             std::vswprintf(log_buffer_u16.data(),len+1,fmt,args);
 
-        #if HGL_OS == HGL_OS_Windows
             LogString(sl,level,log_buffer_u16.data(),len);
-        #else
-
-            int u8len=get_utf8_length(UTF16LECharSet,log_buffer_u16.data(),len)+1;
-
-            log_buffer_u8.resize(u8len);
-
-            u8len=u16_to_u8(log_buffer_u8.data(),u8len,log_buffer_u16.data(),len);
-
-            LogString(sl,level,log_buffer_u8.data(),u8len);
-        #endif
         }
     }
+#endif
 }//namespace hgl::logger

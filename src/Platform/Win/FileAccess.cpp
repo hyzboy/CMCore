@@ -21,7 +21,7 @@ namespace hgl::io
 
         MLogVerbose(FileAccess,OS_TEXT("创建临时文件: ")+OSString(TempName))
 
-        return Open(TempName,FileOpenMode::Create);
+        return Open(TempName,FileOpenMode::CreateTrunc);
     }
 
     int OpenFile(const os_char *fn,FileOpenMode fom)
@@ -36,7 +36,7 @@ namespace hgl::io
 
         errno_t result;
 
-        if(fom==FileOpenMode::Create       )result=_wsopen_s(&fp,fn,_O_BINARY|_O_WRONLY|_O_CREAT               ,_SH_DENYNO,S_IREAD|_S_IWRITE);else
+        if(fom==FileOpenMode::Create       )result=_wsopen_s(&fp,fn,_O_BINARY|_O_WRONLY|_O_CREAT|_O_EXCL      ,_SH_DENYNO,S_IREAD|_S_IWRITE);else
         if(fom==FileOpenMode::CreateTrunc  )result=_wsopen_s(&fp,fn,_O_BINARY|_O_WRONLY|_O_CREAT|_O_TRUNC      ,_SH_DENYNO,S_IREAD|_S_IWRITE);else
 //          if(fom==FileOpenMode::CreateTemp   )result=_wsopen_s(&fp,fn,_O_BINARY|_O_WRONLY|_O_CREAT|_O_TEMPORARY  ,_SH_DENYNO,S_IREAD|_S_IWRITE);else //某些平台不支持，所以全都不使用fomCreateTemp,统一使用CreateTemp
         if(fom==FileOpenMode::OnlyRead     )result=_wsopen_s(&fp,fn,_O_BINARY|_O_RDONLY                        ,_SH_DENYNO,S_IREAD|_S_IWRITE);else

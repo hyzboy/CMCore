@@ -4,6 +4,7 @@
 #include<hgl/io/FileOutputStream.h>
 #include<hgl/io/DataOutputStream.h>
 #include<hgl/io/TextOutputStream.h>
+#include<hgl/time/Time.h>
 
 namespace hgl
 {
@@ -32,9 +33,7 @@ namespace hgl
             {
                 OSString local_app_data_path;
                 OSString cmgdk_path;
-                OSString fn;
-                os_char filename[HGL_MAX_PATH];
-                os_char num[16]={'.',0};
+                OSString base_filename;
 
                 if(!GetLocalAppdataPath(local_app_data_path))
                     return(false);
@@ -44,27 +43,34 @@ namespace hgl
                 if(!filesystem::MakePath(cmgdk_path))
                     return(false);
 
-                fn=filesystem::JoinPathWithFilename(cmgdk_path,project_code);
+                base_filename=filesystem::JoinPathWithFilename(cmgdk_path,project_code);
+                const OSString run_stamp=OSString::numberOf(GetTimeMs());
 
                 for(uint i=0;i<=0xFFFF;i++)
                 {
-                    hgl::strcpy(filename,HGL_MAX_PATH,fn);
+                    const OSString filename=base_filename+OS_TEXT(".")+run_stamp+
+                                            OS_TEXT(".")+OSString::numberOf(i)+OS_TEXT(".log");
 
-                    if(i)
-                    {
-                        hgl::utos(num+1,14,i);
-                        hgl::strcat(filename,HGL_MAX_PATH,num,sizeof(num));
-                    }
+                    if(filesystem::FileExist(filename))
+                        continue;
 
-                    hgl::strcat(filename,HGL_MAX_PATH,OS_TEXT(".log"),4);
-
-                    if(fos.CreateTrunc(filename))//创建成功
+                    if(fos.Create(filename))
                     {
                         tos=io::CreateTextOutputStream<u8char>(&fos);
+
+                        if(!tos)
+                        {
+                            fos.Close();
+                            return(false);
+                        }
+
                         tos->WriteBOM();
 
                         return(true);
                     }
+
+                    if(!filesystem::FileExist(filename))
+                        return(false);
                 }
 
                 return(false);

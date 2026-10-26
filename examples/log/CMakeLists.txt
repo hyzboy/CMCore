@@ -4,3 +4,6 @@ cm_example_project("Log" LogOutputWaysExample
     LogOutputWaysExtra.cpp
 )
 
+cm_example_project("Log" LogCreateExclusiveTest
+    LogCreateExclusiveTest.cpp
+)

@@ -66,6 +66,16 @@ namespace hgl::logger
 
 public:
 
+        void LogText(const std::source_location &sl,const LogLevel level,const U16String &text)
+        {
+            if(text.IsEmpty())
+                return;
+
+            const U8String utf8_text=to_u8(text);
+            const OSString os_text=ToOSString(utf8_text);
+            LogString(sl,level,os_text.c_str(),static_cast<int>(os_text.Length()));
+        }
+
         void LogText(const std::source_location &sl,const LogLevel level,const std::string &text)
         {
             if(text.empty())
@@ -91,15 +101,34 @@ public:
 
     #undef LOG_HELPER_DECL_STD_STRING
 
+    #define LOG_HELPER_DECL_U16_STRING(LEVEL_ENUM) \
+        void LEVEL_ENUM(const std::source_location &sl,const U16String &text) \
+        {   \
+            LogText(sl,LogLevel::LEVEL_ENUM,text); \
+        }
+
+        LOG_HELPER_DECL_U16_STRING(Verbose)
+        LOG_HELPER_DECL_U16_STRING(Debug)
+        LOG_HELPER_DECL_U16_STRING(Info)
+        LOG_HELPER_DECL_U16_STRING(Notice)
+        LOG_HELPER_DECL_U16_STRING(Warning)
+        LOG_HELPER_DECL_U16_STRING(Error)
+        LOG_HELPER_DECL_U16_STRING(Fatal)
+
+    #undef LOG_HELPER_DECL_U16_STRING
+
         void LogString(const std::source_location &,const LogLevel,const os_char *,const int);     ///< 核心输出入口：拼装前缀并下发到sink
 
         void LogPrintf(const std::source_location &,const LogLevel,const u8char *,va_list);        ///< UTF-8格式化输出(va_list)
-        void LogPrintf(const std::source_location &,const LogLevel,const u16char *,va_list);       ///< UTF-16格式化输出(va_list)
 
     #ifdef HGL_SUPPORT_CHAR8_T
         void LogString(const std::source_location &,const LogLevel,const char *,const size_t);     ///< char*直写入口(兼容char8_t场景)
         void LogPrintf(const std::source_location &,const LogLevel,const char *,va_list);          ///< char*格式化入口(兼容char8_t场景)
     #endif//HGL_SUPPORT_CHAR8_T
+
+    #if HGL_OS == HGL_OS_Windows
+        void LogPrintf(const std::source_location &,const LogLevel,const u16char *,va_list);       ///< Windows UTF-16格式化输出(va_list)
+    #endif
 
     #define LOG_HELPER_DECL(LEVEL_ENUM,CHAR_TYPE) \
         void LEVEL_ENUM(const std::source_location &sl,const CHAR_TYPE *fmt,...) \
@@ -123,11 +152,14 @@ public:
         LOG_HELPER_DECL(Fatal,CHAR_TYPE)
 
         LOG_HELPER_DECL_CHAR(u8char)
-        LOG_HELPER_DECL_CHAR(u16char)
 
         #ifdef HGL_SUPPORT_CHAR8_T
             LOG_HELPER_DECL_CHAR(char)
         #endif//HGL_SUPPORT_CHAR8_T
+
+    #if HGL_OS == HGL_OS_Windows
+        LOG_HELPER_DECL_CHAR(u16char)
+    #endif
 
     #undef LOG_HELPER_DECL_CHAR
     #undef LOG_HELPER_DECL
