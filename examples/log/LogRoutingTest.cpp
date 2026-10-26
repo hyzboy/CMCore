@@ -1,11 +1,42 @@
 #include<hgl/log/Log.h>
 #include<hgl/log/Logger.h>
+#include<hgl/object/Object.h>
 
 DEFINE_LOGGER_MODULE_WITH_LEVEL(LogRoutingTest,LogLevel::Info)
 
 namespace
 {
     struct RoutingTestObject{};
+
+    class RoutingTestBase:public hgl::Object
+    {
+    public:
+
+        HGL_OBJECT(RoutingTestBase,hgl::Object)
+
+        int init_count=0;
+        int release_count=0;
+
+    protected:
+
+        bool OnInit() override
+        {
+            ++init_count;
+            return(true);
+        }
+
+        void OnRelease() override
+        {
+            ++release_count;
+        }
+    };//class RoutingTestBase
+
+    class RoutingTestLeaf:public RoutingTestBase
+    {
+    public:
+
+        HGL_OBJECT(RoutingTestLeaf,RoutingTestBase)
+    };//class RoutingTestLeaf
 }
 
 int main()
@@ -59,6 +90,32 @@ int main()
        first_object_logger.GetBoundObjectTypeId()!=type_info->type_id||
        AllocateObjectId()<=object_id)
         return 14;
+
+    RoutingTestLeaf object;
+
+    object.SetInstanceName(OS_TEXT("leaf-instance"));
+
+    const ObjectId leaf_object_id=object.GetObjectId();
+
+    if(leaf_object_id==InvalidObjectId||
+       !object.Init()||
+       object.Init()!=true||                                            // 幂等
+       !object.IsInitialized()||
+       object.init_count!=1||
+       object.GetTypeId()!=RoutingTestLeaf::StaticTypeInfo()->type_id||
+       !object.IsA<RoutingTestBase>()||
+       !object.IsA<hgl::Object>()||
+       object.Cast<RoutingTestBase>()!=&object||
+       object.GetInstanceName()!=OS_TEXT("leaf-instance")||
+       object.GetLogger().GetBoundObjectId()!=leaf_object_id||
+       object.GetLogger().GetBoundObjectTypeId()!=RoutingTestLeaf::StaticTypeInfo()->type_id)
+        return 15;
+
+    object.Release();
+    object.Release();                                                     // 幂等
+
+    if(!object.IsReleased()||object.release_count!=1)
+        return 16;
 
     if(!IsLogEnabledForOutputter(category,console,LogLevel::Info)||
        IsLogEnabledForOutputter(category,console,LogLevel::Debug))
