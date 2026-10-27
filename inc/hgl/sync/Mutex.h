@@ -8,16 +8,16 @@ namespace hgl
     * 排斥(线程)访问类可以判断数据在被一个代码段访问时，不能被另一代码段访问<br>
     * 注：此排斥仅在当前进程内有效
     */
-    class ThreadMutex                                                                               ///排斥访问类(仅当前进程)
+    class Mutex                                                                                     ///排斥访问类(仅当前进程)
     {
         thread_mutex_ptr ptr;
 
     public:
 
-        ThreadMutex();                                                                              ///<本类构造函数
-        virtual ~ThreadMutex();                                                                     ///<本类析构函数
+        Mutex();                                                                                    ///<本类构造函数
+        virtual ~Mutex();                                                                           ///<本类析构函数
 
-        thread_mutex_ptr *GetThreadMutex(){return &ptr;}
+        thread_mutex_ptr *GetNativeHandle(){return &ptr;}
 
         virtual void    Lock();                                                                     ///<取得的控制权(如果对象处于排斥状态，则等待)
         virtual bool    TryLock();                                                                  ///<尝试取得控制权
@@ -30,23 +30,23 @@ namespace hgl
     /**
      * 线程排斥对象
      */
-    template<typename T> class ThreadMutexObject:public ThreadMutex
+    template<typename T> class MutexObject:public Mutex
     {
         T *data;
 
     public:
 
-        ThreadMutexObject()
+        MutexObject()
         {
             data=new T;
         }
 
-        ThreadMutexObject(T *t)
+        MutexObject(T *t)
         {
             data=t;
         }
 
-        virtual ~ThreadMutexObject()
+        virtual ~MutexObject()
         {
             SAFE_CLEAR(data);
         }
@@ -73,25 +73,25 @@ namespace hgl
         {
             return !data;
         }
-    };//class ThreadMutexObject
+    };//class MutexObject
 
     /**
      * 线程排斥对像阵列
      */
-    template<typename T> class ThreadMutexObjectArray
+    template<typename T> class MutexObjectArray
     {
     protected:
 
-        ThreadMutexObject<T> *items;
+        MutexObject<T> *items;
 
     public:
 
-        ThreadMutexObjectArray()
+        MutexObjectArray()
         {
             items=nullptr;
         }
 
-        ThreadMutexObjectArray(int count)
+        MutexObjectArray(int count)
         {
             if(count<=0)
             {
@@ -99,63 +99,66 @@ namespace hgl
             }
             else
             {
-                items=new ThreadMutexObject<T>[count];
+                items=new MutexObject<T>[count];
             }
         }
 
-        virtual ~ThreadMutexObjectArray()
+        virtual ~MutexObjectArray()
         {
             delete[] items;     //delete nullptr不是个错误
         }
 
-        ThreadMutexObject<T> &operator [](int index)
+        MutexObject<T> &operator [](int index)
         {
             return items[index];
         }
-    };//class ThreadMutexObjectArray
+    };//class MutexObjectArray
 
     /**
      * 智能自释放线程排斥锁
      */
-    class ThreadMutexLock
+    class MutexLock
     {
-        ThreadMutex *tm;
+        Mutex *mutex;
 
     public:
 
-        ThreadMutexLock(ThreadMutex *tm_lock)
-        {
-            tm=tm_lock;
+        MutexLock(const MutexLock &)=delete;
+        MutexLock &operator=(const MutexLock &)=delete;
 
-            if(tm)
-                tm->Lock();
+        MutexLock(Mutex *mutex_to_lock)
+        {
+            mutex=mutex_to_lock;
+
+            if(mutex)
+                mutex->Lock();
         }
 
-        ~ThreadMutexLock()
+        ~MutexLock()
         {
-            if(tm)
-                tm->Unlock();
+            if(mutex)
+                mutex->Unlock();
         }
 
         void Lock()
         {
-            if(tm)
-                tm->Lock();
+            if(mutex)
+                mutex->Lock();
         }
 
         void Unlock()
         {
-            if(tm)
-                tm->Unlock();
+            if(mutex)
+                mutex->Unlock();
         }
 
         void Clear()
         {
-            if(tm)
+            if(mutex)
             {
-                tm->Unlock();
-                tm=nullptr;
+                mutex->Unlock();
+                mutex=nullptr;
             }
         }
-    };//class ThreadMutexLock
+    };//class MutexLock
 }//namespace hgl

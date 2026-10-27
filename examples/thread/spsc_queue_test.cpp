@@ -1,4 +1,4 @@
-#include<hgl/thread/SpscQueue.h>
+#include<hgl/concurrency/SpscQueue.h>
 #include<hgl/thread/Thread.h>
 
 using namespace hgl;
@@ -92,8 +92,8 @@ int main()
         return(6);
     if(!producer.Start())
     {
-        producer.WaitExit();
-        consumer.WaitExit();
+        producer.StopAndJoin();
+        consumer.StopAndJoin();
         return(7);
     }
 

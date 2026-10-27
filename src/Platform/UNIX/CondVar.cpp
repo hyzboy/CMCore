@@ -1,5 +1,5 @@
-﻿#include<hgl/thread/CondVar.h>
-#include<hgl/thread/ThreadMutex.h>
+﻿#include<hgl/sync/CondVar.h>
+#include<hgl/sync/Mutex.h>
 #include<pthread.h>
 
 namespace hgl
@@ -19,7 +19,7 @@ namespace hgl
         delete cond_var;
     }
 
-    bool CondVar::Wait(ThreadMutex *tm,double t)
+    bool CondVar::Wait(Mutex *tm,double t)
     {
         if(t>0)
         {
@@ -27,11 +27,11 @@ namespace hgl
 
             GetWaitTime(abstime,t);
 
-            return(!pthread_cond_timedwait(cond_var,tm->GetThreadMutex(),&abstime));
+            return(!pthread_cond_timedwait(cond_var,tm->GetNativeHandle(),&abstime));
         }
         else
         {
-            return(!pthread_cond_wait(cond_var,tm->GetThreadMutex()));
+            return(!pthread_cond_wait(cond_var,tm->GetNativeHandle()));
         }
     }
 

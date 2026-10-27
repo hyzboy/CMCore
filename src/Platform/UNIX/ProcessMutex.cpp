@@ -1,16 +1,16 @@
-﻿#include<hgl/proc/ProcMutex.h>
+﻿#include<hgl/sync/ProcessMutex.h>
 #include<sys/fcntl.h>
 #include<sys/stat.h>
 #include<errno.h>
 
 namespace hgl
 {
-    ProcMutex::ProcMutex()
+    ProcessMutex::ProcessMutex()
     {
         lock = nullptr;
     }
 
-    bool ProcMutex::Create(const os_char *name)
+    bool ProcessMutex::Create(const os_char *name)
     {
         if (lock != nullptr)return(false);
 
@@ -23,7 +23,7 @@ namespace hgl
         return(false);
     }
 
-    void ProcMutex::Clear()
+    void ProcessMutex::Clear()
     {
         if (lock == nullptr)return;
 
@@ -32,7 +32,7 @@ namespace hgl
         lock = nullptr;
     }
 
-    bool ProcMutex::Lock()
+    bool ProcessMutex::Lock()
     {
         if (lock == nullptr)return(false);
 
@@ -46,14 +46,14 @@ namespace hgl
         return !err;
     }
 
-    bool ProcMutex::TryLock()
+    bool ProcessMutex::TryLock()
     {
         if (lock == nullptr)return(false);
 
         return(sem_trywait(lock)==0);
     }
 
-    bool ProcMutex::Unlock()
+    bool ProcessMutex::Unlock()
     {
         if (lock == nullptr)return(false);
 

@@ -43,7 +43,7 @@ IF(UNIX)
     SET(CMCORE_PLATFORM_THREAD_SOURCES      UNIX/CondVar.cpp
                                             UNIX/RWLock.cpp
                                             UNIX/Thread.cpp
-                                            UNIX/ThreadMutex.cpp)
+                                            UNIX/Mutex.cpp)
 
     IF(ANDROID)
         SET(CMCORE_PLATFORM_LOG_SOURCES         Android/LogConsole.cpp)
@@ -91,7 +91,7 @@ IF(UNIX)
         ENDIF()
     ENDIF()
 
-    SET(CMCORE_PLATFORM_PROCESS_SOURCES     UNIX/ProcMutex.cpp
+    SET(CMCORE_PLATFORM_PROCESS_SOURCES     UNIX/ProcessMutex.cpp
                                             UNIX/Process.cpp
                                             UNIX/Pipe.cpp
                                             UNIX/Fifo.cpp
@@ -132,9 +132,9 @@ IF(WIN32)
                                             Win/RWLock.cpp
                                             Win/Semaphore.cpp
                                             Win/Thread.cpp
-                                            Win/ThreadMutex.cpp)
+                                            Win/Mutex.cpp)
 
-    SET(CMCORE_PLATFORM_PROCESS_SOURCES     Win/ProcMutex.cpp
+    SET(CMCORE_PLATFORM_PROCESS_SOURCES     Win/ProcessMutex.cpp
                                             Win/Pipe.cpp
                                             Win/Fifo.cpp)
 

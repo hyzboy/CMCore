@@ -1,7 +1,7 @@
 #pragma once
 
-#include<hgl/thread/CondVar.h>
-#include<hgl/thread/ThreadMutex.h>
+#include<hgl/sync/CondVar.h>
+#include<hgl/sync/Mutex.h>
 #include<hgl/time/Time.h>
 #include<hgl/type/ValueArray.h>
 
@@ -20,7 +20,7 @@ namespace hgl
         int receive_index=1;
         bool receive_active=false;
         bool closed=false;
-        ThreadMutex lock;
+        Mutex lock;
         CondVar changed;
 
         bool SwapLocked()
@@ -39,7 +39,7 @@ namespace hgl
 
         bool Post(const T &value)
         {
-            ThreadMutexLock guard(&lock);
+            MutexLock guard(&lock);
 
             if(closed)
                 return(false);
@@ -54,7 +54,7 @@ namespace hgl
             if(!values||count<=0)
                 return(0);
 
-            ThreadMutexLock guard(&lock);
+            MutexLock guard(&lock);
 
             if(closed)
                 return(0);
@@ -69,13 +69,13 @@ namespace hgl
 
         bool TrySwap()
         {
-            ThreadMutexLock guard(&lock);
+            MutexLock guard(&lock);
             return SwapLocked();
         }
 
         bool WaitAndSwap(double timeout=0)
         {
-            ThreadMutexLock guard(&lock);
+            MutexLock guard(&lock);
             const double start=timeout>0?GetUptimeSec():0;
 
             while(!receive_active&&buffers[write_index].IsEmpty()&&!closed)
@@ -104,7 +104,7 @@ namespace hgl
 
         void ReleaseReceive()
         {
-            ThreadMutexLock guard(&lock);
+            MutexLock guard(&lock);
 
             if(receive_active)
             {
@@ -115,20 +115,20 @@ namespace hgl
 
         void Close()
         {
-            ThreadMutexLock guard(&lock);
+            MutexLock guard(&lock);
             closed=true;
             changed.Broadcast();
         }
 
         bool IsClosed()
         {
-            ThreadMutexLock guard(&lock);
+            MutexLock guard(&lock);
             return closed;
         }
 
         int GetPendingCount()
         {
-            ThreadMutexLock guard(&lock);
+            MutexLock guard(&lock);
             return buffers[write_index].GetCount();
         }
     };//class SwapMailbox

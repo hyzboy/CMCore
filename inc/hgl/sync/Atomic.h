@@ -27,4 +27,3 @@ namespace hgl
     using atom_float   = atom<float>;
     // 如需 double: using atom_double = atom<double>;
 }
-

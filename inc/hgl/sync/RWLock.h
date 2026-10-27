@@ -110,27 +110,30 @@ namespace hgl
     /**
      * 读写锁共享锁定自动释放类
      */
-    class OnlyReadLock
+    class ReadLockGuard
     {
         RWLock *rw;
 
     public:
 
-        OnlyReadLock(RWLock &rw_lock)
+        ReadLockGuard(const ReadLockGuard &)=delete;
+        ReadLockGuard &operator=(const ReadLockGuard &)=delete;
+
+        ReadLockGuard(RWLock &rw_lock)
         {
             rw=&rw_lock;
 
             rw->ReadLock();
         }
 
-        OnlyReadLock(RWLock *rw_lock)
+        ReadLockGuard(RWLock *rw_lock)
         {
             rw=rw_lock;
 
             rw->ReadLock();
         }
 
-        ~OnlyReadLock()
+        ~ReadLockGuard()
         {
             Unlock();
         }
@@ -143,32 +146,35 @@ namespace hgl
                 rw=nullptr;
             }
         }
-    };//class ReadLock
+    };//class ReadLockGuard
 
     /**
      * 读写锁独占访问锁定自动释放类
      */
-    class OnlyWriteLock
+    class WriteLockGuard
     {
         RWLock *rw;
 
     public:
 
-        OnlyWriteLock(RWLock &rw_lock)
+        WriteLockGuard(const WriteLockGuard &)=delete;
+        WriteLockGuard &operator=(const WriteLockGuard &)=delete;
+
+        WriteLockGuard(RWLock &rw_lock)
         {
             rw=&rw_lock;
 
             rw->WriteLock();
         }
 
-        OnlyWriteLock(RWLock *rw_lock)
+        WriteLockGuard(RWLock *rw_lock)
         {
             rw=rw_lock;
 
             rw->WriteLock();
         }
 
-        ~OnlyWriteLock()
+        ~WriteLockGuard()
         {
             Unlock();
         }
@@ -181,5 +187,5 @@ namespace hgl
                 rw=nullptr;
             }
         }
-    };//class WriteLock
+    };//class WriteLockGuard
 }//namespace hgl

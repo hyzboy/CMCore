@@ -1,16 +1,16 @@
-﻿#include<hgl/thread/ThreadMutex.h>
+﻿#include<hgl/sync/Mutex.h>
 
 #include<wchar.h>
 
 #pragma warning(disable:4800)            // BOOL -> bool 性能损失警告
 namespace hgl
 {
-    ThreadMutex::ThreadMutex()
+    Mutex::Mutex()
     {
         InitializeCriticalSection(&ptr);
     }
 
-    ThreadMutex::~ThreadMutex()
+    Mutex::~Mutex()
     {
         DeleteCriticalSection(&ptr);
     }
@@ -19,7 +19,7 @@ namespace hgl
     * 取得控制权
     * 如果对象处于排斥状态，则等待
     */
-    void ThreadMutex::Lock()
+    void Mutex::Lock()
     {
         EnterCriticalSection(&ptr);
     }
@@ -28,7 +28,7 @@ namespace hgl
     * 尝试取得控制权
     * @return 是否成功取得控制权
     */
-    bool ThreadMutex::TryLock()
+    bool Mutex::TryLock()
     {
         return(TryEnterCriticalSection(&ptr));
     }
@@ -38,7 +38,7 @@ namespace hgl
     * @param time 等待的最大时间,时间为0表示尝试
     * @return 是否取得控制权
     */
-    bool ThreadMutex::WaitLock(double time_out)
+    bool Mutex::WaitLock(double time_out)
     {
         if(time_out<=0)
             return TryLock();
@@ -62,7 +62,7 @@ namespace hgl
     /**
     * 放弃控制权
     */
-    void ThreadMutex::Unlock()
+    void Mutex::Unlock()
     {
         LeaveCriticalSection(&ptr);
     }

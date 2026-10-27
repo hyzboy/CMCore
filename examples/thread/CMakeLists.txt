@@ -10,6 +10,7 @@ endmacro()
 
 cm_thread_test(ThreadLifecycleTest thread_lifecycle_test.cpp)
 cm_thread_test(SpscQueueTest spsc_queue_test.cpp)
+cm_thread_test(RingBufferTest ring_buffer_test.cpp)
 cm_thread_test(DuplexQueueTest duplex_queue_test.cpp)
 cm_thread_test(SwapMailboxTest swap_mailbox_test.cpp)
 cm_thread_test(AsyncEventTest async_event_test.cpp)

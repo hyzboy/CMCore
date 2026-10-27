@@ -1,5 +1,5 @@
 ﻿#include<hgl/thread/Thread.h>
-#include<hgl/thread/CondVar.h>
+#include<hgl/sync/CondVar.h>
 #include<hgl/log/LogInfo.h>
 #include<hgl/time/Time.h>
 #include<signal.h>
@@ -66,9 +66,9 @@ namespace hgl
 
     void GetWaitTime(struct timespec &abstime,double t);
 
-    bool Thread::WaitExit(const double &time_out)
+    bool Thread::StopAndJoin(const double &time_out)
     {
-        Exit();
+        RequestStop();
         return Join(time_out);
     }
 

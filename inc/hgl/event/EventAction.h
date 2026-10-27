@@ -7,33 +7,33 @@ namespace hgl
     /**
      * 事件基类
      */
-    class EventProc
+    class EventAction
     {
     public:
 
-        EventProc()=default;
-        virtual ~EventProc()=default;
+        EventAction()=default;
+        virtual ~EventAction()=default;
 
-        virtual bool Proc()=0;
-    };//class EventProc
+        virtual bool Execute()=0;
+    };//class EventAction
 
-    // Queue entries are borrowed; the submitter owns each event object.
-    using EventProcQueue=Queue<EventProc *>;
+    // Queue entries are borrowed; the submitter owns each event action.
+    using EventActionQueue=Queue<EventAction *>;
 
     /**
         * 执行一个事件
         */
-    inline bool UpdateEvent(EventProcQueue *epq)
+    inline bool DispatchEvent(EventActionQueue *epq)
     {
         if(!epq||epq->GetCount()<=0)
             return(false);
 
-        EventProc *e;
+        EventAction *event;
 
-        if(epq->Pop(e))
+        if(epq->Pop(event))
         {
-            if(e)
-                e->Proc();
+            if(event)
+                event->Execute();
 
             return(true);
         }
@@ -46,18 +46,18 @@ namespace hgl
         * @param epq 事件队列
         * @param max_count 最大刷新个数(-1表示无限制)
         */
-    inline int UpdateEventQueue(EventProcQueue *epq,int max_count=-1)
+    inline int DispatchEvents(EventActionQueue *epq,int max_count=-1)
     {
         if(!epq||epq->GetCount()<=0||max_count==0)
             return(0);
 
         int count=0;
-        EventProc *e;
+        EventAction *event;
 
-        while(epq->Pop(e))
+        while(epq->Pop(event))
         {
-            if(e)
-                e->Proc();
+            if(event)
+                event->Execute();
 
             ++count;
 

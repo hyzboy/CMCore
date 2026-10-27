@@ -128,13 +128,13 @@ namespace hgl::io
 
     bool Pipe::Create()
     {
-        ThreadMutexLock lock(&mutex);
+        MutexLock lock(&mutex);
         return hgl::CreatePipe(pp);
     }
 
     void Pipe::CloseRead()
     {
-        ThreadMutexLock lock(&mutex);
+        MutexLock lock(&mutex);
 
         if(input_stream)
         {
@@ -151,7 +151,7 @@ namespace hgl::io
 
     void Pipe::CloseWrite()
     {
-        ThreadMutexLock lock(&mutex);
+        MutexLock lock(&mutex);
 
         if(output_stream)
         {
@@ -167,7 +167,7 @@ namespace hgl::io
 
     WeakPtr<InputStream> Pipe::GetInputStream()
     {
-        ThreadMutexLock lock(&mutex);
+        MutexLock lock(&mutex);
 
         if(pp[0]==PIPE_NULL) return WeakPtr<InputStream>();
         if(!input_stream)
@@ -179,7 +179,7 @@ namespace hgl::io
 
     WeakPtr<OutputStream> Pipe::GetOutputStream()
     {
-        ThreadMutexLock lock(&mutex);
+        MutexLock lock(&mutex);
 
         if(pp[1]==PIPE_NULL) return WeakPtr<OutputStream>();
         if(!output_stream)

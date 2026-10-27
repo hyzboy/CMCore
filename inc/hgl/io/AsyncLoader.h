@@ -11,14 +11,14 @@ namespace hgl
     /**
     * 加载器，用于异步加载数据
     */
-    class Loader:public EnumObject,public Thread                                                    ///加载器
+    class AsyncLoader:public EnumObject,public Thread                                               ///异步加载器
     {
     public:
 
         /**
         * 加载器状态枚举
         */
-        enum LoaderStatus       //加载器状态
+        enum AsyncLoaderStatus  //加载器状态
         {
             lsNone=0,           //未使用
 
@@ -33,9 +33,9 @@ namespace hgl
 
     protected:
 
-        LoaderStatus status;
+        AsyncLoaderStatus status;
 
-        void SetStatus(LoaderStatus);
+        void SetStatus(AsyncLoaderStatus);
 
         HAC *loader_hac;
         U16String loader_filename;
@@ -51,13 +51,13 @@ namespace hgl
 
     public: //事件
 
-        DefEvent(void,OnError,(Loader *));                                                          ///<出错事件
-        DefEvent(void,OnEnd,(Loader *));                                                            ///<完成事件,在ProcEnd之后,ProcClear之前被调用
+        DefEvent(void,OnError,(AsyncLoader *));                                                     ///<出错事件
+        DefEvent(void,OnEnd,(AsyncLoader *));                                                       ///<完成事件,在ProcEnd之后,ProcClear之前被调用
 
     public:
 
-        Loader();
-        virtual ~Loader()=default;
+        AsyncLoader();
+        virtual ~AsyncLoader()=default;
 
         bool Execute();
 
@@ -67,6 +67,6 @@ namespace hgl
 
         bool Load(HAC *,const u16char *);                                                           ///<加载一个文件到某个对象
 
-        LoaderStatus GetStatus();                                                                   ///<取得状态
-    };//class Loader
+        AsyncLoaderStatus GetStatus();                                                              ///<取得状态
+    };//class AsyncLoader
 }//namespace hgl

@@ -1,5 +1,5 @@
-﻿#ifndef HGL_THREAD_RING_BUFFER_SOURCE
-#define HGL_THREAD_RING_BUFFER_SOURCE
+#ifndef HGL_CONCURRENCY_RING_BUFFER_CORE
+#define HGL_CONCURRENCY_RING_BUFFER_CORE
 
 /**
 * 由于设定read_pos=write_pos表示无数据，所以当数据刚好读写到结尾时，不立即转成0，而是仍为buffer_size
@@ -55,4 +55,4 @@ namespace hgl
         write_pos-=buffer_size;
     }
 }//namespace hgl
-#endif//HGL_THREAD_RING_BUFFER_SOURCE
+#endif//HGL_CONCURRENCY_RING_BUFFER_CORE

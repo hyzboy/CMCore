@@ -1,6 +1,6 @@
 #pragma once
 
-#include<hgl/thread/SpscQueue.h>
+#include<hgl/concurrency/SpscQueue.h>
 
 namespace hgl
 {

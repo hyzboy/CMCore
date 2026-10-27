@@ -1,4 +1,4 @@
-﻿#include<hgl/thread/RWLock.h>
+﻿#include<hgl/sync/RWLock.h>
 
 #pragma warning(disable:4800)            // BOOL -> bool 性能损失警告
 namespace hgl

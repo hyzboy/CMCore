@@ -3,7 +3,7 @@
 #include<hgl/io/InputStream.h>
 #include<hgl/io/OutputStream.h>
 #include<hgl/proc/Pipe.h>
-#include<hgl/thread/ThreadMutex.h>
+#include<hgl/sync/Mutex.h>
 #include<hgl/type/Smart.h>
 
 namespace hgl::io
@@ -22,7 +22,7 @@ namespace hgl::io
         SharedPtr<InputStream>  input_stream;
         SharedPtr<OutputStream> output_stream;
 
-        ThreadMutex mutex; // 保护成员的线程互斥锁
+        Mutex mutex; // 保护成员的线程互斥锁
 
     public:
         Pipe();

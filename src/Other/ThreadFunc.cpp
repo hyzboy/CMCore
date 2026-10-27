@@ -1,5 +1,5 @@
 ﻿#include<hgl/thread/Thread.h>
-#include<hgl/thread/ThreadMutex.h>
+#include<hgl/sync/Mutex.h>
 
 namespace hgl
 {

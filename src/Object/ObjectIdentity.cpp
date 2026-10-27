@@ -1,7 +1,7 @@
 #include<hgl/object/ObjectIdentity.h>
 #include<hgl/util/hash/FNV1a.h>
-#include<hgl/thread/ThreadMutex.h>
-#include<hgl/thread/Atomic.h>
+#include<hgl/sync/Mutex.h>
+#include<hgl/sync/Atomic.h>
 #include<hgl/Charset.h>
 #include<hgl/log/LogCategory.h>
 
@@ -59,9 +59,9 @@ namespace hgl
 
         hgl::atom_uint64 GlobalObjectId=0;
 
-        ThreadMutex *GetObjectTypeLock()
+        Mutex *GetObjectTypeLock()
         {
-            static ThreadMutex lock;
+            static Mutex lock;
             return &lock;
         }
     }//namespace
@@ -98,7 +98,7 @@ namespace hgl
         if(type_id==InvalidObjectTypeId)
             return(nullptr);
 
-        ThreadMutexLock lock(GetObjectTypeLock());
+        MutexLock lock(GetObjectTypeLock());
 
         for(uint i=0;i<ObjectTypeCount;i++)
             if(ObjectTypeRegistry[i].type_id==type_id)
@@ -124,7 +124,7 @@ namespace hgl
         if(type_id==InvalidObjectTypeId)
             return(nullptr);
 
-        ThreadMutexLock lock(GetObjectTypeLock());
+        MutexLock lock(GetObjectTypeLock());
 
         for(uint i=0;i<ObjectTypeCount;i++)
             if(ObjectTypeRegistry[i].type_id==type_id)
@@ -140,7 +140,7 @@ namespace hgl
 
     const uint GetObjectTypeCount()
     {
-        ThreadMutexLock lock(GetObjectTypeLock());
+        MutexLock lock(GetObjectTypeLock());
 
         return ObjectTypeCount;
     }

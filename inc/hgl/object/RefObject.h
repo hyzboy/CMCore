@@ -1,7 +1,7 @@
 #pragma once
 
 #include<hgl/object/Object.h>
-#include<hgl/thread/Atomic.h>
+#include<hgl/sync/Atomic.h>
 
 namespace hgl
 {

@@ -1,6 +1,6 @@
-﻿#include<hgl/thread/CondVar.h>
-#include<hgl/thread/ThreadMutex.h>
-#include<hgl/thread/RWLock.h>
+﻿#include<hgl/sync/CondVar.h>
+#include<hgl/sync/Mutex.h>
+#include<hgl/sync/RWLock.h>
 
 #pragma warning(disable:4800)            // BOOL -> bool 性能损失警告
 namespace hgl
@@ -16,9 +16,9 @@ namespace hgl
         delete cond_var;
     }
 
-    bool CondVar::Wait(ThreadMutex *tm, double time)
+    bool CondVar::Wait(Mutex *tm, double time)
     {
-        return SleepConditionVariableCS(cond_var,tm->GetThreadMutex(),(DWORD)(time>0?time*1000:INFINITE));
+        return SleepConditionVariableCS(cond_var,tm->GetNativeHandle(),(DWORD)(time>0?time*1000:INFINITE));
     }
 
     bool CondVar::Wait(RWLock *lock, double time, bool read)

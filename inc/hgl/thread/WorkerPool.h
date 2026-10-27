@@ -1,11 +1,11 @@
 #pragma once
 
-#include<hgl/thread/TaskQueue.h>
+#include<hgl/concurrency/TaskQueue.h>
 #include<hgl/thread/Thread.h>
-#include<hgl/thread/Atomic.h>
+#include<hgl/sync/Atomic.h>
 #include<hgl/type/ManagedArray.h>
 
-namespace hgl::workflow
+namespace hgl::thread
 {
     enum class ShutdownMode
     {
@@ -14,11 +14,11 @@ namespace hgl::workflow
     };
 
     template<typename W>
-    class WorkProc
+    class WorkHandler
     {
     public:
 
-        virtual ~WorkProc()=default;
+        virtual ~WorkHandler()=default;
         virtual void OnWork(uint worker_index,W *work)=0;
         virtual void OnCancel(W *){}
     };
@@ -27,19 +27,19 @@ namespace hgl::workflow
     class WorkerThread:public Thread
     {
         TaskQueue<W *> *queue;
-        WorkProc<W> *work_proc;
+        WorkHandler<W> *work_handler;
         uint worker_index;
 
     public:
 
-        WorkerThread(TaskQueue<W *> *q,WorkProc<W> *proc,uint index)
-            :queue(q),work_proc(proc),worker_index(index)
+        WorkerThread(TaskQueue<W *> *q,WorkHandler<W> *handler,uint index)
+            :queue(q),work_handler(handler),worker_index(index)
         {
         }
 
         bool Execute()override
         {
-            if(!queue||!work_proc)
+            if(!queue||!work_handler)
                 return(false);
 
             W *work=nullptr;
@@ -47,7 +47,7 @@ namespace hgl::workflow
                 return(false);
 
             if(work)
-                work_proc->OnWork(worker_index,work);
+                work_handler->OnWork(worker_index,work);
 
             return(true);
         }
@@ -62,15 +62,15 @@ namespace hgl::workflow
     class WorkerPool
     {
         TaskQueue<W *> queue;
-        ThreadMutex lifecycle_lock;
-        WorkProc<W> *work_proc;
+        Mutex lifecycle_lock;
+        WorkHandler<W> *work_handler;
         ManagedArray<WorkerThread<W>> workers;
         atom_bool started{false};
         atom_bool stopped{false};
 
     public:
 
-        explicit WorkerPool(WorkProc<W> *proc):work_proc(proc){}
+        explicit WorkerPool(WorkHandler<W> *handler):work_handler(handler){}
 
         ~WorkerPool()
         {
@@ -79,14 +79,14 @@ namespace hgl::workflow
 
         bool Start(uint worker_count)
         {
-            ThreadMutexLock guard(&lifecycle_lock);
+            MutexLock guard(&lifecycle_lock);
 
-            if(!work_proc||worker_count==0||started.load()||stopped.load())
+            if(!work_handler||worker_count==0||started.load()||stopped.load())
                 return(false);
 
             for(uint i=0;i<worker_count;i++)
             {
-                WorkerThread<W> *worker=workers.Create(&queue,work_proc,i);
+                WorkerThread<W> *worker=workers.Create(&queue,work_handler,i);
 
                 if(!worker||!worker->Start())
                 {
@@ -127,7 +127,7 @@ namespace hgl::workflow
 
         bool Stop(ShutdownMode mode=ShutdownMode::Drain)
         {
-            ThreadMutexLock guard(&lifecycle_lock);
+            MutexLock guard(&lifecycle_lock);
 
             if(stopped.load())
                 return(true);
@@ -138,7 +138,7 @@ namespace hgl::workflow
                 queue.CloseAndCancel(cancelled);
 
                 for(int i=0;i<cancelled.GetCount();i++)
-                    work_proc->OnCancel(cancelled[i]);
+                    work_handler->OnCancel(cancelled[i]);
             }
             else
             {
@@ -164,4 +164,4 @@ namespace hgl::workflow
         int GetPendingCount(){return queue.GetCount();}
         int GetWorkerCount()const{return workers.GetCount();}
     };
-}//namespace hgl::workflow
+}//namespace hgl::thread

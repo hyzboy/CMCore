@@ -3,7 +3,7 @@
 #include<hgl/io/InputStream.h>
 #include<hgl/io/OutputStream.h>
 #include<hgl/proc/Fifo.h>
-#include<hgl/thread/ThreadMutex.h>
+#include<hgl/sync/Mutex.h>
 #include<hgl/type/Smart.h>
 
 namespace hgl::io

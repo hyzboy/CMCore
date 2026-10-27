@@ -1,4 +1,4 @@
-#include<hgl/thread/ThreadMutex.h>
+﻿#include<hgl/sync/Mutex.h>
 #include<pthread.h>
 #include<sys/time.h>
 
@@ -6,31 +6,38 @@ namespace hgl
 {
     void GetWaitTime(struct timespec &,double);
 
-    ThreadMutex::ThreadMutex()
+    Mutex::Mutex()
     {
-        ptr=OS_UNFAIR_LOCK_INIT;
+        pthread_mutexattr_t attr;
+
+        pthread_mutexattr_init(&attr);
+
+        pthread_mutex_init(&ptr,&attr);
+
+        pthread_mutexattr_destroy(&attr);
     }
 
-    ThreadMutex::~ThreadMutex()
+    Mutex::~Mutex()
     {
+        pthread_mutex_destroy(&ptr);
     }
 
     /**
     * 取得控制权
     * 如果对象处于排斥状态，则等待
     */
-    void ThreadMutex::Lock()
+    void Mutex::Lock()
     {
-        os_unfair_lock_lock(&ptr);
+        pthread_mutex_lock(&ptr);
     }
 
     /**
     * 尝试取得控制权
     * @return 是否成功取得控制权
     */
-    bool ThreadMutex::TryLock()
+    bool Mutex::TryLock()
     {
-        return os_unfair_lock_trylock(&ptr);
+        return(!pthread_mutex_trylock(&ptr));
     }
 
 #if !defined(__APPLE__)&&!defined(__ANDROID__)
@@ -39,8 +46,11 @@ namespace hgl
     * @param time 等待的最大时间,时间为0表示尝试
     * @return 是否取得控制权
     */
-    bool ThreadMutex::WaitLock(double t)
+    bool Mutex::WaitLock(double t)
     {
+        if(t<=0)
+            return TryLock();
+
         struct timespec abstime;
 
         GetWaitTime(abstime,t);
@@ -52,8 +62,8 @@ namespace hgl
     /**
     * 放弃控制权
     */
-    void ThreadMutex::Unlock()
+    void Mutex::Unlock()
     {
-        os_unfair_lock_unlock(&ptr);
+        pthread_mutex_unlock(&ptr);
     }
 }//namespace hgl

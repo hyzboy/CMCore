@@ -1,9 +1,8 @@
 #pragma once
 
 #include<hgl/CoreType.h>
-#include<hgl/thread/Atomic.h>
+#include<hgl/sync/Atomic.h>
 #include<hgl/type/MemoryBlock.h>
-#include<type_traits>
 
 namespace hgl
 {
@@ -17,7 +16,7 @@ namespace hgl
     template<typename T>
     class SpscQueue
     {
-        static_assert(std::is_trivially_copyable_v<T>,
+        static_assert(__is_trivially_copyable(T),
                       "SpscQueue<T> requires T to be trivially copyable");
 
         alignas(64) atom<uint32> head;

@@ -1,4 +1,4 @@
-﻿#include<hgl/thread/Semaphore.h>
+﻿#include<hgl/sync/Semaphore.h>
 #include<hgl/log/LogInfo.h>
 #include<errno.h>
 #include<pthread.h>

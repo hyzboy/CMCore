@@ -3,8 +3,8 @@
 #include<hgl/type/DataType.h>
 #include<hgl/type/FlatOrderedSet.h>
 #include<hgl/type/String.h>
-#include<hgl/thread/Atomic.h>
-#include<hgl/thread/ThreadMutex.h>
+#include<hgl/sync/Atomic.h>
+#include<hgl/sync/Mutex.h>
 #include<hgl/log/Log.h>
 
 namespace hgl
@@ -13,7 +13,7 @@ namespace hgl
 
     /**
     * 线程类.本类用于建立一个线程并管理它。<br>
-    * Sleep和Exit函数是给线程内的程序使用的；而Start,Close,Pause,Rewind是给线程外的程序使用的。<br>
+    * Execute是线程工作体；Start,RequestStop,Join是线程外部控制接口。<br>
     * 使用本类只需要重载本类，并将代码写在Execute函数内即可；线程对象由创建方持有并负责等待退出。<br>
     * 执行大概为：<br>
     * if(ProcStartThread())     <br>
@@ -32,8 +32,8 @@ namespace hgl
 
         thread_ptr tp=0;
 
-        ThreadMutex thread_lock;
-        ThreadMutex join_lock;
+        Mutex thread_lock;
+        Mutex join_lock;
         atom_bool stop_requested{false};
         atom_bool thread_running{false};
 
@@ -73,7 +73,7 @@ namespace hgl
 
         virtual void ProcEndThread(){}                                                              ///<结程结束运行函数,在Execute后被调用
 
-        bool IsLive()const{return thread_running.load();}
+        bool IsRunning()const{return thread_running.load();}
         bool IsStopRequested()const{return stop_requested.load();}
 
     protected:
@@ -86,17 +86,15 @@ namespace hgl
 
         virtual bool IsCurThread();                                                                 ///<是否是当前线程
 
-        virtual void Exit()                                                                         ///<退出当前线程(其它线程调用)
+        /** Request cooperative stop; this does not forcibly terminate the thread. */
+        virtual void RequestStop()
         {
             if(!stop_requested.exchange(true))
                 OnStopRequested();
         }
 
-        /**
-         * (线程外部调用)退出当前线程，并等待其完成退出<br>
-         * @param time_out 等待的时间，如果为0表示等到线程运行结束为止。默认为0
-         */
-        virtual bool WaitExit(const double &time_out=0);
+        /** Request cooperative stop, then wait for completion. */
+        virtual bool StopAndJoin(const double &time_out=0);
 
         /** Wait for natural thread completion without requesting a stop. */
         virtual bool Join(const double &time_out=0);
@@ -162,7 +160,7 @@ namespace hgl
 
             for(int i=0;i<count;i++)
             {
-                (*p)->WaitExit();
+                (*p)->StopAndJoin();
                 ++p;
             }
 
@@ -195,7 +193,7 @@ namespace hgl
         /**
          * 检查还有几个线程活着
          */
-        int IsLive()
+        int IsRunning()
         {
             const int count=thread_set.GetCount();
 
@@ -205,7 +203,7 @@ namespace hgl
 
             for(int i=0;i<count;i++)
             {
-                if((*p)->IsLive())
+                if((*p)->IsRunning())
                     ++total;
 
                 ++p;

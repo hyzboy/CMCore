@@ -47,9 +47,9 @@ namespace hgl
         return(tp&&GetThreadId(tp)==GetCurrentThreadId());
     }
 
-    bool Thread::WaitExit(const double &time_out)
+    bool Thread::StopAndJoin(const double &time_out)
     {
-        Exit();
+        RequestStop();
         return Join(time_out);
     }
 

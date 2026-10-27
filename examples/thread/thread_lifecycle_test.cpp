@@ -36,13 +36,18 @@ int main()
     if(!cooperative.Start())
         return(1);
 
-    if(!cooperative.WaitExit(2.0)||cooperative.IsLive())
+    if(!cooperative.IsRunning())
+        return(2);
+
+    cooperative.RequestStop();
+
+    if(!cooperative.Join(2.0)||cooperative.IsRunning())
         return(2);
 
     if(!cooperative.Start())
         return(3);
 
-    if(!cooperative.WaitExit(2.0)||cooperative.IsLive())
+    if(!cooperative.StopAndJoin(2.0)||cooperative.IsRunning())
         return(4);
 
     GatedThread gated;
@@ -55,7 +60,7 @@ int main()
 
     gated.release.store(true);
 
-    if(!gated.Join(2.0)||gated.IsLive())
+    if(!gated.Join(2.0)||gated.IsRunning())
         return(7);
 
     return(0);

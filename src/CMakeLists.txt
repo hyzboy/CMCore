@@ -325,28 +325,32 @@ SOURCE_GROUP("Time" FILES ${CMCORE_TIME_FILES})
 ##==================================================================================================
 ## Thread 线程
 ##==================================================================================================
-SET(CMCORE_THREAD_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Atomic.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/CondVar.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/DataPost.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Loader.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/RingBuffer.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/RWLock.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Semaphore.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/SemLock.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/SpscQueue.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/SwapColl.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/SwapData.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Thread.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/ThreadMutex.h
-                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Workflow.h
+SET(CMCORE_SYNC_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/sync/Atomic.h
+                      ${CMCORE_ROOT_INCLUDE_PATH}/hgl/sync/CondVar.h
+                      ${CMCORE_ROOT_INCLUDE_PATH}/hgl/sync/Mutex.h
+                      ${CMCORE_ROOT_INCLUDE_PATH}/hgl/sync/ProcessMutex.h
+                      ${CMCORE_ROOT_INCLUDE_PATH}/hgl/sync/RWLock.h
+                      ${CMCORE_ROOT_INCLUDE_PATH}/hgl/sync/Semaphore.h)
+SOURCE_GROUP("Sync" FILES ${CMCORE_SYNC_FILES})
+
+SET(CMCORE_CONCURRENCY_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/concurrency/DuplexQueue.h
+                             ${CMCORE_ROOT_INCLUDE_PATH}/hgl/concurrency/RingBuffer.h
+                             ${CMCORE_ROOT_INCLUDE_PATH}/hgl/concurrency/SpscQueue.h
+                             ${CMCORE_ROOT_INCLUDE_PATH}/hgl/concurrency/SwapMailbox.h
+                             ${CMCORE_ROOT_INCLUDE_PATH}/hgl/concurrency/TaskQueue.h)
+SOURCE_GROUP("Concurrency" FILES ${CMCORE_CONCURRENCY_FILES})
+
+SET(CMCORE_THREAD_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Thread.h
+                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/WorkerPool.h
+                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io/AsyncLoader.h
                         Other/ThreadFunc.cpp)
 SOURCE_GROUP("Thread" FILES ${CMCORE_THREAD_FILES})
 
 ##==================================================================================================
 ## Event 事件
 ##==================================================================================================
-SET(CMCORE_EVENT_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/event/ASyncEvent.h
-                       ${CMCORE_ROOT_INCLUDE_PATH}/hgl/event/EventProc.h)
+SET(CMCORE_EVENT_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/async/AsyncEvent.h
+                       ${CMCORE_ROOT_INCLUDE_PATH}/hgl/event/EventAction.h)
 SOURCE_GROUP("Event" FILES ${CMCORE_EVENT_FILES})
 
 ##==================================================================================================
@@ -401,6 +405,8 @@ add_cm_library(CMCore "CM" ${CMCORE_ROOT_INCLUDE_PATH}
                         ${CMCORE_TYPE_IDNAME_FILES}
                         ${CMCORE_FILESYSTEM_FILES}
                         ${CMCORE_TIME_FILES}
+                        ${CMCORE_SYNC_FILES}
+                        ${CMCORE_CONCURRENCY_FILES}
                         ${CMCORE_THREAD_FILES}
                         ${CMCORE_EVENT_FILES}
                         ${CMCORE_PLUGIN_FILES}

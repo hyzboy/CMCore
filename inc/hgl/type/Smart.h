@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<hgl/Macro.h>
-#include<hgl/thread/Atomic.h>
+#include<hgl/sync/Atomic.h>
 #include <memory>        // for std::unique_ptr
 #include <vector>        // for AutoDeleteObjectArray
 #include <algorithm>     // for std::fill, std::for_each

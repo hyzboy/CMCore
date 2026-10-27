@@ -19,7 +19,7 @@ namespace hgl
             fifo_pair pp;
             SharedPtr<InputStream>  in;
             SharedPtr<OutputStream> out;
-            ThreadMutex mutex;
+            Mutex mutex;
             std::string name;
 
             Impl()
@@ -155,7 +155,7 @@ namespace hgl
 
         bool FifoStream::Create(const char *name)
         {
-            ThreadMutexLock lock(&impl->mutex);
+            MutexLock lock(&impl->mutex);
 
             if(!name) return false;
 
@@ -178,7 +178,7 @@ namespace hgl
 
         void FifoStream::CloseRead()
         {
-            ThreadMutexLock lock(&impl->mutex);
+            MutexLock lock(&impl->mutex);
             if(impl->in)
                 impl->in = SharedPtr<InputStream>();
             if(impl->pp[0]!=FIFO_NULL)
@@ -189,7 +189,7 @@ namespace hgl
 
         void FifoStream::CloseWrite()
         {
-            ThreadMutexLock lock(&impl->mutex);
+            MutexLock lock(&impl->mutex);
             if(impl->out)
                 impl->out = SharedPtr<OutputStream>();
             if(impl->pp[1]!=FIFO_NULL)
@@ -200,7 +200,7 @@ namespace hgl
 
         WeakPtr<InputStream> FifoStream::GetInputStream()
         {
-            ThreadMutexLock lock(&impl->mutex);
+            MutexLock lock(&impl->mutex);
             if(impl->pp[0]==FIFO_NULL) return WeakPtr<InputStream>();
             if(!impl->in)
                 impl->in = SharedPtr<InputStream>(new FifoInputStreamImpl(impl->pp[0], false));
@@ -209,7 +209,7 @@ namespace hgl
 
         WeakPtr<OutputStream> FifoStream::GetOutputStream()
         {
-            ThreadMutexLock lock(&impl->mutex);
+            MutexLock lock(&impl->mutex);
             if(impl->pp[1]==FIFO_NULL) return WeakPtr<OutputStream>();
             if(!impl->out)
                 impl->out = SharedPtr<OutputStream>(new FifoOutputStreamImpl(impl->pp[1], false));

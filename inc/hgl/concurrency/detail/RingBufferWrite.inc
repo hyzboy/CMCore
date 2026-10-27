@@ -1,5 +1,5 @@
-﻿#ifndef HGL_THREAD_RING_BUFFER_WRITE_SOURCE
-#define HGL_THREAD_RING_BUFFER_WRITE_SOURCE
+#ifndef HGL_CONCURRENCY_RING_BUFFER_WRITE
+#define HGL_CONCURRENCY_RING_BUFFER_WRITE
 #include<string.h>
 
 namespace hgl
@@ -178,4 +178,4 @@ namespace hgl
         return size;
     }
 }//namespace hgl
-#endif//HGL_THREAD_RING_BUFFER_WRITE_SOURCE
+#endif//HGL_CONCURRENCY_RING_BUFFER_WRITE

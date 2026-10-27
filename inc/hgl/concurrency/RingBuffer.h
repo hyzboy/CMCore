@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<hgl/thread/ThreadMutex.h>
+#include<hgl/sync/Mutex.h>
 #include<hgl/io/InputStream.h>
 #include<hgl/io/OutputStream.h>
 namespace hgl
@@ -8,7 +8,7 @@ namespace hgl
     /**
     * 多线程环形数据流,用于随时被读或写的情况以及在多线程应用中同时被读与写的情况。
     */
-    template<typename T> class RingBuffer:protected ThreadMutex                                     ///多线程环形数据流
+    template<typename T> class RingBuffer:protected Mutex                                     ///多线程环形数据流
     {
     protected:
 
@@ -81,9 +81,9 @@ namespace hgl
     };//class RingBuffer
 }//namespace hgl
 
-#include<hgl/thread/RingBuffer.cpp>
-#include<hgl/thread/RingBufferRead.cpp>
-#include<hgl/thread/RingBufferWrite.cpp>
+#include<hgl/concurrency/detail/RingBufferCore.inc>
+#include<hgl/concurrency/detail/RingBufferRead.inc>
+#include<hgl/concurrency/detail/RingBufferWrite.inc>
 
 namespace hgl
 {

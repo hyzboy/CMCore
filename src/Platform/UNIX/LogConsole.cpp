@@ -1,7 +1,7 @@
 ﻿#include<hgl/log/Logger.h>
 #include<hgl/log/LogMessage.h>
 #include<hgl/CodePage.h>
-#include<hgl/thread/ThreadMutex.h>
+#include<hgl/sync/Mutex.h>
 #include<unistd.h>
 #include<pthread.h>
 
@@ -23,7 +23,7 @@ namespace hgl
             char log_buf[LOG_BUF_SIZE];
 
 #ifdef LOGINFO_THREAD_MUTEX
-            ThreadMutex mutex;
+            Mutex mutex;
 #endif//LOGINFO_THREAD_MUTEX
 
         public:

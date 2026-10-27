@@ -3,7 +3,7 @@
 #include<hgl/Charset.h>
 #include<hgl/type/StdString.h>
 #include<hgl/time/DateTime.h>
-#include<hgl/thread/Atomic.h>
+#include<hgl/sync/Atomic.h>
 #include<cstdarg>
 #include<cstring>
 

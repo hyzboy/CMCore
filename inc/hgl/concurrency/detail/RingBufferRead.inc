@@ -1,5 +1,5 @@
-﻿#ifndef HGL_THREAD_RING_BUFFER_READ_SOURCE
-#define HGL_THREAD_RING_BUFFER_READ_SOURCE
+#ifndef HGL_CONCURRENCY_RING_BUFFER_READ
+#define HGL_CONCURRENCY_RING_BUFFER_READ
 #include<string.h>
 
 namespace hgl
@@ -207,4 +207,4 @@ namespace hgl
         return(size);
     }
 }//namespace hgl
-#endif//HGL_THREAD_RING_BUFFER_READ_SOURCE
+#endif//HGL_CONCURRENCY_RING_BUFFER_READ

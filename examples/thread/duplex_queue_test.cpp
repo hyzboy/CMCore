@@ -1,4 +1,4 @@
-#include<hgl/thread/DuplexQueue.h>
+#include<hgl/concurrency/DuplexQueue.h>
 #include<hgl/thread/Thread.h>
 #include<hgl/time/Time.h>
 
@@ -129,15 +129,15 @@ int main()
         return(2);
     if(!client.Start())
     {
-        client.WaitExit();
-        processor.WaitExit();
+        client.StopAndJoin();
+        processor.StopAndJoin();
         return(3);
     }
 
     if(!client.Join(12.0)||!processor.Join(12.0))
     {
-        client.WaitExit(2.0);
-        processor.WaitExit(2.0);
+        client.StopAndJoin(2.0);
+        processor.StopAndJoin(2.0);
         return(4);
     }
 

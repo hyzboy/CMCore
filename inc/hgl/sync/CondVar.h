@@ -3,7 +3,7 @@
 #include<hgl/platform/Platform.h>
 namespace hgl
 {
-    class ThreadMutex;
+    class Mutex;
     class RWLock;
 
     /**
@@ -18,7 +18,7 @@ namespace hgl
         CondVar();
         virtual ~CondVar();
 
-        bool Wait(ThreadMutex *,double time=0);                                                     ///<释放指定ThreadMutex，在条件符合后重新锁定并结束等待,0表示永久
+        bool Wait(Mutex *,double time=0);                                                           ///<释放指定Mutex，在条件符合后重新锁定并结束等待,0表示永久
 
 #if HGL_OS == HGL_OS_Windows
         bool Wait(RWLock *,double time=0,bool read=false);                                          ///<释放指定RWLock，在条件符合后重新锁定并结束等待。（注：此函数仅在Windows 2008/Vista及更新版本中支持，Linux/BSD版不支持）

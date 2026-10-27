@@ -1,4 +1,4 @@
-#include<hgl/thread/SwapMailbox.h>
+#include<hgl/concurrency/SwapMailbox.h>
 #include<hgl/thread/Thread.h>
 #include<hgl/time/Time.h>
 
@@ -100,10 +100,10 @@ int main()
     if(!producer0.Start()||!producer1.Start()||!producer2.Start())
     {
         mailbox.Close();
-        consumer.WaitExit();
-        producer0.WaitExit();
-        producer1.WaitExit();
-        producer2.WaitExit();
+        consumer.StopAndJoin();
+        producer0.StopAndJoin();
+        producer1.StopAndJoin();
+        producer2.StopAndJoin();
         return(2);
     }
 

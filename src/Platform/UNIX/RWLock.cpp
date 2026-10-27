@@ -1,4 +1,4 @@
-﻿#include<hgl/thread/RWLock.h>
+﻿#include<hgl/sync/RWLock.h>
 #include<pthread.h>
 
 namespace hgl

@@ -1,7 +1,7 @@
 #pragma once
 
-#include<hgl/thread/CondVar.h>
-#include<hgl/thread/ThreadMutex.h>
+#include<hgl/sync/CondVar.h>
+#include<hgl/sync/Mutex.h>
 #include<hgl/time/Time.h>
 #include<hgl/type/Queue.h>
 #include<hgl/type/ValueArray.h>
@@ -17,7 +17,7 @@ namespace hgl
     class TaskQueue
     {
         Queue<T> queue;
-        ThreadMutex lock;
+        Mutex lock;
         CondVar changed;
         bool closed=false;
 
@@ -25,7 +25,7 @@ namespace hgl
 
         bool Submit(const T &task)
         {
-            ThreadMutexLock guard(&lock);
+            MutexLock guard(&lock);
 
             if(closed)
                 return(false);
@@ -39,13 +39,13 @@ namespace hgl
 
         bool TryPop(T &task)
         {
-            ThreadMutexLock guard(&lock);
+            MutexLock guard(&lock);
             return queue.Pop(task);
         }
 
         bool WaitPop(T &task,double timeout=0)
         {
-            ThreadMutexLock guard(&lock);
+            MutexLock guard(&lock);
             const double start=timeout>0?GetUptimeSec():0;
 
             while(queue.IsEmpty()&&!closed)
@@ -71,14 +71,14 @@ namespace hgl
 
         void Close()
         {
-            ThreadMutexLock guard(&lock);
+            MutexLock guard(&lock);
             closed=true;
             changed.Broadcast();
         }
 
         int CloseAndCancel(ValueArray<T> &cancelled)
         {
-            ThreadMutexLock guard(&lock);
+            MutexLock guard(&lock);
             closed=true;
 
             T task;
@@ -95,13 +95,13 @@ namespace hgl
 
         bool IsClosed()
         {
-            ThreadMutexLock guard(&lock);
+            MutexLock guard(&lock);
             return closed;
         }
 
         int GetCount()
         {
-            ThreadMutexLock guard(&lock);
+            MutexLock guard(&lock);
             return queue.GetCount();
         }
     };//class TaskQueue

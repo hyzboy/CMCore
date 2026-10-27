@@ -2,14 +2,14 @@
 #include<hgl/time/Time.h>
 
 using namespace hgl;
-using namespace hgl::workflow;
+using namespace hgl::thread;
 
 struct WorkItem
 {
     uint32 value;
 };
 
-class CountingWorkProc:public WorkProc<WorkItem>
+class CountingWorkHandler:public WorkHandler<WorkItem>
 {
 public:
 
@@ -29,7 +29,7 @@ public:
     }
 };
 
-class GatedWorkProc:public WorkProc<WorkItem>
+class GatedWorkHandler:public WorkHandler<WorkItem>
 {
 public:
 
@@ -74,8 +74,8 @@ int main()
 {
     static const uint32 DrainCount=12000;
     WorkItem drain_items[DrainCount];
-    CountingWorkProc counting_proc;
-    WorkerPool<WorkItem> drain_pool(&counting_proc);
+    CountingWorkHandler counting_handler;
+    WorkerPool<WorkItem> drain_pool(&counting_handler);
 
     if(!drain_pool.Start(4))
         return(1);
@@ -98,17 +98,17 @@ int main()
     if(!drain_pool.Stop(ShutdownMode::Drain))
         return(4);
 
-    if(counting_proc.processed.load()!=DrainCount
-       ||counting_proc.sum.load()!=expected_sum
-       ||counting_proc.cancelled.load()!=0
+    if(counting_handler.processed.load()!=DrainCount
+       ||counting_handler.sum.load()!=expected_sum
+       ||counting_handler.cancelled.load()!=0
        ||drain_pool.Submit(&drain_items[0])
        ||drain_pool.GetPendingCount()!=0)
        return(5);
 
     static const uint32 CancelCount=256;
     WorkItem cancel_items[CancelCount];
-    GatedWorkProc gated_proc;
-    WorkerPool<WorkItem> cancel_pool(&gated_proc);
+    GatedWorkHandler gated_handler;
+    WorkerPool<WorkItem> cancel_pool(&gated_handler);
 
     if(!cancel_pool.Start(1))
         return(6);
@@ -118,11 +118,11 @@ int main()
         return(7);
 
     const double wait_start=GetUptimeSec();
-    while(!gated_proc.entered.load())
+    while(!gated_handler.entered.load())
     {
         if(GetUptimeSec()-wait_start>5.0)
         {
-            gated_proc.release.store(true);
+            gated_handler.release.store(true);
             cancel_pool.Stop(ShutdownMode::CancelPending);
             return(8);
         }
@@ -135,16 +135,16 @@ int main()
         cancel_items[i].value=i;
         if(!cancel_pool.Submit(&cancel_items[i]))
         {
-            gated_proc.release.store(true);
+            gated_handler.release.store(true);
             cancel_pool.Stop(ShutdownMode::Drain);
             return(9);
         }
     }
 
-    ReleaseThread release_thread(&gated_proc.release);
+    ReleaseThread release_thread(&gated_handler.release);
     if(!release_thread.Start())
     {
-        gated_proc.release.store(true);
+        gated_handler.release.store(true);
         cancel_pool.Stop(ShutdownMode::CancelPending);
         return(10);
     }
@@ -153,8 +153,8 @@ int main()
     const bool released=release_thread.Join();
 
     if(!cancelled||!released
-       ||gated_proc.processed.load()!=1
-       ||gated_proc.cancelled.load()!=CancelCount-1
+       ||gated_handler.processed.load()!=1
+       ||gated_handler.cancelled.load()!=CancelCount-1
        ||cancel_pool.Submit(&cancel_items[0])
        ||cancel_pool.GetPendingCount()!=0)
         return(11);

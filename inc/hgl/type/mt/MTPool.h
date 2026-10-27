@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include<hgl/type/ObjectPool.h>
-#include<hgl/thread/RWLock.h>
-#include<hgl/thread/ThreadMutex.h>
+#include<hgl/sync/RWLock.h>
+#include<hgl/sync/Mutex.h>
 
 namespace hgl
 {
@@ -17,9 +17,9 @@ namespace hgl
 
     public:
 
-        virtual int GetActiveCount()    {OnlyReadLock rl(lock);return Pool<T>::Active.GetCount();   }
-        virtual int GetInactiveCount()  {OnlyReadLock rl(lock);return Pool<T>::Inactive.GetCount(); }
-        virtual int GetHistoryMaxCount(){OnlyReadLock rl(lock);return Pool<T>::history_max;         }
+        virtual int GetActiveCount()    {ReadLockGuard rl(lock);return Pool<T>::Active.GetCount();   }
+        virtual int GetInactiveCount()  {ReadLockGuard rl(lock);return Pool<T>::Inactive.GetCount(); }
+        virtual int GetHistoryMaxCount(){ReadLockGuard rl(lock);return Pool<T>::history_max;         }
 
     public:
 

@@ -5,7 +5,7 @@
 #include<hgl/time/DateTime.h>
 #include<hgl/type/ValueArray.h>
 #include<hgl/type/UnorderedMap.h>
-#include<hgl/thread/RWLock.h>
+#include<hgl/sync/RWLock.h>
 #include<hgl/filesystem/FileSystem.h>
 
 DEFINE_LOGGER_MODULE(LogInfo)
@@ -47,7 +47,7 @@ namespace hgl
             if(category_id!=InvalidLogCategoryId)
             {
                 LogFilterState &state=GetLogFilterState();
-                OnlyReadLock lock(state.lock);
+                ReadLockGuard lock(state.lock);
 
                 const CategoryFilter *category=state.category_filters.GetValuePointer(category_id);
 
@@ -71,7 +71,7 @@ namespace hgl
             if(!log)
                 return(false);
 
-            OnlyWriteLock owl(log_list);
+            WriteLockGuard owl(log_list);
 
             if(log_list->Contains(log))        //重复添加
                 return(false);
@@ -79,7 +79,7 @@ namespace hgl
             if(log->outputter_id==InvalidLogOutputterId)
             {
                 LogFilterState &state=GetLogFilterState();
-                OnlyWriteLock filter_lock(state.lock);
+                WriteLockGuard filter_lock(state.lock);
 
                 if(state.next_outputter_id==InvalidLogOutputterId)
                     return(false);
@@ -93,7 +93,7 @@ namespace hgl
 
         void WriteLog(const LogMessage *msg)
         {
-            OnlyReadLock orl(log_list);
+            ReadLockGuard orl(log_list);
 
             const int n=log_list->GetCount();
 
@@ -119,7 +119,7 @@ namespace hgl
                 return(InvalidLogCategoryId);
 
             LogFilterState &state=GetLogFilterState();
-            OnlyWriteLock lock(state.lock);
+            WriteLockGuard lock(state.lock);
 
             if(const LogCategoryId *existing=state.category_ids.GetValuePointer(name))
                 return(*existing);
@@ -146,7 +146,7 @@ namespace hgl
         LogCategoryId FindLogCategory(const OSString &name)
         {
             LogFilterState &state=GetLogFilterState();
-            OnlyReadLock lock(state.lock);
+            ReadLockGuard lock(state.lock);
 
             const LogCategoryId *category_id=state.category_ids.GetValuePointer(name);
             return category_id?*category_id:InvalidLogCategoryId;
@@ -155,7 +155,7 @@ namespace hgl
         bool SetLogCategoryLevel(const LogCategoryId category_id,const LogLevel level)
         {
             LogFilterState &state=GetLogFilterState();
-            OnlyWriteLock lock(state.lock);
+            WriteLockGuard lock(state.lock);
 
             CategoryFilter *filter=state.category_filters.GetValuePointer(category_id);
 
@@ -168,7 +168,7 @@ namespace hgl
 
         bool HasLogOutputter(const LogOutputterId outputter_id)
         {
-            OnlyReadLock lock(log_list);
+            ReadLockGuard lock(log_list);
 
             Logger **log=log_list->GetData();
 
@@ -191,7 +191,7 @@ namespace hgl
                 return(false);
 
             LogFilterState &state=GetLogFilterState();
-            OnlyWriteLock lock(state.lock);
+            WriteLockGuard lock(state.lock);
 
             CategoryFilter *filter=state.category_filters.GetValuePointer(category_id);
 
@@ -208,7 +208,7 @@ namespace hgl
                                             const LogOutputterId outputter_id)
         {
             LogFilterState &state=GetLogFilterState();
-            OnlyWriteLock lock(state.lock);
+            WriteLockGuard lock(state.lock);
 
             CategoryFilter *filter=state.category_filters.GetValuePointer(category_id);
 
@@ -220,7 +220,7 @@ namespace hgl
 
         LogOutputterId FindLogOutputter(const OSString &name)
         {
-            OnlyReadLock lock(log_list);
+            ReadLockGuard lock(log_list);
 
             Logger **log=log_list->GetData();
 
@@ -240,7 +240,7 @@ namespace hgl
             if(outputter_id==InvalidLogOutputterId)
                 return(false);
 
-            OnlyWriteLock lock(log_list);
+            WriteLockGuard lock(log_list);
 
             Logger **log=log_list->GetData();
 
@@ -260,7 +260,7 @@ namespace hgl
 
         bool IsLogEnabled(const LogCategoryId category_id,const LogLevel level)
         {
-            OnlyReadLock lock(log_list);
+            ReadLockGuard lock(log_list);
 
             Logger **log=log_list->GetData();
 
@@ -279,7 +279,7 @@ namespace hgl
                                       const LogOutputterId outputter_id,
                                       const LogLevel level)
         {
-            OnlyReadLock lock(log_list);
+            ReadLockGuard lock(log_list);
 
             Logger **log=log_list->GetData();
 
@@ -296,7 +296,7 @@ namespace hgl
 
         bool PutLogHeader()
         {
-            OnlyReadLock orl(log_list);
+            ReadLockGuard orl(log_list);
 
             if(log_list->GetCount()<=0)
                 return(false);
@@ -345,7 +345,7 @@ namespace hgl
 
         void CloseAllLog()
         {
-            OnlyWriteLock owl(log_list);
+            WriteLockGuard owl(log_list);
 
             const int n=log_list->GetCount();
 

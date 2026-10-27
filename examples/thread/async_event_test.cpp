@@ -1,11 +1,11 @@
-#include<hgl/event/ASyncEvent.h>
-#include<hgl/thread/Atomic.h>
+#include<hgl/async/AsyncEvent.h>
+#include<hgl/sync/Atomic.h>
 
 using namespace hgl;
 
 static const uint32 EventCount=4000;
 
-class CountEvent:public EventProc
+class CountEvent:public EventAction
 {
     atom_uint *count;
     atom_uint64 *sum;
@@ -20,7 +20,7 @@ public:
         value=event_value;
     }
 
-    bool Proc()override
+    bool Execute()override
     {
         count->fetch_add(1);
         sum->fetch_add(value);
@@ -30,8 +30,8 @@ public:
 
 int main()
 {
-    MTEventProcQueue queue;
-    EventThread event_thread(&queue);
+    AsyncEventQueue queue;
+    AsyncEventThread event_thread(&queue);
     CountEvent events[EventCount];
     atom_uint count{0};
     atom_uint64 sum{0};
@@ -45,17 +45,17 @@ int main()
         events[i].Set(&count,&sum,i+1);
         expected_sum+=i+1;
 
-        if(!AddToAsyncEventQueue(&queue,&events[i]))
+        if(!PostAsyncEvent(&queue,&events[i]))
         {
-            event_thread.WaitExit();
+            event_thread.StopAndJoin();
             return(2);
         }
     }
 
-    if(!event_thread.WaitExit(5.0))
+    if(!event_thread.StopAndJoin(5.0))
         return(3);
 
-    if(AddToAsyncEventQueue(&queue,&events[0]))
+    if(PostAsyncEvent(&queue,&events[0]))
         return(4);
 
     return count.load()==EventCount&&sum.load()==expected_sum?0:5;
