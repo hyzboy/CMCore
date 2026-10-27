@@ -18,7 +18,7 @@ namespace hgl
 
         if(tc->ProcStartThread())
         {
-            while(!tc->IsStopRequested()&&tc->Execute())
+            while(tc->Execute()&&!tc->IsStopRequested())
             {
             }
 

@@ -50,18 +50,27 @@ namespace hgl
     bool Thread::WaitExit(const double &time_out)
     {
         Exit();
+        return Join(time_out);
+    }
 
+    bool Thread::Join(const double &time_out)
+    {
+        join_lock.Lock();
         thread_lock.Lock();
 
         if(!tp)
         {
             thread_lock.Unlock();
+            join_lock.Unlock();
             return(true);
         }
 
-        if(IsCurThread())
+        const thread_ptr joining_thread=tp;
+        thread_lock.Unlock();
+
+        if(GetThreadId(joining_thread)==GetCurrentThreadId())
         {
-            thread_lock.Unlock();
+            join_lock.Unlock();
             return(false);
         }
 
@@ -73,20 +82,25 @@ namespace hgl
             wait_time=timeout_ms>=double(INFINITE-1)?INFINITE-1:DWORD(timeout_ms);
         }
 
-        const DWORD result=WaitForSingleObject(tp,wait_time);
+        const DWORD result=WaitForSingleObject(joining_thread,wait_time);
 
         if(result==WAIT_OBJECT_0)
         {
-            CloseHandle(tp);
-            tp=nullptr;
+            thread_lock.Lock();
+            if(tp==joining_thread)
+            {
+                CloseHandle(tp);
+                tp=nullptr;
+            }
             thread_lock.Unlock();
+            join_lock.Unlock();
             return(true);
         }
 
         if(result==WAIT_FAILED)
             LogError(OS_TEXT("WaitForSingleObject failed, Windows ErrorCode: ")+OSString::numberOf((uint)GetLastError()));
 
-        thread_lock.Unlock();
+        join_lock.Unlock();
         return(false);
     }
 

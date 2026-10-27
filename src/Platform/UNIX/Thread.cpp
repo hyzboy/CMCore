@@ -69,18 +69,27 @@ namespace hgl
     bool Thread::WaitExit(const double &time_out)
     {
         Exit();
+        return Join(time_out);
+    }
 
+    bool Thread::Join(const double &time_out)
+    {
+        join_lock.Lock();
         thread_lock.Lock();
 
         if(!tp)
         {
             thread_lock.Unlock();
+            join_lock.Unlock();
             return(true);
         }
 
-        if(IsCurThread())
+        const thread_ptr joining_thread=tp;
+        thread_lock.Unlock();
+
+        if(pthread_equal(pthread_self(),joining_thread))
         {
-            thread_lock.Unlock();
+            join_lock.Unlock();
             return(false);
         }
 
@@ -94,7 +103,7 @@ namespace hgl
             GetWaitTime(ts,time_out);
 
             void *res=nullptr;
-            const int retval=pthread_timedjoin_np(tp,&res,&ts);
+            const int retval=pthread_timedjoin_np(joining_thread,&res,&ts);
             completed=(retval==0);
 #else
             const double start=GetUptimeSec();
@@ -103,7 +112,7 @@ namespace hgl
             {
                 if(GetUptimeSec()-start>=time_out)
                 {
-                    thread_lock.Unlock();
+                    join_lock.Unlock();
                     return(false);
                 }
 
@@ -111,13 +120,13 @@ namespace hgl
             }
 
             void *res=nullptr;
-            completed=(pthread_join(tp,&res)==0);
+            completed=(pthread_join(joining_thread,&res)==0);
 #endif//__ANDROID__&&BSD
         }
         else
         {
             void *res=nullptr;
-            completed=(pthread_join(tp,&res)==0);
+            completed=(pthread_join(joining_thread,&res)==0);
         }
 
 #ifdef _DEBUG
@@ -127,9 +136,13 @@ namespace hgl
 #endif//_DEBUG
 
         if(completed)
+        {
+            thread_lock.Lock();
             tp=0;
+            thread_lock.Unlock();
+        }
 
-        thread_lock.Unlock();
+        join_lock.Unlock();
         return(completed);
     }
 

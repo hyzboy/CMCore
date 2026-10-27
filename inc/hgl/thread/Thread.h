@@ -33,6 +33,7 @@ namespace hgl
         thread_ptr tp=0;
 
         ThreadMutex thread_lock;
+        ThreadMutex join_lock;
         atom_bool stop_requested{false};
         atom_bool thread_running{false};
 
@@ -96,6 +97,9 @@ namespace hgl
          * @param time_out 等待的时间，如果为0表示等到线程运行结束为止。默认为0
          */
         virtual bool WaitExit(const double &time_out=0);
+
+        /** Wait for natural thread completion without requesting a stop. */
+        virtual bool Join(const double &time_out=0);
     };//class Thread
 
     void WaitThread(Thread **,int,double time=0);                                                   ///<等待多个线程中的一个完成

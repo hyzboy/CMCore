@@ -17,6 +17,7 @@ namespace hgl
         virtual bool Proc()=0;
     };//class EventProc
 
+    // Queue entries are borrowed; the submitter owns each event object.
     using EventProcQueue=Queue<EventProc *>;
 
     /**
@@ -31,8 +32,8 @@ namespace hgl
 
         if(epq->Pop(e))
         {
-            e->Proc();
-            delete e;
+            if(e)
+                e->Proc();
 
             return(true);
         }
@@ -56,10 +57,7 @@ namespace hgl
         while(epq->Pop(e))
         {
             if(e)
-            {
                 e->Proc();
-                delete e;
-            }
 
             ++count;
 
