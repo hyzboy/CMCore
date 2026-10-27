@@ -5,6 +5,7 @@
 #include<hgl/sync/Mutex.h>
 #include<hgl/thread/ShutdownMode.h>
 #include<hgl/thread/Thread.h>
+#include<hgl/time/Time.h>
 #include<hgl/type/ManagedArray.h>
 #include<hgl/type/MemoryBlock.h>
 #include<hgl/type/String.h>
@@ -56,6 +57,7 @@ namespace hgl::io
 
         MemoryBlock data;
         int64 data_size=0;
+        double submitted_at=0;
         atom_bool cancelled{false};
 
     public:
@@ -127,6 +129,9 @@ namespace hgl::io
         uint64 loaded_bytes=0;  ///< @brief CN: 成功交付的总字节数。 EN: Total bytes delivered successfully.
         uint64 pending=0;       ///< @brief CN: 当前仍在队列中的请求数。 EN: Current number of queued requests.
         uint64 peak_pending=0;  ///< @brief CN: 历史待处理请求峰值。 EN: Peak queued-request count.
+        uint64 queue_wait_microseconds=0; ///< @brief CN: 已出队请求的累计排队等待时间，单位微秒。 EN: Cumulative queued wait time for dequeued requests, in microseconds.
+        uint64 read_microseconds=0;       ///< @brief CN: 文件打开和读取阶段的累计耗时，单位微秒。 EN: Cumulative file-open and read duration, in microseconds.
+        uint64 read_samples=0;            ///< @brief CN: 已完成或失败的文件读取尝试数。 EN: Number of completed or failed read attempts.
     };
 
     /**
@@ -176,6 +181,18 @@ namespace hgl::io
         atom_uint64 failed_count{0};
         atom_uint64 cancelled_count{0};
         atom_uint64 loaded_byte_count{0};
+        atom_uint64 queue_wait_microseconds{0};
+        atom_uint64 read_microseconds{0};
+        atom_uint64 read_sample_count{0};
+
+        void RecordReadDuration(double start_time)
+        {
+            const double elapsed=GetUptimeSec()-start_time;
+            if(elapsed>0)
+                read_microseconds.fetch_add(static_cast<uint64>(elapsed*1000000.0));
+
+            read_sample_count.fetch_add(1);
+        }
 
         void Process(uint worker_index,AsyncFileLoadRequest *request)
         {
@@ -191,9 +208,11 @@ namespace hgl::io
                 return;
             }
 
+            const double read_start=GetUptimeSec();
             OpenFileInputStream input(request->filename);
             if(!input)
             {
+                RecordReadDuration(read_start);
                 Fail(worker_index,request,AsyncFileLoadError::OpenFailed);
                 return;
             }
@@ -201,6 +220,7 @@ namespace hgl::io
             const int64 size=input->GetSize();
             if(size<0)
             {
+                RecordReadDuration(read_start);
                 Fail(worker_index,request,AsyncFileLoadError::SizeUnavailable);
                 return;
             }
@@ -209,6 +229,7 @@ namespace hgl::io
 
             if(size>0&&!request->data.Reserve(size))
             {
+                RecordReadDuration(read_start);
                 Fail(worker_index,request,AsyncFileLoadError::AllocationFailed);
                 return;
             }
@@ -218,6 +239,7 @@ namespace hgl::io
             {
                 if(request->IsCancelled())
                 {
+                    RecordReadDuration(read_start);
                     request->ReleaseData();
                     handler->OnFileCancelled(worker_index,request);
                     cancelled_count.fetch_add(1);
@@ -227,6 +249,7 @@ namespace hgl::io
                 const int64 read_size=input->Read(static_cast<uint8 *>(request->data.Get())+offset,size-offset);
                 if(read_size<=0)
                 {
+                    RecordReadDuration(read_start);
                     Fail(worker_index,request,AsyncFileLoadError::ReadFailed);
                     return;
                 }
@@ -234,6 +257,7 @@ namespace hgl::io
                 offset+=read_size;
             }
 
+            RecordReadDuration(read_start);
             request->data_size=size;
             request->error=AsyncFileLoadError::None;
 
@@ -309,6 +333,7 @@ namespace hgl::io
 
             request->priority=priority;
             request->error=AsyncFileLoadError::None;
+            request->submitted_at=GetUptimeSec();
             return queue.Submit(request,priority);
         }
 
@@ -382,6 +407,7 @@ namespace hgl::io
         }
 
         int GetPendingCount(){return queue.GetPendingCount();}
+        int GetPriorityPendingCount(uint priority){return queue.GetPriorityPendingCount(priority);}
         int GetWorkerCount()const{return workers.GetCount();} ///< @brief CN: 返回固定 worker 数。 EN: Return the fixed worker count.
 
         /** @brief CN: 取得线程安全的累计指标与队列快照。 EN: Return cumulative counters and a queue snapshot. */
@@ -397,6 +423,9 @@ namespace hgl::io
             result.loaded_bytes=loaded_byte_count.load();
             result.pending=queue_stats.pending;
             result.peak_pending=queue_stats.peak_pending;
+            result.queue_wait_microseconds=queue_wait_microseconds.load();
+            result.read_microseconds=read_microseconds.load();
+            result.read_samples=read_sample_count.load();
             return result;
         }
     };
@@ -412,7 +441,12 @@ namespace hgl::io
             return(false);
 
         if(request)
+        {
             request->priority=priority;
+            const double elapsed=GetUptimeSec()-request->submitted_at;
+            if(elapsed>0)
+                loader->queue_wait_microseconds.fetch_add(static_cast<uint64>(elapsed*1000000.0));
+        }
 
         loader->Process(worker_index,request);
         return(true);

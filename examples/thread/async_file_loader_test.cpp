@@ -153,7 +153,7 @@ int main()
     if(result==0
        &&(stats.submitted!=3||stats.popped!=3||stats.loaded!=2
           ||stats.failed!=0||stats.cancelled!=1||stats.pending!=0
-          ||stats.loaded_bytes!=sizeof(TestBytes)*2))
+          ||stats.loaded_bytes!=sizeof(TestBytes)*2||stats.read_samples!=2))
         result=11;
 
     texture_request.ReleaseData();
