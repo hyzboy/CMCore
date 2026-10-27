@@ -59,5 +59,19 @@ int main()
        ||stats.pending!=0||stats.peak_pending<2)
         return(6);
 
+    PriorityTaskQueue<PriorityItem,4> wait_queue;
+    if(wait_queue.WaitPop(item,priority,0.01))
+        return(7);
+
+    if(!wait_queue.Submit(normal,1))
+        return(8);
+
+    wait_queue.Close();
+    if(!wait_queue.WaitPop(item,priority)||item.id!=normal.id||priority!=1)
+        return(9);
+
+    if(wait_queue.WaitPop(item,priority))
+        return(10);
+
     return(0);
 }

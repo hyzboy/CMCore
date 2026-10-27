@@ -344,10 +344,12 @@ SOURCE_GROUP("Concurrency" FILES ${CMCORE_CONCURRENCY_FILES})
 
 SET(CMCORE_THREAD_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Thread.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/WorkHandler.h
+                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/ShutdownMode.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/SingleWorker.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/PolledWorker.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/WorkerPool.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io/AsyncLoader.h
+                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io/AsyncFileLoader.h
                         Other/ThreadFunc.cpp)
 SOURCE_GROUP("Thread" FILES ${CMCORE_THREAD_FILES})
 

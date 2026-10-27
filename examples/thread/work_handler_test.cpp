@@ -1,6 +1,7 @@
 #include<hgl/concurrency/TaskQueue.h>
 #include<hgl/thread/PolledWorker.h>
 #include<hgl/thread/SingleWorker.h>
+#include<hgl/thread/WorkerPool.h>
 #include<hgl/sync/Atomic.h>
 
 using namespace hgl;
@@ -29,7 +30,8 @@ int main()
 {
     TestWork polled_work[4]={{1},{2},{3},{4}};
     TestHandler polled_handler;
-    PolledWorker<TestWork> polled(&polled_handler,7);
+    TaskQueue<TestWork *> polled_queue;
+    PolledWorker<TestWork> polled(&polled_queue,&polled_handler,7);
 
     for(TestWork &work:polled_work)
         if(!polled.Submit(&work))
@@ -55,6 +57,20 @@ int main()
         return(5);
     if(threaded_handler.sum.load()!=26)
         return(6);
+
+    TaskQueue<TestWork *> pool_queue;
+    TestWork pool_work[2]={{9},{10}};
+    TestHandler pool_handler;
+    WorkerPool<TestWork> pool(&pool_queue,&pool_handler);
+
+    if(!pool.Start(2)
+       ||!pool_queue.Submit(&pool_work[0])
+       ||!pool_queue.Submit(&pool_work[1])
+       ||!pool.Stop(ShutdownMode::Drain))
+        return(7);
+
+    if(pool_handler.count.load()!=2||pool_handler.sum.load()!=19)
+        return(8);
 
     return(0);
 }

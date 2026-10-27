@@ -3,18 +3,12 @@
 #include<hgl/concurrency/TaskQueue.h>
 #include<hgl/thread/Thread.h>
 #include<hgl/thread/WorkHandler.h>
+#include<hgl/thread/ShutdownMode.h>
 #include<hgl/sync/Atomic.h>
 #include<hgl/type/ManagedArray.h>
 
 namespace hgl::thread
 {
-    /** @brief CN: 工作池关闭策略：Drain 执行已接受任务；CancelPending 取消未开始任务。 EN: Pool shutdown mode: Drain runs accepted tasks; CancelPending cancels tasks not yet started. */
-    enum class ShutdownMode
-    {
-        Drain,
-        CancelPending
-    };
-
     template<typename W>
     class WorkerThread:public Thread
     {
@@ -55,7 +49,8 @@ namespace hgl::thread
      *              Stop(Drain) 关闭队列并等待已接受任务全部处理；Stop(CancelPending)
      *              取消队列中尚未取出的任务并调用 OnCancel，仍等待正在执行的 OnWork
      *              返回。Stop 可能阻塞，必须从 worker 回调之外调用；处理回调不可重入
-     *              Start/Stop。成功 Stop 后工作池不可重启，析构时会执行 Drain。
+     *              Start/Stop。可注入由外部持有的 TaskQueue；默认构造方式则由工作池
+     *              拥有内嵌队列。成功 Stop 后工作池不可重启，析构时会执行 Drain。
      *          EN: Start can succeed only once and creates the fixed worker set. Submit
      *              is non-blocking and false means the task was not accepted. Task
      *              pointers are borrowed; the pointed-to objects must remain alive
@@ -65,12 +60,15 @@ namespace hgl::thread
      *              Stop(CancelPending) cancels queued tasks through OnCancel but still
      *              waits for running OnWork callbacks. Stop may block and must be called
      *              outside worker callbacks; callbacks must not re-enter Start/Stop.
-     *              A successfully stopped pool cannot restart; destruction drains it.
+     *              A TaskQueue may be injected and owned externally; otherwise the pool
+     *              owns an embedded queue. A successfully stopped pool cannot restart;
+     *              destruction drains it.
      */
     template<typename W>
     class WorkerPool
     {
-        TaskQueue<W *> queue;
+        TaskQueue<W *> owned_queue;
+        TaskQueue<W *> *queue;
         Mutex lifecycle_lock;
         WorkHandler<W> *work_handler;
         ManagedArray<WorkerThread<W>> workers;
@@ -79,7 +77,15 @@ namespace hgl::thread
 
     public:
 
-        explicit WorkerPool(WorkHandler<W> *handler):work_handler(handler){}
+        explicit WorkerPool(WorkHandler<W> *handler)
+            :queue(&owned_queue),work_handler(handler)
+        {
+        }
+
+        WorkerPool(TaskQueue<W *> *task_queue,WorkHandler<W> *handler)
+            :queue(task_queue),work_handler(handler)
+        {
+        }
 
         ~WorkerPool()
         {
@@ -90,16 +96,16 @@ namespace hgl::thread
         {
             MutexLock guard(&lifecycle_lock);
 
-            if(!work_handler||worker_count==0||started.load()||stopped.load())
+            if(!queue||!work_handler||worker_count==0||started.load()||stopped.load())
                 return(false);
 
             for(uint i=0;i<worker_count;i++)
             {
-                WorkerThread<W> *worker=workers.Create(&queue,work_handler,i);
+                WorkerThread<W> *worker=workers.Create(queue,work_handler,i);
 
                 if(!worker||!worker->Start())
                 {
-                    queue.Close();
+                    queue->Close();
 
                     for(int j=0;j<workers.GetCount();j++)
                         workers[j]->Join();
@@ -120,7 +126,7 @@ namespace hgl::thread
             if(!started.load()||stopped.load()||!work)
                 return(false);
 
-            return queue.Submit(work);
+            return queue&&queue->Submit(work);
         }
 
         /**
@@ -156,17 +162,21 @@ namespace hgl::thread
             if(stopped.load())
                 return(true);
 
+            if(!queue||!work_handler)
+                return(false);
+
             if(mode==ShutdownMode::CancelPending)
             {
                 ValueArray<W *> cancelled;
-                queue.CloseAndCancel(cancelled);
+                queue->CloseAndCancel(cancelled);
 
                 for(int i=0;i<cancelled.GetCount();i++)
                     work_handler->OnCancel(cancelled[i]);
             }
             else
             {
-                queue.Close();
+                if(queue)
+                    queue->Close();
             }
 
             bool joined=true;
@@ -185,7 +195,7 @@ namespace hgl::thread
             return joined;
         }
 
-        int GetPendingCount(){return queue.GetCount();}
+        int GetPendingCount(){return queue?queue->GetCount():0;}
         int GetWorkerCount()const{return workers.GetCount();}
     };
 }//namespace hgl::thread

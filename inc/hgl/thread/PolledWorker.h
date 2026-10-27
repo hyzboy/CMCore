@@ -18,21 +18,22 @@ namespace hgl::thread
     template<typename W>
     class PolledWorker
     {
-        TaskQueue<W *> queue;
+        TaskQueue<W *> *queue;
         WorkHandler<W> *work_handler;
         uint worker_index;
 
     public:
 
-        explicit PolledWorker(WorkHandler<W> *handler,uint index=0)
-            :work_handler(handler),worker_index(index)
+        /** @brief CN: 绑定外部队列和处理器；两者均由调用方拥有。 EN: Bind an externally owned queue and handler. */
+        PolledWorker(TaskQueue<W *> *task_queue,WorkHandler<W> *handler,uint index=0)
+            :queue(task_queue),work_handler(handler),worker_index(index)
         {
         }
 
         /** @brief CN: 提交借用任务指针。 EN: Submit a borrowed task pointer. */
         bool Submit(W *work)
         {
-            return work_handler&&work&&queue.Submit(work);
+            return queue&&work_handler&&work&&queue->Submit(work);
         }
 
         /**
@@ -51,7 +52,7 @@ namespace hgl::thread
             int processed=0;
             W *work=nullptr;
 
-            while((max_count<=0||processed<max_count)&&queue.TryPop(work))
+            while(queue&&(max_count<=0||processed<max_count)&&queue->TryPop(work))
             {
                 if(work)
                     work_handler->OnWork(worker_index,work);
@@ -63,8 +64,12 @@ namespace hgl::thread
         }
 
         /** @brief CN: 拒绝后续投递；已接受任务仍可由 Process 排空。 EN: Reject future submissions; accepted tasks remain available to Process. */
-        void Close(){queue.Close();}
+        void Close()
+        {
+            if(queue)
+                queue->Close();
+        }
 
-        int GetPendingCount(){return queue.GetCount();}
+        int GetPendingCount(){return queue?queue->GetCount():0;} ///< @brief CN: 返回队列中尚未取出的任务数。 EN: Return the number of tasks not yet removed from the queue.
     };
 }//namespace hgl::thread
