@@ -2,6 +2,7 @@
 
 #include<hgl/concurrency/TaskQueue.h>
 #include<hgl/thread/Thread.h>
+#include<hgl/thread/WorkHandler.h>
 #include<hgl/sync/Atomic.h>
 #include<hgl/type/ManagedArray.h>
 
@@ -12,18 +13,6 @@ namespace hgl::thread
     {
         Drain,
         CancelPending
-    };
-
-    template<typename W>
-    class WorkHandler
-    {
-    public:
-
-        virtual ~WorkHandler()=default;
-        /** @brief CN: 在指定 worker 线程上处理借用任务；编号从零开始，不同 worker 可并发执行。 EN: Process a borrowed task on a worker; indices start at zero and callbacks may run concurrently across workers. */
-        virtual void OnWork(uint worker_index,W *work)=0;
-        /** @brief CN: CancelPending 时对每个尚未开始的任务回调一次。 EN: Called once for each task not yet started when using CancelPending. */
-        virtual void OnCancel(W *){}
     };
 
     template<typename W>

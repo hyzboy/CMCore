@@ -342,6 +342,9 @@ SET(CMCORE_CONCURRENCY_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/concurrency/DuplexQ
 SOURCE_GROUP("Concurrency" FILES ${CMCORE_CONCURRENCY_FILES})
 
 SET(CMCORE_THREAD_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Thread.h
+                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/WorkHandler.h
+                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/SingleWorker.h
+                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/PolledWorker.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/WorkerPool.h
                         ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io/AsyncLoader.h
                         Other/ThreadFunc.cpp)
