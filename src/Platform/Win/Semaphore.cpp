@@ -9,6 +9,13 @@ namespace hgl
     */
     Semaphore::Semaphore(int max_count)
     {
+        if(max_count<=0)
+        {
+            LogError(OS_TEXT("CreateSemaphore error,max_count must be positive."));
+            return;
+        }
+
+        this->max_count=max_count;
         ptr=CreateSemaphoreW(nullptr,0,max_count,nullptr);
 
         if(!ptr)
@@ -17,7 +24,8 @@ namespace hgl
 
     Semaphore::~Semaphore()
     {
-        CloseHandle(ptr);
+        if(ptr)
+            CloseHandle(ptr);
     }
 
     /**
@@ -27,8 +35,13 @@ namespace hgl
     */
     bool Semaphore::Post(int n)
     {
-        if(n<=0)return(false);
-        return(ReleaseSemaphore(ptr,n,nullptr));
+        if(!ptr||!ReservePost(n))return(false);
+
+        if(ReleaseSemaphore(ptr,n,nullptr))
+            return(true);
+
+        UndoPost(n);
+        return(false);
     }
 
     /**
@@ -37,7 +50,13 @@ namespace hgl
     */
     bool Semaphore::TryAcquire()
     {
-        return(WaitForSingleObject(ptr,0)==WAIT_OBJECT_0);
+        if(!ptr)return false;
+
+        if(WaitForSingleObject(ptr,0)!=WAIT_OBJECT_0)
+            return(false);
+
+        Consumed();
+        return(true);
     }
 
     /**
@@ -46,7 +65,13 @@ namespace hgl
     */
     bool Semaphore::Acquire()
     {
-        return(WaitForSingleObject(ptr,INFINITE)==WAIT_OBJECT_0);
+        if(!ptr)return false;
+
+        if(WaitForSingleObject(ptr,INFINITE)!=WAIT_OBJECT_0)
+            return(false);
+
+        Consumed();
+        return(true);
     }
 
     /**
@@ -56,6 +81,18 @@ namespace hgl
     */
     bool Semaphore::Acquire(double time_out)
     {
-        return(WaitForSingleObject(ptr,time_out>0?DWORD(time_out*1000):INFINITE)==WAIT_OBJECT_0);
+        if(!ptr)return false;
+
+        if(time_out<=0)
+            return Acquire();
+
+        const double timeout_ms=time_out*1000.0;
+        const DWORD wait_time=timeout_ms>=double(INFINITE-1)?INFINITE-1:(timeout_ms<1.0?1:DWORD(timeout_ms));
+
+        if(WaitForSingleObject(ptr,wait_time)!=WAIT_OBJECT_0)
+            return(false);
+
+        Consumed();
+        return(true);
     }
 }//namespace hgl

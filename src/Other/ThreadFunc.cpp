@@ -13,31 +13,19 @@ namespace hgl
      */
     THREAD_FUNC ThreadFunc(Thread *tc)
     {
-        tc->live_lock.Lock();
+        tc->thread_lock.Lock();
+        tc->thread_lock.Unlock();
 
         if(tc->ProcStartThread())
         {
-            while(tc->Execute())
+            while(!tc->IsStopRequested()&&tc->Execute())
             {
-                if(tc->exit_lock.TryLock())
-                {
-                    tc->exit_lock.Unlock();
-                    break;
-                }
             }
 
             tc->ProcEndThread();
         }
 
-        if(tc->DeletedAfterExit())
-        {
-            tc->live_lock.Unlock();
-
-            HGL_THREAD_DETACH_SELF
-            delete tc;
-        }
-        else
-            tc->live_lock.Unlock();
+        tc->SetThreadRunning(false);
 
         return(0);
     }

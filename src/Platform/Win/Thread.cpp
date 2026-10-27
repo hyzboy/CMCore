@@ -13,17 +13,29 @@ namespace hgl
     {
         unsigned long threadid;
 
-        exit_lock.Lock();
+        thread_lock.Lock();
+
+        if(tp)
+        {
+            thread_lock.Unlock();
+            LogWarning(OS_TEXT("Thread::Start() error, thread must be joined before restart."));
+            return(false);
+        }
+
+        stop_requested.store(false);
+        thread_running.store(true);
 
         tp=::CreateThread(0,0,(PTHREAD_START_ROUTINE)ThreadFunc,this,0,&threadid);
 
         if(!tp)
         {
-            exit_lock.Unlock();
+            thread_running.store(false);
+            thread_lock.Unlock();
             LogWarning(OS_TEXT("Create Thread failed,Windows ErrorCode: ")+OSString::numberOf((uint)GetLastError()));
             return(false);
         }
 
+        thread_lock.Unlock();
         return(true);
     }
 
@@ -32,14 +44,70 @@ namespace hgl
     */
     bool Thread::IsCurThread()
     {
-        return(tp==GetCurrentThread());
+        return(tp&&GetThreadId(tp)==GetCurrentThreadId());
     }
 
-    void WaitThreadExit(thread_ptr tp,const double &time_out)
+    bool Thread::WaitExit(const double &time_out)
     {
-        if(!tp)return;
+        Exit();
 
-        WaitForSingleObject(tp,time_out>0?time_out*1000:INFINITE);
+        thread_lock.Lock();
+
+        if(!tp)
+        {
+            thread_lock.Unlock();
+            return(true);
+        }
+
+        if(IsCurThread())
+        {
+            thread_lock.Unlock();
+            return(false);
+        }
+
+        DWORD wait_time=INFINITE;
+
+        if(time_out>0)
+        {
+            const double timeout_ms=time_out*1000.0;
+            wait_time=timeout_ms>=double(INFINITE-1)?INFINITE-1:DWORD(timeout_ms);
+        }
+
+        const DWORD result=WaitForSingleObject(tp,wait_time);
+
+        if(result==WAIT_OBJECT_0)
+        {
+            CloseHandle(tp);
+            tp=nullptr;
+            thread_lock.Unlock();
+            return(true);
+        }
+
+        if(result==WAIT_FAILED)
+            LogError(OS_TEXT("WaitForSingleObject failed, Windows ErrorCode: ")+OSString::numberOf((uint)GetLastError()));
+
+        thread_lock.Unlock();
+        return(false);
+    }
+
+    bool WaitThreadExit(thread_ptr tp,const double &time_out)
+    {
+        if(!tp)return(true);
+
+        DWORD wait_time=INFINITE;
+
+        if(time_out>0)
+        {
+            const double timeout_ms=time_out*1000.0;
+            wait_time=timeout_ms>=double(INFINITE-1)?INFINITE-1:DWORD(timeout_ms);
+        }
+
+        const DWORD result=WaitForSingleObject(tp,wait_time);
+
+        if(result==WAIT_FAILED)
+            GLogError(OS_TEXT("WaitForSingleObject failed, Windows ErrorCode: ")+OSString::numberOf((uint)GetLastError()));
+
+        return(result==WAIT_OBJECT_0);
     }
 
     /**

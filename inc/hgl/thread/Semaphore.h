@@ -1,13 +1,14 @@
 ﻿#pragma once
 
 #include<hgl/platform/Platform.h>
+#include<hgl/thread/Atomic.h>
 #include<hgl/log/Log.h>
 
 namespace hgl
 {
     /**
     * 信号是用于多线程同步中常用的一种技术<br>
-    * 注意信号的用法是要有信号被发送出来，才能获取到信号。
+    * Post 的计数受 max_count 限制；Acquire 的 timeout 单位为秒，0 或负数表示无限等待。
     */
     class Semaphore                                                                                 ///信号
     {
@@ -15,7 +16,28 @@ namespace hgl
 
     private:
 
-        semaphore_ptr ptr;
+        semaphore_ptr ptr=nullptr;
+        int max_count=0;
+        atom_int count{0};
+
+    protected:
+
+        bool ReservePost(int n)
+        {
+            if(n<=0||n>max_count)
+                return(false);
+
+            int current=count.load();
+
+            while(current<=max_count-n)
+                if(count.compare_exchange_weak(current,current+n))
+                    return(true);
+
+            return(false);
+        }
+
+        void UndoPost(int n){count.fetch_sub(n);}
+        void Consumed(){count.fetch_sub(1);}
 
     public:
 

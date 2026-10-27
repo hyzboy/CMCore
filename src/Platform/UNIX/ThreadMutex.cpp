@@ -48,6 +48,9 @@ namespace hgl
     */
     bool ThreadMutex::WaitLock(double t)
     {
+        if(t<=0)
+            return TryLock();
+
         struct timespec abstime;
 
         GetWaitTime(abstime,t);

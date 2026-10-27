@@ -13,8 +13,6 @@ namespace hgl
 
     ThreadMutex::~ThreadMutex()
     {
-        if(ptr!=OS_UNFAIR_LOCK_INIT)
-            os_unfair_lock_unlock(&ptr);
     }
 
     /**

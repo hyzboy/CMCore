@@ -1,5 +1,6 @@
 ﻿#include<hgl/thread/Semaphore.h>
 #include<hgl/log/LogInfo.h>
+#include<errno.h>
 #include<pthread.h>
 #include<semaphore.h>
 
@@ -12,6 +13,14 @@ namespace hgl
     */
     Semaphore::Semaphore(int max_count)
     {
+        this->max_count=max_count;
+
+        if(max_count<=0)
+        {
+            LOG_ERROR(OS_TEXT("sem_init error,max_count must be positive."));
+            return;
+        }
+
         ptr=new sem_t;
 
         if(sem_init(ptr,PTHREAD_PROCESS_PRIVATE,0))
@@ -37,15 +46,16 @@ namespace hgl
     */
     bool Semaphore::Post(int n)
     {
-        if(!ptr)return(false);
-        if(n<=0)return(false);
-
-        int result=0;
+        if(!ptr||!ReservePost(n))return(false);
 
         for(int i=0;i<n;i++)
-            result+=sem_post(ptr);
+            if(sem_post(ptr))
+            {
+                UndoPost(n-i);
+                return false;
+            }
 
-        return !result;
+        return true;
 
         //if(n==1)
         //  return !sem_post(ptr);
@@ -61,7 +71,17 @@ namespace hgl
     {
         if(!ptr)return(false);
 
-        return !sem_trywait(ptr);
+        int result;
+        do
+        {
+            result=sem_trywait(ptr);
+        }while(result&&errno==EINTR);
+
+        if(result)
+            return(false);
+
+        Consumed();
+        return(true);
     }
 
     /**
@@ -72,7 +92,17 @@ namespace hgl
     {
         if(!ptr)return(false);
 
-        return !sem_wait(ptr);
+        int result;
+        do
+        {
+            result=sem_wait(ptr);
+        }while(result&&errno==EINTR);
+
+        if(result)
+            return(false);
+
+        Consumed();
+        return(true);
     }
 
     /**
@@ -83,11 +113,22 @@ namespace hgl
     bool Semaphore::Acquire(double t)
     {
         if(!ptr)return(false);
+        if(t<=0)return Acquire();
 
         struct timespec abstime;
 
         GetWaitTime(abstime,t);
 
-        return !sem_timedwait(ptr,&abstime);
+        int result;
+        do
+        {
+            result=sem_timedwait(ptr,&abstime);
+        }while(result&&errno==EINTR);
+
+        if(result)
+            return(false);
+
+        Consumed();
+        return(true);
     }
 }//namespace hgl

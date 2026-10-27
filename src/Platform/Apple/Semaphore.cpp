@@ -8,6 +8,14 @@ namespace hgl
     */
     Semaphore::Semaphore(int max_count)
     {
+        this->max_count=max_count;
+
+        if(max_count<=0)
+        {
+            LogError(OS_TEXT("dispatch_semaphore_create error,max_count must be positive."));
+            return;
+        }
+
         ptr=dispatch_semaphore_create(0);
 
         if(!ptr)
@@ -31,8 +39,7 @@ namespace hgl
     */
     bool Semaphore::Post(int n)
     {
-        if(!ptr)return(false);
-        if(n<=0)return(false);
+        if(!ptr||!ReservePost(n))return(false);
 
         for(int i=0;i<n;i++)
             dispatch_semaphore_signal(ptr);
@@ -48,7 +55,11 @@ namespace hgl
     {
         if(!ptr)return(false);
 
-        return !dispatch_semaphore_wait(ptr,DISPATCH_TIME_NOW);
+        if(dispatch_semaphore_wait(ptr,DISPATCH_TIME_NOW))
+            return(false);
+
+        Consumed();
+        return(true);
     }
 
     /**
@@ -59,7 +70,11 @@ namespace hgl
     {
         if(!ptr)return(false);
 
-        return !dispatch_semaphore_wait(ptr,DISPATCH_TIME_FOREVER);
+        if(dispatch_semaphore_wait(ptr,DISPATCH_TIME_FOREVER))
+            return(false);
+
+        Consumed();
+        return(true);
     }
 
     /**
@@ -71,8 +86,15 @@ namespace hgl
     {
         if(!ptr)return(false);
 
-        dispatch_time_t when=dispatch_time(DISPATCH_TIME_NOW,t*HGL_NANO_SEC_PER_SEC);
+        if(t<=0)
+            return Acquire();
 
-        return !dispatch_semaphore_wait(ptr,when);
+        dispatch_time_t when=dispatch_time(DISPATCH_TIME_NOW,static_cast<int64_t>(t*HGL_NANO_SEC_PER_SEC));
+
+        if(dispatch_semaphore_wait(ptr,when))
+            return(false);
+
+        Consumed();
+        return(true);
     }
 }//namespace hgl

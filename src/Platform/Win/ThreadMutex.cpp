@@ -12,8 +12,6 @@ namespace hgl
 
     ThreadMutex::~ThreadMutex()
     {
-        Unlock();
-
         DeleteCriticalSection(&ptr);
     }
 
@@ -42,7 +40,23 @@ namespace hgl
     */
     bool ThreadMutex::WaitLock(double time_out)
     {
-        return(!WaitForSingleObject(&ptr,time_out*1000));
+        if(time_out<=0)
+            return TryLock();
+
+        const double timeout_ms=time_out*1000.0;
+        const DWORD wait_ms=timeout_ms>=double(MAXDWORD)?MAXDWORD:(timeout_ms<1.0?1:DWORD(timeout_ms));
+        const DWORD start=GetTickCount();
+
+        for(;;)
+        {
+            if(TryLock())
+                return true;
+
+            if(DWORD(GetTickCount()-start)>=wait_ms)
+                return false;
+
+            Sleep(1);
+        }
     }
 
     /**
