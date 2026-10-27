@@ -30,6 +30,8 @@ public:
 
 int main()
 {
+    // CN: 使用调用方持有的事件数组验证并发投递、批量执行及停止时排空语义。
+    // EN: Use caller-owned events to verify concurrent posting, batch execution, and draining on shutdown.
     AsyncEventQueue queue;
     AsyncEventThread event_thread(&queue);
     CountEvent events[EventCount];

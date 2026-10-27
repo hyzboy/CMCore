@@ -4,6 +4,12 @@
 
 namespace hgl
 {
+    // CN: WriteStart 将读端位置快照到 read_off，限制本轮写入不覆盖尚未消费的数据；
+    //     写入游标只在 WriteEnd 提交，Safe* 路径还会在提交后释放内部互斥锁。
+    // EN: WriteStart snapshots the reader position in read_off to prevent overwriting
+    //     unconsumed data. The write cursor is committed only by WriteEnd; Safe* paths
+    //     also release the internal mutex after committing.
+
     /**
     * 安全取得可写入数据长度
     */

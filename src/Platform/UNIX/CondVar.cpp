@@ -21,6 +21,8 @@ namespace hgl
 
     bool CondVar::Wait(Mutex *tm,double t)
     {
+        // CN: pthread 条件等待要求调用方已持有 mutex；返回时仍重新持有该锁。
+        // EN: pthread condition waits require the caller to hold mutex and return with it reacquired.
         if(t>0)
         {
             struct timespec abstime;

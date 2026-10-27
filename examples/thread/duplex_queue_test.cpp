@@ -117,6 +117,10 @@ public:
 
 int main()
 {
+    // CN: 客户端与处理器各自只负责一个方向，验证双向队列的 SPSC 使用约束、
+    //     请求/响应对应关系及两端全部排空后的计数。
+    // EN: The client and handler each own one direction; verify SPSC constraints,
+    //     request/response matching, and final counts after both sides drain.
     DuplexQueue<uint32,uint32> queue(64);
 
     if(!queue.IsValid())

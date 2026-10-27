@@ -89,6 +89,10 @@ public:
 
 int main()
 {
+    // CN: 三个并发生产者向邮箱投递带来源编号的数据，由唯一消费者按批次交换，
+    //     检查每个生产者提交的所有条目均恰好被消费。
+    // EN: Three concurrent producers post source-tagged values for one batch consumer;
+    //     verify every submitted item is consumed exactly once.
     SwapMailbox<MailboxItem> mailbox;
     MailboxConsumer consumer(&mailbox);
     MailboxProducer producer0(&mailbox,0);

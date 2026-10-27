@@ -40,6 +40,8 @@ public:
 
     void OnWork(uint,WorkItem *)override
     {
+        // CN: 将当前任务停留在执行中，以便测试线程在它运行期间取消排队任务。
+        // EN: Hold the current task in progress so the test can cancel queued tasks concurrently.
         entered.store(true);
 
         while(!release.load())
@@ -72,6 +74,10 @@ public:
 
 int main()
 {
+    // CN: Drain 场景核对所有接受的任务均执行；CancelPending 场景用门闩确保
+    //     一项任务正在运行，其余任务仍在队列中，以验证取消回调与排空边界。
+    // EN: Drain verifies every accepted task runs. CancelPending uses a gate to keep
+    //     one task running while others remain queued, checking cancellation callbacks and drain boundaries.
     static const uint32 DrainCount=12000;
     WorkItem drain_items[DrainCount];
     CountingWorkHandler counting_handler;

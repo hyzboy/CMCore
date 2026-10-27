@@ -64,6 +64,8 @@ public:
 
 int main()
 {
+    // CN: 覆盖容量规范化、无效分配、满队列拒绝/计数，以及双线程 FIFO 顺序。
+    // EN: Cover capacity normalization, invalid allocation, full-queue rejection/counting, and two-thread FIFO order.
     SpscQueue<uint32> invalid_queue(0xffffffffu);
     if(invalid_queue.IsValid()||invalid_queue.GetCapacity()!=0)
         return(1);

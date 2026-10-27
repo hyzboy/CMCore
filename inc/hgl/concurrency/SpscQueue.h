@@ -7,12 +7,26 @@
 namespace hgl
 {
     /**
-    * Bounded single-producer/single-consumer ring queue.
-    *
-    * T must be trivially copyable. Only one thread may call Push and only one
-    * different thread may call Pop; query methods are approximate observations,
-    * not synchronization primitives.
-    */
+     * @brief CN: 有界 SPSC（单生产者、单消费者）无锁环形队列。
+     *        EN: Bounded lock-free ring queue for one producer and one consumer (SPSC).
+     * @details CN: 使用前提：
+     *              - 生命周期内只能有一个线程调用 Push，且只能有另一个线程调用 Pop；
+     *                多生产者/多消费者场景应改用 TaskQueue 等相应结构。
+     *              - T 必须是可平凡复制类型；队列保存值的副本，不负责管理指针指向的对象。
+     *              - 队列容量向上取整到不小于请求值的 2 的幂，最小容量为 8；
+     *                分配失败或请求容量超出支持范围时 IsValid 返回 false。
+     *              Push 在队列无效或已满时返回 false，并累计到 GetDroppedCount。
+     *              GetCount/IsEmpty/IsFull 只是并发观察值，不能用于“检查后再操作”的
+     *              同步逻辑；容量及槽位由生产者/消费者的发布与获取顺序保证可见性。
+     *          EN: Exactly one thread may call Push and one other thread may call Pop
+     *              during the queue lifetime; use a different structure such as
+     *              TaskQueue for multiple producers or consumers. T must be trivially
+     *              copyable; pointer targets are not owned. Capacity is rounded up to
+     *              a power of two with a minimum of 8. IsValid is false on allocation
+     *              failure or unsupported capacity. Push returns false and increments
+     *              GetDroppedCount when invalid or full. GetCount, IsEmpty and IsFull
+     *              are observations only, not synchronization for check-then-act logic.
+     */
     template<typename T>
     class SpscQueue
     {
@@ -130,7 +144,7 @@ namespace hgl
             return(true);
         }
 
-        /** Approximate concurrent count; do not use it to synchronize producers or consumers. */
+        /** @brief CN: 并发状态下的近似积压数量；仅用于观测，不可作为同步依据。 EN: Approximate concurrent backlog; for observation only, not synchronization. */
         int GetCount()const
         {
             if(!capacity)
@@ -143,7 +157,7 @@ namespace hgl
             return count<=capacity?int(count):0;
         }
 
-        /** Number of Push attempts rejected because the queue was invalid or full. */
+        /** @brief CN: 因队列无效或已满而被拒绝的 Push 次数；无效队列操作也会计数。 EN: Push calls rejected because the queue is invalid or full; invalid-queue calls are counted too. */
         uint64 GetDroppedCount()const
         {
             return rejected.load(std::memory_order_relaxed);

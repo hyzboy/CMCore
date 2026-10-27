@@ -25,6 +25,8 @@ namespace hgl
             return(false);
         }
 
+        // CN: 使用 joinable 线程：结束后由调用方 Join 回收系统资源，支持对象安全复用。
+        // EN: Use joinable threads so callers reclaim resources with Join and may safely reuse the object.
         pthread_attr_t attr;
 
         pthread_attr_init(&attr);
@@ -68,12 +70,16 @@ namespace hgl
 
     bool Thread::StopAndJoin(const double &time_out)
     {
+        // CN: RequestStop 设置协作标记；线程须自行离开 Execute，Join 不会强制终止它。
+        // EN: RequestStop sets a cooperative flag; the thread must leave Execute itself, since Join does not terminate it.
         RequestStop();
         return Join(time_out);
     }
 
     bool Thread::Join(const double &time_out)
     {
+        // CN: 串行化 pthread_join，防止两个调用者同时回收同一 pthread_t。
+        // EN: Serialize pthread_join to prevent concurrent callers from reclaiming the same pthread_t.
         join_lock.Lock();
         thread_lock.Lock();
 
@@ -84,6 +90,8 @@ namespace hgl
             return(true);
         }
 
+        // CN: 复制线程句柄后释放状态锁，避免在阻塞 join 期间妨碍工作线程退出。
+        // EN: Copy the thread handle and release the state lock so a blocking join cannot prevent worker exit.
         const thread_ptr joining_thread=tp;
         thread_lock.Unlock();
 
@@ -106,6 +114,10 @@ namespace hgl
             const int retval=pthread_timedjoin_np(joining_thread,&res,&ts);
             completed=(retval==0);
 #else
+            // CN: 不支持可移植限时 join 的平台：先观察运行标志并轮询超时，
+            //     只有确认工作体结束后才调用 pthread_join 完成句柄回收。
+            // EN: On platforms without portable timed join, poll the running flag until
+            //     timeout and call pthread_join only after the worker body has ended.
             const double start=GetUptimeSec();
 
             while(thread_running.load())

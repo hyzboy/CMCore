@@ -4,6 +4,12 @@
 
 namespace hgl
 {
+    // CN: ReadStart 将写端位置快照到 write_off，确保一次读取最多观察到开始时
+    //     已提交的数据；跨尾端读取时拆成两段复制，读取游标只在 ReadEnd 提交。
+    // EN: ReadStart snapshots the writer position in write_off so this read observes
+    //     only data already committed at its start. Reads crossing the physical end
+    //     are copied in two segments; the read cursor is committed only by ReadEnd.
+
     /**
     * 安全取得可读取数据长度
     */

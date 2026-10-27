@@ -7,6 +7,7 @@
 
 namespace hgl::thread
 {
+    /** @brief CN: 工作池关闭策略：Drain 执行已接受任务；CancelPending 取消未开始任务。 EN: Pool shutdown mode: Drain runs accepted tasks; CancelPending cancels tasks not yet started. */
     enum class ShutdownMode
     {
         Drain,
@@ -19,7 +20,9 @@ namespace hgl::thread
     public:
 
         virtual ~WorkHandler()=default;
+        /** @brief CN: 在指定 worker 线程上处理借用任务；编号从零开始，不同 worker 可并发执行。 EN: Process a borrowed task on a worker; indices start at zero and callbacks may run concurrently across workers. */
         virtual void OnWork(uint worker_index,W *work)=0;
+        /** @brief CN: CancelPending 时对每个尚未开始的任务回调一次。 EN: Called once for each task not yet started when using CancelPending. */
         virtual void OnCancel(W *){}
     };
 
@@ -54,10 +57,27 @@ namespace hgl::thread
     };
 
     /**
-    * Fixed-size worker pool. Submitted pointers are borrowed: their storage
-    * must remain valid until OnWork or OnCancel returns. Stop must be called
-    * from outside a worker callback; callbacks must not re-enter Start or Stop.
-    */
+     * @brief CN: 由固定数量工作线程组成的任务池。
+     *        EN: Task pool backed by a fixed number of worker threads.
+     * @details CN: Start 仅可成功调用一次，创建固定数量的 worker；Submit 是非阻塞提交，
+     *              返回 false 表示任务未被接受。任务指针为借用关系，指向的对象必须持续
+     *              有效，直到对应的 OnWork 或 OnCancel 回调返回。不同 worker 的 OnWork
+     *              可并发执行，因此共享状态由 WorkHandler 自行同步。
+     *              Stop(Drain) 关闭队列并等待已接受任务全部处理；Stop(CancelPending)
+     *              取消队列中尚未取出的任务并调用 OnCancel，仍等待正在执行的 OnWork
+     *              返回。Stop 可能阻塞，必须从 worker 回调之外调用；处理回调不可重入
+     *              Start/Stop。成功 Stop 后工作池不可重启，析构时会执行 Drain。
+     *          EN: Start can succeed only once and creates the fixed worker set. Submit
+     *              is non-blocking and false means the task was not accepted. Task
+     *              pointers are borrowed; the pointed-to objects must remain alive
+     *              until OnWork or OnCancel returns. OnWork may run concurrently across
+     *              workers, so WorkHandler must synchronize shared state.
+     *              Stop(Drain) closes the queue and waits for accepted tasks to finish.
+     *              Stop(CancelPending) cancels queued tasks through OnCancel but still
+     *              waits for running OnWork callbacks. Stop may block and must be called
+     *              outside worker callbacks; callbacks must not re-enter Start/Stop.
+     *              A successfully stopped pool cannot restart; destruction drains it.
+     */
     template<typename W>
     class WorkerPool
     {
@@ -105,6 +125,7 @@ namespace hgl::thread
             return(true);
         }
 
+        /** @brief CN: 提交非空任务指针；池未启动、已停止或队列关闭时返回 false。 EN: Submit a non-null task pointer; false if the pool is not started, is stopped, or its queue is closed. */
         bool Submit(W *work)
         {
             if(!started.load()||stopped.load()||!work)
@@ -113,6 +134,12 @@ namespace hgl::thread
             return queue.Submit(work);
         }
 
+        /**
+         * @brief CN: 顺序提交一组任务指针。
+         *        EN: Submit a sequence of task pointers in order.
+         * @return CN: 已接受的前缀长度；遇到失败立即停止，不跳过任务继续提交。
+         *         EN: Number of tasks accepted from the beginning of the sequence; stops at the first rejection.
+         */
         int Submit(W **work,int count)
         {
             if(!work||count<=0||!started.load()||stopped.load())
@@ -125,6 +152,14 @@ namespace hgl::thread
             return submitted;
         }
 
+        /**
+         * @brief CN: 关闭任务入口并等待 worker 结束。
+         *        EN: Close task submission and wait for workers to exit.
+         * @param mode CN: Drain 排空全部已入队任务；CancelPending 取消仍排队任务，不中断执行中任务。
+         *             EN: Drain all queued tasks, or cancel queued tasks without interrupting running work.
+         * @return CN: 至少一个 worker 未能 Join 时返回 false。
+         *         EN: False if at least one worker could not be joined.
+         */
         bool Stop(ShutdownMode mode=ShutdownMode::Drain)
         {
             MutexLock guard(&lifecycle_lock);

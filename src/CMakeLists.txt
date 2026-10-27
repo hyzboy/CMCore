@@ -323,7 +323,8 @@ SET(CMCORE_TIME_FILES ${CMCORE_TIME_INCLUDE_PATH}/DateTime.h
 SOURCE_GROUP("Time" FILES ${CMCORE_TIME_FILES})
 
 ##==================================================================================================
-## Thread 线程
+## CN: 同步原语（sync）、并发队列（concurrency）与线程生命周期（thread）
+## EN: Synchronization primitives (sync), concurrent queues (concurrency), and thread lifecycle (thread)
 ##==================================================================================================
 SET(CMCORE_SYNC_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/sync/Atomic.h
                       ${CMCORE_ROOT_INCLUDE_PATH}/hgl/sync/CondVar.h
@@ -347,7 +348,8 @@ SET(CMCORE_THREAD_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/thread/Thread.h
 SOURCE_GROUP("Thread" FILES ${CMCORE_THREAD_FILES})
 
 ##==================================================================================================
-## Event 事件
+## CN: 事件动作接口与异步事件消费器
+## EN: Event-action interface and asynchronous event consumer
 ##==================================================================================================
 SET(CMCORE_EVENT_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/async/AsyncEvent.h
                        ${CMCORE_ROOT_INCLUDE_PATH}/hgl/event/EventAction.h)

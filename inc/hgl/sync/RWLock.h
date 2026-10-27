@@ -4,9 +4,17 @@
 namespace hgl
 {
     /**
-    * 读写锁/共享锁
-    */
-    class RWLock                                                                                    ///读写锁/共享锁
+     * @brief CN: 读写锁：允许多个读者并行，写者进入时要求独占访问。
+     *        EN: Reader-writer lock allowing concurrent readers and exclusive writers.
+     * @details CN: 读锁适用于只读临界区，写锁适用于会修改共享状态的临界区。读写锁
+     *              不会自动升级/降级锁模式；每次成功加锁都必须使用对应的解锁函数。
+     *              对具体平台的公平性、优先级及等待策略不作统一保证。
+     *          EN: Use read locks for read-only critical sections and write locks for
+     *              shared-state updates. Lock modes are not upgraded or downgraded
+     *              automatically; pair each successful acquisition with its matching
+     *              unlock. Fairness, priority and wait policy are platform-dependent.
+     */
+    class RWLock                                                                                    ///< @brief CN: 读写锁。 EN: Reader-writer lock.
     {
         rwlock_ptr *lock;
 
@@ -15,19 +23,20 @@ namespace hgl
         RWLock();
         virtual ~RWLock();
 
-        rwlock_ptr *GetRWLock(){ return lock; }                                                     ///<返回操作系级锁
+        /** @brief CN: 仅供平台条件变量适配使用；调用方不得释放或替换原生锁。 EN: For platform condition-variable adapters only; callers must not release or replace the native lock. */
+        rwlock_ptr *GetRWLock(){ return lock; }                                                     ///< @brief CN: 返回操作系统级锁句柄。 EN: Return the native OS lock handle.
 
-        bool TryReadLock();                                                                         ///<尝试读(共享访问)锁定
-        bool ReadLock();                                                                            ///<读(共享访问)锁定
-        bool ReadUnlock();                                                                          ///<读(共享访问)解锁
+        bool TryReadLock();                                                                         ///< @brief CN: 非阻塞尝试获取读锁。 EN: Try to acquire a read lock without blocking.
+        bool ReadLock();                                                                            ///< @brief CN: 获取读锁以进行共享只读访问。 EN: Acquire a read lock for shared read access.
+        bool ReadUnlock();                                                                          ///< @brief CN: 释放当前线程持有的读锁。 EN: Release a read lock held by the current thread.
 
-        bool TryWriteLock();                                                                        ///<尝试写(独占访问)锁定
-        bool WriteLock();                                                                           ///<写(独占访问)锁定
-        bool WriteUnlock();                                                                         ///<写(独占访问)解锁
+        bool TryWriteLock();                                                                        ///< @brief CN: 非阻塞尝试获取写锁。 EN: Try to acquire a write lock without blocking.
+        bool WriteLock();                                                                           ///< @brief CN: 获取写锁以进行独占访问。 EN: Acquire a write lock for exclusive access.
+        bool WriteUnlock();                                                                         ///< @brief CN: 释放当前线程持有的写锁。 EN: Release a write lock held by the current thread.
 
 #if (HGL_OS != HGL_OS_Windows)&&(HGL_OS != HGL_OS_macOS)
-        bool WaitReadLock(double);                                                                  ///<等待读(共享访问)锁定
-        bool WaitWriteLock(double);                                                                 ///<等待写(独占访问)锁定
+        bool WaitReadLock(double);                                                                  ///< @brief CN: 限时等待获取读锁，单位秒。 EN: Wait for a read lock with a timeout in seconds.
+        bool WaitWriteLock(double);                                                                 ///< @brief CN: 限时等待获取写锁，单位秒。 EN: Wait for a write lock with a timeout in seconds.
 #endif//(HGL_OS != HGL_OS_Windows)&&(HGL_OS != HGL_OS_macOS)
     };//class RWLock
 
@@ -60,7 +69,13 @@ namespace hgl
                                     virtual bool WriteUnlock()  {return true;}  \
 
     /**
-     * 读写锁/共享锁对象
+     * @brief CN: 与读写锁关联的指针容器。
+     *        EN: Pointer holder associated with a reader-writer lock.
+     * @details CN: operator-> 不会自动获取读锁或写锁；访问数据前须由调用方按读写
+     *              语义显式加锁。构造时接收的指针由此对象负责 delete。
+     *          EN: operator-> does not acquire a read or write lock; callers must
+     *              explicitly lock according to their access semantics. The supplied
+     *              pointer is owned and deleted by this object.
      */
     template<typename T> class RWLockObject:public RWLock
     {
@@ -108,7 +123,10 @@ namespace hgl
     };//class RWLockObject
 
     /**
-     * 读写锁共享锁定自动释放类
+     * @brief CN: 读锁作用域守卫，构造时获取共享读锁并在析构或 Unlock 时释放。
+     *        EN: Scoped read-lock guard that acquires on construction and releases on destruction or Unlock.
+     * @note CN: 守卫不可复制；其关联 RWLock 必须比守卫活得更久。
+     *       EN: The guard is non-copyable; its RWLock must outlive the guard.
      */
     class ReadLockGuard
     {
@@ -149,7 +167,10 @@ namespace hgl
     };//class ReadLockGuard
 
     /**
-     * 读写锁独占访问锁定自动释放类
+     * @brief CN: 写锁作用域守卫，构造时获取独占写锁并在析构或 Unlock 时释放。
+     *        EN: Scoped write-lock guard that acquires on construction and releases on destruction or Unlock.
+     * @note CN: 守卫不可复制；不要在同一临界区对同一把非递归读写锁重复加写锁。
+     *       EN: The guard is non-copyable; do not recursively acquire the same non-recursive RWLock.
      */
     class WriteLockGuard
     {

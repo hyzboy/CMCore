@@ -22,6 +22,8 @@ namespace hgl
             return(false);
         }
 
+        // CN: 复用对象前必须已 Join；新一轮启动重新清除上一次停止请求。
+        // EN: Join before reusing the object; a new start clears the previous stop request.
         stop_requested.store(false);
         thread_running.store(true);
 
@@ -49,12 +51,16 @@ namespace hgl
 
     bool Thread::StopAndJoin(const double &time_out)
     {
+        // CN: 停止请求只通知工作体，不终止 OS 线程；Join 负责等待并关闭线程句柄。
+        // EN: A stop request only notifies the worker; Join waits for exit and closes the OS thread handle.
         RequestStop();
         return Join(time_out);
     }
 
     bool Thread::Join(const double &time_out)
     {
+        // CN: join_lock 保证多个调用者不会同时等待并重复回收同一个原生句柄。
+        // EN: join_lock prevents concurrent callers from waiting on and reclaiming the same native handle.
         join_lock.Lock();
         thread_lock.Lock();
 
@@ -65,6 +71,8 @@ namespace hgl
             return(true);
         }
 
+        // CN: 先在 thread_lock 下快照句柄，再释放该锁，避免等待期间阻塞线程收尾。
+        // EN: Snapshot the handle under thread_lock, then release it so waiting cannot block thread cleanup.
         const thread_ptr joining_thread=tp;
         thread_lock.Unlock();
 

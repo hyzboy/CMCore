@@ -46,6 +46,8 @@ namespace hgl
     */
     bool Semaphore::Post(int n)
     {
+        // CN: POSIX semaphore 没有跨平台的批量 post，逐个发布；失败时撤销尚未发布的计数。
+        // EN: POSIX has no portable multi-post operation; post permits individually and roll back the remaining count on failure.
         if(!ptr||!ReservePost(n))return(false);
 
         for(int i=0;i<n;i++)

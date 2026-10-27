@@ -35,6 +35,8 @@ namespace hgl
     */
     bool Semaphore::Post(int n)
     {
+        // CN: 先在 HGL 计数器中预留名额，再通知系统信号量；系统调用失败时回滚预留。
+        // EN: Reserve permits in the HGL counter before signaling the OS semaphore; roll back if the system call fails.
         if(!ptr||!ReservePost(n))return(false);
 
         if(ReleaseSemaphore(ptr,n,nullptr))

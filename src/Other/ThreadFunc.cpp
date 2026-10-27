@@ -13,11 +13,19 @@ namespace hgl
      */
     THREAD_FUNC ThreadFunc(Thread *tc)
     {
+        // CN: 与 Start 并发时，先经过同一把锁，确保创建线程所需的句柄及对象状态
+        //     已由启动方完整发布，再进入派生类回调。
+        // EN: When racing with Start, use the same lock so the startup handle and object
+        //     state are fully published before entering derived callbacks.
         tc->thread_lock.Lock();
         tc->thread_lock.Unlock();
 
+        // CN: ProcStartThread 可拒绝启动；只有接受后才运行循环并调用结束回调。
+        // EN: ProcStartThread may reject startup; only an accepted start runs the loop and end callback.
         if(tc->ProcStartThread())
         {
+            // CN: Execute 决定自然结束；stop_requested 由外部请求，用于协作式停止。
+            // EN: Execute controls natural exit; stop_requested is an external cooperative-stop request.
             while(tc->Execute()&&!tc->IsStopRequested())
             {
             }
@@ -25,6 +33,8 @@ namespace hgl
             tc->ProcEndThread();
         }
 
+        // CN: 线程工作体到此结束；平台线程句柄仍须由 Join 回收。
+        // EN: The thread body has ended; Join must still reclaim the platform thread handle.
         tc->SetThreadRunning(false);
 
         return(0);

@@ -8,6 +8,8 @@ namespace hgl
 
     Mutex::Mutex()
     {
+        // CN: 初始化进程内 pthread mutex；该类型不承担跨进程共享语义。
+        // EN: Initialize an in-process pthread mutex; this type does not provide inter-process sharing.
         pthread_mutexattr_t attr;
 
         pthread_mutexattr_init(&attr);

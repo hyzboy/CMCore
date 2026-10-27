@@ -2,8 +2,19 @@
 #define HGL_CONCURRENCY_RING_BUFFER_CORE
 
 /**
-* 由于设定read_pos=write_pos表示无数据，所以当数据刚好读写到结尾时，不立即转成0，而是仍为buffer_size
-*/
+ * @brief CN: 环形缓冲区的游标基础实现。
+ *        EN: Core cursor implementation for the ring buffer.
+ * @details CN: read_pos 与 write_pos 使用单调递增的逻辑位置表示已消费与已写入数量；
+ *              两者相等代表空，差值代表当前占用量。实际访问槽位时再对容量取模。
+ *              逻辑位置越过容量边界后整体减去一个容量，以避免长期运行时整数溢出；
+ *              不能分别对两个游标取模，否则“空”状态会与刚好绕满一圈的状态混淆。
+ *          EN: read_pos and write_pos are monotonic logical positions for consumed and
+ *              written elements. Equal positions mean empty; their difference is the
+ *              current occupancy. Modulo is applied only when indexing storage. Once
+ *              positions cross a capacity boundary, both are reduced by one capacity
+ *              to prevent long-running integer overflow. Reducing them independently
+ *              would make empty indistinguishable from a completely wrapped buffer.
+ */
 //--------------------------------------------------------------------------------------------------
 namespace hgl
 {

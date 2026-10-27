@@ -7,10 +7,20 @@
 namespace hgl
 {
     /**
-    * 信号是用于多线程同步中常用的一种技术<br>
-    * Post 的计数受 max_count 限制；Acquire 的 timeout 单位为秒，0 或负数表示无限等待。
-    */
-    class Semaphore                                                                                 ///信号
+     * @brief CN: 计数信号量，用于传递可累计的许可或通知数量。
+     *        EN: Counting semaphore for passing a countable number of permits or notifications.
+     * @details CN: 每次成功 Post(n) 增加 n 个许可，每次成功 Acquire 消耗一个许可；
+     *              TryAcquire 不等待。许可数量受构造时指定的最大值限制，超过上限的
+     *              Post 会失败。带超时的 Acquire 使用秒为单位，超时为零或负数表示
+     *              无限等待。信号量只计数，不保护与许可关联的数据本身。
+     *          EN: Each successful Post(n) adds n permits and each successful Acquire
+     *              consumes one; TryAcquire does not wait. The constructor sets the
+     *              maximum permit count, and Post fails if that limit would be exceeded.
+     *              Acquire timeouts are in seconds; non-positive values wait
+     *              indefinitely. The semaphore counts permits but does not protect
+     *              associated data.
+     */
+    class Semaphore                                                                                 ///< @brief CN: 计数信号量。 EN: Counting semaphore.
     {
         OBJECT_LOGGER
 
@@ -44,10 +54,10 @@ namespace hgl
         Semaphore(int=1024);
         virtual ~Semaphore();
 
-        virtual bool Post(int n=1);                                                                 ///<发送信号
+        virtual bool Post(int n=1);                                                                 ///< @brief CN: 发布 n 个许可。 EN: Post n permits.
 
-        virtual bool TryAcquire();                                                                  ///<尝试取得一个信号
-        virtual bool Acquire();                                                                     ///<等待并获取一个信号
-        virtual bool Acquire(double time);                                                          ///<等待并获取一个信号
+        virtual bool TryAcquire();                                                                  ///< @brief CN: 非阻塞尝试获取一个许可。 EN: Try to acquire one permit without blocking.
+        virtual bool Acquire();                                                                     ///< @brief CN: 阻塞等待并获取一个许可。 EN: Wait until one permit is acquired.
+        virtual bool Acquire(double time);                                                          ///< @brief CN: 限时等待并获取一个许可，单位秒。 EN: Acquire one permit with a timeout in seconds.
     };//class Semaphore
 }//namespace hgl

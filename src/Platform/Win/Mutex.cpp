@@ -7,6 +7,8 @@ namespace hgl
 {
     Mutex::Mutex()
     {
+        // CN: 临界区是进程内线程同步原语；跨进程协调请使用 ProcessMutex。
+        // EN: A critical section is an in-process synchronization primitive; use ProcessMutex across processes.
         InitializeCriticalSection(&ptr);
     }
 
