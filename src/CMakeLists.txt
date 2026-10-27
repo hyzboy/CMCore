@@ -335,6 +335,7 @@ SET(CMCORE_SYNC_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/sync/Atomic.h
 SOURCE_GROUP("Sync" FILES ${CMCORE_SYNC_FILES})
 
 SET(CMCORE_CONCURRENCY_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/concurrency/DuplexQueue.h
+                             ${CMCORE_ROOT_INCLUDE_PATH}/hgl/concurrency/PriorityTaskQueue.h
                              ${CMCORE_ROOT_INCLUDE_PATH}/hgl/concurrency/RingBuffer.h
                              ${CMCORE_ROOT_INCLUDE_PATH}/hgl/concurrency/SpscQueue.h
                              ${CMCORE_ROOT_INCLUDE_PATH}/hgl/concurrency/SwapMailbox.h
