@@ -4,7 +4,7 @@
 
 using namespace hgl;
 
-static const uint32 ItemCount=1000;
+static const uint32 ItemCount=20000;
 
 class RequestProcessor:public Thread
 {
