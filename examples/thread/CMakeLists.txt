@@ -1,0 +1,16 @@
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+macro(cm_thread_test project_name source_file)
+    cm_example_project("Thread" ${project_name} ${source_file})
+    if(BUILD_TESTING)
+        add_test(NAME ${project_name} COMMAND $<TARGET_FILE:${project_name}>)
+        set_tests_properties(${project_name} PROPERTIES TIMEOUT 30)
+    endif()
+endmacro()
+
+cm_thread_test(ThreadLifecycleTest thread_lifecycle_test.cpp)
+cm_thread_test(SpscQueueTest spsc_queue_test.cpp)
+cm_thread_test(DuplexQueueTest duplex_queue_test.cpp)
+cm_thread_test(SwapMailboxTest swap_mailbox_test.cpp)
+cm_thread_test(AsyncEventTest async_event_test.cpp)
+cm_thread_test(WorkerPoolTest worker_pool_test.cpp)

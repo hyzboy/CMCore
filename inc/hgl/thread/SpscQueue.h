@@ -2,8 +2,8 @@
 
 #include<hgl/CoreType.h>
 #include<hgl/thread/Atomic.h>
+#include<hgl/type/MemoryBlock.h>
 #include<type_traits>
-#include<new>
 
 namespace hgl
 {
@@ -28,6 +28,7 @@ namespace hgl
         uint32 producer_tail;
         uint32 consumer_head;
         T *slots;
+        MemoryBlock storage;
 
         static uint32 NextPower2(uint32 n)
         {
@@ -62,13 +63,20 @@ namespace hgl
             rejected.store(0);
 
             if(capacity)
-                slots=static_cast<T*>(::operator new(static_cast<size_t>(capacity)*sizeof(T)));
+            {
+                const uint64 storage_size=uint64(capacity)*sizeof(T);
+
+                if(storage.Reserve(storage_size,alignof(T)))
+                    slots=static_cast<T*>(storage.Get());
+                else
+                {
+                    capacity=0;
+                    mask=0;
+                }
+            }
         }
 
-        ~SpscQueue()
-        {
-            ::operator delete(slots);
-        }
+        ~SpscQueue()=default;
 
         SpscQueue(const SpscQueue &)=delete;
         SpscQueue &operator=(const SpscQueue &)=delete;
