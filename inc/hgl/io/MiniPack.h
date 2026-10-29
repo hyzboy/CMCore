@@ -98,4 +98,16 @@ namespace hgl::io::minipack
     MiniPackReader *GetMiniPackReader(const OSStringView &);
     MiniPackMemory *GetMiniPackMemory(const OSStringView &);
     MiniPackMemory *GetMiniPackFileMapping(const OSStringView &);
+
+    /**
+     * @brief 从**已读入内存**的字节构造 MiniPackMemory（异步加载路径用）。
+     *
+     * 不拷贝、也不接管 `data`：返回的读取器只是一层视图，调用方必须保证这块内存在
+     * 读取器销毁之前一直有效（典型用法：`LoadedFileManager` 回调期间解析完毕并立即销毁）。
+     *
+     * @param name 仅用于日志与诊断的资产名（不需要是真实文件）
+     * @param data 完整 minipack 字节
+     * @param size 字节数
+     */
+    MiniPackMemory *GetMiniPackMemoryFromBytes(const OSStringView &name,const void *data,uint32 size);
 }//namespace hgl::io::minipack

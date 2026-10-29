@@ -161,6 +161,18 @@ namespace hgl::io::minipack
                 delete mm;         // unmap and close file
             }
         };
+
+        /// 只是一层视图：不拥有字节，也不负责释放（见 GetMiniPackMemoryFromBytes）。
+        class MiniPackMemoryBytes:public MiniPackMemoryBase
+        {
+        public:
+            MiniPackMemoryBytes(const OSStringView &filename, const char *data, FileEntryList *fel, const uint32 data_start, const uint32 size)
+                : MiniPackMemoryBase(filename, fel,
+                                      reinterpret_cast<uint8 *>(const_cast<char *>(data)) + data_start,
+                                      (size>data_start)?(size-data_start):0)
+            {
+            }
+        };
     }
 
     // Load whole file to memory and use owning buffer
@@ -214,5 +226,21 @@ namespace hgl::io::minipack
         }
 
         return new MiniPackMemoryMapped(filename, mm, fel, data_start);
+    }
+
+    MiniPackMemory *GetMiniPackMemoryFromBytes(const OSStringView &name,const void *data,uint32 size)
+    {
+        if(!data||size==0)
+            return nullptr;
+
+        uint32 data_start = 0; FileEntryList *fel = nullptr; uint32 available = 0;
+
+        // ParseMiniPack 只读取，不写缓冲区 ⇒ const_cast 安全。
+        if(!ParseMiniPack(const_cast<char *>(static_cast<const char *>(data)),
+                          static_cast<int64>(size),
+                          data_start,fel,available))
+            return nullptr;
+
+        return new MiniPackMemoryBytes(name,static_cast<const char *>(data),fel,data_start,size);
     }
 }// namespace hgl::io::minipack
