@@ -1008,11 +1008,10 @@ namespace hgl
     // EN: Supports conversion of numbers to hexadecimal strings
     template<typename T2, typename I> String<T2> ToHexString(const I &value) { T2 str[(sizeof(I) << 1) + 1]; ToUpperHexStr(str, value); return String<T2>(str); }
     template<typename T2, typename I> String<T2> HexToString(const I &value) { T2 str[(sizeof(I) << 1) + 1]; htos(str, (sizeof(I) << 1) + 1, value); return String<T2>(str); }
-    template<typename T2> String<T2> PointerToHexString(const void *ptr)     { return HexToString<T2, HGL_POINTER_UINT>(reinterpret_cast<const HGL_POINTER_UINT>(ptr)); }
+    template<typename T2> String<T2> PointerToHexString(const void *ptr)     { return HexToString<T2, uintptr_t>(reinterpret_cast<uintptr_t>(ptr)); }
     inline String<os_char> PointerToHexOSString(const void *value)           { return PointerToHexString<os_char>(value); }
     inline String<char>    PointerToHexU8String(const void *value)          { return PointerToHexString<char>(value); }
     inline String<u16char> PointerToHexU16String(const void *value)         { return PointerToHexString<u16char>(value); }
-
     // CN: 支持字符串拷贝和追加工具函数
     // EN: Supports string copy and append utility functions
     template<typename T2> inline void strcpy(T2 *dst, int max_count, const String<T2> &src) { hgl::strcpy(dst, max_count, src.c_str(), src.Length()); }
