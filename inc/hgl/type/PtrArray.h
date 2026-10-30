@@ -89,7 +89,7 @@ namespace hgl
                 Reserve(n);
                 auto it = lt.begin();
                 for(int i = 0; i < n; ++i, ++it)
-                    construct_at_copy(data_ + i, *it);
+                    hgl::construct_at_copy(data_ + i, *it);
                 count_ = n;
             }
         }
@@ -120,8 +120,8 @@ namespace hgl
 
         ~PtrArray()
         {
-            destroy_range(data_, count_);
-            deallocate_raw_memory(data_);
+            hgl::destroy_range(data_, count_);
+            hgl::deallocate_raw_memory(data_);
         }
 
         // 禁止拷贝（避免双重释放）
@@ -180,7 +180,7 @@ namespace hgl
             if(count > count_)
                 default_construct_range(data_ + count_, count - count_);
             else if(count < count_)
-                destroy_range(data_ + count, count_ - count);
+                hgl::destroy_range(data_ + count, count_ - count);
 
             count_ = count;
             return true;
@@ -251,7 +251,7 @@ namespace hgl
         void Append(const T& obj)
         {
             ensure_capacity(count_ + 1);
-            construct_at_copy(data_ + count_, obj);
+            hgl::construct_at_copy(data_ + count_, obj);
             ++count_;
         }
 
@@ -262,7 +262,7 @@ namespace hgl
         T* Add()
         {
             ensure_capacity(count_ + 1);
-            construct_at_default(data_ + count_);
+            hgl::construct_at(data_ + count_);
             ++count_;
             return data_ + (count_ - 1);
         }
@@ -313,13 +313,13 @@ namespace hgl
 
             int delete_count = end_pos - start;
 
-            destroy_range(data_ + start, delete_count);
+            hgl::destroy_range(data_ + start, delete_count);
 
             int move_count = count_ - end_pos;
             for(int i = 0; i < move_count; ++i)
             {
-                construct_at_move(data_ + start + i, std::move(data_[end_pos + i]));
-                destroy_at(data_ + end_pos + i);
+                hgl::construct_at_move(data_ + start + i, std::move(data_[end_pos + i]));
+                hgl::destroy_at(data_ + end_pos + i);
             }
 
             count_ -= delete_count;
@@ -335,12 +335,12 @@ namespace hgl
 
             int delete_count = end_pos - start;
 
-            destroy_range(data_ + start, delete_count);
+            hgl::destroy_range(data_ + start, delete_count);
 
             for(int i = end_pos; i < count_; ++i)
             {
-                construct_at_move(data_ + i - delete_count, std::move(data_[i]));
-                destroy_at(data_ + i);
+                hgl::construct_at_move(data_ + i - delete_count, std::move(data_[i]));
+                hgl::destroy_at(data_ + i);
             }
 
             count_ -= delete_count;
@@ -362,31 +362,31 @@ namespace hgl
 
             if(np >= old_pos && np <= old_pos + mc) return;
 
-            T* temp = allocate_raw_memory<T>(mc);
+            T* temp = hgl::allocate_raw_memory<T>(mc);
             move_construct_range(temp, data_ + old_pos, mc);
-            destroy_range(data_ + old_pos, mc);
+            hgl::destroy_range(data_ + old_pos, mc);
 
             if(np < old_pos)
             {
                 for(int i = old_pos - 1; i >= np; --i)
                 {
-                    construct_at_move(data_ + i + mc, std::move(data_[i]));
-                    destroy_at(data_ + i);
+                    hgl::construct_at_move(data_ + i + mc, std::move(data_[i]));
+                    hgl::destroy_at(data_ + i);
                 }
             }
             else
             {
                 for(int i = old_pos; i < np - mc; ++i)
                 {
-                    construct_at_move(data_ + i, std::move(data_[i + mc]));
-                    destroy_at(data_ + i + mc);
+                    hgl::construct_at_move(data_ + i, std::move(data_[i + mc]));
+                    hgl::destroy_at(data_ + i + mc);
                 }
                 np -= mc;
             }
 
             move_construct_range(data_ + np, temp, mc);
-            destroy_range(temp, mc);
-            deallocate_raw_memory(temp);
+            hgl::destroy_range(temp, mc);
+            hgl::deallocate_raw_memory(temp);
         }
 
         bool Insert(int pos, const T* data, const int number)
@@ -402,8 +402,8 @@ namespace hgl
             {
                 for(int i = count_ - 1; i >= pos; --i)
                 {
-                    construct_at_move(data_ + i + number, std::move(data_[i]));
-                    destroy_at(data_ + i);
+                    hgl::construct_at_move(data_ + i + number, std::move(data_[i]));
+                    hgl::destroy_at(data_ + i);
                 }
             }
 
@@ -429,14 +429,14 @@ namespace hgl
 
         void Clear()
         {
-            destroy_range(data_, count_);
+            hgl::destroy_range(data_, count_);
             count_ = 0;
         }
 
         void Free()
         {
-            destroy_range(data_, count_);
-            deallocate_raw_memory(data_);
+            hgl::destroy_range(data_, count_);
+            hgl::deallocate_raw_memory(data_);
             data_ = nullptr;
             count_ = 0;
             alloc_count_ = 0;
@@ -454,7 +454,7 @@ namespace hgl
             ensure_capacity(n);
             auto it = l.begin();
             for(int i = 0; i < n; ++i, ++it)
-                construct_at_copy(data_ + i, *it);
+                hgl::construct_at_copy(data_ + i, *it);
             count_ = n;
             return *this;
         }
