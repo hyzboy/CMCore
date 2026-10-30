@@ -303,6 +303,87 @@ void test_delete_semantics()
     }
 }
 
+// ============================================================================
+// TEST 5c: 特化版与主模板 API 对等 (F12)
+// ============================================================================
+void test_specialization_api_parity()
+{
+    std::cout << "\n========================================" << std::endl;
+    std::cout << "TEST 5c: Array specialization API parity" << std::endl;
+    std::cout << "========================================\n" << std::endl;
+
+    std::cout << "\n[5c.1] Add()/Add(ptr,n)/RepeatAdd()/GetFirst/GetLast:" << std::endl;
+    {
+        ValueArray<uint256> v;
+
+        v.Add();                                  // 默认元素
+        TEST_ASSERT(v.GetCount() == 1, "Add() appends one element");
+
+        uint256 item;
+        fill_pattern(item, 4, 2);
+        TEST_ASSERT(v.Add(&item, 1) == 1, "Add(ptr,n) returns start index");
+        TEST_ASSERT(v.GetCount() == 2, "Add(ptr,n) appends");
+
+        uint256 rep;
+        fill_pattern(rep, 4, 3);
+        TEST_ASSERT(v.RepeatAdd(rep, 2) == 2, "RepeatAdd returns start index");
+        TEST_ASSERT(v.GetCount() == 4, "RepeatAdd appends n elements");
+
+        uint256 first;
+        uint256 last;
+        TEST_ASSERT(v.GetFirst(first) && v.GetLast(last), "GetFirst/GetLast succeed");
+        TEST_ASSERT(verify_pattern(last, 4, 3), "GetLast returns the last element");
+    }
+
+    std::cout << "\n[5c.2] Insert(pos, ptr, n):" << std::endl;
+    {
+        ValueArray<uint256> ins;
+        for (uint64 i = 1; i <= 3; ++i)
+        {
+            uint256 x;
+            fill_pattern(x, 4, i);
+            ins.Add(x);
+        }
+
+        uint256 batch[2];
+        fill_pattern(batch[0], 4, 8);
+        fill_pattern(batch[1], 4, 9);
+
+        TEST_ASSERT(ins.Insert(1, batch, 2), "Batch insert succeeds");
+        TEST_ASSERT(ins.GetCount() == 5, "Batch insert grows count");
+
+        const uint256 *d = ins.GetData();
+        TEST_ASSERT(verify_pattern(d[0], 4, 1) && verify_pattern(d[1], 4, 8)
+                    && verify_pattern(d[2], 4, 9) && verify_pattern(d[3], 4, 2)
+                    && verify_pattern(d[4], 4, 3), "Batch insert order correct");
+    }
+
+    std::cout << "\n[5c.3] Exchange / Move:" << std::endl;
+    {
+        ValueArray<uint256> mv;
+        for (uint64 i = 1; i <= 5; ++i)
+        {
+            uint256 x;
+            fill_pattern(x, 4, i);
+            mv.Add(x);
+        }
+
+        mv.Exchange(0, 4);
+        const uint256 *d = mv.GetData();
+        TEST_ASSERT(verify_pattern(d[0], 4, 5) && verify_pattern(d[4], 4, 1), "Exchange swaps");
+
+        mv.Move(0, 4, 1);                     // 把末尾的 1 移到最前
+        d = mv.GetData();
+        TEST_ASSERT(verify_pattern(d[0], 4, 1) && verify_pattern(d[1], 4, 5)
+                    && verify_pattern(d[4], 4, 4), "Move to front matches main template order");
+
+        mv.Move(5, 0, 2);                     // 把前两个移到末尾 => {2,3,4,1,5}
+        d = mv.GetData();
+        TEST_ASSERT(verify_pattern(d[0], 4, 2) && verify_pattern(d[3], 4, 1)
+                    && verify_pattern(d[4], 4, 5), "Move to end matches main template order");
+    }
+}
+
 void test_performance_comparison()
 {
     std::cout << "\n========================================" << std::endl;
@@ -400,6 +481,7 @@ int main(int, char**)
         test_array_type_find_delete();
         test_storage_alignment();
         test_delete_semantics();
+        test_specialization_api_parity();
         test_performance_comparison();
     }
     catch (const std::exception& e)
