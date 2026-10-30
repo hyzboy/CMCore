@@ -84,6 +84,22 @@ namespace
 
     int ThrowingCopy::alive = 0;
     int ThrowingCopy::copy_budget = -1;
+
+    // 非平凡拷贝、但可平凡重定位（平凡移动构造 + 平凡析构）→ 走 memmove 快路径
+    struct Reloc
+    {
+        int value;
+
+        explicit Reloc(int v = 0):value(v) {}
+        Reloc(const Reloc &o):value(o.value) {}          // 用户提供拷贝构造 ⇒ 非 trivially copyable
+        Reloc(Reloc &&) = default;                       // 平凡移动构造
+        Reloc &operator=(const Reloc &) = default;
+        Reloc &operator=(Reloc &&) = default;
+        ~Reloc() = default;                              // 平凡析构
+
+        bool operator==(const Reloc &o)const{return value == o.value;}
+        bool operator!=(const Reloc &o)const{return value != o.value;}
+    };
 }//namespace
 
 static void TestConstruction()
@@ -357,6 +373,52 @@ static void TestDeleteSwapSemantics()
     TEST_ASSERT(Tracked::alive == 0, "DeleteSwap leaves no leaks");
 }
 
+static void TestTriviallyRelocatablePath()
+{    std::printf("\n=== PtrArray: Find and Capacity ===\n");
+    std::printf("\n=== PtrArray: trivially relocatable bulk move ===\n");
+
+    static_assert(!std::is_trivially_copyable_v<Reloc>, "Reloc must not be trivially copyable");
+    static_assert(std::is_trivially_move_constructible_v<Reloc>, "Reloc must be trivially move constructible");
+    static_assert(std::is_trivially_destructible_v<Reloc>, "Reloc must be trivially destructible");
+
+    // Delete 走 memmove 分支，结果必须与逐个搬移一致
+    {
+        PtrArray<Reloc> arr;
+        for(int i = 1; i <= 5; ++i)
+            arr.Add(Reloc(i));
+
+        TEST_ASSERT(arr.Delete(1, 2), "Bulk delete succeeded");
+        TEST_ASSERT(arr.GetCount() == 3, "Bulk delete count");
+        TEST_ASSERT(arr[0] == Reloc(1) && arr[1] == Reloc(4) && arr[2] == Reloc(5),
+                    "Bulk delete preserves order (memmove path)");
+    }
+
+    // Insert 走 memmove 分支
+    {
+        PtrArray<Reloc> arr;
+        for(int i = 1; i <= 4; ++i)
+            arr.Add(Reloc(i));
+
+        Reloc ins[2] = {Reloc(8), Reloc(9)};
+        TEST_ASSERT(arr.Insert(2, ins, 2), "Bulk insert succeeded");
+        TEST_ASSERT(arr.GetCount() == 6, "Bulk insert count");
+        TEST_ASSERT(arr[0] == Reloc(1) && arr[1] == Reloc(2) && arr[2] == Reloc(8)
+                    && arr[3] == Reloc(9) && arr[4] == Reloc(3) && arr[5] == Reloc(4),
+                    "Bulk insert keeps tail order (memmove path)");
+    }
+
+    // DeleteSwap 在快路径类型上同样正确
+    {
+        PtrArray<Reloc> arr;
+        for(int i = 1; i <= 4; ++i)
+            arr.Add(Reloc(i));
+
+        TEST_ASSERT(arr.DeleteSwap(0), "DeleteSwap on relocatable type");
+        TEST_ASSERT(arr.GetCount() == 3 && arr[0] == Reloc(4) && arr[1] == Reloc(2) && arr[2] == Reloc(3),
+                    "DeleteSwap fills with last element");
+    }
+}
+
 static void TestFindAndCapacity()
 {    std::printf("\n=== PtrArray: Find and Capacity ===\n");
     PtrArray<Tracked> arr{Tracked(10), Tracked(20), Tracked(30)};
@@ -443,6 +505,7 @@ int os_main(int, os_char **)
     TestMoveSemantics();
     TestReallocationExceptionSafety();
     TestDeleteSwapSemantics();
+    TestTriviallyRelocatablePath();
     TestFindAndCapacity();
     TestLifetime();
 

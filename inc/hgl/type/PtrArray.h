@@ -3,6 +3,7 @@
 #include<type_traits>
 #include<utility>
 #include<algorithm>
+#include<cstring>
 #include<initializer_list>
 #include<hgl/type/ObjectUtil.h>
 
@@ -19,6 +20,10 @@ namespace hgl
         static_assert(!std::is_trivially_copyable_v<T>, "Use ValueArray for trivially copyable types");
 
     private:
+        // 平凡可重定位：移动构造与析构都无副作用，可以整段 memmove
+        static constexpr bool trivially_relocatable =
+            std::is_trivially_move_constructible_v<T> && std::is_trivially_destructible_v<T>;
+
         T*  data_;
         int count_;
         int alloc_count_;
@@ -342,10 +347,18 @@ namespace hgl
             hgl::destroy_range(data_ + start, delete_count);
 
             int move_count = count_ - end_pos;
-            for(int i = 0; i < move_count; ++i)
+            if constexpr(trivially_relocatable)
             {
-                hgl::construct_at_move(data_ + start + i, std::move(data_[end_pos + i]));
-                hgl::destroy_at(data_ + end_pos + i);
+                if(move_count > 0)
+                    std::memmove(data_ + start, data_ + end_pos, (size_t)move_count * sizeof(T));
+            }
+            else
+            {
+                for(int i = 0; i < move_count; ++i)
+                {
+                    hgl::construct_at_move(data_ + start + i, std::move(data_[end_pos + i]));
+                    hgl::destroy_at(data_ + end_pos + i);
+                }
             }
 
             count_ -= delete_count;
@@ -410,10 +423,17 @@ namespace hgl
 
             if(pos < count_)
             {
-                for(int i = count_ - 1; i >= pos; --i)
+                if constexpr(trivially_relocatable)
                 {
-                    hgl::construct_at_move(data_ + i + number, std::move(data_[i]));
-                    hgl::destroy_at(data_ + i);
+                    std::memmove(data_ + pos + number, data_ + pos, (size_t)(count_ - pos) * sizeof(T));
+                }
+                else
+                {
+                    for(int i = count_ - 1; i >= pos; --i)
+                    {
+                        hgl::construct_at_move(data_ + i + number, std::move(data_[i]));
+                        hgl::destroy_at(data_ + i);
+                    }
                 }
             }
 
