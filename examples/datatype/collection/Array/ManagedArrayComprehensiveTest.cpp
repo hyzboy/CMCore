@@ -111,7 +111,7 @@ void test_objectlist_ownership()
     }
     TEST_ASSERT(TestObject::instance_count == 0, "All instances cleaned up");
 
-    std::cout << "\n[2.2] Unlink (remove without delete):" << std::endl;
+    std::cout << "\n[2.2] DetachAt (remove without delete):" << std::endl;
     TestObject::instance_count = 0;
     {
         ManagedArray<TestObject> obj_list;
@@ -119,12 +119,13 @@ void test_objectlist_ownership()
         obj_list.Add(obj_to_keep);
         obj_list.Add(new TestObject(2, "B"));
 
-        std::cout << "  Unlinking first object:" << std::endl;
-        obj_list.Unlink(0);  // Remove from list but don't delete
+        std::cout << "  Detaching first object:" << std::endl;
+        TestObject* detached = obj_list.DetachAt(0);  // Remove from list, keep ownership with caller
+        TEST_ASSERT(detached == obj_to_keep, "DetachAt returns the detached pointer");
         TEST_ASSERT(obj_list.GetCount() == 1, "Count is 1");
         TEST_ASSERT(TestObject::instance_count == 2, "Both instances still exist");
 
-        std::cout << "  Manually deleting unlinked object:" << std::endl;
+        std::cout << "  Manually deleting detached object:" << std::endl;
         delete obj_to_keep;
         TEST_ASSERT(TestObject::instance_count == 1, "Manually deleted");
     }
@@ -233,9 +234,8 @@ void test_objectlist_mixed_operations()
     TEST_ASSERT(obj_list.GetCount() == 3, "Count is 3");
     TEST_ASSERT(TestObject::instance_count == 3, "3 instances");
 
-    std::cout << "\n[5.2] Mix of Unlink and DeleteAt:" << std::endl;
-    TestObject* keep_ref = obj_list[0];
-    obj_list.Unlink(0);  // Remove first without delete
+    std::cout << "\n[5.2] Mix of DetachAt and DeleteAt:" << std::endl;
+    TestObject* keep_ref = obj_list.DetachAt(0);  // Remove first without delete
     TEST_ASSERT(TestObject::instance_count == 3, "Still 3 instances");
 
     obj_list.DeleteAt(0);  // Delete second (now at index 0)

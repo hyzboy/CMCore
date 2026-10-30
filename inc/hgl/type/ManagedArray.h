@@ -7,17 +7,17 @@
 
 namespace hgl
 {
-    // AI NOTE: Owns pointers to non-trivial objects and deletes them on Clear/Free.
-    // Use Unlink APIs to detach without deleting. Pointer order may change on erase.
+    // AI NOTE: Owns pointers to non-trivial objects and deletes them on Clear/ClearAndDeallocate.
+    // Use Detach APIs to detach without deleting. Pointer order may change on erase.
     /**
      * 对象列表：
      * 本容器保存指针类型并对这些指针拥有所有权（Owning Ptr）。
-     * 当调用 Clear()/Free()/Delete 系列函数时，会对所包含的元素执行 delete 操作
+     * 当调用 Clear()/ClearAndDeallocate()/Delete 系列函数时，会对所包含的元素执行 delete 操作
      *
      * 设计要点：
      * - 内部使用 std::vector<T *> 存储指针；
      * - 新增以 Own 命名的方法（如 DeleteAt），用于先释放对象再从列表中移除；
-     * - 提供 Unlink 系列方法仅断开关联（不 delete），以支持不同的内存管理策略；
+     * - 提供 Detach 系列方法仅断开关联（不 delete），以支持不同的内存管理策略；
      * - 拷贝构造/拷贝赋值被禁用（逐指针浅拷贝会双重释放），只提供移动语义；
      * - Resize() 扩大容量时会填充 nullptr 空槽位，At() 对空槽位返回 nullptr。
      */
@@ -248,33 +248,32 @@ namespace hgl
             items.clear();
         }
 
-        // ============ Unlink 系列：仅断开关联（不 delete） ============
-        bool Unlink(int index)
+        // ============ Detach 系列：仅断开关联（不 delete） ============
+        /**
+         * 断开指定索引处的元素并返回其指针，容器不再持有该对象。
+         * 调用方获得指针的所有权，必须自行 delete，否则内存泄漏。
+         */
+        ItemPointer DetachAt(int index)
         {
-            if(index<0 || index>=(int)items.size()) return false;
+            if(index<0 || index>=(int)items.size()) return nullptr;
+            ItemPointer ptr = items[index];
             items.erase(items.begin()+index);
-            return true;
-        }          ///< 断开指定索引
-        bool UnlinkMove(int index)
-        {
-            if(index<0 || index>=(int)items.size()) return false;
-            items.erase(items.begin()+index);
-            return true;
-        }     ///< 断开并前移其后的元素
-        bool Unlink(int start, int number)
+            return ptr;
+        }
+        bool DetachRange(int start, int number)
         {
             if(start<0 || number<=0 || start+number>(int)items.size()) return false;
             items.erase(items.begin()+start, items.begin()+start+number);
             return true;
-        }  ///< 断开一段范围
-        bool UnlinkByValue(ItemPointer &ip)
+        }  ///< 断开一段范围（不 delete，指针随之丢失，调用方需自行提前保存）
+        bool DetachByValue(ItemPointer &ip)
         {
             auto it = std::find(items.begin(), items.end(), ip);
             if(it == items.end()) return false;
             items.erase(it);
             return true;
         }      ///< 通过值断开（单个）
-        void UnlinkByValue(ItemPointer *ip, int n)
+        void DetachByValue(ItemPointer *ip, int n)
         {
             if(!ip || n<=0) return;
             for(int i = 0; i < n; ++i)
@@ -283,7 +282,7 @@ namespace hgl
                 if(it != items.end()) items.erase(it);
             }
         }          ///< 通过数组断开
-        void UnlinkAll()                          { items.clear(); }                       ///< 断开所有（不 delete ）
+        void DetachAll()                          { items.clear(); }                       ///< 断开所有（不 delete ）
 
     private:
         // 内部辅助：删除范围的元素并先行销毁这些指针

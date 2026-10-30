@@ -216,7 +216,7 @@ namespace hgl
          * @param data_count  已构造的元素数量（必须 >= 0）
          * @return 成功接管返回 true；data_count < 0 时返回 false 且不做任何修改
          */
-        bool SetData(T* data, int data_count)
+        bool AdoptRawBuffer(T* data, int data_count)
         {
             if(data_count < 0)
                 return false;
@@ -232,11 +232,21 @@ namespace hgl
             return true;
         }
 
-        void Unlink()
+        /**
+         * 放弃对当前内存缓冲区的所有权，并返回原始指针。
+         *
+         * 容器不再持有该内存：调用方必须自行用 hgl::destroy_range + hgl::deallocate_raw_memory
+         * 释放，否则内存泄漏。主要用于把缓冲区整体移交到另一个 PtrArray。
+         *
+         * @return 原缓冲区指针（容器为空时为 nullptr）
+         */
+        T* DetachBuffer()
         {
+            T* buf = data_;
             data_ = nullptr;
             count_ = 0;
             alloc_count_ = 0;
+            return buf;
         }
 
     public: // 读写
