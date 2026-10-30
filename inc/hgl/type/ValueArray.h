@@ -181,6 +181,11 @@ namespace hgl
 
         bool Contains(const T &flag)const{return Find(flag)>=0;}                            ///<确认数据项是否存在
 
+        /**
+         * 删除指定索引的数据，保持后续元素顺序（O(n)）。
+         * @param start 起始索引
+         * @param num 删除数量
+         */
         bool Delete(int start,int num=1)
         {
             if(start<0 || start+num>(int)data_array.size()) return false;
@@ -203,10 +208,38 @@ namespace hgl
             return true;
         }              ///<删除指定索引的数据
 
+        /**
+         * 删除指定索引的数据（O(1)，不保序）。
+         * 用最后一个元素填补被删位置，因此元素顺序可能改变。
+         * 需要保持顺序时请使用 Delete()。
+         */
+        bool DeleteSwap(int index)
+        {
+            const int count=(int)data_array.size();
+            if(index<0 || index>=count) return false;
+
+            if constexpr (!std::is_array_v<T>)
+            {
+                if(index!=count-1)
+                    data_array[index]=data_array[count-1];
+            }
+            else
+            {
+                if(index!=count-1)
+                    std::memcpy(&data_array[index], &data_array[count-1], sizeof(T));
+            }
+
+            data_array.pop_back();
+            return true;
+        }
+
+        /**
+         * Delete() 的历史别名：两者都保序，行为完全一致。
+         */
         bool DeleteShift(int start,int num=1)
         {
             return Delete(start, num);
-        }      ///<删除指定索引的数据,将后面紧邻的数据前移
+        }      ///<删除指定索引的数据,将后面紧邻的数据前移（等价于 Delete）
 
         /**
         * 删除列表中的指定项
@@ -565,6 +598,25 @@ namespace hgl
             return -1;
         }
 
+        /**
+         * 删除指定索引的数据（O(1)，不保序）。
+         * 用最后一个元素填补被删位置；需要保持顺序时请使用 Delete()。
+         */
+        bool DeleteSwap(int index)
+        {
+            const int count = GetElementCount();
+            if (index < 0 || index >= count) return false;
+
+            if (index != count - 1)
+                std::memcpy(storage[(size_t)index].value, storage[(size_t)(count - 1)].value, sizeof(ArrayType));
+
+            storage.pop_back();
+            return true;
+        }
+
+        /**
+         * 删除指定索引的数据，保持后续元素顺序（O(n)）。
+         */
         bool Delete(int index)
         {
             const int count = GetElementCount();

@@ -219,8 +219,53 @@ void test_array_type_find_delete()
 
 // ============================================================================
 // TEST 5: 存储单元对齐与布局 (F1 回归)
-// ============================================================================
-void test_storage_alignment()
+// ============================================================================void test_storage_alignment()
+void test_delete_semantics()
+{
+    std::cout << "\n========================================" << std::endl;
+    std::cout << "TEST 5b: Delete vs DeleteSwap" << std::endl;
+    std::cout << "========================================\n" << std::endl;
+
+    std::cout << "\n[5b.1] Scalar ValueArray:" << std::endl;
+    {
+        ValueArray<uint64> v;
+        for (uint64 i = 1; i <= 4; ++i)
+            v.Add(i);
+
+        TEST_ASSERT(v.DeleteSwap(1), "DeleteSwap succeeded");
+        TEST_ASSERT(v.GetCount() == 3, "Count is 3");
+        TEST_ASSERT(v[0] == 1 && v[1] == 4 && v[2] == 3, "DeleteSwap fills with last element");
+
+        TEST_ASSERT(v.Delete(0), "Delete succeeded");
+        TEST_ASSERT(v.GetCount() == 2 && v[0] == 4 && v[1] == 3, "Delete preserves order");
+        TEST_ASSERT(!v.DeleteSwap(9), "DeleteSwap out of range fails");
+    }
+
+    std::cout << "\n[5b.2] Array-element ValueArray:" << std::endl;
+    {
+        ValueArray<uint256> v;
+
+        for (uint64 i = 1; i <= 4; ++i)
+        {
+            uint256 item;
+            fill_pattern(item, 4, i);
+            v.Add(item);
+        }
+
+        TEST_ASSERT(v.DeleteSwap(1), "Array DeleteSwap succeeded");
+        TEST_ASSERT(v.GetCount() == 3, "Array count is 3");
+
+        const uint256 *d = v.GetData();
+        TEST_ASSERT(verify_pattern(d[0], 4, 1) && verify_pattern(d[1], 4, 4) && verify_pattern(d[2], 4, 3),
+                    "Array DeleteSwap fills with last element");
+
+        TEST_ASSERT(v.Delete(0), "Array Delete succeeded");
+        TEST_ASSERT(v.GetCount() == 2, "Array count is 2");
+        d = v.GetData();
+        TEST_ASSERT(verify_pattern(d[0], 4, 4) && verify_pattern(d[1], 4, 3), "Array Delete preserves order");
+        TEST_ASSERT(!v.DeleteSwap(-1), "Array DeleteSwap negative index fails");
+    }
+}void test_storage_alignment()
 {
     std::cout << "\n========================================" << std::endl;
     std::cout << "TEST 5: Storage alignment and layout" << std::endl;
@@ -354,6 +399,7 @@ int main(int, char**)
         test_valuearray_uint16k_large();
         test_array_type_find_delete();
         test_storage_alignment();
+        test_delete_semantics();
         test_performance_comparison();
     }
     catch (const std::exception& e)

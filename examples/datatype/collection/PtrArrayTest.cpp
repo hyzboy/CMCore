@@ -318,9 +318,47 @@ static void TestReallocationExceptionSafety()
     TEST_ASSERT(ThrowingCopy::alive == 0, "No leak after exception test");
 }
 
+static void TestDeleteSwapSemantics()
+{    std::printf("\n=== PtrArray: Find and Capacity ===\n");
+    std::printf("\n=== PtrArray: Delete vs DeleteSwap ===\n");
+
+    // Delete 保序
+    {
+        PtrArray<Tracked> arr{Tracked(1), Tracked(2), Tracked(3), Tracked(4)};
+        TEST_ASSERT(arr.Delete(1), "Delete succeeded");
+        TEST_ASSERT(arr.GetCount() == 3, "Delete reduces count");
+        TEST_ASSERT(arr[0] == Tracked(1) && arr[1] == Tracked(3) && arr[2] == Tracked(4),
+                    "Delete preserves order");
+    }
+
+    // DeleteShift 与 Delete 等价
+    {
+        PtrArray<Tracked> arr{Tracked(1), Tracked(2), Tracked(3), Tracked(4)};
+        TEST_ASSERT(arr.DeleteShift(1), "DeleteShift succeeded");
+        TEST_ASSERT(arr[0] == Tracked(1) && arr[1] == Tracked(3) && arr[2] == Tracked(4),
+                    "DeleteShift equals Delete");
+    }
+
+    // DeleteSwap 用尾元素填补，不保序
+    {
+        PtrArray<Tracked> arr{Tracked(1), Tracked(2), Tracked(3), Tracked(4)};
+        TEST_ASSERT(arr.DeleteSwap(1), "DeleteSwap succeeded");
+        TEST_ASSERT(arr.GetCount() == 3, "DeleteSwap reduces count");
+        TEST_ASSERT(arr[0] == Tracked(1) && arr[1] == Tracked(4) && arr[2] == Tracked(3),
+                    "DeleteSwap fills the hole with the last element");
+
+        TEST_ASSERT(arr.DeleteSwap(2), "DeleteSwap of last element succeeded");
+        TEST_ASSERT(arr.GetCount() == 2 && arr[0] == Tracked(1) && arr[1] == Tracked(4),
+                    "DeleteSwap of tail keeps the rest");
+
+        TEST_ASSERT(!arr.DeleteSwap(5), "DeleteSwap out of range fails");
+    }
+
+    TEST_ASSERT(Tracked::alive == 0, "DeleteSwap leaves no leaks");
+}
+
 static void TestFindAndCapacity()
 {    std::printf("\n=== PtrArray: Find and Capacity ===\n");
-
     PtrArray<Tracked> arr{Tracked(10), Tracked(20), Tracked(30)};
 
     TEST_ASSERT(arr.Find(Tracked(20)) == 1, "Find found");
@@ -404,6 +442,7 @@ int os_main(int, os_char **)
     TestMoveExchange();
     TestMoveSemantics();
     TestReallocationExceptionSafety();
+    TestDeleteSwapSemantics();
     TestFindAndCapacity();
     TestLifetime();
 

@@ -327,6 +327,9 @@ namespace hgl
             std::swap(data_[a], data_[b]);
         }
 
+        /**
+         * 删除指定索引的数据，保持后续元素顺序（O(n)）。
+         */
         bool Delete(int start, int num = 1)
         {
             if(start < 0 || num <= 0 || start >= count_) return false;
@@ -349,25 +352,28 @@ namespace hgl
             return true;
         }
 
+        /**
+         * 删除指定索引的元素（O(1)，不保序）。
+         * 用最后一个元素填补被删位置；需要保持顺序时请使用 Delete()。
+         */
+        bool DeleteSwap(int index)
+        {
+            if(index < 0 || index >= count_) return false;
+
+            if(index != count_ - 1)
+                data_[index] = std::move(data_[count_ - 1]);
+
+            hgl::destroy_at(data_ + count_ - 1);
+            --count_;
+            return true;
+        }
+
+        /**
+         * Delete() 的历史别名：两者都保序，行为完全一致。
+         */
         bool DeleteShift(int start, int num = 1)
         {
-            if(start < 0 || num <= 0 || start >= count_) return false;
-
-            int end_pos = start + num;
-            if(end_pos > count_) end_pos = count_;
-
-            int delete_count = end_pos - start;
-
-            hgl::destroy_range(data_ + start, delete_count);
-
-            for(int i = end_pos; i < count_; ++i)
-            {
-                hgl::construct_at_move(data_ + i - delete_count, std::move(data_[i]));
-                hgl::destroy_at(data_ + i);
-            }
-
-            count_ -= delete_count;
-            return true;
+            return Delete(start, num);
         }
 
         void Move(const int new_pos, const int old_pos, const int move_count)
