@@ -18,6 +18,8 @@ namespace hgl
      * - 内部使用 std::vector<T *> 存储指针；
      * - 新增以 Own 命名的方法（如 DeleteAt），用于先释放对象再从列表中移除；
      * - 提供 Unlink 系列方法仅断开关联（不 delete），以支持不同的内存管理策略；
+     * - 拷贝构造/拷贝赋值被禁用（逐指针浅拷贝会双重释放），只提供移动语义；
+     * - Resize() 扩大容量时会填充 nullptr 空槽位，At() 对空槽位返回 nullptr。
      */
     template<typename T> class ManagedArray
     {
@@ -39,7 +41,7 @@ namespace hgl
 
                 const   int     GetAllocCount   ()const{return (int)items.capacity();}         ///<取得已分配容量
                 const   int     GetCount        ()const{return (int)items.size();}              ///<取得列表内数据数量
-        virtual         bool    Resize          (int count){items.resize(count); return true;}       ///<设置列表内数据数量
+        virtual         bool    Resize          (int count){items.resize(count); return true;}       ///<设置列表内数据数量（放大部分为 nullptr 空槽位）
         virtual         bool    Reserve         (int count){items.reserve(count); return true;}      ///<预分配指定数量的数据空间
 
                 const   bool    IsEmpty         ()const{return items.empty();}               ///<确认列表是否为空
@@ -66,6 +68,23 @@ namespace hgl
     public: //方法
 
         ManagedArray()=default;                                                                          ///<本类构造函数
+
+        // 本类拥有所存指针的所有权，逐指针浅拷贝会导致双重释放，因此禁用拷贝。
+        // 需要复制内容请在调用点显式复制每个对象（new T(*other) 后 Add）。
+        ManagedArray(const ManagedArray &)=delete;
+        ManagedArray &operator=(const ManagedArray &)=delete;
+
+        ManagedArray(ManagedArray &&other) noexcept : items(std::move(other.items)) {}                    ///<移动构造（转移所有权）
+        ManagedArray &operator=(ManagedArray &&other) noexcept                                           ///<移动赋值（转移所有权）
+        {
+            if(this!=&other)
+            {
+                Free();
+                items=std::move(other.items);
+            }
+            return *this;
+        }
+
         virtual ~ManagedArray(){Free();}                                                                 ///<本类析构函数
 
         template<typename ...ARGS>
@@ -87,12 +106,6 @@ namespace hgl
         }
 
         // ============ Add 系列方法 ============
-        virtual T *Add()
-        {
-            items.push_back(nullptr);
-            return items.back();
-        }
-
         virtual int Add(const ItemPointer &obj)
         {
             const int index=(int)items.size();
@@ -206,23 +219,13 @@ namespace hgl
         }
 
         // ============ 赋值操作符 ============
-        virtual void operator=(const std::vector<ItemPointer> &da)
-        {
-            items = da;
-        }
+        // 注意：逐指针赋值同样会转移/共享所有权，极易造成双重释放，
+        // 因此只提供移动赋值（见构造函数区域），不再提供指针数组赋值。
 
-        virtual void operator=(const ManagedArray<T> &ol)
-        {
-            if (this != &ol)
-            {
-                items = ol.items;
-            }
-        }
+        virtual void operator+=(const ItemPointer &obj) { Add(obj); }
+        virtual void operator<<(const ItemPointer &obj) { Add(obj); }
 
-        virtual void operator+=(ItemPointer &obj) { Add(obj); }
-        virtual void operator<<(ItemPointer &obj) { Add(obj); }
-
-        virtual void operator-=(ItemPointer &obj) { DeleteByValue(obj); }
+        virtual void operator-=(const ItemPointer &obj) { DeleteByValue(obj); }
 
         // ============ 释放与清理 ============
         // Free: 先 Clear（对元素 delete），再调用 shrink_to_fit
@@ -335,7 +338,7 @@ namespace hgl
         }
 
         // 通过值查找并销毁，然后从列表移除（单个）
-        bool DeleteByValue(ItemPointer &ip)
+        bool DeleteByValue(const ItemPointer &ip)
         {
             auto it = std::find(items.begin(), items.end(), ip);
             if (it == items.end()) return false;
@@ -347,7 +350,7 @@ namespace hgl
         }
 
         // 通过数组的值逐个销毁并移除
-        void DeleteByValue(ItemPointer *ip, int n)
+        void DeleteByValue(const ItemPointer *ip, int n)
         {
             if (!ip || n <= 0) return;
 
