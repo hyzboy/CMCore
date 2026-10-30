@@ -3,7 +3,7 @@
  *
  * PtrArray<T> 非平凡类型阵列容器测试：
  *   - 构造（默认/容量/初始化列表/原始数组/移动）
- *   - 增删（Add/Append/Insert/Delete/DeleteShift/Move/Exchange）
+ *   - 增删（Add/Append/Insert/Delete/DeleteSwap/Move/Swap）
  *   - 访问（operator[]/At/ReadAt/WriteAt）
  *   - 容量（Reserve/Resize/Expand）
  *   - 查找（Find/Contains）
@@ -203,7 +203,7 @@ static void TestInsertDelete()
     TEST_ASSERT(arr.GetCount() == 4, "Count is 4 after Delete");
     TEST_ASSERT(arr[1] == Tracked(2), "Elements shift forward after Delete");
 
-    // DeleteShift（当前数组 {1,2,3,0}）
+    // Delete（当前数组 {1,2,3,0}）
     TEST_ASSERT(arr.Delete(1), "Delete succeeded");
     TEST_ASSERT(arr.GetCount() == 3, "Count is 3 after Delete");
     TEST_ASSERT(arr[1] == Tracked(3), "Elements shift forward after Delete");
@@ -215,18 +215,18 @@ static void TestInsertDelete()
     TEST_ASSERT(arr2[0] == Tracked(1) && arr2[1] == Tracked(5), "Bulk delete keeps first and last");
 }
 
-static void TestMoveExchange()
+static void TestMoveSwap()
 {
-    std::printf("\n=== PtrArray: Move/Exchange ===\n");
+    std::printf("\n=== PtrArray: Move/Swap ===\n");
 
     PtrArray<Tracked> arr{Tracked(1), Tracked(2), Tracked(3), Tracked(4), Tracked(5)};
 
-    // Exchange
+    // Swap
     arr.Swap(0, 4);
-    TEST_ASSERT(arr[0] == Tracked(5) && arr[4] == Tracked(1), "Exchange swaps");
+    TEST_ASSERT(arr[0] == Tracked(5) && arr[4] == Tracked(1), "Swap swaps");
 
     // Move：把末尾元素(1)移到最前（np < old_pos 分支）
-    // Exchange(0,4) 后 {5,2,3,4,1}；Move(0,4,1) 后 {1,5,2,3,4}
+    // Swap(0,4) 后 {5,2,3,4,1}；Move(0,4,1) 后 {1,5,2,3,4}
     arr.Move(0, 4, 1);
     TEST_ASSERT(arr[0] == Tracked(1) && arr[1] == Tracked(5) && arr[4] == Tracked(4), "Order correct after Move");
     TEST_ASSERT(arr.GetCount() == 5, "Move does not change count");
@@ -501,7 +501,7 @@ int os_main(int, os_char **)
     TestAddAppend();
     TestAccess();
     TestInsertDelete();
-    TestMoveExchange();
+    TestMoveSwap();
     TestMoveSemantics();
     TestReallocationExceptionSafety();
     TestDeleteSwapSemantics();
