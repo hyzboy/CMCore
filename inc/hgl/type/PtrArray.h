@@ -12,11 +12,11 @@ namespace hgl
     // Manages raw memory and explicit ctor/dtor; indices may shift on delete.
     /**
      * 非平凡类型专用的阵列容器。
-     * 与 ValueBuffer 接口尽量保持一致，手动管理内存并显式调用构造/析构函数。
+     * 与 ValueArray 接口尽量保持一致，手动管理内存并显式调用构造/析构函数。
      */
     template<typename T> class PtrArray
     {
-        static_assert(!std::is_trivially_copyable_v<T>, "Use ValueBuffer for trivially copyable types");
+        static_assert(!std::is_trivially_copyable_v<T>, "Use ValueArray for trivially copyable types");
 
     private:
         T*  data_;
@@ -291,7 +291,7 @@ namespace hgl
         }
 
         /**
-         * 从另一个 ObjectArray 追加全部数据
+         * 从另一个 PtrArray 追加全部数据
          */
         int Add(const PtrArray<T>& other)
         {
