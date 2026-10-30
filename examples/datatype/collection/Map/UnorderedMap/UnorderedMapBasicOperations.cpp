@@ -142,6 +142,14 @@ void BasicOperationTest()
     map.Get(1, retrieved_value);
     TEST_ASSERT(retrieved_value == 200, "Value updated via operator[]");
 
+    // 1.4b operator[] 现在可读，也可直接参与运算
+    TEST_ASSERT(map[1] == 200, "operator[] reads the value");
+    map[1] += 50;
+    TEST_ASSERT(map.GetValueRef(1) == 250, "operator[] supports compound assignment");
+    TEST_ASSERT(map[2] == 0, "operator[] inserts a default value on miss");
+    TEST_ASSERT(map.ContainsKey(2), "Missing key was inserted");
+    TEST_ASSERT(map.DeleteByKey(2), "Cleanup inserted key");
+
     // 1.5 删除元素
     cout << "\n[1.5] Delete elements:" << endl;
     TEST_ASSERT(map.DeleteByKey(1), "Delete existing key");

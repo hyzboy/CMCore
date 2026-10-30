@@ -11,10 +11,15 @@ namespace hgl
 {
     // AI NOTE: Wrapper around ankerl::unordered_dense::map with optional
     // key/value array extraction for serialization and fast rebuild.
-    // operator[] is write-only (assignment), use Get/GetValuePointer to read.
-    // Pointer/reference results may be invalidated by rehash or erase.
+    // operator[] follows std::unordered_map semantics (inserts on miss).
+    // Pointer/reference results are invalidated by insert, erase or rehash.
     /**
      * 现代无序映射 - 混合架构（ankerl + 分离式序列化）
+     *
+     * 迭代器/指针失效规则（与 ankerl::unordered_dense 一致）：
+     * - 插入（Add/operator[]）可能触发 rehash，并使所有指针、引用与迭代器失效；
+     * - 删除（DeleteByKey）会移动后续元素，同样使受影响的指针/引用/迭代器失效；
+     * - 仅读取操作不会使其失效。
      *
      * 核心特性：
      * 1. 主存储：ankerl::unordered_dense::map（极致查找性能，5.5x vs ManagedPool）
@@ -41,6 +46,12 @@ namespace hgl
         UnorderedMap() = default;
         virtual ~UnorderedMap() = default;
 
+        /**
+         * 仅用于赋值的便捷代理：map[key] = value
+         *
+         * 注意：operator[] 现已返回 V&（标准语义，可读可写），本类仅作为
+         * 需要显式"先取代理再赋值"的历史写法保留。
+         */
         class AssignProxy
         {
             UnorderedMap* map;
@@ -61,6 +72,10 @@ namespace hgl
                 map->map_data[key] = std::move(value);
                 return *this;
             }
+
+            /// 取回可写引用，便于 m[k].value() += 1 之类的写法
+            V& value() { return map->map_data[key]; }
+            V* operator->() { return &value(); }
         };
 
         // ============================================================
@@ -83,10 +98,18 @@ namespace hgl
         void Reserve(size_t count) { map_data.reserve(count); }
 
         /**
-         * 仅用于赋值的便捷写法：map[key] = value
+         * 标准下标访问：返回 value 的可读写引用。
+         * - key 不存在时会插入一个默认构造的 V（与 std::unordered_map 一致）；
+         *   若不想插入，请先用 ContainsKey()/GetValuePointer() 判断。
+         * - 插入可能触发 rehash，使此前取得的指针/引用/迭代器全部失效。
+         *
+         * 读取示例：
+         *   V *p = map.GetValuePointer(key);
+         *   if(p) use(*p);
+         *   if(map.ContainsKey(key)) use(map.GetValueRef(key));
          */
-        AssignProxy operator[](const K& key) { return AssignProxy(this, key); }
-        AssignProxy operator[](K&& key) { return AssignProxy(this, std::move(key)); }
+        V& operator[](const K& key) { return map_data[key]; }
+        V& operator[](K&& key) { return map_data[std::move(key)]; }
 
         /**
          * 添加一个键值对
