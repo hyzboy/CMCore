@@ -2,6 +2,7 @@
 
 #include<vector>
 #include<algorithm>
+#include<utility>
 #include<hgl/type/MemoryUtil.h>
 
 namespace hgl
@@ -68,13 +69,20 @@ namespace hgl
         virtual ~ManagedArray(){Free();}                                                                 ///<本类析构函数
 
         template<typename ...ARGS>
-        T* Create(ARGS...args)
+        T* Create(ARGS&&...args)
         {
-            T* obj = new T(args...);
+            T* obj = new T(std::forward<ARGS>(args)...);
 
-            if (!obj) return nullptr;
+            try
+            {
+                items.push_back(obj);
+            }
+            catch(...)
+            {
+                delete obj;
+                throw;
+            }
 
-            items.push_back(obj);
             return obj;
         }
 
