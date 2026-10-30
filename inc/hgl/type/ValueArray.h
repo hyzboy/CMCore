@@ -209,7 +209,7 @@ namespace hgl
         * @param data 要删除的数据项
         * @return 是否成功
         */
-        virtual bool DeleteByValue(T &data)
+        virtual bool DeleteByValue(const T &data)
         {
             const int pos=Find(data);
 
@@ -222,9 +222,12 @@ namespace hgl
         * @param n 要删除的数据个数
         * @return 成功删除的数据个数
         */
-        virtual int  DeleteByValue(T *data,int n)
+        virtual int  DeleteByValue(const T *data,int n)
         {
             int result=0;
+
+            if(!data || n<=0)
+                return 0;
 
             while(n--)
             {
@@ -395,9 +398,9 @@ namespace hgl
             return *this;
         }                  ///<操作符重载复制一个列表
 
-        virtual void operator += (T &obj){Add(obj);}                                                ///<操作符重载添加一个数据
-        virtual void operator << (T &obj){Add(obj);}                                                ///<操作符重载添加一个数据
-        virtual void operator -= (T &obj){DeleteByValue(obj);}                                      ///<操作符重载删除一个数据
+        virtual void operator += (const T &obj){Add(obj);}                                                ///<操作符重载添加一个数据
+        virtual void operator << (const T &obj){Add(obj);}                                                ///<操作符重载添加一个数据
+        virtual void operator -= (const T &obj){DeleteByValue(obj);}                                      ///<操作符重载删除一个数据
 
                 T *  At(const int index)
         {
