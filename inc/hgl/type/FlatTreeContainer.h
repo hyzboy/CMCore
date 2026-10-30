@@ -17,13 +17,13 @@ namespace hgl
      *
      * 设计特性：
      * 1. 结构与数据彻底解耦：底部分离维护紧凑连续的数据数组与拓扑索引数组。
-     * 2. 零指针引用：节点间完全由整型下标关联，内存紧凑，天然支持 memcpy。
+     * 2. 零指针引用：节点间完全由整型下标关联，内存紧凑，天然支持连续内存搬移与 memcpy。
      * 3. 双重视角 (Dual-View)：
-     *    - 原始数组视角：直接提供连续物理内存指针，零拷贝供批量批处理及 GPU VRAM 上传；
+     *    - 原始数组视角：直接提供连续物理内存指针，零拷贝供批量批处理、高性能并行计算与外部缓存绑定；
      *    - 树形结构视角：通过轻量代理 NodeView / ConstNodeView 进行面向对象的父子兄弟树形导航。
      * 4. 双拓扑架构 (Dual-Topology)：
-     *    - CPU 富拓扑：左孩子右兄弟 + 前驱兄弟 + 末尾孩子 (LCRS)，支持 O(1) 添加子节点、摘除与重置父节点 (Reparenting)；
-     *    - GPU 极简拓扑：自动烘焙衍生纯 Parent 索引、Depth 与深度分层偏移表 (Depth Offsets)，直接匹配 Compute Shader (SSBO)。
+     *    - 层级富拓扑 (Hierarchy Topology)：左孩子右兄弟 + 前驱兄弟 + 末尾孩子 (LCRS)，支持 O(1) 添加子节点、摘除与重置父节点 (Reparenting)；
+     *    - 线性平铺拓扑 (Linear Topology)：自动衍生平铺的纯 Parent 索引、Depth 与深度分层偏移表 (Depth Offsets)，用于极速流水线式并行层级扫描更新。
      * 5. 线性零拷贝序列化：无需递归，无指针修正，整块流式 I/O。
      */
     template<typename T>
@@ -31,15 +31,15 @@ namespace hgl
     {
         static_assert(std::is_trivially_copyable_v<T>,
                       "FlatTreeContainer<T> requires trivially copyable types (PODs, transforms, matrices, etc.) "
-                      "to ensure zero-copy GPU VRAM upload, linear serialization, and memcpy-safe flat memory layout.");
+                      "to ensure zero-copy contiguous buffer upload, linear serialization, and memcpy-safe flat memory layout.");
 
     public:
         static constexpr int32 INVALID_INDEX = -1;
 
         /**
-         * @brief CPU 端富拓扑节点（面向编辑、UI层级树、双向链表导航）
+         * @brief 层级富拓扑节点（面向编辑、UI层级树、双向链表导航）
          */
-        struct CPUTopologyNode
+        struct HierarchyTopologyNode
         {
             int32  parent       = INVALID_INDEX;    ///< 父节点下标，INVALID_INDEX 表示根节点
             int32  first_child  = INVALID_INDEX;    ///< 首个子节点下标
@@ -51,14 +51,18 @@ namespace hgl
         };
 
         /**
-         * @brief GPU 端衍生精简拓扑节点（面向 Compute Shader、SSBO 对齐）
+         * @brief 衍生精简线性平铺拓扑节点（面向连续线性扫描、批量并行计算与硬件缓存对齐）
          */
-        struct alignas(8) GPUTopologyNode
+        struct alignas(8) LinearTopologyNode
         {
-            int32  parent       = INVALID_INDEX;    ///< 父节点下标（供 GPU 并行读取父节点变换）
+            int32  parent       = INVALID_INDEX;    ///< 父节点下标（供单向线性扫描直接读取父节点状态）
             uint16 depth        = 0;                ///< 层级深度
             uint16 flags        = 0;                ///< 标志位
         };
+
+        // 别名兼容
+        using CPUTopologyNode = HierarchyTopologyNode;
+        using GPUTopologyNode = LinearTopologyNode;
 
 #pragma pack(push, 1)
         /**
@@ -66,14 +70,14 @@ namespace hgl
          */
         struct FileHeader
         {
-            char   magic[8];            // "FLATTREE"
-            uint32 version;             // 1
-            uint32 node_count;          // 节点总数
-            uint32 element_size;        // sizeof(T)
-            uint32 cpu_topology_size;   // sizeof(CPUTopologyNode)
-            uint32 gpu_topology_size;   // sizeof(GPUTopologyNode)
-            uint32 flags;               // 标志位
-            uint32 reserved;            // 预留对齐
+            char   magic[8];                    // "FLATTREE"
+            uint32 version;                     // 1
+            uint32 node_count;                  // 节点总数
+            uint32 element_size;                // sizeof(T)
+            uint32 hierarchy_topology_size;     // sizeof(HierarchyTopologyNode)
+            uint32 linear_topology_size;        // sizeof(LinearTopologyNode)
+            uint32 flags;                       // 标志位
+            uint32 reserved;                    // 预留对齐
         };
 #pragma pack(pop)
 
@@ -82,13 +86,13 @@ namespace hgl
         class ConstNodeView;
 
     protected:
-        ValueArray<T>               m_data;             ///< 紧凑连续的数据数组
-        ValueArray<CPUTopologyNode> m_cpu_topology;     ///< CPU 端富拓扑数组
-        ValueArray<GPUTopologyNode> m_gpu_topology;     ///< GPU 端衍生极简拓扑数组（用于 SSBO）
-        ValueArray<uint32>          m_depth_offsets;    ///< GPU 深度分层偏移表（用于逐层 Dispatch）
-        ValueArray<uint32>          m_depth_counts;     ///< 各深度层包含的节点数
-        uint32                      m_max_depth = 0;    ///< 树的最大深度
-        bool                        m_gpu_dirty = true; ///< GPU 拓扑脏标记
+        ValueArray<T>                     m_data;                 ///< 紧凑连续的数据数组
+        ValueArray<HierarchyTopologyNode> m_hierarchy_topology;   ///< 层级富拓扑数组
+        ValueArray<LinearTopologyNode>    m_linear_topology;      ///< 衍生极简线性平铺拓扑数组
+        ValueArray<uint32>                m_depth_offsets;        ///< 深度分层偏移表（用于逐层批处理）
+        ValueArray<uint32>                m_depth_counts;         ///< 各深度层包含的节点数
+        uint32                            m_max_depth = 0;        ///< 树的最大深度
+        bool                              m_linear_dirty = true;  ///< 线性平铺拓扑脏标记
 
     public:
         // ====================================================================
@@ -260,7 +264,7 @@ namespace hgl
         FlatTreeContainer &operator=(FlatTreeContainer &&) noexcept = default;
 
         // ====================================================================
-        // 原始数组与线性视角 (Raw Array View / GPU View)
+        // 原始数组与线性视角 (Raw Array View / Flat Data View)
         // ====================================================================
         int32   GetCount()          const { return m_data.GetCount(); }
         int32   GetAllocCount()      const { return m_data.GetAllocCount(); }
@@ -289,25 +293,39 @@ namespace hgl
         }
 
         // ====================================================================
-        // CPU 拓扑原始数据访问
+        // 层级拓扑原始数据访问 (Hierarchy Topology View)
         // ====================================================================
-        CPUTopologyNode *       GetCPUTopologyData()       { return m_cpu_topology.GetData(); }
-        const CPUTopologyNode * GetCPUTopologyData() const { return m_cpu_topology.GetData(); }
-        size_t                  GetCPUTopologyTotalBytes() const { return m_cpu_topology.GetTotalBytes(); }
-        const ValueArray<CPUTopologyNode> &GetCPUTopology() const { return m_cpu_topology; }
+        HierarchyTopologyNode *       GetHierarchyTopologyData()       { return m_hierarchy_topology.GetData(); }
+        const HierarchyTopologyNode * GetHierarchyTopologyData() const { return m_hierarchy_topology.GetData(); }
+        size_t                        GetHierarchyTopologyTotalBytes() const { return m_hierarchy_topology.GetTotalBytes(); }
+        const ValueArray<HierarchyTopologyNode> &GetHierarchyTopology() const { return m_hierarchy_topology; }
 
         // ====================================================================
-        // GPU 拓扑原始数据访问 (SSBO Upload)
+        // 线性平铺拓扑原始数据访问 (Linear Topology View)
         // ====================================================================
-        const GPUTopologyNode * GetGPUTopologyData() const { return m_gpu_topology.GetData(); }
-        size_t                  GetGPUTopologyTotalBytes() const { return m_gpu_topology.GetTotalBytes(); }
-        int32                   GetGPUTopologyCount() const { return m_gpu_topology.GetCount(); }
-        const ValueArray<GPUTopologyNode> &GetGPUTopology() const { return m_gpu_topology; }
+        const LinearTopologyNode * GetLinearTopologyData() const { return m_linear_topology.GetData(); }
+        size_t                     GetLinearTopologyTotalBytes() const { return m_linear_topology.GetTotalBytes(); }
+        int32                      GetLinearTopologyCount() const { return m_linear_topology.GetCount(); }
+        const ValueArray<LinearTopologyNode> &GetLinearTopology() const { return m_linear_topology; }
 
         const ValueArray<uint32> &GetDepthOffsets() const { return m_depth_offsets; }
         const ValueArray<uint32> &GetDepthCounts() const { return m_depth_counts; }
-        uint32                  GetMaxDepth() const { return m_max_depth; }
-        bool                    IsGPUTopologyDirty() const { return m_gpu_dirty; }
+        uint32                    GetMaxDepth() const { return m_max_depth; }
+        bool                      IsLinearTopologyDirty() const { return m_linear_dirty; }
+
+        // 别名方法以供过渡兼容
+        HierarchyTopologyNode *       GetCPUTopologyData()       { return GetHierarchyTopologyData(); }
+        const HierarchyTopologyNode * GetCPUTopologyData() const { return GetHierarchyTopologyData(); }
+        size_t                        GetCPUTopologyTotalBytes() const { return GetHierarchyTopologyTotalBytes(); }
+        const ValueArray<HierarchyTopologyNode> &GetCPUTopology() const { return GetHierarchyTopology(); }
+
+        const LinearTopologyNode * GetGPUTopologyData() const { return GetLinearTopologyData(); }
+        size_t                     GetGPUTopologyTotalBytes() const { return GetLinearTopologyTotalBytes(); }
+        int32                      GetGPUTopologyCount() const { return GetLinearTopologyCount(); }
+        const ValueArray<LinearTopologyNode> &GetGPUTopology() const { return GetLinearTopology(); }
+        bool                       IsGPUTopologyDirty() const { return IsLinearTopologyDirty(); }
+        bool                       BakeGPUTopology() { return BakeLinearTopology(); }
+        bool                       SyncGPUTopology() { return SyncLinearTopology(); }
 
         // ====================================================================
         // 树形代理视角获取
@@ -343,66 +361,66 @@ namespace hgl
         int32 GetParent(int32 index) const
         {
             if (!IsValidIndex(index)) return INVALID_INDEX;
-            return m_cpu_topology[index].parent;
+            return m_hierarchy_topology[index].parent;
         }
 
         int32 GetFirstChild(int32 index) const
         {
             if (!IsValidIndex(index)) return INVALID_INDEX;
-            return m_cpu_topology[index].first_child;
+            return m_hierarchy_topology[index].first_child;
         }
 
         int32 GetLastChild(int32 index) const
         {
             if (!IsValidIndex(index)) return INVALID_INDEX;
-            return m_cpu_topology[index].last_child;
+            return m_hierarchy_topology[index].last_child;
         }
 
         int32 GetNextSibling(int32 index) const
         {
             if (!IsValidIndex(index)) return INVALID_INDEX;
-            return m_cpu_topology[index].next_sibling;
+            return m_hierarchy_topology[index].next_sibling;
         }
 
         int32 GetPrevSibling(int32 index) const
         {
             if (!IsValidIndex(index)) return INVALID_INDEX;
-            return m_cpu_topology[index].prev_sibling;
+            return m_hierarchy_topology[index].prev_sibling;
         }
 
         uint16 GetDepth(int32 index) const
         {
             if (!IsValidIndex(index)) return 0;
-            return m_cpu_topology[index].depth;
+            return m_hierarchy_topology[index].depth;
         }
 
         bool IsRoot(int32 index) const
         {
             if (!IsValidIndex(index)) return false;
-            return m_cpu_topology[index].parent == INVALID_INDEX;
+            return m_hierarchy_topology[index].parent == INVALID_INDEX;
         }
 
         bool IsLeaf(int32 index) const
         {
             if (!IsValidIndex(index)) return false;
-            return m_cpu_topology[index].first_child == INVALID_INDEX;
+            return m_hierarchy_topology[index].first_child == INVALID_INDEX;
         }
 
         bool HasChildren(int32 index) const
         {
             if (!IsValidIndex(index)) return false;
-            return m_cpu_topology[index].first_child != INVALID_INDEX;
+            return m_hierarchy_topology[index].first_child != INVALID_INDEX;
         }
 
         int32 GetChildCount(int32 index) const
         {
             if (!IsValidIndex(index)) return 0;
             int32 count = 0;
-            int32 c = m_cpu_topology[index].first_child;
+            int32 c = m_hierarchy_topology[index].first_child;
             while (c != INVALID_INDEX)
             {
                 ++count;
-                c = m_cpu_topology[c].next_sibling;
+                c = m_hierarchy_topology[c].next_sibling;
             }
             return count;
         }
@@ -415,12 +433,12 @@ namespace hgl
             if (!IsValidIndex(ancestor) || !IsValidIndex(descendant))
                 return false;
 
-            int32 curr = m_cpu_topology[descendant].parent;
+            int32 curr = m_hierarchy_topology[descendant].parent;
             while (curr != INVALID_INDEX)
             {
                 if (curr == ancestor)
                     return true;
-                curr = m_cpu_topology[curr].parent;
+                curr = m_hierarchy_topology[curr].parent;
             }
             return false;
         }
@@ -439,7 +457,7 @@ namespace hgl
             const int32 new_index = m_data.GetCount();
             m_data.Add(value);
 
-            CPUTopologyNode node;
+            HierarchyTopologyNode node;
             node.parent = parent;
             node.first_child = INVALID_INDEX;
             node.last_child = INVALID_INDEX;
@@ -448,19 +466,19 @@ namespace hgl
 
             if (parent != INVALID_INDEX && IsValidIndex(parent))
             {
-                node.depth = m_cpu_topology[parent].depth + 1;
+                node.depth = m_hierarchy_topology[parent].depth + 1;
                 // 挂载到父节点末尾
-                int32 last = m_cpu_topology[parent].last_child;
+                int32 last = m_hierarchy_topology[parent].last_child;
                 if (last != INVALID_INDEX)
                 {
-                    m_cpu_topology[last].next_sibling = new_index;
+                    m_hierarchy_topology[last].next_sibling = new_index;
                     node.prev_sibling = last;
-                    m_cpu_topology[parent].last_child = new_index;
+                    m_hierarchy_topology[parent].last_child = new_index;
                 }
                 else
                 {
-                    m_cpu_topology[parent].first_child = new_index;
-                    m_cpu_topology[parent].last_child = new_index;
+                    m_hierarchy_topology[parent].first_child = new_index;
+                    m_hierarchy_topology[parent].last_child = new_index;
                 }
             }
             else
@@ -469,8 +487,8 @@ namespace hgl
                 node.depth = 0;
             }
 
-            m_cpu_topology.Add(node);
-            m_gpu_dirty = true;
+            m_hierarchy_topology.Add(node);
+            m_linear_dirty = true;
             return new_index;
         }
 
@@ -497,34 +515,34 @@ namespace hgl
             if (!IsValidIndex(sibling))
                 return INVALID_INDEX;
 
-            const int32 parent = m_cpu_topology[sibling].parent;
+            const int32 parent = m_hierarchy_topology[sibling].parent;
             const int32 new_index = m_data.GetCount();
             m_data.Add(value);
 
-            CPUTopologyNode node;
+            HierarchyTopologyNode node;
             node.parent = parent;
-            node.depth = m_cpu_topology[sibling].depth;
+            node.depth = m_hierarchy_topology[sibling].depth;
             node.first_child = INVALID_INDEX;
             node.last_child = INVALID_INDEX;
 
             // 插入到 sibling 之后
-            const int32 old_next = m_cpu_topology[sibling].next_sibling;
+            const int32 old_next = m_hierarchy_topology[sibling].next_sibling;
             node.prev_sibling = sibling;
             node.next_sibling = old_next;
 
-            m_cpu_topology[sibling].next_sibling = new_index;
+            m_hierarchy_topology[sibling].next_sibling = new_index;
             if (old_next != INVALID_INDEX)
             {
-                m_cpu_topology[old_next].prev_sibling = new_index;
+                m_hierarchy_topology[old_next].prev_sibling = new_index;
             }
             else if (parent != INVALID_INDEX)
             {
                 // sibling 是原先的 last_child
-                m_cpu_topology[parent].last_child = new_index;
+                m_hierarchy_topology[parent].last_child = new_index;
             }
 
-            m_cpu_topology.Add(node);
-            m_gpu_dirty = true;
+            m_hierarchy_topology.Add(node);
+            m_linear_dirty = true;
             return new_index;
         }
 
@@ -546,7 +564,7 @@ namespace hgl
                 return false;
 
             // 相同父节点，无操作
-            if (m_cpu_topology[node_index].parent == new_parent_index)
+            if (m_hierarchy_topology[node_index].parent == new_parent_index)
                 return true;
 
             // 禁止挂载到自身
@@ -561,32 +579,32 @@ namespace hgl
             UnlinkFromParentAndSiblings(node_index);
 
             // 2. 接入新父节点
-            m_cpu_topology[node_index].parent = new_parent_index;
+            m_hierarchy_topology[node_index].parent = new_parent_index;
             if (new_parent_index != INVALID_INDEX)
             {
-                int32 last = m_cpu_topology[new_parent_index].last_child;
+                int32 last = m_hierarchy_topology[new_parent_index].last_child;
                 if (last != INVALID_INDEX)
                 {
-                    m_cpu_topology[last].next_sibling = node_index;
-                    m_cpu_topology[node_index].prev_sibling = last;
-                    m_cpu_topology[new_parent_index].last_child = node_index;
+                    m_hierarchy_topology[last].next_sibling = node_index;
+                    m_hierarchy_topology[node_index].prev_sibling = last;
+                    m_hierarchy_topology[new_parent_index].last_child = node_index;
                 }
                 else
                 {
-                    m_cpu_topology[new_parent_index].first_child = node_index;
-                    m_cpu_topology[new_parent_index].last_child = node_index;
+                    m_hierarchy_topology[new_parent_index].first_child = node_index;
+                    m_hierarchy_topology[new_parent_index].last_child = node_index;
                 }
-                UpdateSubtreeDepth(node_index, m_cpu_topology[new_parent_index].depth + 1);
+                UpdateSubtreeDepth(node_index, m_hierarchy_topology[new_parent_index].depth + 1);
             }
             else
             {
                 // 成为根节点
-                m_cpu_topology[node_index].prev_sibling = INVALID_INDEX;
-                m_cpu_topology[node_index].next_sibling = INVALID_INDEX;
+                m_hierarchy_topology[node_index].prev_sibling = INVALID_INDEX;
+                m_hierarchy_topology[node_index].next_sibling = INVALID_INDEX;
                 UpdateSubtreeDepth(node_index, 0);
             }
 
-            m_gpu_dirty = true;
+            m_linear_dirty = true;
             return true;
         }
 
@@ -627,7 +645,7 @@ namespace hgl
             // 构建压缩后的新数组
             ValueArray<T> new_data;
             new_data.Reserve(new_count);
-            ValueArray<CPUTopologyNode> new_topology;
+            ValueArray<HierarchyTopologyNode> new_topology;
             new_topology.Reserve(new_count);
 
             for (int32 i = 0; i < total; ++i)
@@ -636,7 +654,7 @@ namespace hgl
                 {
                     new_data.Add(m_data[i]);
 
-                    CPUTopologyNode node = m_cpu_topology[i];
+                    HierarchyTopologyNode node = m_hierarchy_topology[i];
                     node.parent       = (node.parent != INVALID_INDEX)       ? new_indices[node.parent]       : INVALID_INDEX;
                     node.first_child  = (node.first_child != INVALID_INDEX)  ? new_indices[node.first_child]  : INVALID_INDEX;
                     node.last_child   = (node.last_child != INVALID_INDEX)   ? new_indices[node.last_child]   : INVALID_INDEX;
@@ -648,8 +666,8 @@ namespace hgl
             }
 
             m_data = std::move(new_data);
-            m_cpu_topology = std::move(new_topology);
-            m_gpu_dirty = true;
+            m_hierarchy_topology = std::move(new_topology);
+            m_linear_dirty = true;
             return true;
         }
 
@@ -659,30 +677,30 @@ namespace hgl
         void Clear()
         {
             m_data.Clear();
-            m_cpu_topology.Clear();
-            m_gpu_topology.Clear();
+            m_hierarchy_topology.Clear();
+            m_linear_topology.Clear();
             m_depth_offsets.Clear();
             m_depth_counts.Clear();
             m_max_depth = 0;
-            m_gpu_dirty = false;
+            m_linear_dirty = false;
         }
 
         void ClearAndDeallocate()
         {
             m_data.ClearAndDeallocate();
-            m_cpu_topology.ClearAndDeallocate();
-            m_gpu_topology.ClearAndDeallocate();
+            m_hierarchy_topology.ClearAndDeallocate();
+            m_linear_topology.ClearAndDeallocate();
             m_depth_offsets.ClearAndDeallocate();
             m_depth_counts.ClearAndDeallocate();
             m_max_depth = 0;
-            m_gpu_dirty = false;
+            m_linear_dirty = false;
         }
 
         bool Reserve(int32 count)
         {
             if (count <= 0) return false;
             m_data.Reserve(count);
-            m_cpu_topology.Reserve(count);
+            m_hierarchy_topology.Reserve(count);
             return true;
         }
 
@@ -696,11 +714,11 @@ namespace hgl
         void ForEachChild(int32 parent, Func &&func) const
         {
             if (!IsValidIndex(parent)) return;
-            int32 c = m_cpu_topology[parent].first_child;
+            int32 c = m_hierarchy_topology[parent].first_child;
             while (c != INVALID_INDEX)
             {
                 func(c, m_data[c]);
-                c = m_cpu_topology[c].next_sibling;
+                c = m_hierarchy_topology[c].next_sibling;
             }
         }
 
@@ -708,11 +726,11 @@ namespace hgl
         void ForEachChild(int32 parent, Func &&func)
         {
             if (!IsValidIndex(parent)) return;
-            int32 c = m_cpu_topology[parent].first_child;
+            int32 c = m_hierarchy_topology[parent].first_child;
             while (c != INVALID_INDEX)
             {
                 func(c, m_data[c]);
-                c = m_cpu_topology[c].next_sibling;
+                c = m_hierarchy_topology[c].next_sibling;
             }
         }
 
@@ -725,11 +743,11 @@ namespace hgl
             if (!IsValidIndex(root_index)) return;
             func(root_index, m_data[root_index]);
 
-            int32 c = m_cpu_topology[root_index].first_child;
+            int32 c = m_hierarchy_topology[root_index].first_child;
             while (c != INVALID_INDEX)
             {
                 TraversePreOrder(c, func);
-                c = m_cpu_topology[c].next_sibling;
+                c = m_hierarchy_topology[c].next_sibling;
             }
         }
 
@@ -739,11 +757,11 @@ namespace hgl
             if (!IsValidIndex(root_index)) return;
             func(root_index, m_data[root_index]);
 
-            int32 c = m_cpu_topology[root_index].first_child;
+            int32 c = m_hierarchy_topology[root_index].first_child;
             while (c != INVALID_INDEX)
             {
                 TraversePreOrder(c, func);
-                c = m_cpu_topology[c].next_sibling;
+                c = m_hierarchy_topology[c].next_sibling;
             }
         }
 
@@ -755,11 +773,11 @@ namespace hgl
         {
             if (!IsValidIndex(root_index)) return;
 
-            int32 c = m_cpu_topology[root_index].first_child;
+            int32 c = m_hierarchy_topology[root_index].first_child;
             while (c != INVALID_INDEX)
             {
                 TraversePostOrder(c, func);
-                c = m_cpu_topology[c].next_sibling;
+                c = m_hierarchy_topology[c].next_sibling;
             }
 
             func(root_index, m_data[root_index]);
@@ -770,11 +788,11 @@ namespace hgl
         {
             if (!IsValidIndex(root_index)) return;
 
-            int32 c = m_cpu_topology[root_index].first_child;
+            int32 c = m_hierarchy_topology[root_index].first_child;
             while (c != INVALID_INDEX)
             {
                 TraversePostOrder(c, func);
-                c = m_cpu_topology[c].next_sibling;
+                c = m_hierarchy_topology[c].next_sibling;
             }
 
             func(root_index, m_data[root_index]);
@@ -795,11 +813,11 @@ namespace hgl
             while (queue.Pop(curr))
             {
                 func(curr, m_data[curr]);
-                int32 c = m_cpu_topology[curr].first_child;
+                int32 c = m_hierarchy_topology[curr].first_child;
                 while (c != INVALID_INDEX)
                 {
                     queue.Push(c);
-                    c = m_cpu_topology[c].next_sibling;
+                    c = m_hierarchy_topology[c].next_sibling;
                 }
             }
         }
@@ -813,7 +831,7 @@ namespace hgl
             const int32 count = m_data.GetCount();
             for (int32 i = 0; i < count; ++i)
             {
-                if (m_cpu_topology[i].parent == INVALID_INDEX)
+                if (m_hierarchy_topology[i].parent == INVALID_INDEX)
                 {
                     TraversePreOrder(i, func);
                 }
@@ -821,26 +839,26 @@ namespace hgl
         }
 
         // ====================================================================
-        // GPU 拓扑烘焙 (Bake & Sync)
+        // 线性平铺拓扑烘焙 (Bake & Sync)
         // ====================================================================
         /**
-         * @brief 将 CPU 拓扑烘焙为连续的 GPU 精简拓扑数组与深度分层表
+         * @brief 将层级拓扑烘焙为连续的极简线性平铺拓扑数组与深度分层表
          */
-        bool BakeGPUTopology()
+        bool BakeLinearTopology()
         {
             const int32 count = m_data.GetCount();
-            m_gpu_topology.Resize(count);
+            m_linear_topology.Resize(count);
 
             m_max_depth = 0;
             for (int32 i = 0; i < count; ++i)
             {
-                const uint16 d = m_cpu_topology[i].depth;
+                const uint16 d = m_hierarchy_topology[i].depth;
                 if (d > m_max_depth)
                     m_max_depth = d;
 
-                m_gpu_topology[i].parent = m_cpu_topology[i].parent;
-                m_gpu_topology[i].depth  = d;
-                m_gpu_topology[i].flags  = m_cpu_topology[i].flags;
+                m_linear_topology[i].parent = m_hierarchy_topology[i].parent;
+                m_linear_topology[i].depth  = d;
+                m_linear_topology[i].flags  = m_hierarchy_topology[i].flags;
             }
 
             // 构建深度统计表
@@ -856,7 +874,7 @@ namespace hgl
 
             for (int32 i = 0; i < count; ++i)
             {
-                const uint16 d = m_cpu_topology[i].depth;
+                const uint16 d = m_hierarchy_topology[i].depth;
                 m_depth_counts[d]++;
             }
 
@@ -868,17 +886,17 @@ namespace hgl
                 offset += m_depth_counts[d];
             }
 
-            m_gpu_dirty = false;
+            m_linear_dirty = false;
             return true;
         }
 
         /**
-         * @brief 若 GPU 拓扑为脏，则同步执行烘焙
+         * @brief 若线性平铺拓扑为脏，则同步执行烘焙
          */
-        bool SyncGPUTopology()
+        bool SyncLinearTopology()
         {
-            if (m_gpu_dirty)
-                return BakeGPUTopology();
+            if (m_linear_dirty)
+                return BakeLinearTopology();
             return true;
         }
 
@@ -898,8 +916,8 @@ namespace hgl
             header.version            = 1;
             header.node_count         = (uint32)m_data.GetCount();
             header.element_size       = (uint32)sizeof(T);
-            header.cpu_topology_size  = (uint32)sizeof(CPUTopologyNode);
-            header.gpu_topology_size  = (uint32)sizeof(GPUTopologyNode);
+            header.hierarchy_topology_size  = (uint32)sizeof(HierarchyTopologyNode);
+            header.linear_topology_size  = (uint32)sizeof(LinearTopologyNode);
             header.flags              = 0;
             header.reserved           = 0;
 
@@ -912,8 +930,8 @@ namespace hgl
                 if (stream->Write(m_data.GetData(), data_bytes) != data_bytes)
                     return false;
 
-                const int64 topo_bytes = (int64)m_cpu_topology.GetTotalBytes();
-                if (stream->Write(m_cpu_topology.GetData(), topo_bytes) != topo_bytes)
+                const int64 topo_bytes = (int64)m_hierarchy_topology.GetTotalBytes();
+                if (stream->Write(m_hierarchy_topology.GetData(), topo_bytes) != topo_bytes)
                     return false;
             }
 
@@ -940,7 +958,7 @@ namespace hgl
             if (header.element_size != sizeof(T))
                 return false;
 
-            if (header.cpu_topology_size != sizeof(CPUTopologyNode))
+            if (header.hierarchy_topology_size != sizeof(HierarchyTopologyNode))
                 return false;
 
             Clear();
@@ -955,16 +973,16 @@ namespace hgl
                     return false;
                 }
 
-                m_cpu_topology.Resize((int32)header.node_count);
-                const int64 topo_bytes = (int64)m_cpu_topology.GetTotalBytes();
-                if (stream->Read(m_cpu_topology.GetData(), topo_bytes) != topo_bytes)
+                m_hierarchy_topology.Resize((int32)header.node_count);
+                const int64 topo_bytes = (int64)m_hierarchy_topology.GetTotalBytes();
+                if (stream->Read(m_hierarchy_topology.GetData(), topo_bytes) != topo_bytes)
                 {
                     Clear();
                     return false;
                 }
             }
 
-            m_gpu_dirty = true;
+            m_linear_dirty = true;
             return true;
         }
 
@@ -977,32 +995,32 @@ namespace hgl
          */
         void UnlinkFromParentAndSiblings(int32 node_index)
         {
-            const int32 parent = m_cpu_topology[node_index].parent;
-            const int32 prev   = m_cpu_topology[node_index].prev_sibling;
-            const int32 next   = m_cpu_topology[node_index].next_sibling;
+            const int32 parent = m_hierarchy_topology[node_index].parent;
+            const int32 prev   = m_hierarchy_topology[node_index].prev_sibling;
+            const int32 next   = m_hierarchy_topology[node_index].next_sibling;
 
             if (prev != INVALID_INDEX)
             {
-                m_cpu_topology[prev].next_sibling = next;
+                m_hierarchy_topology[prev].next_sibling = next;
             }
             else if (parent != INVALID_INDEX)
             {
                 // 该节点是首子节点
-                m_cpu_topology[parent].first_child = next;
+                m_hierarchy_topology[parent].first_child = next;
             }
 
             if (next != INVALID_INDEX)
             {
-                m_cpu_topology[next].prev_sibling = prev;
+                m_hierarchy_topology[next].prev_sibling = prev;
             }
             else if (parent != INVALID_INDEX)
             {
                 // 该节点是末尾子节点
-                m_cpu_topology[parent].last_child = prev;
+                m_hierarchy_topology[parent].last_child = prev;
             }
 
-            m_cpu_topology[node_index].prev_sibling = INVALID_INDEX;
-            m_cpu_topology[node_index].next_sibling = INVALID_INDEX;
+            m_hierarchy_topology[node_index].prev_sibling = INVALID_INDEX;
+            m_hierarchy_topology[node_index].next_sibling = INVALID_INDEX;
         }
 
         /**
@@ -1010,12 +1028,12 @@ namespace hgl
          */
         void UpdateSubtreeDepth(int32 node_index, uint16 new_depth)
         {
-            m_cpu_topology[node_index].depth = new_depth;
-            int32 c = m_cpu_topology[node_index].first_child;
+            m_hierarchy_topology[node_index].depth = new_depth;
+            int32 c = m_hierarchy_topology[node_index].first_child;
             while (c != INVALID_INDEX)
             {
                 UpdateSubtreeDepth(c, new_depth + 1);
-                c = m_cpu_topology[c].next_sibling;
+                c = m_hierarchy_topology[c].next_sibling;
             }
         }
 
@@ -1025,11 +1043,11 @@ namespace hgl
         void MarkDeletedRecursive(int32 curr, ValueArray<uint8> &is_deleted)
         {
             is_deleted[curr] = 1;
-            int32 c = m_cpu_topology[curr].first_child;
+            int32 c = m_hierarchy_topology[curr].first_child;
             while (c != INVALID_INDEX)
             {
                 MarkDeletedRecursive(c, is_deleted);
-                c = m_cpu_topology[c].next_sibling;
+                c = m_hierarchy_topology[c].next_sibling;
             }
         }
     };

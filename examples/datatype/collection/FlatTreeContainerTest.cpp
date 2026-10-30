@@ -162,12 +162,12 @@ int main()
     // 自身作为父节点检测：应该失败
     CHECK(!tree.SetParent(childA, childA));
 
-    // 7. GPU 拓扑烘焙 (BakeGPUTopology) 测试
-    CHECK(tree.IsGPUTopologyDirty());
-    CHECK(tree.SyncGPUTopology());
-    CHECK(!tree.IsGPUTopologyDirty());
+    // 7. 线性平铺拓扑烘焙 (BakeLinearTopology) 测试
+    CHECK(tree.IsLinearTopologyDirty());
+    CHECK(tree.SyncLinearTopology());
+    CHECK(!tree.IsLinearTopologyDirty());
 
-    CHECK(tree.GetGPUTopologyCount() == tree.GetCount());
+    CHECK(tree.GetLinearTopologyCount() == tree.GetCount());
     CHECK(tree.GetMaxDepth() == 2);
     const auto &depthCounts = tree.GetDepthCounts();
     CHECK(depthCounts.GetCount() == 3);
@@ -180,13 +180,13 @@ int main()
     CHECK(depthOffsets[1] == 1);
     CHECK(depthOffsets[2] == 3);
 
-    const auto *gpuTopo = tree.GetGPUTopologyData();
-    CHECK(gpuTopo[root].parent == FlatTreeContainer<TestTransform>::INVALID_INDEX);
-    CHECK(gpuTopo[root].depth == 0);
-    CHECK(gpuTopo[childA].parent == root);
-    CHECK(gpuTopo[childA].depth == 1);
-    CHECK(gpuTopo[subA3].parent == childB);
-    CHECK(gpuTopo[subA3].depth == 2);
+    const auto *linearTopo = tree.GetLinearTopologyData();
+    CHECK(linearTopo[root].parent == FlatTreeContainer<TestTransform>::INVALID_INDEX);
+    CHECK(linearTopo[root].depth == 0);
+    CHECK(linearTopo[childA].parent == root);
+    CHECK(linearTopo[childA].depth == 1);
+    CHECK(linearTopo[subA3].parent == childB);
+    CHECK(linearTopo[subA3].depth == 2);
 
     // 8. 物理压缩删除子树 (RemoveSubtree) 测试
     // 删除 childA 及其子节点 (subA1, subA2)
@@ -203,9 +203,9 @@ int main()
     CHECK(tree.GetNode(2).GetParent() == 1);
     CHECK(tree.GetNode(1).GetFirstChild() == 2);
 
-    // 重新烘焙并验证 GPU 拓扑
-    tree.SyncGPUTopology();
-    CHECK(tree.GetGPUTopologyCount() == 3);
+    // 重新烘焙并验证线性平铺拓扑
+    tree.SyncLinearTopology();
+    CHECK(tree.GetLinearTopologyCount() == 3);
     CHECK(tree.GetMaxDepth() == 2);
 
     // 9. 线性零拷贝序列化与反序列化测试
@@ -228,7 +228,7 @@ int main()
         CHECK(loadedTree.GetDepth(i) == tree.GetDepth(i));
     }
 
-    loadedTree.SyncGPUTopology();
+    loadedTree.SyncLinearTopology();
     CHECK(loadedTree.GetMaxDepth() == tree.GetMaxDepth());
 
     // 10. 森林多根节点与深度分层压力测试
@@ -255,7 +255,7 @@ int main()
         CHECK(forest.GetCount() == 3 + 50 + 100);
         CHECK(forest.GetNode(r2).GetChildCount() == 100);
 
-        forest.SyncGPUTopology();
+        forest.SyncLinearTopology();
         CHECK(forest.GetMaxDepth() == 50);
 
         int32 rootTraverseCount = 0;
