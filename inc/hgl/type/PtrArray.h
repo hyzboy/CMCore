@@ -360,33 +360,14 @@ namespace hgl
             if(np < 0) np = 0;
             if(np > count_) np = count_;
 
+            // 目标落在源区间内时无需移动
             if(np >= old_pos && np <= old_pos + mc) return;
 
-            T* temp = hgl::allocate_raw_memory<T>(mc);
-            move_construct_range(temp, data_ + old_pos, mc);
-            hgl::destroy_range(data_ + old_pos, mc);
-
+            // std::rotate 直接在已构造区间内就地旋转，不需要临时缓冲
             if(np < old_pos)
-            {
-                for(int i = old_pos - 1; i >= np; --i)
-                {
-                    hgl::construct_at_move(data_ + i + mc, std::move(data_[i]));
-                    hgl::destroy_at(data_ + i);
-                }
-            }
+                std::rotate(data_ + np, data_ + old_pos, data_ + old_pos + mc);
             else
-            {
-                for(int i = old_pos; i < np - mc; ++i)
-                {
-                    hgl::construct_at_move(data_ + i, std::move(data_[i + mc]));
-                    hgl::destroy_at(data_ + i + mc);
-                }
-                np -= mc;
-            }
-
-            move_construct_range(data_ + np, temp, mc);
-            hgl::destroy_range(temp, mc);
-            hgl::deallocate_raw_memory(temp);
+                std::rotate(data_ + old_pos, data_ + old_pos + mc, data_ + np);
         }
 
         bool Insert(int pos, const T* data, const int number)

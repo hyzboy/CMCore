@@ -15,6 +15,8 @@
 #include"test_common.h"
 
 #include<cstring>
+#include<stdexcept>
+#include<utility>
 
 using namespace hgl;
 
@@ -46,6 +48,42 @@ namespace
     };
 
     int Tracked::alive = 0;
+
+    // 用于验证 reallocate_and_move 的异常安全：
+    // 拷贝构造可能抛异常，移动构造不是 noexcept（因此走拷贝分支）
+    struct ThrowingCopy
+    {
+        static int alive;
+        static int copy_budget;     // 剩余允许的成功拷贝次数，<0 表示不抛异常
+
+        int value;
+
+        explicit ThrowingCopy(int v = 0):value(v) { ++alive; }
+
+        ThrowingCopy(const ThrowingCopy &o):value(o.value)
+        {
+            if(copy_budget == 0)
+                throw std::runtime_error("ThrowingCopy: copy budget exhausted");
+
+            if(copy_budget > 0)
+                --copy_budget;
+
+            ++alive;
+        }
+
+        ThrowingCopy(ThrowingCopy &&o) noexcept(false):value(o.value) { ++alive; }
+
+        ThrowingCopy &operator=(const ThrowingCopy &o) { value = o.value; return *this; }
+        ThrowingCopy &operator=(ThrowingCopy &&o) noexcept { value = o.value; return *this; }
+
+        ~ThrowingCopy() { --alive; }
+
+        bool operator==(const ThrowingCopy &o)const{return value == o.value;}
+        bool operator!=(const ThrowingCopy &o)const{return value != o.value;}
+    };
+
+    int ThrowingCopy::alive = 0;
+    int ThrowingCopy::copy_budget = -1;
 }//namespace
 
 static void TestConstruction()
@@ -178,9 +216,110 @@ static void TestMoveExchange()
     TEST_ASSERT(arr.GetCount() == 5, "Move does not change count");
 }
 
-static void TestFindAndCapacity()
+static void TestMoveSemantics()
+{    std::printf("\n=== PtrArray: Find and Capacity ===\n");
+    std::printf("\n=== PtrArray: Move semantics (forward/backward/boundary) ===\n");
+
+    // 前移单元素（np > old_pos）：{1,2,3,4,5} Move(4,1,1) => {1,3,4,2,5}
+    {
+        PtrArray<Tracked> arr{Tracked(1), Tracked(2), Tracked(3), Tracked(4), Tracked(5)};
+        arr.Move(4, 1, 1);
+        TEST_ASSERT(arr.GetCount() == 5, "Forward move keeps count");
+        TEST_ASSERT(arr[0] == Tracked(1) && arr[1] == Tracked(3) && arr[2] == Tracked(4)
+                    && arr[3] == Tracked(2) && arr[4] == Tracked(5), "Forward single move");
+    }
+
+    // 后移整段（np < old_pos）：{1,2,3,4,5} Move(0,3,2) => {4,5,1,2,3}
+    {
+        PtrArray<Tracked> arr{Tracked(1), Tracked(2), Tracked(3), Tracked(4), Tracked(5)};
+        arr.Move(0, 3, 2);
+        TEST_ASSERT(arr[0] == Tracked(4) && arr[1] == Tracked(5) && arr[2] == Tracked(1)
+                    && arr[3] == Tracked(2) && arr[4] == Tracked(3), "Backward block move");
+    }
+
+    // 移动到末尾：{1,2,3,4,5} Move(5,0,2) => {3,4,5,1,2}
+    {
+        PtrArray<Tracked> arr{Tracked(1), Tracked(2), Tracked(3), Tracked(4), Tracked(5)};
+        arr.Move(5, 0, 2);
+        TEST_ASSERT(arr[0] == Tracked(3) && arr[1] == Tracked(4) && arr[2] == Tracked(5)
+                    && arr[3] == Tracked(1) && arr[4] == Tracked(2), "Move block to end");
+    }
+
+    // 目标落在源区间内：不移动
+    {
+        PtrArray<Tracked> arr{Tracked(1), Tracked(2), Tracked(3), Tracked(4), Tracked(5)};
+        arr.Move(2, 1, 3);
+        TEST_ASSERT(arr[0] == Tracked(1) && arr[1] == Tracked(2) && arr[2] == Tracked(3)
+                    && arr[3] == Tracked(4) && arr[4] == Tracked(5), "Target inside source range is a no-op");
+    }
+
+    // 越界参数：move_count 超出尾部时被裁剪
+    {
+        PtrArray<Tracked> arr{Tracked(1), Tracked(2), Tracked(3), Tracked(4), Tracked(5)};
+        arr.Move(0, 4, 10);
+        TEST_ASSERT(arr[0] == Tracked(5) && arr[1] == Tracked(1) && arr[4] == Tracked(4),
+                    "Oversized move_count is clamped");
+    }
+
+    // 空数组与非法位置
+    {
+        PtrArray<Tracked> arr;
+        arr.Move(0, 0, 1);
+        TEST_ASSERT(arr.IsEmpty(), "Move on empty array is a no-op");
+
+        PtrArray<Tracked> arr2{Tracked(1), Tracked(2)};
+        arr2.Move(-5, 1, 1);                     // np 被裁剪到 0
+        TEST_ASSERT(arr2[0] == Tracked(2) && arr2[1] == Tracked(1), "Negative new_pos is clamped to 0");
+    }
+
+    TEST_ASSERT(Tracked::alive == 0, "Move semantics leave no leaks");
+}
+
+static void TestReallocationExceptionSafety()
 {
-    std::printf("\n=== PtrArray: Find and Capacity ===\n");
+    std::printf("\n=== PtrArray: Reallocation exception safety ===\n");
+
+    ThrowingCopy::alive = 0;
+    ThrowingCopy::copy_budget = -1;
+
+    {
+        PtrArray<ThrowingCopy> arr;
+        for(int i = 0; i < 8; ++i)                // 首次分配容量为 8
+            arr.Add(ThrowingCopy(i));
+
+        TEST_ASSERT(arr.GetCount() == 8, "8 elements before reallocation");
+        TEST_ASSERT(ThrowingCopy::alive == 8, "8 objects alive");
+
+        // 下一次追加会触发扩容；令第一个拷贝抛出
+        ThrowingCopy::copy_budget = 0;
+
+        bool threw = false;
+        try
+        {
+            arr.Add(ThrowingCopy(99));
+        }
+        catch(const std::runtime_error &)
+        {
+            threw = true;
+        }
+
+        ThrowingCopy::copy_budget = -1;
+
+        TEST_ASSERT(threw, "Reallocation propagated the copy exception");
+        TEST_ASSERT(arr.GetCount() == 8, "Count unchanged after failed reallocation");
+        TEST_ASSERT(ThrowingCopy::alive == 8, "Only the original objects remain; no leaked new block");
+
+        for(int i = 0; i < 8; ++i)
+            TEST_ASSERT(arr[i].value == i, "Original elements intact after failed reallocation");
+
+        arr.Clear();
+    }
+
+    TEST_ASSERT(ThrowingCopy::alive == 0, "No leak after exception test");
+}
+
+static void TestFindAndCapacity()
+{    std::printf("\n=== PtrArray: Find and Capacity ===\n");
 
     PtrArray<Tracked> arr{Tracked(10), Tracked(20), Tracked(30)};
 
@@ -244,6 +383,8 @@ int os_main(int, os_char **)
     TestAccess();
     TestInsertDelete();
     TestMoveExchange();
+    TestMoveSemantics();
+    TestReallocationExceptionSafety();
     TestFindAndCapacity();
     TestLifetime();
 
