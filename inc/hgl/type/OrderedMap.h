@@ -293,7 +293,7 @@ namespace hgl
         * @param value CN:值。EN:Value.
         * @return CN:删除成功返回true。EN:Return true if deleted.
         */
-        virtual bool DeleteByValue(const V& value)
+        virtual bool RemoveByValue(const V& value)
         {
             int index = FindByValue(value);
             return index >= 0 && DeleteAt(index);

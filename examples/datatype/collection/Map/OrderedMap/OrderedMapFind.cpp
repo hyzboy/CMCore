@@ -65,12 +65,12 @@ int os_main(int, os_char**)
     assert(!map.Check("orange", 1)); // Missing key
     cout << "  ✓ Check validates key-value pairs" << endl;
 
-    cout << "\n[4.8] DeleteByValue:" << endl;
-    assert(map.DeleteByValue(3));  // Delete entry with value 3
+    cout << "\n[4.8] RemoveByValue:" << endl;
+    assert(map.RemoveByValue(3));  // Delete entry with value 3
     assert(map.GetCount() == 4);
     assert(!map.ContainsValue(3));
     assert(!map.ContainsKey("cherry"));
-    cout << "  ✓ DeleteByValue removes correct entry" << endl;
+    cout << "  ✓ RemoveByValue removes correct entry" << endl;
 
     cout << "\n[4.9] FindByValue after deletion:" << endl;
     assert(map.FindByValue(3) == -1);  // Value 3 no longer exists

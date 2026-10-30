@@ -162,7 +162,7 @@ namespace hgl
             for(int j=0;j<total-1-i;j++)
             {
                 if(out_names[j].CaseComp(out_names[j+1])>0)
-                    out_names.Exchange(j,j+1);
+                    out_names.Swap(j,j+1);
             }
         }
 

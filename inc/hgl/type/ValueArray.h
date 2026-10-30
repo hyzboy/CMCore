@@ -100,13 +100,13 @@ namespace hgl
         }
 
         /**
-        * 重复向列表中添加一个数据对象
+        * 向列表中追加 n 个相同的数据副本
         * @param data 要添加的数据对象
         * @param n 要添加的数据个数
         * @return 这个数据的索引号
         * @return >0 出错
         */
-        int  RepeatAdd(const T &data,int n)
+        int  AppendCopies(const T &data,int n)
         {
             if(n<=0)return(-1);
 
@@ -179,19 +179,11 @@ namespace hgl
         }
 
         /**
-         * Delete() 的历史别名：两者都保序，行为完全一致。
-         */
-        bool DeleteShift(int start,int num=1)
-        {
-            return Delete(start, num);
-        }      ///<删除指定索引的数据,将后面紧邻的数据前移（等价于 Delete）
-
-        /**
         * 删除列表中的指定项
         * @param data 要删除的数据项
         * @return 是否成功
         */
-        bool DeleteByValue(const T &data)
+        bool Remove(const T &data)
         {
             const int pos=Find(data);
 
@@ -204,7 +196,7 @@ namespace hgl
         * @param n 要删除的数据个数
         * @return 成功删除的数据个数
         */
-        int  DeleteByValue(const T *data,int n)
+        int  Remove(const T *data,int n)
         {
             int result=0;
 
@@ -225,7 +217,7 @@ namespace hgl
             return result;
         }
 
-        void Exchange(int a,int b)
+        void Swap(int a,int b)
         {
             if(a>=0 && a<(int)data_array.size() && b>=0 && b<(int)data_array.size())
                 std::swap(data_array[a], data_array[b]);
@@ -293,7 +285,7 @@ namespace hgl
 
         void operator += (const T &obj){Add(obj);}                                                ///<操作符重载添加一个数据
         void operator << (const T &obj){Add(obj);}                                                ///<操作符重载添加一个数据
-        void operator -= (const T &obj){DeleteByValue(obj);}                                      ///<操作符重载删除一个数据
+        void operator -= (const T &obj){Remove(obj);}                                      ///<操作符重载删除一个数据
 
                 T *  At(const int index)
         {
@@ -456,7 +448,7 @@ namespace hgl
         }
 
         /// 重复追加同一个元素，返回起始索引（与主模板对齐）
-        int RepeatAdd(const ArrayType& data, int n)
+        int AppendCopies(const ArrayType& data, int n)
         {
             if (n <= 0) return -1;
 
@@ -485,7 +477,7 @@ namespace hgl
         }
 
         /// 交换两个元素（与主模板对齐）
-        void Exchange(int a, int b)
+        void Swap(int a, int b)
         {
             const int count = GetElementCount();
             if (a < 0 || a >= count || b < 0 || b >= count) return;

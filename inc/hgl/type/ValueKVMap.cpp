@@ -110,7 +110,7 @@ namespace hgl
         int idx = Find(key);
         if(idx < 0) return false;
         out_value = data_list.At(idx)->value;
-        data_list.DeleteShift(idx);
+        data_list.Delete(idx);
         cache_idx = -1; // 删除后失效缓存
         return true;
     }
@@ -131,7 +131,7 @@ namespace hgl
     bool ValueKVMap<K,V>::DeleteAt(int index)
     {
         if(index < 0 || index >= data_list.GetCount()) return false;
-        data_list.DeleteShift(index);
+        data_list.Delete(index);
         cache_idx = -1; // 删除后失效缓存
         return true;
     }

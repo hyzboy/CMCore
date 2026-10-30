@@ -176,7 +176,7 @@ void test_valuearray_uint16k_large()
 void test_array_type_find_delete()
 {
     std::cout << "\n========================================" << std::endl;
-    std::cout << "TEST 3: Array type data integrity (Find/DeleteByValue)" << std::endl;
+    std::cout << "TEST 3: Array type data integrity (Find/Remove)" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
     ValueArray<uint256> array;
@@ -199,17 +199,17 @@ void test_array_type_find_delete()
     index = array.Find(data1);
     TEST_ASSERT(index == 0, "Find(data1) returns first matching index");
 
-    // DeleteByValue
-    std::cout << "\n[3.2] DeleteByValue operation:" << std::endl;
+    // Remove
+    std::cout << "\n[3.2] Remove operation:" << std::endl;
 
-    TEST_ASSERT(array.Delete(data1), "DeleteByValue(data1) succeeded");
+    TEST_ASSERT(array.Delete(data1), "Remove(data1) succeeded");
     TEST_ASSERT(array.GetCount() == 3, "GetCount == 3 after delete");
 
     int new_index = array.Find(data1);
     TEST_ASSERT(new_index != 0, "First data1 deleted");
 
     // 再次删除 data1
-    TEST_ASSERT(array.Delete(data1), "Second DeleteByValue(data1) succeeded");
+    TEST_ASSERT(array.Delete(data1), "Second Remove(data1) succeeded");
     TEST_ASSERT(array.Find(data1) == -1, "All data1 deleted");
 }
 
@@ -312,7 +312,7 @@ void test_specialization_api_parity()
     std::cout << "TEST 5c: Array specialization API parity" << std::endl;
     std::cout << "========================================\n" << std::endl;
 
-    std::cout << "\n[5c.1] Add()/Add(ptr,n)/RepeatAdd()/GetFirst/GetLast:" << std::endl;
+    std::cout << "\n[5c.1] Add()/Add(ptr,n)/AppendCopies()/GetFirst/GetLast:" << std::endl;
     {
         ValueArray<uint256> v;
 
@@ -326,8 +326,8 @@ void test_specialization_api_parity()
 
         uint256 rep;
         fill_pattern(rep, 4, 3);
-        TEST_ASSERT(v.RepeatAdd(rep, 2) == 2, "RepeatAdd returns start index");
-        TEST_ASSERT(v.GetCount() == 4, "RepeatAdd appends n elements");
+        TEST_ASSERT(v.AppendCopies(rep, 2) == 2, "AppendCopies returns start index");
+        TEST_ASSERT(v.GetCount() == 4, "AppendCopies appends n elements");
 
         uint256 first;
         uint256 last;
@@ -368,7 +368,7 @@ void test_specialization_api_parity()
             mv.Add(x);
         }
 
-        mv.Exchange(0, 4);
+        mv.Swap(0, 4);
         const uint256 *d = mv.GetData();
         TEST_ASSERT(verify_pattern(d[0], 4, 5) && verify_pattern(d[4], 4, 1), "Exchange swaps");
 

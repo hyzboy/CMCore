@@ -221,20 +221,20 @@ void test_exchange_operations()
     PrintList("Initial", list);
 
     std::cout << "\n[4.1] Exchange two elements:" << std::endl;
-    TEST_ASSERT(list.Exchange(1, 3), "Exchange succeeded");
+    TEST_ASSERT(list.Swap(1, 3), "Exchange succeeded");
     TEST_ASSERT(list[1] == 30, "Element 1 is now 30");
     TEST_ASSERT(list[3] == 10, "Element 3 is now 10");
     PrintList("After exchange 1,3", list);
 
     std::cout << "\n[4.2] Exchange first and last:" << std::endl;
-    TEST_ASSERT(list.Exchange(0, 4), "Exchange succeeded");
+    TEST_ASSERT(list.Swap(0, 4), "Exchange succeeded");
     TEST_ASSERT(list[0] == 40, "First is now 40");
     TEST_ASSERT(list[4] == 0, "Last is now 0");
     PrintList("After exchange 0,4", list);
 
     std::cout << "\n[4.3] Invalid exchange:" << std::endl;
-    TEST_ASSERT(!list.Exchange(-1, 2), "Invalid negative index");
-    TEST_ASSERT(!list.Exchange(2, 10), "Invalid large index");
+    TEST_ASSERT(!list.Swap(-1, 2), "Invalid negative index");
+    TEST_ASSERT(!list.Swap(2, 10), "Invalid large index");
 }
 
 void test_iterator()
@@ -307,8 +307,8 @@ void test_shrink_reorder()
     TEST_ASSERT(list.GetFreeCount() == 0, "No free slots after shrink");
 
     std::cout << "\n[6.3] Exchange to disorder:" << std::endl;
-    list.Exchange(0, list.GetCount()-1);
-    list.Exchange(1, list.GetCount()-2);
+    list.Swap(0, list.GetCount()-1);
+    list.Swap(1, list.GetCount()-2);
     PrintList("After exchanges", list);
     TEST_ASSERT(!list.IsOrdered(), "List is disordered");
 
@@ -334,7 +334,7 @@ void test_edge_cases()
     TEST_ASSERT(empty.IsEmpty(), "Empty list is empty");
     TEST_ASSERT(empty.GetCount() == 0, "Empty count is 0");
     TEST_ASSERT(empty.Delete(0, 1) == -1, "Delete from empty fails");
-    TEST_ASSERT(!empty.Exchange(0, 1), "Exchange in empty fails");
+    TEST_ASSERT(!empty.Swap(0, 1), "Exchange in empty fails");
 
     std::cout << "\n[8.2] Single element:" << std::endl;
     empty.Add(42);

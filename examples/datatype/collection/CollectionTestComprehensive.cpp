@@ -255,24 +255,24 @@ bool Test_Exchange()
     PrintCollection<char>("Initial", c);
 
     // 交换首尾
-    TEST_ASSERT(c.Exchange(0, 4), "Exchange first and last");
+    TEST_ASSERT(c.Swap(0, 4), "Swap first and last");
 
     char* arr = c.ToArray<char>();
     TEST_ASSERT(arr[0] == 'E', "First is now E");
     TEST_ASSERT(arr[4] == 'A', "Last is now A");
 
-    PrintCollection<char>("After Exchange(0, 4)", c);
+    PrintCollection<char>("After Swap(0, 4)", c);
 
     // 交换中间元素
-    TEST_ASSERT(c.Exchange(1, 3), "Exchange middle elements");
+    TEST_ASSERT(c.Swap(1, 3), "Swap middle elements");
     TEST_ASSERT(arr[1] == 'D', "Position 1 is now D");
     TEST_ASSERT(arr[3] == 'B', "Position 3 is now B");
 
-    PrintCollection<char>("After Exchange(1, 3)", c);
+    PrintCollection<char>("After Swap(1, 3)", c);
 
     // 无效交换
-    TEST_ASSERT(!c.Exchange(0, 100), "Exchange out of range returns false");
-    TEST_ASSERT(!c.Exchange(100, 0), "Exchange out of range returns false");
+    TEST_ASSERT(!c.Swap(0, 100), "Swap out of range returns false");
+    TEST_ASSERT(!c.Swap(100, 0), "Swap out of range returns false");
 
     return true;
 }

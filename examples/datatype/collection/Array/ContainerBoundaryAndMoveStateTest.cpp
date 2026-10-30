@@ -81,7 +81,7 @@ static void TestValueArrayBoundaries()
 
     // Exchange 越界不改变内容
     int before = v[0];
-    v.Exchange(-1, 100);
+    v.Swap(-1, 100);
     TEST_ASSERT(v[0] == before, "Exchange with invalid indices is a no-op");
 
     TEST_ASSERT(Item::alive == 0, "No Item leaks in ValueArray test");

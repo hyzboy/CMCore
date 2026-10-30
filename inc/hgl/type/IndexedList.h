@@ -347,7 +347,7 @@ namespace hgl
             return count;
         }
 
-        virtual bool Exchange(int32 a,int32 b)
+        virtual bool Swap(int32 a,int32 b)
         {
             if(!IsValidIndex(a))return(false);
             if(!IsValidIndex(b))return(false);
@@ -688,7 +688,7 @@ namespace hgl
             return count;
         }
 
-        bool Exchange(int32 a, int32 b)
+        bool Swap(int32 a, int32 b)
         {
             if (!IsValidIndex(a)) return false;
             if (!IsValidIndex(b)) return false;

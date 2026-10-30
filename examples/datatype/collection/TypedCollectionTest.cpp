@@ -86,7 +86,7 @@ static void TestSetInsertExchange()
     TEST_ASSERT((got == Point{20, 20}), "Original item 1 shifted after Insert");
 
     // Exchange
-    TEST_ASSERT(tc.Exchange(0, 3), "Exchange(0,3) succeeded");
+    TEST_ASSERT(tc.Swap(0, 3), "Swap(0,3) succeeded");
     tc.Get(0, got);
     TEST_ASSERT((got == Point{3, 3}), "After Exchange, Get(0) == {3,3}");
     tc.Get(3, got);

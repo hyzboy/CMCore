@@ -204,9 +204,9 @@ static void TestInsertDelete()
     TEST_ASSERT(arr[1] == Tracked(2), "Elements shift forward after Delete");
 
     // DeleteShift（当前数组 {1,2,3,0}）
-    TEST_ASSERT(arr.DeleteShift(1), "DeleteShift succeeded");
-    TEST_ASSERT(arr.GetCount() == 3, "Count is 3 after DeleteShift");
-    TEST_ASSERT(arr[1] == Tracked(3), "Elements shift forward after DeleteShift");
+    TEST_ASSERT(arr.Delete(1), "Delete succeeded");
+    TEST_ASSERT(arr.GetCount() == 3, "Count is 3 after Delete");
+    TEST_ASSERT(arr[1] == Tracked(3), "Elements shift forward after Delete");
 
     // 批量 Delete
     PtrArray<Tracked> arr2{Tracked(1), Tracked(2), Tracked(3), Tracked(4), Tracked(5)};
@@ -222,7 +222,7 @@ static void TestMoveExchange()
     PtrArray<Tracked> arr{Tracked(1), Tracked(2), Tracked(3), Tracked(4), Tracked(5)};
 
     // Exchange
-    arr.Exchange(0, 4);
+    arr.Swap(0, 4);
     TEST_ASSERT(arr[0] == Tracked(5) && arr[4] == Tracked(1), "Exchange swaps");
 
     // Move：把末尾元素(1)移到最前（np < old_pos 分支）
@@ -347,12 +347,12 @@ static void TestDeleteSwapSemantics()
                     "Delete preserves order");
     }
 
-    // DeleteShift 与 Delete 等价
+    // Delete 保序，DeleteSwap 不保序
     {
         PtrArray<Tracked> arr{Tracked(1), Tracked(2), Tracked(3), Tracked(4)};
-        TEST_ASSERT(arr.DeleteShift(1), "DeleteShift succeeded");
+        TEST_ASSERT(arr.Delete(1), "Delete succeeded");
         TEST_ASSERT(arr[0] == Tracked(1) && arr[1] == Tracked(3) && arr[2] == Tracked(4),
-                    "DeleteShift equals Delete");
+                    "Delete preserves order");
     }
 
     // DeleteSwap 用尾元素填补，不保序
@@ -437,10 +437,10 @@ static void TestFindAndCapacity()
     int added = arr.Expand(3);
     TEST_ASSERT(added == 8 && arr.GetCount() == 8, "Expand returns new count (5+3=8)");
 
-    // Zero 清零
-    arr.Zero();
+    // ResetAll 重置为默认构造值
+    arr.ResetAll();
     for(int i = 0; i < arr.GetCount(); i++)
-        TEST_ASSERT(arr[i] == Tracked(0), "All zero after Zero");
+        TEST_ASSERT(arr[i] == Tracked(0), "All reset to default after ResetAll");
 }
 
 static void TestLifetime()

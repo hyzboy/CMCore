@@ -281,7 +281,12 @@ namespace hgl
             return true;
         }
 
-        void Zero()
+        /**
+         * 将容器内所有已存在的元素重新赋值为默认构造值 T()。
+         * 不改变元素数量，也不释放内存；与 Clear()（数量归零）和
+         * mem_zero（按位清零）都不同。
+         */
+        void ResetAll()
         {
             for(int i = 0; i < count_; ++i)
                 data_[i] = T();
@@ -339,7 +344,7 @@ namespace hgl
             return Add(other.data_, other.count_);
         }
 
-        void Exchange(int a, int b)
+        void Swap(int a, int b)
         {
             if(a < 0 || b < 0 || a >= count_ || b >= count_) return;
             std::swap(data_[a], data_[b]);
@@ -392,14 +397,6 @@ namespace hgl
             hgl::destroy_at(data_ + count_ - 1);
             --count_;
             return true;
-        }
-
-        /**
-         * Delete() 的历史别名：两者都保序，行为完全一致。
-         */
-        bool DeleteShift(int start, int num = 1)
-        {
-            return Delete(start, num);
         }
 
         void Move(const int new_pos, const int old_pos, const int move_count)

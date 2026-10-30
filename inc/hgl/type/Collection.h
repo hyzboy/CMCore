@@ -119,7 +119,7 @@ namespace hgl
         bool Get(const uint64 index,void *element);                                         ///<获取一个数据
         bool Set(const uint64 index,const void *element);                                   ///<设置一个数据
         bool Insert(const uint64 offset,const void *element);                               ///<插入一个数据到合集
-        bool Exchange(uint64 target,uint64 source);                                         ///<交换两个数据的位置
+        bool Swap(uint64 target,uint64 source);                                         ///<交换两个数据的位置
 
         void Clear();                                                                       ///<清空整个合集(并不释放内存)
         void *Map(const uint64 start,const uint64 range);                                   ///<映射一段数据区供访问

@@ -455,12 +455,12 @@ namespace hgl
         * @param index1 第一个字符串的位置
         * @param index2 第二个字符串的位置
         */
-        void Exchange(int index1, int index2)                                                        ///<交换两行字符串
+        void Swap(int index1, int index2)                                                        ///<交换两行字符串
         {
             if (index1 < 0 || index2 < 0 || index1 >= Items.GetCount() || index2 >= Items.GetCount())
                 return;
 
-            Items.Exchange(index1, index2);
+            Items.Swap(index1, index2);
         }
 
         const StringClass &GetString(int n) const

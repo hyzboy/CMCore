@@ -77,7 +77,7 @@ int os_main(int, os_char**)
     assert(!map.ContainsKey(999));
     assert(map.Find(999) == -1);
     assert(!map.DeleteByKey(999));
-    assert(!map.DeleteByValue(9999));
+    assert(!map.RemoveByValue(9999));
     assert(map.GetValuePointer(999) == nullptr);
     cout << "  ✓ Non-existent key/value operations safe" << endl;
 

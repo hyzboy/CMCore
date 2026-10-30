@@ -94,11 +94,11 @@ int os_main(int, os_char**)
 
     // [10] 根据 VALUE 删除
     cout << "\n[10] Delete by value:" << endl;
-    TEST_ASSERT(bmap.DeleteByValue("two"), "DeleteByValue('two') succeeds");
+    TEST_ASSERT(bmap.RemoveByValue("two"), "RemoveByValue('two') succeeds");
     TEST_ASSERT(bmap.GetCount() == 1, "Count becomes 1 after delete");
     TEST_ASSERT(!bmap.ContainsValue("two"), "Value 'two' no longer exists");
     TEST_ASSERT(!bmap.ContainsKey(2), "Key 2 no longer exists");
-    TEST_ASSERT(!bmap.DeleteByValue("two"), "DeleteByValue('two') again returns false");
+    TEST_ASSERT(!bmap.RemoveByValue("two"), "RemoveByValue('two') again returns false");
 
     // [11] 清空操作
     cout << "\n[11] Clear operations:" << endl;

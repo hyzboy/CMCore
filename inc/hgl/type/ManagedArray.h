@@ -157,7 +157,7 @@ namespace hgl
         }
 
         // ============ 交换与移动 ============
-        void Exchange(int a, int b)
+        void Swap(int a, int b)
         {
             if(a>=0 && a<(int)items.size() && b>=0 && b<(int)items.size())
                 std::swap(items[a], items[b]);
@@ -228,7 +228,7 @@ namespace hgl
         void operator+=(const ItemPointer &obj) { Add(obj); }
         void operator<<(const ItemPointer &obj) { Add(obj); }
 
-        void operator-=(const ItemPointer &obj) { DeleteByValue(obj); }
+        void operator-=(const ItemPointer &obj) { Remove(obj); }
 
         // ============ 释放与清理 ============
         // ClearAndDeallocate: 先 Clear（对元素 delete），再调用 shrink_to_fit
@@ -300,27 +300,14 @@ namespace hgl
 
     public:
         // 以下以 Own 结尾的方法会先 delete 对象（如果存在），再从列表中移除对应条目。
-        // 不使用 override 是为避免与 ValueArray 中 Delete/DeleteByValue 的签名冲突。
-
-        // 删除指定索引并销毁该对象
-        bool DeleteAt(int index)
-        {
-            if (!_DeleteRange(index, 1))
-                return false;
-
-            items.erase(items.begin() + index);
-            return true;
-        }
+        // 不使用 override 是为避免与 ValueArray 中 Delete/Remove 的签名冲突。
 
         /**
-         * 删除指定索引的元素并保持顺序（先销毁对象，再将后续元素向前移动）
+         * 删除指定索引的元素并销毁该对象，后续元素前移以保持顺序。
          * @param index 要删除的索引位置
          * @return 删除成功返回 true，失败返回 false
-         *
-         * 注意：此函数会先 delete 对应的对象，然后将后面的元素依次向前移动，
-         *       保持列表的顺序。性能开销比 DeleteAt 略高，但可以保持元素顺序。
          */
-        bool DeleteShift(int index)
+        bool DeleteAt(int index)
         {
             if (!_DeleteRange(index, 1))
                 return false;
@@ -339,8 +326,8 @@ namespace hgl
             return true;
         }
 
-        // 通过值查找并销毁，然后从列表移除（单个）
-        bool DeleteByValue(const ItemPointer &ip)
+        // 通过值查找，销毁对象再从列表移除（单个）
+        bool Remove(const ItemPointer &ip)
         {
             auto it = std::find(items.begin(), items.end(), ip);
             if (it == items.end()) return false;
@@ -352,12 +339,12 @@ namespace hgl
         }
 
         // 通过数组的值逐个销毁并移除
-        void DeleteByValue(const ItemPointer *ip, int n)
+        void Remove(const ItemPointer *ip, int n)
         {
             if (!ip || n <= 0) return;
 
             for (int i = 0; i < n; ++i)
-                DeleteByValue(ip[i]);
+                Remove(ip[i]);
         }
 
     public: // 迭代器

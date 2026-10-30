@@ -265,17 +265,17 @@ void TestIntArrayList()
     PrintArrayList(list, "After adding 100-104");
 
     // 测试重复添加
-    std::cout << "\n[1.3] RepeatAdd:" << std::endl;
-    list.RepeatAdd(999, 3);
-    PrintArrayList(list, "After RepeatAdd(999, 3)");
+    std::cout << "\n[1.3] AppendCopies:" << std::endl;
+    list.AppendCopies(999, 3);
+    PrintArrayList(list, "After AppendCopies(999, 3)");
 
     // 测试删除
     std::cout << "\n[1.4] Delete operations:" << std::endl;
     list.Delete(0, 3);
     PrintArrayList(list, "After Delete(0, 3)");
 
-    list.DeleteShift(5, 2);
-    PrintArrayList(list, "After DeleteShift(5, 2)");
+    list.Delete(5, 2);
+    PrintArrayList(list, "After Delete(5, 2)");
 
     // 测试插入
     std::cout << "\n[1.5] Insert operations:" << std::endl;
@@ -288,8 +288,8 @@ void TestIntArrayList()
 
     // 测试交换
     std::cout << "\n[1.6] Exchange:" << std::endl;
-    list.Exchange(0, list.GetCount() - 1);
-    PrintArrayList(list, "After Exchange(0, last)");
+    list.Swap(0, list.GetCount() - 1);
+    PrintArrayList(list, "After Swap(0, last)");
 
     // 测试查找
     std::cout << "\n[1.7] Find and Contains:" << std::endl;
@@ -332,10 +332,10 @@ void TestPODArrayList()
     PrintArrayList(list, "After adding batch");
 
     // 测试RepeatAdd
-    std::cout << "\n[2.3] RepeatAdd POD:" << std::endl;
+    std::cout << "\n[2.3] AppendCopies POD:" << std::endl;
     SimplePOD repeated(99, 99.9, "Repeated");
-    list.RepeatAdd(repeated, 2);
-    PrintArrayList(list, "After RepeatAdd");
+    list.AppendCopies(repeated, 2);
+    PrintArrayList(list, "After AppendCopies");
 
     // 测试删除
     std::cout << "\n[2.4] Delete operations:" << std::endl;

@@ -5,7 +5,7 @@
  *   - Add 按 key 排序插入 / 重复 key 行为
  *   - Get/GetValuePointer/ContainsKey/ContainsValue
  *   - Change / operator[] 赋值
- *   - DeleteByKey / DeleteByValue / GetAndDelete
+ *   - DeleteByKey / RemoveByValue / GetAndDelete
  *   - Find/FindPos
  *   - 迭代顺序（有序性）
  *   - Clear/Free
@@ -110,11 +110,11 @@ static void TestModify()
     TEST_ASSERT(map.DeleteByKey(2), "DeleteByKey succeeded");
     TEST_ASSERT(map.IsEmpty(), "Empty after delete");
 
-    // DeleteByValue
+    // RemoveByValue
     map.Add(5, 55);
     map.Add(6, 66);
-    TEST_ASSERT(map.DeleteByValue(55), "DeleteByValue succeeded");
-    TEST_ASSERT(map.GetCount() == 1 && map.ContainsKey(6), "1 item left after DeleteByValue");
+    TEST_ASSERT(map.RemoveByValue(55), "RemoveByValue succeeded");
+    TEST_ASSERT(map.GetCount() == 1 && map.ContainsKey(6), "1 item left after RemoveByValue");
 }
 
 static void TestSerialAccess()

@@ -53,12 +53,12 @@ int os_main(int, os_char**)
     assert(!map.ContainsValue(500));
     cout << "  ✓ ContainsValue works" << endl;
 
-    cout << "\n[2.7] DeleteByValue:" << endl;
-    assert(map.DeleteByValue(200));
+    cout << "\n[2.7] RemoveByValue:" << endl;
+    assert(map.RemoveByValue(200));
     assert(map.GetCount() == 2);
     assert(!map.ContainsValue(200));
     assert(map.ContainsKey(10));  // Key 10 still exists
-    cout << "  ✓ DeleteByValue successful" << endl;
+    cout << "  ✓ RemoveByValue successful" << endl;
 
     cout << "\n[2.8] GetAndDelete:" << endl;
     int retrieved;

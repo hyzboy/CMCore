@@ -162,18 +162,18 @@ void test_list_delete_operations()
     TEST_ASSERT(list.GetCount() == 6, "Count is 6");
     PrintList("After delete range", list);
 
-    std::cout << "\n[2.3] DeleteShift (shifts elements):" << std::endl;
+    std::cout << "\n[2.3] Delete (shifts elements):" << std::endl;
     list.Clear();
     for (int i = 0; i < 5; i++) list.Add(i);
-    list.DeleteShift(2);
+    list.Delete(2);
     TEST_ASSERT(*list.At(2) == 3, "Element shifted correctly");
-    PrintList("After DeleteShift", list);
+    PrintList("After Delete", list);
 
-    std::cout << "\n[2.4] DeleteByValue:" << std::endl;
+    std::cout << "\n[2.4] Remove:" << std::endl;
     int val_to_delete = 3;
-    list.DeleteByValue(val_to_delete);
+    list.Remove(val_to_delete);
     TEST_ASSERT(!list.Contains(3), "Value deleted");
-    PrintList("After DeleteByValue", list);
+    PrintList("After Remove", list);
 }
 
 void test_list_batch_operations()

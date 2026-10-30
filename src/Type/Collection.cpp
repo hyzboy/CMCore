@@ -155,7 +155,7 @@ namespace hgl
     /**
      * 交换两个数据的位置
      */
-    bool Collection::Exchange(uint64 target,uint64 source)
+    bool Collection::Swap(uint64 target,uint64 source)
     {
         if(data_count<2)return(false);
         if(target==source)return(true);

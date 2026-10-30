@@ -233,8 +233,8 @@ void TestByValue()
     assert(map.ContainsValue(1.5f) == true);
     assert(map.ContainsValue(99.9f) == false);
 
-    // Test DeleteByValue
-    assert(map.DeleteByValue(2.5f) == true);
+    // Test RemoveByValue
+    assert(map.RemoveByValue(2.5f) == true);
     assert(map.GetCount() == 2);
     assert(map.ContainsValue(2.5f) == false);
 

@@ -37,8 +37,8 @@ void TestArrayListBasic()
     std::cout << std::endl;
 
     // 测试RepeatAdd
-    intList.RepeatAdd(99, 3);
-    std::cout << "After RepeatAdd(99, 3): ";
+    intList.AppendCopies(99, 3);
+    std::cout << "After AppendCopies(99, 3): ";
     for(int i = 0; i < intList.GetCount(); i++)
         std::cout << *intList.At(i) << " ";
     std::cout << std::endl;
@@ -111,7 +111,7 @@ void TestNonTrivialType()
     }
     std::cout << std::endl;
 
-    std::cout << "After RepeatAdd(99, 2): ";
+    std::cout << "After AppendCopies(99, 2): ";
     for(int i = 0; i < list.GetCount(); i++)
     {
         const TestClass* obj = list.At(i);  // Dereference to get pointer

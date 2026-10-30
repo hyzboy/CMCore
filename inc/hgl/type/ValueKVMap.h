@@ -126,7 +126,7 @@ namespace hgl
         }
 
         int DeleteByKey (const K *keys, int count);
-        bool DeleteByValue (const V &value)
+        bool RemoveByValue (const V &value)
         {
             return DeleteAt(FindByValue(value));
         }

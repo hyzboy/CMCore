@@ -39,7 +39,7 @@ namespace hgl
      *
      * // 删除（自动同步两个映射）
      * map.DeleteByKey(1);
-     * map.DeleteByValue("two");
+     * map.RemoveByValue("two");
      *
      * // 获取KEY/VALUE向量用于序列化
      * const ValueArray<int>& keys = map.GetKeys();
@@ -619,7 +619,7 @@ namespace hgl
          *
          * @note 自动删除对应的 KEY 映射，并从向量中移除数据
          */
-        bool DeleteByValue(const V& value)
+        bool RemoveByValue(const V& value)
         {
             auto it = reverse.find(value);
             if (it == reverse.end())

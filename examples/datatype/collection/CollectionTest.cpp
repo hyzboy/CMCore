@@ -85,7 +85,7 @@ int main(int,char **)
         }
 
         std::cout<<"exchanged two elements, they at 0 and 2"<<std::endl;
-        cu.Exchange(0,2);out(cu);
+        cu.Swap(0,2);out(cu);
     }
 
     std::cout<<std::endl;
@@ -130,6 +130,6 @@ int main(int,char **)
         }
 
         std::cout<<"exchanged two elements, they at 0 and 2"<<std::endl;
-        cu3.Exchange(0,2);out3(cu3);
+        cu3.Swap(0,2);out3(cu3);
     }
 }

@@ -64,7 +64,7 @@ int os_main(int, os_char**)
     {
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "one");
-        TEST_ASSERT(bmap.DeleteByValue("one"), "Delete by value succeeds");
+        TEST_ASSERT(bmap.RemoveByValue("one"), "Delete by value succeeds");
         TEST_ASSERT(bmap.Add(2, "one"), "Re-add with same value succeeds");
         TEST_ASSERT(bmap.GetCount() == 1, "Count is 1");
     }
@@ -191,7 +191,7 @@ int os_main(int, os_char**)
         bmap.Add(3, "three");
         TEST_ASSERT(bmap.GetCount() == 2, "Count is 2 after re-add");
 
-        bmap.DeleteByValue("two");
+        bmap.RemoveByValue("two");
         TEST_ASSERT(bmap.GetCount() == 1, "Count is 1 after value delete");
     }
 
