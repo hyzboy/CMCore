@@ -30,19 +30,23 @@ namespace hgl
                       "ValueArray<T> requires trivially copyable types (int, float, POD structs, etc). "
                       "For non-trivial types (std::string, custom classes with dynamic memory), use ManagedArray<T> instead.");
 
-                const   int     GetAllocCount   ()const{return (int)data_array.capacity();}         ///<取得已分配容量
-                const   int     GetCount        ()const{return (int)data_array.size();}              ///<取得列表内数据数量
+                int     GetAllocCount   ()const{return (int)data_array.capacity();}         ///<取得已分配容量
+                int     GetCount        ()const{return (int)data_array.size();}              ///<取得列表内数据数量
         virtual         bool    Resize          (int count){data_array.resize(count); return true;}       ///<设置列表内数据数量
         virtual         bool    Reserve         (int count){data_array.reserve(count); return true;}      ///<预分配指定数量的数据空间
 
-                const   bool    IsEmpty         ()const{return data_array.empty();}               ///<确认列表是否为空
+                bool    IsEmpty         ()const{return data_array.empty();}               ///<确认列表是否为空
 
-                        T *     GetData         ()const{return data_array.empty()?nullptr:const_cast<T*>(data_array.data());}               ///<提供原始数据项
+                        T *     GetData         (){return data_array.empty()?nullptr:data_array.data();}               ///<提供原始数据项
+                const   T *     GetData         ()const{return data_array.empty()?nullptr:data_array.data();}         ///<提供原始数据项（只读）
                         int     GetTotalBytes   ()const{return (int)(data_array.size()*sizeof(T));}         ///<取得原始数据总字节数
 
-                        T *     begin           ()const{return data_array.empty()?nullptr:const_cast<T*>(data_array.data());}
-                        T *     end             ()const{return data_array.empty()?nullptr:const_cast<T*>(data_array.data())+data_array.size();}
-                        T *     last            ()const{return data_array.empty()?nullptr:const_cast<T*>(data_array.data())+data_array.size()-1;}
+                        T *     begin           (){return data_array.empty()?nullptr:data_array.data();}
+                const   T *     begin           ()const{return data_array.empty()?nullptr:data_array.data();}
+                        T *     end             (){return data_array.empty()?nullptr:data_array.data()+data_array.size();}
+                const   T *     end             ()const{return data_array.empty()?nullptr:data_array.data()+data_array.size();}
+                        T *     last            (){return data_array.empty()?nullptr:data_array.data()+data_array.size()-1;}
+                const   T *     last            ()const{return data_array.empty()?nullptr:data_array.data()+data_array.size()-1;}
 
     public:
 
@@ -482,14 +486,22 @@ namespace hgl
 
         int GetTotalBytes() const { return (int)byte_storage.size(); }
 
-        ArrayType* GetData() const
+        ArrayType* GetData()
         {
-            return byte_storage.empty() ? nullptr : const_cast<ArrayType*>(reinterpret_cast<const ArrayType*>(byte_storage.data()));
+            return byte_storage.empty() ? nullptr : reinterpret_cast<ArrayType*>(byte_storage.data());
         }
 
-        ArrayType* begin() const { return GetData(); }
-        ArrayType* end() const { return GetData() + GetElementCount(); }
-        ArrayType* last() const { return GetElementCount() == 0 ? nullptr : GetData() + GetElementCount() - 1; }
+        const ArrayType* GetData() const
+        {
+            return byte_storage.empty() ? nullptr : reinterpret_cast<const ArrayType*>(byte_storage.data());
+        }
+
+        ArrayType* begin() { return GetData(); }
+        const ArrayType* begin() const { return GetData(); }
+        ArrayType* end() { ArrayType *d = GetData(); return d ? d + GetElementCount() : nullptr; }
+        const ArrayType* end() const { const ArrayType *d = GetData(); return d ? d + GetElementCount() : nullptr; }
+        ArrayType* last() { const int n = GetElementCount(); return n == 0 ? nullptr : GetData() + n - 1; }
+        const ArrayType* last() const { const int n = GetElementCount(); return n == 0 ? nullptr : GetData() + n - 1; }
 
         bool Clear() { byte_storage.clear(); return true; }
         bool Free() { std::vector<uint8_t>().swap(byte_storage); return true; }
