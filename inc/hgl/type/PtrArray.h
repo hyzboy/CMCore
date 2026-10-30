@@ -193,12 +193,35 @@ namespace hgl
             return count_;
         }
 
-        void SetData(T* data, int data_count)
+        /**
+         * 接管外部内存。
+         *
+         * 契约（必须遵守，否则析构时是未定义行为）：
+         * - data 必须由 hgl::allocate_raw_memory<T>() 分配（即带 alignof(T) 对齐的
+         *   ::operator new），因为析构会调用 hgl::deallocate_raw_memory()；
+         * - data 指向的前 data_count 个元素必须已经构造完成；
+         * - 本容器会先释放自身原有内容，然后取得该内存的所有权。
+         *
+         * 想在不转移所有权的情况下使用外部数据，请改用指针容器（如 ValueArray<T*>）。
+         *
+         * @param data        外部内存指针（可为 nullptr，此时等价于清空）
+         * @param data_count  已构造的元素数量（必须 >= 0）
+         * @return 成功接管返回 true；data_count < 0 时返回 false 且不做任何修改
+         */
+        bool SetData(T* data, int data_count)
         {
+            if(data_count < 0)
+                return false;
+
+            if(!data && data_count != 0)
+                return false;
+
             Free();
+
             data_ = data;
             count_ = data_count;
             alloc_count_ = data_count;
+            return true;
         }
 
         void Unlink()

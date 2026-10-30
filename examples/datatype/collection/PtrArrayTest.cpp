@@ -371,6 +371,25 @@ static void TestLifetime()
         TEST_ASSERT(b.GetCount() == 2 && a.GetCount() == 0, "Move assignment");
     }
 
+    // SetData 接管契约
+    {
+        PtrArray<Tracked> arr;
+        arr.Add(Tracked(1));
+
+        TEST_ASSERT(!arr.SetData(nullptr, -1), "SetData rejects negative count");
+        TEST_ASSERT(arr.GetCount() == 1, "Failed SetData leaves container untouched");
+
+        Tracked *raw = allocate_raw_memory<Tracked>(2);
+        hgl::construct_at_copy(raw + 0, Tracked(7));
+        hgl::construct_at_copy(raw + 1, Tracked(8));
+
+        TEST_ASSERT(arr.SetData(raw, 2), "SetData adopts raw memory");
+        TEST_ASSERT(arr.GetCount() == 2 && arr[0] == Tracked(7) && arr[1] == Tracked(8),
+                    "Adopted content is readable");
+
+        arr.Free();
+    }
+
     TEST_ASSERT(Tracked::alive == 0, "No leak, no double free at end");
 }
 
