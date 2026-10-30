@@ -1,10 +1,20 @@
 ﻿#include<hgl/type/ObjectManager.h>
 #include<iostream>
 #include<string>
-#include<cassert>
+#include<cstdlib>
 
 using namespace hgl;
 using namespace std;
+
+// CHECK() is stripped under NDEBUG (Release), which silently drops any
+// side-effecting call written inside it (e.g. manager.Add(...)).
+// Use an always-evaluated check instead.
+static void CheckFailed(const char *expr)
+{
+    cout << "  [FAIL] " << expr << endl;
+    exit(1);
+}
+#define CHECK(expr) do { if(!(expr)) CheckFailed(#expr); } while(0)
 
 // ============================================================================
 // 测试用的简单对象类
@@ -45,48 +55,48 @@ void TestBasicOperations()
         auto obj2 = new TestObject(2, "Bob");
         auto obj3 = new TestObject(3, "Charlie");
 
-        assert(manager.Add(100, obj1) == true);
-        assert(manager.Add(200, obj2) == true);
-        assert(manager.Add(300, obj3) == true);
+        CHECK(manager.Add(100, obj1) == true);
+        CHECK(manager.Add(200, obj2) == true);
+        CHECK(manager.Add(300, obj3) == true);
 
         // 重复添加应该失败
         auto obj_dup = new TestObject(99, "Duplicate");
-        assert(manager.Add(100, obj_dup) == false);
+        CHECK(manager.Add(100, obj_dup) == false);
         delete obj_dup; // 手动删除未添加的对象
 
         cout << "  Added 3 objects. Count: " << manager.GetCount() << endl;
-        assert(manager.GetCount() == 3);
+        CHECK(manager.GetCount() == 3);
     }
 
     cout << "\n✓ Testing Find..." << endl;
     {
         TestObject* obj = manager.Find(100);
-        assert(obj != nullptr);
-        assert(obj->id == 1);
-        assert(obj->name == "Alice");
+        CHECK(obj != nullptr);
+        CHECK(obj->id == 1);
+        CHECK(obj->name == "Alice");
         cout << "  Found: " << obj->id << " -> " << obj->name << endl;
 
         TestObject* not_found = manager.Find(999);
-        assert(not_found == nullptr);
+        CHECK(not_found == nullptr);
         cout << "  Not found (999) correctly returns nullptr" << endl;
     }
 
     cout << "\n✓ Testing Get (with ref_count increment)..." << endl;
     {
         TestObject* obj = manager.Get(200);
-        assert(obj != nullptr);
-        assert(obj->id == 2);
+        CHECK(obj != nullptr);
+        CHECK(obj->id == 2);
         cout << "  Got: " << obj->id << " -> " << obj->name << endl;
 
         // 多次 Get 应该增加引用计数
         TestObject* obj2 = manager.Get(200);
-        assert(obj2 == obj);
+        CHECK(obj2 == obj);
         cout << "  Called Get twice on same object" << endl;
 
         // 使用新的 GetRefCount 方法
         int ref_count = manager.GetRefCount(200);
         cout << "  Ref count by key: " << ref_count << endl;
-        assert(ref_count == 3); // 初始1 + Get两次
+        CHECK(ref_count == 3); // 初始1 + Get两次
     }
 
     cout << "\n✓ Testing GetKeyByValue..." << endl;
@@ -96,14 +106,14 @@ void TestBasicOperations()
         uint ref_count = 0;
 
         bool result = manager.GetKeyByValue(obj, &found_key, &ref_count, false);
-        assert(result == true);
-        assert(found_key == 100);
+        CHECK(result == true);
+        CHECK(found_key == 100);
         cout << "  Found key: " << found_key << ", ref_count: " << ref_count << endl;
     }
 
     cout << "\n✓ Cleaning up..." << endl;
     manager.Clear();
-    assert(manager.GetCount() == 0);
+    CHECK(manager.GetCount() == 0);
     cout << "  All objects deleted" << endl;
 }
 
@@ -135,7 +145,7 @@ void TestReferenceCount()
         uint after_get;
         manager.GetKeyByValue(obj, nullptr, &after_get, false);
         cout << "  After Get(): " << after_get << endl;
-        assert(after_get == initial_count + 1);
+        CHECK(after_get == initial_count + 1);
     }
 
     cout << "\n✓ Testing Release..." << endl;
@@ -146,12 +156,12 @@ void TestReferenceCount()
 
         int remaining = manager.Release(1, false);
         cout << "  After Release: " << remaining << endl;
-        assert(remaining == before_release - 1);
+        CHECK(remaining == before_release - 1);
 
         // 使用新的 GetRefCount 方法验证
         int ref_count = manager.GetRefCount(1);
         cout << "  Ref count by key after Release: " << ref_count << endl;
-        assert(ref_count == remaining);
+        CHECK(ref_count == remaining);
     }
 
     cout << "\n✓ Testing Release by pointer..." << endl;
@@ -162,12 +172,12 @@ void TestReferenceCount()
 
         int remaining = manager.Release(obj, false);
         cout << "  After Release by pointer: " << remaining << endl;
-        assert(remaining == before_release - 1);
+        CHECK(remaining == before_release - 1);
 
         // 使用新的 GetRefCount 方法按对象指针查询
         int ref_count = manager.GetRefCount(obj);
         cout << "  Ref count by pointer after Release: " << ref_count << endl;
-        assert(ref_count == remaining);
+        CHECK(ref_count == remaining);
     }
 
     cout << "\n✓ Cleaning up..." << endl;
@@ -202,14 +212,14 @@ void TestZeroClear()
         int count = manager.Release(1, true);
         cout << "  Released obj1, remaining ref_count: " << count << endl;
         cout << "  [DEBUG] After first Release(1,true): GetCount() = " << manager.GetCount() << endl;
-        assert(count == 1); // 还有一个引用
-        assert(manager.GetCount() == 3); // 对象还在
+        CHECK(count == 1); // 还有一个引用
+        CHECK(manager.GetCount() == 3); // 对象还在
 
         count = manager.Release(1, true);
         cout << "  Released obj1 again, remaining ref_count: " << count << endl;
         cout << "  [DEBUG] After second Release(1,true): GetCount() = " << manager.GetCount() << endl;
-        assert(count == 0); // 引用计数为0，对象被删除
-        assert(manager.GetCount() == 2); // 对象数量减少
+        CHECK(count == 0); // 引用计数为0，对象被删除
+        CHECK(manager.GetCount() == 2); // 对象数量减少
     }
 
     cout << "\n✓ Testing ClearFree (removes zero ref_count objects)..." << endl;
@@ -221,7 +231,7 @@ void TestZeroClear()
         cout << "  Before ClearFree: " << manager.GetCount() << endl;
         manager.ClearFree();
         cout << "  After ClearFree: " << manager.GetCount() << endl;
-        assert(manager.GetCount() == 1); // 只剩 Object 2 (ref_count=1)
+        CHECK(manager.GetCount() == 1); // 只剩 Object 2 (ref_count=1)
     }
 
     cout << "\n✓ Cleaning up..." << endl;
@@ -251,10 +261,10 @@ void TestAutoIdManager()
         uint32 id3 = manager.Add(obj3);
 
         cout << "  Allocated IDs: " << id1 << ", " << id2 << ", " << id3 << endl;
-        assert(id1 == 0);
-        assert(id2 == 1);
-        assert(id3 == 2);
-        assert(manager.GetCount() == 3);
+        CHECK(id1 == 0);
+        CHECK(id2 == 1);
+        CHECK(id3 == 2);
+        CHECK(manager.GetCount() == 3);
     }
 
     cout << "\n✓ Testing duplicate object detection..." << endl;
@@ -263,29 +273,29 @@ void TestAutoIdManager()
         uint32 id = manager.Add(existing_obj); // 添加已存在的对象
 
         cout << "  Adding existing object returned ID: " << id << endl;
-        assert(id == 0); // 返回原来的 ID
-        assert(manager.GetCount() == 3); // 数量不变
+        CHECK(id == 0); // 返回原来的 ID
+        CHECK(manager.GetCount() == 3); // 数量不变
 
         // 检查引用计数是否增加
         uint ref_count;
         manager.GetKeyByValue(existing_obj, nullptr, &ref_count, false);
         cout << "  Ref count after re-add: " << ref_count << endl;
-        assert(ref_count == 2); // ref_count 应该增加了
+        CHECK(ref_count == 2); // ref_count 应该增加了
     }
 
     cout << "\n✓ Testing Find by auto-generated ID..." << endl;
     {
         TestObject* obj = manager.Find(1);
-        assert(obj != nullptr);
-        assert(obj->id == 102);
-        assert(obj->name == "Auto2");
+        CHECK(obj != nullptr);
+        CHECK(obj->id == 102);
+        CHECK(obj->name == "Auto2");
         cout << "  Found: ID=" << obj->id << ", Name=" << obj->name << endl;
     }
 
     cout << "\n✓ Testing null object handling..." << endl;
     {
         uint32 id = manager.Add(nullptr);
-        assert(id == uint32(-1));
+        CHECK(id == uint32(-1));
         cout << "  Adding nullptr correctly returned -1" << endl;
     }
 
@@ -307,19 +317,19 @@ void TestEdgeCases()
 
     cout << "\n✓ Testing empty manager..." << endl;
     {
-        assert(manager.GetCount() == 0);
-        assert(manager.Find(1) == nullptr);
-        assert(manager.Get(1) == nullptr);
+        CHECK(manager.GetCount() == 0);
+        CHECK(manager.Find(1) == nullptr);
+        CHECK(manager.Get(1) == nullptr);
 
         int result = manager.Release(1, false);
-        assert(result == -1);
+        CHECK(result == -1);
         cout << "  Empty manager operations handled correctly" << endl;
     }
 
     cout << "\n✓ Testing null object add..." << endl;
     {
         bool result = manager.Add(1, nullptr);
-        assert(result == false);
+        CHECK(result == false);
         cout << "  Adding nullptr correctly rejected" << endl;
     }
 
@@ -328,8 +338,8 @@ void TestEdgeCases()
         auto obj1 = new TestObject(1, "First");
         auto obj2 = new TestObject(2, "Second");
 
-        assert(manager.Add(100, obj1) == true);
-        assert(manager.Add(100, obj2) == false); // 重复键
+        CHECK(manager.Add(100, obj1) == true);
+        CHECK(manager.Add(100, obj2) == false); // 重复键
 
         delete obj2; // 手动删除未添加的对象
         cout << "  Duplicate key correctly rejected" << endl;
@@ -340,7 +350,7 @@ void TestEdgeCases()
         TestObject* fake_obj = reinterpret_cast<TestObject*>(0x12345678);
         int key;
         bool result = manager.GetKeyByValue(fake_obj, &key, nullptr, false);
-        assert(result == false);
+        CHECK(result == false);
         cout << "  Non-existent object correctly returned false" << endl;
     }
 
@@ -348,7 +358,7 @@ void TestEdgeCases()
     {
         manager.Clear();
         manager.Clear(); // 应该安全
-        assert(manager.GetCount() == 0);
+        CHECK(manager.GetCount() == 0);
         cout << "  Multiple Clear() calls handled safely" << endl;
     }
 }
@@ -405,7 +415,7 @@ void TestRealWorldScenario()
         uint tex_refs = 0;
         asset_manager.GetKeyByValue(tex1, nullptr, &tex_refs, false);
         cout << "  Texture ref_count: " << tex_refs << endl;
-        assert(tex_refs == 3); // 初始1 + Get两次
+        CHECK(tex_refs == 3); // 初始1 + Get两次
     }
 
     cout << "\n✓ Releasing unused assets..." << endl;
@@ -420,7 +430,7 @@ void TestRealWorldScenario()
         cout << "  Released assets from scenes" << endl;
         cout << "  Assets still loaded: " << asset_manager.GetCount() << endl;
         // 此时都没被删除，因为都还有ref_count > 0
-        assert(asset_manager.GetCount() == 3);
+        CHECK(asset_manager.GetCount() == 3);
     }
 
     cout << "\n✓ Final Release with zero_clear..." << endl;
@@ -430,7 +440,7 @@ void TestRealWorldScenario()
         asset_manager.Release("model.obj", true);     // ref_count: 1 -> 0，删除！
 
         cout << "  Assets after final release: " << asset_manager.GetCount() << endl;
-        assert(asset_manager.GetCount() == 1); // 只剩 sound.wav
+        CHECK(asset_manager.GetCount() == 1); // 只剩 sound.wav
     }
 
     cout << "\n✓ Cleaning up unused assets..." << endl;
