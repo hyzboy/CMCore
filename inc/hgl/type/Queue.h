@@ -65,6 +65,7 @@
 #include<vector>
 #include<type_traits>
 #include<algorithm>
+#include<cstddef>
 #include<cstring>
 namespace hgl
 {

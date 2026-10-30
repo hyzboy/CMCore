@@ -2,6 +2,9 @@
 
 #include<vector>
 #include<cassert>
+#include<cstring>
+#include<type_traits>
+#include<utility>
 namespace hgl
 {
     /**
