@@ -60,7 +60,7 @@ namespace hgl
         // ===== 构造/析构 / Constructor/Destructor =====
 
         Stack() = default;
-        virtual ~Stack() = default;
+        ~Stack() = default;
 
         // ===== 隐式转换 / Implicit Conversion =====
 
