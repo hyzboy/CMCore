@@ -21,6 +21,7 @@ cm_datatype_test("DataType/Collection" BlockAllocatorTest     BlockAllocatorTest
 cm_datatype_test("DataType/Collection" BlockAllocatorTest2    BlockAllocatorTest2.cpp)
 cm_datatype_test("DataType/Collection" MonotonicIDListTest    MonotonicIDListTest.cpp)
 cm_datatype_test("DataType/Collection" FlatTreeTest           FlatTreeTest.cpp)
+cm_datatype_test("DataType/Collection" FlatTreeContainerTest  FlatTreeContainerTest.cpp)
 
 cm_datatype_test("DataType/Collection" FixedValuePoolTest     FixedValuePoolTest.cpp)
 cm_datatype_test("DataType/Collection" PointerObjectPoolTest  PointerObjectPoolTest.cpp)
