@@ -217,6 +217,47 @@ void test_array_type_find_delete()
 // TEST 4: 性能对比 - 数组类型 vs 标量类型
 // ============================================================================
 
+// ============================================================================
+// TEST 5: 存储单元对齐与布局 (F1 回归)
+// ============================================================================
+void test_storage_alignment()
+{
+    std::cout << "\n========================================" << std::endl;
+    std::cout << "TEST 5: Storage alignment and layout" << std::endl;
+    std::cout << "========================================\n" << std::endl;
+
+    std::cout << "\n[5.1] Holder layout matches the array type:" << std::endl;
+    TEST_ASSERT(sizeof(ArrayElementHolder<uint64, 4>) == sizeof(uint256), "Holder size == uint256 size");
+    TEST_ASSERT(alignof(ArrayElementHolder<uint64, 4>) == alignof(uint256), "Holder alignment == uint256 alignment");
+
+    std::cout << "\n[5.2] Over-aligned element types stay aligned:" << std::endl;
+    {
+        struct alignas(32) OverAligned
+        {
+            float v[8];
+        };
+
+        static_assert(alignof(ArrayElementHolder<OverAligned, 2>) == 32, "holder must preserve alignas(32)");
+
+        ValueArray<OverAligned[2]> list;
+        OverAligned item[2] = {};
+
+        for (int i = 0; i < 5; ++i)
+            list.Add(item);
+
+        bool all_aligned = true;
+        for (int i = 0; i < list.GetCount(); ++i)
+        {
+            const auto addr = reinterpret_cast<uintptr_t>(list.GetData() + i);
+            if ((addr % 32) != 0)
+                all_aligned = false;
+        }
+
+        TEST_ASSERT(list.GetCount() == 5, "Over-aligned elements stored");
+        TEST_ASSERT(all_aligned, "Every element is 32-byte aligned");
+    }
+}
+
 void test_performance_comparison()
 {
     std::cout << "\n========================================" << std::endl;
@@ -312,6 +353,7 @@ int main(int, char**)
         test_valuearray_uint256_basic();
         test_valuearray_uint16k_large();
         test_array_type_find_delete();
+        test_storage_alignment();
         test_performance_comparison();
     }
     catch (const std::exception& e)

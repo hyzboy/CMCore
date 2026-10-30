@@ -451,49 +451,60 @@ namespace hgl
     };//template <typename T> class ValueArray
 
     /**
+     * @brief ValueArray<T[N]> 的存储单元包装
+     * 用结构体包装数组，使 std::vector 依据 alignof(ElementType) 分配对齐内存，
+     * 从而避免把字节缓冲区当作 T[N] 使用时产生的未对齐访问与严格别名问题。
+     */
+    template<typename ElementType, size_t ArraySize>
+    struct ArrayElementHolder
+    {
+        ElementType value[ArraySize];
+    };
+
+    /**
      * @brief Specialization for array types (e.g., uint64[256])
-     * Uses byte-level storage to avoid std::vector's array type construction issues
+     * 使用 ArrayElementHolder 作为存储单元，保证对齐且无需字节级 reinterpret_cast。
      */
     template<typename ElementType, size_t ArraySize>
     class ValueArray<ElementType[ArraySize]>
     {
     protected:
         using ArrayType = ElementType[ArraySize];
-        std::vector<uint8_t> byte_storage;
+        using Holder    = ArrayElementHolder<ElementType, ArraySize>;
 
-        int GetElementCount() const { return (int)(byte_storage.size() / sizeof(ArrayType)); }
-        ArrayType* GetElementPtr(int idx) { return reinterpret_cast<ArrayType*>(byte_storage.data() + idx * sizeof(ArrayType)); }
-        const ArrayType* GetElementPtr(int idx) const { return reinterpret_cast<const ArrayType*>(byte_storage.data() + idx * sizeof(ArrayType)); }
+        std::vector<Holder> storage;
+
+        int GetElementCount() const { return (int)storage.size(); }
 
     public:
-        int GetAllocCount() const { return (int)(byte_storage.capacity() / sizeof(ArrayType)); }
+        int GetAllocCount() const { return (int)storage.capacity(); }
         int GetCount() const { return GetElementCount(); }
-        bool IsEmpty() const { return byte_storage.empty(); }
+        bool IsEmpty() const { return storage.empty(); }
 
         bool Resize(int count)
         {
             if (count < 0) return false;
-            byte_storage.resize((size_t)count * sizeof(ArrayType));
+            storage.resize((size_t)count);
             return true;
         }
 
         bool Reserve(int count)
         {
             if (count < 0) return false;
-            byte_storage.reserve((size_t)count * sizeof(ArrayType));
+            storage.reserve((size_t)count);
             return true;
         }
 
-        int GetTotalBytes() const { return (int)byte_storage.size(); }
+        int GetTotalBytes() const { return (int)(storage.size() * sizeof(Holder)); }
 
         ArrayType* GetData()
         {
-            return byte_storage.empty() ? nullptr : reinterpret_cast<ArrayType*>(byte_storage.data());
+            return storage.empty() ? nullptr : &storage.data()->value;
         }
 
         const ArrayType* GetData() const
         {
-            return byte_storage.empty() ? nullptr : reinterpret_cast<const ArrayType*>(byte_storage.data());
+            return storage.empty() ? nullptr : &storage.data()->value;
         }
 
         ArrayType* begin() { return GetData(); }
@@ -503,54 +514,52 @@ namespace hgl
         ArrayType* last() { const int n = GetElementCount(); return n == 0 ? nullptr : GetData() + n - 1; }
         const ArrayType* last() const { const int n = GetElementCount(); return n == 0 ? nullptr : GetData() + n - 1; }
 
-        bool Clear() { byte_storage.clear(); return true; }
-        bool Free() { std::vector<uint8_t>().swap(byte_storage); return true; }
+        bool Clear() { storage.clear(); return true; }
+        bool Free() { std::vector<Holder>().swap(storage); return true; }
 
         bool Add(const ArrayType& data)
         {
-            size_t offset = byte_storage.size();
-            byte_storage.resize(offset + sizeof(ArrayType));
-            std::memcpy(byte_storage.data() + offset, &data, sizeof(ArrayType));
+            Holder holder;
+            std::memcpy(holder.value, data, sizeof(ArrayType));
+            storage.push_back(holder);
             return true;
         }
 
         bool Insert(int index, const ArrayType& data)
         {
-            int count = GetElementCount();
+            const int count = GetElementCount();
             if (index < 0 || index > count) return false;
 
-            byte_storage.insert(
-                byte_storage.begin() + (ptrdiff_t)index * sizeof(ArrayType),
-                reinterpret_cast<const uint8_t*>(&data),
-                reinterpret_cast<const uint8_t*>(&data) + sizeof(ArrayType)
-            );
+            Holder holder;
+            std::memcpy(holder.value, data, sizeof(ArrayType));
+            storage.insert(storage.begin() + index, holder);
             return true;
         }
 
         bool Get(int index, ArrayType& data) const
         {
-            int count = GetElementCount();
+            const int count = GetElementCount();
             if (index < 0 || index >= count) return false;
-            std::memcpy(&data, byte_storage.data() + (size_t)index * sizeof(ArrayType), sizeof(ArrayType));
+            std::memcpy(data, storage[(size_t)index].value, sizeof(ArrayType));
             return true;
         }
 
         bool Set(int index, const ArrayType& data)
         {
-            int count = GetElementCount();
+            const int count = GetElementCount();
             if (index < 0 || index >= count) return false;
-            std::memcpy(byte_storage.data() + (size_t)index * sizeof(ArrayType), &data, sizeof(ArrayType));
+            std::memcpy(storage[(size_t)index].value, data, sizeof(ArrayType));
             return true;
         }
 
         int Find(const ArrayType& data) const
         {
-            int count = GetElementCount();
-            const uint8_t* search_bytes = reinterpret_cast<const uint8_t*>(&data);
+            const int count = GetElementCount();
+            const void* search_bytes = (const void*)data;
 
             for (int i = 0; i < count; ++i)
             {
-                if (std::memcmp(byte_storage.data() + (size_t)i * sizeof(ArrayType), search_bytes, sizeof(ArrayType)) == 0)
+                if (std::memcmp(storage[(size_t)i].value, search_bytes, sizeof(ArrayType)) == 0)
                     return i;
             }
             return -1;
@@ -558,12 +567,9 @@ namespace hgl
 
         bool Delete(int index)
         {
-            int count = GetElementCount();
+            const int count = GetElementCount();
             if (index < 0 || index >= count) return false;
-            byte_storage.erase(
-                byte_storage.begin() + (ptrdiff_t)index * sizeof(ArrayType),
-                byte_storage.begin() + (ptrdiff_t)(index + 1) * sizeof(ArrayType)
-            );
+            storage.erase(storage.begin() + index);
             return true;
         }
 
@@ -575,7 +581,10 @@ namespace hgl
 
         bool operator==(const ValueArray<ArrayType>& other) const
         {
-            return byte_storage == other.byte_storage;
+            const size_t n = storage.size();
+            if (n != other.storage.size()) return false;
+            if (n == 0) return true;
+            return std::memcmp(storage.data(), other.storage.data(), n * sizeof(Holder)) == 0;
         }
 
         bool operator!=(const ValueArray<ArrayType>& other) const
@@ -585,11 +594,11 @@ namespace hgl
 
         ValueArray() = default;
         ~ValueArray() = default;
-        ValueArray(const ValueArray& rhs) : byte_storage(rhs.byte_storage) {}
+        ValueArray(const ValueArray& rhs) : storage(rhs.storage) {}
         ValueArray& operator=(const ValueArray& rhs)
         {
             if (this != &rhs)
-                byte_storage = rhs.byte_storage;
+                storage = rhs.storage;
             return *this;
         }
     };
