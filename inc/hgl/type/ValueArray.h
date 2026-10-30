@@ -50,11 +50,17 @@ namespace hgl
 
     public:
 
-            std::vector<T> &      GetArray()          {return data_array;}
+            /// 只读访问底层 vector（保持原有接口）
             const std::vector<T> &GetArray()const     {return data_array;}
 
-            operator        std::vector<T> & ()       {return data_array;}
-            operator const  std::vector<T> & ()const  {return data_array;}
+            /**
+             * 可写访问底层 vector（绕过容器不变量，慎用）。
+             * 直接修改可能破坏容量/数量一致性。
+             */
+            std::vector<T> &      GetArrayUnsafe()    {return data_array;}
+
+            explicit operator        std::vector<T> & ()       {return data_array;}
+            explicit operator const  std::vector<T> & ()const  {return data_array;}
                     T &     operator[](int index)             {return data_array[index];}
             const   T &     operator[](int index)const        {return data_array[index];}
 
