@@ -170,7 +170,7 @@ namespace hgl
         /**
          * @brief CN:清空并尝试释放内存\nEN:Clear and try to release memory
          */
-        void Free()
+        void ClearAndDeallocate()
         {
             data.clear();
             data.reserve(0);

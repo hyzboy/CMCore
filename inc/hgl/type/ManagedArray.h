@@ -82,13 +82,13 @@ namespace hgl
         {
             if(this!=&other)
             {
-                Free();
+                ClearAndDeallocate();
                 items=std::move(other.items);
             }
             return *this;
         }
 
-        ~ManagedArray(){Free();}                                                                 ///<本类析构函数
+        ~ManagedArray(){ClearAndDeallocate();}                                                                 ///<本类析构函数
 
         template<typename ...ARGS>
         T* Create(ARGS&&...args)
@@ -231,8 +231,8 @@ namespace hgl
         void operator-=(const ItemPointer &obj) { DeleteByValue(obj); }
 
         // ============ 释放与清理 ============
-        // Free: 先 Clear（对元素 delete），再调用 shrink_to_fit
-        void Free()
+        // ClearAndDeallocate: 先 Clear（对元素 delete），再调用 shrink_to_fit
+        void ClearAndDeallocate()
         {
             Clear();
             items.shrink_to_fit();

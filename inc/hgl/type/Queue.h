@@ -49,7 +49,7 @@
  *
  * 9) 清理接口
  * - `Clear()`：清空两段元素计数并复位 `read_offset`，保留已分配容量。
- * - `Free()`：在 `Clear()` 的基础上释放两段底层数组的内存空间（容量归零）。
+ * - `ClearAndDeallocate()`：在 `Clear()` 的基础上释放两段底层数组的内存空间（容量归零）。
  *
  * 10) 边界条件与线程安全
  * - 空队列：`Peek/Pop` 返回 false；`begin()/end()` 迭代区间为空。
@@ -341,7 +341,7 @@ namespace hgl
             read_offset=0;
         }
 
-        void Free()                                                       ///<清除所有数据并释放内存
+        void ClearAndDeallocate()                                                       ///<清除所有数据并释放内存
         {
             Clear();
             data_array[0].clear();

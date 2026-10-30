@@ -117,7 +117,7 @@ int os_main(int, os_char**)
     map6.Add(2, "two");
     assert(map6.GetCount() == 2);
 
-    map6.Free();
+    map6.ClearAndDeallocate();
     assert(map6.IsEmpty());
     assert(map6.GetCount() == 0);
     cout << "  ✓ Free() clears and releases memory" << endl;

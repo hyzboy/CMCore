@@ -50,7 +50,7 @@ int os_main(int, os_char**)
         cout << "  Capacity after Clear: " << capacity_after_clear << endl;
         cout << "  ✓ Clear keeps capacity" << endl;
 
-        stack.Free();
+        stack.ClearAndDeallocate();
         assert(stack.IsEmpty());
         int64 capacity_after_free = stack.GetAllocCount();
         cout << "  Capacity after Free: " << capacity_after_free << endl;

@@ -29,8 +29,8 @@ public:
 
     virtual ~ActiveDataManagerDebug()
     {
-        cout << "[ADM] Destructor called - calling Free()" << endl;
-        Free();
+        cout << "[ADM] Destructor called - calling ClearAndDeallocate()" << endl;
+        ClearAndDeallocate();
         cout << "[ADM] Destructor completed" << endl;
     }
 
@@ -208,16 +208,16 @@ public:
         aim.ReleaseAllActive();
     }
 
-    // Free - 清空所有数据并释放内存
-    void Free()
+    // ClearAndDeallocate - 清空所有数据并释放内存
+    void ClearAndDeallocate()
     {
-        cout << "[ADM::Free] Start - freeing all data and memory" << endl;
-        cout << "  Calling aim.Free()..." << endl;
-        aim.Free();
-        cout << "  Calling data_array.Free()..." << endl;
+        cout << "[ADM::ClearAndDeallocate] Start - freeing all data and memory" << endl;
+        cout << "  Calling aim.ClearAndDeallocate()..." << endl;
+        aim.ClearAndDeallocate();
+        cout << "  Calling data_array.ClearAndDeallocate()..." << endl;
         data_array.clear();
         data_array.shrink_to_fit();
-        cout << "[ADM::Free] End" << endl;
+        cout << "[ADM::ClearAndDeallocate] End" << endl;
     }
 
     // GetData - 获取指定ID的数据指针

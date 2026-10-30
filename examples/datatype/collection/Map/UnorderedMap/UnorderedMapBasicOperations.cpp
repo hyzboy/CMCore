@@ -558,7 +558,7 @@ void PerformanceAndBatchTest()
     for(int i = 0; i < 100; i++)
         map.Add(i, i);
 
-    map.Free();
+    map.ClearAndDeallocate();
     TEST_ASSERT(map.GetCount() == 0, "Free empties map and releases memory");
 }
 

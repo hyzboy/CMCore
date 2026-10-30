@@ -123,7 +123,7 @@ namespace hgl
 
         void Clear();                                                                       ///<清空整个合集(并不释放内存)
         void *Map(const uint64 start,const uint64 range);                                   ///<映射一段数据区供访问
-        void Free();                                                                        ///<清空整个合集并释放内存
+        void ClearAndDeallocate();                                                                        ///<清空整个合集并释放内存
 
         bool RemoveAt(const uint64 offset);                                                 ///<移除指定位置的数据
         bool RemoveAt(const uint64 start,const uint64 remove_count);                        ///<移除指定数量的连续

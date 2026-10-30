@@ -80,7 +80,7 @@ int os_main(int, os_char**)
     set.Add(2);
     set.Add(3);
     assert(set.GetCount() == 3);
-    set.Free();
+    set.ClearAndDeallocate();
     assert(set.GetCount() == 0);
     assert(set.IsEmpty());
     cout << "  ✓ Free empties the set" << endl;

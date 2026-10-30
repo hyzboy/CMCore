@@ -212,7 +212,7 @@ void test_objectlist_edge_cases()
     TEST_ASSERT(TestObject::instance_count == 6, "4 instances deleted");
 
     std::cout << "\n[4.4] Free vs Clear:" << std::endl;
-    empty.Free();
+    empty.ClearAndDeallocate();
     TEST_ASSERT(empty.GetCount() == 0, "Free empties list");
     TEST_ASSERT(TestObject::instance_count == 0, "All deleted");
 }

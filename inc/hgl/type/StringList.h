@@ -303,7 +303,7 @@ namespace hgl
         */
         void Clear()
         {
-            Items.Free();
+            Items.ClearAndDeallocate();
         }
 
         /**

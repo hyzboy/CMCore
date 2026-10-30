@@ -73,7 +73,7 @@ int os_main(int, os_char**)
     assert(alloc_reserved >= 10);
     cout << "  Reserved capacity: " << alloc_reserved << endl;
 
-    set.Free();
+    set.ClearAndDeallocate();
     assert(set.GetCount() == 0);
     int64 alloc_after_free = set.GetAllocCount();
     if (alloc_after_free != 0)

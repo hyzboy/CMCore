@@ -115,7 +115,7 @@ namespace hgl
             if(this == &other)
                 return *this;
 
-            Free();
+            ClearAndDeallocate();
             data_ = other.data_;
             count_ = other.count_;
             alloc_count_ = other.alloc_count_;
@@ -224,7 +224,7 @@ namespace hgl
             if(!data && data_count != 0)
                 return false;
 
-            Free();
+            ClearAndDeallocate();
 
             data_ = data;
             count_ = data_count;
@@ -476,7 +476,7 @@ namespace hgl
             count_ = 0;
         }
 
-        void Free()
+        void ClearAndDeallocate()
         {
             hgl::destroy_range(data_, count_);
             hgl::deallocate_raw_memory(data_);

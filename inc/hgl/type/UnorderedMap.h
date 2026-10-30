@@ -225,7 +225,7 @@ namespace hgl
         /**
          * 清空并释放内存
          */
-        void Free() {
+        void ClearAndDeallocate() {
             ankerl::unordered_dense::map<K, V, Hash, KeyEqual> empty;
             map_data.swap(empty);
         }

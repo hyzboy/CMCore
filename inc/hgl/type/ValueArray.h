@@ -74,7 +74,7 @@ namespace hgl
         ValueArray(const ValueArray<T> &lt){operator=(lt);}                                                     ///<本类构造函数
         ValueArray(const std::initializer_list<T> &lt){operator=(lt);}
 
-        ~ValueArray(){Free();}                                                                    ///<本类析构函数
+        ~ValueArray(){ClearAndDeallocate();}                                                                    ///<本类析构函数
 
         /**
          * 向列表中添加一个空数据
@@ -133,7 +133,7 @@ namespace hgl
 
                 int  Add(const ValueArray<T> &l){return Add(l.GetData(),l.GetCount());}                            ///<增加一批数据
 
-        void Free()
+        void ClearAndDeallocate()
         {
             data_array.clear();
             data_array.shrink_to_fit();
@@ -393,7 +393,7 @@ namespace hgl
         const ArrayType* last() const { const int n = GetElementCount(); return n == 0 ? nullptr : GetData() + n - 1; }
 
         bool Clear() { storage.clear(); return true; }
-        bool Free() { std::vector<Holder>().swap(storage); return true; }
+        bool ClearAndDeallocate() { std::vector<Holder>().swap(storage); return true; }
 
         bool Add(const ArrayType& data)
         {

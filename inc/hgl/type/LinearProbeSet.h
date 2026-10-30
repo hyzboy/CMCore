@@ -266,9 +266,9 @@ namespace hgl
             active_slots = 0;
         }
 
-        void Free()
+        void ClearAndDeallocate()
         {
-            data_manager.Free();
+            data_manager.ClearAndDeallocate();
             table.clear();
             active_slots = 0;
         }

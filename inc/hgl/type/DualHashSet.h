@@ -303,9 +303,9 @@ namespace hgl
             deleted_count = 0;
         }
 
-        void Free()
+        void ClearAndDeallocate()
         {
-            data_manager.Free();
+            data_manager.ClearAndDeallocate();
             hash_map_active.clear();
             hash_map_rebuilding.clear();
             is_rebuilding = false;

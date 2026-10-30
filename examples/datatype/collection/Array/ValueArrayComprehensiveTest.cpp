@@ -315,7 +315,7 @@ void test_list_edge_cases()
     TEST_ASSERT(list.GetCount() == 0, "Clear empties list");
     TEST_ASSERT(list.GetAllocCount() > 0, "Memory still allocated");
 
-    list.Free();
+    list.ClearAndDeallocate();
     TEST_ASSERT(list.GetAllocCount() == 0, "Free releases memory");
 }
 
@@ -350,7 +350,7 @@ void test_list_stress()
     TEST_ASSERT(list.GetCount() == 5000, "Count is 5000");
 
     std::cout << "\n[8.4] Cleanup:" << std::endl;
-    list.Free();
+    list.ClearAndDeallocate();
     TEST_ASSERT(list.GetCount() == 0, "Freed successfully");
 }
 

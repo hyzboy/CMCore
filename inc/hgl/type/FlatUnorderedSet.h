@@ -408,11 +408,11 @@ namespace hgl
         /**
          * @brief CN:清空所有元素并释放内存\nEN:Clear all elements and free memory
          */
-        void Free()
+        void ClearAndDeallocate()
         {
             // std::vector 的内存会在析构时自动释放
             // 这里显式清空以触发内存释放
-            data_manager.Free();
+            data_manager.ClearAndDeallocate();
             hash_map.clear();
         }
 

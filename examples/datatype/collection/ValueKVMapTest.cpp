@@ -160,7 +160,7 @@ static void TestClearFree()
     map.Add(1, 1);
     TEST_ASSERT(map.GetCount() == 1, "Usable after Clear");
 
-    map.Free();
+    map.ClearAndDeallocate();
     TEST_ASSERT(map.IsEmpty(), "Empty after Free");
 }
 

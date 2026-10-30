@@ -434,7 +434,7 @@ bool Test_ClearAndFree()
     TEST_ASSERT(c.GetCount() == 10, "Can add after Clear");
 
     // Free测试
-    c.Free();
+    c.ClearAndDeallocate();
     TEST_ASSERT(c.GetCount() == 0, "Count is 0 after Free");
     TEST_ASSERT(c.IsEmpty(), "Collection is empty after Free");
 

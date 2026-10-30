@@ -89,7 +89,7 @@ int os_main(int, os_char**)
     assert(cf_map.IsEmpty());
     assert(cf_map.GetCount() == 0);
 
-    cf_map2.Free();  // Free all memory
+    cf_map2.ClearAndDeallocate();  // Clear and deallocate all memory
     assert(cf_map2.IsEmpty());
     assert(cf_map2.GetCount() == 0);
     cout << "  ✓ Clear() and Free() both empty the map" << endl;

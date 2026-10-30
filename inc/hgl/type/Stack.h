@@ -205,7 +205,7 @@ namespace hgl
          * CN: 彻底清除所有数据和容量
          * EN: Clear all data and release memory
          */
-        void Free()
+        void ClearAndDeallocate()
         {
             Clear();
             data_array.clear();

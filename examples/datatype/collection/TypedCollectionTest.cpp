@@ -177,7 +177,7 @@ static void TestClearFree()
     tc.Add(Point{1, 1});
     TEST_ASSERT(tc.GetCount() == 1, "Can Add again after Clear");
 
-    tc.Free();
+    tc.ClearAndDeallocate();
     TEST_ASSERT(tc.IsEmpty(), "Empty after Free");
     TEST_ASSERT(tc.GetAllocCount() == 0, "Free releases capacity");
 }

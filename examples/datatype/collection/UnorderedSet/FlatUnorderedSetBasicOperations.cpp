@@ -233,7 +233,7 @@ void TestClearOperations()
     std::cout << "✓ Can add after Clear" << std::endl;
 
     // Free（释放内存）
-    set.Free();
+    set.ClearAndDeallocate();
     assert(set.GetCount() == 0);
     assert(set.IsEmpty() == true);
     std::cout << "✓ Free released memory" << std::endl;

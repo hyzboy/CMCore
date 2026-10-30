@@ -134,7 +134,7 @@ namespace hgl
         bool DeleteAt (int index);
         bool DeleteAt (int start, int number);
         bool Change (const K &key, const V &value);
-        void Free () { data_list.Free(); }
+        void ClearAndDeallocate() { data_list.ClearAndDeallocate(); }
         void Clear () { data_list.Clear(); }
 
     private:

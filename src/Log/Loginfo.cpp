@@ -361,7 +361,7 @@ namespace hgl
                 ++log;
             }
 
-            log_list->Free();
+            log_list->ClearAndDeallocate();
         }
     }//namespace logger
 

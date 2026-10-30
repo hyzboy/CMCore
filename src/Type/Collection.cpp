@@ -196,7 +196,7 @@ namespace hgl
     /**
      * 清空整个合集并释放内存
      */
-    void Collection::Free()
+    void Collection::ClearAndDeallocate()
     {
         data_count=0;
         total_bytes=0;

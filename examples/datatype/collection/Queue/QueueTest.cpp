@@ -187,7 +187,7 @@ void TestQueueCapacity()
     cout<<"AllocCount: "<<q.GetAllocCount()<<", Count: "<<q.GetCount()<<endl;
 
     cout<<"\n[5] Free memory..."<<endl;
-    q.Free();
+    q.ClearAndDeallocate();
     cout<<"After Free():"<<endl;
     cout<<"AllocCount: "<<q.GetAllocCount()<<", Count: "<<q.GetCount()<<endl;
 }

@@ -459,7 +459,7 @@ static void TestLifetime()
         TEST_ASSERT(Tracked::alive == 0, "Clear destroys all objects");
         TEST_ASSERT(arr.GetAllocCount() >= 100, "Clear keeps capacity");
 
-        arr.Free();                         // 释放
+        arr.ClearAndDeallocate();                         // 释放
         TEST_ASSERT(arr.GetAllocCount() == 0, "Free releases capacity");
     }
 
@@ -487,7 +487,7 @@ static void TestLifetime()
         TEST_ASSERT(arr.GetCount() == 2 && arr[0] == Tracked(7) && arr[1] == Tracked(8),
                     "Adopted content is readable");
 
-        arr.Free();
+        arr.ClearAndDeallocate();
     }
 
     TEST_ASSERT(Tracked::alive == 0, "No leak, no double free at end");

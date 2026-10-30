@@ -166,7 +166,7 @@ namespace hgl
         IndexedList(const T *lt,const int n){Add(lt,n);}
         IndexedList(const IndexedList<T,I> &lt){operator=(lt);}
         IndexedList(const std::initializer_list<T> &lt){operator=(lt);}
-        virtual ~IndexedList(){Free();}
+        virtual ~IndexedList(){ClearAndDeallocate();}
 
         /**
          * 向列表中添加一个空数据
@@ -280,7 +280,7 @@ namespace hgl
             free_index.Clear();
         }
 
-        virtual void Free()
+        virtual void ClearAndDeallocate()
         {
             data_array.clear();
             if constexpr (!std::is_array_v<T>)
@@ -289,7 +289,7 @@ namespace hgl
             }
             data_index.clear();
             data_index.shrink_to_fit();
-            free_index.Free();
+            free_index.ClearAndDeallocate();
         }
 
         const bool IsValidIndex(const int32 index)const
@@ -827,11 +827,11 @@ namespace hgl
             return true;
         }
 
-        bool Free()
+        bool ClearAndDeallocate()
         {
             std::vector<uint8_t>().swap(byte_storage);
             std::vector<I>().swap(data_index);
-            free_index.Free();
+            free_index.ClearAndDeallocate();
             return true;
         }
 

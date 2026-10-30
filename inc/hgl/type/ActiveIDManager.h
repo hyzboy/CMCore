@@ -166,9 +166,9 @@ namespace hgl
          * CN:适用于不再需要管理器时的彻底清理。\nEN:Suitable for thorough cleanup when the manager is no longer needed.
          *
          * 用法示例 / Usage example:
-         * idm.Free();  // CN:彻底释放所有资源 / EN:Completely free all resources
+         * idm.ClearAndDeallocate();  // CN:彻底释放所有资源 / EN:Completely free all resources
          */
-        void Free()
+        void ClearAndDeallocate()
         {
             active_list.clear();
             ClearIdle();

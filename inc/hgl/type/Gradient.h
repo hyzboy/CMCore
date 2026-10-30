@@ -28,7 +28,7 @@ namespace hgl
 
         void Clear()
         {
-            stop_map.Free();
+            stop_map.ClearAndDeallocate();
         }
 
         /**

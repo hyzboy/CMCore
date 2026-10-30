@@ -162,7 +162,7 @@ void test_boundary_conditions()
         TEST_ASSERT(after_clear_alloc == before_alloc, "Capacity unchanged after Clear");
         TEST_ASSERT(va.GetCount() == 0, "Element count 0 after Clear");
 
-        va.Free();
+        va.ClearAndDeallocate();
         int after_free_alloc = va.GetAllocCount();
         TEST_ASSERT(after_free_alloc == 0, "Capacity 0 after Free");
     }

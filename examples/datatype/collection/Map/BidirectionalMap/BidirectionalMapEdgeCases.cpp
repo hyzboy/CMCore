@@ -151,7 +151,7 @@ int os_main(int, os_char**)
 
         BidirectionalMap<int, string> bmap2;
         bmap2.Add(1, "one");
-        bmap2.Free();
+        bmap2.ClearAndDeallocate();
         TEST_ASSERT(bmap2.IsEmpty(), "After Free, map is empty");
         TEST_ASSERT(bmap2.Add(3, "three"), "Can add after Free");
     }

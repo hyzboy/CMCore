@@ -343,9 +343,9 @@ namespace hgl
         /**
         * @brief CN:清空所有数据并释放内存。\nEN:Clear all data and free memory.
         */
-        void Free()
+        void ClearAndDeallocate()
         {
-            aim.Free();
+            aim.ClearAndDeallocate();
             data_array.clear();
             data_array.shrink_to_fit();
         }

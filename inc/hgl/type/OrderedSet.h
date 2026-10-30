@@ -220,7 +220,7 @@ namespace hgl
         /**
          * @brief CN:清空所有元素并释放内存\nEN:Clear all elements and free memory
          */
-        void Free() { data.clear(); }
+        void ClearAndDeallocate() { data.clear(); }
 
         /**
          * @brief CN:清空所有元素\nEN:Clear all elements

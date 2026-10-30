@@ -302,7 +302,7 @@ namespace hgl
         /**
          * @brief CN:清空所有元素并释放内存\nEN:Clear all elements and free memory
          */
-        void Free()
+        void ClearAndDeallocate()
         {
             data.clear();
             data.shrink_to_fit();

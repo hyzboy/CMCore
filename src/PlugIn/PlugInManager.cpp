@@ -240,7 +240,7 @@ namespace hgl
 
         ScanDetailed(out_infos,true);
 
-        probe_cache.Free();
+        probe_cache.ClearAndDeallocate();
 
         const int count=out_infos.GetCount();
         for(int i=0;i<count;i++)

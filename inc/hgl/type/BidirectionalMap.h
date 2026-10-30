@@ -862,7 +862,7 @@ namespace hgl
         /**
          * @brief 清空所有映射并释放内存
          */
-        void Free()
+        void ClearAndDeallocate()
         {
             std::vector<K>().swap(keys);
             std::vector<V>().swap(values);

@@ -191,11 +191,11 @@ namespace hgl
             }
         }
 
-        void Free()
+        void ClearAndDeallocate()
         {
             for (auto &shard : shards)
             {
-                shard.data_manager.Free();
+                shard.data_manager.ClearAndDeallocate();
                 shard.hash_map.clear();
                 shard.deleted_count = 0;
             }
