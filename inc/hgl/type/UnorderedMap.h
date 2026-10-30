@@ -5,6 +5,7 @@
 #include<vector>
 #include<utility>
 #include<functional>
+#include<cassert>
 
 namespace hgl
 {
@@ -139,19 +140,21 @@ namespace hgl
 
         /**
          * 获取指定 key 对应的 value 引用（非 const 版本）
-         * 注：调用者必须确保 key 存在，否则行为未定义
+         * 注：调用者必须确保 key 存在，否则触发断言（Debug）/行为未定义（Release）
          */
         V& GetValueRef(const K& key) {
             auto it = map_data.find(key);
+            assert(it != map_data.end());
             return it->second;
         }
 
         /**
          * 获取指定 key 对应的 value 引用（const 版本）
-         * 注：调用者必须确保 key 存在，否则行为未定义
+         * 注：调用者必须确保 key 存在，否则触发断言（Debug）/行为未定义（Release）
          */
         const V& GetValueRef(const K& key) const {
             auto it = map_data.find(key);
+            assert(it != map_data.end());
             return it->second;
         }
 
