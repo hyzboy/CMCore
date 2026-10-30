@@ -89,7 +89,7 @@ int os_main(int, os_char**)
     map.Add(1, 1.5);
     map.Add(2, 2.5);
 
-    assert(map.Change(1, 1.9));
+    assert(map.Update(1, 1.9));
     double v;
     assert(map.Get(1, v) && v == 1.9);
     cout << "  Changed key 1 to 1.9" << endl;

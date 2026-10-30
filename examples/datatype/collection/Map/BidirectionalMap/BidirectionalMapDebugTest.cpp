@@ -173,14 +173,14 @@ int os_main(int, os_char**)
             if (present_keys.find(key) != present_keys.end())
             {
                 string new_value = "modified_" + to_string(key);
-                bool result = bmap.Change(key, new_value);
+                bool result = bmap.Update(key, new_value);
 
                 if (result)
                 {
                     change_count++;
                     op_count++;
 
-                    if (!VerifyIntegrity(bmap, "Change(" + to_string(key) + ", \"" + new_value + "\")", op_count))
+                    if (!VerifyIntegrity(bmap, "Update(" + to_string(key) + ", \"" + new_value + "\")", op_count))
                     {
                         cout << "\n🛑 Integrity check failed after Change operation!" << endl;
                         cout << "Operation #" << op_count << " (total ops: " << op << ")" << endl;

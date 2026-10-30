@@ -47,7 +47,7 @@ int os_main(int, os_char**)
             {
                 op_name = "Change";
                 value = "modified_" + to_string(key);
-                result = bmap.Change(key, value);
+                result = bmap.Update(key, value);
                 if (result)
                     expected[key] = value;
             }

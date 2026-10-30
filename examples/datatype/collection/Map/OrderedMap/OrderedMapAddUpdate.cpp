@@ -29,12 +29,12 @@ int os_main(int, os_char**)
     cout << "  Updated key 1 to 'ONE'" << endl;
 
     cout << "\n[2.3] Change - modify existing key:" << endl;
-    assert(map.Change(1, "one_modified"));
+    assert(map.Update(1, "one_modified"));
     assert(map.Get(1, v) && v == "one_modified");
     cout << "  Changed key 1 to 'one_modified'" << endl;
 
     cout << "\n[2.4] Change - non-existent key returns false:" << endl;
-    assert(!map.Change(99, "value"));
+    assert(!map.Update(99, "value"));
     cout << "  ✓ Change on non-existent key returns false" << endl;
 
     cout << "\n[2.5] operator[] - change existing:" << endl;

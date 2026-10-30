@@ -7,7 +7,7 @@ int os_main(int, os_char**)
     cout << "========================================" << endl;
 
     // [3] 顺序修改 50000 个元素
-    cout << "\n[3] Sequential Change (50000 items):" << endl;
+    cout << "\n[3] Sequential Update (50000 items):" << endl;
     {
         BidirectionalMap<int, string> bmap;
         map<int, string> expected;
@@ -27,7 +27,7 @@ int os_main(int, os_char**)
         for (int i = 0; i < COUNT; i++)
         {
             const string new_value = "changed_" + to_string(i);
-            const bool result = bmap.Change(i, new_value);
+            const bool result = bmap.Update(i, new_value);
             if (result)
                 expected[i] = new_value;
 

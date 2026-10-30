@@ -161,7 +161,7 @@ namespace hgl
     }
 
     template<typename K,typename V>
-    bool ValueKVMap<K,V>::Change(const K &key,const V &value)
+    bool ValueKVMap<K,V>::Update(const K &key,const V &value)
     {
         int idx = Find(key);
         if(idx < 0) return false;

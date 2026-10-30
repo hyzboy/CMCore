@@ -182,7 +182,7 @@ int os_main(int, os_char**)
     modify_map.Add(1, "Original");
 
     // Modify via Change
-    bool changed = modify_map.Change(1, "Modified");
+    bool changed = modify_map.Update(1, "Modified");
     assert(changed);
 
     string val_check;

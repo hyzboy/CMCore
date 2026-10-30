@@ -603,7 +603,7 @@ namespace hgl
         * @param value CN:新值。EN:New value.
         * @return CN:成功返回true，键不存在返回false。EN:Return true if successful, false if key doesn't exist.
         */
-        virtual bool Change(const K& key, const V& value)
+        virtual bool Update(const K& key, const V& value)
         {
             int64 index = Find(key);
             if (index >= 0)
@@ -617,7 +617,7 @@ namespace hgl
         /**
         * @brief CN:修改键对应的值（移动语义版本）\nEN:Change value for a key (move semantics version)
         */
-        virtual bool Change(const K& key, V&& value)
+        virtual bool Update(const K& key, V&& value)
         {
             int64 index = Find(key);
             if (index >= 0)

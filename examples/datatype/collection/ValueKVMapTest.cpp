@@ -88,13 +88,13 @@ static void TestModify()
     map.Add(2, 20);
 
     // Change 已存在 key
-    TEST_ASSERT(map.Change(1, 11), "Change on existing key");
+    TEST_ASSERT(map.Update(1, 11), "Change on existing key");
     int v = 0;
     map.Get(1, v);
     TEST_ASSERT(v == 11, "Value updated after Change");
 
     // Change 不存在的 key
-    TEST_ASSERT(!map.Change(9, 90), "Change on missing key fails");
+    TEST_ASSERT(!map.Update(9, 90), "Change on missing key fails");
 
     // operator[] 赋值
     map[2] = 22;
@@ -139,7 +139,7 @@ static void TestSerialAccess()
     TEST_ASSERT(pos_30 == 2, "Find(30) position is 2 (ordered)");
 
     // 按 key 修改后顺序不变
-    TEST_ASSERT(map.Change(20, 250), "Change(20)");
+    TEST_ASSERT(map.Update(20, 250), "Update(20)");
     int v = 0;
     TEST_ASSERT(map.Get(20, v) && v == 250, "Change effective");
 }

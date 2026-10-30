@@ -49,12 +49,12 @@ int os_main(int, os_char**)
     cout << "  ✓ ContainsKey works correctly" << endl;
 
     cout << "\n[1.5] Change existing value:" << endl;
-    assert(map.Change(10, "TEN"));
+    assert(map.Update(10, "TEN"));
     assert(map.Get(10, value) && value == "TEN");
     cout << "  Changed key 10 to 'TEN'" << endl;
 
     cout << "\n[1.6] Change non-existent key:" << endl;
-    assert(!map.Change(99, "ninety-nine"));
+    assert(!map.Update(99, "ninety-nine"));
     cout << "  ✓ Change on missing key returns false" << endl;
 
     cout << "\n[1.7] operator[] - change existing:" << endl;

@@ -97,7 +97,7 @@ int os_main(int, os_char**)
             if (present_keys.find(key) != present_keys.end())
             {
                 string new_value = "modified_" + to_string(key);
-                bool result = bmap.Change(key, new_value);
+                bool result = bmap.Update(key, new_value);
                 if (result)
                 {
                     op_count++;

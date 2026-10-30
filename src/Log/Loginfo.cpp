@@ -199,7 +199,7 @@ namespace hgl
                 return(false);
 
             if(filter->outputter_levels.GetValuePointer(outputter_id))
-                return filter->outputter_levels.Change(outputter_id,level);
+                return filter->outputter_levels.Update(outputter_id,level);
 
             return filter->outputter_levels.Add(outputter_id,level);
         }

@@ -378,7 +378,7 @@ namespace hgl
                 dst = src;
 
                 // 更新映射
-                id_to_location_map.Change(tail_id, hole);
+                id_to_location_map.Update(tail_id, hole);
                 location_to_id[hole]=tail_id;
                 location_to_id[tail_loc]=InvalidID();
 

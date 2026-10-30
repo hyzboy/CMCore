@@ -36,7 +36,7 @@ int os_main(int, os_char**)
         bmap.Add(2, "two");
         bmap.Add(3, "three");
 
-        TEST_ASSERT(bmap.Change(1, "ONE"), "Change(1, 'ONE') succeeds");
+        TEST_ASSERT(bmap.Update(1, "ONE"), "Update(1, 'ONE') succeeds");
 
         string result;
         TEST_ASSERT(bmap.Get(1, result) && result == "ONE", "Changed value is 'ONE'");
@@ -51,7 +51,7 @@ int os_main(int, os_char**)
         bmap.Add(1, "one");
         bmap.Add(2, "two");
 
-        TEST_ASSERT(!bmap.Change(1, "two"), "Change(1, 'two') fails (value already used)");
+        TEST_ASSERT(!bmap.Update(1, "two"), "Update(1, 'two') fails (value already used)");
         string dummy;
         TEST_ASSERT(bmap.Get(1, dummy) && bmap.ContainsValue("one"),
                    "Mapping unchanged after failed change");
@@ -63,7 +63,7 @@ int os_main(int, os_char**)
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "one");
 
-        TEST_ASSERT(!bmap.Change(999, "new"), "Change(999, 'new') fails");
+        TEST_ASSERT(!bmap.Update(999, "new"), "Update(999, 'new') fails");
         TEST_ASSERT(bmap.GetCount() == 1, "Map remains unchanged");
     }
 
@@ -128,9 +128,9 @@ int os_main(int, os_char**)
         bmap.Add(2, "two");
         bmap.Add(3, "three");
 
-        TEST_ASSERT(bmap.Change(1, "ONE"), "First change succeeds");
-        TEST_ASSERT(bmap.Change(2, "TWO"), "Second change succeeds");
-        TEST_ASSERT(bmap.Change(3, "THREE"), "Third change succeeds");
+        TEST_ASSERT(bmap.Update(1, "ONE"), "First update succeeds");
+        TEST_ASSERT(bmap.Update(2, "TWO"), "Second update succeeds");
+        TEST_ASSERT(bmap.Update(3, "THREE"), "Third update succeeds");
 
         TEST_ASSERT(bmap.GetCount() == 3, "Count remains 3");
         TEST_ASSERT(bmap.ContainsValue("ONE"), "New value 'ONE' exists");
@@ -144,7 +144,7 @@ int os_main(int, os_char**)
         BidirectionalMap<int, string> bmap;
         bmap.Add(1, "one");
 
-        bmap.Change(1, "ONE");
+        bmap.Update(1, "ONE");
 
         int key;
         TEST_ASSERT(bmap.GetByValue("ONE", key) && key == 1,
@@ -179,7 +179,7 @@ int os_main(int, os_char**)
     cout << "\n[11] Change on empty map:" << endl;
     {
         BidirectionalMap<int, string> empty_bmap;
-        TEST_ASSERT(!empty_bmap.Change(1, "one"), "Change on empty map fails");
+        TEST_ASSERT(!empty_bmap.Update(1, "one"), "Update on empty map fails");
     }
 
     // [12] operator[] 链式操作

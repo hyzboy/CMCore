@@ -733,7 +733,7 @@ namespace hgl
          *
          * @note 如果新值与其他 KEY 的映射冲突，操作失败
          */
-        bool Change(const K& key, const V& new_value)
+        bool Update(const K& key, const V& new_value)
         {
             auto it = forward.find(key);
             if (it == forward.end())

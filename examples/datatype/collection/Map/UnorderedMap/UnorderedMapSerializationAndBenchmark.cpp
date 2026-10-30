@@ -84,11 +84,11 @@ void TestBasicOperations()
 
     // Test Change
     cout << "\n✓ Testing Change..." << endl;
-    assert(map.Change(1, "apple_modified"));
+    assert(map.Update(1, "apple_modified"));
     string modified;
     map.Get(1, modified);
     assert(modified == "apple_modified");
-    assert(!map.Change(999, "nonexistent"));
+    assert(!map.Update(999, "nonexistent"));
     cout << "  Change operations passed" << endl;
 
     // Test operator[] assignment

@@ -133,7 +133,7 @@ void BasicOperationTest()
 
     // 1.4 修改元素
     cout << "\n[1.4] Update elements:" << endl;
-    TEST_ASSERT(map.Change(1, 150), "Change existing key");
+    TEST_ASSERT(map.Update(1, 150), "Change existing key");
     map.Get(1, retrieved_value);
     TEST_ASSERT(retrieved_value == 150, "Value updated correctly");
 
@@ -305,11 +305,11 @@ void EdgeCaseTest()
 
     // 4.4 operator[] vs Change测试
     cout << "\n[4.4] operator[] vs Change:" << endl;
-    TEST_ASSERT(!map.Change(200, 2000), "Change non-existent key fails");
+    TEST_ASSERT(!map.Update(200, 2000), "Change non-existent key fails");
     TEST_ASSERT(!map.ContainsKey(200), "Key 200 does not exist before operator[]");
     map[200] = 2000;
     TEST_ASSERT(map.ContainsKey(200), "Key 200 now exists");
-    TEST_ASSERT(map.Change(200, 3000), "Change existing key succeeds");
+    TEST_ASSERT(map.Update(200, 3000), "Change existing key succeeds");
     int updated_val = 0;
     map.Get(200, updated_val);
     TEST_ASSERT(updated_val == 3000, "Value updated correctly");
@@ -364,7 +364,7 @@ void StringKeyTest()
     // 5.3 修改测试
     cout << "\n[5.3] Update user info:" << endl;
     UserInfo modified = {"Tom", true, 40};
-    TEST_ASSERT(ui_map.Change("Tom", modified), "Update Tom's info");
+    TEST_ASSERT(ui_map.Update("Tom", modified), "Update Tom's info");
     ui_map.Get("Tom", found);
     TEST_ASSERT(found.age == 40, "Tom's age updated to 40");
 

@@ -36,8 +36,9 @@
  * - `GetCount()`：逻辑元素总数 = 读段元素数 + 写段元素数 - `read_offset`。
  * - `GetAllocCount()`：返回两段底层数组已分配容量之和，便于观测内存预留情况。
  *
- * 7) GetArray 与未读快照（Unread Snapshot）
- * - `GetArray()`：返回当前“写段”的引用（便于与 Active 接口兼容的场景）。
+ * 7) 写段访问与未读快照（Unread Snapshot）
+ * - `GetWriteArray()`：返回当前“写段”的引用（便于与 Active 接口兼容的场景）。
+ *   曾用名 `GetArray()` 已移除，因为它只暴露写段、易被误认为整条队列。
  * - `GetUnreadSnapshot()`：返回队列的稳定快照（`std::vector<T>`），按顺序合并“读段的未读部分”与“写段的全部数据”。
  *   - 快照不会改变队列内部状态（不影响 `read_offset`、读写段内容）。
  *   - 若使用指针类型 `Queue<U*>`，快照包含的是指针序列；对象的生命周期仍由调用方管理，容器不负责 delete。
@@ -191,7 +192,7 @@ namespace hgl
             return ConstIterator(this, 1, (int)data_array[write_index].size());
         }
 
-    public: //兼容 Active 接口的简易 GetArray()
+    public: // 写段访问
 
         /**
          * 返回当前“写段”的可写引用。
@@ -201,10 +202,6 @@ namespace hgl
          */
         std::vector<T> &GetWriteArray(){ return data_array[write_index]; }
         const std::vector<T> &GetWriteArray() const { return data_array[write_index]; }
-
-        /// 旧名保留，等价于 GetWriteArray()
-        std::vector<T> &GetArray(){ return GetWriteArray(); }
-        const std::vector<T> &GetArray() const { return GetWriteArray(); }
 
         /**
          * @brief 获取队列中所有未读数据的完整视图（包括 read 和 write 两个数组）

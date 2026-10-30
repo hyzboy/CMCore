@@ -435,7 +435,7 @@ namespace hgl
         * @param value CN:新值。EN:New value.
         * @return CN:成功返回true，键不存在返回false。EN:Return true if successful, false if key doesn't exist.
         */
-        virtual bool Change(const K& key, const V& value)
+        virtual bool Update(const K& key, const V& value)
         {
             auto it = map_data.find(key);
             if (it == map_data.end())

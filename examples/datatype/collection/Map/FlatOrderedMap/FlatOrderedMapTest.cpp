@@ -175,12 +175,12 @@ void TestChange()
     map.Add(2, 2.5f);
 
     // Test Change
-    assert(map.Change(1, 1.9f) == true);
+    assert(map.Update(1, 1.9f) == true);
     float value;
     map.Get(1, value);
     assert(value == 1.9f);
 
-    assert(map.Change(99, 99.9f) == false);
+    assert(map.Update(99, 99.9f) == false);
 
     // Test AddOrUpdate
     bool is_new = map.AddOrUpdate(2, 2.9f);

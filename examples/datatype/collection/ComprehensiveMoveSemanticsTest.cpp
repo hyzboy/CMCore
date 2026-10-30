@@ -328,7 +328,7 @@ int os_main(int, os_char**)
             for (int i = 0; i < 10; i++) {
                 vector<string> new_vec;
                 new_vec.push_back("updated");
-                map.Change(i, move(new_vec));
+                map.Update(i, move(new_vec));
             }
 
             cout << "    ✓ Sequential add/update operations work" << endl;

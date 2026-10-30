@@ -33,7 +33,7 @@ int os_main(int, os_char**)
 
             // Change
             value = "modified_v" + to_string(round);
-            result = bmap.Change(round, value);
+            result = bmap.Update(round, value);
             if (result)
                 expected[round] = value;
             LogOp(round * 3 + 1, "Change", round, value, result, bmap.GetCount(), (int)expected.size());

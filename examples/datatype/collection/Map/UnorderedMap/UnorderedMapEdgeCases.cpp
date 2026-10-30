@@ -62,7 +62,7 @@ int os_main(int, os_char**)
     assert(!map4.Get(999, result));
 
     // Change missing key
-    bool changed = map4.Change(999, "new");
+    bool changed = map4.Update(999, "new");
     assert(changed == false);
 
     // Delete missing key

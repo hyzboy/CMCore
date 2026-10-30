@@ -198,7 +198,7 @@ namespace hgl
         /**
          * 更改指定 key 的 value（如果 key 不存在则返回 false）
          */
-        bool Change(const K& key, const V& value) {
+        bool Update(const K& key, const V& value) {
             auto it = map_data.find(key);
             if (it == map_data.end()) return false;
             it->second = value;
@@ -208,7 +208,7 @@ namespace hgl
         /**
          * 更改指定 key 的 value（移动语义版本）
          */
-        bool Change(const K& key, V&& value) {
+        bool Update(const K& key, V&& value) {
             auto it = map_data.find(key);
             if (it == map_data.end()) return false;
             it->second = std::move(value);

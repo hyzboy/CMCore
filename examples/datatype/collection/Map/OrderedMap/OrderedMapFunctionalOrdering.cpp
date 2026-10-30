@@ -179,7 +179,7 @@ void BasicOperationTest()
 
     // 1.6 修改元素
     cout << "\n[1.6] Update elements:" << endl;
-    TEST_ASSERT(map.Change(2, 25), "Change key 2 value");
+    TEST_ASSERT(map.Update(2, 25), "Change key 2 value");
     map.Get(2, retrieved_value);
     TEST_ASSERT(retrieved_value == 25, "Value updated correctly");
 

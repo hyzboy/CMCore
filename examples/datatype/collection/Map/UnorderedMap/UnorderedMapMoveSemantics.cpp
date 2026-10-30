@@ -116,7 +116,7 @@ int os_main(int, os_char**)
         map.Add(1, string("original"));
 
         // 使用移动语义更新
-        assert(map.Change(1, string("modified")));
+        assert(map.Update(1, string("modified")));
 
         string val;
         assert(map.Get(1, val) && val == "modified");
@@ -131,7 +131,7 @@ int os_main(int, os_char**)
         // 直接传递临时对象
         map.Add(1, string("temp1"));
         map[2] = string("temp2");
-        map.Change(1, string("modified_temp"));
+        map.Update(1, string("modified_temp"));
 
         assert(map.GetCount() == 2);
         cout << "  ✓ Temporary objects automatically moved" << endl;

@@ -128,7 +128,7 @@ int os_main(int, os_char**)
         OrderedMap<int, string> map;
         map.Add(1, string("original"));
 
-        bool changed = map.Change(1, string("modified"));
+        bool changed = map.Update(1, string("modified"));
         assert(changed);
 
         string val;
