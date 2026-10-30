@@ -32,8 +32,8 @@ namespace hgl
 
                 int     GetAllocCount   ()const{return (int)data_array.capacity();}         ///<取得已分配容量
                 int     GetCount        ()const{return (int)data_array.size();}              ///<取得列表内数据数量
-        virtual         bool    Resize          (int count){data_array.resize(count); return true;}       ///<设置列表内数据数量
-        virtual         bool    Reserve         (int count){data_array.reserve(count); return true;}      ///<预分配指定数量的数据空间
+        bool    Resize          (int count){data_array.resize(count); return true;}       ///<设置列表内数据数量
+        bool    Reserve         (int count){data_array.reserve(count); return true;}      ///<预分配指定数量的数据空间
 
                 bool    IsEmpty         ()const{return data_array.empty();}               ///<确认列表是否为空
 
@@ -65,13 +65,13 @@ namespace hgl
         ValueArray(const ValueArray<T> &lt){operator=(lt);}                                                     ///<本类构造函数
         ValueArray(const std::initializer_list<T> &lt){operator=(lt);}
 
-        virtual ~ValueArray(){Free();}                                                                    ///<本类析构函数
+        ~ValueArray(){Free();}                                                                    ///<本类析构函数
 
         /**
          * 向列表中添加一个空数据
          * @return 这个数据的指针
          */
-        virtual T *  Add()
+        T *  Add()
         {
             const int index=(int)data_array.size();
             data_array.resize(index+1);
@@ -83,7 +83,7 @@ namespace hgl
         * @param data 要添加的数据对象
         * @return 这个数据的索引号
         */
-        virtual int  Add(const T &data)
+        int  Add(const T &data)
         {
             const int index=(int)data_array.size();
             if constexpr (std::is_array_v<T>)
@@ -105,7 +105,7 @@ namespace hgl
         * @return 这个数据的索引号
         * @return >0 出错
         */
-        virtual int  RepeatAdd(const T &data,int n)
+        int  RepeatAdd(const T &data,int n)
         {
             if(n<=0)return(-1);
 
@@ -129,7 +129,7 @@ namespace hgl
         * @param n 要添加的数据数量
         * @return 起始数据的索引号
         */
-        virtual int  Add(const T *data,int n)
+        int  Add(const T *data,int n)
         {
             if(!data||n<=0)
                 return(-1);
@@ -150,7 +150,7 @@ namespace hgl
 
                 int  Add(const ValueArray<T> &l){return Add(l.GetData(),l.GetCount());}                            ///<增加一批数据
 
-        virtual void Free()
+        void Free()
         {
             data_array.clear();
             if constexpr (!std::is_array_v<T>)
@@ -158,9 +158,9 @@ namespace hgl
                 data_array.shrink_to_fit();
             }
         }                                                     ///<清除所有数据，并释放内存
-        virtual void Clear(){data_array.clear();}                                                   ///<清除所有数据，但不清空缓冲区
+        void Clear(){data_array.clear();}                                                   ///<清除所有数据，但不清空缓冲区
 
-        virtual int  Find(const T &data)const
+        int  Find(const T &data)const
         {
             if constexpr (std::is_array_v<T>)
             {
@@ -179,9 +179,9 @@ namespace hgl
             }
         }                        ///<查找指定数据的索引
 
-        virtual bool Contains(const T &flag)const{return Find(flag)>=0;}                            ///<确认数据项是否存在
+        bool Contains(const T &flag)const{return Find(flag)>=0;}                            ///<确认数据项是否存在
 
-        virtual bool Delete(int start,int num=1)
+        bool Delete(int start,int num=1)
         {
             if(start<0 || start+num>(int)data_array.size()) return false;
 
@@ -203,7 +203,7 @@ namespace hgl
             return true;
         }              ///<删除指定索引的数据
 
-        virtual bool DeleteShift(int start,int num=1)
+        bool DeleteShift(int start,int num=1)
         {
             return Delete(start, num);
         }      ///<删除指定索引的数据,将后面紧邻的数据前移
@@ -213,7 +213,7 @@ namespace hgl
         * @param data 要删除的数据项
         * @return 是否成功
         */
-        virtual bool DeleteByValue(const T &data)
+        bool DeleteByValue(const T &data)
         {
             const int pos=Find(data);
 
@@ -226,7 +226,7 @@ namespace hgl
         * @param n 要删除的数据个数
         * @return 成功删除的数据个数
         */
-        virtual int  DeleteByValue(const T *data,int n)
+        int  DeleteByValue(const T *data,int n)
         {
             int result=0;
 
@@ -247,7 +247,7 @@ namespace hgl
             return result;
         }
 
-        virtual void Exchange(int a,int b)
+        void Exchange(int a,int b)
         {
             if(a>=0 && a<(int)data_array.size() && b>=0 && b<(int)data_array.size())
             {
@@ -265,7 +265,7 @@ namespace hgl
             }
         }                               ///<根据索引交换两个数据
 
-        virtual bool Insert(int pos,const T &data)
+        bool Insert(int pos,const T &data)
         {
             if(pos<0 || pos>(int)data_array.size()) return false;
 
@@ -291,7 +291,7 @@ namespace hgl
         * @param data 要插入的数据
         * @param number 要插入的数据个数
         */
-        virtual bool Insert(int pos,const T *data,const int number)
+        bool Insert(int pos,const T *data,const int number)
         {
             if(!data || number<=0 || pos<0 || pos>(int)data_array.size()) return false;
 
@@ -319,7 +319,7 @@ namespace hgl
         * @param old_pos 原来的位置
         * @param move_count 要移动的数据个数
         */
-        virtual void Move(const int new_pos,const int old_pos,const int move_count)
+        void Move(const int new_pos,const int old_pos,const int move_count)
         {
             if(old_pos<0 || old_pos+move_count>(int)data_array.size()) return;
             if(new_pos<0 || new_pos>(int)data_array.size()) return;
@@ -368,7 +368,7 @@ namespace hgl
             }
         }
 
-        virtual ValueArray<T>& operator = (const ValueArray<T> &da)
+        ValueArray<T>& operator = (const ValueArray<T> &da)
         {
             if constexpr (std::is_array_v<T>)
             {
@@ -383,7 +383,7 @@ namespace hgl
             return *this;
         }
 
-        virtual ValueArray<T>& operator = (const std::initializer_list<T> &l)
+        ValueArray<T>& operator = (const std::initializer_list<T> &l)
         {
             if constexpr (std::is_array_v<T>)
             {
@@ -402,9 +402,9 @@ namespace hgl
             return *this;
         }                  ///<操作符重载复制一个列表
 
-        virtual void operator += (const T &obj){Add(obj);}                                                ///<操作符重载添加一个数据
-        virtual void operator << (const T &obj){Add(obj);}                                                ///<操作符重载添加一个数据
-        virtual void operator -= (const T &obj){DeleteByValue(obj);}                                      ///<操作符重载删除一个数据
+        void operator += (const T &obj){Add(obj);}                                                ///<操作符重载添加一个数据
+        void operator << (const T &obj){Add(obj);}                                                ///<操作符重载添加一个数据
+        void operator -= (const T &obj){DeleteByValue(obj);}                                      ///<操作符重载删除一个数据
 
                 T *  At(const int index)
         {
@@ -432,7 +432,7 @@ namespace hgl
             return true;
         }    ///<取得指定索引处的数据
 
-        virtual bool Set(int index,const T &data)
+        bool Set(int index,const T &data)
         {
             if(index<0 || index>=(int)data_array.size()) return false;
             if constexpr (std::is_array_v<T>)
@@ -446,8 +446,8 @@ namespace hgl
             return true;
         }    ///<设置指定索引处的数据
 
-        virtual bool GetFirst   (T &data)const{return Get(0, data);}                   ///<取第一个数据
-        virtual bool GetLast    (T &data)const{return Get((int)data_array.size()-1, data);}        ///<取最后一个数据
+        bool GetFirst   (T &data)const{return Get(0, data);}                   ///<取第一个数据
+        bool GetLast    (T &data)const{return Get((int)data_array.size()-1, data);}        ///<取最后一个数据
     };//template <typename T> class ValueArray
 
     /**

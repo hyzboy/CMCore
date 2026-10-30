@@ -257,7 +257,7 @@ namespace hgl
             return (int)(data_array[0].size()+data_array[1].size()-read_offset);
         }
 
-        virtual bool Reserve(int count)                                          ///<预分配数据空间
+        bool Reserve(int count)                                          ///<预分配数据空间
         {
             data_array[0].reserve(count);
             data_array[1].reserve(count);
@@ -282,9 +282,9 @@ namespace hgl
             read_offset=0;
         }
 
-        virtual ~Queue()=default;
+        ~Queue()=default;
 
-        virtual bool Push(const T *data,int count)                                ///<压入一批数据
+        bool Push(const T *data,int count)                                ///<压入一批数据
         {
             if(!data||count<=0)return false;
 
@@ -297,9 +297,9 @@ namespace hgl
             return true;
         }
 
-        virtual bool Push(const T &data){return Push(&data,1);}                   ///<压入一个数据
+        bool Push(const T &data){return Push(&data,1);}                   ///<压入一个数据
 
-        virtual bool Peek(T &data)                                                ///<尝试访问一个数据
+        bool Peek(T &data)                                                ///<尝试访问一个数据
         {
             if(read_offset >= (int)data_array[read_index].size())
             {
@@ -314,7 +314,7 @@ namespace hgl
             return true;
         }
 
-        virtual bool Pop(T &data)                                                 ///<弹出一个数据
+        bool Pop(T &data)                                                 ///<弹出一个数据
         {
             if((int)data_array[read_index].size()<=read_offset)
             {
@@ -331,14 +331,14 @@ namespace hgl
 
     public:
 
-        virtual void Clear()                                                      ///<清除所有数据
+        void Clear()                                                      ///<清除所有数据
         {
             data_array[0].clear();
             data_array[1].clear();
             read_offset=0;
         }
 
-        virtual void Free()                                                       ///<清除所有数据并释放内存
+        void Free()                                                       ///<清除所有数据并释放内存
         {
             Clear();
             data_array[0].clear();

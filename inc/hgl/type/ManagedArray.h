@@ -41,8 +41,8 @@ namespace hgl
 
                 const   int     GetAllocCount   ()const{return (int)items.capacity();}         ///<取得已分配容量
                 const   int     GetCount        ()const{return (int)items.size();}              ///<取得列表内数据数量
-        virtual         bool    Resize          (int count){items.resize(count); return true;}       ///<设置列表内数据数量（放大部分为 nullptr 空槽位）
-        virtual         bool    Reserve         (int count){items.reserve(count); return true;}      ///<预分配指定数量的数据空间
+        bool    Resize          (int count){items.resize(count); return true;}       ///<设置列表内数据数量（放大部分为 nullptr 空槽位）
+        bool    Reserve         (int count){items.reserve(count); return true;}      ///<预分配指定数量的数据空间
 
                 const   bool    IsEmpty         ()const{return items.empty();}               ///<确认列表是否为空
 
@@ -85,7 +85,7 @@ namespace hgl
             return *this;
         }
 
-        virtual ~ManagedArray(){Free();}                                                                 ///<本类析构函数
+        ~ManagedArray(){Free();}                                                                 ///<本类析构函数
 
         template<typename ...ARGS>
         T* Create(ARGS&&...args)
@@ -106,14 +106,14 @@ namespace hgl
         }
 
         // ============ Add 系列方法 ============
-        virtual int Add(const ItemPointer &obj)
+        int Add(const ItemPointer &obj)
         {
             const int index=(int)items.size();
             items.push_back(obj);
             return index;
         }
 
-        virtual int Add(const ItemPointer *data, int n)
+        int Add(const ItemPointer *data, int n)
         {
             if(!data||n<=0)
                 return(-1);
@@ -123,30 +123,30 @@ namespace hgl
             return(ec);
         }
 
-        virtual int Add(const ManagedArray<T> &l)
+        int Add(const ManagedArray<T> &l)
         {
             return Add(l.GetData(), l.GetCount());
         }
 
         // ============ 查找 ============
-        virtual int Find(const ItemPointer &data) const
+        int Find(const ItemPointer &data) const
         {
             auto it = std::find(items.begin(), items.end(), data);
             return (it == items.end()) ? -1 : (int)std::distance(items.begin(), it);
         }
 
         // ============ 判断是否包含 ============
-        virtual bool Contains(const ItemPointer &flag) const { return Find(flag) >= 0; }
+        bool Contains(const ItemPointer &flag) const { return Find(flag) >= 0; }
 
         // ============ 插入元素 ============
-        virtual bool Insert(int index, const ItemPointer &obj)
+        bool Insert(int index, const ItemPointer &obj)
         {
             if(index<0 || index>(int)items.size()) return false;
             items.insert(items.begin()+index, obj);
             return true;
         }
 
-        virtual bool Insert(int index, const ItemPointer *data, int number)
+        bool Insert(int index, const ItemPointer *data, int number)
         {
             if(!data || number<=0 || index<0 || index>(int)items.size()) return false;
             items.insert(items.begin()+index, data, data+number);
@@ -154,13 +154,13 @@ namespace hgl
         }
 
         // ============ 交换与移动 ============
-        virtual void Exchange(int a, int b)
+        void Exchange(int a, int b)
         {
             if(a>=0 && a<(int)items.size() && b>=0 && b<(int)items.size())
                 std::swap(items[a], items[b]);
         }
 
-        virtual void Move(int new_pos, int old_pos, int move_count)
+        void Move(int new_pos, int old_pos, int move_count)
         {
             if(old_pos<0 || old_pos+move_count>(int)items.size()) return;
             if(new_pos<0 || new_pos>(int)items.size()) return;
@@ -190,28 +190,28 @@ namespace hgl
             return items[index];
         }
 
-        virtual bool Get(int index, ItemPointer &data) const
+        bool Get(int index, ItemPointer &data) const
         {
             if(index<0 || index>=(int)items.size()) return false;
             data = items[index];
             return true;
         }
 
-        virtual bool Set(int index, const ItemPointer &data)
+        bool Set(int index, const ItemPointer &data)
         {
             if(index<0 || index>=(int)items.size()) return false;
             items[index] = data;
             return true;
         }
 
-        virtual bool GetFirst(ItemPointer &data) const
+        bool GetFirst(ItemPointer &data) const
         {
             if(items.empty()) return false;
             data = items.front();
             return true;
         }
 
-        virtual bool GetLast(ItemPointer &data) const
+        bool GetLast(ItemPointer &data) const
         {
             if(items.empty()) return false;
             data = items.back();
@@ -222,21 +222,21 @@ namespace hgl
         // 注意：逐指针赋值同样会转移/共享所有权，极易造成双重释放，
         // 因此只提供移动赋值（见构造函数区域），不再提供指针数组赋值。
 
-        virtual void operator+=(const ItemPointer &obj) { Add(obj); }
-        virtual void operator<<(const ItemPointer &obj) { Add(obj); }
+        void operator+=(const ItemPointer &obj) { Add(obj); }
+        void operator<<(const ItemPointer &obj) { Add(obj); }
 
-        virtual void operator-=(const ItemPointer &obj) { DeleteByValue(obj); }
+        void operator-=(const ItemPointer &obj) { DeleteByValue(obj); }
 
         // ============ 释放与清理 ============
         // Free: 先 Clear（对元素 delete），再调用 shrink_to_fit
-        virtual void Free()
+        void Free()
         {
             Clear();
             items.shrink_to_fit();
         }
 
         // Clear: 对内部所有指针执行销毁（delete），然后清空数组
-        virtual void Clear()
+        void Clear()
         {
             T **ptr = items.data();
             int n = (int)items.size();
@@ -246,32 +246,32 @@ namespace hgl
         }
 
         // ============ Unlink 系列：仅断开关联（不 delete） ============
-        virtual bool Unlink(int index)
+        bool Unlink(int index)
         {
             if(index<0 || index>=(int)items.size()) return false;
             items.erase(items.begin()+index);
             return true;
         }          ///< 断开指定索引
-        virtual bool UnlinkMove(int index)
+        bool UnlinkMove(int index)
         {
             if(index<0 || index>=(int)items.size()) return false;
             items.erase(items.begin()+index);
             return true;
         }     ///< 断开并前移其后的元素
-        virtual bool Unlink(int start, int number)
+        bool Unlink(int start, int number)
         {
             if(start<0 || number<=0 || start+number>(int)items.size()) return false;
             items.erase(items.begin()+start, items.begin()+start+number);
             return true;
         }  ///< 断开一段范围
-        virtual bool UnlinkByValue(ItemPointer &ip)
+        bool UnlinkByValue(ItemPointer &ip)
         {
             auto it = std::find(items.begin(), items.end(), ip);
             if(it == items.end()) return false;
             items.erase(it);
             return true;
         }      ///< 通过值断开（单个）
-        virtual void UnlinkByValue(ItemPointer *ip, int n)
+        void UnlinkByValue(ItemPointer *ip, int n)
         {
             if(!ip || n<=0) return;
             for(int i = 0; i < n; ++i)
@@ -280,7 +280,7 @@ namespace hgl
                 if(it != items.end()) items.erase(it);
             }
         }          ///< 通过数组断开
-        virtual void UnlinkAll()                          { items.clear(); }                       ///< 断开所有（不 delete ）
+        void UnlinkAll()                          { items.clear(); }                       ///< 断开所有（不 delete ）
 
     private:
         // 内部辅助：删除范围的元素并先行销毁这些指针
