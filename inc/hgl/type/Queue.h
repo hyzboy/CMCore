@@ -193,8 +193,18 @@ namespace hgl
 
     public: //兼容 Active 接口的简易 GetArray()
 
-        std::vector<T> &GetArray(){ return data_array[write_index]; }
-        const std::vector<T> &GetArray() const { return data_array[write_index]; }
+        /**
+         * 返回当前“写段”的可写引用。
+         * 注意：直接写入会绕过队列的入队语义（不会推进 write 段计数以外的任何状态），
+         * 仅用于与 Active 接口兼容的场景；通常请使用 Push()。
+         * 只读访问请使用 GetUnreadSnapshot()。
+         */
+        std::vector<T> &GetWriteArray(){ return data_array[write_index]; }
+        const std::vector<T> &GetWriteArray() const { return data_array[write_index]; }
+
+        /// 旧名保留，等价于 GetWriteArray()
+        std::vector<T> &GetArray(){ return GetWriteArray(); }
+        const std::vector<T> &GetArray() const { return GetWriteArray(); }
 
         /**
          * @brief 获取队列中所有未读数据的完整视图（包括 read 和 write 两个数组）
@@ -274,7 +284,7 @@ namespace hgl
 
         virtual ~Queue()=default;
 
-        virtual bool Push(T *data,int count)                                      ///<压入一批数据
+        virtual bool Push(const T *data,int count)                                ///<压入一批数据
         {
             if(!data||count<=0)return false;
 
@@ -287,7 +297,7 @@ namespace hgl
             return true;
         }
 
-        virtual bool Push(const T &data){return Push((T*)&data,1);}               ///<压入一个数据
+        virtual bool Push(const T &data){return Push(&data,1);}                   ///<压入一个数据
 
         virtual bool Peek(T &data)                                                ///<尝试访问一个数据
         {
