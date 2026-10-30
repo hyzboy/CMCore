@@ -257,6 +257,9 @@ namespace hgl
             return (int)(data_array[0].size()+data_array[1].size()-read_offset);
         }
 
+        size_t size() const { return (size_t)GetCount(); }      ///<元素数量（STL 风格别名）
+        bool empty() const { return GetCount() == 0; }          ///<是否为空（STL 风格别名）
+
         bool Reserve(int count)                                          ///<预分配数据空间
         {
             data_array[0].reserve(count);

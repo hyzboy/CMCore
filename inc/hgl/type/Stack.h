@@ -31,7 +31,10 @@ namespace hgl
         int GetCount() const { return (int)data_array.size(); }                ///< 当前元素数量 / Current element count
         bool IsEmpty() const { return data_array.empty(); }                 ///< 是否\为空 / Is empty
 
-        int GetTotalBytes() const { return (int)(data_array.size() * sizeof(T)); }      ///< 总字节数 / Total bytes
+        size_t GetTotalBytes() const { return data_array.size() * sizeof(T); }  ///< 总字节数 / Total bytes（size_t 防止大数组溢出）
+
+        size_t size() const { return data_array.size(); }   ///< 元素数量（STL 风格别名）
+        bool empty() const { return data_array.empty(); }   ///< 是否为空（STL 风格别名）
 
         /**
          * @brief 获取常数据指针（Const 正确）
@@ -172,6 +175,9 @@ namespace hgl
          */
         bool Pop(T* out_data, int count)
         {
+            if (!out_data || count <= 0)
+                return false;
+
             if ((int)data_array.size() < count)
                 return false;
 

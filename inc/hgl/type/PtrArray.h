@@ -47,10 +47,13 @@ namespace hgl
 
         int     GetAllocCount   ()const { return alloc_count_; }
         int     GetCount        ()const { return count_; }
-        int     GetTotalBytes   ()const { return count_ * static_cast<int>(sizeof(T)); }
+        size_t  GetTotalBytes   ()const { return (size_t)count_ * sizeof(T); }
         bool    IsEmpty         ()const { return count_ == 0; }
 
-        int     GetAllocBytes   ()const { return alloc_count_ * static_cast<int>(sizeof(T)); }
+        size_t  GetAllocBytes   ()const { return (size_t)alloc_count_ * sizeof(T); }
+
+        size_t  size            ()const { return (size_t)count_; }       ///<元素数量（STL 风格别名）
+        bool    empty           ()const { return count_ == 0; }          ///<是否为空（STL 风格别名）
 
         T*      GetData         (){ return data_; }
         const T*GetData         ()const{ return data_; }

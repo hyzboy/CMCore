@@ -48,7 +48,10 @@ namespace hgl
 
                         ItemPointer *GetData    (){return items.empty()?nullptr:items.data();}               ///<提供原始数据项
                 const   ItemPointer *GetData    ()const{return items.empty()?nullptr:items.data();}               ///<提供原始数据项（const 版本）
-                        int     GetTotalBytes   ()const{return (int)(items.size()*sizeof(ItemPointer));}         ///<取得原始数据总字节数
+                        size_t  GetTotalBytes   ()const{return items.size()*sizeof(ItemPointer);}         ///<取得原始数据总字节数（size_t 防止大数组溢出）
+
+                size_t  size            ()const{return items.size();}                       ///<元素数量（STL 风格别名）
+                bool    empty           ()const{return items.empty();}                      ///<是否为空（STL 风格别名）
 
                         ItemPointer *DataBegin  (){return items.empty()?nullptr:items.data();}
                 const   ItemPointer *DataBegin  ()const{return items.empty()?nullptr:items.data();}

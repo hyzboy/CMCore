@@ -19,3 +19,9 @@ cm_example_project("DataType/Collection/Array" ValueArrayPerformanceTest        
 cm_datatype_test("DataType/Collection/Array" ArrayTypeSpecializationTest                 ArrayTypeSpecializationTest.cpp)
 cm_datatype_test("DataType/Collection/Array" ContainerInteroperabilityTest              ContainerInteroperabilityTest.cpp)
 cm_datatype_test("DataType/Collection/Array" ArrayStressAndBoundaryTest                 ArrayStressAndBoundaryTest.cpp)
+
+# ============================================================================
+# 边界与后置状态 (F25)
+# ============================================================================
+
+cm_datatype_test("DataType/Collection/Array" ContainerBoundaryAndMoveStateTest       ContainerBoundaryAndMoveStateTest.cpp)

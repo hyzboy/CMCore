@@ -39,7 +39,10 @@ namespace hgl
 
                         T *     GetData         (){return data_array.empty()?nullptr:data_array.data();}               ///<提供原始数据项
                 const   T *     GetData         ()const{return data_array.empty()?nullptr:data_array.data();}         ///<提供原始数据项（只读）
-                        int     GetTotalBytes   ()const{return (int)(data_array.size()*sizeof(T));}         ///<取得原始数据总字节数
+                        size_t  GetTotalBytes   ()const{return data_array.size()*sizeof(T);}         ///<取得原始数据总字节数（size_t 防止大数组溢出）
+
+                size_t  size            ()const{return data_array.size();}                  ///<元素数量（STL 风格别名）
+                bool    empty           ()const{return data_array.empty();}                 ///<是否为空（STL 风格别名）
 
                         T *     begin           (){return data_array.empty()?nullptr:data_array.data();}
                 const   T *     begin           ()const{return data_array.empty()?nullptr:data_array.data();}
@@ -367,7 +370,10 @@ namespace hgl
             return true;
         }
 
-        int GetTotalBytes() const { return (int)(storage.size() * sizeof(Holder)); }
+        size_t GetTotalBytes() const { return storage.size() * sizeof(Holder); }
+
+        size_t size() const { return storage.size(); }
+        bool empty() const { return storage.empty(); }
 
         ArrayType* GetData()
         {
