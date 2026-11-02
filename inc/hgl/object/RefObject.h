@@ -11,7 +11,7 @@ namespace hgl
     enum class RefZeroPolicy:uint8
     {
         AutoDestroy=0,          ///<归零时调用Release()并delete自身(默认)
-        KeepMetaUnloadPayload,  ///<归零时只调用Release()(由MetaObject实现为卸载负载)，对象壳由外部销毁
+        KeepMetaUnloadPayload,  ///<归零时只调用Release()(由CMAassetsManage的MetaObject实现为卸载负载)，对象壳由外部销毁
     };//enum class RefZeroPolicy
 
     class RefObject;
