@@ -384,6 +384,19 @@ SET(CMCORE_LOG_FILES ${CMCORE_ROOT_INCLUDE_PATH}/hgl/log/Log.h
 SOURCE_GROUP("Log" FILES ${CMCORE_LOG_FILES})
 
 ##==================================================================================================
+## Hash 文件/流封装（算法本体在 CMHash 模块，这里只做 IO）
+##==================================================================================================
+SET(CMCORE_HASH_IO_FILES
+    ${CMCORE_ROOT_INCLUDE_PATH}/hgl/util/hash/HashFile.h
+    ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io/HashInputStream.h
+    ${CMCORE_ROOT_INCLUDE_PATH}/hgl/io/HashOutputStream.h
+    util/hash/HashFile.cpp
+    util/hash/HashInputStream.cpp
+    util/hash/HashOutputStream.cpp)
+
+SOURCE_GROUP("IO\\Hash" FILES ${CMCORE_HASH_IO_FILES})
+
+##==================================================================================================
 ## Library 库定义
 ##==================================================================================================
 add_cm_library(CMCore "CM" ${CMCORE_ROOT_INCLUDE_PATH}
@@ -417,9 +430,11 @@ add_cm_library(CMCore "CM" ${CMCORE_ROOT_INCLUDE_PATH}
                         ${CMCORE_EVENT_FILES}
                         ${CMCORE_PLUGIN_FILES}
                         ${CMCORE_LOG_FILES}
+                        ${CMCORE_HASH_IO_FILES}
                         )
 
 target_link_libraries(CMCore PUBLIC CMCoreType)
+target_link_libraries(CMCore PUBLIC CMHash)
 target_link_libraries(CMCore PUBLIC absl::flat_hash_map absl::node_hash_map absl::btree)
 
 ##==================================================================================================
