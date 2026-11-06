@@ -101,17 +101,23 @@ namespace hgl::io::minipack
             return(nullptr);
         }
 
+        // 所有权约定：只要传入了非空流，**本函数就接管其所有权**（成功时由
+        // MiniPackReaderFromStream 的析构负责释放，失败时在各错误分支就地释放）。
+        // 此前只有 ParseInfoBlock 失败分支 delete 了流，其余错误分支都漏掉了，
+        // 造成同一接口的成功/失败路径所有权语义不一致。
         MiniPackFileHeader header;
 
         if(is->ReadFully(&header,MiniPackFileHeaderSize) != MiniPackFileHeaderSize)
         {
             MLogError(MiniPackReader,"Read file header failed.");
+            delete is;
             return(nullptr);
         }
 
         if(memcmp(header.magic,MiniPackMagicID,MiniPackMagicIDBytes))
         {
             MLogError(MiniPackReader,"Magic number error.");
+            delete is;
             return(nullptr);
         }
 
@@ -121,6 +127,7 @@ namespace hgl::io::minipack
         {
             MLogError(MiniPackReader,"Read info block failed.");
             delete[] info_block;
+            delete is;
             return(nullptr);
         }
 
@@ -149,6 +156,7 @@ namespace hgl::io::minipack
             return(nullptr);
         }
 
+        // 失败的流已由 GetMiniPackReader(InputStream*) 接管并释放
         return GetMiniPackReader(fis);
     }
 }//namespace hgl::io::minipack

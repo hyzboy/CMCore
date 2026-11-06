@@ -94,7 +94,18 @@ namespace hgl::io::minipack
         }
     };//class MiniPackMemory
 
+    /**
+     * @brief 从已打开的流构造 minipack 读取器（包裹化/异步流式路径的统一入口）。
+     *
+     * **所有权约定**：只要 `is` 非空，本函数即**接管其所有权** —— 成功时由返回的
+     * 读取器在析构时释放，失败时在各错误分支就地释放。因此必须传入 `new` 出来的
+     * 流，且**不要**在调用后再 delete 它（包括失败时）。
+     *
+     * @return 成功返回新读取器（负责释放），失败返回 `nullptr`（流已被释放）
+     */
     MiniPackReader *GetMiniPackReader(::hgl::io::InputStream *);
+
+    /// 打开文件并接管内部创建的流（失败时流已在内部释放）
     MiniPackReader *GetMiniPackReader(const OSStringView &);
     MiniPackMemory *GetMiniPackMemory(const OSStringView &);
     MiniPackMemory *GetMiniPackFileMapping(const OSStringView &);
