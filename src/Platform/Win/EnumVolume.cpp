@@ -2,9 +2,56 @@
 #include<hgl/type/String.h>
 #include<hgl/log/Log.h>
 #include<windows.h>
+#include<winioctl.h>
 
 namespace hgl::filesystem
 {
+    /**
+     * 查询卷对应的底层物理磁盘号
+     * @param volume_name     卷设备名(形如 \\\\?\\Volume{GUID}\\)
+     * @param out_disk_id     输出物理磁盘号(PhysicalDriveN),失败时为 InvalidPhysicalDisk
+     * @param out_extent_count 输出卷跨越的物理磁盘数,失败时为 0
+     * @return 查询成功返回 true
+     */
+    static bool QueryVolumePhysicalDisk(const u16char *volume_name,uint32 &out_disk_id,uint32 &out_extent_count)
+    {
+        out_disk_id=VolumeInfo::InvalidPhysicalDisk;
+        out_extent_count=0;
+
+        u16char device_path[HGL_MAX_PATH+2];
+        hgl::strcpy(device_path,HGL_MAX_PATH+2,volume_name);
+
+        //卷设备名以反斜杠结尾,CreateFileW 查询卷元数据时要求去掉末尾反斜杠
+        size_t len=hgl::strlen<u16char>(device_path);
+        while(len>0 && device_path[len-1]==u'\\') device_path[--len]=0;
+
+        //dwDesiredAccess=0:仅查询设备元数据,无需管理员权限
+        HANDLE h_vol=CreateFileW(device_path,0,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr);
+
+        if(h_vol==INVALID_HANDLE_VALUE)return(false);
+
+        alignas(8) uint8 ext_buf[sizeof(VOLUME_DISK_EXTENTS)+16*sizeof(DISK_EXTENT)];
+        DWORD returned=0;
+        bool  ok=false;
+
+        if(DeviceIoControl(h_vol,IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS,nullptr,0,
+                           ext_buf,sizeof(ext_buf),&returned,nullptr) &&
+           returned>=sizeof(VOLUME_DISK_EXTENTS))
+        {
+            const VOLUME_DISK_EXTENTS *exts=reinterpret_cast<const VOLUME_DISK_EXTENTS *>(ext_buf);
+
+            if(exts->NumberOfDiskExtents>=1)
+            {
+                out_disk_id=(uint32)exts->Extents[0].DiskNumber;
+                out_extent_count=(uint32)exts->NumberOfDiskExtents;
+                ok=true;
+            }
+        }
+
+        CloseHandle(h_vol);
+        return(ok);
+    }
+
     int EnumVolume(ValueArray<VolumeInfo> &vi_list,const VolumeCheckConfig &cfg)
     {
         if(cfg.isErrorConfig())
@@ -24,6 +71,9 @@ namespace hgl::filesystem
             hgl::filesystem::VolumeInfo vi;
 
             memset(&vi,0,sizeof(hgl::filesystem::VolumeInfo));
+
+            vi.physical_disk_id   =VolumeInfo::InvalidPhysicalDisk;
+            vi.disk_extent_count  =0;
 
             DWORD length;
 
@@ -62,6 +112,15 @@ namespace hgl::filesystem
             else
             {
                 GLogWarning(U16_TEXT("Get <")+U16String(path_name)+U16_TEXT("> info failed！Windows error code: ")+U16String::numberOf((uint)GetLastError()));
+            }
+
+            uint32 disk_id;
+            uint32 extent_count;
+
+            if(QueryVolumePhysicalDisk(volume_name,disk_id,extent_count))
+            {
+                vi.physical_disk_id =disk_id;
+                vi.disk_extent_count=extent_count;
             }
 
             if(GetDiskFreeSpaceExW(path_name,

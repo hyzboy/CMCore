@@ -55,6 +55,14 @@ void out(const VolumeInfo &vi)
         out_size(OS_TEXT("        Total space: "),vi.total_space);
         out_size(OS_TEXT("         Free space: "),vi.free_space);
 
+    if(vi.physical_disk_id==VolumeInfo::InvalidPhysicalDisk)
+        os_out<<OS_TEXT("  Physical disk id: <unknown>")<<endl;
+    else
+    {
+        os_out<<OS_TEXT("  Physical disk id: ")<<vi.physical_disk_id<<endl;
+        os_out<<OS_TEXT("     Disk extents: ")<<vi.disk_extent_count<<endl;
+    }
+
     os_out<<endl<<endl;
 }
 

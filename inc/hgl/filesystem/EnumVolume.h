@@ -10,6 +10,8 @@ namespace hgl::filesystem
      */
     struct VolumeInfo
     {
+        static constexpr uint32 InvalidPhysicalDisk = 0xFFFFFFFFu;  ///<无法确定底层物理磁盘号(网络卷、跨盘软卷、查询失败等)
+
         enum class DriverType
         {
             None=0,
@@ -42,6 +44,9 @@ namespace hgl::filesystem
         uint64              available_space;            ///<有效容量
         uint64              total_space;                ///<总空量
         uint64              free_space;                 ///<自由容量
+
+        uint32              physical_disk_id = InvalidPhysicalDisk;   ///<底层物理磁盘号(Windows PhysicalDriveN);InvalidPhysicalDisk表示未知
+        uint32              disk_extent_count = 0;                    ///<卷跨越的物理磁盘数量(>1表示跨盘软卷/RAID条带)
 
         bool operator==(const VolumeInfo& other) const
         {
