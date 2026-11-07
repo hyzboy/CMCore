@@ -32,7 +32,8 @@ namespace hgl::io
         SizeUnavailable,    ///< @brief CN: 无法取得文件长度。 EN: The file size could not be queried.
         AllocationFailed,   ///< @brief CN: 无法分配文件缓冲区。 EN: The file buffer could not be allocated.
         ReadFailed,         ///< @brief CN: 文件读取失败或提前结束。 EN: The file read failed or ended prematurely.
-        DeliveryRejected    ///< @brief CN: 目标处理器拒绝接收结果。 EN: The destination handler rejected the result.
+        DeliveryRejected,   ///< @brief CN: 目标处理器拒绝接收结果。 EN: The destination handler rejected the result.
+        BufferTooSmall      ///< @brief CN: 外部目标缓冲容量小于文件长度。 EN: The external destination buffer is smaller than the file.
     };
 
     /**
@@ -94,6 +95,8 @@ namespace hgl::io
         int64 data_size=0;
         double submitted_at=0;
         atom_bool cancelled{false};
+        void *dest_buffer=nullptr;                  ///< @brief CN: 外部目标缓冲起始地址；为空时读入内部 MemoryBlock。 EN: External destination buffer; null means load into the internal MemoryBlock.
+        int64 dest_capacity=0;                      ///< @brief CN: 外部目标缓冲最大容量(字节)。 EN: Capacity in bytes of the external destination buffer.
 
     public:
 
@@ -113,13 +116,40 @@ namespace hgl::io
 
         void Cancel(){cancelled.store(true);} ///< @brief CN: 请求协作式取消；不会中断阻塞中的系统读取。 EN: Request cooperative cancellation; an active blocking read is not interrupted.
         bool IsCancelled()const{return cancelled.load();} ///< @brief CN: 查询是否已请求取消。 EN: Return whether cancellation has been requested.
-        uint8 *GetData(){return static_cast<uint8 *>(data.Get());} ///< @brief CN: 获取读取缓冲区；仅在成功交付后有效。 EN: Return the loaded buffer; valid after successful delivery.
-        const uint8 *GetData()const{return static_cast<const uint8 *>(const_cast<MemoryBlock &>(data).Get());} ///< @brief CN: 获取只读读取缓冲区。 EN: Return the loaded buffer as read-only data.
+        uint8 *GetData(){return dest_buffer?static_cast<uint8 *>(dest_buffer):static_cast<uint8 *>(data.Get());} ///< @brief CN: 获取读取缓冲区；仅在成功交付后有效。 EN: Return the loaded buffer; valid after successful delivery.
+        const uint8 *GetData()const{return dest_buffer?static_cast<const uint8 *>(dest_buffer):static_cast<const uint8 *>(const_cast<MemoryBlock &>(data).Get());} ///< @brief CN: 获取只读读取缓冲区。 EN: Return the loaded buffer as read-only data.
         int64 GetDataSize()const{return data_size;} ///< @brief CN: 获取已读取字节数。 EN: Return the number of loaded bytes.
 
-        /** @brief CN: 释放已读取的文件缓冲区；仅在目标处理结束后调用。 EN: Release loaded bytes; call only after destination processing is complete. */
+        /**
+         * @brief CN: 将读取目标设为调用方预分配的外部缓冲区(如已映射的 Staging 显存)。
+         *        EN: Route loaded bytes into a caller-provided external buffer (e.g. mapped staging memory).
+         * @details CN: 必须在提交前调用。设置后加载器不再分配内部 MemoryBlock，而是把
+         *              文件字节直接写入 buffer；文件长度超过 capacity 时以
+         *              BufferTooSmall 失败。缓冲区生命周期由调用方管理，ReleaseData
+         *              不会释放它。
+         *          EN: Call before submission. The loader then skips the internal
+         *              MemoryBlock and writes file bytes straight into buffer; files
+         *              larger than capacity fail with BufferTooSmall. The caller owns
+         *              the buffer lifetime and ReleaseData never frees it.
+         */
+        void SetDestinationBuffer(void *buffer,int64 capacity)
+        {
+            dest_buffer=buffer;
+            dest_capacity=capacity;
+        }
+
+        bool HasDestinationBuffer()const{return dest_buffer!=nullptr;} ///< @brief CN: 查询是否已设置外部目标缓冲。 EN: Return whether an external destination buffer is set.
+        int64 GetDestinationCapacity()const{return dest_capacity;} ///< @brief CN: 获取外部目标缓冲容量。 EN: Return the external destination buffer capacity.
+
+        /** @brief CN: 释放已读取的文件缓冲区；仅在目标处理结束后调用。外部目标缓冲不会被释放。 EN: Release loaded bytes; call only after destination processing is complete. External destination buffers are not freed. */
         void ReleaseData()
         {
+            if(dest_buffer)
+            {
+                data_size=0;
+                return;
+            }
+
             data.Free();
             data_size=0;
         }
@@ -271,11 +301,27 @@ namespace hgl::io
 
             request->ReleaseData();
 
-            if(size>0&&!request->data.Reserve(size))
+            uint8 *write_target=nullptr;
+            if(request->HasDestinationBuffer())
+            {
+                if(size>request->dest_capacity)
+                {
+                    RecordReadDuration(read_start);
+                    Fail(worker_index,request,AsyncFileLoadError::BufferTooSmall);
+                    return;
+                }
+
+                write_target=static_cast<uint8 *>(request->dest_buffer);
+            }
+            else if(size>0&&!request->data.Reserve(size))
             {
                 RecordReadDuration(read_start);
                 Fail(worker_index,request,AsyncFileLoadError::AllocationFailed);
                 return;
+            }
+            else
+            {
+                write_target=static_cast<uint8 *>(request->data.Get());
             }
 
             int64 offset=0;
@@ -290,7 +336,7 @@ namespace hgl::io
                     return;
                 }
 
-                const int64 read_size=input->Read(static_cast<uint8 *>(request->data.Get())+offset,size-offset);
+                const int64 read_size=input->Read(write_target+offset,size-offset);
                 if(read_size<=0)
                 {
                     RecordReadDuration(read_start);
@@ -317,11 +363,27 @@ namespace hgl::io
 
             request->ReleaseData();
 
-            if(size>0&&!request->data.Reserve(size))
+            uint8 *write_target=nullptr;
+            if(request->HasDestinationBuffer())
+            {
+                if(size>request->dest_capacity)
+                {
+                    RecordReadDuration(read_start);
+                    Fail(worker_index,request,AsyncFileLoadError::BufferTooSmall);
+                    return;
+                }
+
+                write_target=static_cast<uint8 *>(request->dest_buffer);
+            }
+            else if(size>0&&!request->data.Reserve(size))
             {
                 RecordReadDuration(read_start);
                 Fail(worker_index,request,AsyncFileLoadError::AllocationFailed);
                 return;
+            }
+            else
+            {
+                write_target=static_cast<uint8 *>(request->data.Get());
             }
 
             int64 offset=0;
@@ -336,7 +398,7 @@ namespace hgl::io
                     return;
                 }
 
-                const int64 read_size=request->byte_source->Read(static_cast<uint8 *>(request->data.Get())+offset,size-offset);
+                const int64 read_size=request->byte_source->Read(write_target+offset,size-offset);
                 if(read_size<=0)
                 {
                     RecordReadDuration(read_start);

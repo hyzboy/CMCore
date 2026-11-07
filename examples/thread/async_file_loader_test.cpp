@@ -13,6 +13,7 @@ using namespace hgl::thread;
 
 static const uint TextureTarget=1;
 static const uint AudioTarget=2;
+static const uint DestTarget=3;
 static const uint8 TestBytes[4]={0x41,0x55,0x4c,0x52};
 
 // 自定义字节源：字节只存在于内存，filename 指向一个必然不存在的文件，
@@ -58,6 +59,7 @@ public:
     atom_uint errors{0};
     atom_uint cancellations{0};
     atom_uint invalid_routes{0};
+    atom_uint dest_delivered{0};
     AsyncFileLoadError last_error=AsyncFileLoadError::None;
 
     bool OnFileLoaded(uint,AsyncFileLoadRequest *request)override
@@ -68,6 +70,9 @@ public:
                 return render_queue.Post(request);
             case AudioTarget:
                 return audio_queue.Submit(request);
+            case DestTarget:
+                dest_delivered.fetch_add(1);
+                return true;
             default:
                 ++invalid_routes;
                 return(false);
@@ -138,6 +143,23 @@ int main()
     source_request.byte_source=&mem_source;
     source_request.expected_bytes=sizeof(TestBytes);
 
+    // 外部目标缓冲：文件系统路径直写调用方缓冲
+    uint8 dest_buf[16]={0};
+    AsyncFileLoadRequest dest_request(filename,DestTarget);
+    dest_request.SetDestinationBuffer(dest_buf,sizeof(dest_buf));
+
+    // 外部目标缓冲：自定义字节源同样直写调用方缓冲
+    uint8 dest_src_buf[16]={0};
+    MemoryByteSource dest_mem_source;
+    AsyncFileLoadRequest dest_source_request(OS_TEXT("MissingDestByteSource.bin"),DestTarget);
+    dest_source_request.byte_source=&dest_mem_source;
+    dest_source_request.SetDestinationBuffer(dest_src_buf,sizeof(dest_src_buf));
+
+    // 容量不足的直写请求：应以 BufferTooSmall 失败
+    uint8 small_buf[2]={0};
+    AsyncFileLoadRequest small_request(filename,DestTarget);
+    small_request.SetDestinationBuffer(small_buf,sizeof(small_buf));
+
     int result=0;
     bool loader_started=false;
     if(!audio_worker.Start())
@@ -154,6 +176,9 @@ int main()
        &&(!loader.Submit(&audio_request,AsyncFilePriority::Low)
           ||!loader.Submit(&texture_request,AsyncFilePriority::Critical)
           ||!loader.Submit(&source_request,AsyncFilePriority::Normal)
+          ||!loader.Submit(&dest_request,AsyncFilePriority::Normal)
+          ||!loader.Submit(&dest_source_request,AsyncFilePriority::Normal)
+          ||!loader.Submit(&small_request,AsyncFilePriority::Normal)
           ||!loader.Submit(&cancelled_request,AsyncFilePriority::Normal)))
         result=4;
 
@@ -178,22 +203,34 @@ int main()
         }
     }
 
+    if(result==0)
+    {
+        for(uint i=0;i<sizeof(TestBytes);i++)
+            if(dest_buf[i]!=TestBytes[i]||dest_src_buf[i]!=TestBytes[i])
+                result=12;
+
+        if(dest_request.GetData()!=dest_buf||dest_request.GetDataSize()!=sizeof(TestBytes))
+            result=12;
+    }
+
     if(!audio_worker.Stop(5.0)&&result==0)
         result=9;
 
     if(result==0
        &&(audio_handler.processed.load()!=2
           ||audio_handler.errors.load()!=0
-          ||routing_handler.errors.load()!=0
+          ||routing_handler.errors.load()!=1
+          ||routing_handler.last_error!=AsyncFileLoadError::BufferTooSmall
           ||routing_handler.cancellations.load()!=1
-          ||routing_handler.invalid_routes.load()!=0))
+          ||routing_handler.invalid_routes.load()!=0
+          ||routing_handler.dest_delivered.load()!=2))
         result=10;
 
     const AsyncFileLoaderStatistics stats=loader.GetStatistics();
     if(result==0
-       &&(stats.submitted!=4||stats.popped!=4||stats.loaded!=3
-          ||stats.failed!=0||stats.cancelled!=1||stats.pending!=0
-          ||stats.loaded_bytes!=sizeof(TestBytes)*3||stats.read_samples!=3))
+       &&(stats.submitted!=7||stats.popped!=7||stats.loaded!=5
+          ||stats.failed!=1||stats.cancelled!=1||stats.pending!=0
+          ||stats.loaded_bytes!=sizeof(TestBytes)*5||stats.read_samples!=6))
         result=11;
 
     texture_request.ReleaseData();
