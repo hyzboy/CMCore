@@ -36,6 +36,41 @@ namespace hgl::io
     };
 
     /**
+     * @brief CN: 自定义字节源：让 IO worker 读取"不是裸 OS 文件"的字节(如包内偏移)。
+     *        EN: Custom byte source so IO workers can read bytes that are not a bare OS file.
+     * @details CN: 挂在 AsyncFileLoadRequest 上的借用指针；调用方必须保证其存活到
+     *              该请求的完成回调返回。GetSize/Read 只在处理该请求的那一个 IO
+     *              worker 线程上被调用，实现无需考虑并发自身。
+     *          EN: A borrowed pointer on the request; keep it alive until the request's
+     *              completion callback returns. GetSize/Read run on the single IO worker
+     *              thread processing that request, so implementations need no locking.
+     */
+    class AsyncFileByteSource
+    {
+    public:
+
+        virtual ~AsyncFileByteSource()=default;
+
+        /**
+         * @brief CN: 物理盘路由用的真实路径(如包内文件所属的 .pack)；返回空则按
+         *              request->filename 路由。仅在提交线程被调用。
+         *        EN: Real path used for physical-device routing (e.g. the owning .pack);
+         *             an empty result falls back to request->filename. Caller thread only.
+         */
+        virtual const OSString &GetRoutePath()const
+        {
+            static const OSString empty;
+            return empty;
+        }
+
+        /** @brief CN: 取数据总字节数；负数视为长度不可用。EN: Total byte count; negative means unavailable. */
+        virtual int64 GetSize()=0;
+
+        /** @brief CN: 读取至多 size 字节到 buffer；返回实际读取数，<=0 视为失败。EN: Read up to size bytes; <=0 means failure. */
+        virtual int64 Read(uint8 *buffer,int64 size)=0;
+    };
+
+    /**
      * @brief CN: 调用方持有的异步文件读取请求及其读取结果。
      *        EN: Caller-owned asynchronous file request and its loaded data.
      * @details CN: 请求指针仅借给 AsyncFileLoader；调用方必须保持请求对象有效，
@@ -67,6 +102,8 @@ namespace hgl::io
         uint priority=0;                            ///< @brief CN: 实际排队优先级，数值越小优先级越高。 EN: Effective queue priority; lower values are higher.
         void *user_data=nullptr;                    ///< @brief CN: 不拥有的业务上下文指针。 EN: Non-owning application context pointer.
         AsyncFileLoadError error=AsyncFileLoadError::None; ///< @brief CN: 最近一次加载结果的错误码。 EN: Error code for the most recent load result.
+        AsyncFileByteSource *byte_source=nullptr;   ///< @brief CN: 可选自定义字节源；为空时按 filename 走文件系统。 EN: Optional custom byte source; null reads filename from the filesystem.
+        uint64 expected_bytes=0;                    ///< @brief CN: 预期字节数，供在途字节预算限流用；0 表示未知。 EN: Expected bytes for in-flight budgeting; 0 means unknown.
 
         /** @brief CN: 创建一个文件请求；请求为一次性对象，不能并发重复提交。 EN: Create a one-shot file request; do not submit it concurrently more than once. */
         explicit AsyncFileLoadRequest(const OSString &path,uint destination=0,void *context=nullptr)
@@ -209,6 +246,13 @@ namespace hgl::io
             }
 
             const double read_start=GetUptimeSec();
+
+            if(request->byte_source)
+            {
+                ReadFromSource(worker_index,request,read_start);
+                return;
+            }
+
             OpenFileInputStream input(request->filename);
             if(!input)
             {
@@ -257,6 +301,58 @@ namespace hgl::io
                 offset+=read_size;
             }
 
+            CompleteRead(worker_index,request,read_start,size);
+        }
+
+        /** @brief CN: 从自定义字节源读完全部字节(在 IO worker 线程)。 EN: Read all bytes from a custom byte source on an IO worker. */
+        void ReadFromSource(uint worker_index,AsyncFileLoadRequest *request,const double read_start)
+        {
+            const int64 size=request->byte_source->GetSize();
+            if(size<0)
+            {
+                RecordReadDuration(read_start);
+                Fail(worker_index,request,AsyncFileLoadError::SizeUnavailable);
+                return;
+            }
+
+            request->ReleaseData();
+
+            if(size>0&&!request->data.Reserve(size))
+            {
+                RecordReadDuration(read_start);
+                Fail(worker_index,request,AsyncFileLoadError::AllocationFailed);
+                return;
+            }
+
+            int64 offset=0;
+            while(offset<size)
+            {
+                if(request->IsCancelled())
+                {
+                    RecordReadDuration(read_start);
+                    request->ReleaseData();
+                    handler->OnFileCancelled(worker_index,request);
+                    cancelled_count.fetch_add(1);
+                    return;
+                }
+
+                const int64 read_size=request->byte_source->Read(static_cast<uint8 *>(request->data.Get())+offset,size-offset);
+                if(read_size<=0)
+                {
+                    RecordReadDuration(read_start);
+                    Fail(worker_index,request,AsyncFileLoadError::ReadFailed);
+                    return;
+                }
+
+                offset+=read_size;
+            }
+
+            CompleteRead(worker_index,request,read_start,size);
+        }
+
+        /** @brief CN: 读取成功的公共尾部：填长度、交付目标处理器并累计统计。 EN: Common success tail: fill size, deliver to the handler, update stats. */
+        void CompleteRead(uint worker_index,AsyncFileLoadRequest *request,const double read_start,const int64 size)
+        {
             RecordReadDuration(read_start);
             request->data_size=size;
             request->error=AsyncFileLoadError::None;

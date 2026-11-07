@@ -15,6 +15,40 @@ static const uint TextureTarget=1;
 static const uint AudioTarget=2;
 static const uint8 TestBytes[4]={0x41,0x55,0x4c,0x52};
 
+// 自定义字节源：字节只存在于内存，filename 指向一个必然不存在的文件，
+// 用于证明请求确实走了 byte_source 分支而不是文件系统。
+class MemoryByteSource:public AsyncFileByteSource
+{
+    int64 offset=0;
+
+public:
+
+    const OSString &GetRoutePath()const override
+    {
+        static const OSString route=OS_TEXT("MemoryByteSource");
+        return route;
+    }
+
+    int64 GetSize()override{return (int64)sizeof(TestBytes);}
+
+    int64 Read(uint8 *buffer,int64 size)override
+    {
+        if(size<=0)
+            return(0);
+
+        int64 n=sizeof(TestBytes)-offset;
+
+        if(n>size)
+            n=size;
+
+        for(int64 i=0;i<n;i++)
+            buffer[i]=TestBytes[offset+i];
+
+        offset+=n;
+        return n;
+    }
+};
+
 class RoutingHandler:public AsyncFileLoadHandler
 {
 public:
@@ -99,6 +133,11 @@ int main()
     AsyncFileLoadRequest cancelled_request(filename,AudioTarget);
     cancelled_request.Cancel();
 
+    MemoryByteSource mem_source;
+    AsyncFileLoadRequest source_request(OS_TEXT("MissingByteSourceTarget.bin"),AudioTarget);
+    source_request.byte_source=&mem_source;
+    source_request.expected_bytes=sizeof(TestBytes);
+
     int result=0;
     bool loader_started=false;
     if(!audio_worker.Start())
@@ -114,6 +153,7 @@ int main()
     if(result==0
        &&(!loader.Submit(&audio_request,AsyncFilePriority::Low)
           ||!loader.Submit(&texture_request,AsyncFilePriority::Critical)
+          ||!loader.Submit(&source_request,AsyncFilePriority::Normal)
           ||!loader.Submit(&cancelled_request,AsyncFilePriority::Normal)))
         result=4;
 
@@ -142,7 +182,7 @@ int main()
         result=9;
 
     if(result==0
-       &&(audio_handler.processed.load()!=1
+       &&(audio_handler.processed.load()!=2
           ||audio_handler.errors.load()!=0
           ||routing_handler.errors.load()!=0
           ||routing_handler.cancellations.load()!=1
@@ -151,13 +191,14 @@ int main()
 
     const AsyncFileLoaderStatistics stats=loader.GetStatistics();
     if(result==0
-       &&(stats.submitted!=3||stats.popped!=3||stats.loaded!=2
+       &&(stats.submitted!=4||stats.popped!=4||stats.loaded!=3
           ||stats.failed!=0||stats.cancelled!=1||stats.pending!=0
-          ||stats.loaded_bytes!=sizeof(TestBytes)*2||stats.read_samples!=2))
+          ||stats.loaded_bytes!=sizeof(TestBytes)*3||stats.read_samples!=3))
         result=11;
 
     texture_request.ReleaseData();
     audio_request.ReleaseData();
+    source_request.ReleaseData();
     routing_handler.render_queue.Close();
     filesystem::FileDelete(filename);
     return result;
